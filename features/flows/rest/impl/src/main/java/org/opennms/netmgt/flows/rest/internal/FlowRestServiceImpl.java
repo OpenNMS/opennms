@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.rest.internal;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -470,22 +472,19 @@ public class FlowRestServiceImpl implements FlowRestService {
             }
         }
 
-        final String tosStr = queryParams.getFirst("tos");
-        if (tosStr != null) {
-            int tos = Integer.parseInt(tosStr);
-            filters.add(new TosFilter(tos));
+        final List<String> tosStr = queryParams.get("tos");
+        if (isNotEmpty(tosStr)) {
+            filters.add(new TosFilter(tosStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
 
-        final String dscpStr = queryParams.getFirst("dscp");
-        if (dscpStr != null) {
-            int dscp = Integer.parseInt(dscpStr);
-            filters.add(new DscpFilter(dscp));
+        final List<String> dscpStr = queryParams.get("dscp");
+        if (isNotEmpty(dscpStr)) {
+            filters.add(new DscpFilter(dscpStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
 
-        final String ecnStr = queryParams.getFirst("ecn");
-        if (ecnStr != null) {
-            int ecn = Integer.parseInt(ecnStr);
-            filters.add(new EcnFilter(ecn));
+        final List<String> ecnStr = queryParams.get("ecn");
+        if (isNotEmpty(ecnStr)) {
+            filters.add(new EcnFilter(ecnStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
         }
 
         return filters;

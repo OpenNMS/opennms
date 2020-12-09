@@ -161,22 +161,25 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
 
     @Override
     public String visit(TosFilter tosFilter) {
-        return render("filter_tos_interface.ftl", ImmutableMap.builder()
-                .put("tos", tosFilter.getTos())
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "tos")
+                .put("values", tosFilter.getTos())
                 .build());
     }
 
     @Override
-    public String visit(DscpFilter DscpFilter) {
-        return render("filter_dscp_interface.ftl", ImmutableMap.builder()
-                .put("dscp", DscpFilter.getDscp())
+    public String visit(DscpFilter dscpFilter) {
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "dscp")
+                .put("values", dscpFilter.getDscp())
                 .build());
     }
 
     @Override
     public String visit(EcnFilter ecnFilter) {
-        return render("filter_ecn_interface.ftl", ImmutableMap.builder()
-                .put("ecn", ecnFilter.getEcn())
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "ecn")
+                .put("values", ecnFilter.getEcn())
                 .build());
     }
 }

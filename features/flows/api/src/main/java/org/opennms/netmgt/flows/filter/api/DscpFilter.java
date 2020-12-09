@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.flows.filter.api;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DscpFilter implements Filter {
 
-    private final int dscp;
+    private final List<Integer> dscp;
 
-    public DscpFilter(int dscp) {
+    public DscpFilter(List<Integer> dscp) {
         this.dscp = dscp;
     }
 
-    public int getDscp() {
+    public List<Integer> getDscp() {
         return dscp;
     }
 
@@ -49,15 +50,18 @@ public class DscpFilter implements Filter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DscpFilter that = (DscpFilter) o;
-        return dscp == that.dscp;
+        return Objects.equals(dscp, that.dscp);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(dscp);
     }
-
 }

@@ -226,22 +226,25 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     @Override
     public String visit(final TosFilter tosFilter) {
-        return render("filter_tos_interface.ftl", ImmutableMap.builder()
-                .put("tos", tosFilter.getTos())
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "netflow.tos")
+                .put("values", tosFilter.getTos())
                 .build());
     }
 
     @Override
     public String visit(final DscpFilter dscpFilter) {
-        return render("filter_dscp_interface.ftl", ImmutableMap.builder()
-                .put("dscp", dscpFilter.getDscp())
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "netflow.dscp")
+                .put("values", dscpFilter.getDscp())
                 .build());
     }
 
     @Override
     public String visit(final EcnFilter ecnFilter) {
-        return render("filter_ecn_interface.ftl", ImmutableMap.builder()
-                .put("ecn", ecnFilter.getEcn())
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "netflow.ecn")
+                .put("values", ecnFilter.getEcn())
                 .build());
     }
 

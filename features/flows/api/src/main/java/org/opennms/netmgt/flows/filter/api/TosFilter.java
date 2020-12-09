@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.flows.filter.api;
 
+import java.util.List;
 import java.util.Objects;
 
 public class TosFilter implements Filter {
 
-    private final int tos;
+    private final List<Integer> tos;
 
-    public TosFilter(int tos) {
+    public TosFilter(List<Integer> tos) {
         this.tos = tos;
     }
 
-    public int getTos() {
+    public List<Integer> getTos() {
         return tos;
     }
 
@@ -49,15 +50,18 @@ public class TosFilter implements Filter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TosFilter that = (TosFilter) o;
-        return tos == that.tos;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TosFilter tosFilter = (TosFilter) o;
+        return Objects.equals(tos, tosFilter.tos);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(tos);
     }
-
 }

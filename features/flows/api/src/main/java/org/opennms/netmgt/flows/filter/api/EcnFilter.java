@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.flows.filter.api;
 
+import java.util.List;
 import java.util.Objects;
 
 public class EcnFilter implements Filter {
 
-    private final int ecn;
+    private final List<Integer> ecn;
 
-    public EcnFilter(int ecn) {
+    public EcnFilter(List<Integer> ecn) {
         this.ecn = ecn;
     }
 
-    public int getEcn() {
+    public List<Integer> getEcn() {
         return ecn;
     }
 
@@ -49,15 +50,18 @@ public class EcnFilter implements Filter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EcnFilter that = (EcnFilter) o;
-        return ecn == that.ecn;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        EcnFilter ecnFilter = (EcnFilter) o;
+        return Objects.equals(ecn, ecnFilter.ecn);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(ecn);
     }
-
 }

@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,9 +84,14 @@ import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
+import org.opennms.netmgt.flows.filter.api.EcnFilter;
+import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.filter.api.TosFilter;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -103,6 +109,7 @@ public class FlowQueryIT {
     private ElasticFlowRepository flowRepository;
 
     private SmartQueryService smartQueryService;
+
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
@@ -668,28 +675,83 @@ public class FlowQueryIT {
         ));
     }
 
-    private void canGetFieldValues(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
-        loadDefaultFlows();
-
-        Object[] memoryResult = DEFAULT_FLOWS
+    private Object[] defaultFlowsFieldValues(Function<FlowDocument, Integer> fieldAccess) {
+        return DEFAULT_FLOWS
                 .stream()
-                .map(aggregateBy)
+                .map(fieldAccess)
                 .distinct()
                 .sorted()
                 .map(i -> i.toString())
                 .toArray()
                 ;
+    }
+
+    private void canGetFieldValues(LimitedCardinalityField field, Function<FlowDocument, Integer> fieldAccess) throws Exception {
+        loadDefaultFlows();
+
+        Object[] memoryResult = defaultFlowsFieldValues(fieldAccess);
 
         List<String> elasticResult = smartQueryService.getFieldValues(field, getFilters()).get();
 
         assertThat(elasticResult, containsInAnyOrder(memoryResult));
     }
 
+    private static Predicate<FlowDocument> filterPredicate(Filter filter) {
+        return filter.visit(new FilterVisitor<Predicate<FlowDocument>>() {
+            @Override
+            public Predicate<FlowDocument> visit(ExporterNodeFilter exporterNodeFilter) {
+                throw new RuntimeException("not yet implemented");
+            }
+
+            @Override
+            public Predicate<FlowDocument> visit(TimeRangeFilter timeRangeFilter) {
+                return fd -> fd.getLastSwitched() >= timeRangeFilter.getStart() && fd.getDeltaSwitched() <= timeRangeFilter.getEnd();
+            }
+
+            @Override
+            public Predicate<FlowDocument> visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter) {
+                return fd -> snmpInterfaceIdFilter.getSnmpInterfaceId() == (fd.getDirection() == Direction.INGRESS ? fd.getInputSnmp() : fd.getOutputSnmp());
+            }
+
+            @Override
+            public Predicate<FlowDocument> visit(TosFilter tosFilter) {
+                return fd -> tosFilter.getTos().isEmpty() || tosFilter.getTos().contains(fd.getTos());
+            }
+
+            @Override
+            public Predicate<FlowDocument> visit(DscpFilter dscpFilter) {
+                return fd -> dscpFilter.getDscp().isEmpty() || dscpFilter.getDscp().contains(fd.getDscp());
+            }
+
+            @Override
+            public Predicate<FlowDocument> visit(EcnFilter ecnFilter) {
+                return fd -> ecnFilter.getEcn().isEmpty() || ecnFilter.getEcn().contains(fd.getEcn());
+            }
+        });
+    }
+
     private void canGetFieldSummaries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
         loadDefaultFlows();
+        canGetFieldSeriesOfLoadedFlows(field, aggregateBy, null);
+    }
+
+    private void canGetFieldSeries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
+        loadDefaultFlows();
+        canGetFieldSeriesOfLoadedFlows(field, aggregateBy, null);
+    }
+
+    private void canGetFieldSummariesOfLoadedFlows(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy, Filter filter) throws Exception {
+
+        List<Filter> filters = filter != null ? getFilters(filter) : getFilters();
+
+        Predicate<FlowDocument> predicate = filters
+                .stream()
+                .map(FlowQueryIT::filterPredicate)
+                .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
 
         Object[] memoryResult = DEFAULT_FLOWS
                 .stream()
+                .filter(predicate)
                 .map(fd -> FlowQueryIT.flowDoc2TrafficSummary(fd, aggregateBy.apply(fd).toString()))
                 // collect the traffic summaries into a map
                 // -> the map key is the traffic summary key and the map value is the merged traffic summary for that key
@@ -703,18 +765,25 @@ public class FlowQueryIT {
                 .sorted(Comparator.comparing(s -> new Integer(s.getEntity())))
                 .toArray();
 
-        List<TrafficSummary<String>> elasticResult = smartQueryService.getFieldSummaries(field, getFilters()).get();
+        List<TrafficSummary<String>> elasticResult = smartQueryService.getFieldSummaries(field, filters).get();
 
         assertThat(elasticResult, contains(memoryResult));
     }
 
-    private void canGetFieldSeries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
-        loadDefaultFlows();
+    private void canGetFieldSeriesOfLoadedFlows(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy, Filter filter) throws Exception {
 
         int step = 8;
 
+        List<Filter> filters = filter != null ? getFilters(filter) : getFilters();
+
+        Predicate<FlowDocument> predicate = filters
+                .stream()
+                .map(FlowQueryIT::filterPredicate)
+                .reduce(fd -> true, (p1, p2) -> fd -> p1.test(fd) && p2.test(fd));
+
         Map<Directional<String>, Map<Long, Double>> memoryResult = DEFAULT_FLOWS
                 .stream()
+                .filter(predicate)
                 .map(fd -> flowDoc2Pair(fd, step, aggregateBy.apply(fd).toString()))
                 // collect the pairs of directionals and maps (of indexes into bytes) into a map
                 // -> the key is the directional and the value are the merged maps for that key
@@ -728,7 +797,7 @@ public class FlowQueryIT {
                         )
                 );
 
-        Table<Directional<String>, Long, Double> elasticResult = smartQueryService.getFieldSeries(field, step, getFilters()).get();
+        Table<Directional<String>, Long, Double> elasticResult = smartQueryService.getFieldSeries(field, step, filters).get();
 
         // The result calculated in memory the result returned by elastic
         // can not be asserted for equality because of rounding errors
@@ -804,6 +873,87 @@ public class FlowQueryIT {
     @Test
     public void canGetEcnSeries() throws Exception {
         canGetFieldSeries(LimitedCardinalityField.ECN, fd -> fd.getEcn());
+    }
+
+    private List<Filter> allFilterCombinations(
+            LimitedCardinalityField field,
+            Function<FlowDocument, Integer> fieldAccess,
+            Function<List<Integer>, Filter> filterCreator
+    ) {
+        List<Filter> res = new ArrayList<>();
+        Object[] values = defaultFlowsFieldValues(fieldAccess);
+
+        // check all combinations of filter values
+        // -> for each value decide if it is used in the filter or not
+        // -> combinations correspond to binary numbers with up values.length digits
+        // -> if a bit is set then the corresponding value is included
+
+        int combinations = 1 << values.length;
+
+        // start with 1 -> at least one bit is set
+        for (int i = 1; i < combinations; i++) {
+            List<Integer> filterValues = new ArrayList<>();
+            for (int j = 0; j < values.length; j++) {
+                if ((i >> j & 1) == 1) {
+                    filterValues.add(Integer.parseInt((String) values[j]));
+                }
+            }
+            res.add(filterCreator.apply(filterValues));
+        }
+
+        return res;
+    }
+
+    private void canFilterSeriesByLimitedCardinalityField(
+            LimitedCardinalityField field,
+            Function<FlowDocument, Integer> fieldAccess,
+            Function<List<Integer>, Filter> filterCreator
+    ) throws Exception {
+        loadDefaultFlows();
+        for (Filter filter: allFilterCombinations(field, fieldAccess, filterCreator)) {
+            canGetFieldSeriesOfLoadedFlows(field, fieldAccess, filter);
+        }
+    }
+
+    private void canFilterSummariesByLimitedCardinalityField(
+            LimitedCardinalityField field,
+            Function<FlowDocument, Integer> fieldAccess,
+            Function<List<Integer>, Filter> filterCreator
+    ) throws Exception {
+        loadDefaultFlows();
+        for (Filter filter: allFilterCombinations(field, fieldAccess, filterCreator)) {
+            canGetFieldSummariesOfLoadedFlows(field, fieldAccess, filter);
+        }
+    }
+
+    @Test
+    public void canFilterSeriesByTos() throws Exception {
+        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.TOS, FlowDocument::getTos, TosFilter::new);
+    }
+
+    @Test
+    public void canFilterSeriesByDscp() throws Exception {
+        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
+    }
+
+    @Test
+    public void canFilterSeriesByEcn() throws Exception {
+        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.ECN, FlowDocument::getEcn, EcnFilter::new);
+    }
+
+    @Test
+    public void canFilterSummariesByTos() throws Exception {
+        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.TOS, FlowDocument::getTos, TosFilter::new);
+    }
+
+    @Test
+    public void canFilterSummariesByDscp() throws Exception {
+        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
+    }
+
+    @Test
+    public void canFilterSummariesByEcn() throws Exception {
+        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.ECN, FlowDocument::getEcn, EcnFilter::new);
     }
 
     private static <K> TrafficSummary<K> flowDoc2TrafficSummary(FlowDocument fd, K key) {
