@@ -35,8 +35,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +48,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
@@ -479,21 +483,53 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         final List<String> dscpStr = queryParams.get("dscp");
         if (isNotEmpty(dscpStr)) {
-            filters.add(new DscpFilter(dscpStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            filters.add(new DscpFilter(dscpStr.stream().flatMap(str -> {
+                // translate symbolic DSCP names into corresponding numbers
+                // (cf. https://en.wikipedia.org/wiki/Type_of_service#DSCP_and_ECN)
+                // -> additionally support IP precedence groups
+                //    (for P0, P5, and P6 more values are used than specified)
+                Supplier<Stream<Integer>> s = DSCP_VALUE_SUPPLIER.get(str.toUpperCase());
+                return s != null ? s.get() : Stream.of(Integer.parseInt(str));
+            }).collect(Collectors.toList())));
         }
 
         final List<String> ecnStr = queryParams.get("ecn");
         if (isNotEmpty(ecnStr)) {
-            filters.add(new EcnFilter(ecnStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
+            filters.add(new EcnFilter(ecnStr.stream().flatMap(str -> {
+                switch (str.toUpperCase()) {
+                    case "ECT": // ecn capable transport
+                        return Stream.of(1, 2);
+                    case "CE": // congestion encountered
+                        return Stream.of(3);
+                    default:
+                        return Stream.of(Integer.parseInt(str));
+                }
+            }).collect(Collectors.toList())));
         }
 
         return filters;
     }
 
+    private static Map<String, Supplier<Stream<Integer>>> DSCP_VALUE_SUPPLIER = new HashMap<String, Supplier<Stream<Integer>>>() {{
+        for (final int p = 0; p < 8; p++) {
+            put("P" + p, () -> Stream.of(p, p + 2, p + 4, p + 6));
+        }
+        for (final int c = 0; c < 8; c++) {
+            put("CS" + c, () -> Stream.of(c * 8));
+            if (c >= 1 && c <= 4) {
+                for (final int d = 1; d <= 3; d++) {
+                    put(("AF" + c) + d, () -> Stream.of(c * 8 + d * 2));
+                }
+            }
+        }
+        put("LE", () -> Stream.of(1));
+        put("EF", () -> Stream.of(46));
+    }};
+
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
         final Optional<TimeRangeFilter> filter = filters.stream()
                 .filter(f -> f instanceof TimeRangeFilter)
-                .map(f -> (TimeRangeFilter)f)
+                .map(f -> (TimeRangeFilter) f)
                 .findFirst();
         if (!filter.isPresent()) {
             throw new BadRequestException("Time range is required.");
@@ -557,7 +593,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     private static <T> T waitForFuture(CompletableFuture<T> future) {
         try {
             return future.get();
-        } catch (InterruptedException|ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
     }
@@ -583,7 +619,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setTimestamps(timestamps);
         response.setValues(values);
     }
-  
+
     /**
      * Retrieve the first value from the map for the given key and convert this to a blank string
      * if the resulting value is null, or does not exist in the map.
