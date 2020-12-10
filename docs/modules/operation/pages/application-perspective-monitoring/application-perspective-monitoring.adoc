@@ -1,8 +1,7 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= Application Perspective Monitoring
 
-With {page-component-title} _Application Perspective Monitoring_ you can see the availability of a service hosted in Houston that is accessed in Seattle from your central location in New York.
+With {page-component-title} Application Perspective Monitoring you can see the availability of a service hosted in Houston that is accessed in Seattle from your central location in New York.
 If a service outage occurs, understanding the _perspective_ from which that outage was monitored makes it easier to troubleshoot the problem. 
 
 Application Perspective Monitoring uses the Minion infrastructure to monitor a service's availability from these different perspectives.
@@ -15,7 +14,7 @@ The service monitor configuration is looked up in the `poller-configuration.xml`
 
 NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used *only* for Application Perspective Monitoring.
 
-==== Configuring Application Perspective Monitoring
+== Configuring Application Perspective Monitoring
 
 Application Perspective Monitoring requires at least one {page-component-title} Minion on your network.
 Refer to the xref:https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html#_monitor_isolated_location_with_minion[Installation Guide] for more information. 

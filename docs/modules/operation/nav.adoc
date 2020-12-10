@@ -117,6 +117,7 @@
 **** xref:service-assurance/monitors/Win32ServiceMonitor.adoc[]
 **** xref:service-assurance/monitors/WsManMonitor.adoc[]
 **** xref:service-assurance/monitors/XmpMonitor.adoc[]
+** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/configuration.adoc[]
@@ -217,7 +218,6 @@
 
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
-* xref:meta-data.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/jira.adoc[]
@@ -262,6 +262,9 @@
 ** xref:kafka-producer/shell-commands.adoc[]
 
 * xref:alarm-correlation/situation-feedback.adoc[]
+* xref:meta-data.adoc[]
+* xref:snmp-poller/concepts.adoc[]
+
 
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]

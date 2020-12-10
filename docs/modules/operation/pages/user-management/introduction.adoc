@@ -13,7 +13,7 @@ Managing users involves the following tasks:
 [[ga-data-choices]]
 == First-Time Login and Data Choices
 
-Access the {page-component-title} web application at http://<ip-or-fqdn-of-your-server>:8980/opennms.
+Access the {page-component-title} web application at \http://<ip-or-fqdn-of-your-server>:8980/opennms.
 
 The default user login is `admin` with the password `admin`.
 
