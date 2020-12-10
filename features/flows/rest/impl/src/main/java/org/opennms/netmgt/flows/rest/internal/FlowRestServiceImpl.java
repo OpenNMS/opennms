@@ -511,14 +511,17 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     private static Map<String, Supplier<Stream<Integer>>> DSCP_VALUE_SUPPLIER = new HashMap<String, Supplier<Stream<Integer>>>() {{
-        for (final int p = 0; p < 8; p++) {
-            put("P" + p, () -> Stream.of(p, p + 2, p + 4, p + 6));
+        for (int p = 0; p < 8; p++) {
+            final int finalP = p;
+            put("P" + finalP, () -> Stream.of(finalP, finalP + 2, finalP + 4, finalP + 6));
         }
-        for (final int c = 0; c < 8; c++) {
-            put("CS" + c, () -> Stream.of(c * 8));
-            if (c >= 1 && c <= 4) {
-                for (final int d = 1; d <= 3; d++) {
-                    put(("AF" + c) + d, () -> Stream.of(c * 8 + d * 2));
+        for (int c = 0; c < 8; c++) {
+            final int finalC = c;
+            put("CS" + finalC, () -> Stream.of(finalC * 8));
+            if (finalC >= 1 && finalC <= 4) {
+                for (int d = 1; d <= 3; d++) {
+                    final int finalD = d;
+                    put(("AF" + finalC) + finalD, () -> Stream.of(finalC * 8 + finalD * 2));
                 }
             }
         }
