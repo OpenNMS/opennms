@@ -52,40 +52,29 @@ require('./Requisitions');
             errorHandler
           );
         };
-        bootbox.dialog({
-          message: '<b>Rescan Options</b>: <br/><hr/>' +
-                   '<b>Full (true)</b>: synchronize and scan all nodes (new and existing).<br/>' +
-                   '<b>Partial (false)</b>: synchronize only new and deleted nodes. Run the scan phase only for new nodes.<br/>' +
-                   '<b>DB Only (dbonly)</b>: synchronize all nodes, skip the scan phase.<br/>' ,
-          
-          title: 'Synchronize Requisition ' + requisition.foreignSource,
-          buttons: {
-            fullSync: {
-              label: 'Full',
-              className: 'btn-primary',
-              callback: function() {
-                doSynchronize(requisition, 'true');
-              }
+        bootbox.prompt({
+            title: 'Synchronize Requisition  ' +  requisition.foreignSource,
+            message: '<p>Choose a scan option: </p>',
+            inputType: 'radio',
+            inputOptions: [
+            {
+                text: 'Scan all nodes',
+                value: 'true',
             },
-            ignoreExistingSync: {
-              label: 'Partial',
-              className: 'btn-secondary',
-              callback: function() {
-                doSynchronize(requisition, 'false');
-              }
+            {
+                text: 'Scan added nodes only',
+                value: 'false',
             },
-            dbOnlySync: {
-              label: 'DB Only',
-              className: 'btn-secondary',
-              callback: function() {
-                doSynchronize(requisition, 'dbonly');
-              }
-            },
-            main: {
-              label: 'Cancel',
-              className: 'btn-secondary'
+            {
+                text: 'No scanning',
+                value: 'dbonly',
             }
-          }
+            ],
+            callback: function (result) {
+                if (result !== null) {
+                    doSynchronize(requisition, result);
+                }
+            }
         });
       }
     };
