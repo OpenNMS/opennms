@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.flows;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -92,11 +93,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
-        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
-        this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesReceived"));
-        this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesParsed"));
-        this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesConverted"));
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
+        this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesReceived"));
+        this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesParsed"));
+        this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesConverted"));
     }
 
     @Override
@@ -117,7 +118,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
                     flowPackets += 1;
 
-                    final List<Flow> converted = converter.convert(flowPacket);
+                    final List<Flow> converted = converter.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
                     flows.addAll(converted);
 
                     this.entriesConverted.mark(converted.size());

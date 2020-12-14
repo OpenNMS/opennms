@@ -47,7 +47,7 @@ public class ConfigurationTest {
 
         final PropertyTree tree = PropertyTree.from(properties);
 
-        final AdapterDefinition adapter = new MapBasedAdapterDef(tree);
+        final AdapterDefinition adapter = new MapBasedAdapterDef("Test", tree);
 
         Assert.assertEquals("Example", adapter.getName());
         Assert.assertEquals("com.example.Adapter", adapter.getClassName());

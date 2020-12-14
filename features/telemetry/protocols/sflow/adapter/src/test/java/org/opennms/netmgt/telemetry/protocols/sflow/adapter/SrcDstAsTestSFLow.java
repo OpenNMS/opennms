@@ -32,6 +32,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.time.Instant;
+
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
 import org.junit.Test;
@@ -55,7 +57,7 @@ public class SrcDstAsTestSFLow {
     public void testSrcDstAs() {
         long value = 2147483648L;
         final BsonDocument bson = getBsonDocument(value);
-        final SFlow flow = new SFlow(null, bson);
+        final SFlow flow = new SFlow(null, bson, Instant.now());
         assertThat(flow.getSrcAs(), is(equalTo(value)));
         assertThat(flow.getDstAs(), is(equalTo(null)));
     }

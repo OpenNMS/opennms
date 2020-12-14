@@ -48,6 +48,9 @@ COPY --chown=10001:0 --from=minion-base /opt /opt
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
 
+# Create the directory for server certificates
+RUN mkdir /opt/minion/server-certs
+
 # Create SSH Key-Pair to use with the Karaf Shell
 # This is a workaround to be able to use our health:check which does not work with the karaf/bin/client command
 RUN mkdir /opt/minion/.ssh && \

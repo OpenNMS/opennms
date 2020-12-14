@@ -137,7 +137,7 @@ public class BmpPeerStatusAdapter extends AbstractAdapter {
 
         final Instant timestamp = Instant.ofEpochSecond(peer.getTimestamp().getSeconds(), peer.getTimestamp().getNanos());
 
-        final EventBuilder event = new EventBuilder(uei, "telemetryd:" + this.adapterConfig.getName(), Date.from(timestamp));
+        final EventBuilder event = new EventBuilder(uei, "telemetryd:" + this.adapterConfig.getFullName(), Date.from(timestamp));
         event.setNodeid(exporterNodeId.get());
         event.setInterface(exporterAddress);
 

@@ -214,3 +214,25 @@ admin@opennms()> config:edit org.opennms.features.flows.persistence.kafka
 admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
 admin@opennms()> config:update
 ----
+
+=== Correcting clock skew
+
+Flow analyses use timestamps exposed by the underlying flow management protocol.
+These timestamps will be set depending on the clock of the exporting router.
+If the router's clock differs from the actual time, this will be reflected in received flows and therefore skew up further analysis and aggregation.
+
+_{opennms-product-name}_ can correct the timestamps of a received flow.
+To do so, it compares the current time of the exporting device with the actual time when the packet has been received.
+If these times differ by a certain amount, the receive time will be considered more correct and all timestamps of the flow will be adapted.
+
+To enable clock correction, configure a threshold for the maximum allowed delta in milliseconds.
+Setting the threshold to `0` will disable the correction mechanism.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms()> config:property-set clockSkewCorrectionThreshold 5000
+admin@opennms()> config:update
+----
