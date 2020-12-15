@@ -36,8 +36,6 @@ public interface FilterVisitor<T> {
 
     T visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter);
 
-    T visit(TosFilter tosFilter);
-
     T visit(DscpFilter dscpFilter);
 
     T visit(EcnFilter ecnFilter);

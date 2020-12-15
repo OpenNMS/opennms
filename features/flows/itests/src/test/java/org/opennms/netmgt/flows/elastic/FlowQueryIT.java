@@ -91,7 +91,6 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.netmgt.flows.filter.api.TosFilter;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -714,11 +713,6 @@ public class FlowQueryIT {
             }
 
             @Override
-            public Predicate<FlowDocument> visit(TosFilter tosFilter) {
-                return fd -> tosFilter.getTos().isEmpty() || tosFilter.getTos().contains(fd.getTos());
-            }
-
-            @Override
             public Predicate<FlowDocument> visit(DscpFilter dscpFilter) {
                 return fd -> dscpFilter.getDscp().isEmpty() || dscpFilter.getDscp().contains(fd.getDscp());
             }
@@ -831,21 +825,6 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canGetTosValues() throws Exception {
-        canGetFieldValues(LimitedCardinalityField.TOS, fd -> fd.getTos());
-    }
-
-    @Test
-    public void canGetTosSummaries() throws Exception {
-        canGetFieldSummaries(LimitedCardinalityField.TOS, fd -> fd.getTos());
-    }
-
-    @Test
-    public void canGetTosSeries() throws Exception {
-        canGetFieldSeries(LimitedCardinalityField.TOS, fd -> fd.getTos());
-    }
-
-    @Test
     public void canGetDscpValues() throws Exception {
         canGetFieldValues(LimitedCardinalityField.DSCP, fd -> fd.getDscp());
     }
@@ -927,11 +906,6 @@ public class FlowQueryIT {
     }
 
     @Test
-    public void canFilterSeriesByTos() throws Exception {
-        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.TOS, FlowDocument::getTos, TosFilter::new);
-    }
-
-    @Test
     public void canFilterSeriesByDscp() throws Exception {
         canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
     }
@@ -939,11 +913,6 @@ public class FlowQueryIT {
     @Test
     public void canFilterSeriesByEcn() throws Exception {
         canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.ECN, FlowDocument::getEcn, EcnFilter::new);
-    }
-
-    @Test
-    public void canFilterSummariesByTos() throws Exception {
-        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.TOS, FlowDocument::getTos, TosFilter::new);
     }
 
     @Test

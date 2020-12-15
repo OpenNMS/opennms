@@ -75,7 +75,6 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.netmgt.flows.filter.api.TosFilter;
 import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
@@ -175,21 +174,6 @@ public class FlowRestServiceImpl implements FlowRestService {
         populateResponseFromTable(series, response);
 
         return response;
-    }
-
-    @Override
-    public List<Integer> getTosValues(UriInfo uriInfo) {
-        return getFieldValues(LimitedCardinalityField.TOS, uriInfo);
-    }
-
-    @Override
-    public FlowSummaryResponse getTosSummaries(UriInfo uriInfo) {
-        return getFieldSummaries(LimitedCardinalityField.TOS, uriInfo);
-    }
-
-    @Override
-    public FlowSeriesResponse getTosSeries(long step, UriInfo uriInfo) {
-        return getFieldSeries(LimitedCardinalityField.TOS, step, uriInfo);
     }
 
     @Override
@@ -476,21 +460,12 @@ public class FlowRestServiceImpl implements FlowRestService {
             }
         }
 
-        final List<String> tosStr = queryParams.get("tos");
-        if (isNotEmpty(tosStr)) {
-            filters.add(new TosFilter(tosStr.stream().map(Integer::parseInt).collect(Collectors.toList())));
-        }
-
         final List<String> dscpStr = queryParams.get("dscp");
         if (isNotEmpty(dscpStr)) {
             filters.add(new DscpFilter(dscpStr.stream().flatMap(str -> {
-                // translate symbolic DSCP names into corresponding numbers
-                // (cf. https://en.wikipedia.org/wiki/Type_of_service#DSCP_and_ECN)
-                // -> additionally support IP precedence groups
-                //    (for P0, P5, and P6 more values are used than specified)
                 Supplier<Stream<Integer>> s = DSCP_VALUE_SUPPLIER.get(str.toUpperCase());
                 return s != null ? s.get() : Stream.of(Integer.parseInt(str));
-            }).collect(Collectors.toList())));
+            }).distinct().collect(Collectors.toList())));
         }
 
         final List<String> ecnStr = queryParams.get("ecn");
@@ -510,10 +485,14 @@ public class FlowRestServiceImpl implements FlowRestService {
         return filters;
     }
 
+    // translate symbolic DSCP names into corresponding numbers
+    // (cf. https://en.wikipedia.org/wiki/Type_of_service#DSCP_and_ECN)
+    // -> additionally support IP precedence groups
+    //    (for P0, P5, and P6 more values are included than specified)
     private static Map<String, Supplier<Stream<Integer>>> DSCP_VALUE_SUPPLIER = new HashMap<String, Supplier<Stream<Integer>>>() {{
         for (int p = 0; p < 8; p++) {
             final int finalP = p;
-            put("P" + finalP, () -> Stream.of(finalP, finalP + 2, finalP + 4, finalP + 6));
+            put("P" + finalP, () -> Stream.of(finalP * 8, finalP * 8 + 2, finalP * 8 + 4, finalP * 8 + 6));
         }
         for (int c = 0; c < 8; c++) {
             final int finalC = c;

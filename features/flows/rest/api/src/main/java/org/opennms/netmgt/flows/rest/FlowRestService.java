@@ -92,28 +92,6 @@ public interface FlowRestService {
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
     @GET
-    @Path("tos/enumerate")
-    @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getTosValues(
-            @Context UriInfo uriInfo
-    );
-
-    @GET
-    @Path("tos")
-    @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTosSummaries(
-            @Context UriInfo uriInfo
-    );
-
-    @GET
-    @Path("tos/series")
-    @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTosSeries(
-            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-            @Context UriInfo uriInfo
-    );
-
-    @GET
     @Path("dscp/enumerate")
     @Produces(MediaType.APPLICATION_JSON)
     List<Integer> getDscpValues(
