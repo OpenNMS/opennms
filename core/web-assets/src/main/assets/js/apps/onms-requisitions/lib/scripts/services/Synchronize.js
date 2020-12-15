@@ -54,7 +54,7 @@ require('./Requisitions');
         };
         bootbox.prompt({
             title: 'Synchronize Requisition  ' +  requisition.foreignSource,
-            message: '<p>Choose a scan option: </p>',
+            message: '<p><b>Choose a scan option: </b></p>',
             inputType: 'radio',
             inputOptions: [
             {
@@ -70,6 +70,15 @@ require('./Requisitions');
                 value: 'dbonly',
             }
             ],
+            buttons: {
+                    confirm: {
+                        label: 'Synchronize',
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                    }
+                },
+            swapButtonOrder: 'true',
             callback: function (result) {
                 if (result !== null) {
                     doSynchronize(requisition, result);
