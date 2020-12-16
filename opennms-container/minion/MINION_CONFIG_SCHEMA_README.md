@@ -1,5 +1,9 @@
 # Minion Configuration Schema
 The minion configuration schema describes all the configuration parameters that Minion allows to be set by container overlay via confd.
+## Purpose
+The purpose of the configuration schema is the following:
+* Generate documentation regarding what configuration options the Minion container supports
+* Act as a source for data-driven UI for setting Minion configuration
 ## Layout
 The schema document is broken down into categories which can be nested.
 
