@@ -134,13 +134,16 @@ public class Netflow9MessageBuilder {
         });
 
         if (builder.getFirstSwitched().getValue() > builder.getLastSwitched().getValue()) {
-            throw new IllegalFlowException(
-                    String.format("lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
-                            builder.getSrcAddress(),
-                            builder.getDstAddress(),
-                            builder.getFirstSwitched().getValue(),
-                            builder.getLastSwitched().getValue(),
-                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
+//            throw new IllegalFlowException(
+//                    String.format("lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
+//                            builder.getSrcAddress(),
+//                            builder.getDstAddress(),
+//                            builder.getFirstSwitched().getValue(),
+//                            builder.getLastSwitched().getValue(),
+//                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
+
+            builder.setLastSwitched(setLongValue(builder.getTimestamp()));
+            builder.setFirstSwitched(setLongValue(builder.getTimestamp() - flowActiveTimeout));
         }
 
         // set vlan
