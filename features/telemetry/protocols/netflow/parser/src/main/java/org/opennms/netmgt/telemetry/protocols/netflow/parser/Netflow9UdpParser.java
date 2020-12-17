@@ -70,6 +70,10 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(session, header, buffer);
 
+        if (header.sequenceNumber == 570258289) {
+            System.out.println(packet.getRecords().count());
+        }
+
         detectClockSkew(header.unixSecs * 1000L, session.getRemoteAddress());
 
         return packet;

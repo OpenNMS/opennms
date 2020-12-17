@@ -71,6 +71,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
@@ -302,11 +303,19 @@ public abstract class ParserBase implements Parser {
             return packet.getRecords().map(record -> {
                 this.recordsReceived.mark();
 
+                if (packet.getSequenceNumber() == 570258289) {
+                    System.out.println(Iterables.filter(record, val -> val.getName().startsWith("IN_BYTES")));
+                }
+
                 final CompletableFuture<Void> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
                 recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
+                    if (packet.getSequenceNumber() == 570258289) {
+                        System.out.println("x " + Iterables.filter(record, val -> val.getName().startsWith("IN_BYTES")));
+                    }
+
                     timerContext.close();
                     if (ex != null) {
                         this.recordEnrichmentErrors.inc();
@@ -322,6 +331,10 @@ public abstract class ParserBase implements Parser {
                     // from one of our executor threads so that we can put back-pressure on the listener
                     // if we can't keep up
                     final Runnable dispatch = () -> {
+                        if (packet.getSequenceNumber() == 570258289) {
+                            System.out.println("y " + Iterables.filter(record, val -> val.getName().startsWith("IN_BYTES")));
+                        }
+
                         // Let's serialize
                         final FlowMessage.Builder flowMessage;
                         try {
@@ -362,8 +375,16 @@ public abstract class ParserBase implements Parser {
                         // Build the message to dispatch
                         final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
 
+                        if (packet.getSequenceNumber() == 570258289) {
+                            System.out.println("z " + Iterables.filter(record, val -> val.getName().startsWith("IN_BYTES")));
+                        }
+
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b, exx) -> {
+                            if (packet.getSequenceNumber() == 570258289) {
+                                System.out.println("! " + Iterables.filter(record, val -> val.getName().startsWith("IN_BYTES")));
+                            }
+
                             if (exx != null) {
                                 this.recordDispatchErrors.inc();
                                 future.completeExceptionally(exx);
