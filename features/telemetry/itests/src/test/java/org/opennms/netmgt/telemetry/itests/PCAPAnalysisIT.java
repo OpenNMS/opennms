@@ -32,10 +32,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -74,7 +72,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -83,7 +80,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
     // Inputs
-    private static final String PCAP_FILE = "/home/fooker/files/agg003.pcap";
+    private static final String PCAP_FILE = "/Users/chris/Downloads/agg003.pcap";
     private static final int INTERFACE_INDEX = 731;
     private static final ReferencePoint START = new ReferencePoint("2020-12-16 15:24:56 -0000",
             8052648991542524L, 2302027755041727L,
@@ -121,7 +118,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
         // Analyze the pcap using tshark
 //        final Process tshark = Runtime.getRuntime().exec("tshark -r " + PCAP_FILE + " -T json");
-        final JsonArray shark = new Gson().fromJson(new FileReader("/home/fooker/files/dump.json"), JsonArray.class);
+        final JsonArray shark = new Gson().fromJson(new FileReader("/Users/chris/Downloads/dump.json"), JsonArray.class);
 
         long captureBytesIn = 0;
         long captureBytesOut = 0;
@@ -130,6 +127,13 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
         long captureFlowsIn = 0;
         long captureFlowsOut = 0;
         long captureFlowsOther = 0;
+
+        long captureDropDueToFlowSetId = 0;
+        long captureDropDueToTimerange = 0;
+        long captureTotal = 0;
+
+        final Set<String> capturedDroppedDueToTs = Sets.newTreeSet();
+
         final Set<String> expectedSequences = Sets.newTreeSet();
         for (final JsonElement pkg : shark) {
             final JsonObject cflow = pkg.getAsJsonObject().getAsJsonObject("_source").getAsJsonObject("layers").getAsJsonObject("cflow");
@@ -139,17 +143,22 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
             final long seqnum = Long.parseLong(cflow.get("cflow.sequence").getAsString());
 
-            final long timestamp = cflow.getAsJsonObject("cflow.timestamp_tree").getAsJsonPrimitive("cflow.unix_secs").getAsLong() * 1000L;
+            final double timestamp = cflow.getAsJsonObject("cflow.timestamp_tree").getAsJsonPrimitive("cflow.unix_secs").getAsLong() * 1000.0;
             final double uptime = cflow.getAsJsonPrimitive("cflow.sysuptime").getAsDouble() * 1000.0;
 
             for (final Map.Entry<String, JsonElement> flowSetEntry : Iterables.filter(cflow.entrySet(), (e) -> e.getKey().startsWith("FlowSet "))) {
                 final JsonObject flowSet = flowSetEntry.getValue().getAsJsonObject();
+                Set<Map.Entry<String, JsonElement>> flows = Sets.filter(flowSet.entrySet(), (e) -> e.getKey().startsWith("Flow "));
 
-                if (flowSet.getAsJsonPrimitive("cflow.flowset_id").getAsInt() != 320) {
+                captureTotal += flows.size();
+
+                if (flowSet.getAsJsonPrimitive("cflow.flowset_id").getAsInt() != 320 && flowSet.getAsJsonPrimitive("cflow.flowset_id").getAsInt() != 324) {
+                    captureDropDueToFlowSetId += flows.size();
                     continue;
                 }
 
-                for (final Map.Entry<String, JsonElement> flowEntry : Iterables.filter(flowSet.entrySet(), (e) -> e.getKey().startsWith("Flow "))) {
+
+                for (final Map.Entry<String, JsonElement> flowEntry : flows) {
                     final JsonObject flow = flowEntry.getValue().getAsJsonObject();
 
                     final double start = flow.getAsJsonObject("cflow.timedelta_tree").getAsJsonPrimitive("cflow.timestart").getAsDouble() * 1000.0;
@@ -160,10 +169,10 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
                     final double tsDelta = Math.max(tsStart, tsEnd - 10_000.0);
 
+                    final long octets = flow.getAsJsonPrimitive("cflow.octets").getAsLong();
+
                     if (tsDelta <= END.getTimestamp() &&
                         tsEnd >= START.getTimestamp()) {
-
-                        final long octets = flow.getAsJsonPrimitive("cflow.octets").getAsLong();
 
                         if (flow.getAsJsonPrimitive("cflow.direction").getAsInt() == 0 && flow.getAsJsonPrimitive("cflow.inputint").getAsInt() == INTERFACE_INDEX) {
                             captureBytesIn += octets;
@@ -181,6 +190,9 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                             captureBytesOther += octets;
                             captureFlowsOther ++;
                         }
+                    } else {
+                        capturedDroppedDueToTs.add(String.format("%s:%s", seqnum, octets));
+                        captureDropDueToTimerange++;
                     }
                 }
             }
@@ -214,7 +226,14 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
         long totalFlowsIn = 0;
         long totalFlowsOut = 0;
         long totalFlowsOther = 0;
+
+        long processingDropDueToTimerange = 0;
+        long processingTotal = 0;
+
+        final Set<String> processedDroppedDueToTs = Sets.newTreeSet();
+
         for (FlowMessage flowMessage : flowMessages) {
+            processingTotal++;
 
             if (flowMessage.getFlowSeqNum().getValue() == 570258289) {
                 System.out.println("= " + flowMessage.getNumBytes().getValue() + " " + flowMessage.getDeltaSwitched().getValue() + " - " + flowMessage.getLastSwitched().getValue());
@@ -227,6 +246,8 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                 // keep
             } else {
                 // skip
+                processedDroppedDueToTs.add(String.format("%s:%s", flowMessage.getFlowSeqNum().getValue(), flowMessage.getNumBytes().getValue()));
+                processingDropDueToTimerange++;
                 continue;
             }
 
@@ -313,6 +334,12 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
         System.out.println("Total bytes out (capture): " + captureBytesOut + " (" + captureFlowsOut + ")");
         System.out.println("Total bytes other (capture): " + captureBytesOther + " (" + captureFlowsOther + ")");
 
+        System.out.println("Drops (capture) due to FlowSetId: "+captureDropDueToFlowSetId);
+        System.out.println("Drops (capture) due to timerange: "+captureDropDueToTimerange);
+        System.out.println("Total (capture):" + captureTotal);
+        System.out.println("Drops (processing) due to timerange: "+processingDropDueToTimerange);
+        System.out.println("Total (processing):" + processingTotal);
+
         System.out.println("Missing sequences: " + expectedSequences.size());
         for (final String expectedSequence : expectedSequences) {
             System.out.println("  " + expectedSequence);
@@ -325,6 +352,14 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
         System.out.println("Delta in (%): " + ((1 - (double)totalBytesIn / mibBytesIn)) * 100 );
         System.out.println("Delta out: " + deltaBytesOut);
         System.out.println("Delta out (%): " + ((1 - (double)totalBytesOut / mibBytesOut)) * 100 );
+
+        Set<String> missingOnes = Sets.difference(capturedDroppedDueToTs, processedDroppedDueToTs);
+
+        for(String s : missingOnes) {
+            System.out.println(s);
+        }
+
+
     }
 
     private static List<UdpPacket> getUdpPackets(String pcapFileName, String filter) throws PcapNativeException, NotOpenException, InterruptedException {
