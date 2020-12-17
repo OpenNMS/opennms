@@ -80,7 +80,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
     // Inputs
-    private static final String PCAP_FILE = "/Users/chris/Downloads/agg003.pcap";
+    private static final String PCAP_FILE = "/home/fooker/files/agg003.pcap";
     private static final int INTERFACE_INDEX = 731;
     private static final ReferencePoint START = new ReferencePoint("2020-12-16 15:24:56 -0000",
             8052648991542524L, 2302027755041727L,
@@ -118,7 +118,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
         // Analyze the pcap using tshark
 //        final Process tshark = Runtime.getRuntime().exec("tshark -r " + PCAP_FILE + " -T json");
-        final JsonArray shark = new Gson().fromJson(new FileReader("/Users/chris/Downloads/dump.json"), JsonArray.class);
+        final JsonArray shark = new Gson().fromJson(new FileReader("/home/fooker/files/dump.json"), JsonArray.class);
 
         long captureBytesIn = 0;
         long captureBytesOut = 0;
@@ -164,8 +164,13 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                     final double start = flow.getAsJsonObject("cflow.timedelta_tree").getAsJsonPrimitive("cflow.timestart").getAsDouble() * 1000.0;
                     final double end = flow.getAsJsonObject("cflow.timedelta_tree").getAsJsonPrimitive("cflow.timeend").getAsDouble() * 1000.0;
 
-                    final double tsStart = timestamp - uptime + start;
-                    final double tsEnd = timestamp - uptime + end;
+                    double tsStart = timestamp - uptime + start;
+                    double tsEnd = timestamp - uptime + end;
+
+                    if (tsEnd - tsStart < 0.0) {
+                        tsEnd = timestamp;
+                        tsStart = timestamp - 10_000.0;
+                    }
 
                     final double tsDelta = Math.max(tsStart, tsEnd - 10_000.0);
 
