@@ -22,6 +22,7 @@ REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := "unset"
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
+PROM_JMX_EXPORTER_VERSION := 0.15.0
 
 help:
 	@echo ""
@@ -54,6 +55,7 @@ help:
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
 	@echo "  BUILD_BRANCH:       In case we run in CI/CD this is the branch of the build, default: $(BUILD_BRANCH)"
+	@echo "  PROM_JMX_EXPORTER_VERSION: Version for the Prometheus JMX Exporter agent, default: $(PROM_JMX_EXPORTER_VERSION)"
 	@echo ""
 	@echo "Example:"
 	@echo "  make build DOCKER_REGISTRY=myregistry.com DOCKER_ORG=myorg DOCKER_FLAGS=--push"
@@ -82,6 +84,7 @@ build: test
 	  --build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
 	  --build-arg BUILD_URL=$(BUILD_URL) \
 	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
+	  --build-arg PROM_JMX_EXPORTER_VERSION=$(PROM_JMX_EXPORTER_VERSION) \
 	  --tag=$(DOCKER_TAG) \
 	  $(DOCKER_FLAGS) \
 	  .
