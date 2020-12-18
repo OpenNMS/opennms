@@ -1,3 +1,5 @@
+{{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
 {{- /* The following check implies if aws is configured then SQS will be used */ -}}
 {{if exists "/aws/aws_region" -}}
 !minion-jms
