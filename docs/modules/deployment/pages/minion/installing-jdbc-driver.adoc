@@ -1,4 +1,4 @@
-= Installing MySQL JDBC Drivers
+= Installing JDBC Driver
 
 For any JDBC service to be detected/polled/collected, corresponding JDBC driver needs to be installed in Minion.
 Following are steps to install JDBC driver.

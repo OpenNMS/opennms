@@ -6,7 +6,7 @@
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
-** xref:minion/install-jdbc-mysql.adoc[]
+** xref:minion/installing-jdbc-driver.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 ** xref:sentinel/flow-processing.adoc[]
