@@ -38,7 +38,7 @@ Single topic must be configured on both Minion and OpenNMS.
 .Configure single topic on Minion
 [source, shell]
 ----
-echo 'single-topic=true' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+echo 'single-topic=true' >> "$\{MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
 ----
 
 On OpenNMS, enable single topic by setting the `org.opennms.core.ipc.rpc.kafka.single-topic` system property to true.
@@ -53,10 +53,10 @@ Tune these settings as below:
 
 [source, sh]
 ----
-echo 'max.concurrent.calls=1000' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+echo 'max.concurrent.calls=1000' >> "$\{MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
 ----
 
 [source, sh]
 ----
-echo 'max.wait.time=100' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+echo 'max.wait.time=100' >> "$\{MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
 ----

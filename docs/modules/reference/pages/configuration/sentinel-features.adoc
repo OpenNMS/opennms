@@ -46,7 +46,7 @@ In some cases it is desired to automatically configure the _Sentinel_ instance a
 As _Sentinel_ is based on _Apache Karaf_ - which supports auto deployment by simply copying any kind of data
 to the `deploy` folder, _Sentinel_ can make use of that mechanism to enable auto or hot deployment.
 
-In order to do so, in most cases it is sufficient to copy a `features.xml` file to `${SENTINEL_HOME}/deploy`.
+In order to do so, in most cases it is sufficient to copy a `features.xml` file to `$\{SENTINEL_HOME}/deploy`.
 This can be done even if the container is running.
 
 The chapter _Configure Flow Processing_ contains an example on how to automatically start them with _Sentinel_
@@ -54,8 +54,8 @@ The chapter _Configure Flow Processing_ contains an example on how to automatica
 == Auto Start
 
 In some cases it might not be sufficient to auto-deploy/configure the container with a `features.xml` file.
-If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `${SENTINEL_HOME}/etc` directory.
-To automatically start features with the container, the file `${SENTINEL_HOME}/etc/org.apache.karaf.features.cfg` must be updated:
+If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `$\{SENTINEL_HOME}/etc` directory.
+To automatically start features with the container, the file `$\{SENTINEL_HOME}/etc/org.apache.karaf.features.cfg` must be updated:
 
 [source]
 ----
@@ -101,7 +101,7 @@ featuresBoot = \
 The following examples illustrate a `features.xml` which configures the _Sentinel_ instance and automatically starts
 all required features to either consume messages via JMS (_ActiveMQ_) or _Kafka_.
 
-Simply copy it to `${SENTINEL_HOME}/deploy/`.
+Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
 
 .JMS
 [source, xml]
@@ -219,13 +219,13 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
 Each _Minion_ works as a Producer and must be configured beforehead.
 Please refer to section <<ga-minion-kafka-producer-configuration, Minion Kafka Producer Configuration>> on how to configure _Minion_ as a _Kafka Producer_.
 
-Each _Sentinel_ works as a Consumer and can be configured in the file `${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
+Each _Sentinel_ works as a Consumer and can be configured in the file `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
 Either manually or via the `config:edit org.opennms.core.ipc.sink.kafka.consumer` statement.
 For supported properties, see link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[here]
 
 By default each _Kafka Consumer_ starts consuming messages immediately after the feature has been started.
 It is possible to set a property `org.opennms.core.ipc.sink.initialSleepTime` to define an initial sleep time in ms before any messages are consumed.
-In order to set this up, please add an entry to the end of the file `${SENTINEL_HOME}/etc/system.properties`:
+In order to set this up, please add an entry to the end of the file `$\{SENTINEL_HOME}/etc/system.properties`:
 
 [source]
 ----

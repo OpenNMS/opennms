@@ -6,7 +6,7 @@ We make an effort to use logical values where possible and provide means to conf
 
 Our modules and services have different rules for determining the TTL.
 
-TIP: To troubleshoot TTLs, consider enabling the Open Tracing integration in {page-component-tite} Core instance and the Minion.
+TIP: To troubleshoot TTLs, consider enabling the Open Tracing integration in {page-component-title} Core instance and the Minion.
 
 == TTLs in Pollerd & Collectd
 

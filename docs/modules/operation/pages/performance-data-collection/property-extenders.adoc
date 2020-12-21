@@ -283,7 +283,7 @@ This example shows how to use the value of `bsnAPDot3MacAddress` as an index int
 ----
 <1> Regular string property `bsnAPName` on the source table
 <2> Extended string property `bsnAPName` on the target table
-<2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
+<3> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
 
 == Pointer-Like Index Property Extender
 
