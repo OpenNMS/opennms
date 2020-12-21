@@ -3,4 +3,8 @@
 * Configuration
 ** xref:configuration/core-docker.adoc[]
 ** xref:configuration/minion-docker.adoc[]
+** xref:configuration/sentinel-features.adoc[]
+** xref:configuration/tuning-kafka.adoc[]
+** xref:configuration/tuning-activemq.adoc[]
+** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]

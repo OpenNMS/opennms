@@ -7,6 +7,7 @@
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
 ** xref:minion/installing-jdbc-driver.adoc[]
+** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 ** xref:sentinel/flow-processing.adoc[]
@@ -14,5 +15,4 @@
 ** xref:system-scalability/time-series-storage.adoc[]
 *** xref:system-scalability/time-series-storage/rrdtool.adoc[]
 *** xref:system-scalability/time-series-storage/newts.adoc[]
-** xref:system-scalability/tuning-kafka.adoc[]
 * xref:opentracing/jaeger-tracing.adoc[]

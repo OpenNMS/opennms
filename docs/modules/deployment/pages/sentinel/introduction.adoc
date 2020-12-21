@@ -4,5 +4,11 @@
 
 This section describes how to install the _Sentinel_ to scale individual components.
 
+Currently _Sentinel_ can be used:
+
+* Only allows distribution of _Telemetryd_ functionality (such as processing flows, or use the existing telemetry adapters to store measurements data to _Newts_)
+* Requires a _Minion_ to work as a (message) producer
+* In most cases, it is advised to disable those adapters and listeners in _{page-component-title}_ if they are also running by a _Sentinel_ instance.
+
 NOTE: At the moment only flows can be distributed using _Sentinel_.
       In the future more components will follow.

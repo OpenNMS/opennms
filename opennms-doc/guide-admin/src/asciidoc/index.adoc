@@ -362,10 +362,6 @@ include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
 include::text/minion/kafka-rpc.adoc[]
 
-[[ga-sentinel]]
-== Sentinel
-include::text/sentinel/sentinel.adoc[]
-
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]
