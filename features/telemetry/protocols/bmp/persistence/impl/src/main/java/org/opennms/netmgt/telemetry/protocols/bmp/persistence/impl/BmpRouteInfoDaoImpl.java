@@ -26,31 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
+package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
-import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 
-public class WhoIsASNTest {
+public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long> implements BmpRouteInfoDao {
 
+    public BmpRouteInfoDaoImpl() {
+        super(BmpRouteInfo.class);
+    }
 
-    @Test
-    public void testWhoIs() throws IOException {
+    @Override
+    public BmpRouteInfo findByPrefix(String prefix) {
 
-        Optional<BmpWhoIsClient.AsnInfo> output = BmpWhoIsClient.getAsnInfo(701L);
-        Assert.assertTrue(output.isPresent());
-        output = BmpWhoIsClient.getAsnInfo(8319L);
-        System.out.println(output.get().getRawOutput());
-        Assert.assertTrue(output.isPresent());
-        output = BmpWhoIsClient.getAsnInfo(33353L);
-        Assert.assertTrue(output.isPresent());
-        output = BmpWhoIsClient.getAsnInfo(132827L);
-        Assert.assertTrue(output.isPresent());
-        output = BmpWhoIsClient.getAsnInfo(5650L);
-        Assert.assertTrue(output.isPresent());
-        Assert.assertEquals("US", output.get().getCountry());
+        Criteria criteria = new Criteria(BmpRouteInfo.class);
+        criteria.addRestriction(new EqRestriction("prefix", prefix));
+        List<BmpRouteInfo> bmpRouteInfoList = findMatching(criteria);
+        if (bmpRouteInfoList != null && bmpRouteInfoList.size() > 0) {
+            return bmpRouteInfoList.get(0);
+        }
+        return null;
     }
 }
