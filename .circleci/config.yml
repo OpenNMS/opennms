@@ -461,6 +461,8 @@ workflows:
             branches:
               only:
                 - develop
+              ignore:
+                - jira/NMS-12497
     jobs:
       - build
       - integration-test-with-coverage:
@@ -512,6 +514,7 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+                - jira/NMS-12497
       - tarball-assembly:
           requires:
             - build
