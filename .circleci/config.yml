@@ -6,7 +6,7 @@ executors:
       - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5084
+      - image: opennms/build-env:debian-jdk8-b5875
   docker-executor:
     docker:
       - image: docker:20.10.1-git
