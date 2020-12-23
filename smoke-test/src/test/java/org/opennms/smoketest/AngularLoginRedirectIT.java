@@ -87,9 +87,9 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
                         sleep(SLEEP_TIME); // encounter for UI Delay
                         findElementById("refresh-requisitions").click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        driver.findElement(By.xpath("//button[@data-bb-handler='reloadAll']")).click();
+                        driver.findElement(By.xpath("//button[text()='Reload Everything']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
-                        driver.findElement(By.xpath("//button[@data-bb-handler='confirm']")).click();
+                        driver.findElement(By.xpath("//button[text()='OK']")).click();
                         sleep(SLEEP_TIME); // encounter for UI Delay
                     }),
             new Check(

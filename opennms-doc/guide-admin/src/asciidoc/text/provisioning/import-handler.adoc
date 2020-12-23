@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
+[[import-handlers]]
 === Import Handlers
 
 The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
