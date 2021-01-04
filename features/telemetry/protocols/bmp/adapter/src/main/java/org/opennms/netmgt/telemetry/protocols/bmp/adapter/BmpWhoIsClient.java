@@ -65,17 +65,23 @@ class BmpWhoIsClient {
         return asnInfo;
     }
 
-    public static Optional<RouteInfo> getRouteInfo(String prefix) {
+    static Optional<RouteInfo> getRouteInfo(String prefix) {
         WhoisClient whoisClient = new WhoisClient();
         Optional<RouteInfo> routeInfo = Optional.empty();
         for (String host : hosts) {
             try {
                 whoisClient.connect(host, 43);
-                String output = whoisClient.query(prefix);
+                String rawOutput = whoisClient.query(prefix);
                 whoisClient.disconnect();
-                if (output.contains("route")) {
-                    routeInfo = Optional.of(RouteInfo.parseOutput(output));
-                    break;
+                if (rawOutput.contains("route")) {
+                    RouteInfo parsed = RouteInfo.parseOutput(rawOutput);
+                    if(parsed.getPrefix() != null && parsed.getPrefixLen() != null
+                            && parsed.getOriginAs() != null) {
+                        routeInfo = Optional.of(parsed);
+                        break;
+                    } else {
+                        LOG.warn("Not able to parse RouteInfo from {}", rawOutput);
+                    }
                 }
             } catch (IOException e) {
                 LOG.warn("Exception while fetching whois info with host `{}` for prefix = {} ", host, prefix, e);

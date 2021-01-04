@@ -43,10 +43,12 @@ public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long
     }
 
     @Override
-    public BmpRouteInfo findByPrefix(String prefix) {
+    public BmpRouteInfo findByPrefix(String prefix, Integer prefixLen, Long originAsn) {
 
         Criteria criteria = new Criteria(BmpRouteInfo.class);
         criteria.addRestriction(new EqRestriction("prefix", prefix));
+        criteria.addRestriction(new EqRestriction("prefixLen", prefixLen));
+        criteria.addRestriction(new EqRestriction("originAs", originAsn));
         List<BmpRouteInfo> bmpRouteInfoList = findMatching(criteria);
         if (bmpRouteInfoList != null && bmpRouteInfoList.size() > 0) {
             return bmpRouteInfoList.get(0);

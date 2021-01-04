@@ -32,5 +32,5 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface BmpRouteInfoDao extends OnmsDao<BmpRouteInfo, Long> {
 
-    BmpRouteInfo findByPrefix(String prefix);
+    BmpRouteInfo findByPrefix(String prefix, Integer prefixLen, Long originAsn);
 }

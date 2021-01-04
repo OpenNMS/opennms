@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import java.net.InetAddress;
 import java.util.Optional;
 
 import org.opennms.core.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RouteInfo {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RouteInfo.class);
 
     private String prefix;
 
@@ -93,13 +98,14 @@ public class RouteInfo {
                 getSubStringAfterColon(line).ifPresent(route -> {
                     if (route.contains("/")) {
                         String[] prefixArray = route.split("/", 2);
-                        routeInfo.setPrefix(prefixArray[0]);
+                        if(isValidIpAddress(prefixArray[0])) {
+                            routeInfo.setPrefix(prefixArray[0]);
+                        }
                         Integer prefixLen = StringUtils.parseInt(prefixArray[1], null);
                         if (prefixLen != null) {
                             routeInfo.setPrefixLen(Integer.parseInt(prefixArray[1]));
                         }
                     }
-
                 });
             }
             if (line.contains("descr")) {
@@ -129,4 +135,15 @@ public class RouteInfo {
         }
         return Optional.empty();
     }
+
+    private static boolean isValidIpAddress(String prefix) {
+
+        try {
+            InetAddress.getByName(prefix);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

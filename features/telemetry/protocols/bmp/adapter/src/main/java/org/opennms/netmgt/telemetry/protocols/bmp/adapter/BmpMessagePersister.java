@@ -258,36 +258,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         prefixByASList.forEach(prefixByAS -> {
             BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
             if (bmpGlobalIpRib != null) {
-                Long asn = bmpGlobalIpRib.getRecvOriginAs();
-                if (asn != null) {
-                    BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
-                    if (bmpAsnInfo == null) {
-                        bmpAsnInfo = fetchAndBuildAsnInfo(asn);
-                        if (bmpAsnInfo != null) {
-                            try {
-                                bmpAsnInfoDao.saveOrUpdate(bmpAsnInfo);
-                            } catch (Exception e) {
-                                LOG.error("Exception while persisting BMP ASN Info  {}", bmpAsnInfo, e);
-                            }
-                        }
-                    }
-                }
-                String prefix = bmpGlobalIpRib.getPrefix();
-                if (!Strings.isNullOrEmpty(prefix)) {
-                    BmpRouteInfo bmpRouteInfo = bmpRouteInfoDao.findByPrefix(prefix);
-                    if (bmpRouteInfo == null) {
-                        bmpRouteInfo = fetchAndBuildRouteInfo(prefix);
-                        if (bmpRouteInfo != null) {
-                            bmpGlobalIpRib.setIrrOriginAs(bmpRouteInfo.getOriginAs());
-                            bmpGlobalIpRib.setIrrSource(bmpRouteInfo.getSource());
-                            try {
-                                bmpRouteInfoDao.saveOrUpdate(bmpRouteInfo);
-                            } catch (Exception e) {
-                                LOG.error("Exception while persisting BMP Route Info  {}", bmpRouteInfo, e);
-                            }
-                        }
-                    }
-                }
                 try {
                     bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
                 } catch (Exception e) {
@@ -590,11 +560,38 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             BmpGlobalIpRib bmpGlobalIpRib = bmpGlobalIpRibDao.findByPrefixAndAS(prefixByAS.getPrefix(), prefixByAS.getOriginAs());
             if (bmpGlobalIpRib == null) {
                 bmpGlobalIpRib = new BmpGlobalIpRib();
+                bmpGlobalIpRib.setPrefix(prefixByAS.getPrefix());
+                bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
+                bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
+                bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
+                Long asn = bmpGlobalIpRib.getRecvOriginAs();
+                if (asn != null) {
+                    BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
+                    if (bmpAsnInfo == null) {
+                        bmpAsnInfo = fetchAndBuildAsnInfo(asn);
+                        if (bmpAsnInfo != null) {
+                            try {
+                                bmpAsnInfoDao.saveOrUpdate(bmpAsnInfo);
+                            } catch (Exception e) {
+                                LOG.error("Exception while persisting BMP ASN Info  {}", bmpAsnInfo, e);
+                            }
+                        }
+                    }
+                }
+                String prefix = bmpGlobalIpRib.getPrefix();
+                if (!Strings.isNullOrEmpty(prefix)) {
+                    BmpRouteInfo bmpRouteInfo = fetchAndBuildRouteInfo(prefix);
+                    if (bmpRouteInfo != null) {
+                        try {
+                            bmpGlobalIpRib.setIrrOriginAs(bmpRouteInfo.getOriginAs());
+                            bmpGlobalIpRib.setIrrSource(bmpRouteInfo.getSource());
+                            bmpRouteInfoDao.saveOrUpdate(bmpRouteInfo);
+                        } catch (Exception e) {
+                            LOG.error("Exception while persisting BMP Route Info  {}", bmpRouteInfo, e);
+                        }
+                    }
+                }
             }
-            bmpGlobalIpRib.setPrefix(prefixByAS.getPrefix());
-            bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
-            bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
-            bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
             return bmpGlobalIpRib;
         } catch (Exception e) {
             LOG.error("Exception while mapping prefix {} to GlobalIpRib entity", prefixByAS.getPrefix(), e);
@@ -627,14 +624,20 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     private BmpRouteInfo fetchAndBuildRouteInfo(String prefix) {
         Optional<RouteInfo> routeInfoOptional = BmpWhoIsClient.getRouteInfo(prefix);
-        if(routeInfoOptional.isPresent()) {
-            BmpRouteInfo bmpRouteInfo = new BmpRouteInfo();
+        if (routeInfoOptional.isPresent() && routeInfoOptional.get().getPrefix() != null) {
             RouteInfo routeInfo = routeInfoOptional.get();
-            bmpRouteInfo.setPrefix(routeInfo.getPrefix());
-            bmpRouteInfo.setPrefixLen(routeInfo.getPrefixLen());
-            bmpRouteInfo.setDescr(routeInfo.getDescription());
-            bmpRouteInfo.setOriginAs(routeInfo.getOriginAs());
-            bmpRouteInfo.setSource(routeInfo.getSource());
+            Integer prefixLen = routeInfo.getPrefixLen();
+            Long originAs = routeInfo.getOriginAs();
+            BmpRouteInfo bmpRouteInfo = bmpRouteInfoDao.findByPrefix(routeInfo.getPrefix(), prefixLen, originAs);
+            if (bmpRouteInfo == null) {
+                bmpRouteInfo = new BmpRouteInfo();
+                bmpRouteInfo.setPrefix(routeInfo.getPrefix());
+                bmpRouteInfo.setPrefixLen(routeInfo.getPrefixLen());
+                bmpRouteInfo.setDescr(routeInfo.getDescription());
+                bmpRouteInfo.setOriginAs(routeInfo.getOriginAs());
+                bmpRouteInfo.setSource(routeInfo.getSource());
+            }
+            bmpRouteInfo.setLastUpdated(Date.from(Instant.now()));
             return bmpRouteInfo;
         }
         return null;
@@ -773,6 +776,14 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     public void setBmpAsnPathAnalysisDao(BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao) {
         this.bmpAsnPathAnalysisDao = bmpAsnPathAnalysisDao;
+    }
+
+    public BmpRouteInfoDao getBmpRouteInfoDao() {
+        return bmpRouteInfoDao;
+    }
+
+    public void setBmpRouteInfoDao(BmpRouteInfoDao bmpRouteInfoDao) {
+        this.bmpRouteInfoDao = bmpRouteInfoDao;
     }
 
     public SessionUtils getSessionUtils() {

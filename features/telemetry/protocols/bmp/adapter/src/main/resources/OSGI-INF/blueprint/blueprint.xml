@@ -22,6 +22,7 @@
 	<reference id="bmpGlobalIpRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" />
 	<reference id="bmpAsnInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" />
 	<reference id="bmpAsnPathAnalysisDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" />
+	<reference id="bmpRouteInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" />
 
 	<reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
 
@@ -98,6 +99,7 @@
 		<property name="bmpGlobalIpRibDao" ref = "bmpGlobalIpRibDao"/>
 		<property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
 		<property name="bmpAsnPathAnalysisDao" ref="bmpAsnPathAnalysisDao"/>
+		<property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
 		<property name="sessionUtils" ref="sessionUtils"/>
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />

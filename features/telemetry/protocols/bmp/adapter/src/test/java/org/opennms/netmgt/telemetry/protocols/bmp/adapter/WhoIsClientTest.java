@@ -58,8 +58,8 @@ public class WhoIsClientTest {
     @Test
     public void testWhoIsPrefix() throws IOException {
 
-        Optional<RouteInfo> output = BmpWhoIsClient.getRouteInfo("100.34.0.0");
+        Optional<RouteInfo> output = BmpWhoIsClient.getRouteInfo("207.248.113.0");
         Assert.assertTrue(output.isPresent());
-        Assert.assertEquals(19262L, output.get().getOriginAs().longValue());
+        Assert.assertEquals(263127L, output.get().getOriginAs().longValue());
     }
 }
