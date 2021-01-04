@@ -734,8 +734,6 @@ jobs:
       - run:
           name: Assemble tarballs and related artifacts
           command: |
-            # install fake makensis to satisfy the assemble dependency
-            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \

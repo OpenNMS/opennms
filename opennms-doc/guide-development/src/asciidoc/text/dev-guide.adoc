@@ -33,7 +33,6 @@ apt-get update
 # install stuff
 apt-get install -y software-properties-common
 apt-get install -y git-core
-apt-get install -y nsis
 
 # install Oracle Java 8 JDK
 # this setup is based on: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
