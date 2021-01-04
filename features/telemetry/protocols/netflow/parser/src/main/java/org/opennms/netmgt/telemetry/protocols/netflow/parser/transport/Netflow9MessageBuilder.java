@@ -74,6 +74,9 @@ public class Netflow9MessageBuilder {
     private Long numPackets;
     private Long firstSwitched;
     private Long lastSwitched;
+    private Long flowStartMilliseconds;
+    private Long flowEndMilliseconds;
+
 
     public Netflow9MessageBuilder(Iterable<Value<?>> values, RecordEnrichment enrichment) {
         this.values = values;
@@ -96,6 +99,14 @@ public class Netflow9MessageBuilder {
         }
         if(this.lastSwitched != null) {
             builder.setLastSwitched(setLongValue(this.lastSwitched + bootTime));
+        }
+
+        // Some Cisco platforms also support absolute timestamps in NetFlow v9 (like defined in IPFIX). See NMS-13006
+        if (this.flowStartMilliseconds != null) {
+            builder.setFirstSwitched(setLongValue(flowStartMilliseconds));
+        }
+        if (this.flowEndMilliseconds != null) {
+            builder.setLastSwitched(setLongValue(flowEndMilliseconds));
         }
 
         // Set Destination address and host name.
@@ -304,6 +315,12 @@ public class Netflow9MessageBuilder {
                 break;
             case "FLOW_INACTIVE_TIMEOUT":
                 flowInActiveTimeout = getLongValue(value);
+                break;
+            case "flowStartMilliseconds":
+                flowStartMilliseconds = getLongValue(value);
+                break;
+            case "flowEndMilliseconds":
+                flowEndMilliseconds = getLongValue(value);
                 break;
         }
 

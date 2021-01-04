@@ -65,8 +65,8 @@
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-util/${batikVersion}</bundle>
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}</bundle>
     </feature>
-    <feature name="bcprov" version="${bcprovVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
-        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bcprovVersion}</bundle>
+    <feature name="bcprov" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
+        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bouncyCastleVersion}</bundle>
     </feature>
     <feature name="bsf" version="${bsfVersion}" description="Apache :: Bean Scripting Framework">
         <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
@@ -529,6 +529,7 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>

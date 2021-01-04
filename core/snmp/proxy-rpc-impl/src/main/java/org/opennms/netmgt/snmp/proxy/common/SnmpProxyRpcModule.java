@@ -52,6 +52,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalkCallback;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes SNMP requests locally using the current {@link org.opennms.netmgt.snmp.SnmpStrategy}.
@@ -59,6 +61,8 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author jwhite
  */
 public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpProxyRpcModule.class);
 
     public static final SnmpProxyRpcModule INSTANCE = new SnmpProxyRpcModule();
 
@@ -81,14 +85,14 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 .completedFuture(new SnmpMultiResponseDTO());
         for (SnmpGetRequestDTO getRequest : request.getGetRequests()) {
             CompletableFuture<SnmpResponseDTO> future = get(request, getRequest);
-            combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
+            combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
                 m.getResponses().add(s);
                 return m;
             });
         }
         if (request.getWalkRequest().size() > 0) {
             CompletableFuture<Collection<SnmpResponseDTO>> future = walk(request, request.getWalkRequest());
-            combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
+            combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
                 m.getResponses().addAll(s);
                 return m;
             });
@@ -176,9 +180,16 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         final CompletableFuture<SnmpValue[]> future = SnmpUtils.getAsync(request.getAgent(), oids);
         return future.thenApply(values -> {
             final List<SnmpResult> results = new ArrayList<>(oids.length);
-            for (int i = 0; i < oids.length; i++) {
-                final SnmpResult result = new SnmpResult(oids[i], null, values[i]);
-                results.add(result);
+            if (values.length < oids.length) {
+                // Should never reach here, should have thrown exception in SnmpUtils.
+                LOG.warn("Received error response from SNMP for the agent {} for oids = {}", request.getAgent(), oids);
+                final SnmpResponseDTO responseDTO = new SnmpResponseDTO();
+                responseDTO.setCorrelationId(get.getCorrelationId());
+            } else {
+                for (int i = 0; i < oids.length; i++) {
+                    final SnmpResult result = new SnmpResult(oids[i], null, values[i]);
+                    results.add(result);
+                }
             }
             final SnmpResponseDTO responseDTO = new SnmpResponseDTO();
             responseDTO.setCorrelationId(get.getCorrelationId());

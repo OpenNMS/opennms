@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class IpFixProtobufValidationTest {
         Utils.JsonConverter jsonConverter = new Utils.JsonConverter();
         List<String> jsonStrings = jsonConverter.getJsonStringFromResources("/flows/ipfix_test_1.json",
                 "/flows/ipfix_test_2.json");
-        List<Flow> jsonData = jsonConverter.convert(jsonStrings);
+        List<Flow> jsonData = jsonConverter.convert(jsonStrings, Instant.now());
         assertThat(jsonData, hasSize(8));
         for (int i = 0; i < 8; i++) {
             Assert.assertEquals(flows.get(i).getFlowSeqNum(), jsonData.get(i).getFlowSeqNum());
@@ -152,7 +153,7 @@ public class IpFixProtobufValidationTest {
                     }
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(ipFixConverter.convert(flowMessage));
+                        flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
                     } catch (InvalidProtocolBufferException e) {
                         throw new RuntimeException(e);
                     }

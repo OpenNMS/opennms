@@ -55,18 +55,26 @@ import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
+
+    private final RateLimitedLog SEQUENCE_ERRORS_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -92,9 +100,23 @@ public abstract class ParserBase implements Parser {
 
     private final DnsResolver dnsResolver;
 
+    private final Meter recordsReceived;
+
+    private final Meter recordsScheduled;
+
     private final Meter recordsDispatched;
 
+    private final Meter recordsCompleted;
+
+    private final Counter recordEnrichmentErrors;
+
+    private final Counter recordDispatchErrors;
+
+    private final Meter invalidFlows;
+
     private final Timer recordEnrichmentTimer;
+
+    private final Counter sequenceErrors;
 
     private final ThreadFactory threadFactory;
 
@@ -142,8 +164,15 @@ public abstract class ParserBase implements Parser {
             }
         };
 
+        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsReceived"));
         recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
         recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
+        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordEnrichmentErrors"));
+        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers",  name, "invalidFlows"));
+        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsScheduled"));
+        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsCompleted"));
+        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordDispatchErrors"));
+        sequenceErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "sequenceErrors"));
 
         // Call setters since these also perform additional handling
         setClockSkewEventRate(DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS);
@@ -240,19 +269,29 @@ public abstract class ParserBase implements Parser {
         this.threads = threads;
     }
 
-    protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) {
+    protected CompletableFuture<?> transmit(final RecordProvider packet, final Session session, final InetSocketAddress remoteAddress) {
+        // Verify that flows sequences are in order
+        if (!session.verifySequenceNumber(packet.getObservationDomainId(), packet.getSequenceNumber())) {
+            SEQUENCE_ERRORS_LOGGER.warn("Error in flow sequence detected: from {}", session.getRemoteAddress());
+            this.sequenceErrors.inc();
+        }
+
         // The packets are coming in hot - performance here is critical
         //   LOG.trace("Got packet: {}", packet);
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
-                final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
+                this.recordsReceived.mark();
+
+                final CompletableFuture<Void> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
                 recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
                     timerContext.close();
                     if (ex != null) {
+                        this.recordEnrichmentErrors.inc();
+
                         // Enrichment failed
                         future.completeExceptionally(ex);
                         return;
@@ -269,16 +308,18 @@ public abstract class ParserBase implements Parser {
                         try {
                             flowMessage = buildMessage(record, enrichment);
                         } catch (IllegalFlowException e) {
-                            final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(remoteAddress.getAddress());
+                            this.invalidFlows.mark();
+
+                            final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(session.getRemoteAddress());
 
                             if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
-                                illegalFlowEventCache.put(remoteAddress.getAddress(), Optional.of(Instant.now()));
+                                illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
 
                                 eventForwarder.sendNow(new EventBuilder()
                                         .setUei(ILLEGAL_FLOW_EVENT_UEI)
                                         .setTime(new Date())
                                         .setSource(getName())
-                                        .setInterface(remoteAddress.getAddress())
+                                        .setInterface(session.getRemoteAddress())
                                         .setDistPoller(identity.getId())
                                         .addParam("monitoringSystemId", identity.getId())
                                         .addParam("monitoringSystemLocation", identity.getLocation())
@@ -287,9 +328,10 @@ public abstract class ParserBase implements Parser {
                                         .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
                                         .getEvent());
 
-                                LOG.warn("Illegal flow detected from exporter {}", remoteAddress.getAddress(), e);
+                                LOG.warn("Illegal flow detected from exporter {}", session.getRemoteAddress().getAddress(), e);
                             }
 
+                            future.complete(null);
                             return;
                         }
 
@@ -299,10 +341,12 @@ public abstract class ParserBase implements Parser {
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b, exx) -> {
                             if (exx != null) {
+                                this.recordDispatchErrors.inc();
                                 future.completeExceptionally(exx);
-                                return;
+                            } else {
+                                this.recordsCompleted.mark();
+                                future.complete(null);
                             }
-                            future.complete(b);
                         });
 
                         recordsDispatched.mark();
@@ -316,6 +360,8 @@ public abstract class ParserBase implements Parser {
                         // We're not in one of the parsers threads, execute the dispatch in the pool
                         executor.execute(dispatch);
                     }
+
+                    this.recordsScheduled.mark();
                 });
                 return future;
             }).toArray(CompletableFuture[]::new);
@@ -344,8 +390,6 @@ public abstract class ParserBase implements Parser {
     }
 
     protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException;
-
-
 
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {

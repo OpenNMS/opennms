@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.rpc</artifactId>
-    <version>27.0.0-SNAPSHOT</version>
+    <version>27.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -34,6 +34,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.hsr</groupId>
+      <artifactId>geohash</artifactId>
+      <version>${geohashVersion}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

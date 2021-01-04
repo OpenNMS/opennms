@@ -41,16 +41,19 @@ import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 
 import io.netty.buffer.ByteBuf;
 
-public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatchable {
+public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
     public Netflow5UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
@@ -67,15 +70,19 @@ public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatch
     }
 
     @Override
-    public CompletableFuture<?> parse(final ByteBuf buffer,
-                                      final InetSocketAddress remoteAddress,
-                                      final InetSocketAddress localAddress) throws Exception {
+    protected RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(header, buffer);
 
-        detectClockSkew(header.unixSecs * 1000L + header.unixNSecs / 1000L, remoteAddress.getAddress());
+        detectClockSkew(header.unixSecs * 1000L + header.unixNSecs / 1000L, session.getRemoteAddress());
 
-        return this.transmit(packet, remoteAddress);
+        return packet;
+    }
+
+    @Override
+    protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress,
+                                                           final InetSocketAddress localAddress) {
+        return new Netflow9UdpParser.SessionKey(remoteAddress.getAddress(), localAddress);
     }
 
     @Override

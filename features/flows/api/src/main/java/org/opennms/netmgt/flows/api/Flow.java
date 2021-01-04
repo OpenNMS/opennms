@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.flows.api;
 
+import java.time.Instant;
 import java.util.Optional;
 
 public interface Flow {
@@ -56,6 +57,11 @@ public interface Flow {
         HashBasedFiltering,
         FlowStateDependentIntermediateFlowSelectionProcess;
     }
+
+    /**
+     * Time at which the flow was received by listener in milliseconds since epoch UTC.
+     */
+    long getReceivedAt();
 
     /**
      * Flow timestamp in milliseconds.

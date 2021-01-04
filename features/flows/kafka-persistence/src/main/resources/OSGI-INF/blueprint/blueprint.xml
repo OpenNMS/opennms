@@ -19,9 +19,30 @@
 
   <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
 
+  <!-- Metrics -->
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+    <service-properties>
+      <entry key="name" value="org.opennms.netmgt.flows.kafka" />
+      <entry key="description" value="Kafka Flow Forwarder" />
+    </service-properties>
+  </service>
+  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <argument ref="metricRegistry"/>
+  </bean>
+  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+    <argument value="org.opennms.netmgt.flows.kafka"/>
+  </bean>
+  <bean id="metricRegistryJmxReporter"
+        factory-ref="metricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
   <bean id="kafkaFlowForwarder" class="org.opennms.netmgt.flows.persistence.KafkaFlowForwarder"
         init-method="init" destroy-method="destroy">
     <argument ref="configurationAdmin"/>
+    <argument ref="metricRegistry"/>
     <property name="topicName" value="${topic}"/>
   </bean>
 
