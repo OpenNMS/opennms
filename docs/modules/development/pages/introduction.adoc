@@ -1,7 +1,4 @@
-
-This guide describes the requirements and how to get started with the development of the OpenNMS project.
-
-=== Operating System/Environment
+= Operating System/Environment
 
 To build/compile OpenNMS requires running a *nix system.
 You do not need to run it physically, a virtual machine is sufficient.
@@ -11,10 +8,10 @@ We recommend one of the following:
  * link:http://ubuntu.com[Ubuntu Desktop]
  * Mac OS X
 
-[NOTE]
-This documentation describes a Debian-based desktop environment.
 
-=== Installation
+NOTE: This documentation describes a Debian-based desktop environment.
+
+== Installation
 
 Follow these instructions to set up your enivronment. 
 They may vary depending on your operating system:
@@ -75,7 +72,7 @@ For more information on how to build OpenNMS from source, check this wiki link:h
 
 After successfully building OpenNMS, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
 
-=== Tooling
+== Tooling
 We recommend the following toolset:
 
  * IDE: link:https://www.jetbrains.com/idea/[IntelliJ IDEA Ultimate]
@@ -84,9 +81,9 @@ We recommend the following toolset:
  * Other: link:http://www.atom.io[atom.io]
 
 
-=== Useful links
+== Useful links
 
-==== General
+=== General
  * https://www.github.com/OpenNMS/opennms[source code] hosted on GitHub
  * http://wiki.opennms.org[Our Wiki], especially the start page. 
  It points you in the right direction.
@@ -94,7 +91,7 @@ We recommend the following toolset:
  * https://github.com/opennms-forge/vagrant-opennms-dev[Vagrant box] to set up a virtual box to build OpenNMS
  * https://github.com/opennms-forge/vagrant-opennms[vagrant box] to set up a virtual box to run OpenNMS
 
-==== Installation/Setup
+=== Installation/Setup
  * http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
  * http://www.opennms.org/wiki/Installation:Source[]
  * http://www.opennms.org/wiki/Developing_with_Git[]
