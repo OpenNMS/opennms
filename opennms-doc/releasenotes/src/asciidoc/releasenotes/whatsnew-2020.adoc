@@ -215,6 +215,22 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.4]
+
+==== Release Meridian-2020.1.4
+
+Release 2020.1.4 contains an SNMP poller fix and a small enhancement to package dependencies.
+
+===== Bug
+
+* When using a custom prefix, the Elasticsearch Forwarder for events and situation-feedback creates a wrong template. (Issue http://issues.opennms.org/browse/NMS-13030[NMS-13030])
+
+===== Enhancement
+
+* Depend on haveged (and supply it in our repo) (Issue http://issues.opennms.org/browse/NMS-8959[NMS-8959])
+
+The codename for 2020.1.4 is _link:$$https://wikipedia.org/wiki/Ria$$[Ria]_.
+
 [releasenotes-changelog-Meridian-2020.1.3]
 
 ==== Release Meridian-2020.1.3
