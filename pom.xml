@@ -843,6 +843,11 @@
           </dynamicDependencies>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>structure-maven-plugin</artifactId>
+        <version>1.0</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>

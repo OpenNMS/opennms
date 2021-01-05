@@ -63,6 +63,7 @@ Requires(pre):  /sbin/nologin
 Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
+Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
 
