@@ -37,6 +37,8 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.snmp4j.PDU;
@@ -48,7 +50,7 @@ public class Snmp4JWrongResponsesTest {
 
 
     @Test
-    public void testWrongResponsesHandling() throws IOException {
+    public void testWrongResponsesHandling() throws IOException, SnmpAgentTimeoutException, SnmpException {
         Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(getAgentConfig());
         // Request with 4 oids.
         SnmpObjId[] oids = {SnmpObjId.get(".1.3.6.1.2.1.1.2.0"),

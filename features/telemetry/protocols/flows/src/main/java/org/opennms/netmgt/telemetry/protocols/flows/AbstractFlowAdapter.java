@@ -93,11 +93,11 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
-        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
-        this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesReceived"));
-        this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesParsed"));
-        this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getName(), "entriesConverted"));
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
+        this.entriesReceived = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesReceived"));
+        this.entriesParsed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesParsed"));
+        this.entriesConverted = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "entriesConverted"));
     }
 
     @Override

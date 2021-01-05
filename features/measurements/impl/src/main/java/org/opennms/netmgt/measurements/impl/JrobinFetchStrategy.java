@@ -72,6 +72,12 @@ public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
         for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
             final Source source = entry.getKey();
             final String rrdFile = entry.getValue();
+
+            /* Limit datasource names to 19 chars per RRD spec - JRB-32 */
+            if(source.getEffectiveDataSource().length() > 19) {
+                source.setDataSource(source.getEffectiveDataSource().substring(0, 19));
+            }
+
             dproc.addDatasource(source.getLabel(), rrdFile, source.getEffectiveDataSource(),
                     source.getAggregation());
         }

@@ -36,15 +36,11 @@ import java.util.List;
 public interface AdapterDefinition extends TelemetryBeanDefinition {
 
     /**
-     * The name of the adapter.
+     * Returns the full qualified (unique) name of the adapter.
      *
-     * This is used as a suffix for any associated queues that are created and
-     * must be the same on both OpenNMS and Minion.
-     *
-     * @return the protocol name
+     * @return The name uniquely identifying the adapter. Must not be null.
      */
-    @Override
-    String getName();
+    String getFullName();
 
     /**
      * Packages may contain settings for specific sources.
