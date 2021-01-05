@@ -370,6 +370,7 @@ categories:
           - name: "listen-address"
             type:
               name: "set"
+              strategy: "concat"
               items:
                 label: "Listen Address"
                 type:
