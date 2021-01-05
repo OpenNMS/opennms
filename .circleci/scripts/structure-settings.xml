@@ -1,0 +1,34 @@
+<settings>
+  <profiles>
+    <profile>
+      <id>defrepo</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>opennms-repo</id>
+          <name>OpenNMS Repository</name>
+          <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
+        </repository>
+        <repository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>opennms-repo</id>
+          <name>OpenNMS Repository</name>
+          <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+</settings>

@@ -848,6 +848,11 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>3.0.0-M3</version>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>structure-maven-plugin</artifactId>
+        <version>1.0</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
