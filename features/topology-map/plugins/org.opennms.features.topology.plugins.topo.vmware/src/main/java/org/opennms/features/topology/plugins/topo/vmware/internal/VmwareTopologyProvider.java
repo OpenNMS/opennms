@@ -54,6 +54,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -231,6 +232,8 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
         final String vmwareTopologyInfo = getTopologyInfo(onmsNode);
 
         return Arrays.stream(vmwareTopologyInfo.split(SPLIT_REGEXP))
+                .map(s -> s.trim())
+                .filter(s -> !s.isEmpty())
                 .map(ParsedEntity::new)
                 .collect(Collectors.toMap(ParsedEntity::getEntityId, Function.identity()));
     }

@@ -1,12 +1,2 @@
-Service detectors allow to bind a service to an interface automatically if it is detected during provisioning of a requisition.
+Service detectors allow {opennms-product-name} to bind a service to an interface automatically if it is detected during provisioning of a requisition.
 
-[[ga-provisioning-detectors-meta-data]]
-==== Metadata DSL
-Service detectors can use link:#ga-meta-data-dsl[MetaData DSL](domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter. 
-
-The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
-
-During evaluation of an expression, the following scopes are available:
-
-* Node metadata
-* Interface metadata

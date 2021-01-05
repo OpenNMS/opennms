@@ -95,19 +95,19 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
             connection.setAutoCommit(false);
 
             do {
-                try (final Statement selectStatement = connection.createStatement(); final ResultSet resultSet = selectStatement.executeQuery("SELECT nodeid, vmwaremanagedobjectid, vmwaremangedentitytype, vmwaremanagementserver, vmwaretopologyinfo, vmwarestate FROM assets WHERE vmwaremanagementserver IS NOT NULL LIMIT " + BATCH_SIZE)) {
+                try (final Statement selectStatement = connection.createStatement(); final ResultSet resultSet = selectStatement.executeQuery("SELECT nodeid, vmwaremanagedobjectid, vmwaremanagedentitytype, vmwaremanagementserver, vmwaretopologyinfo, vmwarestate FROM assets WHERE vmwaremanagementserver IS NOT NULL LIMIT " + BATCH_SIZE)) {
 
                     if (!resultSet.next()) {
                         break;
                     }
 
                     try (final PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO node_metadata (id, context, key, value) VALUES  (?,?,?,?)");
-                         final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE assets SET vmwaremanagedobjectid=NULL, vmwaremangedentitytype=NULL, vmwaremanagementserver=NULL, vmwaretopologyinfo=NULL, vmwarestate=NULL WHERE nodeid=?")) {
+                         final PreparedStatement nullifyStatement = connection.prepareStatement("UPDATE assets SET vmwaremanagedobjectid=NULL, vmwaremanagedentitytype=NULL, vmwaremanagementserver=NULL, vmwaretopologyinfo=NULL, vmwarestate=NULL WHERE nodeid=?")) {
 
                         do {
                             final Integer nodeId = resultSet.getInt("nodeid");
                             final String vmwareManagedObjectId = resultSet.getString("vmwaremanagedobjectid");
-                            final String vmwareMangedentityType = resultSet.getString("vmwaremangedentitytype");
+                            final String vmwareManagedentityType = resultSet.getString("vmwaremanagedentitytype");
                             final String vmwareManagementServer = resultSet.getString("vmwaremanagementserver");
                             final String vmwareTopologyInfo = resultSet.getString("vmwaretopologyinfo");
                             final String vmwareState = resultSet.getString("vmwarestate");
@@ -120,8 +120,8 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
 
                             insertStatement.setInt(1, nodeId);
                             insertStatement.setString(2, "VMware");
-                            insertStatement.setString(3, "mangedentityType");
-                            insertStatement.setString(4, vmwareMangedentityType);
+                            insertStatement.setString(3, "managedEntityType");
+                            insertStatement.setString(4, vmwareManagedentityType);
                             insertStatement.execute();
 
                             insertStatement.setInt(1, nodeId);
@@ -164,7 +164,7 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
 
             final Statement postMigrationStatement = connection.createStatement();
             postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwaremanagedobjectid");
-            postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwaremangedentitytype");
+            postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwaremanagedentitytype");
             postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwaremanagementserver");
             postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwaretopologyinfo");
             postMigrationStatement.execute("ALTER TABLE assets DROP COLUMN vmwarestate");

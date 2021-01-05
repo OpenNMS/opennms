@@ -46,7 +46,7 @@ public class SnmpInterfacePollerConfigurationTest extends XmlTestNoCastor<SnmpIn
         return Arrays.asList(new Object[][] {
             {
                 getConfig(),
-                "<snmp-interface-poller-configuration threads=\"30\" service=\"SNMP\">\n" + 
+                "<snmp-interface-poller-configuration threads=\"30\" service=\"SNMP\" up-values=\"1\" down-values=\"2\" >\n" +
                 "  <node-outage>\n" + 
                 "    <critical-service name=\"ICMP\" />\n" + 
                 "    <critical-service name=\"SNMP\" />\n" + 
@@ -54,7 +54,7 @@ public class SnmpInterfacePollerConfigurationTest extends XmlTestNoCastor<SnmpIn
                 "  <package name=\"example1\">\n" + 
                 "    <filter>IPADDR != '0.0.0.0'</filter>\n" + 
                 "    <include-range begin=\"1.1.1.1\" end=\"1.1.1.1\" />\n" + 
-                "    <interface name=\"Ethernet\" criteria=\"snmpiftype = 6\" interval=\"300000\" user-defined=\"false\" status=\"on\"/>\n" + 
+                "    <interface name=\"Ethernet\" criteria=\"snmpiftype = 6\" interval=\"300000\" user-defined=\"false\" status=\"on\" max-vars-per-pdu=\"10\" max-interface-per-pdu=\"0\"/>\n" +
                 "  </package>\n" +
                 "</snmp-interface-poller-configuration>"
             }

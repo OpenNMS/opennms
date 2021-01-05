@@ -62,6 +62,10 @@ public class ApplicationOutage {
         return delegate.getForeignSource();
     }
 
+    public String getForeignId() {
+        return delegate.getForeignId();
+    }
+
     public String getIpAddress() {
         return Optional.ofNullable(delegate.getMonitoredService())
                 .map(OnmsMonitoredService::getIpInterface)

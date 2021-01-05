@@ -20,7 +20,7 @@ To enable support for OpenConfig, edit `${OPENNMS_HOME}/etc/telemetryd-configura
         <package name="OpenConfig-Default">
             <filter>IPADDR != '0.0.0.0'</filter>
             <parameter key="port" value="${requisition:oc.port|9000}"/>
-            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+            <parameter key="paths" value="/network-instances/network-instance[instance-name=master]"/>
          </package>
     </connector>
 
@@ -67,12 +67,17 @@ The data contains metadata and is structured as a list of `key:value` pairs.
         <package name="OpenConfig-Default">
             <filter>IPADDR != '0.0.0.0'</filter>
             <parameter key="port" value="${requisition:oc.port|9000}"/>
-            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
-            <parameter key="frequency" value="${requisition:oc.frequency|300000}"/>
             <parameter key="retries" value="12"/>
             <parameter key="interval" value="300"/>
             <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
             <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
+           <!-- Use groups to separate paths that need to be streamed at different frequencies -->
+            <parameter group="group1" key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+            <parameter group="group1" key="frequency" value="5000"/>
+            <parameter group="group2" key="paths" value="/protocols/protocol/bgp"/>
+            <parameter group="group2" key="frequency" value="30000"/>
+            <parameter group="group3" key="paths" value="/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters"/>
+            <parameter group="group3" key="frequency" value="60000"/>
         </package>
     </connector>
 
@@ -83,6 +88,9 @@ At least one package must be present for the connector to function.
 Use multiple packages to customize the parameter's subsets of nodes.
 
 The `filter` element is optional; if missing, all services with the given name will be considered.
+
+Use the `group` element to group parameters into multiple groups when you need to stream different paths at different frequencies.
+Global parameters like port, and connection-specific parameters, don't need any group.
 
 Parameters are passed to the connector and are interpolated for node/interface and service-level metadata.
 
@@ -120,6 +128,7 @@ Use the script extension to extract the desired metrics from the OpenConfig stre
 |===
 | Parameter        | Description                                                       | Required | Default value
 | `script`         | Full path to the script that handles the OpenConfig data        | required | (none)
+| `mode`           | Specify Mode for stream format, gnmi or jti                     | optional | gnmi
 |===
 
 ====== Scripting
@@ -128,7 +137,16 @@ The script will be invoked for every OpenConfig stream data that is received and
 
 The following globals will be passed to the script:
 
-.Globals passed to the script
+.Globals passed to the script for gNMI (default) mode.
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                    | Type
+| `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
+| `builder`  | Builder in which the resources and metrics should be added     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| `msg`      | Decoded message from which the metrics should be extracted     | `org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse`
+|===
+
+.Globals passed to the script for JTI mode.
 [options="header, autowidth"]
 |===
 | Parameter  | Description                                                    | Type

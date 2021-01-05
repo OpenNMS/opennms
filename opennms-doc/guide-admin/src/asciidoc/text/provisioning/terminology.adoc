@@ -4,23 +4,21 @@
 
 ==== Terminology
 
-The following terms are used with respect to the {opennms-product-name} provisioning system and are essential for understanding the material presented in this guide.
+The following terms are associated with the {opennms-product-name} provisioning system.
 
 ===== Entity
 
-Entities are managed objects in {opennms-product-name} such as Nodes, IP interfaces, SNMP Interfaces, and Services.
+Entities are managed objects in {opennms-product-name} such as nodes, IP interfaces, SNMP interfaces, and services.
 
 ===== Foreign Source and Foreign ID
 
-The _Importer_ service from 1.6 introduced the idea of foreign sources and foreign IDs.
-The _Foreign Source_ uniquely identifies a provisioning source and is still a basic attribute of importing node entities into {opennms-product-name}.
-The concept is to provide an external (foreign) system with a way to uniquely identify itself and any node entities that it is requesting (via a requisition) to be provisioned into {opennms-product-name}.
+A _foreign source_ uniquely identifies an external (foreign) provisioning source and any node entities it is requesting to import into {opennms-product-name}.
 
-The _Foreign ID_ is the unique node ID maintained in foreign system and the foreign source uniquely identifies the external system in {opennms-product-name}.
+A _foreign ID_ is the unique node ID maintained in the foreign system and the foreign source.
 
-{opennms-product-name} uses the combination of the foreign source and foreign ID become the unique foreign key when synchronizing the set of nodes from each source with the nodes in the {opennms-product-name} DB.
-This way the foreign system doesn’t have to keep track of the {opennms-product-name} node IDs that are assigned when a node is first created.
-This is how _Provisiond_ can decided if a node entity from an import requisition is new, has been changed, or needs to be deleted.
+{opennms-product-name} uses the combination of the foreign source and foreign ID as a unique foreign key when synchronizing the set of nodes from each source with the nodes in the {opennms-product-name} database.
+This way the foreign system does not have to keep track of the {opennms-product-name} node IDs that are assigned when a node is first created.
+This is how provisiond decides if a node entity from an import requisition is new, has been changed, or needs to be deleted.
 
 ===== Foreign Source Definition
 
@@ -55,7 +53,7 @@ No discovery process is used for finding more interfaces or services.
 
 ===== Enhanced Directed Discovery
 
-Directed discovery is enhanced with the capability to scan nodes that have been directed nodes for entities (interfaces.
+Directed discovery is enhanced with the capability to scan nodes that have been directed nodes for entities (interfaces).
 
 ===== Policy-Based Discovery
 

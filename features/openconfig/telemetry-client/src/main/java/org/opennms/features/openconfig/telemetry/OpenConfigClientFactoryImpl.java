@@ -29,6 +29,7 @@
 package org.opennms.features.openconfig.telemetry;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.openconfig.api.OpenConfigClient;
@@ -38,8 +39,8 @@ public class OpenConfigClientFactoryImpl implements OpenConfigClientFactory {
 
 
     @Override
-    public OpenConfigClient create(InetAddress ipAddress, Map<String, String> params)  {
-        return new OpenConfigClientImpl(ipAddress, params);
+    public OpenConfigClient create(InetAddress ipAddress, List<Map<String, String>> paramList)  {
+        return new OpenConfigClientImpl(ipAddress, paramList);
     }
 
 }

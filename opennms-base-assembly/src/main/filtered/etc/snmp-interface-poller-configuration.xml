@@ -1,4 +1,4 @@
-<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP">
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP" up-values="1" down-values="2">
    <node-outage>
       <critical-service name="ICMP"/>
       <critical-service name="SNMP"/>
@@ -7,7 +7,7 @@
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="1.1.1.1"/>
       <include-range begin="::1" end="::1"/>
-      <interface criteria="snmpiftype = 6" name="Ethernet" interval="300000" user-defined="false" status="on"/>
+      <interface criteria="snmpiftype = 6" name="Ethernet" interval="300000" user-defined="false" status="on" max-vars-per-pdu="10" max-interface-per-pdu="0"/>
    </package>
    <!--  package name="overwritesnmpvalues">
       <filter>IPADDR != '0.0.0.0'</filter>

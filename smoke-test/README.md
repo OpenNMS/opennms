@@ -120,14 +120,14 @@ If a test is failing and we have a patched .jar we want to deploy, how can we re
 
 #### Filesystem
 
-Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-27.0.0-SNAPSHOT.jar`
+Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-28.0.0-SNAPSHOT.jar`
 
 Add the .jar to the overlay:
 ```
 OVERLAY_ROOT="~/git/opennms/smoke-test/src/main/resources/opennms-overlay"
 TARGET_PATH="$OVERLAY_ROOT/lib"
 mkdir -p $TARGET_PATH
-cp target/opennms-services-27.0.0-SNAPSHOT.jar $TARGET_PATH/lib
+cp target/opennms-services-28.0.0-SNAPSHOT.jar $TARGET_PATH/lib
 ```
 
 Re-run the test.

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -133,7 +133,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String json = sendRequest(jsonRequest, 200);
 
         JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/alarms.json")));
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/alarms.json"), "UTF-8"));
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
@@ -288,7 +288,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
-        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+        assertEquals(OnmsSeverity.CLEARED, fromRest.getSeverity());
     }
 
     @Test
@@ -307,7 +307,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
-        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+        assertEquals(OnmsSeverity.CLEARED, fromRest.getSeverity());
     }
 
     @Test
@@ -318,7 +318,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 204);
         final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
         final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
-        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+        assertEquals(OnmsSeverity.CLEARED, fromRest.getSeverity());
     }
 
     @Test

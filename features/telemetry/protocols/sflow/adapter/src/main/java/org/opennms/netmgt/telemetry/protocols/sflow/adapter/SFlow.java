@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils;
 
@@ -92,7 +93,17 @@ public class SFlow implements Flow {
 
     @Override
     public Direction getDirection() {
-        return Direction.INGRESS;
+        final Optional<BsonValue> source = first(get(document, "source_id", "source_id_index"),
+                get(document, "source_id"));
+
+        final Optional<BsonValue> input = first(get(document, "input", "value"),
+                get(document, "input"));
+
+        if (source.isPresent() && input.isPresent() && !Objects.equals(source, input)) {
+            return Direction.EGRESS;
+        } else {
+            return Direction.INGRESS;
+        }
     }
 
     @Override

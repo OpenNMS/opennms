@@ -63,7 +63,10 @@
       <logmsg dest="logndisplay">Agent Interface Down (linkDown Trap)
         </logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1"/>
+       <!-- reduce alarms from traps and polls into a single alarm -->
+       <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false">
+           <update-field field-name="severity" update-on-reduction="true"/>
+       </alarm-data>
    </event>
    <event>
       <mask>
@@ -98,7 +101,8 @@
       <logmsg dest="logndisplay">Agent Interface Up (linkUp Trap)
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%"/>
+       <!-- reduce alarms from traps and polls into a single alarm -->
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[#1]"/>
    </event>
    <event>
       <mask>

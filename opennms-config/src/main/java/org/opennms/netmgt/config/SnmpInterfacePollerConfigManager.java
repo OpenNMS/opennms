@@ -520,6 +520,19 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getMaxVarsPerPdu();        
     }
 
+    /** {@inheritDoc}
+     * @return*/
+    @Override
+    public String getUpValues(String pkgName, String pkgInterfaceName) {
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getUpValues().orElse(getUpValues());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getDownValues(String pkgName, String pkgInterfaceName) {
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getDownValues().orElse(getDownValues());
+    }
+
     /**
      * <p>enumeratePackage</p>
      *
@@ -589,4 +602,21 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return getConfiguration().getUseCriteriaFilters();
     }
 
+    /**
+     * <p>getUpValues</p>
+     * @return a String
+     */
+    @Override
+    public String getUpValues() {
+        return getConfiguration().getUpValues();
+    }
+
+    /**
+     * <p>getDownValues</p>
+     * @return a String
+     */
+    @Override
+    public String getDownValues() {
+        return getConfiguration().getDownValues();
+    }
 }

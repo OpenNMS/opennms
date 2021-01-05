@@ -2,7 +2,7 @@
 Description=${install.package.description} server
 Wants=${install.postgresql.service}.service
 Requires=network.target network-online.target
-After=${install.postgresql.service}.service postgresql-10.service postgresql-11.service postgresql-12.service network.target network-online.target
+After=${install.postgresql.service}.service postgresql-10.service postgresql-11.service postgresql-12.service postgresql-13.service network.target network-online.target
 
 [Service]
 User=root

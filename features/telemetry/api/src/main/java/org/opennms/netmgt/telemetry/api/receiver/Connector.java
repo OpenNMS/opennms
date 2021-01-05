@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.api.receiver;
 
 import java.io.Closeable;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +44,6 @@ import java.util.Map;
  */
 public interface Connector extends Closeable {
 
-    void stream(int nodeId, InetAddress ipAddress, Map<String, String> params);
+    void stream(int nodeId, InetAddress ipAddress, List<Map<String, String>> paramList);
 
 }

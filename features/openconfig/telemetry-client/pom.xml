@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.openconfig</artifactId>
     <groupId>org.opennms.features</groupId>
-    <version>27.0.0-SNAPSHOT</version>
+    <version>28.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -76,5 +76,10 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
