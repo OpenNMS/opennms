@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.7.10-b4096"
+ARG BASE_IMAGE_VERSION="11.0.9.11-b5706"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
@@ -21,7 +21,7 @@ RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
 RUN dnf -y install dnf-plugins-core && \
-    dnf config-manager --set-enabled PowerTools && \
+    dnf config-manager --set-enabled powertools && \
     rpm --import "${REPO_KEY_URL}" && \
     dnf -y install epel-release && \
     dnf -y install "${REPO_RPM}" && \
