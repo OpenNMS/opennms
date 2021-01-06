@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet id="27.0.4-alter-column-snmpifdescr" author="mszoek">
-    <modifyDataType tableName="snmpinterfaces" columnName="snmpifdescr" newDataType="text"/>
+    <modifyDataType tableName="snmpinterface" columnName="snmpifdescr" newDataType="text"/>
   </changeSet>
 
 </databaseChangeLog>
