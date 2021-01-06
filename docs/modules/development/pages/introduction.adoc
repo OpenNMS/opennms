@@ -1,7 +1,7 @@
 = Operating System/Environment
 
-To build/compile OpenNMS requires running a *nix system.
-You do not need to run it physically, a virtual machine is sufficient.
+Building/compiling OpenNMS requires running a *nix system.
+You do not need to run it physically; a virtual machine is sufficient.
 We recommend one of the following:
 
  * link:http://www.linuxmint.com/[Linux Mint] with Cinnamon Desktop environment
@@ -68,15 +68,15 @@ cd ~/dev/opennms
 ./assemble.pl -p dir
 ----
 
-For more information on how to build OpenNMS from source, check this wiki link:http://www.opennms.org/wiki/Installation:Source#Building[Install from Source].
+For more information on how to build OpenNMS from source, check this wiki link:https://wiki.opennms.org/wiki/Installation:Source#Building[Install from Source].
 
-After successfully building OpenNMS, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
+After successfully building OpenNMS, please follow the wiki link:https://wiki.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
 
 == Tooling
 We recommend the following toolset:
 
  * IDE: link:https://www.jetbrains.com/idea/[IntelliJ IDEA Ultimate]
- * DB-Tool: link:http://dbeaver.jkiss.org/[DBeaver] or link:http://www.pgadmin.org/[Postgres Admin - pgAdmin]
+ * DB-Tool: link:http://dbeaver.jkiss.org/[DBeaver] or link:http://www.pgadmin.org/[Postgres Admin – pgAdmin]
  * Graphing: link:http://www.yworks.com/en/products/yfiles/yed/[yEd]
  * Other: link:http://www.atom.io[atom.io]
 
@@ -89,11 +89,11 @@ We recommend the following toolset:
  It points you in the right direction.
  * Our http://issues.opennms.org[issue/bug tracker]
  * https://github.com/opennms-forge/vagrant-opennms-dev[Vagrant box] to set up a virtual box to build OpenNMS
- * https://github.com/opennms-forge/vagrant-opennms[vagrant box] to set up a virtual box to run OpenNMS
+ * https://github.com/opennms-forge/vagrant-opennms[Vagrant box] to set up a virtual box to run OpenNMS
 
 === Installation/Setup
- * http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
- * http://www.opennms.org/wiki/Installation:Source[]
- * http://www.opennms.org/wiki/Developing_with_Git[]
- * http://www.opennms.org/wiki/Eclipse_and_OpenNMS[]
- * http://www.opennms.org/wiki/IDEA_and_OpenNMS[]
+
+ * https://wiki.opennms.org/wiki/Installation:Source[]
+ * https://wiki.opennms.org/wiki/Developing_with_Git[]
+ * https://wiki.opennms.org/wiki/Eclipse_and_OpenNMS[]
+ * https://wiki.opennms.org/wiki/IDEA_and_OpenNMS[]

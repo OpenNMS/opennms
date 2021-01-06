@@ -2,10 +2,10 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Guidelines
+= Guidelines
 
-This sections describes a series of guidelines and best practices when developing _Minion_ modules:
+This sections describes a series of guidelines and best practices when developing Minion modules:
 
-==== Security
+== Security
 
 . Don't store any credentials on disk, use the `SecureCredentialVault` instead.

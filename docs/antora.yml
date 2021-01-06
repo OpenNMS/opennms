@@ -27,4 +27,5 @@ nav:
 - modules/ROOT/index.adoc
 - modules/deployment/nav.adoc
 - modules/operation/nav.adoc
+- modules/development/nav.adoc
 - modules/reference/nav.adoc

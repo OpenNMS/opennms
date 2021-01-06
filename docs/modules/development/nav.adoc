@@ -1,3 +1,14 @@
 .Development
 * xref:overview/overview.adoc[]
 
+* xref:minion/introduction.adoc[]
+** xref:minion/container.adoc[]
+** xref:minion/guidelines.adoc[]
+** xref:minion/testing.adoc[]
+
+* xref:topology/introduction.adoc[]
+** xref:topology/infopanel.adoc[]
+** xref:topology/graphml.adoc
+** xref:topology/update.adoc[]
+
+* xref:graph/graph.adoc[]

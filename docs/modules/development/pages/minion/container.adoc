@@ -1,18 +1,17 @@
-
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Container
+= Container
 
-This section details the customizations we make to the standard _Karaf_ distribution for the _Minion_ container.
+This section details the customizations we make to the standard Karaf distribution for the Minion container.
 
-==== Clean Start
+== Clean Start
 
 We clear the cache on every start by setting `karaf.clean.cache = true` in order to ensure that only the features listed in the featuresBoot (or installed by the `karaf-extender`) are installed.
 
-==== Karaf Extender
+== Karaf Extender
 
-The _Karaf Extender_ was developed to make it easier to manage and extend the container using existing packaging tools.
+The Karaf Extender was developed to make it easier to manage and extend the container using existing packaging tools.
 It allows packages to register *Maven Repositories*, *Karaf Feature Repositories* and *Karaf Features to Boot* by overlaying additional files, avoiding modifying any of the existing files.
 
 Here's an overview, used for reference, of the relevant directories that are (currently) present on a default install of the `opennms-minion` package:
