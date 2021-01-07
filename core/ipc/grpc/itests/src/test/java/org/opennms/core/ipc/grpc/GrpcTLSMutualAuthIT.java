@@ -78,7 +78,7 @@ public class GrpcTLSMutualAuthIT {
         serverConfig.put(GrpcServerConstants.TLS_ENABLED, "true");
         serverConfig.put(GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH, serverCertFilePath);
         serverConfig.put(GrpcServerConstants.PRIVATE_KEY_FILE_PATH, serverKeyFilePath);
-        serverConfig.put(GrpcServerConstants.CLIENT_CERTIFICATE_FILE_PATH, clientCertFilePath);
+        serverConfig.put(GrpcServerConstants.TRUST_CERTIFICATE_FILE_PATH, trustCertFilePath);
 
         Hashtable<String, Object> clientConfig = new Hashtable<>();
         clientConfig.put(GrpcClientConstants.GRPC_PORT, String.valueOf(port));
