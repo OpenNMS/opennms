@@ -1,19 +1,19 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Topologies Updates
+= Topologies Updates
 
-In {page-component-title} the `Kafka Producer` uses Topologies Updates to send topologies messages to Kafka.
+In {page-component-title} the Kafka Producer uses topologies updates to send topology messages to Kafka.
 
-Enhanced Linkd has six `OnmsTopologyUpdaters` each sending its own  NODES, BRIDGE, CDP, ISIS, LLDP and OSPF protocol `OnmsTopologyMessage`.
+Enhanced Linkd has six `OnmsTopologyUpdaters` each sending its own NODES, BRIDGE, CDP, ISIS, LLDP, and OSPF protocol `OnmsTopologyMessage`.
 
-`Kafka Producer` implements an `OnmsTopologyConsumer` that reads the `OnmsTopologyMessage` to be shared over Kafka. 
+Kafka Producer implements an `OnmsTopologyConsumer` that reads the `OnmsTopologyMessage` to be shared over Kafka. 
 
-The Topologies updates api are available under `opennms/features/topologies`
+The Topologies updates APIs are available under `opennms/features/topologies`
 
-==== OnmsTopologyUpdater
+== OnmsTopologyUpdater
 
-To set up an implementation class of `OnmsTopologyUpdater` interface it must be implemented three methods:    
+Three methods are required to set up an implementation class of `OnmsTopologyUpdater` interface:    
 
 `OnmsTopology getTopology();`
 
@@ -23,12 +23,12 @@ To set up an implementation class of `OnmsTopologyUpdater` interface it must be 
 
 An `OnmsTopologyUpdater` holds the `OnmsTopology` of the specified `OnmsTopologyProtocol`. 
 
-In order to send `OnmsTopologyMessage` to subscribers the updater should register and send messages using the provided methods into `OnmsTopologyDao`
+To send `OnmsTopologyMessage` to subscribers, the updater should register and send messages using the provided methods into `OnmsTopologyDao`
 
 To register use:
 
 `register(OnmsTopologyUpdater updater)`
-Only one updater for protocol is allowed to register over `OnmsTopologyDao`.
+Only one updater per protocol is allowed to register over `OnmsTopologyDao`.
 
 To send messages to subscriber use: 
 
@@ -38,19 +38,20 @@ To unregister use:
 
 `unregister(OnmsTopologyUpdater updater)`
 
-Registering Updaters with OnmsTopologyDao will also provide Topology using `OnmsTopologyDao`
+Registering updaters with OnmsTopologyDao will also provide topology using `OnmsTopologyDao`
 
-to get a Topology for a specific protocol use:
+To get a topology for a specific protocol use:
 
 `OnmsTopology getTopology(String protocol)`
 
-==== OnmsTopologyRef
+== OnmsTopologyRef
 
-`OnmsTopologyRef` is the topology basic interface. All topology defined objects are implementing it.
+`OnmsTopologyRef` is the topology basic interface. 
+All topology defined objects implement it.
 
 The methods defining OnmsTopolgyRef are:
 
-The Id: a unique String identifier of the topology Object.
+The ID: a unique string identifier of the topology object.
 
 `String getId();`
 
@@ -58,20 +59,20 @@ The tool tip text: some additional information to describe the topology object.
 
 `String getToolTipText();`
 
-==== OnmsTopologyMessage
+== OnmsTopologyMessage
 
-`OnmsTopologyMessage` is defined by `OnmsTopologyProtocol` by a `TopologyMessageStatus` and by an `OnmsTopologyRef` and it is send to all subscriber for the specified protocol by the registered updater via the
-`OnmsTopologyDao' 
+`OnmsTopologyMessage` is defined by `OnmsTopologyProtocol`, a `TopologyMessageStatus`, and an `OnmsTopologyRef` and it is sent to all subscribers for the specified protocol by the registered updater via the `OnmsTopologyDao' 
 
-==== OnmsTopologyProtocol
+== OnmsTopologyProtocol
 
-`OnmsTopologyProtocol` represent a protocol. It is defined by a String but it is not case sensitive, CDP either cdp and Cdp will define the same protocol. 
+`OnmsTopologyProtocol` represents a protocol. 
+It is defined by a string but it is not case sensitive: CDP, cdp, and Cdp will define the same protocol. 
 
 An `OnmsTopologyUpdater` can be an updater for only one protocol.
 
 An `OnmsTopologyConsumer` can be a consumer for several protocols.
 
-==== TopologyMessageStatus
+== TopologyMessageStatus
 
 `TopologyMessageStatus` is an enum whose allowed values are: UPDATE or DELETE. 
 
@@ -80,7 +81,7 @@ still available in Topology
 
 DELETE message means that the object `OnmsTopologyRef` has been deleted from topology.
 
-==== OnmsTopology
+== OnmsTopology
 
 A topology is made by vertices and edges  each of uniquely identified by an `OnmsTopologyRef`
 
@@ -88,15 +89,15 @@ A topology is made by vertices and edges  each of uniquely identified by an `Onm
 
 Also is possible to set and get a Default Vertex.
 
-==== OnmsTopologyVertex
+== OnmsTopologyVertex
 
 `OnmsTopologyVertex` implements `OnmsTopologyRef` and represents a vertex
 
-==== OnmsTopologyEdge
+== OnmsTopologyEdge
 
 `OnmsTopologyEdge` implements `OnmsTopologyRef` and represents an Edge and is made by a two `OnmsTopologyPort` the source and the target of the edge.
 
-==== OnmsTopologyPort
+== OnmsTopologyPort
 
 `OnmsTopologyPort` implements `OnmsTopologyRef` represents a Port belonging to a Vertex so has a property to set and get the `OnmsTopologyVertex`.
 
@@ -104,7 +105,7 @@ The Port is an element of the Topology because it belongs to an Edge and is the 
 
 Two vertices are connected by an Edge by the corresponding Port.
 
-==== OnmsTopologyConsumer
+== OnmsTopologyConsumer
 
 To set up an implementation class of `OnmsTopologyConsumer` interface it must be implemented three methods:
 
