@@ -25,22 +25,22 @@ An `OnmsTopologyUpdater` holds the `OnmsTopology` of the specified `OnmsTopology
 
 To send `OnmsTopologyMessage` to subscribers, the updater should register and send messages using the provided methods into `OnmsTopologyDao`
 
-To register use:
+To register, use:
 
 `register(OnmsTopologyUpdater updater)`
 Only one updater per protocol is allowed to register over `OnmsTopologyDao`.
 
-To send messages to subscriber use: 
+To send messages to subscriber, use: 
 
 `void update(OnmsTopologyUpdater updater,OnmsTopologyMessage message) throws OnmsTopologyException;`
 
-To unregister use:
+To unregister, use:
 
 `unregister(OnmsTopologyUpdater updater)`
 
-Registering updaters with OnmsTopologyDao will also provide topology using `OnmsTopologyDao`
+Registering updaters with OnmsTopologyDao will also provide topology using `OnmsTopologyDao`.
 
-To get a topology for a specific protocol use:
+To get a topology for a specific protocol, use:
 
 `OnmsTopology getTopology(String protocol)`
 
@@ -61,12 +61,13 @@ The tool tip text: some additional information to describe the topology object.
 
 == OnmsTopologyMessage
 
-`OnmsTopologyMessage` is defined by `OnmsTopologyProtocol`, a `TopologyMessageStatus`, and an `OnmsTopologyRef` and it is sent to all subscribers for the specified protocol by the registered updater via the `OnmsTopologyDao' 
+`OnmsTopologyMessage` is defined by `OnmsTopologyProtocol`, a `TopologyMessageStatus`, and an `OnmsTopologyRef`. 
+It is sent to all subscribers for the specified protocol by the registered updater via the `OnmsTopologyDao'. 
 
 == OnmsTopologyProtocol
 
 `OnmsTopologyProtocol` represents a protocol. 
-It is defined by a string but it is not case sensitive: CDP, cdp, and Cdp will define the same protocol. 
+It is defined by a string but is not case sensitive: CDP, cdp, and Cdp will define the same protocol. 
 
 An `OnmsTopologyUpdater` can be an updater for only one protocol.
 
@@ -74,40 +75,41 @@ An `OnmsTopologyConsumer` can be a consumer for several protocols.
 
 == TopologyMessageStatus
 
-`TopologyMessageStatus` is an enum whose allowed values are: UPDATE or DELETE. 
+`TopologyMessageStatus` is an enum whose allowed values are UPDATE or DELETE. 
 
 UPDATE message means that the topology message holds information about an `OnmsTopologyRef` 
-still available in Topology 
+still available in topology. 
 
 DELETE message means that the object `OnmsTopologyRef` has been deleted from topology.
 
 == OnmsTopology
 
-A topology is made by vertices and edges  each of uniquely identified by an `OnmsTopologyRef`
+A topology is made by vertices and edges, each uniquely identified by an `OnmsTopologyRef`.
 
 `OnmsTopology` is a SET of `OnmsTopologyVertex` and a SET of `OnmsTopologyEdge`.
 
-Also is possible to set and get a Default Vertex.
+It is also possible to set and get a default vertex.
 
 == OnmsTopologyVertex
 
-`OnmsTopologyVertex` implements `OnmsTopologyRef` and represents a vertex
+`OnmsTopologyVertex` implements `OnmsTopologyRef` and represents a vertex.
 
 == OnmsTopologyEdge
 
-`OnmsTopologyEdge` implements `OnmsTopologyRef` and represents an Edge and is made by a two `OnmsTopologyPort` the source and the target of the edge.
+`OnmsTopologyEdge` implements `OnmsTopologyRef` and represents an edge.
+It is made by a #two `OnmsTopologyPort` the source and the target of the edge#.
 
 == OnmsTopologyPort
 
-`OnmsTopologyPort` implements `OnmsTopologyRef` represents a Port belonging to a Vertex so has a property to set and get the `OnmsTopologyVertex`.
+`OnmsTopologyPort` implements `OnmsTopologyRef` and represents a port belonging to a vertex, so has a property to set and get the `OnmsTopologyVertex`.
 
-The Port is an element of the Topology because it belongs to an Edge and is the connection element.
+The port is an element of the topology because it belongs to an edge and is the connection element.
 
-Two vertices are connected by an Edge by the corresponding Port.
+Two vertices are connected by an edge by the corresponding port.
 
 == OnmsTopologyConsumer
 
-To set up an implementation class of `OnmsTopologyConsumer` interface it must be implemented three methods:
+Three methods are required to set up an implementation class of `OnmsTopologyConsumer` interface:
 
 `String getName();`
 
@@ -115,15 +117,15 @@ To set up an implementation class of `OnmsTopologyConsumer` interface it must be
 
 `void consume(OnmsTopologyMessage message);`
 
-An `OnmsTopologyconsumer` consume the `OnmsTopologyMessage` of the specified list `OnmsTopologyProtocol` provided by the `getProtocols()` method implementing the method `void consume(OnmsTopologyMessage message)`
+An `OnmsTopologyconsumer` consumes the `OnmsTopologyMessage` of the specified list `OnmsTopologyProtocol` provided by the `getProtocols()` method implementing the method `void consume(OnmsTopologyMessage message)`.
 
-In order to receive `OnmsTopologyMessage` from the registered "Updaters", the "Consumer" should subscribe `OnmsTopologyDao` 
+To receive `OnmsTopologyMessage` from the registered "Updaters", the "Consumer" should subscribe `OnmsTopologyDao`. 
 
-To subscribe use:
+To subscribe, use:
 
 `void subscribe(OnmsTopologyConsumer consumer)`
 
-To unsubscribe use:
+To unsubscribe, use:
 
 `void unsubscribe(OnmsTopologyConsumer consumer)`
  

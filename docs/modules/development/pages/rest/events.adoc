@@ -1,7 +1,7 @@
 
-==== Events
+= Events
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="2,10"]
 |===
@@ -11,7 +11,7 @@
 | `/events/{id}`  | Get the event specified by the given _ID_.
 |===
 
-===== PUTs (Modifying Data)
+== PUTs (Modifying Data)
 
 _PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-Type.
 
@@ -22,7 +22,7 @@ _PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-
 | `/events?x=y&...&ack=''(true;false)`   | Acknowledges (or unacknowledges) the matching events.
 |===
 
-===== POSTs (Adding Data)
+== POSTs (Adding Data)
 
 POST requires XML (application/xml) or JSON (application/json) as its Content-Type.
 

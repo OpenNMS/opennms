@@ -1,10 +1,10 @@
-==== Flow API
+= Flow API
 
 The _Flow API_ can be used to retrieve summary statistics and time series data derived from persisted flows.
 
 NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
@@ -145,7 +145,7 @@ The `hosts` and `hosts/series` endpoints also support:
 Both endpoints requires one of `N` or `host` query parameters to be set and will return an error if neither or
 both are set.
 
-====== Examples
+=== Examples
 
 
 .Retrieve the number of flows persisted in the last 4 hours

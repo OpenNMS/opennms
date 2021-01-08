@@ -1,5 +1,5 @@
 
-==== Foreign Sources
+= Foreign Sources
 
 ReSTful service to the {page-component-title} Provisioning Foreign Source definitions.  Foreign source definitions are used to control the scanning (service detection) of services for SLA monitoring as well as the data collection settings for physical interfaces (resources).
 
@@ -7,7 +7,7 @@ This API supports CRUD operations for managing the Provisioner's foreign source 
 
 If a request says that it gets the "active" foreign source, that means it returns the pending foreign source (being edited for deployment) if there is one, otherwise it returns the deployed foreign source.
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
@@ -23,7 +23,7 @@ If a request says that it gets the "active" foreign source, that means it return
 | `/foreignSources/{name}/policies/{policy}`    | Get the specified policy for the foreign source named {name}.
 |===
 
-===== POSTs (Adding Data)
+== POSTs (Adding Data)
 
 POST requires XML using application/xml as its Content-Type.
 
@@ -35,7 +35,7 @@ POST requires XML using application/xml as its Content-Type.
 | `/foreignSources/{name}/policies`  | Add a policy to the named foreign source.
 |===
 
-===== PUTs (Modifying Data)
+== PUTs (Modifying Data)
 
 PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
 
@@ -45,7 +45,7 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 | `/foreignSources/{name}` | Modify a foreign source with the given name.
 |===
 
-===== DELETEs (Removing Data)
+== DELETEs (Removing Data)
 
 [options="header", cols="5,10"]
 |===

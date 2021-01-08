@@ -11,3 +11,22 @@
 ** xref:topology/graphml.adoc[]
 ** xref:topology/update.adoc[]
 
+* xref:graph/graph.adoc[]
+
+* xref:rest/CORS.adoc[]
+
+* xref:rest/rest-api.adoc[]
+** xref:rest/osgi.adoc[]
+** xref:rest/implemented.adoc[]
+*** xref:rest/acknowledgements.adoc[]
+*** xref:rest/alarm_statistics.adoc[]
+*** xref:rest/alarms.adoc[]
+*** xref:rest/alarm_history.adoc[]
+*** xref:rest/events.adoc[]
+*** xref:rest/categories.adoc[]
+*** xref:rest/flows.adoc[]
+*** xref:rest/classifications.adoc[]
+*** xref:rest/foreign_sources.adoc[]
+*** xref:rest/graph.adoc[]
+
+

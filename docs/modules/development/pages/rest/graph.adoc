@@ -1,5 +1,5 @@
 [[ga-development-rest-graph]]
-==== Graph API
+= Graph API
 
 The _Graph API_ can be used to read existing graph and graph containers in the system and is an `api/v2` endpoint.
 
@@ -66,10 +66,10 @@ At the moment, the context of a search must always be a concrete _namespace_ and
 NOTE: The API allows to query any container and graph via ReST, but in most cases you should only query for a graph view.
 
 
-===== Examples
+== Examples
 
 
-====== Retrieve all graph container infos
+=== Retrieve all graph container infos
 
 .Request
 [source,bash]
@@ -133,7 +133,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs
 ----
 
 
-====== Retrieve graph container 'bsm'
+=== Retrieve graph container 'bsm'
 .Request
 [source,bash]
 ----
@@ -163,7 +163,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/bsm
 }
 ----
 
-====== Retrieve graph 'layer3-network' in container 'layer3-topology'
+=== Retrieve graph 'layer3-network' in container 'layer3-topology'
 .Request
 [source,bash]
 ----
@@ -439,7 +439,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/layer3-to
 ----
 
 
-====== Get a view of the graph
+=== Get a view of the graph
 
 .Request
 [source,bash]
@@ -510,7 +510,7 @@ curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{ "semanticZ
 }
 ----
 
-====== Search Suggestions
+=== Search Suggestions
 
 .Request
 [source,bash]
@@ -538,7 +538,7 @@ curl -X GET -u admin:admin http://localhost:8980/opennms/api/v2/graphs/search/su
 ----
 
 
-====== Search Results
+=== Search Results
 
 .Request
 [source,bash]

@@ -1,16 +1,16 @@
 
-=== Expose ReST services via OSGi
+= Expose ReST services via OSGi
 
-In order to expose a ReST service via OSGi the following steps must be followed:
+To expose a REST service via OSGi the follow these steps:
 
-1. Define an interface, containing java jax-rs annotations
-2. Define a class, implementing that interface
-3. Create an OSGi bundle which exports a service with the interface from above
+. Define an interface, containing java jax-rs annotations.
+. Define a class, implementing that interface.
+Create an OSGi bundle that exports a service with the interface from above.
 
 
-==== Define a ReST interface
+== Define a REST interface
 
-At first a public interface must be created which must contain jax-rs annotations.
+First, create a public interface which must contain jax-rs annotations.
 
 [source, java]
 ----
@@ -25,17 +25,17 @@ public interface DataChoiceRestService {
     UsageStatisticsReportDTO getUsageStatistics();
 }
 ----
-<1>  Each ReST interface must either have a `@Path` or `@Provider` annotation.
-     Otherwise it is not considered a ReST service.
-<2>  Use jax-rs annotations, such as `@Post, @GET, @PUT, @Path`, etc. to define the ReST service.
+<1>  Each REST interface must either have a `@Path` or `@Provider` annotation.
+     Otherwise, it is not considered a REST service.
+<2>  Use jax-rs annotations, such as `@Post, @GET, @PUT, @Path`, etc., to define the REST service.
 
-==== Implement a ReST interface
+== Implement a REST Interface
 
-A class must implement the ReST interface.
+A class must implement the REST interface.
 
-NOTE:   The class may or may not repeat the jax-rs annotations from the interface.
+NOTE: The class may or may not repeat the jax-rs annotations from the interface.
         This is purely for readability.
-        Changing or adding different jax-rs annotations on the class, won't have any effect.
+        Changing or adding different jax-rs annotations on the class will not have any effect.
 
 [source, java]
 ----
@@ -53,10 +53,10 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
 }
 ----
 
-==== Export the ReST service
+== Export the REST Service
 
-At last the ReST service must be exported via the bundlecontext.
-This can be either achieved using an Activator or the blueprint mechanism.
+Finally, you must export the REST service via the bundlecontext.
+Achieve this by using either an Activator or the blueprint mechanism.
 
 [source, xml]
 ----
@@ -75,10 +75,10 @@ This can be either achieved using an Activator or the blueprint mechanism.
 
 </blueprint>
 ----
-<1>  Create the ReST implementation class
-<2>  Export the ReST service
-<3>  Define where the ReST service will be exported to, e.g. `/rest`, `/api/v2`, but also completely different paths can be used.
+<1>  Create the REST implementation class.
+<2>  Export the REST service.
+<3>  Define where the REST service will be exported, e.g., `/rest`, `/api/v2`. You can also use completely different paths.
      If not defined, `/services` is used.
 
 
-For a full working example refer to the link:https://github.com/OpenNMS/opennms/tree/develop/features/datachoices[datachoices feature].
+For a full working example, refer to the link:https://github.com/OpenNMS/opennms/tree/develop/features/datachoices[datachoices feature].

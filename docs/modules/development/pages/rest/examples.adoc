@@ -1,4 +1,4 @@
-==== Getting Graph data
+= Getting Graph data
 
 While graphs aren't technically available via _ReST_, you can parse some _ReST_ variables to get enough data to pull a graph.
 This isn't ideal because it requires multiple fetches, but depending on your use case, this may be adequate for you.
@@ -51,7 +51,7 @@ function fetchGraphs($nodeId) {
 }
 ----
 
-==== provision.pl examples and notes
+== provision.pl examples and notes
 
 One way to test out the new _ReST_ interface is to use `provision.pl`.
 If you run it you'll get a summary of the output, but it's not totally obvious how it all works.
@@ -78,7 +78,7 @@ You will probably need to specify the username/password of an admin.  To do this
 
 to the command line.
 
-==== Debian (Lenny) Notes
+== Debian (Lenny) Notes
 
 For Lenny, you'll need to pull a package out of backports to make everything work right.
 Read http://backports.org/dokuwiki/doku.php?id=instructions for instructions on adding it to `sources.list`.
@@ -89,7 +89,7 @@ Read http://backports.org/dokuwiki/doku.php?id=instructions for instructions on 
 sudo apt-get -t lenny-backports install liburi-perl
 ----
 
-==== Windows Powershell ReST
+== Windows Powershell ReST
 
 Example of using _Windows Powershell_ to fill some asset fields with _ReST_.
 

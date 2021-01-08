@@ -1,8 +1,8 @@
 
-==== Discovery
+= Discovery
 This endpoint can be used to trigger a one-time discovery scan.
 
-===== POSTs (Submitting one-time scan configuration)
+== POSTs (Submitting one-time scan configuration)
 
 [options="header", cols="5,10"]
 |===
