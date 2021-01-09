@@ -1496,7 +1496,7 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.9.0</frontendPluginVersion>
+    <frontendPluginVersion>1.11.0</frontendPluginVersion>
     <nodeVersion>v10.19.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
 
