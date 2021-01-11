@@ -13,7 +13,7 @@
     <name>OpenNMS :: Features :: Flows :: Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <nephronVersion>0.1.1</nephronVersion>
+        <nephronVersion>0.1.2-SNAPSHOT</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
     </properties>
     <build>

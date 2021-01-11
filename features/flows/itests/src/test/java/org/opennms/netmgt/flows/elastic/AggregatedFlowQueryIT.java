@@ -78,6 +78,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -340,6 +341,74 @@ public class AggregatedFlowQueryIT {
         hosts = smartQueryService.getHosts("10.1.*|192.168.*", 10, getFilters()).get();
         assertThat(hosts, equalTo(Arrays.asList("10.1.1.11", "10.1.1.12", "10.1.1.13", "192.168.1.100",
                 "192.168.1.101", "192.168.1.102")));
+    }
+
+    @Test
+    public void canGetDscps() throws Exception {
+
+        final List<FlowDocument> flows = new FlowBuilder()
+                .withExporter("SomeFs", "SomeFid", 99)
+                .withSnmpInterfaceId(98)
+                // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
+                .withDirection(Direction.INGRESS)
+                .withTos(0)
+                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
+                .withTos(4)
+                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withDirection(Direction.INGRESS)
+                .withTos(8)
+                .withFlow(new Date(20), new Date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
+                .withTos(12)
+                .withFlow(new Date(20), new Date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .build();
+
+        // expect 15 flow summary documents
+        // - 1 for exporter/interface (98/0)
+        // - 4 for exporter/interface/tos (0, 4, 8, 12)
+        // - 4 * 1 for exporter/interface/tos/application (http)
+        // - 4 * 1 for exporter/interface/tos/conversation (10.1.1.11 <-> 192.168.1.100)
+        // - 4 * 2 for exporter/interface/tos/host (10.1.1.11, 192.168.1.100)
+        loadFlows(flows, 21);
+
+        List<String> hosts = smartQueryService.getFieldValues(LimitedCardinalityField.DSCP, getFilters()).get();
+        assertThat(hosts, equalTo(Arrays.asList("0", "1", "2", "3")));
+
+    }
+
+    @Test
+    public void canGetEcns() throws Exception {
+
+        final List<FlowDocument> flows = new FlowBuilder()
+                .withExporter("SomeFs", "SomeFid", 99)
+                .withSnmpInterfaceId(98)
+                // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
+                .withDirection(Direction.INGRESS)
+                .withTos(0)
+                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
+                .withTos(1)
+                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withDirection(Direction.INGRESS)
+                .withTos(2)
+                .withFlow(new Date(20), new Date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withDirection(Direction.EGRESS)
+                .withTos(3)
+                .withFlow(new Date(20), new Date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .build();
+
+        // expect 15 flow summary documents
+        // - 1 for exporter/interface (98/0)
+        // - 3 for exporter/interface/tos (0, 1, 3); code 2 is treated as code 1
+        // - 3 * 1 for exporter/interface/tos/application (http)
+        // - 3 * 1 for exporter/interface/tos/conversation (10.1.1.11 <-> 192.168.1.100)
+        // - 3 * 2 for exporter/interface/tos/host (10.1.1.11, 192.168.1.100)
+        loadFlows(flows, 16);
+
+        List<String> hosts = smartQueryService.getFieldValues(LimitedCardinalityField.ECN, getFilters()).get();
+        assertThat(hosts, equalTo(Arrays.asList("0", "1", "3")));
+
     }
 
     @Test
@@ -748,7 +817,13 @@ public class AggregatedFlowQueryIT {
                 .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
 
-        this.loadFlows(flows, 17);
+        // expect 15 flow summary documents
+        // - 1 for exporter/interface (98/0)
+        // - 1 for exporter/interface/dscp (0)
+        // - 3 for exporter/interface/dscp/application (http, https, unknown)
+        // - 4 for exporter/interface/dscp/conversation (see above)
+        // - 6 for exporter/interface/dscp/host (10.1.1.11, 10.1.1.12, 10.1.1.13, 192.168.1.100, 192.168.1.101, 192.168.1.102)
+        this.loadFlows(flows, 15);
     }
 
     private void loadFlows(final List<FlowDocument> flowDocuments, long expectedNumFlowSummaries) throws FlowException {

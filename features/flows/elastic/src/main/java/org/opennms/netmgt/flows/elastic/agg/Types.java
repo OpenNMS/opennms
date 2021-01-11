@@ -29,11 +29,8 @@
 package org.opennms.netmgt.flows.elastic.agg;
 
 import org.opennms.netmgt.flows.api.Conversation;
-import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.elastic.ConversationKeyUtils;
-
-import io.searchbox.core.search.aggregation.TermsAggregation;
 
 /**
  * Type definitions that consolidate the logic used to query and
@@ -51,6 +48,8 @@ public class Types {
     public static final ApplicationType APPLICATION = new ApplicationType();
     public static final ConversationType CONVERSATION = new ConversationType();
     public static final HostType HOST = new HostType();
+    public static final DscpType DSCP = new DscpType();
+    public static final EcnType ECN = new EcnType();
 
     public interface Type<T> {
         String getKey();
@@ -110,6 +109,40 @@ public class Types {
         @Override
         public Host getOtherEntity() {
             return OTHER;
+        }
+    }
+
+    public static class DscpType implements Type<String> {
+        public static final String OTHER_DSCP_NAME_DISPLAY = "Other";
+
+        public String getKey() {
+            return "dscp";
+        }
+
+        public String toEntity(String key) {
+            return key;
+        }
+
+        @Override
+        public String getOtherEntity() {
+            return OTHER_DSCP_NAME_DISPLAY;
+        }
+    }
+
+    public static class EcnType implements Type<String> {
+        public static final String OTHER_ECN_NAME_DISPLAY = "Other";
+
+        public String getKey() {
+            return "ecn";
+        }
+
+        public String toEntity(String key) {
+            return key;
+        }
+
+        @Override
+        public String getOtherEntity() {
+            return OTHER_ECN_NAME_DISPLAY;
         }
     }
 
