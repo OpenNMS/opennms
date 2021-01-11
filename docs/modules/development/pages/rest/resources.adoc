@@ -1,37 +1,37 @@
 
-==== Resources API
+= Resources API
 
-The _Resources API_ can be used to list or delete resources at the node level and below.
-This service is especially useful in conjunction with the _Measurements API_.
+Use the Resources API to list or delete resources at the node level and below.
+This service is especially useful in conjunction with the Measurements API.
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource                            | Description
-| `/resources`                        | Retrieve the full tree of resources in the system (expensive, use with care)
-| `/resources/{resourceId}`           | Retrieve the tree of resources starting with the named resource ID
-| `/resources/fornode/{nodeCriteria}` | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple
+| `/resources`                        | Retrieve the full tree of resources in the system (expensive, use with care).
+| `/resources/{resourceId}`           | Retrieve the tree of resources starting with the named resource ID.
+| `/resources/fornode/{nodeCriteria}` | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple.
 |===
 
-===== DELETEs (Removing Data)
+== DELETEs (Removing Data)
 [options="header", cols="5,10"]
 |===
 | Resource                  | Description
-| `/resources/{resourceId}` | Delete resource with the named resource ID, and all its child resources, if any
+| `/resources/{resourceId}` | Delete resource with the named resource ID, and all its child resources, if any.
 |===
 
 The following table shows all supported query string parameters and their default values.
 
 [options="header"]
 |===
-| name  | default | comment
+| Name  | Default | Comment
 | depth | varies  | GET only.
                     Limits the tree depth for retrieved resources.
                     Defaults to 1 when listing all resources, or to -1 (no limit) when listing a single resource.
 |===
 
-===== Usage examples with curl
+== Use examples with cURL
 
 .Retrieve the tree of resources rooted at the node with database ID `1`, by resource ID
 [source,bash]

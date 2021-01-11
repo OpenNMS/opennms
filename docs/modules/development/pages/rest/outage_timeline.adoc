@@ -1,13 +1,13 @@
 
-==== Outage Timelines
+= Outage Timelines
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource                                                          | Description
-| `/header/{start}/{end}/{width}`                                   | Generate the timeline header
-| `/image/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}` | Generate the timeline image
-| `/empty/{start}/{end}/{width}`                                    | Generate an empty timeline for non-monitored services
-| `/html/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}`  | Generate the raw HTML for the image
+| `/header/{start}/{end}/{width}`                                   | Generate the timeline header.
+| `/image/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}` | Generate the timeline image.
+| `/empty/{start}/{end}/{width}`                                    | Generate an empty timeline for non-monitored services.
+| `/html/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}`  | Generate the raw HTML for the image.
 |===

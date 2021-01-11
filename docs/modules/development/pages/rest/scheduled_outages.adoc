@@ -1,37 +1,37 @@
 
-==== Scheduled Outages
+= Scheduled Outages
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
-[options="header", cols="1,10"]
+[options="header, autowidth", cols="1,10"]
 |===
 | Parameter                     | Description
-| `/sched-outages`              | to get a list of configured scheduled outages.
-| `/sched-outages/{outageName}` | to get the details of a specific outage.
+| `/sched-outages`              | Get a list of configured scheduled outages.
+| `/sched-outages/{outageName}` | Get the details of a specific outage.
 |===
 
-===== POSTs (Setting Data)
+== POSTs (Setting Data)
 
-[options="header", cols="1,10"]
+[options="header, autowidth", cols="1,10"]
 |===
 | Parameter        | Description
-| `/sched-outages` | to add a new outage (or update an existing one).
+| `/sched-outages` | Add a new outage (or update an existing one).
 |===
 
-===== PUTs (Modifying Data)
+== PUTs (Modifying Data)
 
-[options="header", cols="1,10"]
+[options="header, autowidth", cols="1,10"]
 |===
 | Parameter                                        | Description
-| `/sched-outages/{outageName}/collectd/{package}` | to add a specific outage to a collectd's package.
-| `/sched-outages/{outageName}/pollerd/{package}`  | to add a specific outage to a pollerd's package.
-| `/sched-outages/{outageName}/threshd/{package}`  | to add a specific outage to a threshd's package.
-| `/sched-outages/{outageName}/notifd`             | to add a specific outage to the notifications.
+| `/sched-outages/{outageName}/collectd/{package}` | Add a specific outage to a collectd's package.
+| `/sched-outages/{outageName}/pollerd/{package}`  | Add a specific outage to a pollerd's package.
+| `/sched-outages/{outageName}/threshd/{package}`  | Add a specific outage to a threshd's package.
+| `/sched-outages/{outageName}/notifd`             | Add a specific outage to the notifications.
 |===
 
-===== DELETEs (Removing Data)
+== DELETEs (Removing Data)
 
-[options="header", cols="1,10"]
+[options="header, autowidth", cols="1,10"]
 |===
 | Parameter                                        | Description
 | `/sched-outages/{outageName}`                    | to delete a specific outage.

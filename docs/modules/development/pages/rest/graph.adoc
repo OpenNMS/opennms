@@ -1,10 +1,9 @@
 [[ga-development-rest-graph]]
 = Graph API
 
-The _Graph API_ can be used to read existing graph and graph containers in the system and is an `api/v2` endpoint.
+Use the Graph API to read existing graph and graph containers in the system and is an `api/v2` endpoint.
 
-NOTE: If not otherwise specified the `Content-Type` of the request and response is `application/json`.
-
+NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
 [options="header", cols="5,1,10"]
 |===
@@ -14,29 +13,29 @@ NOTE: If not otherwise specified the `Content-Type` of the request and response 
 
 | `/graphs`
 | GET
-| Retrieves the meta data of all registered graph containers.
+| Retrieves the metadata of all registered graph containers.
 
 | `/graphs/{containerId}`
 | GET
 | Retrieve the container identified by `{containerId}`.
-  Returns a 404 if a Graph Container with `{containerId}` does not exist.
+  Returns a 404 if a graph container with `{containerId}` does not exist.
 
 | `/graphs/{containerId}/{namespace}`
 | GET
 | Retrieve the graph with namespace `{namespace}` from the container `{containerId}`.
-  Returns a 404 if either the `{containerId}` does not exist or the container is not containing any graph with namespace `{namespace}`.
+  Returns a 404 if either the `{containerId}` does not exist or the container does not contain any graphs with namespace `{namespace}`.
 
 | `/graphs/{containerId}/{namespace}`
 | POST
 | Retrieve the view of the graph with namespace `{namespace}` from the container `{containerId}`.
-  The body must contain the query to create the view, e.g. `{ "semanticZoomLevel": 1, "verticesInFocus": []}`
+  The body must contain the query to create the view, e.g., `{ "semanticZoomLevel": 1, "verticesInFocus": []}`
   If no `semanticZoomLevel` is provided, `1` is assumed.
   If no `verticesInFocus` is provided, the default focus of the graph is used.
   Valid values for `verticesInFocus` are vertex references (namespace:id tuple, e.g. `dummy:1`).
 
 |===
 
-At the moment, the context of a search must always be a concrete _namespace_ and can never be over all graphs or containers.
+At the moment, the context of a search must always be a concrete namespace and can never be over all graphs or containers.
 
 
 [options="header", cols="5,1,10"]
@@ -49,9 +48,9 @@ At the moment, the context of a search must always be a concrete _namespace_ and
 | GET
 | Provides suggestions in the context of `{namespace}` for the input `{search}`.
   Each suggestion has the following properties:
-  `context`: The context of the suggestion, e.g. Node for a node,
-  `id`: A unique identifier of the representing element of this suggestion, e.g. `node id`,
-  `label`: A human readable label, e.g. `node label`,
+  `context`: The context of the suggestion, e.g., Node for a node,
+  `id`: A unique identifier of the representing element of this suggestion, e.g., `node id`,
+  `label`: A human-readable label, e.g., `node label`,
   `provider`: The source of the suggestion.
 
 | `/graphs/search/results/{namespace}?providerId={providerId}&criteria={criteria}&context={context}`
@@ -63,13 +62,13 @@ At the moment, the context of a search must always be a concrete _namespace_ and
 |===
 
 
-NOTE: The API allows to query any container and graph via ReST, but in most cases you should only query for a graph view.
+NOTE: The API allows you to query any container and graph via REST, but in most cases you should query only for a graph view.
 
 
 == Examples
 
 
-=== Retrieve all graph container infos
+=== Retrieve all graph container information
 
 .Request
 [source,bash]

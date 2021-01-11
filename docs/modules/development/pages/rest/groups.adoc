@@ -1,7 +1,7 @@
 
 = Groups
 
-Like users, groups have a simplified interface as well.
+Like users, groups have a simplified interface.
 
 == GETs (Reading Data)
 
@@ -10,8 +10,8 @@ Like users, groups have a simplified interface as well.
 | Resource                         | Description
 | `/groups`                        | Get a list of groups.
 | `/groups/{groupname}`            | Get a specific group, given a group name.
-| `/groups/{groupname}/users`      | Get the users for a group, given a group name. (new in OpenNMS 14)
-| `/groups/{groupname}/categories` | Get the categories associated with a group, given a group name. (new in OpenNMS 14)
+| `/groups/{groupname}/users`      | Get the users for a group, given a group name. 
+| `/groups/{groupname}/categories` | Get the categories associated with a group, given a group name.
 |===
 
 == POSTs (Adding Data)
@@ -27,9 +27,9 @@ Like users, groups have a simplified interface as well.
 [options="header", cols="5,10"]
 |===
 | Resource                                        | Description
-| `/groups/{groupname}`                           | Update the metadata of a group (eg, change the `comments` field).
-| `/groups/{groupname}/users/{username}`          | Add a user to the group, given a group name and username. (new in OpenNMS 14)
-| `/groups/{groupname}/categories/{categoryname}` | Associate a category with the group, given a group name and category name. (new in OpenNMS 14)
+| `/groups/{groupname}`                           | Update the metadata of a group (e.g., change the `comments` field).
+| `/groups/{groupname}/users/{username}`          | Add a user to the group, given a group name and username.
+| `/groups/{groupname}/categories/{categoryname}` | Associate a category with the group, given a group name and category name. 
 |===
 
 == DELETEs (Removing Data)
@@ -38,6 +38,6 @@ Like users, groups have a simplified interface as well.
 |===
 | Resource                                        | Description
 | `/groups/{groupname}`                           | Delete a group.
-| `/groups/{groupname}/users/{username}`          | Remove a user from the group. (new in OpenNMS 14)
-| `/groups/{groupname}/categories/{categoryname}` | Disassociate a category from a group, given a group name and category name. (new in OpenNMS 14)
+| `/groups/{groupname}/users/{username}`          | Remove a user from the group.
+| `/groups/{groupname}/categories/{categoryname}` | Disassociate a category from a group, given a group name and category name.
 |===

@@ -1,7 +1,7 @@
 
 = Expose ReST services via OSGi
 
-To expose a REST service via OSGi the follow these steps:
+To expose a REST service via OSGi, follow these steps:
 
 . Define an interface, containing java jax-rs annotations.
 . Define a class, implementing that interface.
@@ -10,7 +10,7 @@ Create an OSGi bundle that exports a service with the interface from above.
 
 == Define a REST interface
 
-First, create a public interface which must contain jax-rs annotations.
+First, create a public interface that must contain jax-rs annotations.
 
 [source, java]
 ----

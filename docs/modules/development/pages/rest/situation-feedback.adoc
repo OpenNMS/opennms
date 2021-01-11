@@ -1,25 +1,25 @@
 
 [[gs-situation-feedback]]
 
-==== Situation Feedback
+= Situation Feedback
 
-Situation Feedback is an optional feature that allows for the management of User Contributed Feedback regarding Correlation of Alarms.
+Situation feedback is an optional feature that allows for the management of user-ontributed feedback regarding correlation of alarms.
 
-It is a simple API that allows for the submission and retrieval of Correlation Feedback.
+It is a simple API that allows for the submission and retrieval of correlation feedback.
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
-[options="header", cols="1,10"]
+[options="header, autowidth", cols="1,10"]
 |===
 | Parameter                 | Description
-| `/situation-feedback/{situationId}` | Get Situation Feedback for the Situation with AlarmId = {situationId}.
+| `/situation-feedback/{situationId}` | Get situation feedback for the situation with AlarmId = {situationId}.
 |===
 
-NOTE: _situationId_ is the same as the _AlarmId_ for the Situation.
+NOTE: situationId is the same as the AlarmId for the situation.
 
-===== Usage examples with curl
+== Use examples with cURL
 
-.Retrieve Situation Feedback for the Situaiton with AlarmId == 210
+.Retrieve situation feedback for the situaiton with AlarmId == 210
 [source,bash]
 ----
 curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
@@ -52,19 +52,19 @@ curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
 ----
 
 
-===== POSTs (Adding Data)
+== POSTs (Adding Data)
 
 POST requires using application/json as a Content-Type.
 
-On a successful request, the Feedback will be persisted 
+On a successful request, the feedback will be persisted. 
 
-[options="header", cols="5,10"]
+[options="header, autowidth", cols="5,10"]
 |===
 | Resource                               | Description
-| `/situation-feedback/{situationId}` | Submits feedback for the Situation identitified with AlarmId = {situationId}.
+| `/situation-feedback/{situationId}` | Submits feedback for the situation identitified with AlarmId = {situationId}.
 |===
 
-===== Usage examples with curl
+== Use examples with cURL
 
 .Submit positve Feedback for a Situation with 2 alarms.
 [source,bash]
@@ -99,4 +99,3 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
 
 .Response
 204 No Content
-

@@ -312,7 +312,7 @@ Configuring the Grafana endpoint sets up Grafana as the datasource for the dashb
 +
 image:database-reports/API-Key.png[Grafana API, 400]
 
-.. If desired, test the key using the Curl command provided oi the API key dialog. 
+.. If desired, test the key using the cURL command provided oi the API key dialog. 
 . In OpenNMS, click *Please add a Grafana endpoint*:
 
 +

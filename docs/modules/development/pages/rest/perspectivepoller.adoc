@@ -1,20 +1,20 @@
 
-==== Perspective Poller
+= Perspective Poller
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
-Allows to query the aggregated percentage availability for a given specific application and its services.
+Allows you to query the aggregated percentage availability for a given specific application and its services.
 
-NOTE: This API is v2-only
+NOTE: This API is v2-only.
 
 [options="header", cols="5,10"]
 |===
 | Resource                                            | Description
-| `perspectivepoller/{applicationId}`                      | Get the list of aggregated percentage availability per location for the application specified by _applicationId_.
-| `perspectivepoller/{applicationId}/{monitoredServiceId}` | Get the list of aggregated percentage availability per location for an application service specified by _applicationId_ and _monitoredServiceId_.
+| `perspectivepoller/{applicationId}`                      | Get the list of aggregated percentage availability per location for the application specified by applicationId.
+| `perspectivepoller/{applicationId}/{monitoredServiceId}` | Get the list of aggregated percentage availability per location for an application service specified by applicationId and monitoredServiceId.
 |===
 
-===== Usage examples with curl
+== Use examples with cURL
 
 .Retrieve application status per location by a given _applicationId_.
 [source,bash]

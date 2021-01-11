@@ -1,10 +1,12 @@
-==== anchor:rest-nodes[]Nodes
+[[nodes-rest]]
+= Nodes
 
-Note: the default offset is 0, the default limit is 10 results.  To get all results, use limit=0 as a parameter on the URL (ie, GET /nodes?limit=0).
+NOTE: The default offset is 0, the default limit is 10 results.  
+To get all results, use limit=0 as a parameter on the URL (i.e., GET /nodes?limit=0).
 
-Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (ie, GET /nodes/fs:fid).
+Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (e.g., GET /nodes/fs:fid).
 
-===== GETs (Reading Data)
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
@@ -22,7 +24,7 @@ Additionally, anywhere you use "id" in the queries below, you can use the foreig
 | `/nodes/{id}/assetRecord`                                 | Get the asset record associated with the given node.
 |===
 
-===== POSTs (Adding Data)
+== POSTs (Adding Data)
 
 POST requires XML using application/xml as its Content-Type.
 
@@ -37,7 +39,7 @@ POST requires XML using application/xml as its Content-Type.
 |===
 
 [[rest-api-nodes-put]]
-===== PUTs (Modifying Data)
+== PUTs (Modifying Data)
 
 PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
 
@@ -51,8 +53,9 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 | `/nodes/{id}/categories/{categoryName}`                   | Modify the category with the given node ID and name.
 |===
 
-===== DELETEs (Removing Data)
+== DELETEs (Removing Data)
 
 Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
 
-NOTE: Deletion of nodes, ipinterfaces and services are asynchronous so they will return 202 (ACCEPTED). Deletion of snmpinterfaces and categories are synchronous calls so they will return 204 (NO_CONTENT) on success.
+NOTE: Deletion of nodes, ipinterfaces, and services is asynchronous so it will return 202 (ACCEPTED). 
+Deletion of snmpinterfaces and categories is synchronous calls so will return 204 (NO_CONTENT) on success.
