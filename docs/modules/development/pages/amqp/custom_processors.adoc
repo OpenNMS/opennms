@@ -2,9 +2,9 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Custom Processors
+= Custom Processors
 
-If your integration requires specific filtering and or formatting, you can write your own processor by implementing the `org.apache.camel.Processor` interface.
+If your integration requires specific filtering and/or formatting, you can write your own processor by implementing the `org.apache.camel.Processor` interface.
 
 For example, we can implement a custom processor used for event forwarding:
 
@@ -31,7 +31,7 @@ public class MyEventProcessor implements Processor {
 }
 ----
 
-In order to use the processor, package it as a bundle, and expose it to the OSGi service registry using:
+To use the processor, package it as a bundle, and expose it to the OSGi service registry using:
 
 [source,xml]
 ----
@@ -44,7 +44,7 @@ In order to use the processor, package it as a bundle, and expose it to the OSGi
 </service>
 ----
 
-Once your bundle in the Karaf container, you can update the loaded you can refer to your processor with:
+Once your bundle is in the Karaf container, #you can update the loaded and# refer to your processor with:
 
 [source]
 ----

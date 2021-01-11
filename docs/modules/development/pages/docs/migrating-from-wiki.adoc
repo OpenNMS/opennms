@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gd-docs-migrating-from-wiki]]
-=== Migrating content from project wiki
+= Migrating Content from Project Wiki
 The https://wiki.opennms.org[project wiki] contains much information that ought to be migrated to the official documentation set.
 To help with this effort, we have a wiki template which informs readers of articles that are tagged for migration to the official docs, or that have already been migrated.
 When you identify an article in the OpenNMS wiki whose information should be migrated (either in its entirety, or just individual sections), use the following process.

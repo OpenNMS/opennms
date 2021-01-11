@@ -2,7 +2,7 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Event Forwarder
+= Event Forwarder
 
 The event forwarder listens for _all_ events on the internal event bus of {page-component-title}.
 Events from the bus are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
@@ -22,7 +22,7 @@ The event forwarder exposes the following properties via the `org.opennms.featur
 The default processor, the `default-event-forwarder-processor`, marshalls events to XML and does not perform any filtering.
 This means that when enabled, all events will be forwarded to the AMQP destination with XML strings as the message body.
 
-==== Setup
+== Setup
 
 Start by logging into a Karaf shell.
 
@@ -44,7 +44,7 @@ Install the feature:
 feature:install opennms-amqp-event-forwarder
 ----
 
-==== Debugging
+== Debugging
 
 You can get detailed information on the Camel route using:
 

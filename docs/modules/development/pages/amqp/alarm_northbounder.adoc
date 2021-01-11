@@ -2,7 +2,7 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Alarm Northbounder
+= Alarm Northbounder
 
 The alarm northbounder listens for _all_ northbound alarms.
 Alarms are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
@@ -22,11 +22,11 @@ The alarm northbounder exposes the following properties via the `org.opennms.fea
 The default processor, the `default-alarm-northbounder-processor`, converts the alarms to a string and does not perform any filtering.
 This means that when enabled, all alarms will be forwarded to the AMQP destination with strings as the message body.
 
-==== Setup
+== Setup
 
 Start by logging into a Karaf shell.
 
-Update the properties with your deployment specific values:
+Update the properties with your deployment-specific values:
 
 [source]
 ----
@@ -44,7 +44,7 @@ Install the feature:
 feature:install opennms-amqp-alarm-northbounder
 ----
 
-==== Debugging
+== Debugging
 
 You can get detailed information on the Camel route using:
 

@@ -3,14 +3,14 @@
 :imagesdir: ../../images
 
 [[gd-docs-include-source]]
-=== Code Snippets
+= Code Snippets
 
 You can include code snippets, configuration- or source code files in the documentation.
 You can enable syntax highlighting by providing the given language parameter. 
 This will work on source code or configuration.
 
 [[gd-docs-explicit]]
-==== Explicitly defined in the document
+== Explicitly Defined in the Document
 
 WARNING: Be careful to use this kind of code snippet as sparsely as possible.
 Code becomes obsolete very quickly; archaic usage practices are detrimental.
@@ -46,7 +46,7 @@ Currently the following syntax highlighters are enabled:
 For other highlighters that could be added see https://code.google.com/p/google-code-prettify/.
 
 [[gd-docs-include]]
-==== Included from an example file
+== Included from an Example File
 
 You can include source or configuration from an external file.
 In this way you can provide a working example configuration maintaining doc and example at the same time.
@@ -66,7 +66,7 @@ include::../configs/wmi-config.xml[]
 ----
 
 [[gd-docs-include-parts]]
-==== Include parts of a file
+== Include parts of a file
 
 To include a specific segment of a large configuration file, assign tags that tell AsciiDoc the section to include.
 In this example, just the service definition of the _ICMP monitor_ should be included.

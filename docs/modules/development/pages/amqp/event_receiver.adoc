@@ -2,7 +2,7 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Event Receiver
+= Event Receiver
 
 The event receiver listens for messages from an AMQP target and forwards them onto the internal event bus of {page-component-title}.
 Messages are sent to a Camel processor, which can filter or transform these, before being sent onto the event bus.
@@ -19,13 +19,13 @@ The event receiver exposes the following properties via the `org.opennms.feature
 | processorName | default-event-receiver-processor  | Named `org.apache.camel.Processor` implementation used to filter and/or format the events.
 |===
 
-The default processor, the `default-event-receiver-processor`, expects the message bodies to contain XML strings which are it unmarshalls to events.
+The default processor, the `default-event-receiver-processor`, expects the message bodies to contain XML strings which it unmarshalls to events.
 
-==== Setup
+== Setup
 
 Start by logging into a Karaf shell.
 
-Update the properties with your deployment specific values:
+Update the properties with your deployment-specific values:
 
 [source]
 ----
@@ -43,7 +43,7 @@ Install the feature:
 feature:install opennms-amqp-event-receiver
 ----
 
-==== Debugging
+== Debugging
 
 You can get detailed information on the Camel route using:
 

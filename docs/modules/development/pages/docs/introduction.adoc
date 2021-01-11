@@ -2,7 +2,9 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-This document is the guideline for people who wish to contribute to writing documentation for the OpenNMS project.
+= Develop Documentation
+
+This section provides guidelines for people who wish to contribute to writing documentation for the OpenNMS project.
 The OpenNMS software is free and open source, contribution of any kind is welcome.
 We ask that you observe the rules and guidelines outlined here to maintain consistency across the project.
 
@@ -23,7 +25,7 @@ The writing style should be accurate and concise.
 However, ensure that you explain concepts in detail and do not make omissions.
 
 [[gd-docs-file-structure]]
-=== File Structure in opennms-doc
+== File Structure in opennms-doc
 
 [options="header", cols="e,d"]
 |===

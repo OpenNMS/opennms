@@ -2,10 +2,10 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-=== Jasper Report Guideline
+= Jasper Report Guideline Design and Style Guidelines
 
 Building and contributing JasperReports is a way to contribute to the project.
-To make it easier to maintain and style reports the following layout guideline can be used to have similar and more consistent report layout.
+To make it easier to maintain and style reports, use the following layout guideline to have similar and more consistent report layout.
 
 .Layout for creating JasperReports
 image::reporting/01_JasperReportStyleGuide.png[]
@@ -20,4 +20,4 @@ The following formatting can be applied:
 | _Paging_       | Page ${current} of ${total}
 |===
 
-TIP: Based on this template definition there exist a link:https://github.com/opennms-forge/jasper-template[GitHub repository] which contains a JasperReport template.
+TIP: A link:https://github.com/opennms-forge/jasper-template[GitHub repository] based on this template definition  contains a JasperReport template.

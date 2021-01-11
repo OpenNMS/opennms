@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[doc-guidelines-cheat-sheets]]
-=== Cheat sheets and additional hints
+= Cheat Sheets and Additional Hints
 
 The documentation uses the AsciiDoc format.
 There are a number of guides to help you get started with AsciiDoc:

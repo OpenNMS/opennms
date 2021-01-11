@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[doc-guidelines-images]]
-=== Include images
+= Include Images
 
 When visualizing complex problems use images to help explain and provide greater information.
 We use two directories for images.
