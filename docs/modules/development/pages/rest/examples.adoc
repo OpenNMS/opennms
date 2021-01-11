@@ -78,17 +78,6 @@ You will probably need to specify the username/password of an admin.  To do this
 
 to the command line.
 
-== Debian (Lenny) Notes
-
-For Lenny, you'll need to pull a package out of backports to make everything work right.
-Read http://backports.org/dokuwiki/doku.php?id=instructions for instructions on adding it to `sources.list`.
-
-[source, bash]
-----
-# install liburi-perl from backports
-sudo apt-get -t lenny-backports install liburi-perl
-----
-
 == Windows PowerShell ReST
 
 Example of using Windows PowerShell to fill some asset fields with REST.
