@@ -1,10 +1,10 @@
 
 = Alarm History
 
-The _Alarm History API_ can be used to retrieve state changes and point-in-time snapshots for alarms.
+Use the Alarm History API to retrieve state changes and point-in-time snapshots for alarms.
 
-NOTE: This endpoint is only available when the _Alarm History_ feature is enabled.
-See the Administrators Guide for details.
+NOTE: This endpoint is only available when the Alarm History feature is enabled.
+See the <<operation:alarms/history.adoc#ga-alarm-history, Alarm History>> for details.
 
 == GETs (Reading Data)
 
@@ -17,8 +17,8 @@ See the Administrators Guide for details.
 |===
 
 |===
-| name               | default        | comment
-| matchType          | `alarm-id`     | By default we lookup alarms based on the given database id.
-                                        This property can be used to change the matching behaviour to lookup by reduction key instead.
+| Name               | Default        | Comment
+| matchType          | `alarm-id`     | By default we look up alarms based on the given database ID.
+                                        Use this property to change the matching behavior to look up by reduction key instead.
 | at                 | (current time) | Timestamp in milliseconds.
 |===

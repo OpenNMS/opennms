@@ -1,12 +1,12 @@
-= Getting Graph data
+= Getting Graph Data
 
-While graphs aren't technically available via _ReST_, you can parse some _ReST_ variables to get enough data to pull a graph.
-This isn't ideal because it requires multiple fetches, but depending on your use case, this may be adequate for you.
+While graphs are not technically available via REST, you can parse some REST variables to get enough data to pull a graph.
+This is not ideal because it requires multiple fetches, but depending on your use case, it may be adequate for you.
 
-I'm in-lining some sample _PHP_ code which should do this (not tested at all, cut & paste from old code I have that does not use the _ReST- interface, and/or coded straight into the browser so YMMV).
-If you go to your NMS and click the resource graphs, then right click the graph you want and hit _View Image_ you will get the full _URL_ that would need to be passed to pull that graph as a standalone image.
+There is some inlined sample PHP code that should do this.
+If you go to your NMS and click the resource graphs, then right click the graph you want, and select *View Image* you will get the full URL that would need to be passed to pull that graph as a standalone image.
 
-From that just take the _URL_ and plug in the values you pulled from _ReST_ to get a graph for whatever node you wanted.
+From that, just take the URL and plug in the values you pulled from REST to get a graph for whatever node you wanted.
 
 [source, php]
 ----
@@ -23,7 +23,7 @@ function fetchit($thing, $user = "user", $pass = "pass") {
     return $data;
 }
 
-// this assumes you already have found the nodeId via a previous REST call or some other means.  Provided more as an example than what you might want.
+// This assumes you already have found the nodeID via a previous REST call or some other means. Provided more as an example than what you might want.
 function getNodeInterfaces($nodeId) {
     $data = fetchit("/rest/nodes/$nodeId/snmpinterfaces");
      return simplexml_load_string($data);
@@ -35,7 +35,7 @@ function fetchGraphs($nodeId) {
      $endtime = time();
      $starttime = (string)(time() - ($days * 24 * 60 * 60)) ;
 
-     // use bcmath or a better version of PHP if  you don't want this hypocrisy here.
+     // Use bcmath or a better version of PHP if  you don't want this hypocrisy here.
      $endtime = $endtime . '000';
      $starttime = $starttime . '000';
 
@@ -53,14 +53,14 @@ function fetchGraphs($nodeId) {
 
 == provision.pl examples and notes
 
-One way to test out the new _ReST_ interface is to use `provision.pl`.
-If you run it you'll get a summary of the output, but it's not totally obvious how it all works.
+One way to test the REST interface is to use `provision.pl`.
+If you run it you will get a summary of the output, but it's not totally obvious how it all works.
 
-Here is an example of adding a new node using the _ReST_ interface:
+Here is an example of adding a new node using the REST interface:
 
 [source, bash]
 ----
-# add a new foreign source called ubr
+# Add a new foreign source called ubr.
 /usr/share/opennms/bin/provision.pl requisition add ubr
 /usr/share/opennms/bin/provision.pl node add ubr 10341111 clownbox
 /usr/share/opennms/bin/provision.pl node set ubr 10341111 city clownville
@@ -68,7 +68,7 @@ Here is an example of adding a new node using the _ReST_ interface:
 /usr/share/opennms/bin/provision.pl node set ubr 10341111 parent-foreign-id 1122114
 /usr/share/opennms/bin/provision.pl interface add ubr 10341111 10.1.3.4
 
-# this is like a commit.  No changes will take effect until you import a foreign source
+# This is like a commit. No changes will take effect until you import a foreign source.
 /usr/share/opennms/bin/provision.pl requisition import ubr
 ----
 
@@ -89,9 +89,9 @@ Read http://backports.org/dokuwiki/doku.php?id=instructions for instructions on 
 sudo apt-get -t lenny-backports install liburi-perl
 ----
 
-== Windows Powershell ReST
+== Windows PowerShell ReST
 
-Example of using _Windows Powershell_ to fill some asset fields with _ReST_.
+Example of using Windows PowerShell to fill some asset fields with REST.
 
 [source, powershell]
 ----

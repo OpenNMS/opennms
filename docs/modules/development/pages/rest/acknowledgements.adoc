@@ -3,7 +3,7 @@
 = Acknowledgements
 
 NOTE: the default offset is 0, the default limit is 10 results.
-To get all results, use `limit=0` as a parameter on the URL (ie, `GET /acks?limit=0`).
+To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?limit=0`).
 
 == GETs (Reading Data)
 
@@ -11,8 +11,8 @@ To get all results, use `limit=0` as a parameter on the URL (ie, `GET /acks?limi
 |===
 | Resource      | Description
 | `/acks`       | Get a list of acknowledgements.
-| `/acks/count` | Get the number of acknowledgements. (Returns plaintext, rather than _XML_ or _JSON_.)
-| `/acks/{id}`  | Get the acknowledgement specified by the given _ID_.
+| `/acks/count` | Get the number of acknowledgements. (Returns plaintext, rather than XML or JSON.)
+| `/acks/{id}`  | Get the acknowledgement specified by the given ID.
 |===
 
 == POSTs (Setting Data)
@@ -20,10 +20,12 @@ To get all results, use `limit=0` as a parameter on the URL (ie, `GET /acks?limi
 [options="header", cols="5,10"]
 |===
 | Resource | Description
-| `/acks`  | Creates or modifies an acknowledgement for the given alarm _ID_ or notification _ID_. To affect an alarm, set an `alarmId<` parameter in the URL-encoded _POST_ body; to affect a notification, set `notifyId` instead. An `action` parameter is also required, and may be one of `ack`, `unack`, `clear`, or `esc` (escalate).
+| `/acks`  | Creates or modifies an acknowledgement for the given alarm ID or notification ID. 
+To affect an alarm, set an `alarmId<` parameter in the URL-encoded POST body. To affect a notification, set `notifyId` instead. 
+An `action` parameter is also required, and may be one of `ack`, `unack`, `clear`, or `esc` (escalate).
 |===
 
-== Usage examples with curl
+== Use examples with curl
 .Acknowledge notification #3
 [source, bash]
 ----

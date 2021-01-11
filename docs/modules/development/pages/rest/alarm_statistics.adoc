@@ -9,5 +9,6 @@ It is possible to get some basic statistics on alarms, including the number of a
 |===
 | Resource | Description
 | `/stats/alarms` | Returns statistics related to alarms. Accepts the same Hibernate parameters that you can pass to the `/alarms` ReST service.
-| `/stats/alarms/by-severity` | Returns the statistics related to alarms, one per severity. You can optionally pass a list of severities to the `severities` query parameter to limit it to the specified severities. (eg, `GET /opennms/rest/stats/alarms/by-severity?severities=MAJOR,CRITICAL`).
+| `/stats/alarms/by-severity` | Returns the statistics related to alarms, one per severity. 
+You can optionally pass a list of severities to the `severities` query parameter to limit it to the specified severities (e.g., `GET /opennms/rest/stats/alarms/by-severity?severities=MAJOR,CRITICAL`).
 |===

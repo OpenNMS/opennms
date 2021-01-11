@@ -1,8 +1,8 @@
 = Flow Classification API
 
-The _Flow Classification API_ can be used to update, create or delete flow classification rules.
+Use the Flow Classification API to update, create, or delete flow classification rules.
 
-NOTE: If not otherwise specified the `Content-Type` of the response is `application/json`.
+NOTE: If not otherwise specified, the `Content-Type` of the response is `application/json`.
 
 == GETs (Reading Data)
 
@@ -30,26 +30,28 @@ NOTE: If not otherwise specified the `Content-Type` of the response is `applicat
   For this, set the accept header: `Accept: text/comma-separated-values`.
 
 | `/classifications/protocols`
-| Retrieve all supported tcp protocols.
+| Retrieve all supported TCP protocols.
 
 |===
 
 
-The `/classifications` endpoint supports the following url parameters:
+The `/classifications` endpoint supports the following URL parameters:
 
 NOTE: The given filters are combined using a logical `AND`.
  There is no support for using `OR` logic, or combinations thereof.
 
-[options="header", cols="5,10"]
+[options="header", cols="1,1,2"]
 |===
-| name
-| default
-| comment
 
-| groupFilter
-| (none)
-| The group to filter the rules by. Should be the `id` retrieved by `/classifications/groups`.
-  It is not possible to retrieve the rules for a disabled group.
+|Name 
+|Default 
+|Comment
+
+| groupFilter 
+| (none) 
+| The group by which to filter the rules. 
+Should be the `id` retrieved by `/classifications/groups`.
+It is not possible to retrieve the rules for a disabled group.
 
 | query
 | (none)
@@ -58,9 +60,7 @@ NOTE: The given filters are combined using a logical `AND`.
 
 |===
 
-
 === Examples
-
 
 .Retrieve all enabled rules
 [source,bash]
@@ -294,14 +294,14 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 
 | `/classifications/{id}`
 | Update a rule identified by `{id}`.
-  The id of the rule cannot be changed.
+  The ID of the rule cannot be changed.
 
 | `/groups/{id}`
 | Retrieve the rule identified by `{id}`.
 
 | `/classifications/groups`
 | Update a group.
-  At the moment, only the enabled property can be changed
+  At the moment, only the enabled property can be changed.
 |===
 
 
@@ -316,6 +316,6 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 | Deletes all rules of a given group.
 
 | `/groups/{id}`
-| Delete the given group and all it's containing rules.
+| Delete the given group and all its containing rules.
 
 |===

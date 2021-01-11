@@ -8,8 +8,8 @@ NOTE: the default offset is 0, the default limit is 10 results. To get all resul
 |===
 | Resource        | Description
 | `/alarms`       | Get a list of alarms.
-| `/alarms/count` | Get the number of alarms. (Returns plaintext, rather than _XML_ or _JSON_.)
-| `/alarms/{id}`  | Get the alarms specified by the given _ID_.
+| `/alarms/count` | Get the number of alarms. (Returns plaintext, rather than XML or JSON.)
+| `/alarms/{id}`  | Get the alarms specified by the given ID.
 |===
 
 Note that you can also query by severity, like so:
@@ -17,7 +17,7 @@ Note that you can also query by severity, like so:
 [options="header", cols="5,10"]
 |===
 | Resource                                   | Description
-| `/alarms?comparator=ge&amp;severity=MINOR` | Get the alarms with a severity greater than or equal to _MINOR_.
+| `/alarms?comparator=ge&amp;severity=MINOR` | Get the alarms with a severity greater than or equal to MINOR.
 |===
 
 == PUTs (Modifying Data)
@@ -28,24 +28,15 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 |===
 | Resource                               | Description
 | `/alarms/{id}?ack=''(true;false)''`    | Acknowledges (or unacknowledges) an alarm.
-| `/alarms?x=y&...&ack=''(true;false)''` | Acknowledges (or unacknowledges) alarms matching the additional query parameters. eg, `/alarms?node.id=4&ack=true`
-|===
-
-== New in OpenNMS 1.11.0
-
-In OpenNMS 1.11.0, some additional features are supported in the alarm ack API:
-
-[options="header", cols="5,10"]
-|===
-| Resource                        | Description
+| `/alarms?x=y&...&ack=''(true;false)''` | Acknowledges (or unacknowledges) alarms matching the additional query parameters. e.g., `/alarms?node.id=4&ack=true`
 | `/alarms/{id}?clear=true`       | Clears an alarm.
-| `/alarms/{id}?escalate=true`    | Escalates an alarm. eg, NORMAL -> MINOR, MAJOR -> CRITICAL, etc.
+| `/alarms/{id}?escalate=true`    | Escalates an alarm (e.g., NORMAL -> MINOR, MAJOR -> CRITICAL, etc.
 | `/alarms?x=y&...&clear=true`    | Clears alarms matching the additional query parameters.
 | `/alarms?x=y&...&escalate=true` | Escalates alarms matching the additional query parameters.
 |===
 
-Additionally, when acknowledging alarms (ack=true) you can now specify an `ackUser` parameter.
-You will only be allowed to `ack` as a different user IF you are PUTting as an authenticated user who is in the _admin_ role.
+Additionally, when acknowledging alarms (ack=true) you can specify an `ackUser` parameter.
+You will only be allowed to `ack` as a different user IF you are PUTting as an authenticated user who is in the admin role.
 
 == v2 API
 
@@ -60,4 +51,5 @@ Examples:
 
 NOTE: If your query string includes a FIQL reserved character like a comma (,) or a semicolon (;) you need to double percent-escape it. 
 
-Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure. Your query would look like `/api/v2/alarms?_s=alarm.reductionKey==uei.opennms.org/nodes/nodeLostService::*:COMMA%252CSERVICE`.
+Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure. 
+Your query would look like `/api/v2/alarms?_s=alarm.reductionKey==uei.opennms.org/nodes/nodeLostService::*:COMMA%252CSERVICE`.
