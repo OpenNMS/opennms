@@ -203,7 +203,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final ImmutableTable.Builder<Directional<T>, Long, Double> builder = ImmutableTable.builder();
         CompletableFuture<Void> seriesFuture;
         if (N > 0) {
-            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(N, groupedBy,
+            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(N, groupedBy, type.getAggregationType(),
                     type.getKey(), step, timeRangeFilter.getStart(),
                     timeRangeFilter.getEnd(), filters);
             seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
@@ -336,7 +336,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                                                                           final Function<T, CompletableFuture<T>> transform) {
         CompletableFuture<List<TrafficSummary<T>>> summaryFutures;
         if (N > 0) {
-            final String query = searchQueryProvider.getTopNQuery(N, groupedBy, type.getKey(), filters);
+            final String query = searchQueryProvider.getTopNQuery(N, groupedBy, type.getAggregationType(), type.getKey(), filters);
             summaryFutures = searchAsync(query, Filter.find(filters, TimeRangeFilter.class).orElse(null))
                     .thenCompose(searchResult -> {
                         final MetricAggregation aggs = searchResult.getAggregations();
