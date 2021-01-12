@@ -45,6 +45,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
@@ -83,6 +84,9 @@ public class BmpDaoIT {
 
     @Autowired
     private BmpGlobalIpRibDao bmpGlobalIpRibDao;
+
+    @Autowired
+    private BmpIpRibLogDao bmpIpRibLogDao;
 
 
     @Test
@@ -149,4 +153,5 @@ public class BmpDaoIT {
         Assert.assertEquals(1, result.size());
 
     }
+    
 }

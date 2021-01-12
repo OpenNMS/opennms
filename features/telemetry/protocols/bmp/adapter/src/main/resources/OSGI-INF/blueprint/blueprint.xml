@@ -23,6 +23,10 @@
 	<reference id="bmpAsnInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" />
 	<reference id="bmpAsnPathAnalysisDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" />
 	<reference id="bmpRouteInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" />
+	<reference id="bmpIpRibLogDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" />
+	<reference id="bmpStatsByPeerDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" />
+	<reference id="bmpStatsByAsnDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" />
+	<reference id="bmpStatsByPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" />
 
 	<reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
 
@@ -103,6 +107,11 @@
 		<property name="sessionUtils" ref="sessionUtils"/>
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
+		<property name="bmpStatsByPeerDao" ref="bmpStatsByPeerDao"/>
+		<property name="bmpStatsByAsnDao" ref="bmpStatsByAsnDao"/>
+		<property name="bmpStatsByPrefixDao" ref="bmpStatsByPrefixDao"/>
+
 	</bean>
 
 	<service ref="bmpMessagePersister" interface="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler">
