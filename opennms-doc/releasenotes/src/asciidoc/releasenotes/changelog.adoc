@@ -2,6 +2,32 @@
 
 === Changelog
 
+[releasenotes-changelog-27.0.3]
+
+==== Release 27.0.3
+
+Release 27.0.3 is the fourth release in the Horizon 27 series.
+
+It contains a number of mostly esoteric bug fixes, and a few small enhancements.
+
+The codename for 27.0.3 is link:$$https://hitchhikers.fandom.com/wiki/Dolphins$$[_Dolphins_].
+
+===== Bug
+
+* Prometheus Collector attempting to persist non-integer values to counters (Issue http://issues.opennms.org/browse/NMS-13007[NMS-13007])
+* OpenNMS fails to start, when more than one active listener is referencing the same parser (Issue http://issues.opennms.org/browse/NMS-13034[NMS-13034])
+* ArrayIndexOutOfBoundsException thrown by the SNMP Interface Poller (Issue http://issues.opennms.org/browse/NMS-13042[NMS-13042])
+* Karaf command 'snmp-fit' not functional (Issue http://issues.opennms.org/browse/NMS-13055[NMS-13055])
+* Long datasource names are truncated and are not accessable on read (Issue http://issues.opennms.org/browse/NMS-13060[NMS-13060])
+* The makerpm.sh script requires the mingw32-nsis package (Issue http://issues.opennms.org/browse/NMS-13069[NMS-13069])
+
+===== Enhancement
+
+* Depend on haveged (and supply it in our repo) (Issue http://issues.opennms.org/browse/NMS-8959[NMS-8959])
+* Import OBMP Grafana dashboards to OpenNMS  (Issue http://issues.opennms.org/browse/NMS-12954[NMS-12954])
+* Inconsistent breadcrumbs on Locations/Minions (Issue http://issues.opennms.org/browse/NMS-13067[NMS-13067])
+
+
 [releasenotes-changelog-27.0.2]
 
 ==== Release 27.0.2

@@ -56,7 +56,7 @@ sudo killall -9 apt-get || true && \
             sudo apt-get update && \
 	    sudo apt-get -y install debconf-utils && \
 	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f R-base rrdtool
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
@@ -67,7 +67,6 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
-           -Dnsis.makensis.bin="$(which makensis)" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            --also-make \
@@ -83,7 +82,6 @@ echo "#### Executing tests"
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
-           -Dnsis.makensis.bin="$(which makensis)" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \

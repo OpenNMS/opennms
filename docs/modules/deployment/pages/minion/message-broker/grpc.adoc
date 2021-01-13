@@ -18,10 +18,10 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 sudo vi etc/featuresBoot.d/grpc.boot
 ----
 
-.Add the gRPC server features
+.Add the gRPC client features
 [source, grpc.boot]
 ----
-opennms-core-ipc-grpc-server
+opennms-core-ipc-grpc-client
 ----
 
 .Configure the gRPC client and the Minion location via the Karaf Shell
@@ -47,7 +47,7 @@ TIP: By default the Minion generates a unique id.
 .Configure the gRPC endpoint
 [source, karaf]
 ----
-config:edit org.opennms.core.ipc.grpc.client.cfg
+config:edit org.opennms.core.ipc.grpc.client
 config:property-set host core-instance-ip<1>
 config:property-set port 8990<2>
 config:update<3>
@@ -114,12 +114,6 @@ config:update<5>
 <4> Set the path client certificate key file
 <5> Save and update the configuration
 
-.Apply the changes with restarting {page-component-title} Core instance
-[source, console]
-----
-sudo systemctl restart opennms
-----
-
 TIP: This is optional and you can set a maximum message size for gRPC.
      The maxium size has to be the same on the {page-component-title} Core server instance as well.
      If you don't set a maximum message size the default is 10 MiB.
@@ -130,4 +124,10 @@ TIP: This is optional and you can set a maximum message size for gRPC.
 config:edit org.opennms.core.ipc.grpc.client
 config:property-set max.message.size 10485760
 config:update
+----
+
+.Apply the changes with restarting {page-component-title} Core instance
+[source, console]
+----
+sudo systemctl restart opennms
 ----
