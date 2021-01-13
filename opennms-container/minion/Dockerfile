@@ -4,7 +4,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b39"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b54"
 
 FROM ${BASE_IMAGE} as minion-base
 
@@ -47,6 +47,9 @@ COPY --chown=10001:0 --from=minion-base /opt /opt
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
+
+# Create the directory for server certificates
+RUN mkdir /opt/minion/server-certs
 
 # Create SSH Key-Pair to use with the Karaf Shell
 # This is a workaround to be able to use our health:check which does not work with the karaf/bin/client command

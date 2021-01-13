@@ -36,4 +36,8 @@ public class SnmpAgentTimeoutException extends Exception {
     public SnmpAgentTimeoutException(String name, InetAddress agentAddress) {
         super(String.format("Timeout retrieving '%s' for %s.", name, InetAddrUtils.str(agentAddress)));
     }
+
+    public SnmpAgentTimeoutException(InetAddress agentAddress) {
+        super(String.format("Timeout retrieving response for %s.", InetAddrUtils.str(agentAddress)));
+    }
 }

@@ -163,6 +163,8 @@ public class UdpListener implements Listener {
 
         @Override
         protected void initChannel(DatagramChannel ch) {
+            // Accounting
+            ch.pipeline().addFirst(new AccountingHandler());
 
             if (parsers.size() == 1) {
                 final UdpParser parser = parsers.get(0);
@@ -183,9 +185,6 @@ public class UdpListener implements Listener {
                     }
                 });
             }
-
-            // Accounting
-            ch.pipeline().addFirst(new AccountingHandler());
 
             // Add error handling
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {

@@ -131,8 +131,11 @@ public class FitProfileCommand implements Action {
                     break;
                 }
 
-            } catch (TimeoutException | InterruptedException | ExecutionException e1) {
-                System.err.printf("%s: %s%n", ipAddress, e1.getClass().getName());
+            } catch (TimeoutException e) {
+                //pass
+                System.out.print(".");
+            } catch (InterruptedException | ExecutionException e1) {
+                System.err.printf("\n %s: %s%n", ipAddress, e1.getMessage());
                 break;
             }
         }

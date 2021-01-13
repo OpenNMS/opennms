@@ -159,6 +159,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         }
 
         @Override
+        public String getFullName() {
+            return this.definition.getFullName();
+        }
+
+        @Override
         public String getClassName() {
             return this.definition.getClassName();
         }
@@ -194,6 +199,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         @Override
         public String getName() {
             return this.definition.getName();
+        }
+
+        @Override
+        public String getFullName() {
+            return this.definition.getFullName();
         }
 
         @Override

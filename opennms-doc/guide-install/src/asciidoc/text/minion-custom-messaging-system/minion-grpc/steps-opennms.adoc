@@ -30,7 +30,7 @@ cat <<EOF >${OPENNMS_HOME}/etc/org.opennms.core.ipc.grpc.server.cfg
 tls.enabled=true
 server.cert.filepath=/custom-path/server.crt
 server.private.key.filepath=/custom-path/server.pem
-client.cert.filepath=/custom-path/client.crt
+trust.cert.filepath=/custom-path/ca.crt
 EOF
 ----
 

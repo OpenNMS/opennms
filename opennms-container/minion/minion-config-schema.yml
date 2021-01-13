@@ -1,0 +1,475 @@
+---
+# Minion configuration schema
+#
+# See the readme MINION_CONFIG_SCHEMA_README.md for more information.
+
+# Version of Minion this schema configuration is applicable to
+version: "27.0.0"
+
+# The root set of categories configurable on a Minion container. Ordering here is used only to determine order for
+# display purposes.
+categories:
+  # General
+  - name: "general"
+    label: "General"
+    description: "TODO"
+    config:
+      - name: "instance-id"
+        type:
+          name: "string"
+          validation: "TODO"
+        label: "OpenNMS Instance Id"
+        description: "TODO"
+        key: "/org.opennms.instance.id"
+        example: "TODO"
+      - name: "system-properties"
+        type:
+          name: "properties"
+        label: "System Properties"
+        description: "TODO"
+        key: "/system/properties"
+        example: "TODO"
+      - name: "server-certificates"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Certificate Name"
+            type:
+              name: "string"
+        label: "Server Certificates"
+        description: "TODO"
+        key: "/server-certs"
+        example: "TODO"
+    categories:
+      # General :: Controller
+      - name: "controller"
+        label: "Controller"
+        description: "TODO"
+        config:
+          - name: "location"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Location"
+            description: "TODO"
+            key: "/location"
+            example: "TODO"
+          - name: "id"
+            type:
+              name: "string"
+              validation: "TODO"
+            label: "Minion Id"
+            description: "TODO"
+            key: "/id"
+            example: "TODO"
+          - name: "broker-url"
+            type:
+              name: "url"
+            label: "Broker URL"
+            description: "TODO"
+            key: "/broker-url"
+            example: "TODO"
+          - name: "http-url"
+            type:
+              name: "url"
+            label: "HTTP URL"
+            description: "TODO"
+            key: "/http-url"
+            example: "TODO"
+  # Dominion
+  - name: "dominion"
+    label: "Dominion"
+    description: "TODO"
+    categories:
+      # Dominion :: gRPC
+      - name: "grpc"
+        label: "gRPC"
+        description: "TODO"
+        config:
+          - name: "host"
+            type:
+              name: "host"
+            label: "Host"
+            description: "TODO"
+            key: "/dominion/grpc/host"
+            example: "TODO"
+          - name: "port"
+            type:
+              name: "port"
+            label: "Port"
+            description: "TODO"
+            key: "/dominion/grpc/port"
+            example: "TODO"
+          - name: "client-secret"
+            type:
+              name: "string"
+            label: "Client Secret"
+            description: "TODO"
+            key: "/dominion/grpc/client-secret"
+            example: "TODO"
+      # Dominion :: SCV
+      - name: "scv"
+        label: "Secure Credentials Vault"
+        description: "TODO"
+        config:
+          - name: "provider"
+            type:
+              name: "string"
+            label: "Provider"
+            description: "TODO"
+            key: "/scv/provider"
+            example: "TODO"
+  # Karaf
+  - name: "karaf"
+    label: "Karaf"
+    description: "TODO"
+    categories:
+      # Karaf :: Management
+      - name: "management"
+        label: "Management"
+        description: "TODO"
+        categories:
+          # Karaf :: Management :: RMI
+          - name: "rmi"
+            label: "RMI"
+            description: "TODO"
+            config:
+              - name: "registry-host"
+                type:
+                  name: "host"
+                label: "Registry Host"
+                description: "TODO"
+                key: "/karaf/management/rmi/registry/host"
+                example: "TODO"
+              - name: "registry-port"
+                type:
+                  name: "port"
+                label: "Registry Port"
+                description: "TODO"
+                key: "/karaf/management/rmi/registry/port"
+                example: "TODO"
+              - name: "server-host"
+                type:
+                  name: "host"
+                label: "Server Host"
+                description: "TODO"
+                key: "/karaf/management/rmi/server/host"
+                example: "TODO"
+              - name: "server-port"
+                type:
+                  name: "port"
+                label: "Server Port"
+                description: "TODO"
+                key: "/karaf/management/rmi/server/port"
+                example: "TODO"
+      # Karaf :: Shell
+      - name: "shell"
+        label: "Shell"
+        description: "TODO"
+        categories:
+          # Karaf :: Shell :: SSH
+          - name: "ssh"
+            label: "SSH"
+            description: "TODO"
+            config:
+              - name: "host"
+                type:
+                  name: "host"
+                label: "Host"
+                description: "TODO"
+                key: "/karaf/shell/ssh"
+                example: "TODO"
+              - name: "port"
+                type:
+                  name: "port"
+                label: "Port"
+                description: "TODO"
+                key: "/karaf/shell/port"
+                example: "TODO"
+  # Minion Environment
+  - name: "environment"
+    label: "Environment"
+    description: "TODO"
+    config:
+      - name: "java-opts"
+        type:
+          name: "collection"
+          strategy: "indexed"
+          items:
+            label: "Option"
+            type:
+              name: "string"
+        label: "JVM Options"
+        description: "TODO"
+        key: "/process-env/java-opts"
+        example: "TODO"
+  # IPC Configuration
+  - name: "ipc"
+    label: "IPC"
+    description: "TODO"
+    categories:
+      # IPC Configuration :: AWS
+      - name: "aws"
+        label: "AWS"
+        description: "TODO"
+        config:
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "TODO"
+            key: "/aws"
+            example: "TODO"
+        categories:
+          # IPC Configuration :: AWS :: SQS
+          - name: "sqs"
+            label: "SQS"
+            description: "TODO"
+            config:
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "TODO"
+                key: "/ipc/sqs"
+                example: "TODO"
+      # IPC Configuration :: gRPC
+      - name: "grpc"
+        label: "gRPC"
+        description: "TODO"
+        config:
+          - name: "host"
+            type:
+              name: "host-with-port"
+            label: "Host"
+            description: "TODO"
+            key: "/ipc/grpc/host"
+            example: "TODO"
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "Additional gRPC configuration properties for IPC gRPC"
+            key: "/ipc/grpc"
+            example: "TODO"
+      # IPC Configuration :: RPC
+      - name: "rpc"
+        label: "RPC"
+        description: "TODO"
+        categories:
+          # IPC Configuration :: RPC :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "TODO"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "set"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers for IPC RPC"
+                key: "/ipc/rpc/kafka/bootstrap.servers"
+                example: "TODO"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional Kafka configuration properties for IPC RPC"
+                key: "/ipc/rpc/kafka"
+                example: "TODO"
+      # IPC Configuration :: Sink
+      - name: "sink"
+        label: "Sink"
+        description: "TODO"
+        config:
+          - name: "offheap"
+            type:
+              name: "properties"
+            label: "Off Heap"
+            description: "TODO"
+            key: "/ipc/sink/offheap"
+            example: "TODO"
+        categories:
+          # IPC Configuration :: Sink :: Kafka
+          - name: "kafka"
+            label: "Kafka"
+            description: "TODO"
+            config:
+              - name: "bootstrap-servers"
+                type:
+                  name: "set"
+                  strategy: "concat"
+                  items:
+                    label: "Server"
+                    type:
+                      name: "host-with-port"
+                    separator: ","
+                label: "Bootstrap Servers"
+                description: "Kafka bootstrap servers for IPC Sink"
+                key: "/ipc/sink/kafka/bootstrap.servers"
+                example: "TODO"
+              - name: "properties"
+                type:
+                  name: "properties"
+                label: "Properties"
+                description: "Additional Kafka configuration properties for IPC Sink"
+                key: "/ipc/sink/kafka"
+                example: "TODO"
+  # Netmgt
+  - name: "netmgt"
+    label: "Network Management"
+    description: "TODO"
+    categories:
+      # Netmgt :: Traps
+      - name: "traps"
+        label: "Traps"
+        description: "TODO"
+        config:
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "TODO"
+            key: "/netmgt/traps"
+            example: "TODO"
+      # Netmgt :: Syslog
+      - name: "syslog"
+        label: "Syslog"
+        description: "TODO"
+        config:
+          - name: "properties"
+            type:
+              name: "properties"
+            label: "Properties"
+            description: "TODO"
+            key: "/netmgt/syslog"
+            example: "TODO"
+  # Web
+  - name: "web"
+    label: "Web"
+    description: "TODO"
+    categories:
+      # Web :: Jetty
+      - name: "jetty"
+        label: "Jetty"
+        description: "TODO"
+        config:
+          - name: "http-listen-port"
+            type:
+              name: "port"
+            label: "HTTP Listen Port"
+            description: "Jetty HTTP listen port"
+            key: "/jetty/web/port"
+            example: "TODO"
+          - name: "listen-address"
+            type:
+              name: "set"
+              strategy: "concat"
+              items:
+                label: "Listen Address"
+                type:
+                  name: "host"
+                separator: ","
+            label: "Listen Address"
+            description: "Jetty listen addresses"
+            key: "/jetty/web/host"
+            example: "TODO"
+  # Telemetry
+  - name: "telemetry"
+    label: "Telemetry"
+    description: "TODO"
+    categories:
+      # Telemetry :: Flows
+      - name: "flows"
+        label: "Flows"
+        description: "TODO"
+        config:
+          - name: "flow-listener-def"
+            type:
+              name: "objects"
+              fields:
+                - name: "listener-name"
+                  label: "Listener Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "class-name"
+                  label: "Class Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "parameters"
+                  label: "Parameters"
+                  type:
+                    name: "properties"
+              index-type: "field"
+              index-field: "listener-name"
+            label: "Flow Listener Definition"
+            description: "TODO"
+            key: "/telemetry/flows/listeners"
+            example: "TODO"
+          - name: "flow-parser-def"
+            type:
+              name: "objects"
+              fields:
+                - name: "parser-name"
+                  label: "Parser Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "class-name"
+                  label: "Class Name"
+                  type:
+                    name: "string"
+                    validation: "TODO"
+                - name: "parameters"
+                  label: "Parameters"
+                  type:
+                    name: "properties"
+              index-type: "field"
+              index-field: "parser-name"
+            label: "Flow Parser Definition"
+            description: "TODO"
+            key: "/telemetry/flows/parsers"
+            example: "TODO"
+        categories:
+          # Telemetry :: Flows :: Single Port Listener
+          - name: "single-port-listener"
+            label: "Single Port Listener"
+            description: "TODO"
+            config:
+              - name: "enabled"
+                type:
+                  name: "boolean"
+                label: "Enable Single Port Listener"
+                description: "TODO"
+                key: "/telemetry/flows/single-port-listener/enabled"
+                example: "TODO"
+              - name: "name"
+                type:
+                  name: "string"
+                  validation: "TODO"
+                label: "Name"
+                description: "TODO"
+                key: "/telemetry/flows/single-port-listener/name"
+                example: "TODO"
+              - name: "parameters"
+                type:
+                  name: "properties"
+                label: "Parameters"
+                description: "TODO"
+                key: "/telemetry/flows/single-port-listener/parameters"
+                example: "TODO"
+              - name: "parser-parameters"
+                type:
+                  name: "properties"
+                label: "Parser Parameters"
+                description: "TODO"
+                key: "/telemetry/flows/single-port-listener/parser-parameters"
+                example: "TODO"

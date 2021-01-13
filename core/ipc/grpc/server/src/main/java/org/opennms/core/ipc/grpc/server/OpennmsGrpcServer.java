@@ -28,7 +28,6 @@
 
 package org.opennms.core.ipc.grpc.server;
 
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.CLIENT_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_MESSAGE_SIZE;
@@ -39,6 +38,7 @@ import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_TTL_PROP
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TLS_ENABLED;
+import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
@@ -226,15 +226,15 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private SslContextBuilder getSslContextBuilder() {
         String certChainFilePath = properties.getProperty(SERVER_CERTIFICATE_FILE_PATH);
         String privateKeyFilePath = properties.getProperty(PRIVATE_KEY_FILE_PATH);
-        String clientCertChainFilePath = properties.getProperty(CLIENT_CERTIFICATE_FILE_PATH);
+        String trustCertCollectionFilePath = properties.getProperty(TRUST_CERTIFICATE_FILE_PATH);
         if (Strings.isNullOrEmpty(certChainFilePath) || Strings.isNullOrEmpty(privateKeyFilePath)) {
             return null;
         }
 
         SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
                 new File(privateKeyFilePath));
-        if (!Strings.isNullOrEmpty(clientCertChainFilePath)) {
-            sslClientContextBuilder.trustManager(new File(clientCertChainFilePath));
+        if (!Strings.isNullOrEmpty(trustCertCollectionFilePath)) {
+            sslClientContextBuilder.trustManager(new File(trustCertCollectionFilePath));
             sslClientContextBuilder.clientAuth(ClientAuth.REQUIRE);
         }
         return GrpcSslContexts.configure(sslClientContextBuilder,

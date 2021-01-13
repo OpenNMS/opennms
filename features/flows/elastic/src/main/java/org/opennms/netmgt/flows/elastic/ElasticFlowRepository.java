@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -129,6 +130,8 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Histogram flowsPerLog;
 
+    private final Counter emptyFlows;
+
     private final SessionUtils sessionUtils;
 
     private final NodeDao nodeDao;
@@ -178,6 +181,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.indexSettings = Objects.requireNonNull(indexSettings);
         this.smartQueryService = Objects.requireNonNull(smartQueryService);
 
+        this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
         logPersistingTimer = metricRegistry.timer("logPersisting");
@@ -215,6 +219,7 @@ public class ElasticFlowRepository implements FlowRepository {
         // Track the number of flows per call
         flowsPerLog.update(flows.size());
         if (flows.isEmpty()) {
+            this.emptyFlows.inc();
             LOG.info("Received empty flows from {} @ {}. Nothing to do.", source.getSourceAddress(), source.getLocation());
             return;
         }
