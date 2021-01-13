@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,10 +84,12 @@ public class DocumentEnricher {
 
     private final Timer nodeLoadTimer;
 
+    private final long clockSkewCorrectionThreshold;
 
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
                             SessionUtils sessionUtils, ClassificationEngine classificationEngine,
-                            CacheConfig cacheConfig) {
+                            CacheConfig cacheConfig,
+                            final long clockSkewCorrectionThreshold) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
@@ -112,6 +115,8 @@ public class DocumentEnricher {
                    }
                }).build();
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
+
+        this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
     }
 
     public List<FlowDocument> enrich(final Collection<Flow> flows, final FlowSource source) {
@@ -159,6 +164,22 @@ public class DocumentEnricher {
 
             // Conversation tagging
             document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
+
+            // Fix skewed clock
+            // If received time and export time differ to much, correct all timestamps by the difference
+            if (this.clockSkewCorrectionThreshold > 0) {
+                final long skew = flow.getTimestamp() - flow.getReceivedAt();
+                if (Math.abs(skew) >= this.clockSkewCorrectionThreshold) {
+                    // The applied correction the the negative skew
+                    document.setClockCorrection(-skew);
+
+                    // Fix the skew on all timestamps of the flow
+                    document.setTimestamp(document.getTimestamp() - skew);
+                    document.setFirstSwitched(document.getFirstSwitched() - skew);
+                    document.setDeltaSwitched(document.getDeltaSwitched() - skew);
+                    document.setLastSwitched(document.getLastSwitched() - skew);
+                }
+            }
 
             return document;
         }).collect(Collectors.toList()));

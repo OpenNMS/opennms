@@ -22,7 +22,7 @@ dnf -y install dnf-plugins-core
 .Enable the PowerTools repository for R dependencies
 [source, bash]
 ----
-dnf config-manager --set-enabled PowerTools
+dnf config-manager --set-enabled powertools
 ----
 
 .Install the epel-release repository with R packages

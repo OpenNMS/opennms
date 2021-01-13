@@ -3,18 +3,18 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b5582
+      - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5084
+      - image: opennms/build-env:debian-jdk8-b5875
   docker-executor:
     docker:
-      - image: docker:19.03.0-git
+      - image: docker:20.10.1-git
   integration-test-executor:
     machine: true
   smoke-test-executor:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -326,6 +326,7 @@ commands:
         default: true
         type: boolean
     steps:
+      - update-maven-cache
       - run:
           name: Integration Tests
           no_output_timeout: 1.0h
@@ -707,7 +708,7 @@ jobs:
 
   tarball-assembly:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
       docker_layer_caching: true
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
@@ -727,15 +728,13 @@ jobs:
       - run:
           name: Install Docker buildx
           command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
       - run:
           name: Assemble tarballs and related artifacts
           command: |
-            # install fake makensis to satisfy the assemble dependency
-            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \

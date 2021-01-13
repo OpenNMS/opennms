@@ -48,6 +48,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class KafkaFlowForwarder implements EnrichedFlowForwarder {
@@ -63,14 +66,27 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             .build();
     private Properties producerConfig;
 
-    public KafkaFlowForwarder(ConfigurationAdmin configAdmin) {
+    private final Meter forwarded;
+    private final Meter persisted;
+    private final Counter skipped;
+    private final Counter failed;
+
+    public KafkaFlowForwarder(final ConfigurationAdmin configAdmin,
+                              final MetricRegistry metricRegistry) {
         this.configAdmin = configAdmin;
+
+        this.forwarded = metricRegistry.meter("forwarded");
+        this.persisted = metricRegistry.meter("persisted");
+        this.skipped = metricRegistry.counter("skipped");
+        this.failed = metricRegistry.counter("failed");
     }
 
     @Override
     public void forward(EnrichedFlow enrichedFlow) {
+        this.forwarded.mark();
 
         if (producer == null) {
+            this.skipped.inc();
             RATE_LIMITED_LOG.warn("Kafka Producer is not configured for flow forwarding.");
             return;
         }
@@ -80,8 +96,10 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
             final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, flowDocument.toByteArray());
             producer.send(record, (recordMetadata, e) -> {
                 if (e != null) {
+                    this.failed.inc();
                     RATE_LIMITED_LOG.warn("Failed to send flow document to kafka: {}.", record, e);
                 } else if (LOG.isTraceEnabled()) {
+                    this.persisted.mark();
                     LOG.trace("Persisted flow document {} to kafka.", flowDocument);
                 }
             });

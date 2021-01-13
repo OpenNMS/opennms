@@ -71,6 +71,7 @@ Requires:       jicmp >= 2.0.0
 Requires(pre):  jicmp >= 2.0.0
 Requires:       jicmp6 >= 2.0.0
 Requires(pre):  jicmp6 >= 2.0.0
+Recommends:	haveged
 
 Conflicts:      %{name}-container        < %{version}-%{release}
 Conflicts:      %{name}-features-core    < %{version}-%{release}

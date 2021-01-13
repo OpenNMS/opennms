@@ -94,7 +94,7 @@ public class AdapterManager implements ManagedServiceFactory {
         // Build the queue and adapter definitions
         final PropertyTree propertyTree = PropertyTree.from(properties);
         final QueueDefinition queueDefinition = new MapBasedQueueDef(propertyTree);
-        final List<AdapterDefinition> adapterDefinitions = new AdapterDefinitionParser().parse(propertyTree);
+        final List<AdapterDefinition> adapterDefinitions = new AdapterDefinitionParser().parse(queueDefinition.getName(), propertyTree);
 
         // Register health checks
         healthChecksById.putIfAbsent(pid, new ArrayList<>());

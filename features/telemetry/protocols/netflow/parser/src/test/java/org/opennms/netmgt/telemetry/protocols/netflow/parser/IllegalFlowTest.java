@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 import java.net.DatagramPacket;
@@ -66,7 +67,7 @@ import com.codahale.metrics.MetricRegistry;
 public class IllegalFlowTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
     private final AtomicInteger messagesSent = new AtomicInteger();
-    private int eventCount = 0;
+    private final AtomicInteger eventCount = new AtomicInteger();
 
     @Test(expected = IllegalFlowException.class)
     public void illegalFlowTest() throws Exception {
@@ -101,7 +102,7 @@ public class IllegalFlowTest {
             @Override
             public void sendNow(Event event) {
                 System.out.println("Sending event: " + event);
-                eventCount++;
+                eventCount.incrementAndGet();
             }
 
             @Override
@@ -170,35 +171,44 @@ public class IllegalFlowTest {
 
         parser.setIllegalFlowEventRate(3600);
         sendValid(udpPort);
-        Assert.assertEquals(0, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
         sendIllegal(udpPort);
-        Assert.assertEquals(1, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(8));
         sendIllegal(udpPort);
-        Assert.assertEquals(1, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(11));
 
         // reset counter
 
-        eventCount = 0;
+        eventCount.set(0);
+        messagesSent.set(0);
 
         // check that event is delivered again after delay
 
-        parser.setIllegalFlowEventRate(1);
+        parser.setIllegalFlowEventRate(2);
         sendValid(udpPort);
-        Assert.assertEquals(0, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
 
         sendIllegal(udpPort);
-        Assert.assertEquals(1, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(8));
 
         sendIllegal(udpPort);
-        Assert.assertEquals(1, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(11));
 
         sendIllegal(udpPort);
-        Assert.assertEquals(1, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(14));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         sendIllegal(udpPort);
-        Assert.assertEquals(2, eventCount);
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(2));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(17));
     }
 
     private void sendTemplate(final int udpPort) throws Exception {

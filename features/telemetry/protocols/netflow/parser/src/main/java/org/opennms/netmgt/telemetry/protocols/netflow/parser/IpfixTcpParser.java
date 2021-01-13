@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,8 +46,12 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.buffer.ByteBuf;
 
@@ -89,7 +94,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
                 detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
 
-                return Optional.of(IpfixTcpParser.this.transmit(packet, remoteAddress));
+                return Optional.of(IpfixTcpParser.this.transmit(packet, session, remoteAddress));
             }
 
             @Override

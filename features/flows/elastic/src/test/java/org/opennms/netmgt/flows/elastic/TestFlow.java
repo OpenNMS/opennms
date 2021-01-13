@@ -37,8 +37,19 @@ public class TestFlow implements Flow {
     final FlowDocument flowDocument;
     String nodeIdentifier;
 
+    private long receivedAt = System.currentTimeMillis();
+
     public TestFlow(final FlowDocument flowDocument) {
         this.flowDocument = flowDocument;
+    }
+
+    @Override
+    public long getReceivedAt() {
+        return this.receivedAt;
+    }
+
+    public void setReceivedAt(final long receivedAt) {
+        this.receivedAt = receivedAt;
     }
 
     @Override
