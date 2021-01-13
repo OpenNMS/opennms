@@ -62,8 +62,8 @@ public class UdpSessionManager {
                 this.observationDomainId = observationDomainId;
             }
 
-            private Key key(final int templateId) {
-                return new Key(UdpSession.this.sessionKey, this.observationDomainId, templateId);
+            private TemplateKey key(final int templateId) {
+                return new TemplateKey(UdpSession.this.sessionKey, this.observationDomainId, templateId);
             }
 
             @Override
@@ -82,9 +82,9 @@ public class UdpSessionManager {
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-                for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
-                                                                                                   e -> Objects.equals(e.getKey().sessionKey, UdpSession.this.sessionKey) &&
-                                                                                                        Objects.equals(e.getKey().observationDomainId, this.observationDomainId))) {
+                for (final Map.Entry<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
+                                                                                                   e -> Objects.equals(e.getKey().domain.sessionKey, UdpSession.this.sessionKey) &&
+                                                                                                        Objects.equals(e.getKey().domain.observationDomainId, this.observationDomainId))) {
                     final Template template = UdpSessionManager.this.templates.get(e.getKey()).template;
 
                     if (scoped.containsAll(template.scopeNames)) {
@@ -112,19 +112,19 @@ public class UdpSessionManager {
 
         @Override
         public void addTemplate(final long observationDomainId, final Template template) {
-            final Key key = new Key(this.sessionKey, observationDomainId, template.id);
+            final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, template.id);
             UdpSessionManager.this.templates.put(key, new TemplateWrapper(template));
         }
 
         @Override
         public void removeTemplate(final long observationDomainId, final int templateId) {
-            final Key key = new Key(this.sessionKey, observationDomainId, templateId);
+            final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, templateId);
             UdpSessionManager.this.templates.remove(key);
         }
 
         @Override
         public void removeAllTemplate(final long observationDomainId, final Template.Type type) {
-            UdpSessionManager.this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId == observationDomainId && e.getValue().template.type == type);
+            UdpSessionManager.this.templates.entrySet().removeIf(e -> e.getKey().domain.observationDomainId == observationDomainId && e.getValue().template.type == type);
         }
 
         @Override
@@ -132,7 +132,7 @@ public class UdpSessionManager {
                                final int templateId,
                                final Collection<Value<?>> scopes,
                                final List<Value<?>> values) {
-            final Key key = new Key(this.sessionKey, observationDomainId, templateId);
+            final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, templateId);
             UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), values);
         }
 
@@ -145,35 +145,65 @@ public class UdpSessionManager {
         public InetAddress getRemoteAddress() {
             return this.sessionKey.getRemoteAddress();
         }
+
+        @Override
+        public boolean verifySequenceNumber(final long observationDomainId, final long sequenceNumber) {
+            final DomainKey key = new DomainKey(this.sessionKey, observationDomainId);
+            final SequenceNumberTracker tracker = UdpSessionManager.this.sequenceNumbers.computeIfAbsent(key, (k) -> new SequenceNumberTracker());
+            return tracker.verify(sequenceNumber);
+        }
     }
 
-    private final static class Key {
-        private final SessionKey sessionKey;
+    private final static class DomainKey {
+        public final SessionKey sessionKey;
         public final long observationDomainId;
-        public final int templateId;
 
-        Key(final SessionKey sessionKey,
-            final long observationDomainId,
-            final int templateId) {
+        private DomainKey(final SessionKey sessionKey,
+                          final long observationDomainId) {
             this.sessionKey = Objects.requireNonNull(sessionKey);
             this.observationDomainId = observationDomainId;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (!(o instanceof DomainKey)) return false;
+
+            final DomainKey that = (DomainKey) o;
+            return Objects.equals(this.observationDomainId, that.observationDomainId) &&
+                   Objects.equals(this.sessionKey, that.sessionKey);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.sessionKey, this.observationDomainId);
+        }
+    }
+
+    private final static class TemplateKey {
+        public final DomainKey domain;
+        public final int templateId;
+
+        TemplateKey(final SessionKey sessionKey,
+                    final long observationDomainId,
+                    final int templateId) {
+            this.domain = new DomainKey(sessionKey, observationDomainId);
             this.templateId = templateId;
         }
 
         @Override
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof Key)) return false;
+            if (!(o instanceof TemplateKey)) return false;
 
-            final Key that = (Key) o;
-            return this.observationDomainId == that.observationDomainId &&
-                    this.templateId == that.templateId &&
-                    Objects.equals(this.sessionKey, that.sessionKey);
+            final TemplateKey that = (TemplateKey) o;
+            return Objects.equals(this.domain, that.domain) &&
+                   Objects.equals(this.templateId, that.templateId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.sessionKey, this.observationDomainId, this.templateId);
+            return Objects.hash(this.domain, this.templateId);
         }
     }
 
@@ -187,8 +217,9 @@ public class UdpSessionManager {
         }
     }
 
-    private final Map<Key, TemplateWrapper> templates = Maps.newHashMap();
-    private final Map<Key, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
+    private final Map<TemplateKey, TemplateWrapper> templates = Maps.newHashMap();
+    private final Map<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
+    private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
 
     private final Duration timeout;
 
@@ -206,6 +237,10 @@ public class UdpSessionManager {
     }
 
     public void drop(final SessionKey sessionKey) {
-        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().sessionKey, sessionKey));
+        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().domain.sessionKey, sessionKey));
+    }
+
+    public int count() {
+        return this.templates.size();
     }
 }

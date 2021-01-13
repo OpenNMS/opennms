@@ -61,6 +61,8 @@ public class EnrichedFlow {
 
     private NodeInfo exporterNodeInfo;
 
+    private long clockCorrection;
+
     public Flow getFlow() {
         return flow;
     }
@@ -145,5 +147,11 @@ public class EnrichedFlow {
         this.convoKey = convoKey;
     }
 
+    public long getClockCorrection() {
+        return this.clockCorrection;
+    }
 
+    public void setClockCorrection(final long clockCorrection) {
+        this.clockCorrection = clockCorrection;
+    }
 }

@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -54,8 +56,8 @@ public class GetCommand extends SnmpRequestCommand implements Action {
     public Object execute() {
         LOG.debug("snmp:get {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
-                    .map(SnmpObjId::get)
-                    .collect(Collectors.toList());
+                .map(SnmpObjId::get)
+                .collect(Collectors.toList());
         SnmpAgentConfig agent;
         try {
             agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
@@ -64,24 +66,27 @@ public class GetCommand extends SnmpRequestCommand implements Action {
             return null;
         }
         final CompletableFuture<List<SnmpValue>> future = locationAwareSnmpClient.get(agent, snmpObjIds)
-            .withDescription("snmp:get")
-            .withLocation(m_location)
-            .withSystemId(m_systemId)
-            .execute();
+                .withDescription("snmp:get")
+                .withLocation(m_location)
+                .withSystemId(m_systemId)
+                .execute();
 
         while (true) {
             try {
                 future.get(1, TimeUnit.SECONDS).stream()
-                    .forEach(res -> {
-                        if (res.isError()) {
-                            System.out.println(String.format("ERROR: %s", res));
-                        } else {
-                            System.out.println(String.format("%s%n", res));
-                        }
-                    });
+                        .forEach(res -> {
+                            if (res.isError()) {
+                                System.out.println(String.format("ERROR: %s", res));
+                            } else {
+                                System.out.println(String.format("%s%n", res));
+                            }
+                        });
                 break;
-            } catch (Exception e) {
-                System.out.println(String.format("%s: %s", m_host, e.getClass().getName()));
+            } catch (TimeoutException e) {
+                // pass
+                System.out.print(".");
+            } catch (InterruptedException | ExecutionException e) {
+                System.out.println(String.format("\n %s: %s", m_host, e.getMessage()));
                 break;
             }
         }

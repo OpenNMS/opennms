@@ -65,6 +65,6 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     @Override
     public org.opennms.netmgt.telemetry.api.receiver.Parser createBean(final ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new Netflow5UdpParser(parserDefinition.getName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new Netflow5UdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

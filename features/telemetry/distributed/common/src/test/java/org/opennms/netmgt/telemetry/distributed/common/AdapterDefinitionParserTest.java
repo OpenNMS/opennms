@@ -53,17 +53,19 @@ public class AdapterDefinitionParserTest {
         properties.put("adapters.2.parameters.script", "/opt/sentinel/etc/sflow-host.groovy");
 
         // Parse and verify
-        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse(properties);
+        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse("Test", PropertyTree.from(properties));
         Assert.assertEquals(2, adapters.size());
         Assert.assertThat(adapters, CoreMatchers.hasItems(
                 new MapBasedAdapterDef(
-                        ImmutableMap.of("name", "SFlow-Parser",
-                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter")
+                        "Test",
+                        PropertyTree.from(ImmutableMap.of("name", "SFlow-Parser",
+                                "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter"))
                 ),
                 new MapBasedAdapterDef(
-                        ImmutableMap.of("name", "SFLOW-Telemetry",
+                        "Test",
+                        PropertyTree.from(ImmutableMap.of("name", "SFLOW-Telemetry",
                                 "class-name", "org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter",
-                                "parameters.script", "/opt/sentinel/etc/sflow-host.groovy")
+                                "parameters.script", "/opt/sentinel/etc/sflow-host.groovy"))
                 )
         ));
     }
@@ -75,7 +77,7 @@ public class AdapterDefinitionParserTest {
         properties.put("adapters.1.name", "Netflow-5-Parser");
         properties.put("adapters.1.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter");
 
-        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse(properties);
+        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse("Test", PropertyTree.from(properties));
         Assert.assertEquals(1, adapters.size());
     }
 
@@ -85,7 +87,7 @@ public class AdapterDefinitionParserTest {
         properties.put("name", "Netflow-5");
         properties.put("class-name", "org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter");
 
-        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse(properties);
+        final List<AdapterDefinition> adapters = new AdapterDefinitionParser().parse("Test", PropertyTree.from(properties));
         Assert.assertEquals(1, adapters.size());
     }
 

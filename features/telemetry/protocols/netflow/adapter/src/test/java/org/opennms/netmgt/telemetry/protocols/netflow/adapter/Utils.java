@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,7 +101,7 @@ public class Utils {
         }
 
         @Override
-        public List<Flow> convert(List<String> resources) {
+        public List<Flow> convert(List<String> resources, final Instant receivedAt) {
 
             List<Flow> flows = new ArrayList<>();
 
@@ -108,7 +109,7 @@ public class Utils {
                 try {
                     FlowMessage.Builder builder = FlowMessage.newBuilder();
                     JsonFormat.parser().merge(resource, builder);
-                    flows.add(new NetflowMessage(builder.build()));
+                    flows.add(new NetflowMessage(builder.build(), receivedAt));
                 } catch (InvalidProtocolBufferException e) {
                     //Ignore.
                 }
