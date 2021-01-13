@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
@@ -37,9 +35,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.service.ConfigurationNotAvailableException;
+import org.opennms.netmgt.config.service.ConfigurationService;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
@@ -69,8 +68,6 @@ public final class VacuumdConfigFactory {
      */
     private static VacuumdConfigFactory m_singleton = null;
 
-    private static boolean m_loadedFromFile = false;
-
     /**
      * The config class loaded from the config file
      */
@@ -97,7 +94,6 @@ public final class VacuumdConfigFactory {
      */
     public VacuumdConfigFactory(VacuumdConfiguration config) {
         m_config = config;
-        m_loadedFromFile = false;
     }
 
     /**
@@ -108,7 +104,7 @@ public final class VacuumdConfigFactory {
      *                Thrown if the specified config file cannot be read
      * @throws java.io.IOException if any.
      */
-    public static synchronized void init() throws IOException {
+    public static synchronized void init() throws ConfigurationNotAvailableException {
         if (m_singleton != null) {
             /*
              * The init method has already called, so return.
@@ -117,18 +113,10 @@ public final class VacuumdConfigFactory {
             return;
         }
 
-        InputStream is = null;
-
-        try {
-            is = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME));
-            setInstance(new VacuumdConfigFactory(is));
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
-        }
-        
-        m_loadedFromFile = true;
+        ConfigurationService configurationService = new ConfigurationService(); // TODO: Patrick dependency injection?
+        VacuumdConfiguration config = configurationService
+                .getConfigurationAsJaxb(ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME), VacuumdConfiguration.class);
+        setInstance(new VacuumdConfigFactory(config));
     }
 
     /**
@@ -138,12 +126,9 @@ public final class VacuumdConfigFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
-        if (m_loadedFromFile) {
-            setInstance(null);
-
-            init();
-        }
+    public static synchronized void reload() throws ConfigurationNotAvailableException {
+        setInstance(null);
+        init();
     }
 
     /**

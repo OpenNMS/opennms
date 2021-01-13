@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.service.ConfigurationNotAvailableException;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
@@ -388,8 +389,8 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
-        } catch (IOException e) {
-            LOG.error("onEvent: IO problem reading vacuumd configuration", e);
+        } catch (ConfigurationNotAvailableException e) {
+            LOG.error("onEvent: problem loading vacuumd configuration", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
