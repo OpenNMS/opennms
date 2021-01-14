@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,18 +37,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
@@ -58,35 +51,23 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
-import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.Lists;
 
@@ -112,12 +93,38 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Ensure no graph exists
         graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology.xml");
         graphmlDocument.delete(restClient);
+
+        cleanUpApplications();
     }
 
     @After
     public void tearDown() {
         RestAssured.reset();
         graphmlDocument.delete(restClient);
+
+        cleanUpRequisition();
+        cleanUpApplications();
+    }
+
+    private void cleanUpApplications() {
+        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
+        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
+        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
+
+        try {
+            applicationDao.findAll().forEach(applicationDao::delete);
+            applicationDao.flush();
+            outageDao.findAll().forEach(outageDao::delete);
+            outageDao.flush();
+        } catch (final Exception e) {
+            LOG.warn("Failed to delete existing application-related data.", e);
+
+        }
+    }
+
+    private void cleanUpRequisition() {
+        deleteExistingRequisition(OpenNMSSeleniumIT.REQUISITION_NAME);
+        deleteExistingForeignSource(OpenNMSSeleniumIT.REQUISITION_NAME);
     }
 
     @Test
@@ -428,64 +435,57 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyStatusEnrichmentApplication() throws InterruptedException {
-        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
-        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
-        final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
-        final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
-        final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
-        final AlarmDao alarmDao = daoFactory.getDao(AlarmDaoHibernate.class); // TODO: Patrick remove later
-        final EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class); // TODO: Patrick remove later
+        final String applicationName = "StatusEnrichmentTest";
 
-        // Clean up
-        applicationDao.findAll().forEach(applicationDao::delete);
+        final InetAddress localhost = InetAddressUtils.getInetAddress("127.0.0.1");
+        final String perspectiveKey = "perspective";
+        final String perspectiveName = "Default";
+
+        final String testServiceName = "ICMP";
+        final String clearedSeverity = OnmsSeverity.CLEARED.getLabel();
+        final String minorSeverity = OnmsSeverity.MINOR.getLabel();
+        final String criticalSeverity = OnmsSeverity.CRITICAL.getLabel();
 
         // Set up test data
         createRequisition();
-        final OnmsApplication tmpApplication = transactionTemplate.execute(transactionStatus -> {
-            final OnmsApplication theApplication = new OnmsApplication();
-            theApplication.setName("OpenNMS Application");
-            OnmsMonitoringLocation location = new OnmsMonitoringLocation();
-            location.setLocationName("Default");
-            Set<OnmsMonitoringLocation> locations = new HashSet<>();
-            locations.add(location);
-            theApplication.setPerspectiveLocations(locations);
-            monitoredServiceDao.findAllServices().stream()
-                    .filter(ms -> ms.getIpAddress().toString().contains("127.0.0.1"))
-                    .forEach(service -> service.addApplication(theApplication));
-            applicationDao.save(theApplication);
-            return theApplication;
-        });
 
-        // Force fully initialized to prevent LazyLoad-Exceptions
-        final OnmsApplication application = transactionTemplate.execute(status -> {
-            final OnmsApplication initializedApplication = applicationDao.get(tmpApplication.getId());
-            initializedApplication.getMonitoredServices().stream().forEach(OnmsMonitoredService::getNodeId);
-            return initializedApplication;
-        });
+        adminPage();
+        findElementByLink("Manage Applications").click();
 
-        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
-        final int nodeId1 = services.get(0).getNodeId();
-        final int nodeId2 = services.get(1).getNodeId();
+        // create the application
+        waitForElement(By.name("newApplicationName"));
+        enterText(By.name("newApplicationName"), applicationName);
+        clickElement(By.cssSelector("form[action='admin/applications.htm'] > button"));
 
-        // Make sure all former outages have been resolved (can be a problem when test is run twice)
-        restClient.sendEvent( new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, getClass().getSimpleName())
-                .setNodeid(nodeId1)
-                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
-                .setService("ICMP")
-                .setParam("perspective", "Default")
-                .setSeverity(OnmsSeverity.CLEARED.getLabel())
-                .getEvent());
-        restClient.sendEvent( new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, getClass().getSimpleName())
-                .setNodeid(nodeId2)
-                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
-                .setService("ICMP")
-                .setParam("perspective", "Default")
-                .setSeverity(OnmsSeverity.CLEARED.getLabel())
-                .getEvent());
+        // browse to the application page
+        clickElement(By.linkText(applicationName));
+
+        clickElement(By.linkText("Edit application"));
+        // make sure the forms have loaded
+        waitForElement(By.id("input_toAdd"));
+
+        // add the services
+        clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node A / 127.0.0.1 / ICMP')]"));
+        clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node B / 127.0.0.1 / ICMP')]"));
+        clickElement(By.id("input_addService"));
+
+        // add the default location
+        clickElement(By.xpath("//select[@id='input_locationAdd']/option[@value='Default']"));
+        clickElement(By.id("input_addLocation"));
+
+        // get the application
+        final Optional<OnmsApplication> app = restClient.getApplications().stream().filter(a -> a.getName() == applicationName).findFirst();
+        if (!app.isPresent()) {
+            throw new IllegalStateException("Failed to retrieve application '" + applicationName + "'");
+        }
+        final OnmsApplication application = app.get();
 
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
         awaitForApplicationStatus(application, "Normal");
+
+        final List<OnmsNode> nodes = restClient.getNodes();
+        final int nodeId1 = nodes.stream().filter(n -> n.getLabel() == "Node A").findFirst().get().getId();
+        final int nodeId2 = nodes.stream().filter(n -> n.getLabel() == "Node B").findFirst().get().getId();
 
         // Fetch data nothing down
         final JSONObject query = new JSONObject()
@@ -510,27 +510,102 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Prepare simulated outages
         final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId1)
-                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
-                .setService("ICMP")
-                .setParam("perspective", "Default")
-                .setSeverity(OnmsSeverity.MINOR.getLabel())
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(minorSeverity)
                 .getEvent();
         final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId2)
-                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
-                .setService("ICMP")
-                .setParam("perspective", "Default")
-                .setSeverity(OnmsSeverity.CRITICAL.getLabel())
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(criticalSeverity)
                 .getEvent();
 
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
-        Thread.sleep(5000); // TODO: Patrick remove later
+        awaitForApplicationStatus(application, "Minor");
+
+        final Response response = getApplicationViewResponse(query.toString());
+        final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
+        assertThat(applicationViewResponse.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
+
+        // Take service down with severity higher than Major
+        restClient.sendEvent(nodeLostServiceEventApp2);
+        awaitForApplicationStatus(application, "Critical");
+
+        final Response response2 = getApplicationViewResponse(query.toString());
+        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
+        assertThat(applicationViewResponse2.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Critical", 1); // we expect the same severity as the interface with the highest severity
+
+        /*
+        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
+        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
+        final MonitoringLocationDaoHibernate locationDao = daoFactory.getDao(MonitoringLocationDaoHibernate.class);
+        final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
+        final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
+        final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
+        final AlarmDao alarmDao = daoFactory.getDao(AlarmDaoHibernate.class); // TODO: Patrick remove later
+        final EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class); // TODO: Patrick remove later
+
+        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
+        final int nodeId1 = services.get(0).getNodeId();
+        final int nodeId2 = services.get(1).getNodeId();
+
+        // Fetch data nothing down
+        final JSONObject query = new JSONObject()
+                .put("semanticZoomLevel", 1)
+                .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
+        given().log().ifValidationFails()
+                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .post("{container_id}/{namespace}", "application", "application")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("vertices", Matchers.hasSize(3))
+                .content("vertices[0].status.severity", Matchers.is("Normal"))
+                .content("vertices[1].status.severity", Matchers.is("Normal"))
+                .content("vertices[2].status.severity", Matchers.is("Normal"))
+                .content("vertices[0].status.count", Matchers.is(0))
+                .content("vertices[1].status.count", Matchers.is(0))
+                .content("vertices[2].status.count", Matchers.is(0));
+
+        // Prepare simulated outages
+        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId1)
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(minorSeverity)
+                .getEvent();
+        final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId2)
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(criticalSeverity)
+                .getEvent();
+
+        // Take service down, reload graph and verify
+        restClient.sendEvent(nodeLostServiceEvent);
+        Thread.sleep(10000); // TODO: Patrick remove later
 
         transactionTemplate.execute(status -> { // TODO: Patrick remove later
-            for(OnmsMonitoredService service : application.getMonitoredServices()) {
-                Collection<OnmsOutage> outages = outageDao.currentOutagesForServiceFromPerspectivePoller(service);
-                LOG.warn("OUTAGES for service: " + service + " " + outages);
+            for(final OnmsMonitoredService service : application.getMonitoredServices()) {
+                final Collection<CurrentOutageDetails> currentOutages = outageDao.newestCurrentOutages(Arrays.asList(testServiceName));
+                LOG.warn("NEW OUTAGES: " + service + " " + currentOutages);
+                final Collection<OnmsOutage> perspectiveOutages = outageDao.currentOutagesForServiceFromPerspectivePoller(service);
+                LOG.warn("OUTAGES for service: " + service + " " + perspectiveOutages);
             }
             LOG.warn("APPLICATION ALARMS: " + applicationDao.getAlarmStatus().stream()
                     .map(s -> s.getNodeId()+"::"+s.getServiceTypeId() +"::"+ s.getIpAddress().toString() + "=" + s.getSeverity())
@@ -562,6 +637,8 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Finally clean up
         applicationDao.delete(application);
+
+        */
     }
 
     private void awaitForApplicationStatus(final OnmsApplication application, final String severity) {
@@ -572,10 +649,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .atMost(1, MINUTES)
                 .until(() -> {
                     karafShell.runCommand("opennms:graph-force-reload --container application");
-                    return new ApplicationViewResponse(getApplicationViewResponse(query.toString()))
+                    final String status = new ApplicationViewResponse(getApplicationViewResponse(query.toString()))
                             .getVertexByApplicationId(application.getId())
                             .getJSONObject("status")
                             .getString("severity");
+                    LOG.debug("application {} status={}", application.getId(), status);
+                    return status;
                 }, equalTo(severity));
     }
 
