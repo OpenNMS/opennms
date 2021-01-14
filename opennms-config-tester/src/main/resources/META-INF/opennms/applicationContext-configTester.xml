@@ -508,10 +508,10 @@
   <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
 
   <bean id="vacuumdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.VacuumdConfigFactory.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.config.VacuumdConfigWrapper.init</value></property>
   </bean>
 
-  <bean id="vacuumdConfigFactory" class="org.opennms.netmgt.config.VacuumdConfigFactory" depends-on="vacuumdConfigFactory-init" factory-method="getInstance"/>
+  <bean id="vacuumdConfigFactory" class="org.opennms.netmgt.config.VacuumdConfigWrapper" depends-on="vacuumdConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="viewsDisplayFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ViewsDisplayFactory.init</value></property>

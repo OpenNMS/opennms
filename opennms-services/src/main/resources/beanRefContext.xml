@@ -95,5 +95,13 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
-   
+
+   <bean id="vacuumdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-vacuumd.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daoContext" />
+    </bean>
 </beans>

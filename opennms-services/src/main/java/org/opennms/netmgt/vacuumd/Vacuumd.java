@@ -41,12 +41,15 @@ import javax.sql.DataSource;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.VacuumdConfigWrapper;
 import org.opennms.netmgt.config.service.ConfigurationNotAvailableException;
+import org.opennms.netmgt.config.service.ConfigurationService;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -59,6 +62,10 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
@@ -68,11 +75,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
-public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
+public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener, ApplicationContextAware {
     
     private static final Logger LOG = LoggerFactory.getLogger(Vacuumd.class);
-    
-    private static volatile Vacuumd m_singleton;
 
     private volatile Thread m_thread;
 
@@ -84,30 +89,10 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     private volatile EventIpcManager m_eventMgr;
 
-    /**
-     * <p>getSingleton</p>
-     *
-     * @return a {@link org.opennms.netmgt.vacuumd.Vacuumd} object.
-     */
-    public static synchronized Vacuumd getSingleton() {
-        if (m_singleton == null) {
-            m_singleton = new Vacuumd();
-        }
-        return m_singleton;
-    }
+    private volatile ConfigurationService m_configurationService;
 
-    /**
-     */
-    public static synchronized void destroySingleton() {
-        if (m_singleton != null) {
-            m_singleton.stop();
-            m_singleton = null;
-        }
-    }
+    private volatile VacuumdConfigWrapper m_configuration;
 
-    /**
-     * <p>Constructor for Vacuumd.</p>
-     */
     public Vacuumd() {
         super("vacuumd");
     }
@@ -120,9 +105,10 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
+        Assert.notNull(m_configurationService, "configurationService must not be null");
         try {
             LOG.info("Loading the configuration file.");
-            VacuumdConfigFactory.init();
+            this.m_configuration = loadConfiguration();
             getEventManager().addEventListener(this, EventConstants.RELOAD_VACUUMD_CONFIG_UEI);
             getEventManager().addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
@@ -136,6 +122,12 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
         createScheduler();
         scheduleAutomations();
+    }
+
+    private VacuumdConfigWrapper loadConfiguration() throws ConfigurationNotAvailableException {
+        VacuumdConfiguration config = this.m_configurationService
+                .getConfigurationAsJaxb(ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME), VacuumdConfiguration.class);
+        return new VacuumdConfigWrapper(config);
     }
 
     private void initializeDataSources() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
@@ -323,7 +315,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     private void scheduleAutomation(Automation auto) {
         if (auto.getActive()) {
-            AutomationProcessor ap = new AutomationProcessor(auto);
+            AutomationProcessor ap = new AutomationProcessor(auto, this, this.m_configuration);
             Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
             ap.setSchedule(s);
             s.schedule();
@@ -353,11 +345,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     public void onEvent(IEvent event) {
 
         if (isReloadConfigEvent(event)) {
-            handleReloadConifgEvent();
+            handleReloadConfigEvent();
         }
     }
 
-    private void handleReloadConifgEvent() {
+    private void handleReloadConfigEvent() {
         LOG.info("onEvent: reloading configuration...");
         
         EventBuilder ebldr = null;
@@ -374,7 +366,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
             LOG.debug("onEvent: reloading vacuumd configuration.");
 
-            VacuumdConfigFactory.reload();
+            this.m_configuration = loadConfiguration();
             LOG.debug("onEvent: creating new schedule and rescheduling automations.");
 
             init();
@@ -438,11 +430,16 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
-    private VacuumdConfigFactory getVacuumdConfig() {
-        return VacuumdConfigFactory.getInstance();
+    private VacuumdConfigWrapper getVacuumdConfig() {
+        return m_configuration;
     }
     
     private DataSource getDataSourceFactory() {
         return DataSourceFactory.getInstance();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        m_configurationService = applicationContext.getBean(ConfigurationService.class);
     }
 }
