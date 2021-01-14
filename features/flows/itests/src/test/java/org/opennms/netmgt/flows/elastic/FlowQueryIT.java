@@ -57,6 +57,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.elasticsearch.painless.PainlessPlugin;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
@@ -103,7 +104,7 @@ public class FlowQueryIT {
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withPlugins(DriftPlugin.class));
+            .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
     private ElasticFlowRepository flowRepository;
 
@@ -931,6 +932,8 @@ public class FlowQueryIT {
                 .withBytes(
                         fd.getDirection() == Direction.INGRESS ? fd.getBytes() : 0,
                         fd.getDirection() == Direction.EGRESS ? fd.getBytes() : 0)
+                .withCongestionEncountered(fd.getTos() != null && fd.getTos() % 4 == 3)
+                .withNonEcnCapableTransport(fd.getTos() != null && fd.getTos() % 4 == 0)
                 .build();
     }
 
@@ -953,7 +956,10 @@ public class FlowQueryIT {
 
     private static <K> TrafficSummary<K> mergeTrafficSummaries(TrafficSummary<K> t1, TrafficSummary<K> t2) {
         return TrafficSummary.from(t1.getEntity())
-                .withBytes(t1.getBytesIn() + t2.getBytesIn(), t1.getBytesOut() + t2.getBytesOut()).build();
+                .withBytes(t1.getBytesIn() + t2.getBytesIn(), t1.getBytesOut() + t2.getBytesOut())
+                .withCongestionEncountered(t1.isCongestionEncountered() || t2.isCongestionEncountered())
+                .withNonEcnCapableTransport(t1.isNonEcnCapableTransport() || t2.isNonEcnCapableTransport())
+                .build();
 
     }
 

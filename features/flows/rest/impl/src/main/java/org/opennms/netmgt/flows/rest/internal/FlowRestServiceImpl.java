@@ -31,7 +31,6 @@ package org.opennms.netmgt.flows.rest.internal;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -150,7 +149,9 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         final List<TrafficSummary<String>> summary = waitForFuture(flowQueryService.getFieldSummaries(field, filters));
 
-        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString)
+        // do not include the ECN info column in the summary if the ECN field is queried
+        // -> the ECN info is already represented by the key column and therefore would appear twice
+        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString, field != LimitedCardinalityField.ECN)
                 .apply(response)
                 .accept(summary);
 
@@ -218,7 +219,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, applications, uriInfo, "application",
                 filters -> flowQueryService.getTopNApplicationSummaries(N, includeOther, filters),
                 filters -> flowQueryService.getApplicationSummaries(applications, includeOther, filters),
-                this.defaultSummaryResponseConsumer("Application", Function.identity()));
+                this.defaultSummaryResponseConsumer("Application", Function.identity(), true));
     }
 
     @Override
@@ -243,7 +244,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, hosts, uriInfo, "host",
                 filters -> flowQueryService.getTopNHostSummaries(N, includeOther, filters),
                 filters -> flowQueryService.getHostSummaries(hosts, includeOther, filters),
-                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName));
+                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName, true));
     }
 
     @Override
@@ -276,7 +277,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                 filters -> flowQueryService.getConversationSummaries(conversations, includeOther, filters),
                 response -> (summary) -> {
                     response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source",
-                            "Dest.", "Application", "Bytes In", "Bytes Out"));
+                            "Dest.", "Application", "Bytes In", "Bytes Out", "ECN"));
                     response.setRows(summary.stream()
                             .map(sum -> {
                                 final Conversation conversation = sum.getEntity();
@@ -284,7 +285,7 @@ public class FlowRestServiceImpl implements FlowRestService {
                                         hostnameMode.buildDisplayName(conversation.getLowerHost()),
                                         hostnameMode.buildDisplayName(conversation.getUpperHost()),
                                         conversation.getApplication(),
-                                        sum.getBytesIn(), sum.getBytesOut());
+                                        sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo());
                             })
                             .collect(Collectors.toList()));
                 });
@@ -399,12 +400,28 @@ public class FlowRestServiceImpl implements FlowRestService {
         return response;
     }
 
-    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(final String entitiesHeader, final Function<K, String> entityLabel) {
+    private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(
+            final String entitiesHeader,
+            final Function<K, String> entityLabel,
+            final boolean includeEcnInfo
+    ) {
+        // the ECN info column (i.e. the last column) is dropped in some cases
+        Function<List, List> maybeDropLast = list -> {
+            if (!includeEcnInfo) list.remove(list.size() - 1);
+            return list;
+        };
         return response -> summary -> {
-            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out"));
-            response.setRows(summary.stream()
-                    .map(sum -> Arrays.asList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut()))
-                    .collect(Collectors.toList()));
+            response.setHeaders(maybeDropLast.apply(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out", "ECN")));
+            response.setRows(
+                    summary
+                            .stream()
+                            .map(sum ->
+                                    (List<Object>)maybeDropLast.apply(
+                                            Lists.newArrayList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo())
+                                    )
+                            )
+                    .collect(Collectors.toList())
+            );
         };
     }
 

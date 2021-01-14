@@ -38,6 +38,17 @@
             "start": ${start?long?c},
             "end": ${end?long?c}
           }
+        },
+        // netflow.ecn is a keyword -> max aggregation not possible; string comparison required
+        "congestion_encountered": {
+          "max": {
+            "script": "doc['netflow.ecn'].size() == 0 ? false : doc['netflow.ecn'].value == '3' ? true : false"
+          }
+        },
+        "non_ect": {
+          "max": {
+            "script": "doc['netflow.ecn'].size() == 0 ? false : doc['netflow.ecn'].value == '0' ? true : false"
+          }
         }
       }
     }

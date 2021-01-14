@@ -52,6 +52,16 @@
           "sum": {
             "field": "bytes_egress"
           }
+        },
+        "congestion_encountered": {
+          "max": {
+            "field": "congestion_encountered"
+          }
+        },
+        "non_ect": {
+          "max": {
+            "field": "non_ect"
+          }
         }
       }
     }

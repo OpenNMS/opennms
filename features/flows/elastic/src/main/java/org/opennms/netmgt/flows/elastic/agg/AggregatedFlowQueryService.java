@@ -360,6 +360,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                                                                   .withEntity(entity)
                                                                   .withBytesIn(ingress.getSum().longValue())
                                                                   .withBytesOut(egress.getSum().longValue())
+                                                                  .withEcnInfo(bucket)
                                                                   .build()));
                         }
 
@@ -386,6 +387,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                     .withEntity(type.getOtherEntity())
                     .withBytesIn(otherBytes.getBytesIn())
                     .withBytesOut(otherBytes.getBytesOut())
+                    .withEcnInfo(total)
                     .build());
             return newTopK;
         });
@@ -402,6 +404,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                             .withEntity(OTHER_NAME)
                             .withBytesIn(ingress != null ? ingress.getSum().longValue() : 0L)
                             .withBytesOut(egress != null ? egress.getSum().longValue() : 0L)
+                            .withEcnInfo(aggs)
                             .build();
                 });
     }

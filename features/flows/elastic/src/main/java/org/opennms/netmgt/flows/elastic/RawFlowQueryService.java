@@ -136,7 +136,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
                                         .thenApply(conversation -> TrafficSummary.from(conversation)
-                                                .withBytesFrom(summary)
+                                                .withBytesAndEcnInfo(summary)
                                                 .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
@@ -148,7 +148,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
                                         .thenApply(conversation -> TrafficSummary.from(conversation)
-                                                .withBytesFrom(summary)
+                                                .withBytesAndEcnInfo(summary)
                                                 .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
@@ -179,7 +179,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
                                         .thenApply(host -> TrafficSummary.from(host)
-                                                .withBytesFrom(summary)
+                                                .withBytesAndEcnInfo(summary)
                                                 .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
@@ -191,7 +191,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
                                         .thenApply(host -> TrafficSummary.from(host)
-                                                .withBytesFrom(summary)
+                                                .withBytesAndEcnInfo(summary)
                                                 .build()))
                                 .collect(Collectors.toList()),
                         Collectors.toList()));
@@ -483,6 +483,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     } else {
                         trafficSummary.withBytesIn(sum.longValue());
                     }
+                    trafficSummary.withEcnInfo(directionBucket);
                 }
                 summaries.put(OTHER_NAME, trafficSummary.build());
                 return summaries;
@@ -631,6 +632,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 } else {
                     trafficSummary.withBytesIn(sum.longValue());
                 }
+                trafficSummary.withEcnInfo(directionBucket);
             }
             summaries.put(bucket.getKey(), trafficSummary.build());
         }

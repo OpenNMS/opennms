@@ -50,6 +50,7 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.testing.TestStream;
 import org.apache.beam.sdk.values.TimestampedValue;
+import org.elasticsearch.painless.PainlessPlugin;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
@@ -101,11 +102,11 @@ import io.searchbox.client.JestClient;
 public class AggregatedFlowQueryIT {
 
     @Rule
-    public TestPipeline p = TestPipeline.create();
+    public TestPipeline p = TestPipeline.fromOptions(PipelineOptionsFactory.fromArgs("--keyByEcn").as(NephronOptions.class));
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-                    .withPlugins(DriftPlugin.class));
+                    .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
     private ElasticFlowRepository flowRepository;
     private SmartQueryService smartQueryService;
@@ -398,7 +399,7 @@ public class AggregatedFlowQueryIT {
                 .withFlow(new Date(20), new Date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 .build();
 
-        // expect 15 flow summary documents
+        // expect 16 flow summary documents
         // - 1 for exporter/interface (98/0)
         // - 3 for exporter/interface/tos (0, 1, 3); code 2 is treated as code 1
         // - 3 * 1 for exporter/interface/tos/application (http)
@@ -840,6 +841,9 @@ public class AggregatedFlowQueryIT {
                 new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(Long.valueOf(flows.size())));
 
         // Pass those same flows through the pipeline and persist the aggregations
+        // -> the NephronOptions defined here are used for constructing PTransformation only; they are not available at runtime
+        // -> the NephronOptions available at runtime must be defined when the pipeline is created
+        //    (cf. the "TestPipeline p" defined above)
         NephronOptions options = PipelineOptionsFactory.as(NephronOptions.class);
         doPipeline(documentForwarder.getFlows().stream()
                 .map( flow -> {
