@@ -28,17 +28,11 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.service.ConfigurationNotAvailableException;
-import org.opennms.netmgt.config.service.ConfigurationService;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
@@ -46,45 +40,26 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
-import org.springframework.util.Assert;
 
 /**
- * This is the singleton class used to load the configuration for the OpenNMS
- * Vacuumd process from the vacuumd-configuration xml file.
+ * This class offers convenience methods to access the Vaccumd configuration.
  *
- * <strong>Note: </strong>Users of this class should make sure the
- * <em>setReader()</em> method is called before calling any other method to ensure the
- * config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:david@opennms.com">David Hustace </a>
  * @author <a href="mailto:brozow@opennms.com">Mathew Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class VacuumdConfigFactory {
+public final class VacuumdConfigWrapper {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-    /**
-     * The singleton instance of this factory
-     */
-    private static VacuumdConfigFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
      */
-    private VacuumdConfiguration m_config;
-
-    /**
-     * <p>Constructor for VacuumdConfigFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     */
-    public VacuumdConfigFactory(InputStream stream) {
-        m_config = JaxbUtils.unmarshal(VacuumdConfiguration.class, new InputStreamReader(stream));
-    }
+    private final VacuumdConfiguration m_config;
 
     /**
      * <p>
-     * Constructor for VacuumdConfigFactory.
+     * Constructor for VacuumdConfigWrapper.
      * </p>
      *
      * Calling reload() on a instance created with method will have no effect.
@@ -92,65 +67,8 @@ public final class VacuumdConfigFactory {
      * @param config
      *          The configuration the use.
      */
-    public VacuumdConfigFactory(VacuumdConfiguration config) {
+    public VacuumdConfigWrapper(final VacuumdConfiguration config) {
         m_config = config;
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws ConfigurationNotAvailableException {
-        if (m_singleton != null) {
-            /*
-             * The init method has already called, so return.
-             * To reload, reload() will need to be called.
-             */
-            return;
-        }
-
-        ConfigurationService configurationService = new ConfigurationService(); // TODO: Patrick dependency injection?
-        VacuumdConfiguration config = configurationService
-                .getConfigurationAsJaxb(ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME), VacuumdConfiguration.class);
-        setInstance(new VacuumdConfigFactory(config));
-    }
-
-    /**
-     * Reload the config from the default config file
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read/loaded
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void reload() throws ConfigurationNotAvailableException {
-        setInstance(null);
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized VacuumdConfigFactory getInstance() {
-        Assert.state(m_singleton != null, "The factory has not been initialized");
-
-        return m_singleton;
-    }
-    
-    /**
-     * Set the singleton instance of this factory.
-     *
-     * @param instance The factory instance to set.
-     */
-    public static synchronized void setInstance(VacuumdConfigFactory instance) {
-        m_singleton = instance;
     }
     
     /**

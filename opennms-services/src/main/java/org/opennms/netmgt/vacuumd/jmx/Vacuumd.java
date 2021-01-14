@@ -28,115 +28,30 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
-import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * Implementws the VacuumdMBead interface and delegeates the mbean
+ * Implements the VacuumdMBead interface and delegeates the mbean
  * implementation to the single Vacuumd.
  *
  * @author ranger
  * @version $Id: $
  */
-public class Vacuumd implements VacuumdMBean {
+public class Vacuumd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.vacuumd.Vacuumd>  implements VacuumdMBean {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
-     */
-    /**
-     * <p>init</p>
-     */
     @Override
-    public void init() {
-
-        EventIpcManagerFactory.init();
-        EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
-        getVacuumd().setEventManager(mgr);
-        getVacuumd().init();
-
+    protected String getLoggingPrefix() {
+        return "vacuumd";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#start()
-     */
-    /**
-     * <p>start</p>
-     */
     @Override
-    public void start() {
-        getVacuumd().start();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#stop()
-     */
-    /**
-     * <p>stop</p>
-     */
-    @Override
-    public void stop() {
-        getVacuumd().stop();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatus()
-     */
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getStatus() {
-        return getVacuumd().getStatus();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#status()
-     */
-    /**
-     * <p>status</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatusText()
-     */
-    /**
-     * <p>getStatusText</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    protected String getSpringContext() {
+        return "vacuumdContext";
     }
 
     /** {@inheritDoc} */
     @Override
     public long getNumAutomations() {
-        return getVacuumd().getNumAutomations();
+        return this.getDaemon().getNumAutomations();
     }
-
-    private org.opennms.netmgt.vacuumd.Vacuumd getVacuumd() {
-        return org.opennms.netmgt.vacuumd.Vacuumd.getSingleton();
-    }
-
 }

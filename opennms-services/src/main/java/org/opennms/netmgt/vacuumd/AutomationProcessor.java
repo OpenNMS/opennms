@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
-import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.VacuumdConfigWrapper;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
 import org.opennms.netmgt.config.vacuumd.Assignment;
@@ -80,7 +81,8 @@ public class AutomationProcessor implements ReadyRunnable {
     private final Automation m_automation;
     private final TriggerProcessor m_trigger;
     private final ActionProcessor m_action;
-    
+    private final Vacuumd m_vacuumd;
+
     /** 
      * @deprecated Associate {@link Automation} objects with {@link ActionEvent} instances instead.
      */
@@ -629,17 +631,18 @@ public class AutomationProcessor implements ReadyRunnable {
      * @param automation a {@link org.opennms.netmgt.config.vacuumd.Automation} object.
      */
     @SuppressWarnings("deprecation")
-	public AutomationProcessor(Automation automation) {
+	public AutomationProcessor(Automation automation, final Vacuumd vacuumd, final VacuumdConfigWrapper vacuumdConfig) {
+        Objects.requireNonNull(vacuumdConfig);
+        m_vacuumd = Objects.requireNonNull(vacuumd);
         m_ready = true;
         m_automation = automation;
-        m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
+        m_trigger = new TriggerProcessor(m_automation.getName(), vacuumdConfig.getTrigger(m_automation.getTriggerName().orElse(null)));
         String actionName = automation.getActionName();
-        Action actionForAutomation = VacuumdConfigFactory.getInstance()
-                .getAction(actionName)
+        Action actionForAutomation = vacuumdConfig.getAction(actionName)
                 .orElseThrow(() -> new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'"));
         m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
-        m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
-        m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
+        m_autoEvent = new AutoEventProcessor(m_automation.getName(), vacuumdConfig.getAutoEvent(m_automation.getAutoEventName().orElse(null)));
+        m_actionEvent = new ActionEventProcessor(m_automation.getName(),vacuumdConfig.getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
     
     /**
@@ -735,7 +738,7 @@ public class AutomationProcessor implements ReadyRunnable {
             // that any event handlers can access the updated records
             LOG.debug("runAutomation: Sending {} events for automation: {}", eventsToSend.size(), m_automation.getName());
             for (Event event : eventsToSend) {
-                Vacuumd.getSingleton().getEventManager().sendNow(event);
+                m_vacuumd.getEventManager().sendNow(event);
             }
 
             LOG.debug("runAutomation: Done processing automation: {}", m_automation.getName());
