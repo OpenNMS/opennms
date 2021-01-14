@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.service;
+package org.opennms.netmgt.configservice;
 
 public class ConfigurationNotAvailableException extends Exception {
 
