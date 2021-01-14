@@ -37,11 +37,11 @@
       <artifactId>opennms-config</artifactId>
     </dependency>
 
-    <!--dependency>
+    <dependency>
       <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store</artifactId>
+      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
       <version>${project.version}</version>
-    </dependency-->
+    </dependency>
 
     <!-- Testing -->
     <dependency>

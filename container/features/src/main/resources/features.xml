@@ -310,6 +310,7 @@
         <feature version="[4.2,4.3)">spring</feature>
         <feature version="[4.2,4.3)">spring-orm</feature>
         <feature>commons-io</feature>
+        <feature>configservice</feature>
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
         <feature>owasp-encoder</feature>
@@ -328,8 +329,13 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
+    </feature>
+
+    <feature name="configservice" version="${project.version}" description="OpenNMS :: Feature :: Configservice">
+        <feature>opennms-blobstore-postgres</feature>
         <bundle>mvn:org.opennms.features/configservice/${project.version}</bundle>
     </feature>
+
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
         <feature>camel-core</feature>
         <feature>camel-http</feature>
