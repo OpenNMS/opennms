@@ -81,11 +81,6 @@ public abstract class ParserBase implements Parser {
             .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
-    private final RateLimitedLog CORRECTION_LOGGER = RateLimitedLog
-            .withRateLimit(LOG)
-            .maxRate(5).every(Duration.ofSeconds(30))
-            .build();
-
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final long DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
