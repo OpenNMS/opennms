@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic.agg;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +55,8 @@ import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -203,34 +206,34 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
             // No results
-            CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(null);
         }
         final TermsAggregation byKeyAgg = aggs.getTermsAggregation("by_key");
         if (byKeyAgg == null) {
             // No results
-            CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(null);
         }
 
-        final List<CompletableFuture<Void>> buckets = new ArrayList<>();
+        return transpose(Iterables.transform(byKeyAgg.getBuckets(),
+                                    bucket -> keyToEntity.apply(bucket.getKey())
+                                                         .thenApply(resolved -> Maps.immutableEntry(bucket, resolved))),
+                         Collectors.toList())
+                .thenApply(buckets -> {
+                    for (final Map.Entry<TermsAggregation.Entry, T> bucket : buckets) {
+                        final ProportionalSumAggregation bytesInAgg = bucket.getKey().getAggregation("bytes_in", ProportionalSumAggregation.class);
+                        final ProportionalSumAggregation bytesOutAgg = bucket.getKey().getAggregation("bytes_out", ProportionalSumAggregation.class);
 
-        for (TermsAggregation.Entry bucket : byKeyAgg.getBuckets()) {
-            final ProportionalSumAggregation bytesInAgg = bucket.getAggregation("bytes_in", ProportionalSumAggregation.class);
-            for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
-                buckets.add(keyToEntity.apply(bucket.getKey()).thenApply(entity -> {
-                    builder.put(new Directional<>(entity, true), dateHistogram.getTime(), dateHistogram.getValue());
-                    return null;
-                }));
-            }
-            final ProportionalSumAggregation bytesOutAgg = bucket.getAggregation("bytes_out", ProportionalSumAggregation.class);
-            for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
-                buckets.add(keyToEntity.apply(bucket.getKey()).thenApply(entity -> {
-                    builder.put(new Directional<>(entity, false), dateHistogram.getTime(), dateHistogram.getValue());
-                    return null;
-                }));
-            }
-        }
+                        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
+                            builder.put(new Directional<>(bucket.getValue(), true), dateHistogram.getTime(), dateHistogram.getValue());
+                        }
 
-        return transpose(buckets, Collectors.reducing(null, (a, b) -> null));
+                        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
+                            builder.put(new Directional<>(bucket.getValue(), false), dateHistogram.getTime(), dateHistogram.getValue());
+                        }
+
+                    }
+                    return null;
+                });
     }
 
     /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -96,10 +97,11 @@ public abstract class ElasticFlowQueryService implements FlowQueryService {
                 });
     }
 
-    protected static <T, A, R> CompletableFuture<R> transpose(final Collection<CompletableFuture<T>> futures,
+    protected static <T, A, R> CompletableFuture<R> transpose(final Iterable<CompletableFuture<T>> futures,
                                                               final Collector<? super T, A, R> collector) {
-        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
-                .thenApply(v -> futures.stream()
+        final CompletableFuture<T>[] array = Iterables.toArray(futures, CompletableFuture.class);
+        return CompletableFuture.allOf(array)
+                                .thenApply(v -> Arrays.stream(array)
                         .map(CompletableFuture::join)
                         .collect(collector));
     }
