@@ -1,0 +1,163 @@
+module opennms-vacuumd {
+    yang-version 1.1;
+    namespace "urn:opennms:params:xml:ns:yang:opennms-vacuumd";
+    prefix "opennms-vacuumd";
+
+    revision "2020-01-13" {
+        description "Initial revision of opennms-vacuumd model";
+    }
+
+  typedef operator-type {
+    type string {
+      pattern '(&lt;|&lt;=|=|&gt;=|&gt;)';
+    }
+  }
+
+  container vacuumdConfiguration {
+    config true;
+
+    leaf-list statement {
+      type string;
+      description "This represents the SQL that is performed every <period> seconds.";
+    }
+
+    container automations {
+      list automation {
+        key "name";
+        uses automation-group;
+      }
+    }
+
+    container triggers {
+      list trigger {
+        key name;
+        uses trigger-group;
+      }
+    }
+
+    container actions {
+      list action {
+        key name;
+        uses action-group;
+      }
+    }
+
+    container auto-event {
+      leaf uei {
+        type string;
+        mandatory true;
+      }
+      leaf name {
+        type string;
+        mandatory true;
+      }
+      leaf fields {
+        type string;
+      }
+    }
+
+    container action-event {
+      list assignment {
+        key name;
+        leaf name {
+          type string;
+          mandatory true;
+        }
+        leaf type {
+          type string;
+          mandatory true;
+        }
+        leaf value {
+          type string;
+          mandatory true;
+        }
+        leaf for-each-result {
+          type boolean;
+          default false;
+        }
+        leaf add-all-params {
+          type boolean;
+          default false;
+        }
+      }
+    }
+
+    leaf period {
+      type uint64;
+      mandatory true;
+    }
+  }
+  grouping automation-group {
+    leaf name {
+      type string;
+      mandatory true;
+    }
+    leaf active {
+      type boolean;
+    }
+    leaf interval {
+      type uint32;
+      mandatory true;
+    }
+    leaf action-name {
+      type string; // REFERENCE
+      mandatory true;
+    }
+    leaf trigger-name {
+      type string;
+    }
+    leaf auto-event-name {
+      type string;
+    }
+    leaf action-event {
+      type string;
+    }
+  }
+
+  grouping trigger-group {
+    description "A query to the database with a resultset used for actions.";
+    leaf name {
+      type string;
+      mandatory true;
+    }
+    leaf data-source {
+      type string;
+      default "opennms";
+    }
+    leaf statement {
+      description "Just a generic string used for SQL statements";
+      type string;
+      mandatory true;
+    }
+    leaf transactional {
+      type boolean;
+    }
+    leaf operator {
+      type operator-type;
+    }
+    leaf row-count {
+      type uint64;
+    }
+  }
+
+  grouping action-group {
+    description "actions modify the database based on results of a trigger";
+    leaf name {
+      type string;
+      mandatory true;
+    }
+    leaf data-source {
+      type string;
+      default "opennms";
+    }
+    leaf statement {
+      type string;
+      mandatory true;
+    }
+    leaf transactional {
+      type boolean;
+      default true;
+    }
+  }
+
+}

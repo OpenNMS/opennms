@@ -109,6 +109,8 @@
     <!-- build -->
     <module>checkstyle</module>
 
+    <module>opennms-yang</module>
+
     <!-- new structure -->
     <module>dependencies</module>
     <module>core</module>
