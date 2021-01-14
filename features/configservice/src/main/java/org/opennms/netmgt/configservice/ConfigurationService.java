@@ -32,11 +32,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -46,12 +50,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfigurationService {
 
-//     private final JsonStore store = null; // TODO: Patrick
+     private final BlobStore store;
 
-//    @Autowired
-//    public ConfigurationService(final JsonStore store) {
-//        this.store = store;
-//    }
+    @Autowired
+    public ConfigurationService(final BlobStore store) {
+        Objects.requireNonNull(store);
+        this.store = store;
+    }
 
     /**
      * Loads the latest available configuration specified by the URI and transforms it into the given JaxB class.
@@ -71,18 +76,18 @@ public class ConfigurationService {
 
         // try store first
         // String context = ConfigDaoConstants.JSON_KEY_STORE_CONTEXT; // TODO Patrick
-//        String context = "config";
-//        Optional<String> config = null; // this.store.get(uri, context);
-//        if(config.isPresent()) {
-//            return config.get();
-//        }
+        String context = "config";
+        Optional<byte[]> config = this.store.get(uri, context);
+        if(config.isPresent()) {
+            return new String(config.get(), StandardCharsets.UTF_8);
+        }
 
         // nothing found. fallback: file
         try {
             // for now we only support files in the etc dir:
             File file = ConfigFileConstants.getConfigFileByName(uri);
             String text = FileUtils.readFileToString(file, Charset.defaultCharset());
-           //  this.store.put(uri, text, context);
+            this.store.put(uri, text.getBytes(StandardCharsets.UTF_8), context);
             return text;
         } catch(IOException e) {
             throw new ConfigurationNotAvailableException(e);
