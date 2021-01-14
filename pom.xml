@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>27.0.3-SNAPSHOT</version>
+  <version>27.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -848,6 +848,11 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <version>3.0.0-M3</version>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>structure-maven-plugin</artifactId>
+        <version>1.0</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -1273,7 +1278,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>27.0.3.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>27.0.4.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1507,7 +1512,7 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.9.0</frontendPluginVersion>
+    <frontendPluginVersion>1.11.0</frontendPluginVersion>
     <nodeVersion>v10.19.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
 
