@@ -93,6 +93,7 @@
               org.opennms.netmgt.config.viewsdisplay.*;version="${project.version}",
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
               org.opennms.netmgt.config.wmi.*;version="${project.version}",
+              org.opennms.netmgt.config.utils.*;version="${project.version}",
               org.opennms.netmgt.eventd.datablock.*;version="${project.version}",
               org.opennms.netmgt.xml.eventconf.*;version="${project.version}",
               org.opennms.netmgt.xml.rtc.*;version="${project.version}"
