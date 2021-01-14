@@ -97,7 +97,8 @@
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
         <entry key="trapd-configuration.xml" value="trapdConfigFactory"/>
         <entry key="users.xml" value="userFactory"/>
-        <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
+        <!-- config service can't be tested this way anymore -->
+        <!-- entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/ -->
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
         <entry key="wmi-config.xml" value="wmiPeerFactory"/>
         <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
@@ -507,12 +508,12 @@
 
   <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
 
-  <!-- TODO: Patrick -->
+  <!-- configuration service won't work this way anymore
   <bean id="vacuumdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.VacuumdConfigWrapper.init</value></property>
   </bean>
-
   <bean id="vacuumdConfigFactory" class="org.opennms.netmgt.config.VacuumdConfigWrapper" depends-on="vacuumdConfigFactory-init" factory-method="getInstance"/>
+  -->
 
   <bean id="viewsDisplayFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ViewsDisplayFactory.init</value></property>
