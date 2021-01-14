@@ -55,7 +55,7 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("LAST_SWITCHED", 987000)).build();
         Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
@@ -78,7 +78,7 @@ public class FlowTimeoutTest {
 
         Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(),  is(987000L - 10000L));
         assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
@@ -100,7 +100,7 @@ public class FlowTimeoutTest {
 
         Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = netflow9MessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 300000L));

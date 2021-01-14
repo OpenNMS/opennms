@@ -56,7 +56,7 @@ public class FlowTimeoutTest {
                 .build();
 
         final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
-        FlowMessage flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L)); // Timeout is same as first
@@ -77,7 +77,7 @@ public class FlowTimeoutTest {
 
 
         final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
-        FlowMessage flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 10000L));
@@ -96,7 +96,7 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("flowInactiveTimeout", 300))
                 .build();
         final IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
-        FlowMessage flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
@@ -114,7 +114,7 @@ public class FlowTimeoutTest {
                 .build();
 
         IpFixMessageBuilder ipFixMessageBuilder = new IpFixMessageBuilder();
-        FlowMessage flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData(values, (address -> Optional.empty())));
+        FlowMessage flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L));
@@ -126,7 +126,7 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("flowEndSysUpTime", 4000000))
                 .build();
         ipFixMessageBuilder = new IpFixMessageBuilder();
-        flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData(values, (address -> Optional.empty())));
+        flowMessage = ipFixMessageBuilder.buildMessage(values, (address -> Optional.empty())).build();
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(2000000L + 100000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(2000000L + 100000L));

@@ -70,7 +70,7 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
         record.add(new UnsignedValue("LAST_SWITCHED", 3000));
         final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData(record, enrichment));
+        final FlowMessage flowMessage = builder.buildMessage(record, enrichment).build();
 
         Assert.assertEquals(1001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(1002000L, flowMessage.getLastSwitched().getValue());
@@ -86,7 +86,7 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("flowStartMilliseconds", 2001000));
         record.add(new UnsignedValue("flowEndMilliseconds", 2002000));
         final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData(record, enrichment));
+        final FlowMessage flowMessage = builder.buildMessage(record, enrichment).build();
 
         Assert.assertEquals(2001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(2002000L, flowMessage.getLastSwitched().getValue());
@@ -116,20 +116,11 @@ public class NMS13006_Test {
 
                 packet.getRecords().forEach(r -> {
                             final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
-                            final FlowMessage flowMessage;
+                            final FlowMessage flowMessage = builder.buildMessage(r, enrichment).build();
 
-                            try {
-                                flowMessage = FlowMessage.parseFrom(builder.buildData(r, enrichment));
-                                Assert.assertEquals(true, flowMessage.hasFirstSwitched());
-                                Assert.assertEquals(true, flowMessage.hasLastSwitched());
-                                Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
-                            } catch (InvalidProtocolBufferException e) {
-                                e.printStackTrace();
-                                fail(e.getMessage());
-                            } catch (IllegalFlowException e) {
-                                e.printStackTrace();
-                                fail(e.getMessage());
-                            }
+                            Assert.assertEquals(true, flowMessage.hasFirstSwitched());
+                            Assert.assertEquals(true, flowMessage.hasLastSwitched());
+                            Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
                         }
                 );
 

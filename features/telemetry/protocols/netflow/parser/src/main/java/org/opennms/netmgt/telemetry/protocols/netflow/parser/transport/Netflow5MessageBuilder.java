@@ -39,7 +39,6 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
@@ -47,12 +46,13 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
-public class Netflow5MessageBuilder {
+public class Netflow5MessageBuilder implements MessageBuilder {
 
     public Netflow5MessageBuilder() {
     }
 
-    public byte[] buildData(final Iterable<Value<?>> values, final RecordEnrichment enrichment) throws IllegalFlowException {
+    @Override
+    public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
 
         Long unixSecs = null;
@@ -189,17 +189,6 @@ public class Netflow5MessageBuilder {
             enrichment.getHostnameFor(nextHop).ifPresent(builder::setNextHopHostname);
         }
 
-        if (builder.getFirstSwitched().getValue() > builder.getLastSwitched().getValue()) {
-            throw new IllegalFlowException(
-                    String.format("lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
-                            builder.getSrcAddress(),
-                            builder.getDstAddress(),
-                            builder.getFirstSwitched().getValue(),
-                            builder.getLastSwitched().getValue(),
-                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
-        }
-
-        return builder.build().toByteArray();
-
+        return builder;
     }
 }

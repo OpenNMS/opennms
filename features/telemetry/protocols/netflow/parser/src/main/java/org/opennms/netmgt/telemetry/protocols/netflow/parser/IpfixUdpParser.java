@@ -63,7 +63,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, new IpFixMessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override
@@ -85,12 +85,6 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress, localAddress);
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
-        IpFixMessageBuilder builder = new IpFixMessageBuilder();
-        return builder.buildData(record, enrichment);
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {

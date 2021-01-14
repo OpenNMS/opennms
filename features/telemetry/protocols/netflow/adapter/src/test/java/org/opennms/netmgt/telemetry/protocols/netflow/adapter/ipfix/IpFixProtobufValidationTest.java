@@ -145,18 +145,14 @@ public class IpFixProtobufValidationTest {
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = new byte[0];
+                    final FlowMessage flowMessage;
                     try {
-                        message = Utils.buildAndSerialize(Protocol.IPFIX, rec);
+                        flowMessage = Utils.buildAndSerialize(Protocol.IPFIX, rec).build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    try {
-                        FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
-                    } catch (InvalidProtocolBufferException e) {
-                        throw new RuntimeException(e);
-                    }
+
+                    flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

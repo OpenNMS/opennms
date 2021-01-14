@@ -52,12 +52,13 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorith
 
 import com.google.common.primitives.UnsignedLong;
 
-public class IpFixMessageBuilder {
+public class IpFixMessageBuilder implements MessageBuilder {
 
     public IpFixMessageBuilder() {
     }
 
-    public byte[] buildData(final Iterable<Value<?>> values, final RecordEnrichment enrichment) throws IllegalFlowException {
+    @Override
+    public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
         final FlowMessage.Builder builder = FlowMessage.newBuilder();
 
         Long exportTime = null;
@@ -567,16 +568,6 @@ public class IpFixMessageBuilder {
             }
         }
 
-        if (builder.getFirstSwitched().getValue() > builder.getLastSwitched().getValue()) {
-            throw new IllegalFlowException(
-                    String.format("lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
-                            builder.getSrcAddress(),
-                            builder.getDstAddress(),
-                            builder.getFirstSwitched().getValue(),
-                            builder.getLastSwitched().getValue(),
-                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
-        }
-
         // Build delta switched
         Timeout timeout = new Timeout(flowActiveTimeout, flowInactiveTimeout);
         timeout.setFirstSwitched(builder.hasFirstSwitched() ? builder.getFirstSwitched().getValue() : null);
@@ -587,6 +578,6 @@ public class IpFixMessageBuilder {
         getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
 
         builder.setNetflowVersion(NetflowVersion.IPFIX);
-        return builder.build().toByteArray();
+        return builder;
     }
 }
