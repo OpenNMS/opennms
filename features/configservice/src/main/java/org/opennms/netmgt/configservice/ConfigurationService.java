@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.service;
+package org.opennms.netmgt.configservice;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +46,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfigurationService {
 
+//     private final JsonStore store = null; // TODO: Patrick
+
+//    @Autowired
+//    public ConfigurationService(final JsonStore store) {
+//        this.store = store;
+//    }
+
     /**
      * Loads the latest available configuration specified by the URI and transforms it into the given JaxB class.
      */
@@ -61,10 +68,22 @@ public class ConfigurationService {
      * format, e.g. XML, JSON or Properties
      */
     public String getConfigurationAsString(final String uri) throws ConfigurationNotAvailableException {
+
+        // try store first
+        // String context = ConfigDaoConstants.JSON_KEY_STORE_CONTEXT; // TODO Patrick
+//        String context = "config";
+//        Optional<String> config = null; // this.store.get(uri, context);
+//        if(config.isPresent()) {
+//            return config.get();
+//        }
+
+        // nothing found. fallback: file
         try {
             // for now we only support files in the etc dir:
             File file = ConfigFileConstants.getConfigFileByName(uri);
-            return FileUtils.readFileToString(file, Charset.defaultCharset());
+            String text = FileUtils.readFileToString(file, Charset.defaultCharset());
+           //  this.store.put(uri, text, context);
+            return text;
         } catch(IOException e) {
             throw new ConfigurationNotAvailableException(e);
         }

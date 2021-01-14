@@ -23,6 +23,6 @@
       <property name="eventManager" ref="eventIpcManager"/>
     </bean>
 
-    <bean id="configurationService" class="org.opennms.netmgt.config.service.ConfigurationService" />
+    <bean id="configurationService" class="org.opennms.netmgt.configservice.ConfigurationService"/>
 
 </beans>
