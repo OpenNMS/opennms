@@ -136,6 +136,7 @@
     <module>datachoices</module>
 
     <!-- Other projects -->
+    <module>configservice</module>
     <module>distributed</module>
     <module>endpoints</module>
     <module>geocoder</module>
