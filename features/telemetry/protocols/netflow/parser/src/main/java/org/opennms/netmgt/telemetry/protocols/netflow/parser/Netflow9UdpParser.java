@@ -87,8 +87,8 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     @Override
     protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException{
-        Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        return builder.buildData();
+        Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        return builder.buildData(record, enrichment);
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {

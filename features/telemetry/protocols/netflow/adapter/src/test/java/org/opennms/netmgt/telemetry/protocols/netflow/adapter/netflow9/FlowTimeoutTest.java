@@ -53,9 +53,9 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("@sysUpTime", 0))
                 .add(new UnsignedValue("FIRST_SWITCHED", 123000))
                 .add(new UnsignedValue("LAST_SWITCHED", 987000)).build();
-        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder(values, (address -> Optional.empty()));
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData());
+        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
@@ -76,9 +76,9 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("FLOW_INACTIVE_TIMEOUT", 300))
                 .build();
 
-        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder(values, (address -> Optional.empty()));
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData());
+        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(),  is(987000L - 10000L));
         assertThat(flowMessage.getLastSwitched().getValue(), is(987000L));
@@ -98,9 +98,9 @@ public class FlowTimeoutTest {
                 .add(new UnsignedValue("FLOW_INACTIVE_TIMEOUT", 300))
                 .build();
 
-        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder(values, (address -> Optional.empty()));
+        Netflow9MessageBuilder netflow9MessageBuilder = new Netflow9MessageBuilder();
 
-        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData());
+        FlowMessage flowMessage = FlowMessage.parseFrom(netflow9MessageBuilder.buildData(values, (address -> Optional.empty())));
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(123000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(987000L - 300000L));

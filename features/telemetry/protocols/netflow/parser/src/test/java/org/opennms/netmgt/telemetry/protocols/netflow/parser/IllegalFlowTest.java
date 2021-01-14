@@ -78,8 +78,8 @@ public class IllegalFlowTest {
         // first > last, this should trigger an exception
         record.add(new UnsignedValue("FIRST_SWITCHED", 3000));
         record.add(new UnsignedValue("LAST_SWITCHED", 2000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        builder.buildData();
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        builder.buildData(record, enrichment);
     }
 
     @Test
@@ -91,8 +91,8 @@ public class IllegalFlowTest {
         // first < last, this is valid
         record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
         record.add(new UnsignedValue("LAST_SWITCHED", 3000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        builder.buildData();
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        builder.buildData(record, enrichment);
     }
 
     @Test

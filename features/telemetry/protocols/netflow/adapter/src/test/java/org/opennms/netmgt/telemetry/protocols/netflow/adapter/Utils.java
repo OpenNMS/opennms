@@ -62,14 +62,14 @@ public class Utils {
     public static byte[] buildAndSerialize(Protocol protocol, Iterable<Value<?>> record) throws IllegalFlowException {
         RecordEnrichment enrichment = (address -> Optional.empty());
         if (protocol.equals(Protocol.NETFLOW5)) {
-            Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
-            return builder.buildData();
+            Netflow5MessageBuilder builder = new Netflow5MessageBuilder();
+            return builder.buildData(record, enrichment);
         } else if (protocol.equals(Protocol.NETFLOW9)) {
-            Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-            return builder.buildData();
+            Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+            return builder.buildData(record, enrichment);
         } else if (protocol.equals(Protocol.IPFIX)) {
-            IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
-            return builder.buildData();
+            IpFixMessageBuilder builder = new IpFixMessageBuilder();
+            return builder.buildData(record, enrichment);
         }
         return null;
     }

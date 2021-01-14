@@ -107,7 +107,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     @Override
     protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
-        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
-        return builder.buildData();
+        IpFixMessageBuilder builder = new IpFixMessageBuilder();
+        return builder.buildData(record, enrichment);
     }
 }

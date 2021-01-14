@@ -69,8 +69,8 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("@sysUpTime", 1000));
         record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
         record.add(new UnsignedValue("LAST_SWITCHED", 3000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData());
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData(record, enrichment));
 
         Assert.assertEquals(1001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(1002000L, flowMessage.getLastSwitched().getValue());
@@ -85,8 +85,8 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("@sysUpTime", 1000));
         record.add(new UnsignedValue("flowStartMilliseconds", 2001000));
         record.add(new UnsignedValue("flowEndMilliseconds", 2002000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData());
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData(record, enrichment));
 
         Assert.assertEquals(2001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(2002000L, flowMessage.getLastSwitched().getValue());
@@ -115,11 +115,11 @@ public class NMS13006_Test {
                 final RecordEnrichment enrichment = (address -> Optional.empty());
 
                 packet.getRecords().forEach(r -> {
-                            final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(r, enrichment);
+                            final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
                             final FlowMessage flowMessage;
 
                             try {
-                                flowMessage = FlowMessage.parseFrom(builder.buildData());
+                                flowMessage = FlowMessage.parseFrom(builder.buildData(r, enrichment));
                                 Assert.assertEquals(true, flowMessage.hasFirstSwitched());
                                 Assert.assertEquals(true, flowMessage.hasLastSwitched());
                                 Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
