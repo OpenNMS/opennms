@@ -118,19 +118,14 @@ public class Netflow9ConverterTest {
                 final Packet packet = new Packet(session, header, buffer);
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = new byte[0];
+                    final FlowMessage flowMessage;
                     try {
-                        message = buildAndSerialize(Protocol.NETFLOW9, rec);
+                        flowMessage = buildAndSerialize(Protocol.NETFLOW9, rec).build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    try {
-                        FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
-                    } catch (InvalidProtocolBufferException e) {
-                        throw new RuntimeException(e);
-                    }
 
+                    flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);
