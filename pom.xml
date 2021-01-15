@@ -1413,7 +1413,7 @@
     <httpclientVersion>4.5.2</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jackson2Version>2.10.0</jackson2Version>
+    <jackson2Version>2.10.5</jackson2Version>
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
@@ -1434,8 +1434,8 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <karafVersion>4.2.6</karafVersion>
-    <kafkaBundleVersion>2.4.0_1</kafkaBundleVersion>
-    <kafkaVersion>2.4.0</kafkaVersion>
+    <kafkaBundleVersion>2.7.0_1</kafkaBundleVersion>
+    <kafkaVersion>2.7.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -1465,18 +1465,20 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
+    <lz4JavaVersion>1.7.1</lz4JavaVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>1.0.4</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
-    <rocksdbjniVersion>5.18.3</rocksdbjniVersion>
-    <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
-    <scalaLoggingVersion>3.9.0</scalaLoggingVersion>
+    <rocksdbjniVersion>5.18.4</rocksdbjniVersion>
+    <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
+    <scalaLoggingVersion>3.9.2</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
-    <slf4jVersion>1.7.26</slf4jVersion>
+    <slf4jVersion>1.7.30</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
+    <snappyJavaVersion>1.1.7.7</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
@@ -1490,6 +1492,8 @@
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.7</zookeeperVersion>
+    <zookeeper2Version>3.5.8</zookeeper2Version>
+    <zstdJniVersion>1.4.5-6</zstdJniVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
