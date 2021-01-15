@@ -9,7 +9,7 @@
          <value>META-INF/opennms/applicationContext-telemetryDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+     <constructor-arg ref="eventDaemonContext" />
    </bean>
 
 </beans>
