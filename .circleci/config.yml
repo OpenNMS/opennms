@@ -11,7 +11,8 @@ executors:
     docker:
       - image: docker:20.10.1-git
   integration-test-executor:
-    machine: true
+    machine:
+     image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01

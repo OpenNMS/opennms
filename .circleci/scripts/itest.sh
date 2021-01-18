@@ -44,12 +44,12 @@ cd ~/project
 ./.circleci/scripts/postgres.sh
 
 echo "#### Installing other dependencies"
-# limit the sources we need to update
-sudo rm -f /etc/apt/sources.list.d/*
-# limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
-deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
+## limit the sources we need to update
+#sudo rm -f /etc/apt/sources.list.d/*
+## limit more sources and add mirrors
+#echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
+#deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
