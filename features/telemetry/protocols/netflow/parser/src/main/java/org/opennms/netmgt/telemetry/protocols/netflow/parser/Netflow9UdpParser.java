@@ -62,7 +62,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
                              final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW9, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW9, name, new Netflow9MessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override
@@ -83,12 +83,6 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress.getAddress(), localAddress);
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException{
-        Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        return builder.buildData();
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {
