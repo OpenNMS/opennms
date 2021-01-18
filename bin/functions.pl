@@ -214,7 +214,7 @@ if (defined $JAVA_HOME and $JAVA_HOME ne "") {
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
 
         my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
-        if ($shortversion >= 9) {
+        if ($shortversion >= 9 && $shortversion < 11) {
                 $JDK9_OR_GT = 1;
         };
 }
@@ -337,7 +337,7 @@ sub find_git {
 }
 
 sub get_minimum_java {
-	my $minimum_java = '1.8';
+	my $minimum_java = '11';
 
 	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
 	if (-e $pomfile) {
@@ -356,7 +356,7 @@ sub get_minimum_java {
 
 # for now
 sub get_maximum_java {
-	return 9;
+	return 12;
 }
 
 sub get_version_from_java {
@@ -385,7 +385,7 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?(?: \d\d\d\d-\d\d-\d\d)?$/ms;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?(?: \d\d\d\d-\d\d-\d\d)?(?: LTS)?$/ms;
 	if (defined $version) {
 		($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
 		($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
@@ -438,7 +438,7 @@ sub find_java_home {
 
 	my $highest_valid = undef;
 
-	for my $majorversion (sort keys %$versions) {
+	for my $majorversion (sort { $b cmp $a } keys %$versions) {
 		if (looks_like_number($majorversion) and looks_like_number($minimum_java) and ($majorversion < $minimum_java or $majorversion >= $maximum_java)) {
 			next;
 		}

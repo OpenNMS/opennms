@@ -12,6 +12,10 @@
   <name>OpenNMS :: Dependencies :: JAXB</name>
   <dependencies>
     <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.moxy</artifactId>
       <version>${eclipselinkVersion}</version>
