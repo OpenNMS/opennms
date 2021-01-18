@@ -52,11 +52,11 @@ deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
 deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
-sudo killall -9 apt-get || true && \
-            sudo apt-get update && \
-	    sudo apt-get -y install debconf-utils && \
+sudo killall -9 apt || true && \
+            sudo apt update && \
+	    sudo apt -y install debconf-utils && \
 	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f R-base rrdtool openjdk-11-jdk
+            sudo env DEBIAN_FRONTEND=noninteractive apt install -f R-base rrdtool openjdk-11-jdk
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 echo "#### Building Assembly Dependencies"
