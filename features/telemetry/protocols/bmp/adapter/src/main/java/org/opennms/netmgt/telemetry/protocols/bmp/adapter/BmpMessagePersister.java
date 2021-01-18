@@ -84,19 +84,10 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsn;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeer;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefix;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByAsn;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByPeer;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByPrefix;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,14 +132,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     @Autowired
     private BmpIpRibLogDao bmpIpRibLogDao;
 
-    @Autowired
-    private BmpStatsByPeerDao bmpStatsByPeerDao;
-
-    @Autowired
-    private BmpStatsByAsnDao bmpStatsByAsnDao;
-
-    @Autowired
-    private BmpStatsByPrefixDao bmpStatsByPrefixDao;
 
     @Autowired
     private SessionUtils sessionUtils;
@@ -274,7 +257,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     public void init() {
         scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 5, TimeUnit.MINUTES);
-        scheduledExecutorService.scheduleAtFixedRate(this::updateStatAggregations, 0, 5, TimeUnit.MINUTES);
     }
 
     void updateGlobalRibsAndAsnInfo() {
@@ -290,85 +272,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
             }
         });
-    }
-
-    private void updateStatAggregations() {
-        LOG.debug("Updating stat aggregations ++");
-        List<StatsByPeer> statsByPeer = bmpIpRibLogDao.getStatsByPeerForInterval("'5 min'");
-        if(statsByPeer.isEmpty()) {
-            LOG.debug("Stats : Bmp Peer List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByPeer elements", statsByPeer.size());
-        }
-        statsByPeer.forEach(stat -> {
-            BmpStatsByPeer bmpStatsByPeer = buildBmpStatsByPeer(stat);
-            try {
-                bmpStatsByPeerDao.saveOrUpdate(bmpStatsByPeer);
-            } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Peer  {}", stat, e);
-            }
-        });
-
-        List<StatsByAsn> statsByAsnList = bmpIpRibLogDao.getStatsByAsnForInterval("'5 min'");
-        if(statsByAsnList.isEmpty()) {
-            LOG.debug("Stats : Bmp ASN List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByAsn elements", statsByAsnList.size());
-        }
-        statsByAsnList.forEach(stat -> {
-            BmpStatsByAsn bmpStatsByAsn = buildBmpStatsByAsn(stat);
-            try {
-                bmpStatsByAsnDao.saveOrUpdate(bmpStatsByAsn);
-            } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Asn  {}", stat, e);
-            }
-        });
-
-        List<StatsByPrefix> statsByPrefixList = bmpIpRibLogDao.getStatsByPrefixForInterval("'5 min'");
-        if(statsByPrefixList.isEmpty()) {
-            LOG.debug("Stats : Bmp Prefix List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByPrefix elements", statsByPrefixList.size());
-        }
-        statsByPrefixList.forEach(stat -> {
-            BmpStatsByPrefix bmpStatsByPrefix = buildBmpStatsByPrefix(stat);
-            try {
-                bmpStatsByPrefixDao.saveOrUpdate(bmpStatsByPrefix);
-            } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Prefix  {}", stat, e);
-            }
-        });
-        LOG.debug("Updating stat aggregations --");
-    }
-
-    private BmpStatsByPeer buildBmpStatsByPeer(StatsByPeer statsByPeer) {
-        BmpStatsByPeer bmpStatsByPeer = new BmpStatsByPeer();
-        bmpStatsByPeer.setPeerHashId(statsByPeer.getPeerHashId());
-        bmpStatsByPeer.setTimestamp(statsByPeer.getIntervalTime());
-        bmpStatsByPeer.setUpdates(statsByPeer.getUpdates());
-        bmpStatsByPeer.setWithdraws(statsByPeer.getWithdraws());
-        return bmpStatsByPeer;
-    }
-
-    private BmpStatsByAsn buildBmpStatsByAsn(StatsByAsn statsByAsn) {
-        BmpStatsByAsn bmpStatsByAsn = new BmpStatsByAsn();
-        bmpStatsByAsn.setPeerHashId(statsByAsn.getPeerHashId());
-        bmpStatsByAsn.setOriginAsn(statsByAsn.getOriginAs());
-        bmpStatsByAsn.setTimestamp(statsByAsn.getIntervalTime());
-        bmpStatsByAsn.setUpdates(statsByAsn.getUpdates());
-        bmpStatsByAsn.setWithdraws(statsByAsn.getWithdraws());
-        return bmpStatsByAsn;
-    }
-
-    private BmpStatsByPrefix buildBmpStatsByPrefix(StatsByPrefix statsByPrefix) {
-        BmpStatsByPrefix bmpStatsByPrefix = new BmpStatsByPrefix();
-        bmpStatsByPrefix.setPeerHashId(statsByPrefix.getPeerHashId());
-        bmpStatsByPrefix.setPrefix(statsByPrefix.getPrefix());
-        bmpStatsByPrefix.setPrefixLen(statsByPrefix.getPrefixLen());
-        bmpStatsByPrefix.setTimestamp(statsByPrefix.getIntervalTime());
-        bmpStatsByPrefix.setUpdates(statsByPrefix.getUpdates());
-        bmpStatsByPrefix.setWithdraws(statsByPrefix.getWithdraws());
-        return bmpStatsByPrefix;
     }
 
     private void updateStats(BmpUnicastPrefix unicastPrefix, String location) {
@@ -905,14 +808,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         this.bmpIpRibLogDao = bmpIpRibLogDao;
     }
 
-    public BmpStatsByPeerDao getBmpStatsByPeerDao() {
-        return bmpStatsByPeerDao;
-    }
-
-    public void setBmpStatsByPeerDao(BmpStatsByPeerDao bmpStatsByPeerDao) {
-        this.bmpStatsByPeerDao = bmpStatsByPeerDao;
-    }
-
     public SessionUtils getSessionUtils() {
         return sessionUtils;
     }
@@ -937,21 +832,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         this.interfaceToNodeCache = interfaceToNodeCache;
     }
 
-    public BmpStatsByAsnDao getBmpStatsByAsnDao() {
-        return bmpStatsByAsnDao;
-    }
-
-    public void setBmpStatsByAsnDao(BmpStatsByAsnDao bmpStatsByAsnDao) {
-        this.bmpStatsByAsnDao = bmpStatsByAsnDao;
-    }
-
-    public BmpStatsByPrefixDao getBmpStatsByPrefixDao() {
-        return bmpStatsByPrefixDao;
-    }
-
-    public void setBmpStatsByPrefixDao(BmpStatsByPrefixDao bmpStatsByPrefixDao) {
-        this.bmpStatsByPrefixDao = bmpStatsByPrefixDao;
-    }
 
     @Override
     public Stream<CollectionSetWithAgent> getCollectionSet() {

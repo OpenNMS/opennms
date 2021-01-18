@@ -45,6 +45,7 @@ public class BmpStatsByAsnDaoImpl extends AbstractDaoHibernate<BmpStatsByAsn, Lo
 
     @Override
     public BmpStatsByAsn findByAsnAndIntervalTime(String peerHashId, Long originAs, Date intervalTime) {
+        
         Criteria criteria = new Criteria(BmpStatsByPeer.class);
         criteria.addRestriction(new EqRestriction("peerHashId", peerHashId));
         criteria.addRestriction(new EqRestriction("originAsn", originAs));

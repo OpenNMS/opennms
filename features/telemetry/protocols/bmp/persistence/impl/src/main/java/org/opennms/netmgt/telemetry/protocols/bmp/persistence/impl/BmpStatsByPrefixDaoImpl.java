@@ -44,7 +44,8 @@ public class BmpStatsByPrefixDaoImpl extends AbstractDaoHibernate<BmpStatsByPref
     }
 
     @Override
-    public BmpStatsByPrefix findByPrefixAndIntervalTime(String peerHashId, String prefix, Integer prefixLen, Date intervalTime) {        Criteria criteria = new Criteria(BmpStatsByPeer.class);
+    public BmpStatsByPrefix findByPrefixAndIntervalTime(String peerHashId, String prefix, Integer prefixLen, Date intervalTime) {
+        Criteria criteria = new Criteria(BmpStatsByPeer.class);
         criteria.addRestriction(new EqRestriction("peerHashId", peerHashId));
         criteria.addRestriction(new EqRestriction("prefix", prefix));
         criteria.addRestriction(new EqRestriction("prefixLen", prefixLen));

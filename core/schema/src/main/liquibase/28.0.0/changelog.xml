@@ -495,7 +495,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0-bmp-ip-rib-log">
+  <changeSet author="cgorantla" id="28.0.0-bmp-ip-rib-log">
 
     <createTable tableName="bmp_ip_rib_log" remarks="bmp ip rib log">
       <column name="id" type="bigint">
@@ -534,7 +534,7 @@
     </createIndex>
   </changeSet>
 
-  <!--  <changeSet  author="cgorantla" id="27.0.0.bmp-add-timescaledb-extension">
+  <!--  <changeSet  author="cgorantla" id="28.0.0.bmp-add-timescaledb-extension">
       <preConditions onFail="MARK_RAN">
         <sqlCheck expectedResult="0">
           SELECT COUNT(e.extname)
@@ -548,7 +548,7 @@
       </sql>
     </changeSet>-->
 
-  <changeSet author="cgorantla" id="27.0.0.bmp-ip-rib-log-create-hypertable">
+  <changeSet author="cgorantla" id="28.0.0.bmp-ip-rib-log-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -581,7 +581,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0-bmp-stats-bypeer">
+  <changeSet author="cgorantla" id="28.0.0-bmp-stats-bypeer">
 
     <createTable tableName="bmp_stats_by_peer" remarks="bmp stats by peer">
       <column name="id" type="bigint">
@@ -609,7 +609,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0.bmp-stats_by-peer-create-hypertable">
+  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-peer-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -642,7 +642,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0-bmp-stats-by-asn">
+  <changeSet author="cgorantla" id="28.0.0-bmp-stats-by-asn">
 
     <createTable tableName="bmp_stats_by_asn" remarks="bmp stats by asn">
       <column name="id" type="bigint">
@@ -677,7 +677,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0.bmp-stats_by-asn-create-hypertable">
+  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-asn-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -710,7 +710,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0-bmp-stats-by-prefix">
+  <changeSet author="cgorantla" id="28.0.0-bmp-stats-by-prefix">
 
     <createTable tableName="bmp_stats_by_prefix" remarks="bmp stats by prefix">
       <column name="id" type="bigint">
@@ -748,7 +748,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="27.0.0.bmp-stats_by-prefix-create-hypertable">
+  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-prefix-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">

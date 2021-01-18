@@ -15,5 +15,6 @@
     <module>parser</module>
     <module>adapter</module>
     <module>persistence</module>
+    <module>stats</module>
   </modules>
 </project>

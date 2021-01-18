@@ -79,6 +79,7 @@ public class BmpIpRibLogDaoImpl extends AbstractDaoHibernate<BmpIpRibLog, Long> 
 
     @Override
     public List<StatsByAsn> getStatsByAsnForInterval(String interval) {
+
         List<StatsByAsn> statsByAsnList = getHibernateTemplate().execute(session -> (List<StatsByAsn>) session.createSQLQuery(
                 "SELECT to_timestamp((cast((extract(epoch from last_updated)) as bigint)/60)*60) at time zone 'utc' as IntervalTime," +
                         " peer_hash_id," +
@@ -111,6 +112,7 @@ public class BmpIpRibLogDaoImpl extends AbstractDaoHibernate<BmpIpRibLog, Long> 
 
     @Override
     public List<StatsByPrefix> getStatsByPrefixForInterval(String interval) {
+
         List<StatsByPrefix> statsByPrefixList = getHibernateTemplate().execute(session -> (List<StatsByPrefix>) session.createSQLQuery(
                 "SELECT to_timestamp((cast((extract(epoch from last_updated)) as bigint)/60)*60) at time zone 'utc' as IntervalTime," +
                         " peer_hash_id," +
