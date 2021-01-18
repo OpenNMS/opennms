@@ -53,6 +53,7 @@ public class WhoIsClientTest {
         output = BmpWhoIsClient.getAsnInfo(5650L);
         Assert.assertTrue(output.isPresent());
         assertEquals("US", output.get().getCountry());
+
     }
 
     @Test

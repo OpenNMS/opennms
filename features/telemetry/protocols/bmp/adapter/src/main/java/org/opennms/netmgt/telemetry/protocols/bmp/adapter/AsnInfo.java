@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -150,13 +150,14 @@ public class AsnInfo {
     public static AsnInfo parseOutput(Long asn, String source, String rawOutput) {
         AsnInfo asnInfo = new AsnInfo(asn, source, rawOutput);
         // Split output into lines
+        String remarks = "";
         String[] lines = rawOutput.split("\\r?\\n");
         for (String line : lines) {
             if (line.contains("ASName") || line.contains("as-name")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setAsName);
                 continue;
             }
-            if (line.contains("OrgName") || line.contains("descr")) {
+            if (line.contains("OrgName") || line.contains("org-name")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setOrgName);
                 continue;
             }
@@ -164,7 +165,7 @@ public class AsnInfo {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setOrgId);
                 continue;
             }
-            if (line.contains("Address") || line.contains("descr")) {
+            if (line.contains("Address") || line.contains("address")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setAddress);
                 continue;
             }
@@ -183,6 +184,12 @@ public class AsnInfo {
             if (line.contains("Country") || line.contains("country")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setCountry);
                 continue;
+            }
+            if (line.contains("remarks") || line.contains("Comment") || line.contains("descr")) {
+                Optional<String> result = getSubStringAfterColon(line);
+                if(result.isPresent()) {
+                    asnInfo.setRemarks(remarks + result.get());
+                }
             }
         }
         return asnInfo;

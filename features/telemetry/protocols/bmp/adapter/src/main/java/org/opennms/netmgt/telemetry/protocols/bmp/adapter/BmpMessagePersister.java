@@ -616,6 +616,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             bmpAsnInfo.setCountry(asnInfo.getCountry());
             bmpAsnInfo.setSource(asnInfo.getSource());
             bmpAsnInfo.setRawOutput(asnInfo.getRawOutput());
+            bmpAsnInfo.setRemarks(asnInfo.getRemarks());
             bmpAsnInfo.setLastUpdated(Date.from(Instant.now()));
             return bmpAsnInfo;
         }
