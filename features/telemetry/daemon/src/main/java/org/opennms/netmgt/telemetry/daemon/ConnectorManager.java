@@ -143,7 +143,6 @@ public class ConnectorManager {
     }
 
     public void start(TelemetrydConfig config) {
-
         for (ConnectorConfig connectorConfig : config.getConnectors()) {
             if (connectorConfig.getPackages().isEmpty()) {
                 // No packages defined
@@ -243,5 +242,4 @@ public class ConnectorManager {
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
         this.entityScopeProvider = entityScopeProvider;
     }
-
 }
