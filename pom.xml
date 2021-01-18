@@ -223,7 +223,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>5.1.1</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -871,7 +871,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[1.8.0,9)</version>
+                 <version>[11,12)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -981,8 +981,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>11</source>
+          <target>11</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1038,6 +1038,8 @@
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
+          <useModulePath>false</useModulePath>
+          <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
       </plugin>
       <plugin>
@@ -1049,9 +1051,9 @@
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
             <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
-            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.keyStorePassword>changeit</javax.net.ssl.keyStorePassword>
             <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
-            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+            <javax.net.ssl.trustStorePassword>changeit</javax.net.ssl.trustStorePassword>
             <!-- <ssl.debug>true</ssl.debug> -->
             <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
           </systemPropertyVariables>
@@ -1068,6 +1070,7 @@
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
           <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
+          <useModulePath>false</useModulePath>
         </configuration>
         <executions>
           <execution>
@@ -1209,15 +1212,13 @@
       Surefire forked JVM arguments
       @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
 
-      Use 1GB of heap for running tests.
+      Use 1.5GB of heap for running tests.
 
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
-
-      Add target/endorsed as an endorsed API directory in case projects require it.
     -->
-    <argLineMemory>-Xmx1g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+    <argLineMemory>-Xmx1536m</argLineMemory>
+    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
     <!--
@@ -1237,15 +1238,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <!--
-      CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
-      org.opennms.core.test.karaf.KarafTestCase classes are experiencing
-      the following bug in those versions (even thought it is claimed to
-      have been fixed in 2.19.1):
-
-      https://issues.apache.org/jira/browse/SUREFIRE-1193
-    -->
-    <maven.testing.plugin.version>2.18</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.0.0-M5</maven.testing.plugin.version>
     <maven.failsafe.plugin.version>${maven.testing.plugin.version}</maven.failsafe.plugin.version>
     <maven.surefire.plugin.version>${maven.testing.plugin.version}</maven.surefire.plugin.version>
     <maven.surefire.report.plugin.version>${maven.testing.plugin.version}</maven.surefire.report.plugin.version>
@@ -1380,7 +1373,7 @@
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <c3p0Version>0.9.5.4</c3p0Version>
     <curatorVersion>3.2.1</curatorVersion>
-    <cxfVersion>3.2.8</cxfVersion>
+    <cxfVersion>3.4.2</cxfVersion>
     <cxfXjcVersion>3.3.0</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
@@ -1440,8 +1433,8 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.13.2</log4j2Version>
-    <mapstructVersion>1.3.0.Final</mapstructVersion>
-    <minaVersion>2.0.16</minaVersion>
+    <mapstructVersion>1.4.1.Final</mapstructVersion>
+    <minaVersion>2.1.4</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.5</newtsVersion>
@@ -1451,7 +1444,7 @@
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
-    <powermockVersion>2.0.7</powermockVersion>
+    <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>0.5.1</opennmsApiVersion>
@@ -1862,13 +1855,6 @@
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun</groupId>
-        <artifactId>tools</artifactId>
-        <version>1.8</version>
-        <scope>system</scope>
-        <systemPath>${java.home}/../lib/tools.jar</systemPath>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -3627,7 +3613,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>3.4</version>
+        <version>4.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3867,6 +3853,11 @@
         <version>1.1</version>
       </dependency>
       <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>2.3.3</version>
+      </dependency>
+      <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>99.99.99-use-opennms-jaxb</version>
@@ -3990,6 +3981,12 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
+        <version>${mockitoVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
         <version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>

@@ -47,12 +47,13 @@
                     <workingDirectory>${project.build.directory}</workingDirectory>
                     <skipIfExist>true</skipIfExist>
                     <alias>localhost</alias>
-                    <keysize>1024</keysize>
-                    <keyalg>DSA</keyalg>
+                    <keysize>2048</keysize>
+                    <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
                     <keystore>${project.build.directory}/test-keystore.jks</keystore>
-                    <storepass>password</storepass>
+                    <storepass>changeit</storepass>
                     <validity>2</validity>
+                    <ext>SubjectAlternativeName=dns:localhost</ext>
                 </configuration>
             </plugin>
         </plugins>
@@ -161,6 +162,7 @@
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.kafka</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -260,12 +262,6 @@
         <dependency>
             <groupId>org.opennms.features.flows</groupId>
             <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.kafka</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

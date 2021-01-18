@@ -27,10 +27,10 @@
  *******************************************************************************/
 package org.opennms.features.ifttt.helper;
 
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -44,15 +44,10 @@ import org.apache.http.message.BasicStatusLine;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.test.MockLogAppender;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(HttpClients.class)
 public class IfTttTriggerTest {
     private static final String TEST_KEY = "abc123def456";
     private static final String TEST_EVENT = "xyz";
@@ -71,7 +66,7 @@ public class IfTttTriggerTest {
 
         final CloseableHttpClient closeableHttpClient = mock(CloseableHttpClient.class);
 
-        when(closeableHttpClient.execute(anyObject())).thenAnswer(new Answer<Object>() {
+        when(closeableHttpClient.execute(any())).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 HttpPost httpPost = invocationOnMock.getArgument(0);

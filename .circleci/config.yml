@@ -3,15 +3,16 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
+      - image: opennms/build-env:11.0.9.11-3.6.3-b5958
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5875
+      - image: opennms/build-env:debian-jdk11-b6222
   docker-executor:
     docker:
       - image: docker:20.10.1-git
   integration-test-executor:
-    machine: true
+    machine:
+     image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -328,8 +329,18 @@ commands:
     steps:
       - update-maven-cache
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Integration Tests
-          no_output_timeout: 1.0h
+          no_output_timeout: 15m
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
@@ -341,8 +352,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
           name: Gather tests
           when: always
@@ -363,12 +374,26 @@ commands:
                 root: ~/
                 paths:
                   - code-coverage
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           when: always
           path: ~/test-results
           destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           when: always
           path: ~/generated-tests
@@ -748,11 +773,12 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 2
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -775,6 +801,7 @@ jobs:
           command: |
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -787,6 +814,7 @@ jobs:
               -Dopennms.home=/opt/opennms \
               install --batch-mode
             # javadoc
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -798,6 +826,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               javadoc:aggregate --batch-mode
+            date
       - run:
           name: Collect Artifacts
           command: |
