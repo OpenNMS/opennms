@@ -40,7 +40,7 @@
         <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-tree/7.1</bundle>
         <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-analysis/7.1</bundle>
         <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-commons/7.1</bundle>
-        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy/1.1.4</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy/1.1.6</bundle>
     </feature>
 
     <feature name="aries-blueprint" description="Aries Blueprint" version="4.2.6">
