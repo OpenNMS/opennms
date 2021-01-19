@@ -40,19 +40,15 @@ import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 
 /**
  * We maintain and serve configurations from a centralized place in a uniform way.
  */
-@Service
 public class ConfigurationService {
 
      private final BlobStore store;
 
-    @Autowired
     public ConfigurationService(final BlobStore store) {
         Objects.requireNonNull(store);
         this.store = store;

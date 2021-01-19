@@ -42,6 +42,11 @@
       <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
