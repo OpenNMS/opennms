@@ -100,6 +100,7 @@
         <constructor-arg>
             <list>
                 <value>META-INF/opennms/applicationContext-vacuumd.xml</value>
+                <value>META-INF/opennms/applicationContext-configservice.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg ref="daoContext" />
