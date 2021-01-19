@@ -86,6 +86,8 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
 
     private static final String WMI_RESOURCE_TYPES_KEY = "wmiResourceTypes";
 
+    private static final String FALLBACK_RESOURCE_TYPE_NAME = "wmiCollector";
+
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(WMI_COLLECTION_KEY, WmiCollection.class),
             new SimpleEntry<>(WMI_AGENT_CONFIG_KEY, WmiAgentConfig.class))
@@ -177,7 +179,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = new DeferredGenericTypeResource(nodeResource, wpm.getResourceType(), instance);
+                                resource = new DeferredGenericTypeResource(nodeResource, wpm.getResourceType(), FALLBACK_RESOURCE_TYPE_NAME, instance);
                             } else {
                                 resource = nodeResource;
                             }
