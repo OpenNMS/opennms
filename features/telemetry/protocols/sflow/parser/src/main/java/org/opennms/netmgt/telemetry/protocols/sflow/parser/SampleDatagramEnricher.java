@@ -96,7 +96,7 @@ public class SampleDatagramEnricher {
         final Map<InetAddress, String> hostnamesByAddress = new HashMap<>(addressesToReverseLookup.size());
         final List<CompletableFuture<Optional<String>>> reverseLookupFutures = addressesToReverseLookup.stream()
                 .map(addr -> dnsResolver.reverseLookup(addr).whenComplete((hostname, ex) -> {
-                    if (ex != null) {
+                    if (ex == null) {
                         synchronized (hostnamesByAddress) {
                             hostnamesByAddress.put(addr, hostname.orElse(null));
                         }
