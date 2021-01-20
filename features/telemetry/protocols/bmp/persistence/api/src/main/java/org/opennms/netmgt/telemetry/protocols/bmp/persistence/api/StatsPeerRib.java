@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,19 +28,38 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
-
 import java.util.Date;
-import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+public class StatsPeerRib {
 
-public interface BmpUnicastPrefixDao extends OnmsDao<BmpUnicastPrefix, Long> {
+    private Date intervalTime;
 
-    BmpUnicastPrefix findByHashId(String hashId);
+    private String peerHashId;
 
-    List<BmpUnicastPrefix> getUnicastPrefixesAfterDate(String hashId, Date time);
+    private Integer v4prefixes;
 
-    List<PrefixByAS> getPrefixesGroupedByAS();
+    private Integer v6prefixes;
 
-    List<StatsPeerRib> getPeerRibCountsByPeer();
+    public StatsPeerRib(Date intervalTime, String peerHashId, Integer v4prefixes, Integer v6prefixes) {
+        this.intervalTime = intervalTime;
+        this.peerHashId = peerHashId;
+        this.v4prefixes = v4prefixes;
+        this.v6prefixes = v6prefixes;
+    }
+
+    public Date getIntervalTime() {
+        return intervalTime;
+    }
+
+    public String getPeerHashId() {
+        return peerHashId;
+    }
+
+    public Integer getV4prefixes() {
+        return v4prefixes;
+    }
+
+    public Integer getV6prefixes() {
+        return v6prefixes;
+    }
 }

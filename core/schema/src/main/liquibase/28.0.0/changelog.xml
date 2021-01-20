@@ -441,6 +441,7 @@
     </createView>
   </changeSet>
 
+
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-route-info-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
@@ -566,6 +567,31 @@
     <sql>
       SELECT create_hypertable('bmp_ip_rib_log', 'last_updated', chunk_time_interval => interval '5 day');
     </sql>
+  </changeSet>
+
+  <changeSet id="28.0.0-bmp-view-ip-routes-history" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_ip_routes_history">
+      SELECT
+      CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
+      rtr.ip_address as RouterAddress,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      log.prefix AS Prefix,log.prefix_len AS PrefixLen,
+      attr.origin AS Origin,log.origin_as AS Origin_AS,
+      attr.med AS MED,attr.local_pref AS LocalPref,attr.next_hop AS NH,
+      attr.as_path AS AS_Path,attr.as_path_count AS ASPath_Count,attr.community_list AS Communities,
+      attr.ext_community_list AS ExtCommunities,attr.large_community_list AS LargeCommunities,
+      attr.cluster_list AS ClusterList,attr.aggregator AS Aggregator,p.peer_addr AS PeerIp,
+      p.peer_asn AS PeerASN,  p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN,
+      log.id,log.last_updated AS LastModified,
+      CASE WHEN log.is_withdrawn THEN 'Withdrawn' ELSE 'Advertised' END as event,
+      log.base_attr_hash_id as base_attr_hash_id, log.peer_hash_id, rtr.hash_id as router_hash_id
+      FROM bmp_ip_rib_log log
+      JOIN bmp_base_attributes attr
+      ON (log.base_attr_hash_id = attr.hash_id AND
+      log.peer_hash_id = attr.peer_hash_id)
+      JOIN bmp_peers p ON (log.peer_hash_id = p.hash_id)
+      JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id);
+    </createView>
   </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-bypeer-nxtid">
@@ -767,5 +793,68 @@
       SELECT create_hypertable('bmp_stats_by_prefix', 'interval_time', chunk_time_interval => interval '2 day');
     </sql>
   </changeSet>
+
+
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-peer-rib-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatspeerribnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatspeerribnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatspeerribnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="28.0.0-bmp-stats-peer-rib">
+
+    <createTable tableName="bmp_stats_peer_rib" remarks="bmp stats peer rib prefix counts">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="peer_hash_id" type="varchar(36)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_peer_rib" indexName="bmp_stats_peer_rib_peer_hash_id" unique="false">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_stats_peer_rib" indexName="bmp_stats_peer_rib_unique" unique="true">
+      <column name="interval_time" />
+      <column name="peer_hash_id" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="28.0.0.bmp-stats-peer-rib-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_peer_rib';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_peer_rib', 'interval_time', chunk_time_interval => interval '1 month');
+    </sql>
+  </changeSet>
+
 
 </databaseChangeLog>

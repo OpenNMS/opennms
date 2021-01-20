@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,19 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
-
-import java.util.Date;
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BmpUnicastPrefixDao extends OnmsDao<BmpUnicastPrefix, Long> {
-
-    BmpUnicastPrefix findByHashId(String hashId);
-
-    List<BmpUnicastPrefix> getUnicastPrefixesAfterDate(String hashId, Date time);
-
-    List<PrefixByAS> getPrefixesGroupedByAS();
-
-    List<StatsPeerRib> getPeerRibCountsByPeer();
+public interface BmpStatsPeerRibDao extends OnmsDao<BmpStatsPeerRib, Long> {
 }

@@ -4,21 +4,24 @@
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
 
-
+  <reference id="bmpUnicastPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" />
   <reference id="bmpIpRibLogDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" />
   <reference id="bmpStatsByPeerDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" />
   <reference id="bmpStatsByAsnDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" />
   <reference id="bmpStatsByPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" />
+  <reference id="bmpStatsPeerRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" />
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
 
   <!-- BMP Stats Aggregator that should only run on OpenNMS -->
-  <bean id="bmpMessagePersister" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.BmpStatsAggregator"
-        init-method="init">
+  <bean id="bmpStatsAggregator" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.BmpStatsAggregator"
+        init-method="init" destroy-method="destroy">
     <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="bmpUnicastPrefixDao" ref="bmpUnicastPrefixDao"/>
     <property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
     <property name="bmpStatsByPeerDao" ref="bmpStatsByPeerDao"/>
     <property name="bmpStatsByAsnDao" ref="bmpStatsByAsnDao"/>
     <property name="bmpStatsByPrefixDao" ref="bmpStatsByPrefixDao"/>
+    <property name="bmpStatsPeerRibDao" ref="bmpStatsPeerRibDao"/>
   </bean>
 
 </blueprint>

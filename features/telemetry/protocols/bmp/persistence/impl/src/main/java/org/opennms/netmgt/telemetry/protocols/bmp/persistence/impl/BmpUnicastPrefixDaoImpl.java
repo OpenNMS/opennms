@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -39,6 +40,7 @@ import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsPeerRib;
 
 import com.google.common.base.Strings;
 
@@ -81,5 +83,29 @@ public class BmpUnicastPrefixDaoImpl extends AbstractDaoHibernate<BmpUnicastPref
                 "GROUP BY prefix.prefix,  prefix.prefixLen, prefix.originAs";
 
         return findObjects(PrefixByAS.class, query);
+    }
+
+    @Override
+    public List<StatsPeerRib> getPeerRibCountsByPeer() {
+        return getHibernateTemplate().execute(session -> (List<StatsPeerRib>) session.createSQLQuery(
+                "SELECT to_timestamp((cast((extract(epoch from now())) as bigint)/900)*900)," +
+                        " peer_hash_id," +
+                        " sum(CASE WHEN is_ipv4 = true THEN 1 ELSE 0 END) AS v4_prefixes, " +
+                        " sum(CASE WHEN is_ipv4 = false THEN 1 ELSE 0 END) as v6_prefixes " +
+                        " FROM bmp_ip_ribs " +
+                        " WHERE is_withdrawn = false" +
+                        " GROUP BY peer_hash_id"
+        ).setResultTransformer(new ResultTransformer() {
+            @Override
+            public Object transformTuple(Object[] tuple, String[] aliases) {
+                return new StatsPeerRib((Date) tuple[0], (String) tuple[1], (Integer) tuple[2], (Integer) tuple[3]);
+            }
+
+            @SuppressWarnings("rawtypes")
+            @Override
+            public List transformList(List collection) {
+                return collection;
+            }
+        }).list());
     }
 }

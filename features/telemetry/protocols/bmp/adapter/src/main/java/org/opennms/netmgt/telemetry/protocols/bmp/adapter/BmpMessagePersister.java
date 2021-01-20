@@ -157,6 +157,14 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     private ConcurrentLinkedQueue<CollectionSetWithAgent> collectionSetQueue = new ConcurrentLinkedQueue<>();
 
 
+    public void init() {
+        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 60, TimeUnit.MINUTES);
+    }
+
+    public void destroy() {
+        scheduledExecutorService.shutdown();
+    }
+
     @Override
     public void handle(Message message, Context context) {
         sessionUtils.withTransaction(() -> {
@@ -255,9 +263,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         });
     }
 
-    public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 5, TimeUnit.MINUTES);
-    }
 
     void updateGlobalRibsAndAsnInfo() {
         List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();

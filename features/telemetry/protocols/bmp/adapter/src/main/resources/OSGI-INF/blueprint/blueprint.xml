@@ -94,7 +94,7 @@
 
 	<!-- OpenBMP Message Persister -->
 	<bean id="bmpMessagePersister" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpMessagePersister"
-		  init-method="init">
+		  init-method="init" destroy-method="destroy">
 		<property name="bmpCollectorDao" ref="bmpCollectorDao"/>
 		<property name="bmpRouterDao" ref="bmpRouterDao"/>
 		<property name="bmpPeerDao" ref="bmpPeerDao"/>
@@ -108,10 +108,6 @@
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
 		<property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
-		<property name="bmpStatsByPeerDao" ref="bmpStatsByPeerDao"/>
-		<property name="bmpStatsByAsnDao" ref="bmpStatsByAsnDao"/>
-		<property name="bmpStatsByPrefixDao" ref="bmpStatsByPrefixDao"/>
-
 	</bean>
 
 	<service ref="bmpMessagePersister" interface="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler">

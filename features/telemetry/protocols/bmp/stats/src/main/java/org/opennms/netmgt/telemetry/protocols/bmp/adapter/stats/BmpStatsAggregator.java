@@ -42,9 +42,13 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeer
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRib;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByAsn;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsByPrefix;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsPeerRib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +62,7 @@ public class BmpStatsAggregator {
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("updateStats-%d")
             .build();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10,
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(20,
             threadFactory);
 
     @Autowired
@@ -74,13 +78,23 @@ public class BmpStatsAggregator {
     private BmpStatsByPrefixDao bmpStatsByPrefixDao;
 
     @Autowired
+    private BmpUnicastPrefixDao bmpUnicastPrefixDao;
+
+    @Autowired
+    private BmpStatsPeerRibDao bmpStatsPeerRibDao;
+
+    @Autowired
     private SessionUtils sessionUtils;
 
     public void init() {
         scheduledExecutorService.scheduleAtFixedRate(this::updatePeerStats, 0, 5, TimeUnit.MINUTES);
         scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByAsn, 0, 5, TimeUnit.MINUTES);
         scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByPrefix, 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(this::updatePeerRibCountStats, 0, 15, TimeUnit.MINUTES);
+    }
 
+    public void destroy() {
+        scheduledExecutorService.shutdown();
     }
 
     private void updatePeerStats() {
@@ -141,6 +155,35 @@ public class BmpStatsAggregator {
         LOG.debug("Updating Stat by Prefix --");
     }
 
+    private void updatePeerRibCountStats() {
+        LOG.debug("Updating Stats Peer Rib ++");
+        List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
+        if(statsPeerRibs.isEmpty()) {
+            LOG.debug("Stats : Bmp Peer Rib is empty");
+        } else {
+            LOG.debug("Retrieved {} StatsPeerRib elements", statsPeerRibs.size());
+        }
+        statsPeerRibs.forEach( statsPeerRib -> {
+            BmpStatsPeerRib bmpStatsPeerRib =  buildBmpStatPeerRibCount(statsPeerRib);
+            try {
+                bmpStatsPeerRibDao.saveOrUpdate(bmpStatsPeerRib);
+            } catch (Exception e) {
+                LOG.error("Exception while persisting BMP Stats Peer Rib {}", bmpStatsPeerRib, e);
+            }
+        });
+        LOG.debug("Updating Stats Peer Rib --");
+
+    }
+
+    private BmpStatsPeerRib buildBmpStatPeerRibCount(StatsPeerRib statsPeerRib) {
+        BmpStatsPeerRib bmpStatsPeerRib = new BmpStatsPeerRib();
+        bmpStatsPeerRib.setPeerHashId(statsPeerRib.getPeerHashId());
+        bmpStatsPeerRib.setTimestamp(statsPeerRib.getIntervalTime());
+        bmpStatsPeerRib.setV4prefixes(statsPeerRib.getV4prefixes());
+        bmpStatsPeerRib.setV6prefixes(statsPeerRib.getV6prefixes());
+        return bmpStatsPeerRib;
+    }
+
     private BmpStatsByPeer buildBmpStatsByPeer(StatsByPeer statsByPeer) {
         BmpStatsByPeer bmpStatsByPeer = new BmpStatsByPeer();
         bmpStatsByPeer.setPeerHashId(statsByPeer.getPeerHashId());
@@ -185,6 +228,14 @@ public class BmpStatsAggregator {
 
     public void setBmpStatsByPrefixDao(BmpStatsByPrefixDao bmpStatsByPrefixDao) {
         this.bmpStatsByPrefixDao = bmpStatsByPrefixDao;
+    }
+
+    public void setBmpUnicastPrefixDao(BmpUnicastPrefixDao bmpUnicastPrefixDao) {
+        this.bmpUnicastPrefixDao = bmpUnicastPrefixDao;
+    }
+
+    public void setBmpStatsPeerRibDao(BmpStatsPeerRibDao bmpStatsPeerRibDao) {
+        this.bmpStatsPeerRibDao = bmpStatsPeerRibDao;
     }
 
     public void setSessionUtils(SessionUtils sessionUtils) {
