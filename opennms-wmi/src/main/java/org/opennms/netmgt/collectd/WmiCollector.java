@@ -40,24 +40,17 @@ import java.util.stream.Stream;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
-import org.opennms.netmgt.collectd.wmi.WmiResourceTypeListWrapper;
 import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
-import org.opennms.netmgt.collection.support.IndexStorageStrategy;
-import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
@@ -93,10 +86,11 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
 
     private static final String WMI_RESOURCE_TYPES_KEY = "wmiResourceTypes";
 
+    private static final String FALLBACK_RESOURCE_TYPE_NAME = "wmiCollector";
+
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(WMI_COLLECTION_KEY, WmiCollection.class),
-            new SimpleEntry<>(WMI_AGENT_CONFIG_KEY, WmiAgentConfig.class),
-            new SimpleEntry<>(WMI_RESOURCE_TYPES_KEY, WmiResourceTypeListWrapper.class))
+            new SimpleEntry<>(WMI_AGENT_CONFIG_KEY, WmiAgentConfig.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
     public WmiCollector() {
@@ -118,8 +112,6 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         runtimeAttributes.put(WMI_COLLECTION_KEY, collection);
         final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(agent.getAddress());
         runtimeAttributes.put(WMI_AGENT_CONFIG_KEY, agentConfig);
-        final WmiResourceTypeListWrapper wmiResourceTypeListWrapper = new WmiResourceTypeListWrapper(DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes());
-        runtimeAttributes.put(WMI_RESOURCE_TYPES_KEY, wmiResourceTypeListWrapper);
         return runtimeAttributes;
     }
 
@@ -130,7 +122,6 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
         // check scheduled nodes to see if that group should be collected
         final WmiCollection collection = (WmiCollection)parameters.get(WMI_COLLECTION_KEY);
         final WmiAgentConfig agentConfig = (WmiAgentConfig)parameters.get(WMI_AGENT_CONFIG_KEY);
-        final Map<String, ResourceType> resourceTypesMap = ((WmiResourceTypeListWrapper) parameters.get(WMI_RESOURCE_TYPES_KEY)).getMap();
 
         final WmiAgentState agentState = new WmiAgentState(agent.getAddress(), agentConfig, parameters);
 
@@ -188,7 +179,7 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = getWmiResource(resourceTypesMap, agent, wpm.getResourceType(), nodeResource, instance);
+                                resource = new DeferredGenericTypeResource(nodeResource, wpm.getResourceType(), FALLBACK_RESOURCE_TYPE_NAME, instance);
                             } else {
                                 resource = nodeResource;
                             }
@@ -271,20 +262,6 @@ public class WmiCollector extends AbstractRemoteServiceCollector {
             }
         }
         return true;
-    }
-
-    private Resource getWmiResource(final Map<String, ResourceType> resourceTypesMap, final CollectionAgent agent, final String resourceType, final NodeLevelResource nodeResource, final String instance) {
-        ResourceType rt = resourceTypesMap.get(resourceType);
-        if (rt == null) {
-            LOG.debug("getWmiResourceType: using default WMI resource type strategy - index / all");
-            rt = new ResourceType();
-            rt.setName(resourceType);
-            rt.setStorageStrategy(new StorageStrategy());
-            rt.getStorageStrategy().setClazz(IndexStorageStrategy.class.getName());
-            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-        }
-        return new GenericTypeResource(nodeResource, rt, instance);
     }
 
     private void initWMIPeerFactory() {
