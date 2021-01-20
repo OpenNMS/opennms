@@ -1,0 +1,58 @@
+= Web Detector
+
+Use this detector to find and assign services based on HTTP.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.web.WebDetector`
+|===
+
+== Configuration and Use
+
+.Parameters for the Web detector
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                                                              | Required | Default value
+| `authEnabled`   | Whether to enable basic authentication.                                                  | optional | `false`
+| `authPassword`  | Password that is required for authentication.                                            | optional | `admin`
+| `authPreemtive` | Whether to send basic authentication even if the site did not ask for it.                | optional | `true`
+| `authUser`      | Username that is required for authentication.                                            | optional | `admin`
+| `headers`       | Optional headers to pass in the HTTP request.                                            | optional | -
+| `ipMatch`       | Matches against specific IP addresses or patterns. Filters can be used here to match single addresses or ranges. If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring match. The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a .* on both sides of your pattern unless you are going to be matching on the entire line.                                      | optional | -
+| `path`          | The relative URL to call in the request.                                                 | optional | `/`
+| `port`          | Port of the web server connecting to.                                                    | optional | `80`
+| `queryString`   | The query string to add to the URL after a ? (e.g., foo=bar&baz=zot).                    | optional | -
+| `responseRange` | Range for allowed HTTP error codes from the response.                                    | optional | `100-399`
+| `responseText`  | Text to look for in the response body. This will be matched against every line, and it will be considered a success at the first match. If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring match. The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a .* on both sides of your pattern unless you are going to be matching on the entire line.       | optional | -
+| `retries`       | Number of attempts to test a Service to be up or down.                                   | optional | -
+| `schema`        | Protocol/scheme to use.                                                                  | optional | `http`
+| `serviceName`   | A custom service name to identify this service .                                         | optional | `WEB`
+| `timeout`       | Timeout in milliseconds to wait for a response.                                          | optional | 2000
+| `useHttpV1`     | True/false whether to use HTTP 1.0 or 1.1.                                               | optional | `false`
+| `useSSLFilter`  | Defaults to false, if true it will trust self-signed certificates.                       | optional | `false`
+| `useSystemProxy`| Should the system wide proxy settings be used? The system proxy settings can be configured via system properties.                                                                                                  | optional | `false`
+| `userAgent`     | Set the user agent field in HTTP header to identify the OpenNMS monitor.                 | optional | `OpenNMS WebMonitor`
+| `virtualHost`   | Set the virtual host field in HTTP header. In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation, known as server name indication (SNI) (See: RFC3546 section 3.1).                           | optional | -
+|===
+
+== Example Configuration
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2010-06-29T13:15:30.494+02:00" name="test" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+  <scan-interval>1d</scan-interval>
+      <detector name="ServiceName" class="org.opennms.netmgt.provision.detector.web.WebDetector">
+         <parameter key="useSSLFilter" value="true"/>
+         <parameter key="port" value="443"/>
+         <parameter key="schema" value="https"/>
+         <parameter key="timeout" value="5000"/>
+         <parameter key="responseText" value="~^.*WoooRegEx.*$"/>
+         <parameter key="path" value="/login.jsp"/>
+      </detector>
+  <policies/>
+</foreign-source>
+----
+
