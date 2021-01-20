@@ -408,35 +408,32 @@ categories:
                   label: "Parameters"
                   type:
                     name: "properties"
+                - name: "parsers"
+                  label: "Flow Parser Definition"
+                  type:
+                    name: "objects"
+                    fields:
+                      - name: "name"
+                        label: "Parser Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "class-name"
+                        label: "Class Name"
+                        type:
+                          name: "string"
+                          validation: "TODO"
+                      - name: "parameters"
+                        label: "Parameters"
+                        type:
+                          name: "properties"
+                    index-type: "field"
+                    index-field: "name"
               index-type: "field"
               index-field: "listener-name"
             label: "Flow Listener Definition"
             description: "TODO"
             key: "/telemetry/flows/listeners"
-            example: "TODO"
-          - name: "flow-parser-def"
-            type:
-              name: "objects"
-              fields:
-                - name: "parser-name"
-                  label: "Parser Name"
-                  type:
-                    name: "string"
-                    validation: "TODO"
-                - name: "class-name"
-                  label: "Class Name"
-                  type:
-                    name: "string"
-                    validation: "TODO"
-                - name: "parameters"
-                  label: "Parameters"
-                  type:
-                    name: "properties"
-              index-type: "field"
-              index-field: "parser-name"
-            label: "Flow Parser Definition"
-            description: "TODO"
-            key: "/telemetry/flows/parsers"
             example: "TODO"
         categories:
           # Telemetry :: Flows :: Single Port Listener
