@@ -1,5 +1,10 @@
 = Minion
 
+A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach. 
+Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
+
+Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via ActiveMQ or Apache Kafka. 
+
 #TODO: We have to update the introduction here. Make it message broker generic.
        The introduction should be rewritten to answer the following questions: +
          * How can a Minion help me and when do I need a Minion +

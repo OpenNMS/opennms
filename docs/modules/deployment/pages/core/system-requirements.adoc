@@ -10,7 +10,7 @@
 |===
 
 *_You can install the packages and the services will start up_ +
-**_We don't take into account your intended workload, e.g. network size, number of monitored metrics, flows, events and data retention requirements._
+**_Does not take into account your intended workload, e.g., network size, number of monitored metrics, flows, events, and data retention requirements._
 
 [[operating-systems-core]]
 == Operating Systems

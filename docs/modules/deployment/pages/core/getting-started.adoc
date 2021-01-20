@@ -1,5 +1,5 @@
 [[getting-started-core]]
-= Getting started with a Core Instance
+= Getting Started with a Core Instance
 
 [[objectives-setup-core]]
 == Objectives
@@ -12,7 +12,7 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 * As a result you will have RRDtool as time series storage which persists RRD files on the local file system and is the default
 endif::[]
-* Login the Web User Interface and change the default admin password
+* Login to the web user interface and change the default admin password
 
 [[requirements-core]]
 == Requirements

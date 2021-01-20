@@ -1,3 +1,11 @@
 = Core
 
-#TODO: What is Core in a high-level-nutshell#
+The OpenNMS core is the main {page-component-title} software comprised of all required compoennts, including PostgreSQL. 
+
+The following illustrates a sample OpenNMS full stack setup. 
+
+.Sample OpenNMS Full Stack Setup
+
+image::deployment/core/opennms-full-stack.png[]
+
+#add detailed description of graphic#

@@ -1,14 +1,18 @@
 = Sentinel
 
-#TODO: What is Sentinel in a high-level-nutshell#
+Sentinel provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry. 
+It also supports thresholding for streaming telemetry if you are using OpenNMS xref:deployment/system-scalability/time-series-storage/newts.adoc[Newts]. 
+If you are using Minions or looking for scalable flow processing, you need Sentinel. 
 
-This section describes how to install the _Sentinel_ to scale individual components.
+Sentinel is a Karaf container that handles data processing for OpenNMS and Minion, spawning new containers as necessary to deal with increased data volume.
 
-Currently _Sentinel_ can be used:
+This section describes how to install the Sentinel to scale individual components.
 
-* Only allows distribution of _Telemetryd_ functionality (such as processing flows, or use the existing telemetry adapters to store measurements data to _Newts_)
-* Requires a _Minion_ to work as a (message) producer
-* In most cases, it is advised to disable those adapters and listeners in _{page-component-title}_ if they are also running by a _Sentinel_ instance.
+Keep the following in mind when using Sentinel:
 
-NOTE: At the moment only flows can be distributed using _Sentinel_.
+* Use only for distribution of Telemetryd functionality (such as processing flows, or use the existing telemetry adapters to store measurements data to OpenNMS Newts).
+* Requires a Minion to work as a (message) producer.
+* In most cases, you should disable adapters and listeners in {page-component-title} that are also run by a Sentinel instance. #how determine?#
+
+NOTE: At the moment Sentinel can distribute only flows.
       In the future more components will follow.

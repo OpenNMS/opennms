@@ -1,14 +1,14 @@
 [[setup-message-broker]]
 = Setting up Message Broker
 
-Distributing {page-component-title} components like Minions and Sentinel require a messaging infrastructure.
+Distributing {page-component-title} components like Minions and Sentinel requires a messaging infrastructure.
 This section describes how to setup your {page-component-title} Core instance to use an existing messaging infrasturce based on ActiveMQ or Apache Kafka.
 If you want to learn how it works, {page-component-title} Core comes with an embedded ActiveMQ system which is by default not reachable from external network.
 To get you started quickly, we describe here as well how you can enable and configure the embedded ActiveMQ instance.
 
-CAUTION: We recommend to use Apache Kafka in production and can be scaled to process high workloads.
-         The embedded ActiveMQ instance is for convinience to get you started quickly in a testing environment.
-         It is not suited for production workloads.
+CAUTION: We recommend using Apache Kafka in production and can be scaled to process high workloads.
+         The embedded ActiveMQ instance is for convenience to get you started quickly in a testing environment.
+         It is not suitable for production workloads.
 
 == Objectives
 
@@ -17,7 +17,7 @@ CAUTION: We recommend to use Apache Kafka in production and can be scaled to pro
 
 == Requirements
 
-Configuring a Minion requires the following information::
+Configuring a Minion requires the following information:
 
 * Web UI URL for your OpenNMS {page-component-title} Core instance
 * SSH access to the Karaf Shell
