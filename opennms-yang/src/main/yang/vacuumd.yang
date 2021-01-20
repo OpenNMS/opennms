@@ -1,7 +1,7 @@
 module opennms-vacuumd {
     yang-version 1.1;
-    namespace "urn:opennms:params:xml:ns:yang:opennms-vacuumd";
-    prefix "opennms-vacuumd";
+    namespace "urn:opennms:yang:vacuumd";
+    prefix "vacuumd";
 
     revision "2020-01-13" {
         description "Initial revision of opennms-vacuumd model";
@@ -160,4 +160,16 @@ module opennms-vacuumd {
     }
   }
 
+  rpc get-vacuumd-config {
+    input {
+      leaf name {
+        type string;
+      }
+    }
+    output {
+      leaf vacuumd-config {
+        type string;
+      }
+    }
+  }
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2018 Pantheon Technologies s.r.o. All Rights Reserved.
+
+  This program and the accompanying materials are made available under the
+  terms of the Eclipse Public License v1.0 which accompanies this distribution,
+  and is available at https://www.eclipse.org/legal/epl-v10.html
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.lighty.core</groupId>
+        <artifactId>lighty-app-parent</artifactId>
+        <version>13.0.2-SNAPSHOT</version>
+        <relativePath>../../lighty-core/lighty-app-parent</relativePath>
+    </parent>
+
+    <groupId>io.lighty.kit.examples.controllers</groupId>
+    <artifactId>lighty-opennms-restconf</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <application.main.class>io.lighty.examples.controllers.restconfapp.Main</application.main.class>
+        <application.attach.zip>true</application.attach.zip>
+
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.lighty.modules</groupId>
+            <artifactId>lighty-netconf-sb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.lighty.modules</groupId>
+            <artifactId>lighty-restconf-nb-community</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.lighty.modules</groupId>
+            <artifactId>lighty-swagger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.yang</groupId>
+            <artifactId>opennms-vacuumd-yang</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
