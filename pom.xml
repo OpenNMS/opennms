@@ -1409,6 +1409,7 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
+    <javassistVersion>3.27.0-GA</javassistVersion>
     <jcifsVersion>2.1.4</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.34.v20201102</jettyVersion>
@@ -1443,7 +1444,7 @@
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
-    <powermockVersion>2.0.7</powermockVersion>
+    <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>0.5.1</opennmsApiVersion>
@@ -3875,6 +3876,11 @@
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-core</artifactId>
         <version>${dropwizardMetricsVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${javassistVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
