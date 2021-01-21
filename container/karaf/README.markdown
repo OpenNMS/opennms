@@ -1,5 +1,4 @@
-Upgrading Karaf
-===============
+
 
 To upgrade our container to use a new base Karaf version, follow these steps.
 
@@ -7,8 +6,8 @@ To upgrade our container to use a new base Karaf version, follow these steps.
 1. Run these commands to see the differences in the Karaf etc files:
 
         diff -r $KARAF_DIR/etc $SRC_DIR/container/karaf/src/main/filtered-resources/etc
-        diff -r $KARAF_DIR/etc $SRC_DIR/features/minion/container/karaf/src/main/filtered-resources/etc
-        diff -r $KARAF_DIR/etc $SRC_DIR/smoke-test/src/test/resources
+        diff -r $KARAF_DIR/etc $SRC_DIR/features/container/minion/src/main/filtered-resources/etc
+        diff -r $KARAF_DIR/etc $SRC_DIR/features/container/sentinel/src/main/filtered-resources/etc
 
 1. Apply any relevant changes to the files inside each etc file.
 1. Copy the new Karaf "standard" features.xml file into the features project:
