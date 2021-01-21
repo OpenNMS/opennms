@@ -1,5 +1,5 @@
 [[getting-started-core]]
-= Getting Started with a Core Instance
+= Installation and Configuration
 
 [[objectives-setup-core]]
 == Objectives

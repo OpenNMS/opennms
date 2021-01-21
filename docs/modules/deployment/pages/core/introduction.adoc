@@ -1,11 +1,5 @@
-= Core
+= Setting up a Basic {page-component-title}
 
-The OpenNMS core is the main {page-component-title} software comprised of all required compoennts, including PostgreSQL. 
+A basic {page-component-title} set up installls and configures the minimum required compoennts, including PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 
 
-The following illustrates a sample OpenNMS full stack setup. 
-
-.Sample OpenNMS Full Stack Setup
-
-image::deployment/core/opennms-full-stack.png[]
-
-#add detailed description of graphic#
+image::deployment/core/opennms-arch.png[]

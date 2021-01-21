@@ -5,33 +5,27 @@ Minions communicate with these remote devices while OpenNMS performs coordinatio
 
 Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via ActiveMQ or Apache Kafka. 
 
-#TODO: We have to update the introduction here. Make it message broker generic.
-       The introduction should be rewritten to answer the following questions: +
-         * How can a Minion help me and when do I need a Minion +
-         * What is required to deploy Minions#
+Using Minions to monitor devices and services in hard-to-reach, remote network locations:
 
-Minion gives the ability to monitor devices and applications which are in isolated networks and hard to reach from a central {page-component-title} Core instance.
-Maintaining a large set of _Firewall_ rules to allow a variety of management protocols is sometimes tedious and hard to set up.
-Communicating with managed devices over unreliable networks and the use of _UDP_ based management protocols can also be difficult to maintain.
-Deploying a Minion can be used to address these issues.
+* means you do not have to set up and maintain a large set of firewall rules for multiple mangement protocols
+* avoids the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols
+* simplifies the network communication to the message broker and REST endpoint
 
-A Minion can be used when a central {page-component-title} Core instance can't reach all devices for monitoring.
-Furthermore it simplifies the network communication to the message broker and the REST endpoint.
+== How it Works
 
-The network area where access to managed network devices and applications is allowed can be modeled in a _Location_.
-Monitored _Nodes_ and _IP Services_ are associated to _Locations_ and are defined during _Provisioning_.
-Each Minion is configured with a _Location_ and all _Nodes_ and _IP Services_ in the same _Location_ are monitored through this Minion.
+A Minion monitors all the managed nodes and IP services in the same location (e.g., Pittsboro office, building_3). 
+It communicates with the message broker, which in turn communicates with the OpenNMS instance. 
 
 ._Nodes_ with _Minions_ in _Locations_
 image::deployment/minion/location.png[]
 
-Every _Node_ created in {page-component-title} is by default created in the _Location_ named _Default_.
-All _Nodes_ and _Services_ in the _Default Location_ are handled by the central {page-component-title} instance itself.
-For each branch office in an isolated network, a _Location_ is defined.
-The _Minion_ has a configuration property for the _Location_ and will register itself to the {page-component-title} instance on startup.
+By default, every node provisioned in {page-component-title} is created in the "Default" location.
+The central {page-component-title} instance itself handles all nodes and services in the "Default" location.
+To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
+The Minion will register itself to the {page-component-title} instance on startup.
 
-The _Provisioning System_ allows to associate _Nodes_ to a _Location_.
-{page-component-title} will delegate monitoring requests for _Nodes_ in the specified _Locations_ to the registered _Minions_ and uses them as a proxy.
+{page-component-title}'s' provisioning system allows you to associate nodes to a location.
+{page-component-title} will delegate monitoring requests for nodes in the specified locations to the registered Minions, using them as a proxy.
 
 Figure <<gi-install-minion-communication, Minion communication>> gives a more detailed overview about the communication between an {page-component-title} instance and a _Minion_.
 
