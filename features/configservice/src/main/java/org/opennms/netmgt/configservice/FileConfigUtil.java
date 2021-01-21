@@ -28,13 +28,23 @@
 
 package org.opennms.netmgt.configservice;
 
-public class ConfigurationNotAvailableException extends Exception {
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Optional;
 
-    public ConfigurationNotAvailableException(final Exception e) {
-        super(e);
-    }
+import org.apache.commons.io.FileUtils;
+import org.opennms.core.utils.ConfigFileConstants;
 
-    public ConfigurationNotAvailableException(final String message) {
-        super(message);
+public class FileConfigUtil {
+
+    public static Optional<String> getConfigFromEtcFile(final String uri) {
+        try {
+            // for now we only support files in the etc dir:
+            File file = ConfigFileConstants.getConfigFileByName(uri);
+            return Optional.ofNullable(FileUtils.readFileToString(file, Charset.defaultCharset()));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 }

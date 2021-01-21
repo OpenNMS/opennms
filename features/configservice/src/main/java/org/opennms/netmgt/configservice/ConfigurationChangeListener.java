@@ -28,13 +28,6 @@
 
 package org.opennms.netmgt.configservice;
 
-public class ConfigurationNotAvailableException extends Exception {
-
-    public ConfigurationNotAvailableException(final Exception e) {
-        super(e);
-    }
-
-    public ConfigurationNotAvailableException(final String message) {
-        super(message);
-    }
+public interface ConfigurationChangeListener {
+    void configurationHasChanged(String uri);
 }
