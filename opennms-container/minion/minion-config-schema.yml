@@ -12,23 +12,23 @@ categories:
   # General
   - name: "general"
     label: "General"
-    description: "TODO"
+    description: "General Minion settings."
     config:
       - name: "instance-id"
         type:
           name: "string"
           validation: "TODO"
-        label: "OpenNMS Instance Id"
-        description: "TODO"
+        label: "Core Instance Id"
+        description: "Identifier for the Core instance used as queue prefix in the message broker."
         key: "/org.opennms.instance.id"
-        example: "TODO"
+        example: "OpenNMS"
       - name: "system-properties"
         type:
           name: "properties"
         label: "System Properties"
-        description: "TODO"
+        description: "Set generic Java system properties"
         key: "/system/properties"
-        example: "TODO"
+        example: "jaeger-agent-host: my-jaeger-host"
       - name: "server-certificates"
         type:
           name: "collection"
@@ -38,54 +38,54 @@ categories:
             type:
               name: "string"
         label: "Server Certificates"
-        description: "TODO"
+        description: "TLS certificates for public communication endpoints."
         key: "/server-certs"
         example: "TODO"
     categories:
       # General :: Controller
       - name: "controller"
-        label: "Controller"
-        description: "TODO"
+        label: "Minion Controller"
+        description: "Minion controller configuration for a location and communication endpoints."
         config:
           - name: "location"
             type:
               name: "string"
               validation: "TODO"
             label: "Location"
-            description: "TODO"
+            description: "Name of the location the Minion is deployed"
             key: "/location"
-            example: "TODO"
+            example: "my-remote-office-nyc"
           - name: "id"
             type:
               name: "string"
               validation: "TODO"
             label: "Minion Id"
-            description: "TODO"
+            description: "A unique Minion identifier in the location."
             key: "/id"
-            example: "TODO"
+            example: "id: my-minion-nyc"
           - name: "broker-url"
             type:
               name: "url"
-            label: "Broker URL"
-            description: "TODO"
+            label: "The message broker URL"
+            description: "Message broker connection URL"
             key: "/broker-url"
-            example: "TODO"
+            example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
           - name: "http-url"
             type:
               name: "url"
-            label: "HTTP URL"
-            description: "TODO"
+            label: "Core base URL"
+            description: "The Core web application base URL."
             key: "/http-url"
-            example: "TODO"
+            example: "http://my-opennms-instance-ip:8980/opennms"
   # Dominion
   - name: "dominion"
     label: "Dominion"
-    description: "TODO"
+    description: "Dominion configuration"
     categories:
       # Dominion :: gRPC
       - name: "grpc"
         label: "gRPC"
-        description: "TODO"
+        description: "gRPC endpoint"
         config:
           - name: "host"
             type:
@@ -123,55 +123,55 @@ categories:
   # Karaf
   - name: "karaf"
     label: "Karaf"
-    description: "TODO"
+    description: "Karaf configuration"
     categories:
       # Karaf :: Management
       - name: "management"
         label: "Management"
-        description: "TODO"
+        description: "Configuration for Karaf JMX management access"
         categories:
           # Karaf :: Management :: RMI
           - name: "rmi"
             label: "RMI"
-            description: "TODO"
+            description: "Configure remote method invocation (RMI)"
             config:
               - name: "registry-host"
                 type:
                   name: "host"
                 label: "Registry Host"
-                description: "TODO"
+                description: "RMI registry host IP address"
                 key: "/karaf/management/rmi/registry/host"
-                example: "TODO"
+                example: "127.0.0.1"
               - name: "registry-port"
                 type:
                   name: "port"
                 label: "Registry Port"
-                description: "TODO"
+                description: "RMI listening TCP port"
                 key: "/karaf/management/rmi/registry/port"
-                example: "TODO"
+                example: "1299"
               - name: "server-host"
                 type:
                   name: "host"
                 label: "Server Host"
-                description: "TODO"
+                description: "RMI server host IP address seen by the client"
                 key: "/karaf/management/rmi/server/host"
-                example: "TODO"
+                example: "127.0.0.1"
               - name: "server-port"
                 type:
                   name: "port"
                 label: "Server Port"
-                description: "TODO"
+                description: "RMI server TCP port"
                 key: "/karaf/management/rmi/server/port"
-                example: "TODO"
+                example: "45444"
       # Karaf :: Shell
       - name: "shell"
         label: "Shell"
-        description: "TODO"
+        description: "Karaf Shell access configuration"
         categories:
           # Karaf :: Shell :: SSH
           - name: "ssh"
             label: "SSH"
-            description: "TODO"
+            description: "Karaf SSH configuration"
             config:
               - name: "host"
                 type:
@@ -190,7 +190,7 @@ categories:
   # Minion Environment
   - name: "environment"
     label: "Environment"
-    description: "TODO"
+    description: "Minion Java environment"
     config:
       - name: "java-opts"
         type:
@@ -201,58 +201,65 @@ categories:
             type:
               name: "string"
         label: "JVM Options"
-        description: "TODO"
+        description: "Additional Java options"
         key: "/process-env/java-opts"
-        example: "TODO"
+        example: "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896"
   # IPC Configuration
   - name: "ipc"
     label: "IPC"
-    description: "TODO"
+    description: "Core, Minion and Sentinel distributed inter process communication (IPC) settings"
     categories:
       # IPC Configuration :: AWS
       - name: "aws"
         label: "AWS"
-        description: "TODO"
+        description: "Amazon Web Services Simple Queue Service (AWS SQS) configuration"
         config:
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
-            description: "TODO"
+            description: "AWS SQS properties"
             key: "/aws"
-            example: "TODO"
+            example: "aws_region: us-east-1, aws_access_key_id: xxxxxx or aws_secret_access_key: yyyyyy"
         categories:
           # IPC Configuration :: AWS :: SQS
           - name: "sqs"
             label: "SQS"
-            description: "TODO"
+            description: "IPC messaging configuration for AWS SQS"
             config:
               - name: "properties"
                 type:
                   name: "properties"
                 label: "Properties"
-                description: "TODO"
+                description: "AWS SQS IPC properties"
                 key: "/ipc/sqs"
-                example: "TODO"
+                example: "sink.MaximumMessageSize: 262144"
       # IPC Configuration :: gRPC
       - name: "grpc"
         label: "gRPC"
-        description: "TODO"
+        description: "gRPC for IPC configuration"
         config:
           - name: "host"
             type:
-              name: "host-with-port"
+              name: "host"
             label: "Host"
-            description: "TODO"
+            description: "gRPC host endpoint, typcally the same Core instance"
             key: "/ipc/grpc/host"
-            example: "TODO"
+            example: "my-opennms-instance-ip"
+          - name: "port"
+            type:
+              name: "port"
+            label: "gRPC TCP port"
+            description: "gRPC TCP port the server is listening"
+            key: "/ipc/grpc/port"
+            example: "8990"
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
             description: "Additional gRPC configuration properties for IPC gRPC"
             key: "/ipc/grpc"
-            example: "TODO"
+            example: "max.message.size: 10485760"
       # IPC Configuration :: RPC
       - name: "rpc"
         label: "RPC"
