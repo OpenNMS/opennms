@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.flows.elastic.agg;
 
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_APPLICATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_CONVERSATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_HOST;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_APPLICATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_CONVERSATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_HOST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +59,8 @@ import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.ElasticFlowQueryService;
 import org.opennms.netmgt.flows.elastic.GPath;
 import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
+import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
@@ -83,39 +92,59 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         super(client, indexSelector);
     }
 
+    private boolean hasTosFilter(List<Filter> filters) {
+        return filters.stream().anyMatch(f -> f instanceof DscpFilter || f instanceof EcnFilter);
+    }
+
+    private GroupedBy selectGroupedBy(List<Filter> filters, GroupedBy withTos, GroupedBy withoutTos) {
+        return hasTosFilter(filters) ? withTos : withoutTos;
+    }
+
+    private GroupedBy selectAppGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_APPLICATION, EXPORTER_INTERFACE_APPLICATION);
+    }
+
+    private GroupedBy selectHostGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_HOST, EXPORTER_INTERFACE_HOST);
+    }
+
+    private GroupedBy selectConvGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_CONVERSATION, EXPORTER_INTERFACE_CONVERSATION);
+    }
+
     @Override
     public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_APPLICATION, Types.APPLICATION,
+        return getTopNSummary(N, includeOther, filters, selectAppGroupedBy(filters), Types.APPLICATION,
                               CompletableFuture::completedFuture);
     }
 
     @Override
     public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_APPLICATION, Types.APPLICATION,
+        return getTopNSeries(N, step, includeOther, filters, selectAppGroupedBy(filters), Types.APPLICATION,
                              CompletableFuture::completedFuture);
     }
 
     @Override
     public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_CONVERSATION, Types.CONVERSATION,
+        return getTopNSummary(N, includeOther, filters, selectConvGroupedBy(filters), Types.CONVERSATION,
                               conversation -> this.resolveHostnameForConversation(conversation, filters));
     }
 
     @Override
     public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_CONVERSATION, Types.CONVERSATION,
+        return getTopNSeries(N, step, includeOther, filters, selectConvGroupedBy(filters), Types.CONVERSATION,
                              conversation -> this.resolveHostnameForConversation(conversation, filters));
     }
 
     @Override
     public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_HOST, Types.HOST,
+        return getTopNSummary(N, includeOther, filters, selectHostGroupedBy(filters), Types.HOST,
                               host -> this.resolveHostnameForHost(host, filters));
     }
 
     @Override
     public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_TOS_HOST, Types.HOST,
+        return getTopNSeries(N, step, includeOther, filters, selectHostGroupedBy(filters), Types.HOST,
                              host -> this.resolveHostnameForHost(host, filters));
     }
 
