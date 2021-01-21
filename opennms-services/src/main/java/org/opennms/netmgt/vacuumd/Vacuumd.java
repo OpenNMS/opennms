@@ -35,6 +35,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
@@ -50,6 +52,7 @@ import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.configservice.ConfigurationNotAvailableException;
 import org.opennms.netmgt.configservice.ConfigurationService;
+import org.opennms.netmgt.configservice.FileConfigUtil;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -65,7 +68,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.util.Assert;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
@@ -76,7 +78,9 @@ import org.springframework.util.Assert;
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
 public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener, ApplicationContextAware {
-    
+
+    private final static String CONFIG_URI = ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME);
+
     private static final Logger LOG = LoggerFactory.getLogger(Vacuumd.class);
 
     private volatile Thread m_thread;
@@ -105,7 +109,8 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        Assert.notNull(m_configurationService, "configurationService must not be null");
+        Objects.requireNonNull(m_configurationService, "configurationService must not be null");
+        m_configurationService.registerForUpdates(CONFIG_URI, uri -> handleReloadConfigEvent());
         try {
             LOG.info("Loading the configuration file.");
             this.m_configuration = loadConfiguration();
@@ -125,9 +130,22 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     private VacuumdConfigWrapper loadConfiguration() throws ConfigurationNotAvailableException {
-        VacuumdConfiguration config = this.m_configurationService
+        Optional<VacuumdConfiguration> config = this.m_configurationService
                 .getConfigurationAsJaxb(ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME), VacuumdConfiguration.class);
-        return new VacuumdConfigWrapper(config);
+
+        // no configuration in the config service: Let's try to load from file and upload to config service
+        if(!config.isPresent()){
+            String xml = FileConfigUtil.getConfigFromEtcFile(CONFIG_URI)
+                    .orElseThrow(() -> new ConfigurationNotAvailableException(CONFIG_URI + " not found."));
+            this.m_configurationService.putConfiguration(CONFIG_URI, xml);
+
+            // try again
+            config = this.m_configurationService
+                    .getConfigurationAsJaxb(ConfigFileConstants.getFileName(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME), VacuumdConfiguration.class);
+        }
+
+        VacuumdConfiguration configJaxb = config.orElseThrow(() -> new ConfigurationNotAvailableException(CONFIG_URI + " not found."));
+        return new VacuumdConfigWrapper(configJaxb);
     }
 
     private void initializeDataSources() throws IOException, ClassNotFoundException, PropertyVetoException, SQLException {
