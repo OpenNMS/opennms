@@ -1,0 +1,59 @@
+{
+    "controller":{
+        "restoreDirectoryPath":"./clustered-datastore-restore",
+        "maxDataBrokerFutureCallbackQueueSize":1000,
+        "maxDataBrokerFutureCallbackPoolSize":10,
+        "metricCaptureEnabled":false,
+        "mailboxCapacity":1000,
+        "moduleShardsConfig": "configuration/initial/module-shards.conf",
+        "modulesConfig": "configuration/initial/modules.conf",
+        "domNotificationRouterConfig":{
+            "queueDepth":65536,
+            "spinTime":0,
+            "parkTime":0,
+            "unit":"MILLISECONDS"
+        },
+        "actorSystemConfig":{
+            "akkaConfigPath":"singlenode/akka-default.conf",
+            "factoryAkkaConfigPath":"singlenode/factory-akka-default.conf"
+        },
+        "schemaServiceConfig":{
+            "topLevelModels":[
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:iana-if-type","name":"iana-if-type","revision":"2017-01-19"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-interfaces","name":"ietf-interfaces","revision":"2014-05-08"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-yang-types","name":"ietf-yang-types","revision":"2013-07-15"},
+                { "nameSpace":"urn:opendaylight:l2:types","name":"opendaylight-l2-types","revision":"2013-08-27"},
+                { "nameSpace":"urn:TBD:params:xml:ns:yang:network:ted","name":"ted","revision":"2013-10-21"},
+                { "nameSpace":"urn:TBD:params:xml:ns:yang:network-topology","name":"network-topology","revision":"2013-10-21"},
+                { "nameSpace":"urn:TBD:params:xml:ns:yang:network:isis-topology","name":"isis-topology","revision":"2013-10-21"},
+                { "nameSpace":"urn:TBD:params:xml:ns:yang:ospf-topology","name":"ospf-topology","revision":"2013-10-21"},
+                { "nameSpace":"urn:TBD:params:xml:ns:yang:nt:l3-unicast-igp-topology","name":"l3-unicast-igp-topology","revision":"2013-10-21"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-inet-types","name":"ietf-inet-types","revision":"2013-07-15"},
+                { "nameSpace":"urn:opendaylight:yang:extension:yang-ext","name":"yang-ext","revision":"2013-07-09"},
+                { "nameSpace":"urn:opendaylight:params:xml:ns:yang:controller:config:distributed-datastore-provider","name":"distributed-datastore-provider","revision":"2014-06-12"},
+                { "nameSpace":"urn:opendaylight:params:xml:ns:yang:controller:md:sal:clustering:entity-owners","name":"entity-owners","revision":"2015-08-04"},
+                { "nameSpace":"urn:opendaylight:params:xml:ns:yang:controller:md:sal:clustering:prefix-shard-configuration","name":"prefix-shard-configuration","revision":"2017-01-10"},
+                { "nameSpace":"urn:opendaylight:params:xml:ns:yang:controller:md:sal:cluster:admin","name":"cluster-admin","revision":"2015-10-13"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-yang-library","name":"ietf-yang-library","revision":"2016-06-21"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-restconf","name":"ietf-restconf","revision":"2017-01-26"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-restconf-monitoring","name":"ietf-restconf-monitoring","revision":"2017-01-26"},
+                { "nameSpace":"urn:opendaylight:params:xml:ns:yang:controller:md:sal:remote","name": "sal-remote","revision":"2014-01-14"},
+                { "nameSpace":"urn:sal:restconf:event:subscription","name": "sal-remote-augment","revision":"2014-07-08"},
+                { "nameSpace":"subscribe:to:notification","name": "subscribe-to-notification","revision":"2016-10-28"},
+                { "nameSpace":"urn:opendaylight:netconf:keystore","name":"netconf-keystore","revision":"2017-10-17"},
+                { "nameSpace":"urn:opendaylight:netconf-node-topology","name":"netconf-node-topology","revision":"2015-01-14"},
+                { "nameSpace":"urn:opendaylight:netconf-node-optional","name":"netconf-node-optional","revision":"2019-06-14"},
+                { "nameSpace":"urn:ietf:params:xml:ns:netconf:base:1.0","name":"ietf-netconf","revision":"2011-06-01"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring","name":"ietf-netconf-monitoring","revision":"2010-10-04"},
+                { "nameSpace":"urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring-extension","name":"ietf-netconf-monitoring-extension","revision":"2013-12-10"}
+            ]
+        }
+    },
+    "restconf":{
+        "inetAddress": "192.168.56.102",
+        "httpPort":8888,
+        "webSocketPort": 8185,
+        "restconfServletContextPath":"/restconf",
+        "jsonRestconfServiceType": "DRAFT_18"
+    }
+}
