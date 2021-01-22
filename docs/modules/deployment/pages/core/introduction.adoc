@@ -1,5 +1,7 @@
 = Setting up a Basic {page-component-title}
 
-A basic {page-component-title} set up installls and configures the minimum required compoennts, including PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 
+A basic {page-component-title} setup installs and configures the minimum required compoennts, including PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 
 
 image::deployment/core/opennms-arch.png[]
+
+{page-component-title} is an event-driven

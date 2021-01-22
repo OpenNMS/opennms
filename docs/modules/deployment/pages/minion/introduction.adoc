@@ -3,7 +3,7 @@
 A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach. 
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
-Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via ActiveMQ or Apache Kafka. 
+Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via an ActiveMQ or Apache Kafka message broker. 
 
 Using Minions to monitor devices and services in hard-to-reach, remote network locations:
 
@@ -14,9 +14,9 @@ Using Minions to monitor devices and services in hard-to-reach, remote network l
 == How it Works
 
 A Minion monitors all the managed nodes and IP services in the same location (e.g., Pittsboro office, building_3). 
-It communicates with the message broker, which in turn communicates with the OpenNMS instance. 
+The Minion communicates with the message broker, which in turn communicates with the OpenNMS instance. 
 
-._Nodes_ with _Minions_ in _Locations_
+._Nodes_ with _Minions_ in _locations_
 image::deployment/minion/location.png[]
 
 By default, every node provisioned in {page-component-title} is created in the "Default" location.
@@ -24,56 +24,22 @@ The central {page-component-title} instance itself handles all nodes and service
 To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
 The Minion will register itself to the {page-component-title} instance on startup.
 
-{page-component-title}'s' provisioning system allows you to associate nodes to a location.
-{page-component-title} will delegate monitoring requests for nodes in the specified locations to the registered Minions, using them as a proxy.
+{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] allows you to associate nodes with any location.
+{page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
 
-Figure <<gi-install-minion-communication, Minion communication>> gives a more detailed overview about the communication between an {page-component-title} instance and a _Minion_.
+Figure <<gi-install-minion-communication, Minion communication>> provides  a more detailed overview about the communication between a {page-component-title} instance and a _Minion_.
 
 .Minion communication
 image::deployment/minion/communication.png[]
 
-#TODO: This is all installation specific and already covered#
+By default the Minion will be automatically provisioned as a node in the {page-component-title} instance and automatically monitored with the Minion-Heartbeat service.
+The Minion sends heartbeat messages to ensure it is running and functioning properly in this location.
 
-The _Minion_ needs a configuration which requires at minimum the following information:
+The specific management protocol messages (e.g., SNMP, ICMP), are piped through a message broker communication channel and are executed by a Minion.
+The broker forwards responses to the central {page-component-title} instance, which processes them accordingly.
 
-* An unique identifier (`id`) for this specific _Minion_
-* Monitoring _Location_ name (`location`) this _Minion_ is responsible
-* The communication endpoints (`broker-url` and `http-url`) for the central {page-component-title} instance
+The following management protocols are currently supported in a Minion proxy scenario:
 
-The configuration resides in a property file in `$\{MINION_HOME}/etc/org.opennms.minion.controller.cfg`.
-When the minimal configuration is set up the _Minion_ can be started and initially connects to the central {page-component-title} instance and identifies itself with his unique _ID_.
-
-NOTE: The unique _ID_ is generated when the packages get installed `/usr/bin/uuidgen -t` and is used if no _ID_ is set manually.
-On upgrade the _ID_ is not updated.
-
-By default the _Minion_ will be automatically provisioned as a _Node_ in the {page-component-title} instance and get automatically monitored with the _Minion-Heartbeat_ service.
-The _Minion_ sends heart beat messages to ensure it is running and functioning properly in this network area.
-
-The specific management protocol messages, e.g. _SNMP_, _ICMP_, are piped through an _ActiveMQ_ messaging communication channel and are executed by a _Minion_.
-Responses are forwarded to the central {page-component-title} instance and are processed accordingly.
-
-_Minions_ can be installed on every system that is able to communicate with these two endpoints:
-
-* The _OpenNMS ReST Interface_, by default _TCP_ port 8980
-* The _ActiveMQ_ broker used by {page-component-title}, by default _TCP_ port 61616
-
-#TODO: This here might make sense to describe why you probably want a Minion#
-
-The following management protocols are currently supported in a _Minion_ proxy scenario:
-
-* Receive _Syslog_ messages and forward them through _ActiveMQ_ to a central {page-component-title} instance
-* Receive _SNMP Traps_ and forward them through _ActiveMQ_ to a central {page-component-title} instance
-* Act as a proxy for _SNMP_ performance data collections
-* Act as a proxy for _Service Monitors_ to test availability and measure response times from applications
-
-#TODO: This is not true anymore#
-IMPORTANT: Packages are only available for _RHEL_-based systems (_RPMS_).
-
-#TODO: We can remove this warning here it is a requirement in the install section#
-WARNING: To avoid issues, make sure the _Minion_ and the instance of {page-component-title} have the same version.
-
-image::deployment/minion/minion-communication.png[]
-
-image::deployment/minion/minion-communication.png[]
-
-image::deployment/minion/setup-minion-kafka.png[]
+* Receive Syslog messages and SNMP traps and forward them through the message broker to a central {page-component-title} instance
+* Act as a proxy for SNMP performance data collection and 
+* Act as a proxy for service monitors to test availability and measure response times from applications
