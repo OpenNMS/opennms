@@ -54,7 +54,7 @@
           <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
           <keystore>${project.build.directory}/test-keystore.jks</keystore>
           <storepass>changeit</storepass>
-          <validity>2</validity>
+          <storetype>jks</storetype>
         </configuration>
       </plugin>
     </plugins>

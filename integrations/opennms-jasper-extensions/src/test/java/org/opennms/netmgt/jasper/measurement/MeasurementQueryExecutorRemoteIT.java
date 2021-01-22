@@ -33,12 +33,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -46,6 +40,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 
 /**
  * Verifies that the {@link MeasurementQueryExecutor} works correctly when running not in jvm mode.
@@ -143,8 +144,8 @@ public class MeasurementQueryExecutorRemoteIT extends AbstractMeasurementQueryEx
             @Override
             public void fill(Map<String, Object> params) throws Exception {
                 params.put("MEASUREMENT_URL", "http://localhost:9999/opennms/rest/measurements");
-                params.put("startDate", String.valueOf(DATE_FORMAT.parse("Wed Aug 26 06:05:00 CEST 2015").getTime()));
-                params.put("endDate",  String.valueOf(DATE_FORMAT.parse("Thu Aug 27 06:00:00 CEST 2015").getTime()));
+                params.put("startDate", String.valueOf(DATE_FORMAT.parse("Wed. Aug. 26 06:05:00 CEST 2015").getTime()));
+                params.put("endDate",  String.valueOf(DATE_FORMAT.parse("Thu. Aug. 27 06:00:00 CEST 2015").getTime()));
             }
         });
         verifyHttpCalls(2);
