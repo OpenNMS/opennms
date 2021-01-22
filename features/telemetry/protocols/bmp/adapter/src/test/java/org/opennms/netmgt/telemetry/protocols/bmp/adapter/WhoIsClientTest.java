@@ -29,11 +29,11 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class WhoIsClientTest {
@@ -43,16 +43,17 @@ public class WhoIsClientTest {
     public void testWhoIsAsn() throws IOException {
 
         Optional<AsnInfo> output = BmpWhoIsClient.getAsnInfo(701L);
-        Assert.assertTrue(output.isPresent());
-        output = BmpWhoIsClient.getAsnInfo(8319L);
-        Assert.assertTrue(output.isPresent());
+        assertTrue(output.isPresent());
         output = BmpWhoIsClient.getAsnInfo(33353L);
-        Assert.assertTrue(output.isPresent());
+        assertTrue(output.isPresent());
         output = BmpWhoIsClient.getAsnInfo(132827L);
-        Assert.assertTrue(output.isPresent());
+        assertTrue(output.isPresent());
         output = BmpWhoIsClient.getAsnInfo(5650L);
-        Assert.assertTrue(output.isPresent());
+        assertTrue(output.isPresent());
         assertEquals("US", output.get().getCountry());
+        output = BmpWhoIsClient.getAsnInfo(8319L);
+        assertTrue(output.isPresent());
+        assertTrue(output.get().getAddress().contains("NETHINKS"));
 
     }
 
@@ -60,7 +61,7 @@ public class WhoIsClientTest {
     public void testWhoIsPrefix() throws IOException {
 
         Optional<RouteInfo> output = BmpWhoIsClient.getRouteInfo("207.248.113.0");
-        Assert.assertTrue(output.isPresent());
-        Assert.assertEquals(263127L, output.get().getOriginAs().longValue());
+        assertTrue(output.isPresent());
+        assertEquals(263127L, output.get().getOriginAs().longValue());
     }
 }

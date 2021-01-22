@@ -53,7 +53,7 @@ class BmpWhoIsClient {
         for (String host : hosts) {
             try {
                 whoisClient.connect(host, 43);
-                String output = whoisClient.query("a AS" + asn);
+                String output = whoisClient.query("AS" + asn);
                 whoisClient.disconnect();
                 if (output.contains("ASName") || output.contains("as-name")) {
                     asnInfo = Optional.of(AsnInfo.parseOutput(asn, host, output));

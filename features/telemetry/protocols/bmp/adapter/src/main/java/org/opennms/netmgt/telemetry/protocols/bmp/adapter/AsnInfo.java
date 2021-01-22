@@ -149,8 +149,11 @@ public class AsnInfo {
 
     public static AsnInfo parseOutput(Long asn, String source, String rawOutput) {
         AsnInfo asnInfo = new AsnInfo(asn, source, rawOutput);
-        // Split output into lines
+        // These items can be in multiple lines.
         String remarks = "";
+        String address = "";
+        String orgId = "";
+        // Split output into lines
         String[] lines = rawOutput.split("\\r?\\n");
         for (String line : lines) {
             if (line.contains("ASName") || line.contains("as-name")) {
@@ -162,11 +165,19 @@ public class AsnInfo {
                 continue;
             }
             if (line.contains("OrgId") || line.contains("org")) {
-                getSubStringAfterColon(line).ifPresent(asnInfo::setOrgId);
+                Optional<String> result = getSubStringAfterColon(line);
+                if (result.isPresent()) {
+                    orgId = orgId + result.get() + " ";
+                    asnInfo.setOrgId(orgId);
+                }
                 continue;
             }
             if (line.contains("Address") || line.contains("address")) {
-                getSubStringAfterColon(line).ifPresent(asnInfo::setAddress);
+                Optional<String> result = getSubStringAfterColon(line);
+                if (result.isPresent()) {
+                    address = address + result.get() + " ";
+                    asnInfo.setAddress(address);
+                }
                 continue;
             }
             if (line.contains("City")) {
@@ -175,20 +186,24 @@ public class AsnInfo {
             }
             if (line.contains("StateProv")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setStateProv);
+
                 continue;
             }
             if (line.contains("PostalCode")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setPostalCode);
+
                 continue;
             }
             if (line.contains("Country") || line.contains("country")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setCountry);
+
                 continue;
             }
             if (line.contains("remarks") || line.contains("Comment") || line.contains("descr")) {
                 Optional<String> result = getSubStringAfterColon(line);
-                if(result.isPresent()) {
-                    asnInfo.setRemarks(remarks + result.get());
+                if (result.isPresent()) {
+                    remarks = remarks + result.get() + " ";
+                    asnInfo.setRemarks(remarks);
                 }
             }
         }
