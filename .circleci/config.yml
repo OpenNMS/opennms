@@ -737,6 +737,7 @@ jobs:
           command: |
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -749,6 +750,7 @@ jobs:
               -Dopennms.home=/opt/opennms \
               install --batch-mode
             # javadoc
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -760,6 +762,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               javadoc:aggregate --batch-mode
+            date
       - run:
           name: Collect Artifacts
           command: |
