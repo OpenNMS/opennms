@@ -12,21 +12,21 @@ categories:
   # General
   - name: "general"
     label: "General"
-    description: "General Minion settings."
+    description: "General Minion settings"
     config:
       - name: "instance-id"
         type:
           name: "string"
           validation: "TODO"
-        label: "Core Instance Id"
-        description: "Identifier for the Core instance used as queue prefix in the message broker."
+        label: "Core instance ID"
+        description: "Identifier for the core instance used as queue prefix in the message broker."
         key: "/org.opennms.instance.id"
         example: "OpenNMS"
       - name: "system-properties"
         type:
           name: "properties"
         label: "System Properties"
-        description: "Set generic Java system properties"
+        description: "Set generic Java system properties."
         key: "/system/properties"
         example: "jaeger-agent-host: my-jaeger-host"
       - name: "server-certificates"
@@ -52,7 +52,7 @@ categories:
               name: "string"
               validation: "TODO"
             label: "Location"
-            description: "Name of the location the Minion is deployed"
+            description: "Name of the location the Minion is deployed."
             key: "/location"
             example: "my-remote-office-nyc"
           - name: "id"
@@ -66,7 +66,7 @@ categories:
           - name: "broker-url"
             type:
               name: "url"
-            label: "The message broker URL"
+            label: "Message broker URL"
             description: "Message broker connection URL"
             key: "/broker-url"
             example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
@@ -74,7 +74,7 @@ categories:
             type:
               name: "url"
             label: "Core base URL"
-            description: "The Core web application base URL."
+            description: "Core instance web application base URL."
             key: "/http-url"
             example: "http://my-opennms-instance-ip:8980/opennms"
   # Dominion
@@ -133,7 +133,7 @@ categories:
           # Karaf :: Management :: RMI
           - name: "rmi"
             label: "RMI"
-            description: "Configure remote method invocation (RMI)"
+            description: "Configuration for remote method invocation (RMI)."
             config:
               - name: "registry-host"
                 type:
@@ -146,14 +146,14 @@ categories:
                 type:
                   name: "port"
                 label: "Registry Port"
-                description: "RMI listening TCP port"
+                description: "RMI TCP port"
                 key: "/karaf/management/rmi/registry/port"
                 example: "1299"
               - name: "server-host"
                 type:
                   name: "host"
                 label: "Server Host"
-                description: "RMI server host IP address seen by the client"
+                description: "RMI server host IP address seen by the client."
                 key: "/karaf/management/rmi/server/host"
                 example: "127.0.0.1"
               - name: "server-port"
@@ -166,7 +166,7 @@ categories:
       # Karaf :: Shell
       - name: "shell"
         label: "Shell"
-        description: "Karaf Shell access configuration"
+        description: "Karaf shell access configuration"
         categories:
           # Karaf :: Shell :: SSH
           - name: "ssh"
@@ -207,7 +207,7 @@ categories:
   # IPC Configuration
   - name: "ipc"
     label: "IPC"
-    description: "Core, Minion and Sentinel distributed inter process communication (IPC) settings"
+    description: "Core, Minion and Sentinel distributed inter-process communication (IPC) settings"
     categories:
       # IPC Configuration :: AWS
       - name: "aws"
@@ -243,14 +243,14 @@ categories:
             type:
               name: "host"
             label: "Host"
-            description: "gRPC host endpoint, typcally the same Core instance"
+            description: "gRPC host endpoint, typcally the same as the core instance"
             key: "/ipc/grpc/host"
             example: "my-opennms-instance-ip"
           - name: "port"
             type:
               name: "port"
             label: "gRPC TCP port"
-            description: "gRPC TCP port the server is listening"
+            description: "gRPC TCP port the server is listening on."
             key: "/ipc/grpc/port"
             example: "8990"
           - name: "properties"
@@ -263,12 +263,12 @@ categories:
       # IPC Configuration :: RPC
       - name: "rpc"
         label: "RPC"
-        description: "TODO"
+        description: "Remote Producer Call (RPC) configuration"
         categories:
           # IPC Configuration :: RPC :: Kafka
           - name: "kafka"
             label: "Kafka"
-            description: "TODO"
+            description: "Configuring Kafka for RPC"
             config:
               - name: "bootstrap-servers"
                 type:
@@ -280,20 +280,20 @@ categories:
                       name: "host-with-port"
                     separator: ","
                 label: "Bootstrap Servers"
-                description: "Kafka bootstrap servers for IPC RPC"
+                description: "Kafka bootstrap servers"
                 key: "/ipc/rpc/kafka/bootstrap.servers"
-                example: "TODO"
+                example: "kafka-01-ip:9092, kafka-02-ip:9092"
               - name: "properties"
                 type:
                   name: "properties"
                 label: "Properties"
-                description: "Additional Kafka configuration properties for IPC RPC"
+                description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
-                example: "TODO"
+                example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"
-        description: "TODO"
+        description: "Message sink configuration"
         config:
           - name: "offheap"
             type:
