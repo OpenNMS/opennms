@@ -114,6 +114,12 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-test</artifactId>
       <version>2.11.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.typesafe.scala-logging</groupId>
