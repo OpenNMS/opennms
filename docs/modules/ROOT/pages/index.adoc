@@ -1,5 +1,6 @@
 
-= Welcome to the Documentation for {page-component-title}
+[[welcome]]
+= Welcome to the {page-component-title} Documentation
 
 [options="autowidth"]
 |===
@@ -10,27 +11,19 @@
 OpenNMS {page-component-title} is a scalable and highly configurable network management platform with comprehensive fault, performance, and traffic monitoring. 
 It easily integrates with your core business applications and workflows to monitor and visualize everything in your network.
 
-== Audience
-This guide is suitable for administrative users and those who will use {page-component-title} to monitor their network.    
+The following shows a sample full stack {page-component-title} implementation:
 
-[[conventions]]
-== Typographical Conventions
+image::opennms-full-stack.png[]
 
-This guide uses the following typographical conventions:
 
-[cols="25h,~"]
-|===
+. OpenNMS platform
+. Kafka message broker
+. PostgreSQL database
+. Elasticsearch (search and analytics engine)
+. Cassandra for time-series data storage (Newts and Cortex)
+. Sentinel for scalability
+. Grafana (dashboard creation)
+. Kibana (dashboard creation)
+. Minions (at remote locations)
 
-|*Convention* |*Meaning*
-|*bold* | Indicates UI elements to click or select in a procedure, and the names of UI elements like dialogs or icons. 
-|_italics_| Introduces a defined or special word. Also used for the titles of publications.
-|`code` | Anything you must type or enter, and the names for code-related elements (classes, methods, commands). 
-
-|===
-
-[[ga-admin-help]]
-== Need Help?
-
-* join the https://chat.opennms.com/opennms/channels/opennms-discussion[OpenNMS Discussion] chat
-* join our community on https://opennms.discourse.group/latest[Discourse]
-* contact sales@opennms.com to purchase https://www.opennms.com/support/[customer support]
+The documentation provides more detail about these components in the Deployment and Operation sections. 

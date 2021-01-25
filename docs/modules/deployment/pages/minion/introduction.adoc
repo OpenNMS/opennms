@@ -41,5 +41,5 @@ The broker forwards responses to the central {page-component-title} instance, wh
 The following management protocols are currently supported in a Minion proxy scenario:
 
 * Receive Syslog messages and SNMP traps and forward them through the message broker to a central {page-component-title} instance
-* Act as a proxy for SNMP performance data collection and 
+* Act as a proxy for SNMP performance data collection
 * Act as a proxy for service monitors to test availability and measure response times from applications
