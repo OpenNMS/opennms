@@ -36,6 +36,9 @@ if [ ! -s /tmp/this_node_projects ]; then
   exit 0
 fi
 
+echo "#### Set loopback to 127.0.0.1"
+sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
+
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
 
