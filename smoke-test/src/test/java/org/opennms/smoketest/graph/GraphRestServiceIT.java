@@ -466,6 +466,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // add the services
         clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node A / 127.0.0.1 / ICMP')]"));
+        clickElement(By.id("input_addService"));
         clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node B / 127.0.0.1 / ICMP')]"));
         clickElement(By.id("input_addService"));
 
@@ -474,7 +475,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         clickElement(By.id("input_addLocation"));
 
         // get the application
-        final Optional<OnmsApplication> app = restClient.getApplications().stream().filter(a -> a.getName() == applicationName).findFirst();
+        final List<OnmsApplication> applications = restClient.getApplications();
+        System.err.println("applications=" + applications);
+        final Optional<OnmsApplication> app = applications.stream().filter(a -> applicationName.equals(a.getName())).findFirst();
         if (!app.isPresent()) {
             throw new IllegalStateException("Failed to retrieve application '" + applicationName + "'");
         }
@@ -484,8 +487,8 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         awaitForApplicationStatus(application, "Normal");
 
         final List<OnmsNode> nodes = restClient.getNodes();
-        final int nodeId1 = nodes.stream().filter(n -> n.getLabel() == "Node A").findFirst().get().getId();
-        final int nodeId2 = nodes.stream().filter(n -> n.getLabel() == "Node B").findFirst().get().getId();
+        final int nodeId1 = nodes.stream().filter(n -> "Node A".equals(n.getLabel())).findFirst().get().getId();
+        final int nodeId2 = nodes.stream().filter(n -> "Node B".equals(n.getLabel())).findFirst().get().getId();
 
         // Fetch data nothing down
         final JSONObject query = new JSONObject()
@@ -522,6 +525,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .setParam(perspectiveKey, perspectiveName)
                 .setSeverity(criticalSeverity)
                 .getEvent();
+
+        getDriver().get(getBaseUrlInternal() + "opennms/topology");
+        waitForElement(By.id("vaadin-content"));
+        selectVaadinFrame();
+        clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'View')]"));
+        clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'Application')]"));
 
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
