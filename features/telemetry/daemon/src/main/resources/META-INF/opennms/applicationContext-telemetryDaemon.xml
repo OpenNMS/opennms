@@ -29,18 +29,4 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
-  <!-- telemetryd is the only daemon using these services so we define them here for now.
-       With the current Spring context hierarchy it is difficult to expose services that
-       depend on event listeners (since the DAO context starts before eventd)
-  -->
-  <bean id="filterWatcher" class="org.opennms.netmgt.dao.support.DefaultFilterWatcher" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterWatcher" ref="filterWatcher" />
-  <bean id="filterWatcherListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="filterWatcher" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
-
-  <bean id="serviceTracker" class="org.opennms.netmgt.dao.support.DefaultServiceTracker" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTracker" ref="serviceTracker" />
-
 </beans>
