@@ -35,6 +35,8 @@ import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.SINGLE_TOPIC_F
 
 import org.opennms.core.utils.SystemInfoUtils;
 
+import com.google.common.base.Strings;
+
 public class KafkaTopicProvider {
 
     private static final String TOPIC_NAME_AT_LOCATION = "%s.%s.%s";
@@ -48,7 +50,7 @@ public class KafkaTopicProvider {
     }
 
     public KafkaTopicProvider() {
-        this.singleTopic = Boolean.getBoolean(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
+        this.singleTopic = getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
     }
 
     public String getRequestTopicAtLocation(String location, String module) {
@@ -65,5 +67,18 @@ public class KafkaTopicProvider {
         return String.format(TOPIC_NAME_WITH_MODULE, SystemInfoUtils.getInstanceId(), RPC_RESPONSE_TOPIC_NAME, module);
     }
 
+    /* Overwrite getBoolean to make default value to true */
+    public static Boolean getBooleanWithDefaultAsTrue(String name) {
+        boolean defaultValue = true;
+        try {
+            String singleTopic = System.getProperty(name);
+            if(!Strings.isNullOrEmpty(singleTopic)) {
+                defaultValue = !singleTopic.equalsIgnoreCase("false");
+            }
+        } catch (NullPointerException | IllegalArgumentException e) {
+            // Ignore
+        }
+        return defaultValue;
+    }
 
 }
