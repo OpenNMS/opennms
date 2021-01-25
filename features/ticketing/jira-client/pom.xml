@@ -131,12 +131,5 @@
             <name>Atlassian public repo</name>
             <url>http://maven.opennms.org/content/repositories/atlassian-public/</url>
         </repository>
-        <!-- not actually necessary here, but we're getting some weird reactor
-             ordering attempting to download httpasyncclient dependencies -->
-        <repository>
-            <id>spring-release</id>
-            <name>Spring</name>
-            <url>https://repo.spring.io/plugins-release/</url>
-        </repository>
     </repositories>
 </project>
