@@ -856,5 +856,75 @@
     </sql>
   </changeSet>
 
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-ip-origins-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatsiporiginsnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpstatsiporiginsnxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmpstatsiporiginsnxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="28.0.0-bmp-stats-ip-origins">
+
+    <createTable tableName="bmp_stats_ip_origins" remarks="bmp stats ip origins">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="interval_time" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_prefixes" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_with_rpki" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_with_rpki" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v4_with_irr" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="v6_with_irr" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex tableName="bmp_stats_ip_origins" indexName="bmp_stats_ip_origins_unique" unique="true">
+      <column name="interval_time" />
+      <column name="asn" />
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="28.0.0.bmp-stats-ip-origins-create-hypertable">
+    <preConditions onFail="MARK_RAN">
+      <and>
+        <sqlCheck expectedResult="1">
+          SELECT COUNT(e.extname)
+          FROM pg_catalog.pg_extension e LEFT JOIN pg_catalog.pg_description c ON c.objoid = e.oid AND c.classoid =
+          'pg_catalog.pg_extension'::pg_catalog.regclass
+          WHERE e.extname LIKE 'timescaledb';
+        </sqlCheck>
+        <sqlCheck expectedResult="0">
+          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_ip_origins';
+        </sqlCheck>
+      </and>
+    </preConditions>
+
+    <sql>
+      SELECT create_hypertable('bmp_stats_ip_origins', 'interval_time', chunk_time_interval => interval '1 month');
+    </sql>
+  </changeSet>
+
 
 </databaseChangeLog>

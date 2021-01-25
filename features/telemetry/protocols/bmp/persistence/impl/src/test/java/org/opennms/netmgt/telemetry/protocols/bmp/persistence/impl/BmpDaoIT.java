@@ -46,11 +46,14 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDa
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsPeerRib;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -64,7 +67,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false, dirtiesContext = true)
 public class BmpDaoIT {
 
     @Autowired
@@ -152,6 +155,68 @@ public class BmpDaoIT {
         result = bmpGlobalIpRibDao.findAll();
         Assert.assertEquals(1, result.size());
 
+    }
+
+
+    @Test
+    public void testPeerRibPrefixCount() {
+
+        long oneMinBack = new Date().getTime() - 60000;
+        Date lastUpdated = new Date(oneMinBack);
+        BmpUnicastPrefix bmpUnicastPrefix = new BmpUnicastPrefix();
+        bmpUnicastPrefix.setHashId("83e12a7ff8f5673es6ae6fcd9a3b345uy");
+        bmpUnicastPrefix.setPrefix("10.0.0.1");
+        bmpUnicastPrefix.setPrefixLen(15);
+        bmpUnicastPrefix.setWithDrawn(false);
+        bmpUnicastPrefix.setFirstAddedTimestamp(lastUpdated);
+        bmpUnicastPrefix.setBaseAttrHashId("23212a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpUnicastPrefix.setAdjRibIn(false);
+        bmpUnicastPrefix.setPrePolicy(true);
+        bmpUnicastPrefix.setIpv4(true);
+        bmpUnicastPrefix.setTimestamp(lastUpdated);
+        BmpPeer bmpPeer = new BmpPeer();
+        bmpPeer.setHashId("61e5a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpPeer.setPeerRd("0:0");
+        bmpPeer.setIpv4(true);
+        bmpPeer.setPeerAddr("10.0.0.3");
+        bmpPeer.setState(State.UP);
+        bmpPeer.setL3VPNPeer(false);
+        bmpPeer.setPrePolicy(true);
+        bmpPeer.setLocRib(false);
+        bmpPeer.setLocRibFiltered(false);
+        bmpPeer.setPeerAsn(2083L);
+        bmpPeer.setTimestamp(lastUpdated);
+        BmpRouter bmpRouter = new BmpRouter();
+        bmpRouter.setState(State.UP);
+        bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
+        bmpRouter.setName("router-1");
+        bmpRouter.setIpAddress("10.1.4.10");
+        bmpRouter.setTimestamp(lastUpdated);
+        BmpCollector bmpCollector = new BmpCollector();
+        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        bmpCollector.setState(State.UP);
+        bmpCollector.setAdminId("admin1");
+        bmpCollector.setName("collector1");
+        bmpCollector.setRoutersCount(2);
+        bmpCollector.setTimestamp(new Date());
+        bmpCollectorDao.save(bmpCollector);
+        List<BmpCollector> collectors = bmpCollectorDao.findAll();
+        Assert.assertFalse(collectors.isEmpty());
+        bmpRouter.setBmpCollector(bmpCollector);
+        bmpRouterDao.saveOrUpdate(bmpRouter);
+        List<BmpRouter> routers = bmpRouterDao.findAll();
+        Assert.assertFalse(routers.isEmpty());
+        bmpPeer.setBmpRouter(bmpRouter);
+        bmpPeerDao.saveOrUpdate(bmpPeer);
+        List<BmpPeer> peers = bmpPeerDao.findAll();
+        Assert.assertFalse(peers.isEmpty());
+        bmpUnicastPrefix.setBmpPeer(bmpPeer);
+        bmpUnicastPrefixDao.saveOrUpdate(bmpUnicastPrefix);
+        List<BmpUnicastPrefix> prefixes = bmpUnicastPrefixDao.findAll();
+        Assert.assertFalse(prefixes.isEmpty());
+        List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
+        Assert.assertFalse(statsPeerRibs.isEmpty());
+        Assert.assertEquals(1L, statsPeerRibs.get(0).getV4prefixes().longValue());
     }
     
     

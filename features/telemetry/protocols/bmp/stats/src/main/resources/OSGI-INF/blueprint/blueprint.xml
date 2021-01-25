@@ -10,6 +10,10 @@
   <reference id="bmpStatsByAsnDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" />
   <reference id="bmpStatsByPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" />
   <reference id="bmpStatsPeerRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" />
+  <reference id="bmpGlobalIpRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" />
+  <reference id="bmpAsnInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" />
+  <reference id="bmpRouteInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" />
+  <reference id="bmpStatsIpOriginsDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" />
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
 
   <!-- BMP Stats Aggregator that should only run on OpenNMS -->
@@ -22,6 +26,10 @@
     <property name="bmpStatsByAsnDao" ref="bmpStatsByAsnDao"/>
     <property name="bmpStatsByPrefixDao" ref="bmpStatsByPrefixDao"/>
     <property name="bmpStatsPeerRibDao" ref="bmpStatsPeerRibDao"/>
+    <property name="bmpGlobalIpRibDao" ref="bmpGlobalIpRibDao"/>
+    <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
+    <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+    <property name="bmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao"/>
   </bean>
 
 </blueprint>

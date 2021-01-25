@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
+package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
-import java.util.List;
+import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOrigins;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
-
-public interface BmpGlobalIpRibDao extends OnmsDao<BmpGlobalIpRib, Long> {
-
-    BmpGlobalIpRib findByPrefixAndAS(String prefix, Long originAS);
-
-    List<StatsIpOrigins> getStatsIpOrigins();
-
+public class BmpStatsIpOriginsDaoImpl extends AbstractDaoHibernate<BmpStatsIpOrigins, Long> implements BmpStatsIpOriginsDao {
+    public BmpStatsIpOriginsDaoImpl() {
+        super(BmpStatsIpOrigins.class);
+    }
 }

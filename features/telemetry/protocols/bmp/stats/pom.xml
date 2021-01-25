@@ -35,6 +35,11 @@
       <artifactId>org.opennms.features.telemetry.protocols.bmp.persistence.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commonsNetVersion}</version>
+    </dependency>
   </dependencies>
 
 </project>

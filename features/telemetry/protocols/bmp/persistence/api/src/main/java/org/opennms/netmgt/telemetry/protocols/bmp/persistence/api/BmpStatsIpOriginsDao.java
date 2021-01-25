@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BmpGlobalIpRibDao extends OnmsDao<BmpGlobalIpRib, Long> {
 
-    BmpGlobalIpRib findByPrefixAndAS(String prefix, Long originAS);
-
-    List<StatsIpOrigins> getStatsIpOrigins();
-
+public interface BmpStatsIpOriginsDao extends OnmsDao<BmpStatsIpOrigins, Long> {
 }

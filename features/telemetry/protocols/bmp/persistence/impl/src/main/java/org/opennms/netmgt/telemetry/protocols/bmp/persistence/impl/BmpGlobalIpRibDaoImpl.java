@@ -28,13 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsIpOrigins;
 
 public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, Long> implements BmpGlobalIpRibDao {
 
@@ -54,4 +58,33 @@ public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, 
         }
         return null;
     }
+
+    @Override
+    public List<StatsIpOrigins> getStatsIpOrigins() {
+        return getHibernateTemplate().execute(session -> (List<StatsIpOrigins>) session.createSQLQuery(
+                "SELECT to_timestamp((cast((extract(epoch from now())) as bigint)/900)*900)," +
+                        " recv_origin_as," +
+                        " sum(case when family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_prefixes, " +
+                        " sum(case when family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_prefixes " +
+                        " sum(case when rpki_origin_as > 0 and family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_with_rpki" +
+                        " sum(case when rpki_origin_as > 0 and family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_with_rpki," +
+                        " sum(case when irr_origin_as > 0 and family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_with_irr," +
+                        " sum(case when irr_origin_as > 0 and family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_with_irr" +
+                        " FROM bmp_global_ip_ribs " +
+                        " GROUP BY recv_origin_as "
+        ).setResultTransformer(new ResultTransformer() {
+            @Override
+            public Object transformTuple(Object[] tuple, String[] aliases) {
+                return new StatsIpOrigins((Date) tuple[0], (BigInteger) tuple[1],
+                        (BigInteger) tuple[2], (BigInteger) tuple[3], (BigInteger) tuple[4], (BigInteger) tuple[5], (BigInteger) tuple[6], (BigInteger) tuple[7]);
+            }
+
+            @SuppressWarnings("rawtypes")
+            @Override
+            public List transformList(List collection) {
+                return collection;
+            }
+        }).list());
+    }
+
 }

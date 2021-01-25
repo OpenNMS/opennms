@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
 import java.io.IOException;
 import java.util.Optional;

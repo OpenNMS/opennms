@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class BmpUnicastPrefixDaoImpl extends AbstractDaoHibernate<BmpUnicastPref
         ).setResultTransformer(new ResultTransformer() {
             @Override
             public Object transformTuple(Object[] tuple, String[] aliases) {
-                return new StatsPeerRib((Date) tuple[0], (String) tuple[1], (Integer) tuple[2], (Integer) tuple[3]);
+                return new StatsPeerRib((Date) tuple[0], (String) tuple[1], (BigInteger) tuple[2], (BigInteger) tuple[3]);
             }
 
             @SuppressWarnings("rawtypes")
