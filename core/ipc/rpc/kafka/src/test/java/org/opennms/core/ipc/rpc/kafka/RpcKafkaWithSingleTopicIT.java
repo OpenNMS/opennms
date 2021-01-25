@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -44,9 +45,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
-import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
 import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
 import org.opennms.core.rpc.echo.EchoRpcModule;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
@@ -115,7 +116,7 @@ public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
         rpcClient.start();
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
-                minionIdentity,tracerRegistry, new MetricRegistry());
+                minionIdentity, tracerRegistry, new MetricRegistry());
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
 
@@ -155,8 +156,18 @@ public class RpcKafkaWithSingleTopicIT extends RpcKafkaIT {
     }
 
     @Test
-    public void testSingleTopic() {
-        boolean result = KafkaTopicProvider.getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
+    public void testSingleTopicProperty() {
+        //Set False.
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES), "false");
+        boolean result = SystemProperties.getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
+        assertFalse(result);
+        //Invalid falls back to true.
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES), "false ");
+        result = SystemProperties.getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
+        assertTrue(result);
+        //Set True.
+        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES), "true");
+        result = SystemProperties.getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
         assertTrue(result);
     }
 
