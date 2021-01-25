@@ -55,6 +55,6 @@ public class TimezoneHelperTest {
         Date date = sdf.parse("2020-11-09 02:00");
 
         final String formatted = TimezoneHelper.formatDate(date, LA, "EEE dd MMM yyyy HH:mm:ss");
-        assertEquals("Mon. 09 Nov. 2020 02:00:00", formatted);
+        assertEquals("Mon 09 Nov 2020 02:00:00", formatted);
     }
 }
