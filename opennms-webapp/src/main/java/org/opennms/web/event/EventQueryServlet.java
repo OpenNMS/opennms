@@ -60,6 +60,7 @@ import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
+import org.owasp.encoder.Encode;
 
 /**
  * This servlet takes a large and specific request parameter set and maps it to
@@ -113,9 +114,8 @@ public class EventQueryServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<>();
 
-
         // convenient syntax for EventTextFilter
-        String eventTextString = WebSecurityUtils.sanitizeString(request.getParameter("eventtext"));
+        String eventTextString = Encode.forHtmlContent(request.getParameter("eventtext"));
         if (eventTextString != null && eventTextString.length() > 0) {
             filterArray.add(new EventTextFilter(eventTextString));
         }
