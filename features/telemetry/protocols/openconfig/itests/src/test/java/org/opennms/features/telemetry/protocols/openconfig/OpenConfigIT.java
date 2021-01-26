@@ -86,6 +86,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-openconfig-components.xml",
+        "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
         "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",

@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -61,7 +60,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
                              final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW5, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW5, name, new Netflow5MessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override
@@ -83,11 +82,5 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress,
                                                            final InetSocketAddress localAddress) {
         return new Netflow9UdpParser.SessionKey(remoteAddress.getAddress(), localAddress);
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
-        Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
-        return builder.buildData();
     }
 }
