@@ -31,7 +31,11 @@ TIP: Default time to live (time at which request will expire) is 20000 msec (20s
 ==== Disable Single Topic for Kafka RPC
 
 By default OpenNMS uses single topic structure i.e. it creates one request topic for each location and one response topic for all modules, regardless of location.
-For any reason, if you need to have different topic for each module, you can disable single-topic as below.
+
+Note that all Minions at any location must be running the same features in order to make use of single topic.
+
+For any reason, if you need to have different topic for each module or need different features on each minion,
+you can disable single-topic as below.
 
 Disabling Single topic must be configured on both Minion and OpenNMS.
 
