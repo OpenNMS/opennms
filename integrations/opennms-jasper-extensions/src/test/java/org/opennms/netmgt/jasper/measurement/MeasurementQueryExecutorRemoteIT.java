@@ -144,8 +144,8 @@ public class MeasurementQueryExecutorRemoteIT extends AbstractMeasurementQueryEx
             @Override
             public void fill(Map<String, Object> params) throws Exception {
                 params.put("MEASUREMENT_URL", "http://localhost:9999/opennms/rest/measurements");
-                params.put("startDate", String.valueOf(DATE_FORMAT.parse("Wed. Aug. 26 06:05:00 CEST 2015").getTime()));
-                params.put("endDate",  String.valueOf(DATE_FORMAT.parse("Thu. Aug. 27 06:00:00 CEST 2015").getTime()));
+                params.put("startDate", String.valueOf(DATE_FORMAT.parse("Wed Aug 26 06:05:00 CEST 2015").getTime()));
+                params.put("endDate",  String.valueOf(DATE_FORMAT.parse("Thu Aug 27 06:00:00 CEST 2015").getTime()));
             }
         });
         verifyHttpCalls(2);
