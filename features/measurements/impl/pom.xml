@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-jexl</artifactId>
+      <artifactId>commons-jexl3</artifactId>
     </dependency>
   </dependencies>
 </project>

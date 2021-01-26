@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.measurements.impl;
 
-import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl3.JexlContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

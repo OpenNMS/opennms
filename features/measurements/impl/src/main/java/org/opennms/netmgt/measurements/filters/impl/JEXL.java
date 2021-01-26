@@ -30,10 +30,11 @@ package org.opennms.netmgt.measurements.filters.impl;
 
 import java.util.Map;
 
-import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
-import org.apache.commons.jexl2.MapContext;
-import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlContext;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlExpression;
+import org.apache.commons.jexl3.MapContext;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
@@ -55,12 +56,12 @@ public class JEXL implements Filter {
     private final JexlEngine jexl;
 
     protected JEXL() {
-        jexl = new JexlEngine();
         // Add additional functions to the engine
         Map<String, Object> functions = Maps.newHashMap();
         functions.put("math", Math.class);
         functions.put("strictmath", StrictMath.class);
-        jexl.setFunctions(functions);
+
+        jexl = new JexlBuilder().namespaces(functions).create();
     }
 
     public JEXL(String expression) {
@@ -78,7 +79,7 @@ public class JEXL implements Filter {
         final JexlContext context = new MapContext(jexlValues);
 
         // Compile the expression
-        Expression expression = jexl.createExpression(m_expression);
+        JexlExpression expression = jexl.createExpression(m_expression);
 
         // Evaluate the expression
         expression.evaluate(context);

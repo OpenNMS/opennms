@@ -34,10 +34,13 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
-import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
-import org.apache.commons.jexl2.JexlException;
-import org.apache.commons.jexl2.MapContext;
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlContext;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlException;
+import org.apache.commons.jexl3.JexlExpression;
+import org.apache.commons.jexl3.MapContext;
+import org.apache.commons.jexl3.introspection.JexlSandbox;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
@@ -61,18 +64,31 @@ public class JEXLExpressionEngine implements ExpressionEngine {
     /**
      * Use a single instance of the JEXL engine, which is thread-safe.
      */
-    private final JexlEngine jexl = new JexlEngine();
+    private final JexlEngine jexl;
+
+    final Map<String, Object> functions = Maps.newHashMap();
 
     public JEXLExpressionEngine() {
         // Add additional functions to the engine
-        Map<String, Object> functions = Maps.newHashMap();
         functions.put("math", Math.class);
         functions.put("strictmath", StrictMath.class);
-        
+
         // Add SampleArrayFunctions functions
         functions.put("fn", SampleArrayFunctions.class);
-        
-        jexl.setFunctions(functions);
+
+        // apply custom sandbox
+        final JexlSandbox jexlSandbox = new JexlSandbox(true);
+        jexlSandbox.white(Math.class.getName());
+        jexlSandbox.white(StrictMath.class.getName());
+        jexlSandbox.white(SampleArrayFunctions.class.getName());
+
+        // create jexl instance
+        jexl = new JexlBuilder()
+                .namespaces(functions)
+                .sandbox(jexlSandbox)
+                .strict(true)
+                .silent(false)
+                .create();
     }
 
     /**
@@ -97,7 +113,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
 
         // Compile the expressions
         int j, k = 0;
-        final LinkedHashMap<String, org.apache.commons.jexl2.Expression> expressions = Maps.newLinkedHashMap();
+        final LinkedHashMap<String, JexlExpression> expressions = Maps.newLinkedHashMap();
         for (final Expression e : request.getExpressions()) {
 
             // Populate the transientFlags array
@@ -130,9 +146,9 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         jexlValues.put("__PI", java.lang.Math.PI);
 
         // Add JexlEvaluateFunctions with current context and jexl engine to allow string constants to be evaluated.
-        JexlEvaluateFunctions jexlEvaluateFunctions = new JexlEvaluateFunctions(context, jexl) ;
-        jexl.getFunctions().put("jexl", jexlEvaluateFunctions);
-        
+        JexlEvaluateFunctions jexlEvaluateFunctions = new JexlEvaluateFunctions(context, jexl);
+        functions.put("jexl", jexlEvaluateFunctions);
+
         final long timestamps[] = results.getTimestamps();
         final Map<String, double[]> columns = results.getColumns();
         final int numRows = timestamps.length;
@@ -147,7 +163,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         for (int i = 0; i < numRows; i++) {
             // Evaluate every expression, in the same order as which they appeared in the query
             j = k = 0;
-            for (final Map.Entry<String, org.apache.commons.jexl2.Expression> expressionEntry : expressions.entrySet()) {
+            for (final Map.Entry<String, JexlExpression> expressionEntry : expressions.entrySet()) {
                 // Update the timestamp
                 jexlValues.put("timestamp", timestamps[i]);
                 

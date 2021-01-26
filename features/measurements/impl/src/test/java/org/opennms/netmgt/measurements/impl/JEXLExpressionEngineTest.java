@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
+import org.apache.commons.jexl2.JexlException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
@@ -388,6 +390,25 @@ public class JEXLExpressionEngineTest {
     public void canReferenceStep() throws ExpressionException {
         double results[] = performExpression("1 * __step");
         assertEquals(1.0, results[0], 0.0001);
+    }
+
+    @Test(expected = ExpressionException.class)
+    public void checkBlacklist() throws ExpressionException {
+        final Map<String,Object> entries = Maps.newHashMap();
+        entries.put("A", 1);
+        double results[] = performExpression("A.class.modifiers", entries);
+        assertEquals(17.0, results[0], DELTA);
+    }
+
+    @Test
+    @Ignore
+    public void checkJexlNamespace() throws ExpressionException {
+        final Map<String,Object> entries = Maps.newHashMap();
+        entries.put("A", 2);
+        entries.put("B", 10);
+        // TODO: Fix the expression
+        double results[] = performExpression("{ C=1 ; jexl:evaluate('C=12') }", entries);
+        assertEquals(12.0, results[0], DELTA);
     }
 
     private double[] performExpression(String expression) throws ExpressionException {
