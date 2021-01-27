@@ -34,7 +34,6 @@ import java.util.List;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao;
 
@@ -44,11 +43,10 @@ public class BmpStatsByPrefixDaoImpl extends AbstractDaoHibernate<BmpStatsByPref
     }
 
     @Override
-    public BmpStatsByPrefix findByPrefixAndIntervalTime(String peerHashId, String prefix, Integer prefixLen, Date intervalTime) {
-        Criteria criteria = new Criteria(BmpStatsByPeer.class);
+    public BmpStatsByPrefix findByPrefixAndIntervalTime(String peerHashId, String prefix, Date intervalTime) {
+        Criteria criteria = new Criteria(BmpStatsByPrefix.class);
         criteria.addRestriction(new EqRestriction("peerHashId", peerHashId));
         criteria.addRestriction(new EqRestriction("prefix", prefix));
-        criteria.addRestriction(new EqRestriction("prefixLen", prefixLen));
         criteria.addRestriction(new EqRestriction("timestamp", intervalTime));
         List<BmpStatsByPrefix> bmpStatsByPrefixList = findMatching(criteria);
         if (bmpStatsByPrefixList != null && bmpStatsByPrefixList.size() > 0) {

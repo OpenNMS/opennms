@@ -69,12 +69,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+/**
+ * Stats Aggregation happen completely on OpenNMS.
+ */
 public class BmpStatsAggregator {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpStatsAggregator.class);
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("updateStats-%d")
+            .setNameFormat("UpdateStats-%d")
             .build();
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(20,
             threadFactory);
@@ -118,6 +121,7 @@ public class BmpStatsAggregator {
         scheduledExecutorService.scheduleAtFixedRate(this::updateStatsByPrefix, 0, 5, TimeUnit.MINUTES);
         scheduledExecutorService.scheduleAtFixedRate(this::updatePeerRibCountStats, 0, 15, TimeUnit.MINUTES);
         scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 60, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(this::updateStatsIpOrigins, 0, 60, TimeUnit.MINUTES);
     }
 
     public void destroy() {
@@ -125,7 +129,9 @@ public class BmpStatsAggregator {
     }
 
     private void updateGlobalRibsAndAsnInfo() {
+        LOG.debug("Updating GlobalRibs ++");
         List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
+        LOG.debug("Retrieved {} PrefixByAS elements", prefixByASList.size());
         prefixByASList.forEach(prefixByAS -> {
             BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
             if (bmpGlobalIpRib != null) {
@@ -137,7 +143,7 @@ public class BmpStatsAggregator {
 
             }
         });
-        updateStatsIpOrigins();
+        LOG.debug("Updating GlobalRibs --");
     }
 
     private BmpGlobalIpRib buildGlobalIpRib(PrefixByAS prefixByAS) {
@@ -149,6 +155,7 @@ public class BmpStatsAggregator {
                 bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
                 bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
                 bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
+                bmpGlobalIpRib.setNumPeers(prefixByAS.getCount());
                 Long asn = bmpGlobalIpRib.getRecvOriginAs();
                 if (asn != null) {
                     BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
@@ -229,98 +236,163 @@ public class BmpStatsAggregator {
     }
 
     private void updateStatsIpOrigins() {
+        LOG.debug("Updating StatsIpOrigins ++");
         List<StatsIpOrigins> statsIpOrigins = bmpGlobalIpRibDao.getStatsIpOrigins();
-        if (statsIpOrigins.isEmpty()) {
-            LOG.debug("Stats : Ip Origins list is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsIpOrigins elements", statsIpOrigins.size());
-        }
+        LOG.debug("Retrieved {} StatsIpOrigins elements", statsIpOrigins.size());
+
         statsIpOrigins.forEach(stat -> {
             BmpStatsIpOrigins bmpStatsIpOrigins = buildBmpStatsOrigins(stat);
             try {
                 bmpStatsIpOriginsDao.saveOrUpdate(bmpStatsIpOrigins);
             } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats IpOrigin {}", stat, e);
+                // Possibly unique constraint violation, query and update.
+                BmpStatsIpOrigins retrieved = bmpStatsIpOriginsDao.findByAsnAndIntervalTime(bmpStatsIpOrigins.getAsn(), bmpStatsIpOrigins.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setV4prefixes(bmpStatsIpOrigins.getV4prefixes());
+                    retrieved.setV6prefixes(bmpStatsIpOrigins.getV6prefixes());
+                    retrieved.setV4withrpki(bmpStatsIpOrigins.getV4withrpki());
+                    retrieved.setV6withrpki(bmpStatsIpOrigins.getV6withrpki());
+                    retrieved.setV4withirr(bmpStatsIpOrigins.getV4withirr());
+                    retrieved.setV6withirr(bmpStatsIpOrigins.getV6withirr());
+                    saveBmpStatsIpOrigin(retrieved);
+                }
             }
         });
+        LOG.debug("Updating StatsIpOrigins --");
+    }
+
+    private void saveBmpStatsIpOrigin(BmpStatsIpOrigins bmpStatsIpOrigins) {
+        try {
+            bmpStatsIpOriginsDao.saveOrUpdate(bmpStatsIpOrigins);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting BMP Stats IpOrigin {}", bmpStatsIpOrigins, e);
+        }
     }
 
 
     private void updatePeerStats() {
 
-        LOG.debug("Updating Stat by Peer ++");
+        LOG.debug("Updating StatsByPeer ++");
         List<StatsByPeer> statsByPeer = bmpIpRibLogDao.getStatsByPeerForInterval("'5 min'");
-        if (statsByPeer.isEmpty()) {
-            LOG.debug("Stats : Bmp Peer List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByPeer elements", statsByPeer.size());
-        }
+        LOG.debug("Retrieved {} StatsByPeer elements", statsByPeer.size());
+
         statsByPeer.forEach(stat -> {
             BmpStatsByPeer bmpStatsByPeer = buildBmpStatsByPeer(stat);
             try {
                 bmpStatsByPeerDao.saveOrUpdate(bmpStatsByPeer);
             } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Peer {}", stat, e);
+                // // Possibly unique constraint violation, query and update.
+                BmpStatsByPeer retrieved = bmpStatsByPeerDao.findByPeerAndIntervalTime(bmpStatsByPeer.getPeerHashId(), bmpStatsByPeer.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByPeer.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByPeer.getWithdraws());
+                    saveBmpStatsByPeer(retrieved);
+                }
             }
         });
-        LOG.debug("Updating Stat by Peer --");
+        LOG.debug("Updating StatsByPeer --");
 
     }
 
-    private void updateStatsByAsn() {
-        LOG.debug("Updating Stat by Asn ++");
-        List<StatsByAsn> statsByAsnList = bmpIpRibLogDao.getStatsByAsnForInterval("'5 min'");
-        if(statsByAsnList.isEmpty()) {
-            LOG.debug("Stats : Bmp ASN List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByAsn elements", statsByAsnList.size());
+    private void saveBmpStatsByPeer(BmpStatsByPeer bmpStatsByPeer) {
+        try {
+            bmpStatsByPeerDao.saveOrUpdate(bmpStatsByPeer);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting BMP Stats by Peer {}", bmpStatsByPeer, e);
         }
+    }
+
+
+    private void updateStatsByAsn() {
+        LOG.debug("Updating StatsByAsn ++");
+        List<StatsByAsn> statsByAsnList = bmpIpRibLogDao.getStatsByAsnForInterval("'5 min'");
+        LOG.debug("Retrieved {} StatsByAsn elements", statsByAsnList.size());
+
         statsByAsnList.forEach(stat -> {
             BmpStatsByAsn bmpStatsByAsn = buildBmpStatsByAsn(stat);
             try {
                 bmpStatsByAsnDao.saveOrUpdate(bmpStatsByAsn);
             } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Asn {}", stat, e);
+                // Possibly unique constraint violation, query and update.
+                BmpStatsByAsn retrieved = bmpStatsByAsnDao.findByAsnAndIntervalTime(bmpStatsByAsn.getPeerHashId(), bmpStatsByAsn.getOriginAsn(), bmpStatsByAsn.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByAsn.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByAsn.getWithdraws());
+                    saveStatsByAsn(retrieved);
+                }
             }
-        });LOG.debug("Updating Stat by Asn --");
+        });
+        LOG.debug("Updating StatsByAsn --");
+    }
+
+    private void saveStatsByAsn(BmpStatsByAsn bmpStatsByAsn) {
+        try {
+            bmpStatsByAsnDao.saveOrUpdate(bmpStatsByAsn);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting BMP Stats by Asn {}", bmpStatsByAsn, e);
+        }
     }
 
     private void updateStatsByPrefix() {
-        LOG.debug("Updating Stat by Prefix ++");
+        LOG.debug("Updating StatsByPrefix ++");
         List<StatsByPrefix> statsByPrefixList = bmpIpRibLogDao.getStatsByPrefixForInterval("'5 min'");
-        if(statsByPrefixList.isEmpty()) {
-            LOG.debug("Stats : Bmp Prefix List is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsByPrefix elements", statsByPrefixList.size());
-        }
+        LOG.debug("Retrieved {} StatsByPrefix elements", statsByPrefixList.size());
+
         statsByPrefixList.forEach(stat -> {
             BmpStatsByPrefix bmpStatsByPrefix = buildBmpStatsByPrefix(stat);
             try {
                 bmpStatsByPrefixDao.saveOrUpdate(bmpStatsByPrefix);
             } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats by Prefix {}", stat, e);
+                // Possibly unique constraint violation, query and update.
+                BmpStatsByPrefix retrieved = bmpStatsByPrefixDao.findByPrefixAndIntervalTime(bmpStatsByPrefix.getPeerHashId(), bmpStatsByPrefix.getPrefix(),
+                        bmpStatsByPrefix.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setUpdates(bmpStatsByPrefix.getUpdates());
+                    retrieved.setWithdraws(bmpStatsByPrefix.getWithdraws());
+                    saveBmpStatsByPrefix(retrieved);
+                }
             }
         });
-        LOG.debug("Updating Stat by Prefix --");
+        LOG.debug("Updating StatsByPrefix --");
+    }
+
+    private void saveBmpStatsByPrefix(BmpStatsByPrefix bmpStatsByPrefix) {
+        try {
+            bmpStatsByPrefixDao.saveOrUpdate(bmpStatsByPrefix);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting BMP Stats by Prefix {}", bmpStatsByPrefix, e);
+        }
     }
 
     private void updatePeerRibCountStats() {
-        LOG.debug("Updating Stats Peer Rib ++");
+        LOG.debug("Updating StatsPeerRib ++");
         List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
-        if(statsPeerRibs.isEmpty()) {
-            LOG.debug("Stats : Bmp Peer Rib is empty");
-        } else {
-            LOG.debug("Retrieved {} StatsPeerRib elements", statsPeerRibs.size());
-        }
-        statsPeerRibs.forEach( statsPeerRib -> {
-            BmpStatsPeerRib bmpStatsPeerRib =  buildBmpStatPeerRibCount(statsPeerRib);
+        LOG.debug("Retrieved {} StatsPeerRib elements", statsPeerRibs.size());
+
+        statsPeerRibs.forEach(statsPeerRib -> {
+            BmpStatsPeerRib bmpStatsPeerRib = buildBmpStatPeerRibCount(statsPeerRib);
             try {
                 bmpStatsPeerRibDao.saveOrUpdate(bmpStatsPeerRib);
             } catch (Exception e) {
-                LOG.error("Exception while persisting BMP Stats Peer Rib {}", bmpStatsPeerRib, e);
+                // Possibly unique constraint violation, query and update.
+                BmpStatsPeerRib retrieved = bmpStatsPeerRibDao.findByPeerAndIntervalTime(bmpStatsPeerRib.getPeerHashId(), bmpStatsPeerRib.getTimestamp());
+                if (retrieved != null) {
+                    retrieved.setV6prefixes(bmpStatsPeerRib.getV6prefixes());
+                    retrieved.setV4prefixes(bmpStatsPeerRib.getV4prefixes());
+                    saveStatsPeerRib(retrieved);
+                }
             }
         });
-        LOG.debug("Updating Stats Peer Rib --");
+        LOG.debug("Updating StatsPeerRib --");
+
+    }
+
+    private void saveStatsPeerRib(BmpStatsPeerRib bmpStatsPeerRib) {
+        try {
+            bmpStatsPeerRibDao.saveOrUpdate(bmpStatsPeerRib);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting BMP Stats Peer Rib {}", bmpStatsPeerRib, e);
+        }
 
     }
 
@@ -364,14 +436,16 @@ public class BmpStatsAggregator {
     }
 
     private BmpStatsIpOrigins buildBmpStatsOrigins(StatsIpOrigins statsIpOrigins) {
+
         BmpStatsIpOrigins bmpStatsIpOrigins = new BmpStatsIpOrigins();
         bmpStatsIpOrigins.setAsn(statsIpOrigins.getRecvOriginAs());
+        bmpStatsIpOrigins.setTimestamp(statsIpOrigins.getIntervalTime());
         bmpStatsIpOrigins.setV4prefixes(statsIpOrigins.getV4prefixes());
         bmpStatsIpOrigins.setV6prefixes(statsIpOrigins.getV6prefixes());
         bmpStatsIpOrigins.setV4withrpki(statsIpOrigins.getV4withrpki());
         bmpStatsIpOrigins.setV6withrpki(statsIpOrigins.getV6withrpki());
         bmpStatsIpOrigins.setV4withirr(statsIpOrigins.getV4withirr());
-        bmpStatsIpOrigins.setV4withirr(statsIpOrigins.getV6withirr());
+        bmpStatsIpOrigins.setV6withirr(statsIpOrigins.getV6withirr());
         return bmpStatsIpOrigins;
 
     }

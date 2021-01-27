@@ -26,13 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import java.io.IOException;
+import java.util.Optional;
 
-public interface BmpStatsByPrefixDao extends OnmsDao<BmpStatsByPrefix, Long> {
+import org.junit.Test;
 
-    BmpStatsByPrefix findByPrefixAndIntervalTime(String peerHashId, String prefix, Date intervalTime);
+public class WhoIsClientTest {
+
+
+    @Test
+    public void testWhoIsAsn() throws IOException {
+
+        Optional<AsnInfo> output = BmpWhoIsClient.getAsnInfo(701L);
+        assertTrue(output.isPresent());
+        output = BmpWhoIsClient.getAsnInfo(33353L);
+        assertTrue(output.isPresent());
+        output = BmpWhoIsClient.getAsnInfo(132827L);
+        assertTrue(output.isPresent());
+        output = BmpWhoIsClient.getAsnInfo(5650L);
+        assertTrue(output.isPresent());
+        assertEquals("US", output.get().getCountry());
+        output = BmpWhoIsClient.getAsnInfo(8319L);
+        assertTrue(output.isPresent());
+        assertTrue(output.get().getAddress().contains("NETHINKS"));
+
+    }
+
+    @Test
+    public void testWhoIsPrefix() throws IOException {
+
+        Optional<RouteInfo> output = BmpWhoIsClient.getRouteInfo("207.248.113.0");
+        assertTrue(output.isPresent());
+        assertEquals(263127L, output.get().getOriginAs().longValue());
+    }
+
 }

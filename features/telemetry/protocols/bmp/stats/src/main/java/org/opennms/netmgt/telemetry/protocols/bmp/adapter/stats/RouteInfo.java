@@ -116,10 +116,12 @@ public class RouteInfo {
             }
             if (line.contains("origin")) {
                 getSubStringAfterColon(line).ifPresent(origin -> {
-                    String originAs = origin.substring(2, origin.length());
-                    Long originAsn = StringUtils.parseLong(originAs, null);
-                    if (originAsn != null) {
-                        routeInfo.setOriginAs(originAsn);
+                    if(origin.length() > 2 ) {
+                        String originAsnString = origin.substring(2, origin.length());
+                        Long originAsn = StringUtils.parseLong(originAsnString, null);
+                        if (originAsn != null) {
+                            routeInfo.setOriginAs(originAsn);
+                        }
                     }
                 });
             }

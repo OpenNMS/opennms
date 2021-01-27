@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao;
@@ -35,5 +40,17 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRi
 public class BmpStatsPeerRibDaoImpl extends AbstractDaoHibernate<BmpStatsPeerRib, Long> implements BmpStatsPeerRibDao {
     public BmpStatsPeerRibDaoImpl() {
         super(BmpStatsPeerRib.class);
+    }
+
+    @Override
+    public BmpStatsPeerRib findByPeerAndIntervalTime(String peerHashId, Date intervalTime) {
+        Criteria criteria = new Criteria(BmpStatsPeerRib.class);
+        criteria.addRestriction(new EqRestriction("peerHashId", peerHashId));
+        criteria.addRestriction(new EqRestriction("timestamp", intervalTime));
+        List<BmpStatsPeerRib> bmpStatsPeerRibs = findMatching(criteria);
+        if (bmpStatsPeerRibs != null && bmpStatsPeerRibs.size() > 0) {
+            return bmpStatsPeerRibs.get(0);
+        }
+        return null;
     }
 }

@@ -36,7 +36,6 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsn;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeer;
 
 public class BmpStatsByAsnDaoImpl extends AbstractDaoHibernate<BmpStatsByAsn, Long> implements BmpStatsByAsnDao {
     public BmpStatsByAsnDaoImpl() {
@@ -46,7 +45,7 @@ public class BmpStatsByAsnDaoImpl extends AbstractDaoHibernate<BmpStatsByAsn, Lo
     @Override
     public BmpStatsByAsn findByAsnAndIntervalTime(String peerHashId, Long originAs, Date intervalTime) {
         
-        Criteria criteria = new Criteria(BmpStatsByPeer.class);
+        Criteria criteria = new Criteria(BmpStatsByAsn.class);
         criteria.addRestriction(new EqRestriction("peerHashId", peerHashId));
         criteria.addRestriction(new EqRestriction("originAsn", originAs));
         criteria.addRestriction(new EqRestriction("timestamp", intervalTime));

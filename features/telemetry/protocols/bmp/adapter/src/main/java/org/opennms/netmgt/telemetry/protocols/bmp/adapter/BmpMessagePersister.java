@@ -31,30 +31,18 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.AttributeType;
-import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
@@ -88,7 +76,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
@@ -126,27 +113,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("updateGlobalRibs-%d")
-            .build();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10,
-            threadFactory);
-
-
-    private Map<String, Long> updatesByPeer = new ConcurrentHashMap<>();
-    private Map<String, Long> withdrawsByPeer = new ConcurrentHashMap<>();
-    private Map<AsnKey, Long> updatesByAsn = new ConcurrentHashMap<>();
-    private Map<AsnKey, Long> withdrawsByAsn = new ConcurrentHashMap<>();
-    private Map<PrefixKey, Long> updatesByPrefix = new ConcurrentHashMap<>();
-    private Map<PrefixKey, Long> withdrawsByPrefix = new ConcurrentHashMap<>();
     private ConcurrentLinkedQueue<CollectionSetWithAgent> collectionSetQueue = new ConcurrentLinkedQueue<>();
-
-
-    public void init() {
-    }
-
-    public void destroy() {
-    }
 
     @Override
     public void handle(Message message, Context context) {
@@ -255,10 +222,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                         (!unicastPrefix.isWithDrawn() && !unicastPrefix.getBaseAttrHashId().equals(unicastPrefix.getPrevBaseAttrHashId())))) {
 
             String peerHashId = unicastPrefix.getBmpPeer().getHashId();
-            Long originAsn = unicastPrefix.getOriginAs();
-            String prefix = unicastPrefix.getPrefix();
-            Integer prefixLen = unicastPrefix.getPrefixLen();
-            boolean isWithdrawn = unicastPrefix.isWithDrawn();
             BmpIpRibLog bmpIpRibLog = new BmpIpRibLog();
             bmpIpRibLog.setPeerHashId(peerHashId);
             bmpIpRibLog.setBaseAttrHashId(unicastPrefix.getBaseAttrHashId());
@@ -269,71 +232,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             bmpIpRibLog.setWithDrawn(unicastPrefix.isWithDrawn());
             bmpIpRibLogDao.saveOrUpdate(bmpIpRibLog);
 
-            if (isWithdrawn) {
-                withdrawsByPeer.compute(peerHashId, (hashId, value) -> (value == null) ? 1 : value + 1);
-                withdrawsByAsn.compute(new AsnKey(peerHashId, originAsn), (hashId, value) -> (value == null) ? 1 : value + 1);
-                withdrawsByPrefix.compute(new PrefixKey(peerHashId, prefix, prefixLen), (hashId, value) -> (value == null) ? 1 : value + 1);
-            } else {
-                updatesByPeer.compute(peerHashId, (hashId, value) -> (value == null) ? 1 : value + 1);
-                updatesByAsn.compute(new AsnKey(peerHashId, originAsn), (hashId, value) -> (value == null) ? 1 : value + 1);
-                updatesByPrefix.compute(new PrefixKey(peerHashId, prefix, prefixLen), (hashId, value) -> (value == null) ? 1 : value + 1);
-            }
-
-
-            // Find the node for the router who has exported the stats and build a collection agent for it
-            String routerAddr = unicastPrefix.getBmpPeer().getBmpRouter().getIpAddress();
-            String peerAddr = unicastPrefix.getBmpPeer().getPeerAddr();
-            InetAddress sourceAddr = InetAddressUtils.getInetAddress(routerAddr);
-            Optional<Integer> nodeId = this.interfaceToNodeCache.getFirstNodeId(location, sourceAddr);
-            if (!nodeId.isPresent()) {
-                return;
-            }
-            final CollectionAgent agent = this.collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), sourceAddr);
-            // Build resource for the peer
-            final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-            final DeferredGenericTypeResource peerResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-peer", peerAddr);
-
-            // Build the collection set for the peer
-            final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-            builder.withTimestamp(unicastPrefix.getTimestamp());
-
-            if (updatesByPeer.get(peerHashId) != null) {
-                builder.withNumericAttribute(peerResource, "bmp-stats-peer", "updates_by_peer", updatesByPeer.get(peerHashId),
-                        AttributeType.COUNTER);
-            }
-            if (withdrawsByPeer.get(peerHashId) != null) {
-                builder.withNumericAttribute(peerResource, "bmp-stats-peer", "withdraws_by_peer", withdrawsByPeer.get(peerHashId),
-                        AttributeType.COUNTER);
-            }
-
-            final DeferredGenericTypeResource asnResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-asn", peerAddr);
-            if (updatesByAsn.get(new AsnKey(peerHashId, originAsn)) != null) {
-                String name = "updates_by_asn" + "_" + originAsn;
-                builder.withNumericAttribute(asnResource, "bmp-stats-asn", name, updatesByAsn.get(new AsnKey(peerHashId, originAsn)),
-                        AttributeType.COUNTER);
-            }
-            if (withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)) != null) {
-                String name = "withdraws_by_asn" + "_" + originAsn;
-                builder.withNumericAttribute(asnResource, "bmp-stats-asn", name, withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)),
-                        AttributeType.COUNTER);
-            }
-
-            final DeferredGenericTypeResource prefixResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-prefix", peerAddr);
-            if (updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)) != null) {
-                String name = "updates_by_prefix" + "_" + prefix + "_" + prefixLen;
-
-                builder.withNumericAttribute(prefixResource, "bmp-stats-prefix", name, updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
-                        AttributeType.COUNTER);
-            }
-
-            if (withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)) != null) {
-                String name = "withdraws_by_prefix" + "_" + prefix + "_" + prefixLen;
-                builder.withNumericAttribute(prefixResource, "bmp-stats-prefix", name, withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
-                        AttributeType.COUNTER);
-            }
-
-            CollectionSetWithAgent collectionSetWithAgent = new CollectionSetWithAgent(agent, builder.build());
-            collectionSetQueue.add(collectionSetWithAgent);
         }
 
     }
@@ -341,7 +239,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     @Override
     public void close() {
-        scheduledExecutorService.shutdown();
     }
 
     private List<BmpCollector> buildBmpCollectors(Message message) {

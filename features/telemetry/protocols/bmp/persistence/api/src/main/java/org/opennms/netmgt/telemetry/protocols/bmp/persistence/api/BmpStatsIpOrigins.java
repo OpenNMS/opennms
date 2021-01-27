@@ -76,7 +76,7 @@ public class BmpStatsIpOrigins implements Serializable {
     @Column(name = "v4_with_irr", nullable = false)
     private Integer v4withirr;
 
-    @Column(name = "v6_prefixes", nullable = false)
+    @Column(name = "v6_with_irr", nullable = false)
     private Integer v6withirr;
 
     public Long getId() {

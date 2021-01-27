@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 import java.time.Instant;
 import java.util.Date;
@@ -53,6 +53,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsIpOrigins;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.StatsPeerRib;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,8 +106,8 @@ public class BmpDaoIT {
         Long id = bmpCollectorDao.save(bmpCollector);
         Assert.assertNotNull(id);
         BmpCollector retrieved = bmpCollectorDao.findByCollectorHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
-        Assert.assertEquals(bmpCollector.getName(), retrieved.getName());
-        Assert.assertEquals(bmpCollector.getHashId(), retrieved.getHashId());
+        assertEquals(bmpCollector.getName(), retrieved.getName());
+        assertEquals(bmpCollector.getHashId(), retrieved.getHashId());
         BmpRouter bmpRouter = new BmpRouter();
         bmpRouter.setState(State.UP);
         bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
@@ -116,12 +117,12 @@ public class BmpDaoIT {
         bmpRouter.setBmpCollector(bmpCollector);
         bmpRouterDao.saveOrUpdate(bmpRouter);
         BmpRouter persistedRouter = bmpRouterDao.findByRouterHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
-        Assert.assertEquals(bmpRouter.getName(), persistedRouter.getName());
-        Assert.assertEquals(bmpRouter.getHashId(), persistedRouter.getHashId());
+        assertEquals(bmpRouter.getName(), persistedRouter.getName());
+        assertEquals(bmpRouter.getHashId(), persistedRouter.getHashId());
         List<BmpRouter> routers = bmpRouterDao.findRoutersByCollectorHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
         Assert.assertFalse(routers.isEmpty());
         BmpRouter result = routers.get(0);
-        Assert.assertEquals(bmpRouter.getHashId(), result.getHashId());
+        assertEquals(bmpRouter.getHashId(), result.getHashId());
     }
 
     @Test
@@ -132,29 +133,32 @@ public class BmpDaoIT {
         bmpGlobalIpRib.setRecvOriginAs(64512L);
         bmpGlobalIpRib.setPrefixLen(1);
         bmpGlobalIpRib.setTimeStamp(Date.from(Instant.now()));
+        bmpGlobalIpRib.setIrrSource("ARIN-WHOIS");
+        bmpGlobalIpRib.setIrrOriginAs(2314L);
+        bmpGlobalIpRib.setNumPeers(4);
 
         bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
 
         List<BmpGlobalIpRib> result = bmpGlobalIpRibDao.findAll();
         Assert.assertFalse(result.isEmpty());
 
-
         BmpGlobalIpRib bmpGlobalIpRib2 = new BmpGlobalIpRib();
-        bmpGlobalIpRib2.setPrefix("10.0.0.1");
+        bmpGlobalIpRib2.setPrefix("10.0.0.2");
         bmpGlobalIpRib2.setPrefixLen(1);
         bmpGlobalIpRib2.setTimeStamp(Date.from(Instant.now()));
         bmpGlobalIpRib2.setRecvOriginAs(64512L);
+        bmpGlobalIpRib2.setNumPeers(2);
+        bmpGlobalIpRib2.setIrrSource("ARIN-WHOIS");
+        bmpGlobalIpRib2.setIrrOriginAs(2315L);
 
-        // This should fail.
-        try {
-            bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib2);
-            fail();
-        } catch (Exception e) {
-
-        }
+        bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib2);
         result = bmpGlobalIpRibDao.findAll();
-        Assert.assertEquals(1, result.size());
-
+        assertEquals(2, result.size());
+        List<StatsIpOrigins> statsIpOrigins = bmpGlobalIpRibDao.getStatsIpOrigins();
+        assertEquals(1, statsIpOrigins.size());
+        StatsIpOrigins stats = statsIpOrigins.get(0);
+        assertEquals(2L, stats.getV4prefixes().longValue());
+        assertEquals(0L, stats.getV6withrpki().longValue());
     }
 
 
@@ -216,7 +220,7 @@ public class BmpDaoIT {
         Assert.assertFalse(prefixes.isEmpty());
         List<StatsPeerRib> statsPeerRibs = bmpUnicastPrefixDao.getPeerRibCountsByPeer();
         Assert.assertFalse(statsPeerRibs.isEmpty());
-        Assert.assertEquals(1L, statsPeerRibs.get(0).getV4prefixes().longValue());
+        assertEquals(1L, statsPeerRibs.get(0).getV4prefixes().longValue());
     }
     
     

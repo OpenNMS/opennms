@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOrigins;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao;
@@ -35,5 +40,18 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOrig
 public class BmpStatsIpOriginsDaoImpl extends AbstractDaoHibernate<BmpStatsIpOrigins, Long> implements BmpStatsIpOriginsDao {
     public BmpStatsIpOriginsDaoImpl() {
         super(BmpStatsIpOrigins.class);
+    }
+
+    @Override
+    public BmpStatsIpOrigins findByAsnAndIntervalTime(Long asn, Date intervalTime) {
+
+        Criteria criteria = new Criteria(BmpStatsIpOrigins.class);
+        criteria.addRestriction(new EqRestriction("asn", asn));
+        criteria.addRestriction(new EqRestriction("timestamp", intervalTime));
+        List<BmpStatsIpOrigins> bmpStatsIpOrigins = findMatching(criteria);
+        if (bmpStatsIpOrigins != null && bmpStatsIpOrigins.size() > 0) {
+            return bmpStatsIpOrigins.get(0);
+        }
+        return null;
     }
 }

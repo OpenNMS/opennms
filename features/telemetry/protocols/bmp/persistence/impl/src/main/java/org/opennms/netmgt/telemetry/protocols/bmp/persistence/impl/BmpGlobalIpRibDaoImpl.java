@@ -65,8 +65,8 @@ public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, 
                 "SELECT to_timestamp((cast((extract(epoch from now())) as bigint)/900)*900)," +
                         " recv_origin_as," +
                         " sum(case when family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_prefixes, " +
-                        " sum(case when family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_prefixes " +
-                        " sum(case when rpki_origin_as > 0 and family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_with_rpki" +
+                        " sum(case when family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_prefixes, " +
+                        " sum(case when rpki_origin_as > 0 and family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_with_rpki," +
                         " sum(case when rpki_origin_as > 0 and family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_with_rpki," +
                         " sum(case when irr_origin_as > 0 and family(inet(prefix)) = 4 THEN 1 ELSE 0 END) as v4_with_irr," +
                         " sum(case when irr_origin_as > 0 and family(inet(prefix)) = 6 THEN 1 ELSE 0 END) as v6_with_irr" +

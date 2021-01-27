@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
+import java.util.Date;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface BmpStatsPeerRibDao extends OnmsDao<BmpStatsPeerRib, Long> {
+
+    BmpStatsPeerRib findByPeerAndIntervalTime(String peerHashId, Date intervalTime);
 }

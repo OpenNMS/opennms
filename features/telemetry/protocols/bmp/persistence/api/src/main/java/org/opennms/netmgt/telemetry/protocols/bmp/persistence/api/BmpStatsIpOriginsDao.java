@@ -28,8 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
+import java.util.Date;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 
 public interface BmpStatsIpOriginsDao extends OnmsDao<BmpStatsIpOrigins, Long> {
+
+    BmpStatsIpOrigins findByAsnAndIntervalTime(Long asn, Date intervalTime);
 }
