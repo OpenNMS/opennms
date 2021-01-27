@@ -91,4 +91,6 @@ message FlowDocument {
     Locality flow_locality = 43;
     string convo_key = 44;
     uint64 clock_correction = 45; // Applied clock correction im milliseconds.
+    google.protobuf.UInt32Value dscp = 46; // DSCP; upper 6 bits of TOS
+    google.protobuf.UInt32Value ecn = 47; // ECN; lower 2 bits of TOS
 }
