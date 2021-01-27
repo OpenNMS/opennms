@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -149,6 +149,10 @@ public class AsnInfo {
 
     public static AsnInfo parseOutput(Long asn, String source, String rawOutput) {
         AsnInfo asnInfo = new AsnInfo(asn, source, rawOutput);
+        // These items can be in multiple lines.
+        String remarks = "";
+        String address = "";
+        String orgId = "";
         // Split output into lines
         String[] lines = rawOutput.split("\\r?\\n");
         for (String line : lines) {
@@ -156,16 +160,24 @@ public class AsnInfo {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setAsName);
                 continue;
             }
-            if (line.contains("OrgName") || line.contains("descr")) {
+            if (line.contains("OrgName") || line.contains("org-name")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setOrgName);
                 continue;
             }
             if (line.contains("OrgId") || line.contains("org")) {
-                getSubStringAfterColon(line).ifPresent(asnInfo::setOrgId);
+                Optional<String> result = getSubStringAfterColon(line);
+                if (result.isPresent()) {
+                    orgId = orgId + result.get() + " ";
+                    asnInfo.setOrgId(orgId);
+                }
                 continue;
             }
-            if (line.contains("Address") || line.contains("descr")) {
-                getSubStringAfterColon(line).ifPresent(asnInfo::setAddress);
+            if (line.contains("Address") || line.contains("address")) {
+                Optional<String> result = getSubStringAfterColon(line);
+                if (result.isPresent()) {
+                    address = address + result.get() + " ";
+                    asnInfo.setAddress(address);
+                }
                 continue;
             }
             if (line.contains("City")) {
@@ -174,15 +186,25 @@ public class AsnInfo {
             }
             if (line.contains("StateProv")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setStateProv);
+
                 continue;
             }
             if (line.contains("PostalCode")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setPostalCode);
+
                 continue;
             }
             if (line.contains("Country") || line.contains("country")) {
                 getSubStringAfterColon(line).ifPresent(asnInfo::setCountry);
+
                 continue;
+            }
+            if (line.contains("remarks") || line.contains("Comment") || line.contains("descr")) {
+                Optional<String> result = getSubStringAfterColon(line);
+                if (result.isPresent()) {
+                    remarks = remarks + result.get() + " ";
+                    asnInfo.setRemarks(remarks);
+                }
             }
         }
         return asnInfo;

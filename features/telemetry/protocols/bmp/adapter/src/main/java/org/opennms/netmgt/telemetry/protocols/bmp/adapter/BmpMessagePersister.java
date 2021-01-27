@@ -440,8 +440,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         });
         return bmpUnicastPrefixes;
     }
-
-
+    
     private List<BmpAsnPathAnalysis> buildBmpAsnPath(String asnPath) {
 
         List<BmpAsnPathAnalysis> bmpAsnPathAnalyses = new ArrayList<>();
