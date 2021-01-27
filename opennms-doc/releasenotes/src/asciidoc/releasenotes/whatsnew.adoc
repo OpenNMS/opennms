@@ -1,102 +1,17 @@
-[[releasenotes-27]]
+[[releasenotes-28]]
 
-== What's New in OpenNMS Horizon 27
+== What's New in OpenNMS Horizon 28
 
 === System Requirements
 
-* *Java 8 through 11*: OpenNMS Horizon 27 runs on JDK 8 through 11.
+* *Java 8 through 11*: OpenNMS Horizon 28 runs on JDK 8 through 11.
   We recommend the most recent version of OpenJDK 11.
-* *PostgreSQL 10 or higher*: Horizon 27 requires any supported version of PostgreSQL from 10 up to (and including) 13.
+* *PostgreSQL 10 or higher*: Horizon 28 requires any supported version of PostgreSQL from 10 up to (and including) 13.
 
 == Breaking Changes
 
-=== Remote Poller Removed
+=== Kafka RPC Enables single topic configuration by default.
 
-The remote poller has been removed from Horizon 27.
-It has been replaced with new infrastructure for <<Application Perspective Monitoring,perspective-based monitoring>> that runs on Minions.
-
-=== VMware Assets
-
-VMware-related data is not longer stored in node assets.
-The `install` command will move any existing VMware asset data to the node's metadata when you upgrade.
-
-== New Features and Improvements
-
-=== Karaf Shell
-
-A number of useful commands have been added or updated in the Karaf shell.
-
-* `alarm-list`: list current alarms (optionally filtered by UEI)
-* `event-list`: list events (optionally filtered by UEI)
-* `ip-addr-range`: generate a list of IP addresses to use in other commands
-* `reload-daemon`: now accepts an optional configuration file to target for reload
-* `send-event`: additional options supported to match the CLI version of `send-event` more closely
-* `snmp-fit`: can now optionally send a `newSuspect` event on success
-* `snmp-get`: like `snmp-walk`, but fetches a single MIB object and prints the result
-
-=== Minion and Sentinel
-
-* The Minion `confd` configuration support now handles a bunch more options, including setting Jetty, RMI, and ssh host and port, Secure Credentials Vault configuration, and environment variables and options for the JVM.  For details, see link:https://github.com/OpenNMS/opennms/blob/develop/opennms-container/minion/CONFD_README.md[the CONFD_README file].
-* It's now possible to override entries in a Sentinel's `system.properties` with a file called `custom.system.properties`
-
-=== Application Perspective Monitoring
-
-Application Perspective Monitoring replaces the old Remote Poller.
-
-It uses the Minion infrastructure to monitor a service's availability from these different perspectives.
-When a service is not responsive an outage will be generated with the corresponding perspective.
-
-A number of provisioning, polling, and web UI changes have been made to accomodate this new infrastructure.
-
-=== Provisioning
-
-* Node scan has been updated to limit the number of concurrent RPC requests so as not to overload communication with Minions.
-* New policies have been added for creating node and interface metadata during provisioning.
-
-=== Polling and Monitoring
-
-* WMI/SMB support has been updated to use a wider set of encryption types.
-* Data collection configuration has been added for Netscaler vServer.
-
-=== Thresholding
-
-* It is now possible to use metadata in threshold evaluation.
-
-=== RPC, Telemetry, Flows, and BMP
-
-* Improvements have been made for supporting aggregate flow metrics.
-* Flow DNS enrichment has been enhanced to improve performance.
-* Aggregate flow queries now support resolving hostnames if available.
-* Sink RPC APIs have been enhanced to expose metrics to Karaf for tracing and performance tuning.
-* The OpenConfig integration now supports gNMI, in addition to JTI.
-
-=== Notifications
-
-* It is now possible to use node-, interface-, and service-level metadata in notifications.
-
-=== ReST API
-
-* Events for `applicationCreated`/`applicationDeleted` are now sent when applications are added or removed through the ReST API.
-* A new v2 API for retrieving application status has been added.
-
-=== Web UI Improvements
-
-* A new universal search bar has been added which allows for searching alarms, nodes, and more from the top of any page in the UI.
-
-=== Documentation Updates
-
-Documentation improvements and additions have been made in a number of areas:
-
-* Application Perspective Monitoring
-* Data Collection Configuration
-* Metadata
-* Mail Transport Monitor
-* Minion/Kafka RPC Tuning
-* Thresholding
-* Users Configuration, Duty Schedules, and Security Roles
-
-...plus TONS of smaller readability improvements.
-
-== Important Internal Changes
-
-* Sink internals have been updated to use Protobuf 3.
+Enables single topic by default for Kafka RPC which would reduce number of topics on Kafka.
+Both Minion and OpenNMS need to be updated to OpenNMS Horizon 28.
+Make sure that Kafka Lag on Sink topics be minimal before upgrading otherwise there may be loss of those sink messages.
