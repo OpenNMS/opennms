@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
@@ -135,13 +136,16 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                 if (m_thread.isInterrupted()) {
                     break;
                 }
-                WatchKey key = null;
+                WatchKey key;
                 try {
-                    LOG.debug("waiting for create event");
-                    key = watcher.take();
+                    LOG.trace("waiting for create event");
+                    key = watcher.poll(1, TimeUnit.SECONDS);
+                    if (key == null) {
+                        continue;
+                    }
                     LOG.debug("got an event, process it");
                 } catch (InterruptedException ie) {
-                    LOG.info("interruped, must be time to shut down...");
+                    LOG.info("interrupted, must be time to shut down...");
                     break;
                 }
 
