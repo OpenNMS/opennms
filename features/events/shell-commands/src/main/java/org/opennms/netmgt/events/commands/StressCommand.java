@@ -43,12 +43,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -114,7 +114,8 @@ public class StressCommand extends OsgiCommandSupport {
         private final List<Expression> expressions = new ArrayList<>();
 
         public JexlEventGenerator(List<String> jexlExpressions) {
-            JexlEngine engine = new JexlEngine();
+            OnmsJexlEngine engine = new OnmsJexlEngine();
+            engine.white(IpUtils.class.getName());
 
             Map<String, Object> functions = Maps.newHashMap();
             functions.put("iputils", IpUtils.class);

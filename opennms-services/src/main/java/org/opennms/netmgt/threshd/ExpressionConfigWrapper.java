@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.jexl2.ExpressionImpl;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +52,19 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
     private final Expression m_expression;
     private final Collection<String> m_datasources;
+    private final OnmsJexlEngine jexlEngine;
+
     public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
         super(expression);
         m_expression = expression;
 
-        JexlEngine expressionParser = new JexlEngine();
+        jexlEngine = new OnmsJexlEngine();
+        jexlEngine.white(HashMap.class.getName());
+        jexlEngine.white(MathBinding.class.getName());
+
         m_datasources = new ArrayList<String>();
         try {
-            ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(m_expression.getExpression());
+            ExpressionImpl e = (ExpressionImpl) jexlEngine.createExpression(m_expression.getExpression());
             LOG.trace("List of Variables on the Expression: {}", e.getVariables());
             for (List<String> list : e.getVariables()) { // Requires JEXL 2.1.x
                 if (list.get(0).equalsIgnoreCase("math")) {
@@ -150,7 +155,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         double result = Double.NaN;
         try {
             // Fetch an instance of the JEXL script engine to evaluate the script expression
-            Object resultObject = new JexlEngine().createExpression(m_expression.getExpression()).evaluate(new MapContext(context));
+            Object resultObject = jexlEngine.createExpression(m_expression.getExpression()).evaluate(new MapContext(context));
             result = Double.parseDouble(resultObject.toString());
         } catch (Throwable e) {
             throw new ThresholdExpressionException("Error while evaluating expression " + m_expression.getExpression() + ": " + e.getMessage(), e);

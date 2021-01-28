@@ -37,6 +37,15 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
       <type>pom</type>
