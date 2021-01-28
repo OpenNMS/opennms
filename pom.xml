@@ -1433,7 +1433,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.13.2</log4j2Version>
     <mapstructVersion>1.4.1.Final</mapstructVersion>
-    <minaVersion>2.0.16</minaVersion>
+    <minaVersion>2.1.4</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.2</newtsVersion>
