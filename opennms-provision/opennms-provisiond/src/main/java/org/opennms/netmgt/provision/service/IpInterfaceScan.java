@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,7 +258,9 @@ public class IpInterfaceScan implements RunInBatch {
 
     private boolean isIpMatching(final InetAddress ip, final String expr) {
         try {
-            JexlEngine parser = new JexlEngine();
+            OnmsJexlEngine parser = new OnmsJexlEngine();
+            parser.white(IPLike.class.getName());
+            parser.white(InetAddress.class.getName());
             Expression e = parser.createExpression(generateExpr(expr));
             final Map<String,Object> context = new HashMap<String,Object>();
             context.put("iplike", IPLike.class);
