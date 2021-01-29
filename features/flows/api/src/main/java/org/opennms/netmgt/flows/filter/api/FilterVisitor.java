@@ -38,5 +38,4 @@ public interface FilterVisitor<T> {
 
     T visit(DscpFilter dscpFilter);
 
-    T visit(EcnFilter ecnFilter);
 }

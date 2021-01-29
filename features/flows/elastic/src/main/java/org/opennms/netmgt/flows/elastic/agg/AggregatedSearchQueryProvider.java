@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
-import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -163,9 +162,9 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
 
     public String getHostname(final String host, List<Filter> filters) {
         return render("hostname.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .put("host", host)
-                .build());
+                                                  .put("filters", getFilterQueries(filters))
+                                                  .put("host", host)
+                                                  .build());
     }
 
     @Override
@@ -176,11 +175,4 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    @Override
-    public String visit(EcnFilter ecnFilter) {
-        return render("filter_term.ftl", ImmutableMap.builder()
-                .put("term", "ecn")
-                .put("values", ecnFilter.getEcn())
-                .build());
-    }
 }

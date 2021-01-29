@@ -38,7 +38,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
-import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -228,14 +227,6 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         return render("filter_term.ftl", ImmutableMap.builder()
                 .put("term", "netflow.dscp")
                 .put("values", dscpFilter.getDscp())
-                .build());
-    }
-
-    @Override
-    public String visit(final EcnFilter ecnFilter) {
-        return render("filter_term.ftl", ImmutableMap.builder()
-                .put("term", "netflow.ecn")
-                .put("values", ecnFilter.getEcn())
                 .build());
     }
 

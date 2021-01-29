@@ -34,8 +34,7 @@ package org.opennms.netmgt.flows.api;
  * Aggregations over these fields can contain results for all values.
  */
 public enum LimitedCardinalityField {
-    DSCP(64,"netflow.dscp"),
-    ECN(4, "netflow.ecn");
+    DSCP(64,"netflow.dscp");
     public final int size;
     public final String fieldName;
     LimitedCardinalityField(int size, String fieldName) {

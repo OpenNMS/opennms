@@ -60,7 +60,6 @@ import org.opennms.netmgt.flows.elastic.ElasticFlowQueryService;
 import org.opennms.netmgt.flows.elastic.GPath;
 import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
-import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
@@ -93,7 +92,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     }
 
     private boolean hasTosFilter(List<Filter> filters) {
-        return filters.stream().anyMatch(f -> f instanceof DscpFilter || f instanceof EcnFilter);
+        return filters.stream().anyMatch(f -> f instanceof DscpFilter);
     }
 
     private GroupedBy selectGroupedBy(List<Filter> filters, GroupedBy withTos, GroupedBy withoutTos) {
@@ -152,7 +151,6 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         switch (field) {
             case DSCP: return getAllTerms(GroupedBy.EXPORTER_INTERFACE_TOS, "dscp", filters);
-            case ECN: return getAllTerms(GroupedBy.EXPORTER_INTERFACE_TOS, "ecn", filters);
             default: throw new UnsupportedOperationException("Enumerating aggregated field values is not supported for field: " + field);
         }
     }
@@ -161,7 +159,6 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     public CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters) {
         switch (field) {
             case DSCP: return getTopNSummary(field.size, false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.DSCP, CompletableFuture::completedFuture);
-            case ECN: return getTopNSummary(field.size, false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.ECN, CompletableFuture::completedFuture);
             default: throw new UnsupportedOperationException("Summaries for aggregated values are not supported for field: " + field);
         }
     }
@@ -170,7 +167,6 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     public CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters) {
         switch (field) {
             case DSCP: return getTopNSeries(field.size, step,false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.DSCP, CompletableFuture::completedFuture);
-            case ECN: return getTopNSeries(field.size, step,false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.ECN, CompletableFuture::completedFuture);
             default: throw new UnsupportedOperationException("Series for aggregated values are not supported for field: " + field);
         }
     }

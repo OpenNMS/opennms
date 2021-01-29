@@ -30,6 +30,8 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 import io.searchbox.core.search.aggregation.MaxAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 
@@ -174,19 +176,20 @@ public class TrafficSummary<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof TrafficSummary)) {
             return false;
         }
-        TrafficSummary<?> that = (TrafficSummary<?>) o;
-        return bytesIn == that.bytesIn &&
-               bytesOut == that.bytesOut &&
+
+        final TrafficSummary<?> that = (TrafficSummary<?>) o;
+        return this.bytesIn == that.bytesIn &&
+               this.bytesOut == that.bytesOut &&
                congestionEncountered == that.congestionEncountered &&
                nonEcnCapableTransport == that.nonEcnCapableTransport &&
-               Objects.equals(entity, that.entity);
+               Objects.equals(this.entity, that.entity);
     }
 
     @Override
@@ -196,12 +199,12 @@ public class TrafficSummary<T> {
 
     @Override
     public String toString() {
-        return "TrafficSummary{" +
-               "entity=" + entity +
-               ", bytesIn=" + bytesIn +
-               ", bytesOut=" + bytesOut +
-               ", congestionEncountered=" + congestionEncountered +
-               ", nonEcnCapableTransport=" + nonEcnCapableTransport +
-               '}';
+        return MoreObjects.toStringHelper(this)
+                .add("entity", this.entity)
+                .add("bytesIn", this.bytesIn)
+                .add("bytesOut", this.bytesOut)
+                .add("nonEcnCapableTransport", this.nonEcnCapableTransport)
+                .add("congestionEncountered", this.congestionEncountered)
+                .toString();
     }
 }

@@ -113,28 +113,6 @@ public interface FlowRestService {
             @Context UriInfo uriInfo
     );
 
-    @GET
-    @Path("ecn/enumerate")
-    @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getEcnValues(
-            @Context UriInfo uriInfo
-    );
-
-    @GET
-    @Path("ecn")
-    @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getEcnSummaries(
-            @Context UriInfo uriInfo
-    );
-
-    @GET
-    @Path("ecn/series")
-    @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getEcnSeries(
-            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-            @Context UriInfo uriInfo
-    );
-
     /**
      * Retrieve the list of applications.
      *

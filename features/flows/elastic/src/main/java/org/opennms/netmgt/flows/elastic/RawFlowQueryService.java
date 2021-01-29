@@ -253,7 +253,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
         final String hostnameQuery = searchQueryProvider.getHostnameByConversationQuery(convoKey, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
-                .thenApply(res -> {
+                .thenApply(res ->  {
                     final JsonObject hit = res.getFirstHit(JsonObject.class).source;
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
@@ -279,7 +279,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
         final String hostnameQuery = searchQueryProvider.getHostnameByHostQuery(host, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
-                .thenApply(res -> {
+                .thenApply(res ->  {
                     final JsonObject hit = res.getFirstHit(JsonObject.class).source;
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), host)) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
@@ -300,7 +300,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         // Increase the multiplier for increased accuracy
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
-        final String query = searchQueryProvider.getTopNQuery(multiplier * N, groupByTerm, keyForMissingTerm, filters);
+        final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> processGroupedByResult(res, N));
     }

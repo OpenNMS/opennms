@@ -53,7 +53,6 @@ public class Types {
     public static final ConversationType CONVERSATION = new ConversationType();
     public static final HostType HOST = new HostType();
     public static final DscpType DSCP = new DscpType();
-    public static final EcnType ECN = new EcnType();
 
     public interface Type<T> {
         String getKey();
@@ -151,28 +150,6 @@ public class Types {
         @Override
         public String getOtherEntity() {
             return OTHER_DSCP_NAME_DISPLAY;
-        }
-    }
-
-    public static class EcnType implements Type<String> {
-        public static final String OTHER_ECN_NAME_DISPLAY = "Other";
-
-        public String getKey() {
-            return "ecn";
-        }
-
-        public String toEntity(String key) {
-            return key;
-        }
-
-        @Override
-        public String getAggregationType() {
-            return AGG_TOTAL;
-        }
-
-        @Override
-        public String getOtherEntity() {
-            return OTHER_ECN_NAME_DISPLAY;
         }
     }
 

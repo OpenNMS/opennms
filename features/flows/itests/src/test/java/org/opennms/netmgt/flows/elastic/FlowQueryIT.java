@@ -86,7 +86,6 @@ import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
-import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -612,10 +611,6 @@ public class FlowQueryIT {
         assertThat(convoTraffic.rowKeySet(), hasSize(4));
     }
 
-    private static List<Integer> toInts(List<String> l) {
-        return l.stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
-    }
-
     @Test
     public void canRetrieveTopNConversationsSeries() throws Exception {
         // Load the default set of flows
@@ -718,10 +713,6 @@ public class FlowQueryIT {
                 return fd -> dscpFilter.getDscp().isEmpty() || dscpFilter.getDscp().contains(fd.getDscp());
             }
 
-            @Override
-            public Predicate<FlowDocument> visit(EcnFilter ecnFilter) {
-                return fd -> ecnFilter.getEcn().isEmpty() || ecnFilter.getEcn().contains(fd.getEcn());
-            }
         });
     }
 
@@ -840,21 +831,6 @@ public class FlowQueryIT {
         canGetFieldSeries(LimitedCardinalityField.DSCP, fd -> fd.getDscp());
     }
 
-    @Test
-    public void canGetEcnValues() throws Exception {
-        canGetFieldValues(LimitedCardinalityField.ECN, fd -> fd.getEcn());
-    }
-
-    @Test
-    public void canGetEcnSummaries() throws Exception {
-        canGetFieldSummaries(LimitedCardinalityField.ECN, fd -> fd.getEcn());
-    }
-
-    @Test
-    public void canGetEcnSeries() throws Exception {
-        canGetFieldSeries(LimitedCardinalityField.ECN, fd -> fd.getEcn());
-    }
-
     private List<Filter> allFilterCombinations(
             LimitedCardinalityField field,
             Function<FlowDocument, Integer> fieldAccess,
@@ -911,19 +887,10 @@ public class FlowQueryIT {
         canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
     }
 
-    @Test
-    public void canFilterSeriesByEcn() throws Exception {
-        canFilterSeriesByLimitedCardinalityField(LimitedCardinalityField.ECN, FlowDocument::getEcn, EcnFilter::new);
-    }
 
     @Test
     public void canFilterSummariesByDscp() throws Exception {
         canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.DSCP, FlowDocument::getDscp, DscpFilter::new);
-    }
-
-    @Test
-    public void canFilterSummariesByEcn() throws Exception {
-        canFilterSummariesByLimitedCardinalityField(LimitedCardinalityField.ECN, FlowDocument::getEcn, EcnFilter::new);
     }
 
     private static <K> TrafficSummary<K> flowDoc2TrafficSummary(FlowDocument fd, K key) {

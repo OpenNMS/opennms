@@ -68,7 +68,6 @@ import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
-import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
@@ -151,7 +150,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         // do not include the ECN info column in the summary if the ECN field is queried
         // -> the ECN info is already represented by the key column and therefore would appear twice
-        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString, field != LimitedCardinalityField.ECN)
+        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString)
                 .apply(response)
                 .accept(summary);
 
@@ -193,21 +192,6 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public List<Integer> getEcnValues(UriInfo uriInfo) {
-        return getFieldValues(LimitedCardinalityField.ECN, uriInfo);
-    }
-
-    @Override
-    public FlowSummaryResponse getEcnSummaries(UriInfo uriInfo) {
-        return getFieldSummaries(LimitedCardinalityField.ECN, uriInfo);
-    }
-
-    @Override
-    public FlowSeriesResponse getEcnSeries(long step, UriInfo uriInfo) {
-        return getFieldSeries(LimitedCardinalityField.ECN, step, uriInfo);
-    }
-
-    @Override
     public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         return waitForFuture(flowQueryService.getApplications(matchingPrefix, limit, filters));
@@ -219,7 +203,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, applications, uriInfo, "application",
                 filters -> flowQueryService.getTopNApplicationSummaries(N, includeOther, filters),
                 filters -> flowQueryService.getApplicationSummaries(applications, includeOther, filters),
-                this.defaultSummaryResponseConsumer("Application", Function.identity(), true));
+                this.defaultSummaryResponseConsumer("Application", Function.identity()));
     }
 
     @Override
@@ -244,7 +228,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         return getSummary(N, hosts, uriInfo, "host",
                 filters -> flowQueryService.getTopNHostSummaries(N, includeOther, filters),
                 filters -> flowQueryService.getHostSummaries(hosts, includeOther, filters),
-                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName, true));
+                this.defaultSummaryResponseConsumer("Host", hostnameMode::buildDisplayName));
     }
 
     @Override
@@ -402,23 +386,14 @@ public class FlowRestServiceImpl implements FlowRestService {
 
     private <K> Function<FlowSummaryResponse, Consumer<List<TrafficSummary<K>>>> defaultSummaryResponseConsumer(
             final String entitiesHeader,
-            final Function<K, String> entityLabel,
-            final boolean includeEcnInfo
+            final Function<K, String> entityLabel
     ) {
-        // the ECN info column (i.e. the last column) is dropped in some cases
-        Function<List, List> maybeDropLast = list -> {
-            if (!includeEcnInfo) list.remove(list.size() - 1);
-            return list;
-        };
         return response -> summary -> {
-            response.setHeaders(maybeDropLast.apply(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out", "ECN")));
+            response.setHeaders(Lists.newArrayList(entitiesHeader, "Bytes In", "Bytes Out", "ECN"));
             response.setRows(
                     summary
                             .stream()
-                            .map(sum ->
-                                    (List<Object>)maybeDropLast.apply(
-                                            Lists.newArrayList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo())
-                                    )
+                            .map(sum -> Lists.newArrayList((Object) entityLabel.apply(sum.getEntity()), sum.getBytesIn(), sum.getBytesOut(), sum.ecnInfo())
                             )
                     .collect(Collectors.toList())
             );
@@ -485,20 +460,6 @@ public class FlowRestServiceImpl implements FlowRestService {
             }).distinct().collect(Collectors.toList())));
         }
 
-        final List<String> ecnStr = queryParams.get("ecn");
-        if (isNotEmpty(ecnStr)) {
-            filters.add(new EcnFilter(ecnStr.stream().flatMap(str -> {
-                switch (str.toUpperCase()) {
-                    case "ECT": // ecn capable transport
-                        return Stream.of(1, 2);
-                    case "CE": // congestion encountered
-                        return Stream.of(3);
-                    default:
-                        return Stream.of(Integer.parseInt(str));
-                }
-            }).collect(Collectors.toList())));
-        }
-
         return filters;
     }
 
@@ -528,7 +489,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
         final Optional<TimeRangeFilter> filter = filters.stream()
                 .filter(f -> f instanceof TimeRangeFilter)
-                .map(f -> (TimeRangeFilter) f)
+                .map(f -> (TimeRangeFilter)f)
                 .findFirst();
         if (!filter.isPresent()) {
             throw new BadRequestException("Time range is required.");
@@ -592,7 +553,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     private static <T> T waitForFuture(CompletableFuture<T> future) {
         try {
             return future.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException|ExecutionException e) {
             throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
     }
