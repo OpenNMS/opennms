@@ -178,14 +178,14 @@ categories:
                   name: "host"
                 label: "Host"
                 description: "TODO"
-                key: "/karaf/shell/ssh"
+                key: "/karaf/shell/ssh/host"
                 example: "TODO"
               - name: "port"
                 type:
                   name: "port"
                 label: "Port"
                 description: "TODO"
-                key: "/karaf/shell/port"
+                key: "/karaf/shell/ssh/port"
                 example: "TODO"
   # Minion Environment
   - name: "environment"
