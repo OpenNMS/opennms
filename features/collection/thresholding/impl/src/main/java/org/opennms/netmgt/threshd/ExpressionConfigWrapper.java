@@ -34,14 +34,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.apache.commons.jexl2.ExpressionImpl;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.opennms.core.rpc.utils.mate.EmptyScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,14 +55,19 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(ExpressionConfigWrapper.class);
 
     private final Expression m_expression;
-    private final Collection<String> m_datasources;    
-    private final JexlEngine jexlEngine = new JexlEngine();
-    
+    private final Collection<String> m_datasources;
+    private final OnmsJexlEngine jexlEngine;
+
     public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
         super(expression);
         m_expression = expression;
 
-        m_datasources = new ArrayList<>();
+        jexlEngine = new OnmsJexlEngine();
+        jexlEngine.white(HashMap.class.getName());
+        jexlEngine.white(MathBinding.class.getName());
+
+        m_datasources = new ArrayList<String>();
+
         try {
             // We need to remove any mate data that are part of the expression before we try to find the datasources so
             // we will interpolate with an empty scope and rely on default values to keep the expression valid
