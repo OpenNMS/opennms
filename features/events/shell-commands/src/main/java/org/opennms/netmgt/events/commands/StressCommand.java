@@ -116,6 +116,7 @@ public class StressCommand extends OsgiCommandSupport {
         public JexlEventGenerator(List<String> jexlExpressions) {
             OnmsJexlEngine engine = new OnmsJexlEngine();
             engine.white(IpUtils.class.getName());
+            engine.white(EventBuilder.class.getName());
 
             Map<String, Object> functions = Maps.newHashMap();
             functions.put("iputils", IpUtils.class);
