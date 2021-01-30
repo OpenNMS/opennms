@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
 import org.opennms.core.spring.BeanUtils;
@@ -81,6 +80,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     static {
         JEXL_ENGINE = new OnmsJexlEngine();
+        JEXL_ENGINE.white(ObjectNameWrapper.class.getName());
     }
 
     protected JmxConfigDao m_jmxConfigDao = null;
