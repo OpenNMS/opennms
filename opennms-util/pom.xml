@@ -28,7 +28,8 @@
               org.opennms.core.resource.db.*;version="${project.version}",
               <!-- Don't export org.opennms.core.utils to avoid conflicts with core/lib -->
               <!-- org.opennms.core.utils.*;version="${project.version}", -->
-              org.opennms.core.utils.url.*;version="${project.version}"
+              org.opennms.core.utils.url.*;version="${project.version}",
+              org.opennms.core.utils.jexl.*;version="${project.version}"
             </Export-Package>
           </instructions>
         </configuration>
@@ -36,6 +37,15 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
