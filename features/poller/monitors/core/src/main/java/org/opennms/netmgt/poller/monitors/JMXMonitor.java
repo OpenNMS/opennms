@@ -80,6 +80,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     static {
         JEXL_ENGINE = new OnmsJexlEngine();
+        JEXL_ENGINE.white(ObjectNameWrapper.class.getName());
     }
 
     private class Timer {
