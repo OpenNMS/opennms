@@ -57,6 +57,7 @@ import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.reporting.jasperreports.compiler.CustomJRJdtCompiler;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
@@ -687,7 +688,7 @@ public class JasperReportService implements ReportService {
         SubreportExpressionVisitor visitor = new SubreportExpressionVisitor(report);
         String string = visitor.visit(expression);
         if (string != null) {
-            JexlEngine engine = new JexlEngine();
+            JexlEngine engine = new OnmsJexlEngine();
             return (String) engine.createExpression(string).evaluate(new MapContext());
         }
         return null;

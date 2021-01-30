@@ -30,23 +30,24 @@ package org.opennms.netmgt.measurements.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import java.util.SortedSet;
 
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.JexlException;
 import org.apache.commons.jexl2.MapContext;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.utils.Utils;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 /**
  * An expression engine implemented using JEXL.
@@ -61,11 +62,18 @@ public class JEXLExpressionEngine implements ExpressionEngine {
     /**
      * Use a single instance of the JEXL engine, which is thread-safe.
      */
-    private final JexlEngine jexl = new JexlEngine();
+    private final OnmsJexlEngine jexl;
 
     public JEXLExpressionEngine() {
+        jexl = new OnmsJexlEngine();
+        jexl.white(Math.class.getName());
+        jexl.white(StrictMath.class.getName());
+        jexl.white(SortedSet.class.getName());
+        jexl.white(JexlEvaluateFunctions.class.getName());
+        jexl.white(SampleArrayFunctions.class.getName());
+
         // Add additional functions to the engine
-        Map<String, Object> functions = Maps.newHashMap();
+        final Map<String, Object> functions = Maps.newHashMap();
         functions.put("math", Math.class);
         functions.put("strictmath", StrictMath.class);
         

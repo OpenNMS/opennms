@@ -38,6 +38,7 @@ import org.apache.commons.jexl2.JexlException;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
 import org.apache.commons.jexl2.UnifiedJEXL;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Parameter;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class JexlIndexStorageStrategy extends IndexStorageStrategy {
 
     static {
         final int cacheSize = Integer.getInteger("org.opennms.netmgt.dao.support.JEXLIndexStorageStrategy.cacheSize", DEFAULT_JEXLENGINE_CACHESIZE);
-        JEXL_ENGINE = new JexlEngine();
+        JEXL_ENGINE = new OnmsJexlEngine();
         JEXL_ENGINE.setCache(cacheSize);
         JEXL_ENGINE.setLenient(false);
         JEXL_ENGINE.setStrict(true);
