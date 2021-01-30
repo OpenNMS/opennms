@@ -32,10 +32,10 @@ import java.util.Objects;
 
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.impl.SLF4JLogFactory;
+import org.apache.commons.logging.LogFactory;
 
 public class OnmsJexlEngine extends JexlEngine {
-    final static Log LOG = SLF4JLogFactory.getLog(OnmsJexlEngine.class);
+    final static Log LOG = LogFactory.getLog(OnmsJexlEngine.class);
 
     final OnmsJexlSandbox onmsJexlSandbox;
 
