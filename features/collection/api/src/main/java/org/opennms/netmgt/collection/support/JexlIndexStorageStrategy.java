@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.JexlException;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.ReadonlyContext;
 import org.apache.commons.jexl2.UnifiedJEXL;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Parameter;
 import org.slf4j.Logger;
@@ -56,23 +56,19 @@ public class JexlIndexStorageStrategy extends IndexStorageStrategy {
     private static final String PARAM_INDEX_FORMAT = "index-format";
     private static final String PARAM_CLEAN_OUTPUT = "clean-output";
 
-    private static final JexlEngine JEXL_ENGINE;
-    private static final UnifiedJEXL EL;
+    protected final OnmsJexlEngine jexlEngine;
+    private final UnifiedJEXL unifiedJexl;
 
     private final Map<String, String> m_parameters;
 
-    static {
-        final int cacheSize = Integer.getInteger("org.opennms.netmgt.dao.support.JEXLIndexStorageStrategy.cacheSize", DEFAULT_JEXLENGINE_CACHESIZE);
-        JEXL_ENGINE = new JexlEngine();
-        JEXL_ENGINE.setCache(cacheSize);
-        JEXL_ENGINE.setLenient(false);
-        JEXL_ENGINE.setStrict(true);
-
-        EL = new UnifiedJEXL(JEXL_ENGINE);
-    }
-
     public JexlIndexStorageStrategy() {
         super();
+        final int cacheSize = Integer.getInteger("org.opennms.netmgt.dao.support.JEXLIndexStorageStrategy.cacheSize", DEFAULT_JEXLENGINE_CACHESIZE);
+        jexlEngine = new OnmsJexlEngine();
+        jexlEngine.setCache(cacheSize);
+        jexlEngine.setLenient(false);
+        jexlEngine.setStrict(true);
+        unifiedJexl = new UnifiedJEXL(jexlEngine);
         m_parameters = new HashMap<>();
     }
 
@@ -81,7 +77,7 @@ public class JexlIndexStorageStrategy extends IndexStorageStrategy {
     public String getResourceNameFromIndex(CollectionResource resource) {
         String resourceName = null;
         try {
-            UnifiedJEXL.Expression expr = EL.parse( m_parameters.get(PARAM_INDEX_FORMAT) );
+            UnifiedJEXL.Expression expr = unifiedJexl.parse( m_parameters.get(PARAM_INDEX_FORMAT) );
             JexlContext context = new MapContext();
             m_parameters.entrySet().forEach((entry) -> {
                 context.set(entry.getKey(), entry.getValue());
