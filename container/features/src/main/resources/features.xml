@@ -310,6 +310,7 @@
         <feature>jaxb</feature>
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-jexl</feature>
         <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
