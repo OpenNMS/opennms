@@ -122,6 +122,7 @@ public class StressCommand implements Action {
 
         public JexlEventGenerator(List<String> jexlExpressions) {
             OnmsJexlEngine engine = new OnmsJexlEngine();
+            engine.setLenient(true);
             engine.white(IpUtils.class.getName());
             engine.white(Math.class.getName());
             engine.white(EventBuilder.class.getName());
