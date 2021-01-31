@@ -304,6 +304,7 @@
       <feature>jaxb</feature>
       <feature>owasp-encoder</feature>
       <feature>owasp-html-sanitizer</feature>
+      <feature>commons-jexl</feature>
 
       <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
