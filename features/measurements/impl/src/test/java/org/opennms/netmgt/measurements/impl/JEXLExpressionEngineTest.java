@@ -30,8 +30,10 @@ package org.opennms.netmgt.measurements.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.Point;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
@@ -388,6 +390,15 @@ public class JEXLExpressionEngineTest {
     public void canReferenceStep() throws ExpressionException {
         double results[] = performExpression("1 * __step");
         assertEquals(1.0, results[0], 0.0001);
+    }
+
+    @Test(expected = ExpressionException.class)
+    public void checkBlacklist() throws ExpressionException {
+        final Map<String,Object> entries = Maps.newHashMap();
+        entries.put("A", new Point(5,2));
+
+        double results[] = performExpression("A.x * A.y", entries);
+        assertEquals(10.0, results[0], DELTA);
     }
 
     private double[] performExpression(String expression) throws ExpressionException {

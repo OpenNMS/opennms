@@ -400,6 +400,7 @@
       <feature>jaxb</feature>
       <feature>owasp-encoder</feature>
       <feature>owasp-html-sanitizer</feature>
+      <feature>commons-jexl</feature>
 
       <!-- Used by org.opennms.core.spring -->
       <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>

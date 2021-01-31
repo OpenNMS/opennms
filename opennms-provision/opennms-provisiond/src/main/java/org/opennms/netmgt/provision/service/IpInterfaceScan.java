@@ -38,7 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.jexl2.Expression;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.AbstractTask;
@@ -46,6 +45,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.slf4j.Logger;
@@ -222,7 +222,9 @@ public class IpInterfaceScan implements RunInBatch {
 
     protected static boolean isIpMatching(final InetAddress ip, final String expr) {
         try {
-            JexlEngine parser = new JexlEngine();
+            OnmsJexlEngine parser = new OnmsJexlEngine();
+            parser.white(IPLike.class.getName());
+            parser.white(InetAddress.class.getName());
             Expression e = parser.createExpression(generateExpr(expr));
             final Map<String,Object> context = new HashMap<String,Object>();
             context.put("iplike", IPLike.class);
