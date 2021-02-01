@@ -1,2 +1,2 @@
-repo: develop
-parent_branch: develop
+repo: testing
+parent_branch: release-27.x
