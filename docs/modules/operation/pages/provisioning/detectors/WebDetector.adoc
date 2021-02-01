@@ -34,7 +34,7 @@ Use this detector to find and assign services based on HTTP.
 | `useSSLFilter`  | Defaults to false; if true it will trust self-signed certificates.                       | optional | `false`
 | `useSystemProxy`| Should the system-wide proxy settings be used? Configure system proxy settings via system properties.                                                                                                  | optional | `false`
 | `userAgent`     | Set the user agent field in HTTP header to identify the OpenNMS monitor.                 | optional | `OpenNMS WebMonitor`
-| `virtualHost`   | Set the virtual host field in HTTP header. In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation, known as server name indication (SNI) (See: RFC3546 section 3.1).                           | optional | -
+| `virtualHost`   | Set the virtual host field in HTTP header. In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation, known as server name indication (SNI) (see: RFC3546 section 3.1).                           | optional | -
 |===
 
 == Example Configuration
