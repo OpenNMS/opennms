@@ -28,7 +28,7 @@ Use this detector to find and assign services based on HTTP.
 | `responseText`  | Text to look for in the response body. This will be matched against every line, and it will be considered a success at the first match. If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring one. The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a .* on both sides of your pattern unless you are going to match on the entire line.       | optional | -
 | `retries`       | Number of attempts to test a service's up/down status.                                   | optional | -
 | `schema`        | Protocol/scheme to use.                                                                  | optional | `http`
-| `serviceName`   | A custom service name to identify this service .                                         | optional | `WEB`
+| `serviceName`   | A custom service name to identify this service.                                         | optional | `WEB`
 | `timeout`       | Timeout in milliseconds to wait for a response.                                          | optional | 2000
 | `useHttpV1`     | True/false whether to use HTTP 1.0 or 1.1.                                               | optional | `false`
 | `useSSLFilter`  | Defaults to false, if true it will trust self-signed certificates.                       | optional | `false`
