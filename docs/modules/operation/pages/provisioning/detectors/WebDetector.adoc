@@ -26,7 +26,7 @@ Use this detector to find and assign services based on HTTP.
 | `queryString`   | The query string to add to the URL after a ? (e.g., foo=bar&baz=zot).                    | optional | -
 | `responseRange` | Range for allowed HTTP error codes from the response.                                    | optional | `100-399`
 | `responseText`  | Text to look for in the response body. This will be matched against every line, and it will be considered a success at the first match. If there is a ~ at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring one. The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a .* on both sides of your pattern unless you are going to match on the entire line.       | optional | -
-| `retries`       | Number of attempts to test a Service to be up or down.                                   | optional | -
+| `retries`       | Number of attempts to test a service's up/down status.                                   | optional | -
 | `schema`        | Protocol/scheme to use.                                                                  | optional | `http`
 | `serviceName`   | A custom service name to identify this service .                                         | optional | `WEB`
 | `timeout`       | Timeout in milliseconds to wait for a response.                                          | optional | 2000
