@@ -31,7 +31,7 @@ Use this detector to find and assign services based on HTTP.
 | `serviceName`   | A custom service name to identify this service.                                         | optional | `WEB`
 | `timeout`       | Timeout in milliseconds to wait for a response.                                          | optional | 2000
 | `useHttpV1`     | True/false whether to use HTTP 1.0 or 1.1.                                               | optional | `false`
-| `useSSLFilter`  | Defaults to false, if true it will trust self-signed certificates.                       | optional | `false`
+| `useSSLFilter`  | Defaults to false; if true it will trust self-signed certificates.                       | optional | `false`
 | `useSystemProxy`| Should the system wide proxy settings be used? The system proxy settings can be configured via system properties.                                                                                                  | optional | `false`
 | `userAgent`     | Set the user agent field in HTTP header to identify the OpenNMS monitor.                 | optional | `OpenNMS WebMonitor`
 | `virtualHost`   | Set the virtual host field in HTTP header. In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation, known as server name indication (SNI) (See: RFC3546 section 3.1).                           | optional | -
