@@ -79,6 +79,7 @@ public class JMXMonitor extends AbstractServiceMonitor {
     static {
         JEXL_ENGINE = new OnmsJexlEngine();
         JEXL_ENGINE.white(ObjectNameWrapper.class.getName());
+        JEXL_ENGINE.white(String.class.getName());
     }
 
     private class Timer {
@@ -135,6 +136,9 @@ public class JMXMonitor extends AbstractServiceMonitor {
 
             try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), ipv4Addr,
                     JmxUtils.convertToStringMap(map), retryCallback)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("connected to JMX server {} on {}", getConnectionName(), InetAddressUtils.str(ipv4Addr));
+                }
 
                 // Start with simple communication
                 connection.getMBeanServerConnection().getMBeanCount();
@@ -201,7 +205,13 @@ public class JMXMonitor extends AbstractServiceMonitor {
 
                 // Execute all tests
                 for (final Map.Entry<String, Expression> e : tests.entrySet()) {
-                    if (!(boolean) e.getValue().evaluate(context)) {
+                    try {
+                        if (!(boolean) e.getValue().evaluate(context)) {
+                            serviceStatus = PollStatus.down("Test failed: " + e.getKey());
+                            break;
+                        }
+                    } catch (final Throwable t) {
+                        LOG.warn("failed to execute test {}", e.getKey(), t);
                         serviceStatus = PollStatus.down("Test failed: " + e.getKey());
                         break;
                     }
@@ -210,12 +220,12 @@ public class JMXMonitor extends AbstractServiceMonitor {
             } catch (JmxServerConnectionException mbse) {
                 // Number of retries exceeded
                 String reason = "IOException while polling address: " + ipv4Addr;
-                LOG.debug(reason);
+                LOG.debug(reason, mbse);
                 serviceStatus = PollStatus.unavailable(reason);
             }
         } catch (Throwable e) {
             String reason = "Monitor - failed! " + InetAddressUtils.str(ipv4Addr);
-            LOG.debug(reason);
+            LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
         }
         return serviceStatus;
