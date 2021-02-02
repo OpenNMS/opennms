@@ -309,6 +309,20 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.16]
+
+==== Release Meridian-2019.1.16
+
+Release 2019.1.16 contains a cleanup to JEXL expression handling and a fix for
+SFlow hostname enrichment.
+
+The codename for 2019.1.16 is link:$$https://en.wikipedia.org/wiki/11020_Orwell$$[_Orwell_].
+
+===== Bug
+
+* SFlow enhancment is not functional (Issue http://issues.opennms.org/browse/NMS-13093[NMS-13093])
+* JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
+
 [releasenotes-changelog-Meridian-2019.1.15]
 
 ==== Release Meridian-2019.1.15

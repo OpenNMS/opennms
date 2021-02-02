@@ -85,6 +85,19 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.25]
+
+==== Release Meridian-2018.1.25
+
+Release 2018.1.25 is a small update to 2018.1.24 with some cleanups in how we
+handle JEXL expressions.
+
+The codename for 2018.1.25 is _https://wikipedia.org/wiki/Mudflow[Mudflow]_.
+
+===== Bug
+
+* JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
+
 [releasenotes-changelog-Meridian-2018.1.24]
 
 ==== Release Meridian-2018.1.24
