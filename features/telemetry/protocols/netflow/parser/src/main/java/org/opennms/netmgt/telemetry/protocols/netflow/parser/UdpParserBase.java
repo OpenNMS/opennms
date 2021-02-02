@@ -45,14 +45,11 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.buffer.ByteBuf;
 
@@ -108,7 +105,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     @Override
     public void start(final ScheduledExecutorService executorService) {
         super.start(executorService);
-        this.sessionManager = new UdpSessionManager(this.templateTimeout);
+        this.sessionManager = new UdpSessionManager(this.templateTimeout, this::sequenceNumberTracker);
         this.housekeepingFuture = executorService.scheduleAtFixedRate(this.sessionManager::doHousekeeping,
                 HOUSEKEEPING_INTERVAL,
                 HOUSEKEEPING_INTERVAL,

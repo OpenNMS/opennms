@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
@@ -128,8 +128,11 @@ public class TcpSession implements Session {
     private final Map<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
     private final Map<Long, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
 
-    public TcpSession(final InetAddress remoteAddress) {
+    private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
+
+    public TcpSession(final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.remoteAddress = Objects.requireNonNull(remoteAddress);
+        this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class TcpSession implements Session {
 
     @Override
     public boolean verifySequenceNumber(long observationDomainId, final long sequenceNumber) {
-        final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> new SequenceNumberTracker(32));
+        final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> this.sequenceNumberTracker.get());
         return tracker.verify(sequenceNumber);
     }
 }
