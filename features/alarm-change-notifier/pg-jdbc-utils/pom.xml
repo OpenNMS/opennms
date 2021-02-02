@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>alarm-change-notifier.parent</artifactId>
-    <version>2018.1.25-SNAPSHOT</version>
+    <version>2018.1.25</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
