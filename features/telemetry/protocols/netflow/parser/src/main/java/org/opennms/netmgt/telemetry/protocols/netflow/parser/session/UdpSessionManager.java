@@ -149,7 +149,7 @@ public class UdpSessionManager {
         @Override
         public boolean verifySequenceNumber(final long observationDomainId, final long sequenceNumber) {
             final DomainKey key = new DomainKey(this.sessionKey, observationDomainId);
-            final SequenceNumberTracker tracker = UdpSessionManager.this.sequenceNumbers.computeIfAbsent(key, (k) -> new SequenceNumberTracker());
+            final SequenceNumberTracker tracker = UdpSessionManager.this.sequenceNumbers.computeIfAbsent(key, (k) -> new SequenceNumberTracker(32));
             return tracker.verify(sequenceNumber);
         }
     }
