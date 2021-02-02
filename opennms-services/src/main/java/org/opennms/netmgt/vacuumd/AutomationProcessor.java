@@ -33,14 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -240,7 +233,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         String getActionSQL() {
-            return getAction().getStatement().getContent();
+            return Optional.ofNullable(getAction()).map(s -> s.getStatement()).map(c -> c.getContent()).orElse("");
         }
 
         PreparedStatement createPreparedStatement() throws SQLException {
