@@ -18,7 +18,6 @@ The codename for 27.0.4 is link:$$https://hitchhikers.fandom.com/wiki/Towel$$[_T
 * Discrepancy between Flows "top N" and SNMP for same interface (Issue http://issues.opennms.org/browse/NMS-12967[NMS-12967])
 * Increase length of snmpinterfaces.snmpifdescr (Issue http://issues.opennms.org/browse/NMS-12976[NMS-12976])
 * requisition meta data are deleted if node meta data defined with "db only" synchronize (Issue http://issues.opennms.org/browse/NMS-12990[NMS-12990])
-* Flow Rest API: Name lookup is happening per bucket and not per interval (Aggregation Only) (Issue http://issues.opennms.org/browse/NMS-13065[NMS-13065])
 * Timezone and date range inconsistencies when scheduling database reports associated with Grafana dashboards. (Issue http://issues.opennms.org/browse/NMS-13070[NMS-13070])
 * Exception messages during node import (log noise) (Issue http://issues.opennms.org/browse/NMS-13082[NMS-13082])
 * Fix vmwareconfigbuilder script to run with JDK9+ (Issue http://issues.opennms.org/browse/NMS-13084[NMS-13084])
