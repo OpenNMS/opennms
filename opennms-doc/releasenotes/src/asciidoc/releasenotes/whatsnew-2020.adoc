@@ -215,11 +215,32 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.5]
+
+==== Release Meridian-2020.1.5
+
+Release 2020.1.5 contains a few bugfixes and a log verbosity enhancement.
+
+The codename for 2020.1.5 is link:$$https://wikipedia.org/wiki/Strandflat$$[_Strandflat_].
+
+===== Bug
+
+* Timezone and date range inconsistencies when scheduling database reports associated with Grafana dashboards. (Issue http://issues.opennms.org/browse/NMS-13070[NMS-13070])
+* Exception messages during node import (log noise) (Issue http://issues.opennms.org/browse/NMS-13082[NMS-13082])
+* SFlow enhancment is not functional (Issue http://issues.opennms.org/browse/NMS-13093[NMS-13093])
+* JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
+
+===== Enhancement
+
+* Optionally silence file not found warnings for JICMP, JRRD when properties are not set (Issue http://issues.opennms.org/browse/NMS-13081[NMS-13081])
+
 [releasenotes-changelog-Meridian-2020.1.4]
 
 ==== Release Meridian-2020.1.4
 
 Release 2020.1.4 contains an SNMP poller fix and a small enhancement to package dependencies.
+
+The codename for 2020.1.4 is link:$$https://wikipedia.org/wiki/Machair$$[_Machair_].
 
 ===== Bug
 
