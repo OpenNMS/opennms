@@ -168,7 +168,7 @@ public class TcpSession implements Session {
 
     @Override
     public boolean verifySequenceNumber(long observationDomainId, final long sequenceNumber) {
-        final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> new SequenceNumberTracker());
+        final SequenceNumberTracker tracker = this.sequenceNumbers.computeIfAbsent(observationDomainId, (k) -> new SequenceNumberTracker(32));
         return tracker.verify(sequenceNumber);
     }
 }
