@@ -181,12 +181,12 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
           </textElement>
           <text><![CDATA[Rendered at:]]></text>
         </staticText>
-        <textField pattern="EEE dd MMM yyyy HH:mm:ss z">
+        <textField>
           <reportElement x="80" y="2" width="200" height="20" uuid="72447933-df4d-4da8-8c10-e8b5f08f41d0"/>
           <textElement verticalAlignment="Middle">
             <font size="10" isBold="false"/>
           </textElement>
-          <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+          <textFieldExpression><![CDATA[org.opennms.netmgt.jasper.helper.TimezoneHelper.now($P{timezone}, "EEE dd MMM yyyy HH:mm:ss z")]]></textFieldExpression>
         </textField>
       </frame>
     </band>
