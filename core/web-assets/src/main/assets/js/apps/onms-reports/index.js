@@ -258,6 +258,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                             scope.report.parametersByName['timezone'].value = after;
                         }
                         scope.oldTimeZone = after;
+                        scope.report.validateTimezone();
                     };
 
                     scope.endpointChanged = function () {
@@ -419,7 +420,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 online: $stateParams.online === 'true'
             };
 
-            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.report = new ReportDetails({id: $scope.meta.reportId, scope: $scope});
             $scope.options = {};
             $scope.loading = false;
             $scope.reportForm = { $invalid: false };
@@ -452,7 +453,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
                 ReportTemplateResource.get(requestParameters, function(response) {
                     $scope.loading = false;
-                    $scope.report = new ReportDetails(response);
+                    $scope.report = new ReportDetails(Object.assign(response, {scope: $scope}));
                 }, function(response) {
                     $scope.loading = false;
                     $scope.setGlobalError(response);
@@ -636,7 +637,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
         .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($scope, userInfo, meta, setGlobalError, ReportScheduleResource) {
             $scope.meta = meta;
             $scope.userInfo = userInfo;
-            $scope.report = new ReportDetails({id: $scope.meta.reportId});
+            $scope.report = new ReportDetails({id: $scope.meta.reportId, scope: $scope});
             $scope.options = {};
             $scope.loading = false;
             $scope.reportForm = { $invalid : false };
@@ -669,7 +670,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
                 ReportScheduleResource.get({id: $scope.meta.triggerName}, function(response) {
                     $scope.loading = false;
-                    $scope.report = new ReportDetails(response);
+                    $scope.report = new ReportDetails(Object.assign(response, {scope: $scope}));
                 }, function(response) {
                     $scope.loading = false;
                     $scope.setGlobalError(response);

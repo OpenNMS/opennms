@@ -10,6 +10,10 @@ import DayOfMonthParser from './parsers/DayOfMonthParser';
 import ContextError from './ContextError';
 import Intervals from './Intervals';
 
+import CronParser from 'cron-parser';
+import moment from 'moment';
+require('moment-timezone');
+
 export default class ScheduleOptions {
 
     /* eslint-disable complexity */
@@ -40,6 +44,9 @@ export default class ScheduleOptions {
 
         // Custom
         this.cronExpression = options.cronExpression || '0 0/5 * * * ?';
+
+        // Report Time Zone to use (if any)
+        this.timezone = options.timezone || undefined;
 
         // Enable debugging?
         this.showDebugOptions = options.showDebugOptions || false;
@@ -175,6 +182,23 @@ export default class ScheduleOptions {
                 throw new ContextError('to', 'To time must be equal or after from time');
             }
         }
+    }
+
+    getServerZone() {
+        return this.serverZone || window._onmsZoneId;
+    }
+
+    getBrowserZone() {
+        return moment.tz.guess();
+    }
+
+    getNextExecution(displayZone) {
+        const interval = CronParser.parseExpression(this.getCronExpression(), {
+            tz: this.timezone,
+        });
+
+        const d = interval.next().toDate();
+        return moment.tz(d, displayZone || this.timezone || moment.tz.guess());
     }
 
     isValid() {
