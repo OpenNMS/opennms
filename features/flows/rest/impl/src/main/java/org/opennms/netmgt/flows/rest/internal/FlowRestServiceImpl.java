@@ -148,8 +148,6 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         final List<TrafficSummary<String>> summary = waitForFuture(flowQueryService.getFieldSummaries(field, filters));
 
-        // do not include the ECN info column in the summary if the ECN field is queried
-        // -> the ECN info is already represented by the key column and therefore would appear twice
         this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString)
                 .apply(response)
                 .accept(summary);

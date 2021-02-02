@@ -846,16 +846,13 @@
             "type": "date"
           },
           "tos": {
-            "type": "keyword",
-            "norms": false
+            "type": "keyword"
           },
           "dscp": {
-            "type": "keyword",
-            "norms": false
+            "type": "keyword"
           },
           "ecn": {
-            "type": "keyword",
-            "norms": false
+            "type": "keyword"
           },
           "version": {
             "type": "keyword",
