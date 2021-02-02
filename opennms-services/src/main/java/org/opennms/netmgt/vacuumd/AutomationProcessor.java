@@ -146,7 +146,6 @@ public class AutomationProcessor implements ReadyRunnable {
 		 * @param trigRowCount
 		 * @param trigOp
 		 * @param resultRows
-		 * @param processor TODO
 		 */
 		public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
 		    
@@ -251,7 +250,6 @@ public class AutomationProcessor implements ReadyRunnable {
          * Returns an ArrayList containing the names of column defined
          * as tokens in the action statement defined in the config.  If no
          * tokens are found, an empty list is returned.
-         * @param targetString
          * @return
          */
         public List<String> getActionColumns() {
@@ -369,8 +367,6 @@ public class AutomationProcessor implements ReadyRunnable {
          * are available in the ResultSet of the paired trigger
          * @param rs
          * @param actionColumns TODO
-         * @param actionSQL
-         * @param processor TODO
          * @return
          */
         public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection<String> actionColumns) {
