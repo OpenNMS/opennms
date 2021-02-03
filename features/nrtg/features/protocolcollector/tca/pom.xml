@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.osgi.features.nrtg</groupId>
     <artifactId>osgi-nrtg-protocolcollector</artifactId>
-    <version>2018.1.25</version>
+    <version>2018.1.26-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg.protocolcollector</groupId>
