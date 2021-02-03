@@ -113,7 +113,71 @@ public class SequenceNumberTrackerTest {
         assertFalse(tracker.verify(100 + tracker.getPatience()));
 
         // Followings are there, again
-        assertTrue(tracker.verify(100 + tracker.getPatience() + 1));
+        for (int x = 1; x < tracker.getPatience(); x++) {
+            assertTrue(tracker.verify(100 + tracker.getPatience() + x));
+        }
     }
 
+    @Test
+    public void testReset() {
+        final SequenceNumberTracker tracker = new SequenceNumberTracker(32);
+
+        assertTrue(tracker.verify(8));
+        assertTrue(tracker.verify(9));
+        assertTrue(tracker.verify(10));
+
+        // Skipping 32 - 1 -> no reset
+        assertTrue(tracker.verify(42));
+        assertFalse(tracker.verify(43));
+        assertFalse(tracker.verify(44));
+
+        // Skipping 32 -> reset
+        assertTrue(tracker.verify(78));
+        assertTrue(tracker.verify(79));
+        assertTrue(tracker.verify(80));
+    }
+
+    @Test
+    public void testSizeTwo() {
+        final SequenceNumberTracker tracker = new SequenceNumberTracker(2);
+
+        assertTrue(tracker.verify(0));
+        assertTrue(tracker.verify(1));
+
+        // skipping 1 -> no reset
+        assertTrue(tracker.verify(3));
+        assertFalse(tracker.verify(4));
+        assertTrue(tracker.verify(5));
+
+        // skipping 2 -> reset
+        assertTrue(tracker.verify(8));
+        assertTrue(tracker.verify(9));
+        assertTrue(tracker.verify(10));
+    }
+
+    @Test
+    public void testSizeOne() {
+        final SequenceNumberTracker tracker = new SequenceNumberTracker(1);
+
+        assertTrue(tracker.verify(0));
+        assertTrue(tracker.verify(1));
+
+        assertTrue(tracker.verify(3));
+        assertTrue(tracker.verify(4));
+
+        assertTrue(tracker.verify(6));
+    }
+
+    @Test
+    public void testSizeZero() {
+        final SequenceNumberTracker tracker = new SequenceNumberTracker(0);
+
+        assertTrue(tracker.verify(0));
+        assertTrue(tracker.verify(1));
+
+        assertTrue(tracker.verify(3));
+        assertTrue(tracker.verify(4));
+
+        assertTrue(tracker.verify(6));
+    }
 }
