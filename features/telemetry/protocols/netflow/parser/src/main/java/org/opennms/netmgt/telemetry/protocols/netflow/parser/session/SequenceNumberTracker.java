@@ -56,8 +56,10 @@ public class SequenceNumberTracker {
     /**
      * The history of seen sequence numbers relative to the current sequence number.
      *
-     * The history is stored in a ring with the size of the expected {@code patience}. By doing so, marking a sequence
-     * number as gives the status of of the expected sequence number - patience.
+     * The history is stored in a ring with the size of the expected {@code patience}. Therefore a sequence number
+     * {@code q} and {@code q - patience} will share the same slot in the ring. While marking {@code q} as seen (or
+     * missing) the history will return the status of {@code q - patience}. As the current sequence number is only
+     * driven forwards, this concludes that {@code q - patience} has exceeded patience in just that moment.
      */
     private final Ring seen;
 
@@ -66,15 +68,22 @@ public class SequenceNumberTracker {
             throw new IllegalArgumentException("patience must be positive");
         }
 
-        this.seen = new Ring(patience);
+        this.seen = patience > 1
+            ? new Ring(patience)
+            : null;
 
         // Set to minimal value to trigger re-initialisation on first sequence number passed
-        this.current = -patience;
+        this.current = Integer.MIN_VALUE;
     }
 
     public synchronized boolean verify(final long sequenceNumber) {
+        // Fast-path for disabled sequence tracking - everything is valid
+        if (this.seen == null) {
+            return true;
+        }
+
         // Detect jumps and reinitialize
-        if (Math.abs(this.current - sequenceNumber) >= this.seen.size()) {
+        if (Math.abs(this.current - sequenceNumber) > this.seen.size()) {
             this.current = sequenceNumber;
 
             // Start over with a history where everything is marked as seen
@@ -89,15 +98,15 @@ public class SequenceNumberTracker {
             return true;
         }
 
-        boolean valid = true;
+        // Mark current sequence number as seen
+        boolean valid = this.seen.set(sequenceNumber, true);
 
         // Mark everything between current sequence number and input as missing
         for (long x = this.current + 1; x < sequenceNumber; x++) {
             valid &= this.seen.set(x, false);
         }
 
-        // Add the sequence number to history and advance
-        valid &= this.seen.set(sequenceNumber, true);
+        // Advance sequence number
         this.current = sequenceNumber;
 
         return valid;
@@ -117,6 +126,10 @@ public class SequenceNumberTracker {
         private final boolean[] values;
 
         private Ring(final int size) {
+            if (size < 0) {
+                throw new IllegalArgumentException("ring size must be >= 1");
+            }
+
             this.values = new boolean[size];
         }
 
