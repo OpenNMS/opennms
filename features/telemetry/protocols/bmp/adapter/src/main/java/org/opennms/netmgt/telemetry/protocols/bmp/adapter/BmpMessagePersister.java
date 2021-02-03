@@ -440,42 +440,30 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         });
         return bmpUnicastPrefixes;
     }
-    
-    private List<BmpAsnPathAnalysis> buildBmpAsnPath(String asnPath) {
+
+
+    List<BmpAsnPathAnalysis> buildBmpAsnPath(String asnPath) {
 
         List<BmpAsnPathAnalysis> bmpAsnPathAnalyses = new ArrayList<>();
-        String[] asnArray = asnPath.split(" ");
-
+        String[] asnStringArray = asnPath.split(" ");
+        long[] asnArray = getLongArrayFromStringArray(asnStringArray);
+        if (asnArray.length == 0) {
+            return new ArrayList<>();
+        }
         Long leftAsn = 0L;
         Long rightAsn = 0L;
         Long asn = 0L;
         for (int i = 0; i < asnArray.length; i++) {
-            if (asnArray[i].length() <= 0)
-                break;
 
-            try {
-                asn = Long.valueOf(asnArray[i]);
-            } catch (NumberFormatException e) {
-                break;
-            }
-
+            asn = asnArray[i];
             if (asn > 0) {
                 if (i + 1 < asnArray.length) {
 
-                    if (asnArray[i + 1].length() <= 0)
-                        break;
-
-                    try {
-                        rightAsn = Long.valueOf(asnArray[i + 1]);
-
-                    } catch (NumberFormatException e) {
-                        break;
-                    }
+                    rightAsn = asnArray[i + 1];
 
                     if (rightAsn.equals(asn)) {
                         continue;
                     }
-
                     Boolean isPeeringAsn = (i == 0 || i == 1) ? TRUE : FALSE;
                     BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, rightAsn, isPeeringAsn);
                     if (bmpAsnPathAnalysis == null) {
@@ -487,7 +475,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     }
                     bmpAsnPathAnalysis.setLastUpdated(Date.from(Instant.now()));
                     bmpAsnPathAnalyses.add(bmpAsnPathAnalysis);
-
                 } else {
                     // No more left in path - Origin ASN
                     BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, 0L, false);
@@ -508,6 +495,16 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         }
 
         return bmpAsnPathAnalyses;
+    }
+
+    static long[] getLongArrayFromStringArray(String[] asnArray) {
+        long[] emptyArray = {};
+        try {
+            return Stream.of(asnArray).mapToLong(Long::parseLong).toArray();
+        } catch (NumberFormatException e) {
+            // Ignore;
+        }
+        return emptyArray;
     }
 
     public BmpCollectorDao getBmpCollectorDao() {
