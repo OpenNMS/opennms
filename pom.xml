@@ -1374,6 +1374,7 @@
     <commonsIoVersion>2.5</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
+    <commonsNetVersion>3.6</commonsNetVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
@@ -3421,7 +3422,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.6</version>
+        <version>${commonsNetVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>

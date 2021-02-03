@@ -75,6 +75,11 @@
       <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>${commonsNetVersion}</version>
+    </dependency>
 
     <!-- Test -->
     <dependency>

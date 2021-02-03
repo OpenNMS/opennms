@@ -54,6 +54,9 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao;
+
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
@@ -107,6 +110,9 @@ public class BmpMessagePersisterIT {
 
     @Autowired
     private BmpGlobalIpRibDao bmpGlobalIpRibDao;
+
+    @Autowired
+    private BmpAsnInfoDao bmpAsnInfoDao;
 
 
     @Test
@@ -175,9 +181,12 @@ public class BmpMessagePersisterIT {
         bmpMessageHandler.handle(msg, context);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
-        bmpMessageHandler.updateGlobalRibs();
+        bmpMessageHandler.updateGlobalRibsAndAsnInfo();
         List<BmpGlobalIpRib> bmpGlobalIpRibs = bmpGlobalIpRibDao.findAll();
         Assert.assertFalse(bmpGlobalIpRibs.isEmpty());
+
+        List<BmpAsnInfo> bmpAsnInfoList = bmpAsnInfoDao.findAll();
+        Assert.assertFalse(bmpAsnInfoList.isEmpty());
 
         //New Peer message should remove all previous prefixes.
         peer.action = Peer.Action.DOWN;
@@ -269,7 +278,7 @@ public class BmpMessagePersisterIT {
         unicastPrefix.baseAttrHash = "23212a7ff9f5433ed6ae6fcd9a2b432gf";
         unicastPrefix.ipv4 = true;
         unicastPrefix.origin = "ibgp";
-        unicastPrefix.originAs = 7075L;
+        unicastPrefix.originAs = 701L;
         unicastPrefix.adjIn = false;
         unicastPrefix.prefix = InetAddressUtils.addr("10.0.0.1");
         unicastPrefix.length = 1;
@@ -288,7 +297,7 @@ public class BmpMessagePersisterIT {
         bmpBaseAttribute.asPath = "64512 64513 {64514}";
         bmpBaseAttribute.asPathCount = 3;
         bmpBaseAttribute.origin = "ebgp";
-        bmpBaseAttribute.originAs = 7075L;
+        bmpBaseAttribute.originAs = 701L;
         bmpBaseAttribute.atomicAgg = false;
         bmpBaseAttribute.nextHop = InetAddressUtils.addr("10.0.1.2");
         bmpBaseAttribute.med = 4L;

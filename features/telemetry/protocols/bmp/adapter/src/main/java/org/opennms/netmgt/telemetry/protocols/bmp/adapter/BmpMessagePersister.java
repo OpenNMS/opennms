@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +66,10 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysis;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
@@ -70,6 +78,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
@@ -82,6 +92,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -106,6 +117,15 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     @Autowired
     private BmpGlobalIpRibDao bmpGlobalIpRibDao;
+
+    @Autowired
+    private BmpAsnInfoDao bmpAsnInfoDao;
+
+    @Autowired
+    private BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao;
+
+    @Autowired
+    private BmpRouteInfoDao bmpRouteInfoDao;
 
     @Autowired
     private SessionUtils sessionUtils;
@@ -202,6 +222,16 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                         } catch (Exception e) {
                             LOG.error("Exception while persisting BMP base attribute {}", bmpBaseAttribute, e);
                         }
+                        String asPath = bmpBaseAttribute.getAsPath();
+                        List<BmpAsnPathAnalysis> asnPaths = buildBmpAsnPath(asPath);
+                        asnPaths.forEach(asnPath -> {
+                            try {
+                                bmpAsnPathAnalysisDao.saveOrUpdate(asnPath);
+                            } catch (Exception e) {
+                                LOG.error("Exception while persisting BMP asn path {}", asnPath, e);
+                            }
+                        });
+
                     });
                     break;
                 case UNICAST_PREFIX:
@@ -220,10 +250,10 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     }
 
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibs, 0, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibsAndAsnInfo, 0, 5, TimeUnit.MINUTES);
     }
 
-    void updateGlobalRibs() {
+    void updateGlobalRibsAndAsnInfo() {
         List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
         prefixByASList.forEach(prefixByAS -> {
             BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
@@ -233,6 +263,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                 } catch (Exception e) {
                     LOG.error("Exception while persisting BMP global iprib  {}", bmpGlobalIpRib, e);
                 }
+
             }
         });
     }
@@ -411,6 +442,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     peerEntity.setPeerAddr(InetAddressUtils.str(peer.remoteIp));
                     peerEntity.setName(peer.name);
                     peerEntity.setPeerBgpId(InetAddressUtils.str(peer.remoteBgpId));
+                    peerEntity.setPeerAsn(peer.remoteAsn);
                     State state = !peer.action.equals(Peer.Action.DOWN) ? State.UP : State.DOWN;
                     peerEntity.setState(state);
                     peerEntity.setL3VPNPeer(peer.l3vpn);
@@ -427,6 +459,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     peerEntity.setReceivedCapabilities(peer.receivedCapabilities);
                     peerEntity.setBmpReason(peer.bmpReason);
                     peerEntity.setBgpErrCode(peer.bgpErrorCode);
+                    peerEntity.setBgpErrSubCode(peer.bgpErrorSubcode);
                     peerEntity.setErrorText(peer.errorText);
                     peerEntity.setLocRib(peer.locRib);
                     peerEntity.setLocRibFiltered(peer.locRibFiltered);
@@ -527,11 +560,38 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             BmpGlobalIpRib bmpGlobalIpRib = bmpGlobalIpRibDao.findByPrefixAndAS(prefixByAS.getPrefix(), prefixByAS.getOriginAs());
             if (bmpGlobalIpRib == null) {
                 bmpGlobalIpRib = new BmpGlobalIpRib();
+                bmpGlobalIpRib.setPrefix(prefixByAS.getPrefix());
+                bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
+                bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
+                bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
+                Long asn = bmpGlobalIpRib.getRecvOriginAs();
+                if (asn != null) {
+                    BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
+                    if (bmpAsnInfo == null) {
+                        bmpAsnInfo = fetchAndBuildAsnInfo(asn);
+                        if (bmpAsnInfo != null) {
+                            try {
+                                bmpAsnInfoDao.saveOrUpdate(bmpAsnInfo);
+                            } catch (Exception e) {
+                                LOG.error("Exception while persisting BMP ASN Info  {}", bmpAsnInfo, e);
+                            }
+                        }
+                    }
+                }
+                String prefix = bmpGlobalIpRib.getPrefix();
+                if (!Strings.isNullOrEmpty(prefix)) {
+                    BmpRouteInfo bmpRouteInfo = fetchAndBuildRouteInfo(prefix);
+                    if (bmpRouteInfo != null) {
+                        try {
+                            bmpGlobalIpRib.setIrrOriginAs(bmpRouteInfo.getOriginAs());
+                            bmpGlobalIpRib.setIrrSource(bmpRouteInfo.getSource());
+                            bmpRouteInfoDao.saveOrUpdate(bmpRouteInfo);
+                        } catch (Exception e) {
+                            LOG.error("Exception while persisting BMP Route Info  {}", bmpRouteInfo, e);
+                        }
+                    }
+                }
             }
-            bmpGlobalIpRib.setPrefix(prefixByAS.getPrefix());
-            bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
-            bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
-            bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
             return bmpGlobalIpRib;
         } catch (Exception e) {
             LOG.error("Exception while mapping prefix {} to GlobalIpRib entity", prefixByAS.getPrefix(), e);
@@ -540,6 +600,112 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     }
 
+    private BmpAsnInfo fetchAndBuildAsnInfo(Long asn) {
+        Optional<AsnInfo> asnInfoOptional = BmpWhoIsClient.getAsnInfo(asn);
+        if (asnInfoOptional.isPresent()) {
+            BmpAsnInfo bmpAsnInfo = new BmpAsnInfo();
+            AsnInfo asnInfo = asnInfoOptional.get();
+            bmpAsnInfo.setAsn(asnInfo.getAsn());
+            bmpAsnInfo.setOrgId(asnInfo.getOrgId());
+            bmpAsnInfo.setAsName(asnInfo.getAsName());
+            bmpAsnInfo.setOrgName(asnInfo.getOrgName());
+            bmpAsnInfo.setAddress(asnInfo.getAddress());
+            bmpAsnInfo.setCity(asnInfo.getCity());
+            bmpAsnInfo.setStateProv(asnInfo.getStateProv());
+            bmpAsnInfo.setPostalCode(asnInfo.getPostalCode());
+            bmpAsnInfo.setCountry(asnInfo.getCountry());
+            bmpAsnInfo.setSource(asnInfo.getSource());
+            bmpAsnInfo.setRawOutput(asnInfo.getRawOutput());
+            bmpAsnInfo.setRemarks(asnInfo.getRemarks());
+            bmpAsnInfo.setLastUpdated(Date.from(Instant.now()));
+            return bmpAsnInfo;
+        }
+        return null;
+    }
+
+    private BmpRouteInfo fetchAndBuildRouteInfo(String prefix) {
+        Optional<RouteInfo> routeInfoOptional = BmpWhoIsClient.getRouteInfo(prefix);
+        if (routeInfoOptional.isPresent() && routeInfoOptional.get().getPrefix() != null) {
+            RouteInfo routeInfo = routeInfoOptional.get();
+            Integer prefixLen = routeInfo.getPrefixLen();
+            Long originAs = routeInfo.getOriginAs();
+            BmpRouteInfo bmpRouteInfo = bmpRouteInfoDao.findByPrefix(routeInfo.getPrefix(), prefixLen, originAs);
+            if (bmpRouteInfo == null) {
+                bmpRouteInfo = new BmpRouteInfo();
+                bmpRouteInfo.setPrefix(routeInfo.getPrefix());
+                bmpRouteInfo.setPrefixLen(routeInfo.getPrefixLen());
+                bmpRouteInfo.setDescr(routeInfo.getDescription());
+                bmpRouteInfo.setOriginAs(routeInfo.getOriginAs());
+                bmpRouteInfo.setSource(routeInfo.getSource());
+            }
+            bmpRouteInfo.setLastUpdated(Date.from(Instant.now()));
+            return bmpRouteInfo;
+        }
+        return null;
+    }
+
+    List<BmpAsnPathAnalysis> buildBmpAsnPath(String asnPath) {
+
+        List<BmpAsnPathAnalysis> bmpAsnPathAnalyses = new ArrayList<>();
+        String[] asnStringArray = asnPath.split(" ");
+        long[] asnArray = getLongArrayFromStringArray(asnStringArray);
+        if (asnArray.length == 0) {
+            return new ArrayList<>();
+        }
+        Long leftAsn = 0L;
+        Long rightAsn = 0L;
+        Long asn = 0L;
+        for (int i = 0; i < asnArray.length; i++) {
+            asn = asnArray[i];
+            if (asn > 0) {
+                if (i + 1 < asnArray.length) {
+
+                    rightAsn = asnArray[i + 1];
+                    if (rightAsn.equals(asn)) {
+                        continue;
+                    }
+                    Boolean isPeeringAsn = (i == 0 || i == 1) ? TRUE : FALSE;
+                    BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, rightAsn, isPeeringAsn);
+                    if (bmpAsnPathAnalysis == null) {
+                        bmpAsnPathAnalysis = new BmpAsnPathAnalysis();
+                        bmpAsnPathAnalysis.setAsn(asn);
+                        bmpAsnPathAnalysis.setAsnLeft(leftAsn);
+                        bmpAsnPathAnalysis.setAsnRight(rightAsn);
+                        bmpAsnPathAnalysis.setAsnLeftPeering(isPeeringAsn);
+                    }
+                    bmpAsnPathAnalysis.setLastUpdated(Date.from(Instant.now()));
+                    bmpAsnPathAnalyses.add(bmpAsnPathAnalysis);
+                } else {
+                    // No more left in path - Origin ASN
+                    BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, 0L, false);
+                    if (bmpAsnPathAnalysis == null) {
+                        bmpAsnPathAnalysis = new BmpAsnPathAnalysis();
+                        bmpAsnPathAnalysis.setAsn(asn);
+                        bmpAsnPathAnalysis.setAsnLeft(leftAsn);
+                        bmpAsnPathAnalysis.setAsnRight(0L);
+                        bmpAsnPathAnalysis.setAsnLeftPeering(false);
+                    }
+                    bmpAsnPathAnalysis.setLastUpdated(Date.from(Instant.now()));
+                    bmpAsnPathAnalyses.add(bmpAsnPathAnalysis);
+                    break;
+                }
+
+                leftAsn = asn;
+            }
+        }
+
+        return bmpAsnPathAnalyses;
+    }
+
+    static long[] getLongArrayFromStringArray(String[] asnArray) {
+        long[] emptyArray = {};
+        try {
+            return Stream.of(asnArray).mapToLong(Long::parseLong).toArray();
+        } catch (NumberFormatException e) {
+            // Ignore;
+        }
+        return emptyArray;
+    }
 
     public BmpCollectorDao getBmpCollectorDao() {
         return bmpCollectorDao;
@@ -587,6 +753,30 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     public void setBmpGlobalIpRibDao(BmpGlobalIpRibDao bmpGlobalIpRibDao) {
         this.bmpGlobalIpRibDao = bmpGlobalIpRibDao;
+    }
+
+    public BmpAsnInfoDao getBmpAsnInfoDao() {
+        return bmpAsnInfoDao;
+    }
+
+    public void setBmpAsnInfoDao(BmpAsnInfoDao bmpAsnInfoDao) {
+        this.bmpAsnInfoDao = bmpAsnInfoDao;
+    }
+
+    public BmpAsnPathAnalysisDao getBmpAsnPathAnalysisDao() {
+        return bmpAsnPathAnalysisDao;
+    }
+
+    public void setBmpAsnPathAnalysisDao(BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao) {
+        this.bmpAsnPathAnalysisDao = bmpAsnPathAnalysisDao;
+    }
+
+    public BmpRouteInfoDao getBmpRouteInfoDao() {
+        return bmpRouteInfoDao;
+    }
+
+    public void setBmpRouteInfoDao(BmpRouteInfoDao bmpRouteInfoDao) {
+        this.bmpRouteInfoDao = bmpRouteInfoDao;
     }
 
     public SessionUtils getSessionUtils() {

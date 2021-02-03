@@ -85,6 +85,9 @@ public class BmpPeer implements Serializable {
     @Column(name = "peer_bgp_id")
     private String peerBgpId;
 
+    @Column(name = "peer_asn")
+    private Long peerAsn;
+
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
@@ -134,6 +137,9 @@ public class BmpPeer implements Serializable {
 
     @Column(name = "bgp_err_code")
     private Integer bgpErrCode;
+
+    @Column(name = "bgp_err_subcode")
+    private Integer bgpErrSubCode;
 
     @Column(name = "error_text")
     private String errorText;
@@ -212,6 +218,14 @@ public class BmpPeer implements Serializable {
 
     public void setPeerBgpId(String peerBgpId) {
         this.peerBgpId = peerBgpId;
+    }
+
+    public Long getPeerAsn() {
+        return peerAsn;
+    }
+
+    public void setPeerAsn(Long peerAsn) {
+        this.peerAsn = peerAsn;
     }
 
     public State getState() {
@@ -342,6 +356,14 @@ public class BmpPeer implements Serializable {
         this.bgpErrCode = bgpErrCode;
     }
 
+    public Integer getBgpErrSubCode() {
+        return bgpErrSubCode;
+    }
+
+    public void setBgpErrSubCode(Integer bgpErrSubCode) {
+        this.bgpErrSubCode = bgpErrSubCode;
+    }
+
     public String getErrorText() {
         return errorText;
     }
@@ -399,6 +421,7 @@ public class BmpPeer implements Serializable {
                 Objects.equals(peerAddr, bmpPeer.peerAddr) &&
                 Objects.equals(name, bmpPeer.name) &&
                 Objects.equals(peerBgpId, bmpPeer.peerBgpId) &&
+                Objects.equals(peerAsn, bmpPeer.peerAsn) &&
                 state == bmpPeer.state &&
                 Objects.equals(timestamp, bmpPeer.timestamp) &&
                 Objects.equals(geoIpStart, bmpPeer.geoIpStart) &&
@@ -413,13 +436,14 @@ public class BmpPeer implements Serializable {
                 Objects.equals(receivedCapabilities, bmpPeer.receivedCapabilities) &&
                 Objects.equals(bmpReason, bmpPeer.bmpReason) &&
                 Objects.equals(bgpErrCode, bmpPeer.bgpErrCode) &&
+                Objects.equals(bgpErrSubCode, bmpPeer.bgpErrSubCode) &&
                 Objects.equals(errorText, bmpPeer.errorText) &&
                 Objects.equals(tableName, bmpPeer.tableName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashId, bmpRouter, peerRd, isIpv4, peerAddr, name, peerBgpId, state, isL3VPNPeer, timestamp, isPrePolicy, geoIpStart, localIp, localBgpId, localPort, localHoldTime, localAsn, remotePort, remoteHoldTime, sentCapabilities, receivedCapabilities, bmpReason, bgpErrCode, errorText, isLocRib, isLocRibFiltered, tableName);
+        return Objects.hash(hashId, bmpRouter, peerRd, isIpv4, peerAddr, name, peerBgpId, peerAsn, state, isL3VPNPeer, timestamp, isPrePolicy, geoIpStart, localIp, localBgpId, localPort, localHoldTime, localAsn, remotePort, remoteHoldTime, sentCapabilities, receivedCapabilities, bmpReason, bgpErrCode, bgpErrSubCode, errorText, isLocRib, isLocRibFiltered, tableName);
     }
 
     @Override
@@ -433,6 +457,7 @@ public class BmpPeer implements Serializable {
                 ", peerAddr='" + peerAddr + '\'' +
                 ", name='" + name + '\'' +
                 ", peerBgpId='" + peerBgpId + '\'' +
+                ", peerAsn=" + peerAsn +
                 ", state=" + state +
                 ", isL3VPNPeer=" + isL3VPNPeer +
                 ", timestamp=" + timestamp +
@@ -449,6 +474,7 @@ public class BmpPeer implements Serializable {
                 ", receivedCapabilities='" + receivedCapabilities + '\'' +
                 ", bmpReason=" + bmpReason +
                 ", bgpErrCode=" + bgpErrCode +
+                ", bgpErrSubCode=" + bgpErrSubCode +
                 ", errorText='" + errorText + '\'' +
                 ", isLocRib=" + isLocRib +
                 ", isLocRibFiltered=" + isLocRibFiltered +

@@ -130,6 +130,9 @@
       </column>
       <column name="name" type="varchar(200)"/>
       <column name="peer_bgp_id" type="varchar(40)"/>
+      <column name="peer_asn" type="bigint">
+        <constraints nullable="false" />
+      </column>
       <column name="state" type="varchar(8)" defaultValue="DOWN">
         <constraints nullable="false" />
       </column>
@@ -154,6 +157,7 @@
       <column name="recv_capabilities" type="varchar(4096)"/>
       <column name="bmp_reason" type="smallint"/>
       <column name="bgp_err_code" type="smallint"/>
+      <column name="bgp_err_subcode" type="smallint"/>
       <column name="error_text" type="varchar(255)"/>
       <column name="is_loc_rib" type="boolean" defaultValue="false">
         <constraints nullable="false" />
@@ -318,5 +322,159 @@
     <addPrimaryKey tableName="bmp_global_ip_ribs" constraintName="pk_bmp_global_ip_ribs" columnNames="prefix,recv_origin_as"/>
   </changeSet>
 
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-asninfo-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpasninfonxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpasninfonxtid" />
+    <rollback>
+      <dropSequence sequenceName="bmpasninfonxtid" />
+    </rollback>
+  </changeSet>
+
+  <changeSet  author="cgorantla" id="28.0.0-bmp-asn-info">
+
+    <createTable tableName="bmp_asn_info" remarks="bmp asn info">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="as_name" type="varchar(255)"/>
+      <column name="org_id" type="varchar(255)"/>
+      <column name="org_name" type="varchar(255)"/>
+      <column name="remarks" type="text"/>
+      <column name="address" type="varchar(255)"/>
+      <column name="city" type="varchar(255)"/>
+      <column name="state_prov" type="varchar(255)"/>
+      <column name="postal_code" type="varchar(255)"/>
+      <column name="country" type="varchar(255)"/>
+      <column name="raw_output" type="text"/>
+      <column name="last_updated" type="timestamp"/>
+      <column name="source" type="varchar(64)"/>
+    </createTable>
+    <addPrimaryKey tableName="bmp_asn_info" constraintName="pk_bmp_asn_info" columnNames="asn"/>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-asnpath-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpasnpathnxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmpasnpathnxtid" />
+    <rollback>
+      <dropSequence sequenceName="bmpasnpathnxtid" />
+    </rollback>
+  </changeSet>
+
+  <changeSet  author="cgorantla" id="28.0.0-bmp-asn-path-analysis">
+
+    <createTable tableName="bmp_asn_path_analysis" remarks="bmp asn path analysis">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="asn_left" type="bigint"/>
+      <column name="asn_right" type="bigint"/>
+      <column name="asn_left_is_peering" type="boolean"/>
+      <column name="last_updated" type="timestamp"/>
+    </createTable>
+    <addPrimaryKey tableName="bmp_asn_path_analysis" constraintName="pk_bmp_asn_path" columnNames="asn, asn_left, asn_right, asn_left_is_peering"/>
+  </changeSet>
+
+  <changeSet id="28.0.0-bmp-view-peer" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_peers">
+      SELECT CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE  rtr.ip_address END AS RouterName, rtr.ip_address as RouterIP,
+      p.local_ip as LocalIP, p.local_port as LocalPort, p.local_asn as LocalASN, p.local_bgp_id as LocalBGPId,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      p.peer_addr as PeerIP, p.remote_port as PeerPort, p.peer_asn as PeerASN,
+      p.peer_bgp_id as PeerBGPId,
+      p.local_hold_time as LocalHoldTime, p.remote_hold_time as PeerHoldTime,
+      p.state as peer_state, rtr.state as router_state,
+      p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN, p.is_pre_policy as isPrePolicy,
+      p.last_updated as LastModified,
+      p.bmp_reason as LastBMPReasonCode, p.bgp_err_code as LastDownCode,
+      p.bgp_err_subcode as LastdownSubCode, p.error_text as LastDownMessage,
+      p.last_updated as LastDownTimestamp,
+      p.sent_capabilities as SentCapabilities, p.recv_capabilities as RecvCapabilities,
+      w.as_name,
+      p.is_loc_rib,p.is_loc_rib_filtered,p.table_name,
+      p.hash_id as peer_hash_id, rtr.hash_id as router_hash_id,p.geo_ip_start
+
+      FROM bmp_peers p JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id)
+      LEFT JOIN bmp_asn_info w ON (p.peer_asn = w.asn);
+    </createView>
+  </changeSet>
+
+  <changeSet id="28.0.0-bmp-view-ip-routes" author="cgorantla">
+    <createView replaceIfExists="true" viewName="bmp_v_ip_routes">
+      SELECT  CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
+      CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
+      r.prefix AS Prefix,r.prefix_len AS PrefixLen,
+      attr.origin AS Origin,r.origin_as AS Origin_AS,attr.med AS MED,
+      attr.local_pref AS LocalPref,attr.next_hop AS NH,attr.as_path AS AS_Path,
+      attr.as_path_count AS ASPath_Count,attr.community_list AS Communities,
+      attr.ext_community_list AS ExtCommunities,attr.large_community_list AS LargeCommunities,
+      attr.cluster_list AS ClusterList,
+      attr.aggregator AS Aggregator,p.peer_addr AS PeerAddress, p.peer_asn AS PeerASN,r.is_ipv4 as isIPv4,
+      p.is_ipv4 as isPeerIPv4, p.is_l3vpn_peer as isPeerVPN,
+      r.last_updated AS LastModified, r.first_added_timestamp as FirstAddedTimestamp,
+      r.path_id, r.labels,
+      r.hash_id as rib_hash_id,
+      r.base_attr_hash_id as base_hash_id, r.peer_hash_id, rtr.hash_id as router_hash_id,r.is_withdrawn,
+      r.prefix_bits,r.is_pre_policy,r.is_adj_ribin
+      FROM bmp_ip_ribs r
+      JOIN bmp_peers p ON (r.peer_hash_id = p.hash_id)
+      JOIN bmp_base_attributes attr ON (attr.hash_id = r.base_attr_hash_id and attr.peer_hash_id = r.peer_hash_id)
+      JOIN bmp_routers rtr ON (p.router_hash_id = rtr.hash_id);
+    </createView>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-route-info-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprouteinfonxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmprouteinfonxtid" />
+    <rollback>
+      <dropSequence sequenceName="bmprouteinfonxtid" />
+    </rollback>
+  </changeSet>
+
+  <changeSet  author="cgorantla" id="28.0.0-bmp-route-info">
+
+    <createTable tableName="bmp_route_info" remarks="bmp route info">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int">
+        <constraints nullable="false"/>
+      </column>
+      <column name="descr" type="text"/>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="source" type="varchar(32)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bmp_route_info" constraintName="pk_bmp_route_info" columnNames="prefix, prefix_len, origin_as"/>
+  </changeSet>
 
 </databaseChangeLog>

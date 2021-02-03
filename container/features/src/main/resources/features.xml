@@ -129,7 +129,7 @@
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
-    <feature name="commons-net" version="3.6" description="Apache :: commons-net">
+    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/3.6</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
@@ -1015,13 +1015,12 @@
         <feature>rate-limited-logger</feature>
         <feature>resilience4j</feature>
         <feature>opennms-dnsresolver-api</feature>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
+        <feature>commons-net</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
