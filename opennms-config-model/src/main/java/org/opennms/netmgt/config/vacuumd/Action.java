@@ -96,6 +96,10 @@ public class Action implements Serializable {
         m_statement = ConfigUtils.assertNotNull(statement, "statement");
     }
 
+    public boolean hasStatement(){
+        return m_statement != null;
+    }
+
     public int hashCode() {
         return Objects.hash(m_name, m_dataSource, m_statement);
     }

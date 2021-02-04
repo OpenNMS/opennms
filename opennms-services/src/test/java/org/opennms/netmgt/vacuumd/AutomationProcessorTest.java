@@ -39,23 +39,23 @@ public class AutomationProcessorTest extends TestCase {
         String emptyString = "";
         //test null Action
         AutomationProcessor.ActionProcessor ap1 = new AutomationProcessor.ActionProcessor("", null);
-        Assert.assertEquals(ap1.getActionSQL(), emptyString);
+        Assert.assertEquals(emptyString, ap1.getActionSQL());
 
         //test Action with null statement
         Action actionNullStatement = new Action();
         AutomationProcessor.ActionProcessor ap2 = new AutomationProcessor.ActionProcessor("", actionNullStatement);
-        Assert.assertEquals(ap2.getActionSQL(), emptyString);
+        Assert.assertEquals(emptyString, ap2.getActionSQL());
 
         //test statement with null content
         Statement statementNullContent = new Statement();
         Action actionNullContent = new Action("name","dataSource",statementNullContent);
         AutomationProcessor.ActionProcessor ap3 = new AutomationProcessor.ActionProcessor("", actionNullContent);
-        Assert.assertEquals(ap3.getActionSQL(), emptyString);
+        Assert.assertEquals(emptyString, ap3.getActionSQL());
 
         //test everything is well
         Statement statement = new Statement("value", true);
         Action action = new Action("name","dataSource",statement);
         AutomationProcessor.ActionProcessor ap4 = new AutomationProcessor.ActionProcessor("", action);
-        Assert.assertEquals(ap4.getActionSQL(), "value");
+        Assert.assertEquals("value", ap4.getActionSQL());
     }
 }
