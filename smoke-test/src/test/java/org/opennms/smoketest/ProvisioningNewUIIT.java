@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,7 @@ package org.opennms.smoketest;
 import static org.awaitility.Awaitility.await;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 import java.util.concurrent.TimeUnit;
@@ -181,6 +182,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         // Save the IP interface
         clickId("save-interface", false);
         wait.until(visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
+        wait.until(invisibilityOfElementLocated(By.xpath("//div[contains(@class,'modal-backdrop')]")));
 
         // Add an asset to the node
         clickId("tab-assets", false);

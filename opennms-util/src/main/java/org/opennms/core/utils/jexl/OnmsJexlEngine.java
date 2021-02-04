@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.endpoints.grafana.api;
+package org.opennms.core.utils.jexl;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
-public interface GrafanaClient {
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    List<Dashboard> getDashboards() throws IOException;
+public class OnmsJexlEngine extends JexlEngine {
+    final static Log LOG = LogFactory.getLog(OnmsJexlEngine.class);
 
-    Dashboard getDashboardByUid(String uid) throws IOException;
+    final OnmsJexlSandbox onmsJexlSandbox;
 
-    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, final String timezone, final Map<String, String> variables);
+    public OnmsJexlEngine() {
+        this(new OnmsJexlSandbox(false));
+    }
+
+    public OnmsJexlEngine(final OnmsJexlSandbox onmsJexlSandbox) {
+        super(new OnmsJexlUberspect(LOG, Objects.requireNonNull(onmsJexlSandbox)), null, null, LOG);
+        this.onmsJexlSandbox = onmsJexlSandbox;
+        setStrict(true);
+        setLenient(false);
+
+    }
+
+    public OnmsJexlSandbox.Permissions white(String clazz) {
+        return this.onmsJexlSandbox.white(clazz);
+    }
+
+    public OnmsJexlSandbox.Permissions black(String clazz) {
+        return this.onmsJexlSandbox.black(clazz);
+    }
 }

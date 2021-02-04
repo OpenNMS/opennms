@@ -54,11 +54,10 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -109,7 +108,7 @@ public class Netflow9ConverterTest {
 
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
