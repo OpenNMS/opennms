@@ -75,6 +75,13 @@ public class TimezoneHelper {
 		return format.format(rezoned);
 	}
 
+	public static String now(final ZoneId zoneId, final String pattern) throws ParseException {
+		final Date now = new Date();
+		final SimpleDateFormat format = new SimpleDateFormat(pattern);
+		format.setTimeZone(TimeZone.getTimeZone(zoneId));
+		return format.format(now);
+	}
+
     public static String getUtcOffset(final ZoneId zoneId, final Date referenceDate) {
         if (zoneId == null || referenceDate == null) {
             return "";

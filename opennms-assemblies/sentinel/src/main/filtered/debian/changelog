@@ -1,3 +1,14 @@
+opennms-sentinel (27.0.4-1) stable; urgency=high
+
+  * New minor release.  It contains a number of bug fixes relating to WMI, the
+    Minion, flows, reports, JEXL processing, and more, as well as a few small
+    enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.0.4/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 02 Feb 2021 15:23:00 -0400
+ 
 opennms-sentinel (27.0.3-1) stable; urgency=low
 
   * New minor release.  It contains a number of mostly esoteric bug fixes, and a

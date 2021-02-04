@@ -45,14 +45,11 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.buffer.ByteBuf;
 
@@ -80,8 +77,11 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));
 
-        metricRegistry.register(MetricRegistry.name("parsers",  name, "sessionCount"),
-                                (Gauge<Integer>) () -> (this.sessionManager != null) ? this.sessionManager.count() : null);
+        String sessionCountGauge = MetricRegistry.name("parsers",  name, "sessionCount");
+        // Register only if it's not already there in the registry.
+        if (!metricRegistry.getGauges().keySet().contains(sessionCountGauge)) {
+            metricRegistry.register(sessionCountGauge, (Gauge<Integer>) () -> (this.sessionManager != null) ? this.sessionManager.count() : null);
+        }
     }
 
     protected abstract RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception;

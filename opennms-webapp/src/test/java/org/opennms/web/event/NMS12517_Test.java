@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.endpoints.grafana.api;
+package org.opennms.web.event;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import static org.junit.Assert.assertEquals;
 
-public interface GrafanaClient {
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
-    List<Dashboard> getDashboards() throws IOException;
+public class NMS12517_Test {
 
-    Dashboard getDashboardByUid(String uid) throws IOException;
+    @Test
+    public void singleQuoteTest() throws Exception {
+        final EventQueryServlet eventQueryServlet = new EventQueryServlet();
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        final MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("eventtext", "'öäü<>'");
 
-    CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, final String timezone, final Map<String, String> variables);
+        eventQueryServlet.doGet(request, response);
+
+        assertEquals(302, response.getStatus());
+        System.err.println("->"+response.getHeader("Location")+"<-");
+        assertEquals("filter?filter=eventtext%3D%27%C3%B6%C3%A4%C3%BC%26lt%3B%26gt%3B%27", response.getHeader("Location"));
+    }
 }

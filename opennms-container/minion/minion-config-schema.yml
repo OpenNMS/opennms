@@ -12,23 +12,23 @@ categories:
   # General
   - name: "general"
     label: "General"
-    description: "TODO"
+    description: "Generic Minion configuration settings."
     config:
       - name: "instance-id"
         type:
           name: "string"
           validation: "TODO"
-        label: "OpenNMS Instance Id"
-        description: "TODO"
+        label: "Core instance ID"
+        description: "Identifier for the core instance used as queue prefix in the message broker."
         key: "/org.opennms.instance.id"
-        example: "TODO"
+        example: "OpenNMS"
       - name: "system-properties"
         type:
           name: "properties"
         label: "System Properties"
-        description: "TODO"
+        description: "Set generic Java system properties."
         key: "/system/properties"
-        example: "TODO"
+        example: "jaeger-agent-host: my-jaeger-host"
       - name: "server-certificates"
         type:
           name: "collection"
@@ -38,159 +38,159 @@ categories:
             type:
               name: "string"
         label: "Server Certificates"
-        description: "TODO"
+        description: "TLS certificates for public communication endpoints."
         key: "/server-certs"
         example: "TODO"
     categories:
       # General :: Controller
       - name: "controller"
-        label: "Controller"
-        description: "TODO"
+        label: "Minion Controller"
+        description: "Minion controller configuration for a location and communication endpoints."
         config:
           - name: "location"
             type:
               name: "string"
               validation: "TODO"
             label: "Location"
-            description: "TODO"
+            description: "Name of the location the Minion is deployed."
             key: "/location"
-            example: "TODO"
+            example: "my-remote-office-nyc"
           - name: "id"
             type:
               name: "string"
               validation: "TODO"
             label: "Minion Id"
-            description: "TODO"
+            description: "A unique Minion identifier in the location."
             key: "/id"
-            example: "TODO"
+            example: "id: my-minion-nyc"
           - name: "broker-url"
             type:
               name: "url"
-            label: "Broker URL"
-            description: "TODO"
+            label: "Message broker URL"
+            description: "Set the message broker connection URL."
             key: "/broker-url"
-            example: "TODO"
+            example: "ActiveMQ: failover:[tcp,ssl]://my-activemq-ip:61616, Kafka: broker-01:9092, broker-02:9092"
           - name: "http-url"
             type:
               name: "url"
-            label: "HTTP URL"
-            description: "TODO"
+            label: "Core base URL"
+            description: "Set the core instance web application base URL."
             key: "/http-url"
-            example: "TODO"
+            example: "http://my-opennms-instance-ip:8980/opennms"
   # Dominion
   - name: "dominion"
     label: "Dominion"
-    description: "TODO"
+    description: "Configuration for the Dominion process."
     categories:
       # Dominion :: gRPC
       - name: "grpc"
         label: "gRPC"
-        description: "TODO"
+        description: "Configure the Dominion gRPC endpoint."
         config:
           - name: "host"
             type:
               name: "host"
             label: "Host"
-            description: "TODO"
+            description: "Set gRPC host for Dominion gRPC endpoint."
             key: "/dominion/grpc/host"
-            example: "TODO"
+            example: "my-dominion-grpc-host"
           - name: "port"
             type:
               name: "port"
             label: "Port"
-            description: "TODO"
+            description: "Set gRPC TCP port for Dominion gRPC endpoint."
             key: "/dominion/grpc/port"
-            example: "TODO"
+            example: "443"
           - name: "client-secret"
             type:
               name: "string"
             label: "Client Secret"
-            description: "TODO"
+            description: "Set gRPC client secret."
             key: "/dominion/grpc/client-secret"
-            example: "TODO"
+            example: "my-9RPC-cl13nt-s3cr3t"
       # Dominion :: SCV
       - name: "scv"
         label: "Secure Credentials Vault"
-        description: "TODO"
+        description: "Configuration for secure credentials vault (scv)."
         config:
           - name: "provider"
             type:
               name: "string"
             label: "Provider"
-            description: "TODO"
+            description: "Set the scv provider."
             key: "/scv/provider"
             example: "TODO"
   # Karaf
   - name: "karaf"
     label: "Karaf"
-    description: "TODO"
+    description: "Karaf configuration"
     categories:
       # Karaf :: Management
       - name: "management"
         label: "Management"
-        description: "TODO"
+        description: "Configuration for Karaf JMX management access."
         categories:
           # Karaf :: Management :: RMI
           - name: "rmi"
             label: "RMI"
-            description: "TODO"
+            description: "Configuration for remote method invocation (RMI)."
             config:
               - name: "registry-host"
                 type:
                   name: "host"
                 label: "Registry Host"
-                description: "TODO"
+                description: "Set RMI registry host IP address."
                 key: "/karaf/management/rmi/registry/host"
-                example: "TODO"
+                example: "127.0.0.1"
               - name: "registry-port"
                 type:
                   name: "port"
                 label: "Registry Port"
-                description: "TODO"
+                description: "Set RMI registry TCP port."
                 key: "/karaf/management/rmi/registry/port"
-                example: "TODO"
+                example: "1299"
               - name: "server-host"
                 type:
                   name: "host"
                 label: "Server Host"
-                description: "TODO"
+                description: "Set RMI server host IP address seen by the client."
                 key: "/karaf/management/rmi/server/host"
-                example: "TODO"
+                example: "127.0.0.1"
               - name: "server-port"
                 type:
                   name: "port"
                 label: "Server Port"
-                description: "TODO"
+                description: "Set RMI server TCP port."
                 key: "/karaf/management/rmi/server/port"
-                example: "TODO"
+                example: "45444"
       # Karaf :: Shell
       - name: "shell"
         label: "Shell"
-        description: "TODO"
+        description: "Karaf shell access configuration"
         categories:
           # Karaf :: Shell :: SSH
           - name: "ssh"
             label: "SSH"
-            description: "TODO"
+            description: "Apache Karaf SSH configuration settings."
             config:
               - name: "host"
                 type:
                   name: "host"
                 label: "Host"
-                description: "TODO"
+                description: "Listening IP address for the SSH service."
                 key: "/karaf/shell/ssh/host"
-                example: "TODO"
+                example: "0.0.0.0"
               - name: "port"
                 type:
                   name: "port"
                 label: "Port"
-                description: "TODO"
+                description: "TCP listening port for the SSH service."
                 key: "/karaf/shell/ssh/port"
-                example: "TODO"
+                example: "8201"
   # Minion Environment
   - name: "environment"
     label: "Environment"
-    description: "TODO"
+    description: "Minion Java environment settings."
     config:
       - name: "java-opts"
         type:
@@ -201,67 +201,74 @@ categories:
             type:
               name: "string"
         label: "JVM Options"
-        description: "TODO"
+        description: "Add additional Java options."
         key: "/process-env/java-opts"
-        example: "TODO"
+        example: "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896"
   # IPC Configuration
   - name: "ipc"
     label: "IPC"
-    description: "TODO"
+    description: "Core, Minion and Sentinel distributed inter-process communication (IPC) settings."
     categories:
       # IPC Configuration :: AWS
       - name: "aws"
         label: "AWS"
-        description: "TODO"
+        description: "Configure Amazon Web Services Simple Queue Service (AWS SQS) as message broker."
         config:
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
-            description: "TODO"
+            description: "Configure global AWS SQS properties."
             key: "/aws"
-            example: "TODO"
+            example: "aws_region: us-east-1, aws_access_key_id: xxxxxx or aws_secret_access_key: yyyyyy"
         categories:
           # IPC Configuration :: AWS :: SQS
           - name: "sqs"
             label: "SQS"
-            description: "TODO"
+            description: "Configure IPC messaging using AWS SQS."
             config:
               - name: "properties"
                 type:
                   name: "properties"
                 label: "Properties"
-                description: "TODO"
+                description: "Set generic AWS SQS IPC properties."
                 key: "/ipc/sqs"
-                example: "TODO"
+                example: "sink.MaximumMessageSize: 262144"
       # IPC Configuration :: gRPC
       - name: "grpc"
         label: "gRPC"
-        description: "TODO"
+        description: "Configure IPC communication using gRPC."
         config:
           - name: "host"
             type:
-              name: "host-with-port"
+              name: "host"
             label: "Host"
-            description: "TODO"
+            description: "Set gRPC host endpoint which is typically the same as the core instance host."
             key: "/ipc/grpc/host"
-            example: "TODO"
+            example: "my-opennms-instance-ip"
+          - name: "port"
+            type:
+              name: "port"
+            label: "gRPC TCP port"
+            description: "Set the gRPC TCP port the server is listening on."
+            key: "/ipc/grpc/port"
+            example: "8990"
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
-            description: "Additional gRPC configuration properties for IPC gRPC"
+            description: "Generic gRPC configuration properties for IPC."
             key: "/ipc/grpc"
-            example: "TODO"
+            example: "max.message.size: 10485760"
       # IPC Configuration :: RPC
       - name: "rpc"
         label: "RPC"
-        description: "TODO"
+        description: "Configuration settings for Remote Producer Call (RPC)."
         categories:
           # IPC Configuration :: RPC :: Kafka
           - name: "kafka"
             label: "Kafka"
-            description: "TODO"
+            description: "Configure RPC using Apache Kafka as message broker."
             config:
               - name: "bootstrap-servers"
                 type:
@@ -273,33 +280,33 @@ categories:
                       name: "host-with-port"
                     separator: ","
                 label: "Bootstrap Servers"
-                description: "Kafka bootstrap servers for IPC RPC"
+                description: "Kafka bootstrap servers"
                 key: "/ipc/rpc/kafka/bootstrap.servers"
-                example: "TODO"
+                example: "kafka-01-ip:9092, kafka-02-ip:9092"
               - name: "properties"
                 type:
                   name: "properties"
                 label: "Properties"
-                description: "Additional Kafka configuration properties for IPC RPC"
+                description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
-                example: "TODO"
+                example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"
-        description: "TODO"
+        description: "Message sink configuration"
         config:
           - name: "offheap"
             type:
               name: "properties"
             label: "Off Heap"
-            description: "TODO"
+            description: "Configuration for the off heap storage for sink messages."
             key: "/ipc/sink/offheap"
-            example: "TODO"
+            example: "offHeapSize: 1GB"
         categories:
           # IPC Configuration :: Sink :: Kafka
           - name: "kafka"
             label: "Kafka"
-            description: "TODO"
+            description: "Configure Kafka for IPC communication."
             config:
               - name: "bootstrap-servers"
                 type:
@@ -311,62 +318,62 @@ categories:
                       name: "host-with-port"
                     separator: ","
                 label: "Bootstrap Servers"
-                description: "Kafka bootstrap servers for IPC Sink"
+                description: "Set Kafka bootstrap servers for IPC Sink."
                 key: "/ipc/sink/kafka/bootstrap.servers"
-                example: "TODO"
+                example: "127.0.0.1:9092, my-broker-ip:9092"
               - name: "properties"
                 type:
                   name: "properties"
                 label: "Properties"
-                description: "Additional Kafka configuration properties for IPC Sink"
+                description: "Additional generic Kafka configuration properties for IPC Sink."
                 key: "/ipc/sink/kafka"
-                example: "TODO"
+                example: "compression.type: gzip"
   # Netmgt
   - name: "netmgt"
     label: "Network Management"
-    description: "TODO"
+    description: "Configuration for generic network management functions."
     categories:
       # Netmgt :: Traps
       - name: "traps"
-        label: "Traps"
-        description: "TODO"
+        label: "SNMP Trap daemon"
+        description: "Configuration for the SNMP Trap daemon."
         config:
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
-            description: "TODO"
+            description: "Set SNMP Trap daemon properties."
             key: "/netmgt/traps"
-            example: "TODO"
+            example: "trapd.listen.interface: 0.0.0.0, trapd.listen.port: 1162"
       # Netmgt :: Syslog
       - name: "syslog"
-        label: "Syslog"
-        description: "TODO"
+        label: "Syslog daemon"
+        description: "Configuration for the Syslog daemon."
         config:
           - name: "properties"
             type:
               name: "properties"
             label: "Properties"
-            description: "TODO"
+            description: "Set Syslog daemon properties."
             key: "/netmgt/syslog"
-            example: "TODO"
+            example: "syslog.listen.interface: 0.0.0.0, syslog.listen.port: 1514" 
   # Web
   - name: "web"
     label: "Web"
-    description: "TODO"
+    description: "Configuration for the core instance web server."
     categories:
       # Web :: Jetty
       - name: "jetty"
         label: "Jetty"
-        description: "TODO"
+        description: "Set generic Jetty web server configuration parameters."
         config:
           - name: "http-listen-port"
             type:
               name: "port"
             label: "HTTP Listen Port"
-            description: "Jetty HTTP listen port"
+            description: "Set Jetty HTTP listen port."
             key: "/jetty/web/port"
-            example: "TODO"
+            example: "8181"
           - name: "listen-address"
             type:
               name: "set"
@@ -377,18 +384,18 @@ categories:
                   name: "host"
                 separator: ","
             label: "Listen Address"
-            description: "Jetty listen addresses"
+            description: "Set Jetty listen addresses."
             key: "/jetty/web/host"
-            example: "TODO"
+            example: "0.0.0.0"
   # Telemetry
   - name: "telemetry"
     label: "Telemetry"
-    description: "TODO"
+    description: "Telemetry daemon configuration"
     categories:
       # Telemetry :: Flows
       - name: "flows"
         label: "Flows"
-        description: "TODO"
+        description: "Configuration for network flow collectors."
         config:
           - name: "flow-listener-def"
             type:
@@ -432,41 +439,41 @@ categories:
               index-type: "field"
               index-field: "listener-name"
             label: "Flow Listener Definition"
-            description: "TODO"
+            description: "Configure listener for network flow packets."
             key: "/telemetry/flows/listeners"
             example: "TODO"
         categories:
           # Telemetry :: Flows :: Single Port Listener
           - name: "single-port-listener"
             label: "Single Port Listener"
-            description: "TODO"
+            description: "Configuration for single port flow listener."
             config:
               - name: "enabled"
                 type:
                   name: "boolean"
                 label: "Enable Single Port Listener"
-                description: "TODO"
+                description: "Enable or disable the single port flow listener."
                 key: "/telemetry/flows/single-port-listener/enabled"
-                example: "TODO"
+                example: "true"
               - name: "name"
                 type:
                   name: "string"
                   validation: "TODO"
                 label: "Name"
-                description: "TODO"
+                description: "Set a single port listener name."
                 key: "/telemetry/flows/single-port-listener/name"
-                example: "TODO"
+                example: "Name for the single port listener."
               - name: "parameters"
                 type:
                   name: "properties"
                 label: "Parameters"
-                description: "TODO"
+                description: "Configuration parameter for the single port listener."
                 key: "/telemetry/flows/single-port-listener/parameters"
-                example: "TODO"
+                example: "port: 50000"
               - name: "parser-parameters"
                 type:
                   name: "properties"
                 label: "Parser Parameters"
-                description: "TODO"
+                description: "Add flow packet parser configuration parameters."
                 key: "/telemetry/flows/single-port-listener/parser-parameters"
-                example: "TODO"
+                example: "queue: Netflow-9"
