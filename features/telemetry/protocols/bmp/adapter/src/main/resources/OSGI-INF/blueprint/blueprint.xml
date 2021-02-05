@@ -9,7 +9,7 @@
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
-	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional"/>
 	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
 
@@ -77,9 +77,6 @@
 		<argument ref="bmpMessagePersister"/>
 		<property name="telemetryRegistry" ref="telemetryRegistry" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
-		<property name="filterDao" ref="filterDao" />
-		<property name="persisterFactory" ref="persisterFactory" />
-		<property name="thresholdingService" ref="thresholdingService" />
 	</bean>
 
 	<service ref="bmpPersistingAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
@@ -97,10 +94,8 @@
 		<property name="bmpBaseAttributeDao" ref="bmpBaseAttributeDao"/>
 		<property name="bmpGlobalIpRibDao" ref = "bmpGlobalIpRibDao"/>
 		<property name="bmpAsnPathAnalysisDao" ref="bmpAsnPathAnalysisDao"/>
-		<property name="sessionUtils" ref="sessionUtils"/>
-		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
-		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
 		<property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
+		<property name="sessionUtils" ref="sessionUtils"/>
 	</bean>
 
 	<service ref="bmpMessagePersister" interface="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler">

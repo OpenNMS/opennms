@@ -30,25 +30,26 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BmpPersistingAdapterFactory extends AbstractCollectionAdapterFactory {
+public class BmpPersistingAdapterFactory extends AbstractAdapterFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpPersistingAdapterFactory.class);
 
-    private final BmpPersistenceMessageHandler bmpPersistenceMessageHandler;
+    private final BmpMessageHandler bmpMessageHandler;
 
-    public BmpPersistingAdapterFactory(BmpPersistenceMessageHandler bmpMessageHandler) {
+    public BmpPersistingAdapterFactory(BmpMessageHandler bmpMessageHandler) {
         super(null);
-        this.bmpPersistenceMessageHandler = bmpMessageHandler;
+        this.bmpMessageHandler = bmpMessageHandler;
     }
 
-    public BmpPersistingAdapterFactory(BundleContext bundleContext, BmpPersistenceMessageHandler bmpMessageHandler) {
+    public BmpPersistingAdapterFactory(BundleContext bundleContext, BmpMessageHandler bmpMessageHandler) {
         super(bundleContext);
-        this.bmpPersistenceMessageHandler = bmpMessageHandler;
+        this.bmpMessageHandler = bmpMessageHandler;
     }
 
     @Override
@@ -59,14 +60,9 @@ public class BmpPersistingAdapterFactory extends AbstractCollectionAdapterFactor
     @Override
     public Adapter createBean(AdapterDefinition adapterConfig) {
 
-        BmpPersistingAdapter adapter =  new BmpPersistingAdapter(adapterConfig,
+        return new BmpPersistingAdapter(adapterConfig,
                 this.getTelemetryRegistry().getMetricRegistry(),
-                bmpPersistenceMessageHandler);
-        adapter.setPersisterFactory(this.getPersisterFactory());
-        adapter.setFilterDao(this.getFilterDao());
-        adapter.setThresholdingService(this.getThresholdingService());
-        adapter.setBundleContext(this.getBundleContext());
-        return adapter;
+                bmpMessageHandler);
     }
 
 }

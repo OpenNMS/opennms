@@ -39,7 +39,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -119,8 +118,6 @@ public class BmpMessagePersisterIT {
         CollectionAgentFactory collectionAgentFactory = mock(CollectionAgentFactory.class);
         Context context = mock(Context.class);
         when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
-        when(collectionAgentFactory.createCollectionAgent(Mockito.anyString(), Mockito.any())).thenReturn(collectionAgent);
-        bmpMessageHandler.setCollectionAgentFactory(collectionAgentFactory);
         // Persist collector
         final Collector collector = getCollector();
         Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
