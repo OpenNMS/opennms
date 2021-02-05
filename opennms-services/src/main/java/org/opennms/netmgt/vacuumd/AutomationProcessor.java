@@ -721,7 +721,7 @@ public class AutomationProcessor implements ReadyRunnable {
             TriggerResults results = processTrigger();
             
             boolean success = false;
-            if (results.isSuccessful() && hasAction() && m_action.getAction().hasStatement() && !m_action.getAction().getStatement().getContent().isEmpty()) {
+            if (results.isSuccessful() && hasAction()) {
                 success = processAction(results, eventsToSend);
             }
             
