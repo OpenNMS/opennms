@@ -19,11 +19,28 @@
       <groupId>com.github.skyghis</groupId>
       <artifactId>j-interop-ng</artifactId>
       <version>${jinteropVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.skyghis</groupId>
       <artifactId>j-interop-ng-deps</artifactId>
       <version>${jinteropVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15to18</artifactId>
+      <version>${bouncyCastleVersion}</version>
     </dependency>
   </dependencies>
   <repositories>
