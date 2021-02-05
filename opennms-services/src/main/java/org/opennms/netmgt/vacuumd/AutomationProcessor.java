@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -240,7 +239,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         String getActionSQL() {
-            return Optional.ofNullable(getAction()).map(s -> s.getStatement()).map(c -> c.getContent()).orElse("");
+            return getAction().getStatement().getContent();
         }
 
         PreparedStatement createPreparedStatement() throws SQLException {
@@ -709,6 +708,8 @@ public class AutomationProcessor implements ReadyRunnable {
 
         if(hasAction()){
             LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
+        }else{
+            LOG.warn("Missing action. Please make sure you have correct action name");
         }
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
