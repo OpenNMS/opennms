@@ -41,7 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -227,20 +227,16 @@ public class AutomationProcessor implements ReadyRunnable {
         private final Action m_action;
 
         public ActionProcessor(String automationName, Action action) {
-            m_automationName = automationName;
-            m_action = action;
+            m_automationName = Objects.requireNonNull(automationName);
+            m_action = Objects.requireNonNull(action);
         }
         
-        public boolean hasAction() {
-            return m_action != null;
-        }
-
         public Action getAction() {
             return m_action;
         }
 
         String getActionSQL() {
-            return Optional.ofNullable(getAction()).map(s -> s.getStatement()).map(c -> c.getContent()).orElse("");
+            return getAction().getStatement().getContent();
         }
 
         PreparedStatement createPreparedStatement() throws SQLException {
@@ -635,10 +631,15 @@ public class AutomationProcessor implements ReadyRunnable {
      */
     @SuppressWarnings("deprecation")
 	public AutomationProcessor(Automation automation) {
+        String actionName = automation.getActionName();
+        Action actionForAutomation = VacuumdConfigFactory.getInstance().getAction(actionName);
+        if (actionForAutomation == null) {
+            throw new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'");
+        }
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
-        m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
+        m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
         m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
