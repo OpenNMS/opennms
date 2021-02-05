@@ -505,6 +505,16 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>configservice</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>configosgi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.daemon</artifactId>
     </dependency>
