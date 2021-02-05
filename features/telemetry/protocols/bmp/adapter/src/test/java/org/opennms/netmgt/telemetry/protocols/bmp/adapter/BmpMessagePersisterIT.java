@@ -178,12 +178,6 @@ public class BmpMessagePersisterIT {
         bmpMessageHandler.handle(msg, context);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
-/*        bmpMessageHandler.updateGlobalRibsAndAsnInfo();
-        List<BmpGlobalIpRib> bmpGlobalIpRibs = bmpGlobalIpRibDao.findAll();
-        Assert.assertFalse(bmpGlobalIpRibs.isEmpty());
-
-        List<BmpAsnInfo> bmpAsnInfoList = bmpAsnInfoDao.findAll();
-        Assert.assertFalse(bmpAsnInfoList.isEmpty());*/
 
         //New Peer message should remove all previous prefixes.
         peer.action = Peer.Action.DOWN;

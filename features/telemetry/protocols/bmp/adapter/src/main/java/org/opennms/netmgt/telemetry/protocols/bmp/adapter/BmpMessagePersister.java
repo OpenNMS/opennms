@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,6 +65,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLog;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
@@ -75,6 +78,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 public class BmpMessagePersister implements BmpPersistenceMessageHandler {
@@ -493,7 +497,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                 leftAsn = asn;
             }
         }
-
         return bmpAsnPathAnalyses;
     }
 
@@ -562,7 +565,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     public void setBmpAsnPathAnalysisDao(BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao) {
         this.bmpAsnPathAnalysisDao = bmpAsnPathAnalysisDao;
     }
-
 
     public BmpIpRibLogDao getBmpIpRibLogDao() {
         return bmpIpRibLogDao;

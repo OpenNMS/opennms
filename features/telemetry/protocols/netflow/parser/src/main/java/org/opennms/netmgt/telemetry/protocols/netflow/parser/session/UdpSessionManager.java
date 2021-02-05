@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
@@ -149,7 +150,7 @@ public class UdpSessionManager {
         @Override
         public boolean verifySequenceNumber(final long observationDomainId, final long sequenceNumber) {
             final DomainKey key = new DomainKey(this.sessionKey, observationDomainId);
-            final SequenceNumberTracker tracker = UdpSessionManager.this.sequenceNumbers.computeIfAbsent(key, (k) -> new SequenceNumberTracker());
+            final SequenceNumberTracker tracker = UdpSessionManager.this.sequenceNumbers.computeIfAbsent(key, (k) -> UdpSessionManager.this.sequenceNumberTracker.get());
             return tracker.verify(sequenceNumber);
         }
     }
@@ -223,8 +224,11 @@ public class UdpSessionManager {
 
     private final Duration timeout;
 
-    public UdpSessionManager(final Duration timeout) {
+    private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
+
+    public UdpSessionManager(final Duration timeout, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.timeout = timeout;
+        this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);
     }
 
     public void doHousekeeping() {

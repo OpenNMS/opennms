@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -51,6 +50,7 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -121,7 +121,11 @@ public class StressCommand implements Action {
         private final List<Expression> expressions = new ArrayList<>();
 
         public JexlEventGenerator(List<String> jexlExpressions) {
-            JexlEngine engine = new JexlEngine();
+            OnmsJexlEngine engine = new OnmsJexlEngine();
+            engine.setLenient(true);
+            engine.white(IpUtils.class.getName());
+            engine.white(Math.class.getName());
+            engine.white(EventBuilder.class.getName());
 
             Map<String, Object> functions = Maps.newHashMap();
             functions.put("iputils", IpUtils.class);

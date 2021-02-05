@@ -1,6 +1,8 @@
 import Types from '../../lib/onms-schedule-editor/scripts/Types';
 import ScheduleOptions from '../../lib/onms-schedule-editor/scripts/ScheduleOptions';
 import ContextError from '../../lib/onms-http/ContextError';
+import Util from 'lib/util';
+
 import moment from 'moment';
 require('moment-timezone');
 
@@ -70,6 +72,45 @@ export default class ReportDetails {
         if (this.supportedFormats.indexOf(this.deliveryOptions.format) === -1) {
             this.deliveryOptions.format = this.format;
         }
+
+        if (window._onmsZoneId) {
+            this.scheduleOptions.serverZone = window._onmsZoneId;
+        } else {
+            const xhr = new XMLHttpRequest();
+            const checkResponseText = () => {
+                try {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            const config = JSON.parse(xhr.responseText);
+                            if (config.datetimeformatConfig && config.datetimeformatConfig.zoneId) {
+                                window._onmsZoneId = config.datetimeformatConfig.zoneId;
+                                this.scheduleOptions.serverZone = config.datetimeformatConfig.zoneId;
+                                return;
+                            }
+                        }
+                        // eslint-disable-next-line no-console
+                        console.error('Failed to request server time zone: ' + xhr.status + ' ' + xhr.statusText);
+                        this.scheduleOptions.serverZone = null;
+                    }
+                } catch (e) {
+                    // eslint-disable-next-line no-console
+                    console.error('An error occurred getting the server time zone:', e);
+                    this.scheduleOptions.serverZone = null;
+                }
+            };
+
+            xhr.onreadystatechange = () => {
+                if (input && input.scope) {
+                    input.scope.$evalAsync(checkResponseText);
+                } else {
+                    checkResponseText();
+                }
+            };
+            xhr.open('GET', Util.getBaseHref() + 'rest/info');
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.send();
+        }
+
     }
 
     hasErrors() {
@@ -166,6 +207,9 @@ export default class ReportDetails {
                 // to just not do anything
             }
         });
+        if (this.parametersByName['timezone']) {
+            this.scheduleOptions.timezone = this.parametersByName['timezone'].value;
+        }
     }
 
     updateTimezoneParameter(selected) {
@@ -176,6 +220,7 @@ export default class ReportDetails {
             timezone = 'UTC';
         }
         this.parametersByName['timezone'].value = timezone;
+        this.scheduleOptions.timezone = timezone;
         this.validateTimezone();
     }
 
