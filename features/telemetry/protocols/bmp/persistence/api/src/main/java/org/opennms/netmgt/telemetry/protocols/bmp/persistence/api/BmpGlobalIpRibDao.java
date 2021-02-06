@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface BmpGlobalIpRibDao extends OnmsDao<BmpGlobalIpRib, Long> {
 
     BmpGlobalIpRib findByPrefixAndAS(String prefix, Long originAS);
+
+    List<StatsIpOrigins> getStatsIpOrigins();
 
 }

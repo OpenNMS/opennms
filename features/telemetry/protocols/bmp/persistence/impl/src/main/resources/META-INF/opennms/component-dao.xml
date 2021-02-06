@@ -59,4 +59,35 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" ref="bmpRouteInfoDao" />
 
+  <bean id="bmpIpRibLogDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpIpRibLogDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" ref="bmpIpRibLogDao" />
+
+  <bean id="bmpStatsByPeerDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPeerDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" ref="bmpStatsByPeerDao" />
+
+  <bean id="bmpStatsByAsnDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByAsnDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" ref="bmpStatsByAsnDao" />
+
+  <bean id="bmpStatsByPrefixDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPrefixDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" ref="bmpStatsByPrefixDao" />
+
+  <bean id="bmpStatsPeerRibDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsPeerRibDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" ref="bmpStatsPeerRibDao" />
+
+  <bean id="bmpStatsIpOriginsDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsIpOriginsDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao" />
+
+
 </beans>

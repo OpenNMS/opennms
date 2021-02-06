@@ -86,8 +86,8 @@ public class PrefixByAS implements Serializable {
         this.timeStamp = timeStamp;
     }
 
-    public Long getCount() {
-        return count;
+    public Integer getCount() {
+        return count != null ? count.intValue() : null;
     }
 
     public void setCount(Long count) {

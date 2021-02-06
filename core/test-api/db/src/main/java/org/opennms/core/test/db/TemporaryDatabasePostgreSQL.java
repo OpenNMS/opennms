@@ -28,16 +28,37 @@
 
 package org.opennms.core.test.db;
 
-import com.google.common.base.Joiner;
-import liquibase.Contexts;
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.exception.ChangeLogParseException;
-import liquibase.exception.LiquibaseException;
-import liquibase.parser.ChangeLogParserFactory;
-import liquibase.resource.ResourceAccessor;
-import liquibase.util.StringUtils;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Logger;
+
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.opennms.core.db.install.SimpleDataSource;
@@ -54,35 +75,17 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
+import com.google.common.base.Joiner;
 
-import static org.junit.Assert.assertTrue;
+import liquibase.Contexts;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.exception.ChangeLogParseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.parser.ChangeLogParserFactory;
+import liquibase.resource.ResourceAccessor;
+import liquibase.util.StringUtils;
 
 /**
  * 
@@ -741,7 +744,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
             m_migrator.setDataSource(templateDataSource);
 
-            m_migrator.setupDatabase(true, true, true, true);
+            m_migrator.setupDatabase(true, true, true, true, false);
 
             Integer count = new JdbcTemplate(templateDataSource).queryForObject("SELECT count(id) FROM databasechangelog WHERE id = '" + SAMPLE_CHANGELOG_ID + "'", Integer.class);
             assertTrue("couldn't find a sample databasechangelog entry after setting up template database. Looking for ID " + SAMPLE_CHANGELOG_ID, count == 1);
