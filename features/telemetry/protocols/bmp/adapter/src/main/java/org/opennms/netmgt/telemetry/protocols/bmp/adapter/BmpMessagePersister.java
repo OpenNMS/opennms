@@ -104,7 +104,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
-
     @Override
     public void handle(Message message, Context context) {
         sessionUtils.withTransaction(() -> {
