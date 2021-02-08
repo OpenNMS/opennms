@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -230,17 +229,13 @@ public class AutomationProcessor implements ReadyRunnable {
             m_automationName = automationName;
             m_action = action;
         }
-        
-        public boolean hasAction() {
-            return m_action != null;
-        }
 
         public Action getAction() {
             return m_action;
         }
 
         String getActionSQL() {
-            return Optional.ofNullable(getAction()).map(s -> s.getStatement()).map(c -> c.getContent()).orElse("");
+            return getAction().getStatement().getContent();
         }
 
         PreparedStatement createPreparedStatement() throws SQLException {
@@ -638,7 +633,11 @@ public class AutomationProcessor implements ReadyRunnable {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
-        m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
+        String actionName = automation.getActionName();
+        Action actionForAutomation = VacuumdConfigFactory.getInstance()
+                .getAction(actionName)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'"));
+        m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
         m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
@@ -706,7 +705,6 @@ public class AutomationProcessor implements ReadyRunnable {
         if (hasTrigger()) {
             LOG.debug("runAutomation: {} trigger statement is: {}", m_automation.getName(), m_trigger.getTriggerSQL());
         }
-            
         LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
