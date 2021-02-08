@@ -637,7 +637,11 @@ public class AutomationProcessor implements ReadyRunnable {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
-        m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
+        String actionName = automation.getActionName();
+        Action actionForAutomation = VacuumdConfigFactory.getInstance()
+                .getAction(actionName)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'"));
+        m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
         m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
@@ -706,11 +710,8 @@ public class AutomationProcessor implements ReadyRunnable {
             LOG.debug("runAutomation: {} trigger statement is: {}", m_automation.getName(), m_trigger.getTriggerSQL());
         }
 
-        if(hasAction()){
-            LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
-        }else{
-            LOG.warn("Missing action. Please make sure you have correct action name");
-        }
+        LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
+
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
 
@@ -722,7 +723,7 @@ public class AutomationProcessor implements ReadyRunnable {
             TriggerResults results = processTrigger();
             
             boolean success = false;
-            if (results.isSuccessful() && hasAction()) {
+            if(results.isSuccessful()){
                 success = processAction(results, eventsToSend);
             }
             
