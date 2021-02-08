@@ -229,10 +229,6 @@ public class AutomationProcessor implements ReadyRunnable {
             m_automationName = automationName;
             m_action = action;
         }
-        
-        public boolean hasAction() {
-            return m_action != null;
-        }
 
         public Action getAction() {
             return m_action;
@@ -709,9 +705,7 @@ public class AutomationProcessor implements ReadyRunnable {
         if (hasTrigger()) {
             LOG.debug("runAutomation: {} trigger statement is: {}", m_automation.getName(), m_trigger.getTriggerSQL());
         }
-
         LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
-
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));
 
@@ -723,7 +717,7 @@ public class AutomationProcessor implements ReadyRunnable {
             TriggerResults results = processTrigger();
             
             boolean success = false;
-            if(results.isSuccessful()){
+            if (results.isSuccessful()) {
                 success = processAction(results, eventsToSend);
             }
             
@@ -884,10 +878,6 @@ public class AutomationProcessor implements ReadyRunnable {
     
     private boolean hasTrigger() {
         return m_trigger.hasTrigger();
-    }
-
-    private boolean hasAction(){
-        return m_action.hasAction();
     }
 
     /**
