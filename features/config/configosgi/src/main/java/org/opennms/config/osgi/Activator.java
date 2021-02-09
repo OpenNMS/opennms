@@ -35,11 +35,13 @@ import org.apache.felix.cm.PersistenceManager;
 import org.opennms.config.configservice.api.ConfigurationService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
 
-//    private ServiceReference<PersistenceManager> reference;
-//    private ServiceRegistration<PersistenceManager> registration;
+    private ServiceReference<PersistenceManager> reference;
+    private ServiceRegistration<PersistenceManager> registration;
     
     @Override
     public void start(BundleContext context) throws Exception {
@@ -52,13 +54,16 @@ public class Activator implements BundleActivator {
                 .map(context::getService)
                 .orElseThrow(() -> new IllegalStateException("Cannot find " + ConfigurationService.class.getName()));
 
-        context.registerService(PersistenceManager.class, new OpenNMSPersistenceManager(context, configService), config);
+        registration = context.registerService(PersistenceManager.class, new OpenNMSPersistenceManager(context, configService), config);
 //        reference = registration
 //                .getReference();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        if(registration != null ) {
+            registration.unregister();
+        }
         System.out.println(OpenNMSPersistenceManager.class.getSimpleName() + "stopped");
     }
 }

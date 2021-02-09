@@ -13,5 +13,6 @@
     <modules>
         <module>configosgi</module>
         <module>configservice</module>
+        <module>shell</module>
     </modules>
 </project>

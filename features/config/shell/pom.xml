@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <description>A service that serves configurations to OpenNMS services.</description>
+  <description>A set of commands for the Karaf shell to deal with configuration.</description>
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.config</artifactId>
@@ -8,8 +8,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.config</groupId>
-  <artifactId>configservice</artifactId>
-  <name>OpenNMS :: Features :: Config :: Configuration Service</name>
+  <artifactId>shell</artifactId>
+  <name>OpenNMS :: Features :: Config :: Shell Commands</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -20,8 +20,7 @@
         <configuration>
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
+            <Karaf-Commands>*</Karaf-Commands>
           </instructions>
         </configuration>
       </plugin>
@@ -33,19 +32,15 @@
 
     <!-- Dependencies used -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>configservice</artifactId>
       <version>${project.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Testing -->
@@ -64,12 +59,7 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.blob.in-memory</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
+
   </dependencies>
   <repositories>
     <repository>

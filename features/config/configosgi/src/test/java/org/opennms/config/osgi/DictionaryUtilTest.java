@@ -34,6 +34,7 @@ import java.util.Dictionary;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.opennms.config.configservice.impl.DictionaryUtil;
 
 public class DictionaryUtilTest {
 

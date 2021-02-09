@@ -31,6 +31,7 @@ package org.opennms.config.configservice.impl;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -93,6 +94,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         }
 
+    }
+
+    @Override
+    public Optional<Dictionary<String, String>> getConfigurationAsDictionary(String uri) {
+        return getConfigurationAsString(uri)
+                .map(DictionaryUtil::createFromRawString);
+    }
+
+    @Override
+    public void putConfiguration(String uri, Dictionary<String, String> config) {
+        this.putConfiguration(uri, DictionaryUtil.writeToRawString(config));
     }
 
     public synchronized void registerForUpdates(final String uriOfConfig, final ConfigurationChangeListener listener) {

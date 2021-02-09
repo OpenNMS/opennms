@@ -28,45 +28,41 @@
 
 package org.opennms.config.osgi;
 
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Optional;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import org.opennms.config.configservice.api.ConfigurationService;
+import org.opennms.config.configservice.impl.DictionaryUtil;
 
-@Command(scope = "onmsconfig", name = "update", description = "updates the config")
+@Command(scope = "onmsconfig", name = "echoconfig", description = "Shows the config of a pid")
 @Service
-public class UpdateConfigCommand implements Action {
+public class EchoConfigCommand implements Action {
 
     @Reference
-    private ConfigurationAdmin configurationAdmin;
+    private ConfigurationService configService;
 
-    @Option(name = "-p", aliases = "--pid", description = "PID to update", required = true)
+    @Option(name = "-p", aliases = "--pid", description = "PID to show", required = true)
     private String pid;
-
-    @Option(name = "-k", aliases = "--key", description = "Key to update", required = true)
-    private String key;
-
-    @Option(name = "-v", aliases = "--value", description = "Value to update", required = true)
-    private String value;
 
     @Override
     public Object execute() throws Exception {
-        if(pid.isEmpty() || key.isEmpty()) {
-            System.out.println("pid and key must not be empty.");
-            return null;
-        }
-        Configuration config = configurationAdmin.getConfiguration("pid", "?org.opennms");
-        Dictionary props = Optional.ofNullable(config.getProperties()).orElse(new Hashtable<>());
-        props.put(key, value);
-        config.update(props);
-        System.out.printf("Updated %s: %s=%s.",pid, key, value);
+        System.out.println("Config of: %s:" + pid);
+        Dictionary properties = configService.getConfigurationAsString(pid)
+                .map(DictionaryUtil::createFromRawString)
+                .orElse(new Hashtable());
+        Collections
+                .list(properties.keys())
+                .stream()
+                .map(key -> key + "=" + properties.get(key))
+                .sorted()
+                .forEachOrdered(System.out::println);
+
         return null;
     }
 }

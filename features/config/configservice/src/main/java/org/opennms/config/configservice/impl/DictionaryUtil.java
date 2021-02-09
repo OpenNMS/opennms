@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.config.osgi;
+package org.opennms.config.configservice.impl;
 
 import java.io.IOException;
 import java.io.StringReader;

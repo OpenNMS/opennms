@@ -28,6 +28,7 @@
 
 package org.opennms.config.configservice.api;
 
+import java.util.Dictionary;
 import java.util.Optional;
 
 
@@ -48,6 +49,14 @@ public interface ConfigurationService {
     Optional<String> getConfigurationAsString(final String uri);
 
     void putConfiguration(final String uri, final String config);
+
+    /**
+     * Loads the latest available configuration specified by the URI and transforms it into a dictionary.
+     * Used by Osgi.
+     */
+    Optional<Dictionary<String, String>> getConfigurationAsDictionary(final String uri);
+
+    void putConfiguration(final String uri, final Dictionary<String, String> config);
 
     void registerForUpdates(final String uriOfConfig, final ConfigurationChangeListener listener);
 }

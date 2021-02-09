@@ -54,8 +54,7 @@ public class OpenNMSPersistenceManager extends FilePersistenceManager implements
         if(!isHandledByUs(pid)) {
             return super.load(pid); // nothing to do for us
         }
-        return configService.getConfigurationAsString(pid)
-                .map(DictionaryUtil::createFromRawString)
+        return configService.getConfigurationAsDictionary(pid)
                 .orElse(new Hashtable());
     }
 
@@ -65,8 +64,7 @@ public class OpenNMSPersistenceManager extends FilePersistenceManager implements
             return; // nothing to do for us
         }
 
-        String rawString = DictionaryUtil.writeToRawString(props);
-        configService.putConfiguration(pid, rawString);
+        configService.putConfiguration(pid, props);
     }
 
     private boolean isHandledByUs(final String pid) {

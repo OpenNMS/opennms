@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config</groupId>
     <artifactId>configosgi</artifactId>
-    <name>OpenNMS :: Features :: Configuration for Osgi</name>
+    <name>OpenNMS :: Features :: Config :: Configuration for Osgi</name>
     <packaging>bundle</packaging>
     <dependencies>
 
