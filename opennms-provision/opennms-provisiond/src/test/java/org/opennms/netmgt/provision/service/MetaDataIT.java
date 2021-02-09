@@ -226,7 +226,6 @@ public class MetaDataIT extends ProvisioningITCase {
                 new OnmsMetaData("nodeCustomContext2", "nodeKey2", "nodeValue2")
         ));
         assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMetaData().size(), is(0));
-
         assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().size(), is(1));
         assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData(), containsInAnyOrder(
                 new OnmsMetaData("interfaceCustomContext3","interfaceKey3","interfaceValue3")
@@ -236,6 +235,7 @@ public class MetaDataIT extends ProvisioningITCase {
         node.addMetaData("nodeCustomContext3", "nodeKey3", "nodeValue3");
         node.addMetaData("nodeCustomContext1", "nodeKey1", "modifiedNodeValue1"); // this should be overwritten on next sync
         node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().add(new OnmsMetaData("interfaceCustomContext4", "interfaceKey4", "interfaceValue4"));
+        node.getIpInterfaceByIpAddress("10.0.0.4").getMonitoredServiceByServiceType("ICMP").getMetaData().add(new OnmsMetaData("serviceCustomContext2", "serviceKey2", "serviceValue2"));
         m_nodeDao.update(node);
 
         // run a node scan, so policies are applied for node and interfaces
@@ -274,5 +274,11 @@ public class MetaDataIT extends ProvisioningITCase {
                 new OnmsMetaData("interfaceCustomContext3","interfaceKey3","interfaceValue3"),
                 new OnmsMetaData("interfaceCustomContext4", "interfaceKey4", "interfaceValue4")
         ));
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMonitoredServiceByServiceType("ICMP").getMetaData().size(), is(1));
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMonitoredServiceByServiceType("ICMP").getMetaData(),
+                containsInAnyOrder(new OnmsMetaData("serviceCustomContext1", "serviceKey1", "serviceValue1")));
+        assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMonitoredServiceByServiceType("ICMP").getMetaData().size(), is(1));
+        assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMonitoredServiceByServiceType("ICMP").getMetaData(),
+                containsInAnyOrder(new OnmsMetaData("serviceCustomContext2", "serviceKey2", "serviceValue2")));
     }
 }
