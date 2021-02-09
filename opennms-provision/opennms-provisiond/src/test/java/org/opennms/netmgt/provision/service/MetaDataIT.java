@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -47,11 +48,15 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -79,7 +84,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-public class NMS12990_IT extends ProvisioningITCase {
+public class MetaDataIT extends ProvisioningITCase {
 
     @Autowired
     private Provisioner m_provisioner;
@@ -142,7 +147,7 @@ public class NMS12990_IT extends ProvisioningITCase {
             @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:/snmpwalk-space.properties"),
             @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:/snmpwalk-space.properties")
     })
-    public void testScanSpaceDevice() throws Exception {
+    public void testNMS12990() throws Exception {
         final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI, EventConstants.IMPORT_SUCCESSFUL_UEI };
         final CountDownLatch eventReceived = anticipateEvents(1, ueis);
 
@@ -160,7 +165,7 @@ public class NMS12990_IT extends ProvisioningITCase {
         OnmsNode node = nodes.get(0);
 
         // run a node scan, so policies are applied for node and interfaces
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "foobar", "1", new OnmsMonitoringLocation());
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "nms12990", "1", new OnmsMonitoringLocation());
         final Task t = scan.createTask();
         t.schedule();
         t.waitFor();
@@ -190,5 +195,84 @@ public class NMS12990_IT extends ProvisioningITCase {
         assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMetaData().size(), is(0));
         assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().size(), is(1));
         assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData(), containsInAnyOrder(new OnmsMetaData("interfaceCustomContext3","interfaceKey3","interfaceValue3")));
+    }
+
+    @Test
+    @JUnitSnmpAgents({
+            @JUnitSnmpAgent(host="192.168.3.1", port=161, resource="classpath:/snmpwalk-space.properties"),
+            @JUnitSnmpAgent(host="10.0.0.4", port=161, resource="classpath:/snmpwalk-space.properties")
+    })
+    public void testNMS13118_NMS13109() throws Exception {
+        final String[] ueis = { EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI, EventConstants.IMPORT_SUCCESSFUL_UEI };
+        final CountDownLatch eventReceived = anticipateEvents(1, ueis);
+
+        // import the requisition
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-13118-1.xml"), Boolean.TRUE.toString());
+        waitForEverything();
+        eventReceived.await(5, TimeUnit.MINUTES);
+
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+
+        // check that only one node exists
+        assertEquals(1, nodes.size());
+
+        // get the node
+        OnmsNode node = nodes.get(0);
+
+        // check that the metadata still exists
+        assertThat(node.getMetaData().size(), is(2));
+        assertThat(node.getMetaData(), containsInAnyOrder(
+                new OnmsMetaData("nodeCustomContext1", "nodeKey1", "nodeValue1"),
+                new OnmsMetaData("nodeCustomContext2", "nodeKey2", "nodeValue2")
+        ));
+        assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMetaData().size(), is(0));
+
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().size(), is(1));
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData(), containsInAnyOrder(
+                new OnmsMetaData("interfaceCustomContext3","interfaceKey3","interfaceValue3")
+        ));
+
+        // now add custom meta-data, see NMS-13109
+        node.addMetaData("nodeCustomContext3", "nodeKey3", "nodeValue3");
+        node.addMetaData("nodeCustomContext1", "nodeKey1", "modifiedNodeValue1"); // this should be overwritten on next sync
+        node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().add(new OnmsMetaData("interfaceCustomContext4", "interfaceKey4", "interfaceValue4"));
+        m_nodeDao.update(node);
+
+        // run a node scan, so policies are applied for node and interfaces
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "nms13118", "1", new OnmsMonitoringLocation());
+        final Task t = scan.createTask();
+        t.schedule();
+        t.waitFor();
+
+        // import again without scanning the node
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-13118-2.xml"), Boolean.TRUE.toString());
+        waitForEverything();
+        eventReceived.await(5, TimeUnit.MINUTES);
+
+        // check that still only one node exists
+        nodes = m_nodeDao.findAll();
+        assertEquals(1, nodes.size());
+
+        // get the node
+        node = nodes.get(0);
+
+        // check that the metadata still exists
+        assertThat(node.getMetaData().size(), is(4));
+        assertThat(node.getMetaData(), containsInAnyOrder(
+                new OnmsMetaData("nms13118-nodeCustomContext1", "nodeKey1", "nodeValue1"),
+                new OnmsMetaData("nodeCustomContext1", "nodeKey1", "nodeValue1"),
+                new OnmsMetaData("nodeCustomContext2", "nodeKey2", "nodeValue2"),
+                new OnmsMetaData("nodeCustomContext3", "nodeKey3", "nodeValue3")
+        ));
+        assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMetaData().size(), is(1));
+        assertThat(node.getIpInterfaceByIpAddress("10.0.0.4").getMetaData(), containsInAnyOrder(
+                new OnmsMetaData("nms13118-interfaceCustomContext3","interfaceKey3","interfaceValue3")
+        ));
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData().size(), is(3));
+        assertThat(node.getIpInterfaceByIpAddress("192.168.3.1").getMetaData(), containsInAnyOrder(
+                new OnmsMetaData("nms13118-interfaceCustomContext2","interfaceKey2","interfaceValue2"),
+                new OnmsMetaData("interfaceCustomContext3","interfaceKey3","interfaceValue3"),
+                new OnmsMetaData("interfaceCustomContext4", "interfaceKey4", "interfaceValue4")
+        ));
     }
 }
