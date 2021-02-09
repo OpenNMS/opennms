@@ -333,7 +333,11 @@
 
     <feature name="configservice" version="${project.version}" description="OpenNMS :: Feature :: Configservice">
         <feature>opennms-blobstore-postgres</feature>
-        <bundle>mvn:org.opennms.features/configservice/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config/configservice/${project.version}</bundle>
+    </feature>
+
+    <feature name="configservice-cm" version="${project.version}" description="OpenNMS :: Feature :: Configservice CM">
+        <bundle>mvn:org.opennms.features.config/configosgi/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
