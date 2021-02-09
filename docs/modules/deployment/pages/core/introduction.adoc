@@ -1,3 +1,4 @@
+[[basic-deployment]]
 = Basic {page-component-title} Deployment
 
 A basic {page-component-title} deployment installs and configures the core product, which includes PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 

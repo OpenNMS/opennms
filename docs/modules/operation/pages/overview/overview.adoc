@@ -1,3 +1,4 @@
+[[overview]]
 = Overview
 
 The Operations section provides information and procedures on setup, configuration, and use of the {page-component-title} platform. Using a task-based approach, chapters appear in a recommended order for working with {page-component-title}:
@@ -6,5 +7,3 @@ The Operations section provides information and procedures on setup, configurati
 * <<user-management/introduction.adoc#ga-admin-user-setup, Setup the admin user>>.
 * <<user-management/user-config.adoc#ga-user-config, Create users>> and <<user-management/security-roles#ga-role-user-management-roles, permissions>>.
 * <<provisioning/introduction.adoc#ga-provisioning-introduction, Provision>> your system.
-
-#TODO: add links to these sections of the documentation once incorporated#

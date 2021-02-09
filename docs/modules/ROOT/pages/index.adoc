@@ -8,13 +8,17 @@
 |Source:  |{page-origin-url}
 |===
 
-OpenNMS {page-component-title} is a scalable and highly configurable network management platform with comprehensive fault, performance, and traffic monitoring. 
-It easily integrates with your core business applications and workflows to monitor and visualize everything in your network.
+OpenNMS {page-component-title} is an open source platform that helps you visualize and monitor everything on your network. 
+It offers comprehensive fault, performance, traffic monitoring, and alarm generation in one place. 
+Highly customizable and scalable, {page-component-title} easily integrates with your core business applications and workflows.
+
+{page-component-title} collects data on the devices, interfaces, and services you define during provisioning. 
+It triggers alarms when it detects a problem, and also stores the metrics it collects over a long period of time. 
+Not only can you monitor and troubleshoot problems on your network, you can also analyze trends and anticipate problems for better capacity management and network optimization.   
 
 The following shows a sample full stack {page-component-title} implementation:
 
 image::opennms-full-stack.png[]
-
 
 . OpenNMS platform
 . Kafka message broker
@@ -26,4 +30,7 @@ image::opennms-full-stack.png[]
 . Kibana (dashboard creation)
 . Minions (at remote locations)
 
-The documentation provides more detail about these components in the Deployment and Operation sections. 
+The xref:deployment:core/introduction.adoc#basic-deployment[Deployment] and xref:operation:overview/overview.adoc#overview[Operation] sections provide more detail about these components. 
+
+== How it Works
+
