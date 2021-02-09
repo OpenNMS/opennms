@@ -315,6 +315,7 @@
         <feature>jaxb</feature>
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-jexl</feature>
         <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -456,7 +457,7 @@
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
-        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
     </feature>
     <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
@@ -959,11 +960,11 @@
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
         <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
-        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/1.6.0</bundle>
-        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.7.3</bundle>
+        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <!-- These are only needed for  servicemix implementation of kafka streams -->
         <!--

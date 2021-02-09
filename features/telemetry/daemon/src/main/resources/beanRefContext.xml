@@ -9,7 +9,8 @@
          <value>META-INF/opennms/applicationContext-telemetryDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daoContext" />
+      <!-- Telemetryd depends on ServiceTracker bean that is loaded with eventd.-->
+     <constructor-arg ref="eventDaemonContext" />
    </bean>
 
 </beans>

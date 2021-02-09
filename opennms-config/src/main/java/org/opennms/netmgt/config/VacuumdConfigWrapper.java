@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -143,16 +144,16 @@ public final class VacuumdConfigWrapper {
     /**
      * Returns an Action with a name matching the string parmater
      *
-     * @param actionName a {@link java.lang.String} object.
+     * @param actionName a {@link String} object.
      * @return a {@link org.opennms.netmgt.config.vacuumd.Action} object.
      */
-    public synchronized Action getAction(String actionName) {
+    public synchronized Optional<Action> getAction(String actionName) {
         for (Action act : getActions()) {
             if (act.getName().equals(actionName)) {
-                return act;
+                return Optional.of(act);
             }
         }
-        return null;
+        return Optional.empty();
     }
     
     /**

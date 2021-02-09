@@ -53,11 +53,10 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -140,7 +139,7 @@ public class Netflow9ProtobufValidationTest {
 
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
@@ -150,19 +149,14 @@ public class Netflow9ProtobufValidationTest {
                 final Packet packet = new Packet(session, header, buffer);
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = new byte[0];
+                    final FlowMessage flowMessage;
                     try {
-                        message = buildAndSerialize(Protocol.NETFLOW9, rec);
+                        flowMessage = buildAndSerialize(Protocol.NETFLOW9, rec).build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    try {
-                        FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
-                    } catch (InvalidProtocolBufferException e) {
-                        throw new RuntimeException(e);
 
-                    }
+                    flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

@@ -31,7 +31,6 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -41,17 +40,12 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.buffer.ByteBuf;
 
@@ -63,13 +57,13 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, new IpFixMessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
     @Override
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
-        final TcpSession session = new TcpSession(remoteAddress.getAddress());
+        final TcpSession session = new TcpSession(remoteAddress.getAddress(), this::sequenceNumberTracker);
 
         return new Handler() {
             @Override
@@ -103,11 +97,5 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
             @Override
             public void inactive() {}
         };
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
-        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
-        return builder.buildData();
     }
 }

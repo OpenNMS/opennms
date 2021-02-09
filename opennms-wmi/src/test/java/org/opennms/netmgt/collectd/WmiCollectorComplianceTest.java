@@ -34,8 +34,10 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.wmi.Rrd;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
@@ -43,6 +45,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class WmiCollectorComplianceTest extends CollectorComplianceTest {
 
@@ -50,6 +53,7 @@ public class WmiCollectorComplianceTest extends CollectorComplianceTest {
 
     private WmiPeerFactory peerFactory;
     private WmiDataCollectionConfigFactory dataCollectionConfigFactory;
+    private DataCollectionConfigDao dataCollectionConfigDao;
 
     public WmiCollectorComplianceTest() {
         super(WmiCollector.class, true);
@@ -65,7 +69,10 @@ public class WmiCollectorComplianceTest extends CollectorComplianceTest {
         dataCollectionConfigFactory = mock(WmiDataCollectionConfigFactory.class);
         when(dataCollectionConfigFactory.getWmiCollection(COLLECTION)).thenReturn(collection);
         when(dataCollectionConfigFactory.getRrdRepository(COLLECTION)).thenReturn(new RrdRepository());
-        WmiDataCollectionConfigFactory.setInstance(dataCollectionConfigFactory);    
+        WmiDataCollectionConfigFactory.setInstance(dataCollectionConfigFactory);
+        dataCollectionConfigDao = mock(DataCollectionConfigDao.class);
+        when(dataCollectionConfigDao.getConfiguredResourceTypes()).thenReturn(Maps.newHashMap());
+        DataCollectionConfigFactory.setInstance(dataCollectionConfigDao);
     }
 
     @Override

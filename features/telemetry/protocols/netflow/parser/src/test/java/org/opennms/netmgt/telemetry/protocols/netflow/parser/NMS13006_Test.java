@@ -48,12 +48,11 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -69,8 +68,8 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("@sysUpTime", 1000));
         record.add(new UnsignedValue("FIRST_SWITCHED", 2000));
         record.add(new UnsignedValue("LAST_SWITCHED", 3000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData());
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        final FlowMessage flowMessage = builder.buildMessage(record, enrichment).build();
 
         Assert.assertEquals(1001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(1002000L, flowMessage.getLastSwitched().getValue());
@@ -85,8 +84,8 @@ public class NMS13006_Test {
         record.add(new UnsignedValue("@sysUpTime", 1000));
         record.add(new UnsignedValue("flowStartMilliseconds", 2001000));
         record.add(new UnsignedValue("flowEndMilliseconds", 2002000));
-        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        final FlowMessage flowMessage = FlowMessage.parseFrom(builder.buildData());
+        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+        final FlowMessage flowMessage = builder.buildMessage(record, enrichment).build();
 
         Assert.assertEquals(2001000L, flowMessage.getFirstSwitched().getValue());
         Assert.assertEquals(2002000L, flowMessage.getLastSwitched().getValue());
@@ -99,7 +98,7 @@ public class NMS13006_Test {
     }
 
     public void testFile(final String filename) throws Exception {
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         try (final FileChannel channel = FileChannel.open(FOLDER.resolve(filename))) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
@@ -115,21 +114,12 @@ public class NMS13006_Test {
                 final RecordEnrichment enrichment = (address -> Optional.empty());
 
                 packet.getRecords().forEach(r -> {
-                            final Netflow9MessageBuilder builder = new Netflow9MessageBuilder(r, enrichment);
-                            final FlowMessage flowMessage;
+                            final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+                            final FlowMessage flowMessage = builder.buildMessage(r, enrichment).build();
 
-                            try {
-                                flowMessage = FlowMessage.parseFrom(builder.buildData());
-                                Assert.assertEquals(true, flowMessage.hasFirstSwitched());
-                                Assert.assertEquals(true, flowMessage.hasLastSwitched());
-                                Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
-                            } catch (InvalidProtocolBufferException e) {
-                                e.printStackTrace();
-                                fail(e.getMessage());
-                            } catch (IllegalFlowException e) {
-                                e.printStackTrace();
-                                fail(e.getMessage());
-                            }
+                            Assert.assertEquals(true, flowMessage.hasFirstSwitched());
+                            Assert.assertEquals(true, flowMessage.hasLastSwitched());
+                            Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
                         }
                 );
 

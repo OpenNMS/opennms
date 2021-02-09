@@ -40,6 +40,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Scope;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
@@ -113,7 +114,7 @@ public class UdpSessionManagerTest {
     }
 
     private void testSessionKeys(final UdpSessionManager.SessionKey sessionKey1, final UdpSessionManager.SessionKey sessionKey2, final boolean shouldMatch) {
-        final UdpSessionManager udpSessionManager = new UdpSessionManager(Duration.ofMinutes(30));
+        final UdpSessionManager udpSessionManager = new UdpSessionManager(Duration.ofMinutes(30), () -> new SequenceNumberTracker(32));
         final Session session1 = udpSessionManager.getSession(sessionKey1);
 
         final List<Scope> scopes = new ArrayList<>();
