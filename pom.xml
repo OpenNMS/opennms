@@ -109,8 +109,8 @@
     <!-- build -->
     <module>checkstyle</module>
 
-    <module>opennms-yang</module>
-    <module>opennms-restconfcontroller</module>
+    <!-- <module>opennms-yang</module> -->
+    <!-- <module>opennms-restconfcontroller</module> -->
 
     <!-- new structure -->
     <module>dependencies</module>
