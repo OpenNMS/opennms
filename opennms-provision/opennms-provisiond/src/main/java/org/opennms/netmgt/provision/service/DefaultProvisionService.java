@@ -275,9 +275,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     }
                     for (OnmsMonitoredService dbNodeMonitoredService:dbNodeInterface.getMonitoredServices()) {
                         final OnmsMonitoredService nodeMonitoredService = nodeInterface.getMonitoredServiceByServiceType(dbNodeMonitoredService.getServiceName());
-                        for(final OnmsMetaData onmsMetaData : dbNodeMonitoredService.getMetaData()) {
-                            if (!nodeMonitoredService.findMetaDataForContextAndKey(onmsMetaData.getContext(), onmsMetaData.getKey()).isPresent()) {
-                                nodeMonitoredService.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                        if (nodeMonitoredService != null) {
+                            for(final OnmsMetaData onmsMetaData : dbNodeMonitoredService.getMetaData()) {
+                                if (!nodeMonitoredService.findMetaDataForContextAndKey(onmsMetaData.getContext(), onmsMetaData.getKey()).isPresent()) {
+                                    nodeMonitoredService.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                                }
                             }
                         }
                     }
