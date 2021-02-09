@@ -637,7 +637,11 @@ public class AutomationProcessor implements ReadyRunnable {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), vacuumdConfig.getTrigger(m_automation.getTriggerName().orElse(null)));
-        m_action = new ActionProcessor(m_automation.getName(), vacuumdConfig.getAction(m_automation.getActionName()));
+        String actionName = m_automation.getActionName();
+        Action actionForAutomation = vacuumdConfig
+                .getAction(actionName)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'"));
+        m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
         m_autoEvent = new AutoEventProcessor(m_automation.getName(), vacuumdConfig.getAutoEvent(m_automation.getAutoEventName().orElse(null)));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(), vacuumdConfig.getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
