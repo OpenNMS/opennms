@@ -47,7 +47,8 @@ public class HttpsDetector extends HttpDetector {
      */
     public HttpsDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setUseSSLFilter(true);
+        // JW: TODO: FIXME
+        // setUseSSLFilter(true);
         setUrl("/");
         setMaxRetCode(500);
     }

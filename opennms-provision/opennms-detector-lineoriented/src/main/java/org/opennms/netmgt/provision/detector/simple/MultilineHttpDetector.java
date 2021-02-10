@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineHttpResponse;
-import org.opennms.netmgt.provision.support.AsyncBasicDetectorMinaImpl;
+import org.opennms.netmgt.provision.support.AsyncBasicDetectorNettyImpl;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.opennms.netmgt.provision.support.codec.MultilineHttpProtocolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public abstract class MultilineHttpDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, MultilineHttpResponse> {
+public abstract class MultilineHttpDetector extends AsyncBasicDetectorNettyImpl<LineOrientedRequest, MultilineHttpResponse> {
     
     private static final Logger LOG = LoggerFactory.getLogger(MultilineHttpDetector.class);
     private static final String DEFAULT_SERVICE_NAME = "HTTP";
@@ -76,7 +74,8 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetectorMinaImpl<L
     }
     
     private void contructDefaults() {
-        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineHttpProtocolFactory()));
+        // JW: FIXME: TODO
+        //setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineHttpProtocolFactory()));
         setUrl(DEFAULT_URL);
         setMaxRetCode(DEFAULT_MAX_RET_CODE);
     }
@@ -117,7 +116,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetectorMinaImpl<L
      * @param url a {@link java.lang.String} object.
      * @param isCheckCode a boolean.
      * @param maxRetCode a int.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected static ResponseValidator<MultilineHttpResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<MultilineHttpResponse>(){

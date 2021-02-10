@@ -28,16 +28,10 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.StandardCharsets;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
-import org.opennms.netmgt.provision.detector.simple.support.TcpDetectorHandler;
 import org.opennms.netmgt.provision.support.ConversationExchange;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
-import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
 
 /**
  * <p>TcpDetector class.</p>
@@ -46,7 +40,7 @@ import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
  * @version $Id: $
  */
 
-public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
+public class TcpDetector extends AsyncLineOrientedDetectorNettyImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
@@ -68,8 +62,9 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
      */
     public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
-        setDetectorHandler(new TcpDetectorHandler());
-        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(StandardCharsets.UTF_8)));
+        // JW: TODO:  FIXME
+        //setDetectorHandler(new TcpDetectorHandler());
+        //setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(StandardCharsets.UTF_8)));
     }
 
     /**
@@ -90,7 +85,9 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
 
             @Override
             public boolean validate(final LineOrientedResponse response) {
-                return response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
+                return true;
+                // JW: TODO: FIXME
+                //return response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
             }
 
             @Override
@@ -104,7 +101,7 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
      * <p>matches</p>
      *
      * @param regex a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     public static ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
@@ -113,7 +110,9 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
             public boolean validate(final LineOrientedResponse response) {
                 // Make sure that the response matches the regex and that it is not an instance of the
                 // special token that represents that no banner was received.
-                return response.matches(regex) && !response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
+                // JW: TODO: FIXME
+                //return response.matches(regex) && !response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
+                return true;
             }
 
         };

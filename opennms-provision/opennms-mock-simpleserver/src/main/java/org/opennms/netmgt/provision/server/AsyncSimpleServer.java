@@ -31,13 +31,6 @@ package org.opennms.netmgt.provision.server;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.service.IoHandler;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.filter.logging.LoggingFilter;
-import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.opennms.netmgt.provision.server.exchange.LineConversation;
 
 /**
@@ -49,8 +42,6 @@ import org.opennms.netmgt.provision.server.exchange.LineConversation;
 public class AsyncSimpleServer {
 
     private LineConversation m_lineConversation;
-    private IoAcceptor m_acceptor;
-    private IoHandler m_ioHandler;
     private int m_port = 9123;
     private int m_bufferSize = 2048;
     private int m_idleTime = 10;
@@ -78,16 +69,7 @@ public class AsyncSimpleServer {
      * @throws java.lang.Exception if any.
      */
     public void startServer() throws Exception {
-        
-        m_acceptor = new NioSocketAcceptor();
-        m_acceptor.getFilterChain().addLast("logger", new LoggingFilter());
-        m_acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8)));
-        
-        m_acceptor.setHandler(getServerHandler());
-        m_acceptor.getSessionConfig().setReadBufferSize(getBufferSize());
-        m_acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, getIdleTime());
-        ((NioSocketAcceptor) m_acceptor).setReuseAddress(true);
-        m_acceptor.bind(new InetSocketAddress(getPort()));
+
         
     }
     
@@ -97,8 +79,6 @@ public class AsyncSimpleServer {
      * @throws java.lang.Exception if any.
      */
     public void stopServer() throws Exception{
-        m_acceptor.unbind();
-        m_acceptor.dispose();
     }
     
     /**
@@ -139,24 +119,7 @@ public class AsyncSimpleServer {
         m_lineConversation.setExpectedClose(closeRequest, closeResponse);
     }
     
-    /**
-     * <p>getServerHandler</p>
-     *
-     * @return a {@link org.apache.mina.core.service.IoHandler} object.
-     */
-    public IoHandler getServerHandler() {
-        return m_ioHandler != null ? m_ioHandler : new SimpleServerHandler(m_lineConversation);
-    }
-    
-    /**
-     * <p>setServerHandler</p>
-     *
-     * @param handler a {@link org.apache.mina.core.service.IoHandler} object.
-     */
-    public void setServerHandler(IoHandler handler) {
-        m_ioHandler = handler;
-    }
-    
+
     /**
      * <p>setPort</p>
      *

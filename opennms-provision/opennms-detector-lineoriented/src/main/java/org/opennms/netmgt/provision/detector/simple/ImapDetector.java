@@ -37,7 +37,7 @@ import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
  * @version $Id: $
  */
 
-public class ImapDetector extends AsyncLineOrientedDetectorMinaImpl {
+public class ImapDetector extends AsyncLineOrientedDetectorNettyImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "IMAP";
     private static final int DEFAULT_PORT = 143;

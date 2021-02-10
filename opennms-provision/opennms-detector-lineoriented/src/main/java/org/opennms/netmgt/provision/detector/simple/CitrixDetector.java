@@ -38,9 +38,8 @@ package org.opennms.netmgt.provision.detector.simple;
  */
 
 
-public class CitrixDetector extends AsyncLineOrientedDetectorMinaImpl {
-    
-    
+public class CitrixDetector extends AsyncLineOrientedDetectorNettyImpl {
+
     private static final String DEFAULT_SERVICE_NAME = "CITRIX";
     private static final int DEFAULT_PORT = 1494;
 
@@ -66,6 +65,5 @@ public class CitrixDetector extends AsyncLineOrientedDetectorMinaImpl {
     protected void onInit() {
         expectBanner(startsWith("ICA"));
     }
-
 
 }

@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.StandardCharsets;
-
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
-
 /**
  * <p>SmtpDetector class.</p>
  *
@@ -40,7 +35,7 @@ import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
  * @version $Id: $
  */
 
-public class SmtpDetector extends AsyncMultilineDetectorMinaImpl {
+public class SmtpDetector extends AsyncLineOrientedDetectorNettyImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "SMTP";
     private static final int DEFAULT_PORT = 25;
@@ -67,7 +62,8 @@ public class SmtpDetector extends AsyncMultilineDetectorMinaImpl {
      */
     @Override
     protected void onInit() {
-        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(StandardCharsets.UTF_8, "-")));
+        // JW: TODO: FIXME
+        //setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(StandardCharsets.UTF_8, "-")));
         
         expectBanner(startsWith("220"));
         send(request("HELO LOCALHOST"), startsWith("250"));

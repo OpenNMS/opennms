@@ -36,7 +36,7 @@ package org.opennms.netmgt.provision.detector.simple;
  * @version $Id: $
  */
 
-public class Pop3Detector extends AsyncLineOrientedDetectorMinaImpl {
+public class Pop3Detector extends AsyncLineOrientedDetectorNettyImpl {
 
     private static final int DEFAULT_PORT = 110;
     private static final String DEFAULT_SERVICE_NAME = "POP3";

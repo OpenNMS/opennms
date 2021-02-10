@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.provision.server;
 
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
 import org.opennms.netmgt.provision.server.exchange.LineConversation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author thedesloge
  * @version $Id: $
  */
-public class SimpleServerHandler extends IoHandlerAdapter {
+public class SimpleServerHandler  {
     
     private static final Logger LOG = LoggerFactory.getLogger(SimpleServerHandler.class);
     
@@ -54,45 +51,6 @@ public class SimpleServerHandler extends IoHandlerAdapter {
      */
     public SimpleServerHandler(LineConversation conversation) {
         m_conversation = conversation;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        LOG.warn("An error was caught in session {}", session, cause);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void sessionOpened(IoSession session) throws Exception {
-        LOG.info("Session opened");
-        if(m_conversation != null && m_conversation.hasBanner()) {
-            LOG.info("Sending Banner: {} \n", m_conversation.getBanner());
-            session.write(m_conversation.getBanner());
-        }
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void messageReceived (IoSession session, Object message) throws Exception {
-        LOG.info("Server received: {}\n", message.toString().trim());
-        String str = message.toString();
-        if(str.trim().equalsIgnoreCase(m_conversation.getExpectedClose())) {
-            if(m_conversation.getExpectedCloseResponse() != null) {
-                session.write(m_conversation.getExpectedCloseResponse());
-            }
-            if (!session.close(false).await(500)) { 
-                LOG.warn("Conversation did not complete promptly in 500ms");
-            }
-            return;
-        }
-        
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        LOG.info("IDLE {}", session.getIdleCount(status));
     }
 
 }

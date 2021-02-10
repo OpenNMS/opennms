@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple.support;
 
-import org.apache.mina.core.session.IoSession;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.BaseDetectorHandler;
@@ -38,8 +37,9 @@ import org.slf4j.LoggerFactory;
 public class TcpDetectorHandler extends BaseDetectorHandler<LineOrientedRequest, LineOrientedResponse> {
     
     private static final Logger LOG = LoggerFactory.getLogger(TcpDetectorHandler.class);
+
     @Override
-    public void sessionOpened(IoSession session) throws Exception {
+    public void sessionOpened(SomeSession session) {
         Object request = getConversation().getRequest();
         if(!getConversation().hasBanner() &&  request != null) {
             session.write(request);

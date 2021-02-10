@@ -30,8 +30,6 @@ package org.opennms.netmgt.provision.support;
 
 import java.util.regex.Pattern;
 
-import org.apache.mina.core.session.IdleStatus;
-
 /**
  * <p>Abstract AsyncBasicDetector class.</p>
  *
@@ -53,8 +51,6 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
-     * @param <Request> a Request object.
-     * @param <Response> a Response object.
      */
     public AsyncBasicDetector(final String serviceName, final int port) {
         super(serviceName, port);
@@ -75,7 +71,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     /**
      * <p>expectBanner</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected void expectBanner(final ResponseValidator<Response> bannerValidator) {
         m_conversation.setHasBanner(true);
@@ -86,7 +82,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * <p>send</p>
      *
      * @param request a Request object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected void send(final Request request, final ResponseValidator<Response> responseValidator) {
         m_conversation.addExchange(new ConversationExchangeDefaultImpl<Request, Response>(new RequestBuilder<Request>() {
@@ -131,7 +127,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * <p>startsWith</p>
      *
      * @param prefix a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected ResponseValidator<Response> startsWith(final String prefix) {
         return new ResponseValidator<Response>() {
@@ -149,7 +145,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * <p>find</p>
      *
      * @param regex a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected ResponseValidator<Response> find(final String regex){
         return new ResponseValidator<Response>() {

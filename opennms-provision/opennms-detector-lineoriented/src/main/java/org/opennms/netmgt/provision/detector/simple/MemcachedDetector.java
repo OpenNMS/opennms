@@ -36,7 +36,7 @@ package org.opennms.netmgt.provision.detector.simple;
  * @version $Id: $
  */
 
-public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
+public class MemcachedDetector extends AsyncLineOrientedDetectorNettyImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "Memcached";
     private static final int DEFAULT_PORT = 11211;

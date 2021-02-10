@@ -39,7 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetectorMinaImpl;
+import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetectorNettyImpl;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 
@@ -92,7 +92,7 @@ public class LineDecoderTest {
         }
     }
     
-    public static class TestDetector extends AsyncLineOrientedDetectorMinaImpl {
+    public static class TestDetector extends AsyncLineOrientedDetectorNettyImpl {
 
         public TestDetector() {
             super("POP3", 110, 500, 1);

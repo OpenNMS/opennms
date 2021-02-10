@@ -97,9 +97,6 @@
                         <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
                         <library>mvn:net.java.dev.jna/jna-platform/${jnaVersion};type:=boot;export:=false</library>
 
-                        <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
-                        <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
-
                         <!-- OPENNMS: Add our custom branding JAR -->
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
