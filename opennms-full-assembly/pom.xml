@@ -205,25 +205,6 @@
               </artifactItems>
             </configuration>
           </execution>
-          <!-- Work around bug KARAF-5384, see org.opennms.core.test.karaf.KarafTestCase -->
-          <execution>
-            <id>copy-mina</id>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.mina</groupId>
-                  <artifactId>mina-core</artifactId>
-                  <version>${minaVersion}</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
           <!-- Unpack the minion core repo so that it can be used in integration tests -->
           <execution>
             <id>unpack-minion-core-repo</id>

@@ -686,7 +686,6 @@
         <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
     </feature>
     <feature name="opennms-provisioning-api" version="${project.version}" description="OpenNMS :: Provisioning :: API">
-        <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
         <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
     </feature>

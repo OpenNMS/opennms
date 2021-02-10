@@ -1441,7 +1441,6 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.13.2</log4j2Version>
     <mapstructVersion>1.3.0.Final</mapstructVersion>
-    <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.2</newtsVersion>
@@ -2835,12 +2834,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>mina-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>netty-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -4100,11 +4093,6 @@
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
         <version>${jsoupVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.mina</groupId>
-        <artifactId>mina-core</artifactId>
-        <version>${minaVersion}</version>
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>

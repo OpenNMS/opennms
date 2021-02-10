@@ -102,9 +102,6 @@
                         <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
                         <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
                         <library>mvn:net.java.dev.jna/jna-platform/${jnaVersion};type:=boot;export:=false</library>
-
-                        <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
-                        <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>

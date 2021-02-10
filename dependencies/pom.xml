@@ -39,7 +39,6 @@
     <module>jrrd2</module>
     <module>jstl</module>
     <module>liquibase</module>
-    <module>mina</module>
     <module>netty</module>
     <module>newts</module>
     <module>owasp</module>
