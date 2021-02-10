@@ -153,7 +153,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
 
             if (onmsPolicy == null) {
                 // if not, the policy definition seems to be broken
-                error(null,"Failed to find bean with name '{}' of type {}", beanName, pluginClass);
+                error(null,"Policy class not found or not a policy class: '{}' of type {}", beanName, pluginClass);
             } else {
                 // log only for debug
                 debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
