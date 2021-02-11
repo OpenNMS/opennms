@@ -926,5 +926,47 @@
     </sql>
   </changeSet>
 
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-rpki-validator-nxtid">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprpkivalidatornxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="bmprpkivalidatornxtid"/>
+    <rollback>
+      <dropSequence sequenceName="bmprpkivalidatornxtid"/>
+    </rollback>
+  </changeSet>
+
+  <changeSet author="cgorantla" id="28.0.0-bmp-rpki-validator">
+
+    <createTable tableName="bmp_rpki_validator" remarks="bmp rpki validator">
+      <column name="id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(40)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix_len_max" type="int" defaultValue="0">
+        <constraints nullable="false"/>
+      </column>
+      <column name="origin_as" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="bmp_rpki_validator" constraintName="pk_bmp_rpki_validator"
+                   columnNames="prefix, prefix_len_max, origin_as"/>
+    <createIndex tableName="bmp_rpki_validator" indexName="bmp_rpki_validator_origin_as">
+      <column name="origin_as" />
+    </createIndex>
+  </changeSet>
+
 
 </databaseChangeLog>

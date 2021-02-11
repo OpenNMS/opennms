@@ -50,6 +50,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidator;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidatorDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
@@ -91,6 +93,9 @@ public class BmpDaoIT {
 
     @Autowired
     private BmpIpRibLogDao bmpIpRibLogDao;
+
+    @Autowired
+    private BmpRpkiValidatorDao bmpRpkiValidatorDao;
 
 
     @Test
@@ -167,42 +172,10 @@ public class BmpDaoIT {
 
         long oneMinBack = new Date().getTime() - 60000;
         Date lastUpdated = new Date(oneMinBack);
-        BmpUnicastPrefix bmpUnicastPrefix = new BmpUnicastPrefix();
-        bmpUnicastPrefix.setHashId("83e12a7ff8f5673es6ae6fcd9a3b345uy");
-        bmpUnicastPrefix.setPrefix("10.0.0.1");
-        bmpUnicastPrefix.setPrefixLen(15);
-        bmpUnicastPrefix.setWithDrawn(false);
-        bmpUnicastPrefix.setFirstAddedTimestamp(lastUpdated);
-        bmpUnicastPrefix.setBaseAttrHashId("23212a7ff9f5433ed6ae6fcd9a2b432gf");
-        bmpUnicastPrefix.setAdjRibIn(false);
-        bmpUnicastPrefix.setPrePolicy(true);
-        bmpUnicastPrefix.setIpv4(true);
-        bmpUnicastPrefix.setTimestamp(lastUpdated);
-        BmpPeer bmpPeer = new BmpPeer();
-        bmpPeer.setHashId("61e5a7ff9f5433ed6ae6fcd9a2b432gf");
-        bmpPeer.setPeerRd("0:0");
-        bmpPeer.setIpv4(true);
-        bmpPeer.setPeerAddr("10.0.0.3");
-        bmpPeer.setState(State.UP);
-        bmpPeer.setL3VPNPeer(false);
-        bmpPeer.setPrePolicy(true);
-        bmpPeer.setLocRib(false);
-        bmpPeer.setLocRibFiltered(false);
-        bmpPeer.setPeerAsn(2083L);
-        bmpPeer.setTimestamp(lastUpdated);
-        BmpRouter bmpRouter = new BmpRouter();
-        bmpRouter.setState(State.UP);
-        bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
-        bmpRouter.setName("router-1");
-        bmpRouter.setIpAddress("10.1.4.10");
-        bmpRouter.setTimestamp(lastUpdated);
-        BmpCollector bmpCollector = new BmpCollector();
-        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
-        bmpCollector.setState(State.UP);
-        bmpCollector.setAdminId("admin1");
-        bmpCollector.setName("collector1");
-        bmpCollector.setRoutersCount(2);
-        bmpCollector.setTimestamp(new Date());
+        BmpUnicastPrefix bmpUnicastPrefix = buildBmpUnicastPrefix(lastUpdated);
+        BmpPeer bmpPeer = buildBmpPeer(lastUpdated);
+        BmpRouter bmpRouter = buildBmpRouter(lastUpdated);
+        BmpCollector bmpCollector = buildBmpCollector(lastUpdated);
         bmpCollectorDao.save(bmpCollector);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
@@ -222,6 +195,75 @@ public class BmpDaoIT {
         Assert.assertFalse(statsPeerRibs.isEmpty());
         assertEquals(1L, statsPeerRibs.get(0).getV4prefixes().longValue());
     }
-    
-    
+
+    @Test
+    public void testRpkiValidator() {
+
+        BmpRpkiValidator bmpRpkiValidator = new BmpRpkiValidator();
+        bmpRpkiValidator.setPrefix("10.1.23.34");
+        bmpRpkiValidator.setPrefixLen(22);
+        bmpRpkiValidator.setPrefixLenMax(24);
+        bmpRpkiValidator.setOriginAs(5645L);
+        bmpRpkiValidator.setTimestamp(new Date());
+        bmpRpkiValidatorDao.saveOrUpdate(bmpRpkiValidator);
+        BmpRpkiValidator retrieved = bmpRpkiValidatorDao.findRpkiValidatorWith("10.1.23.34", 24, 5645L);
+        Assert.assertNotNull(retrieved);
+
+
+    }
+
+    private BmpCollector buildBmpCollector(Date lastUpdated) {
+        BmpCollector bmpCollector = new BmpCollector();
+        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        bmpCollector.setState(State.UP);
+        bmpCollector.setAdminId("admin1");
+        bmpCollector.setName("collector1");
+        bmpCollector.setRoutersCount(2);
+        bmpCollector.setTimestamp(lastUpdated);
+        return bmpCollector;
+    }
+
+    private BmpRouter buildBmpRouter(Date lastUpdated) {
+        BmpRouter bmpRouter = new BmpRouter();
+        bmpRouter.setState(State.UP);
+        bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
+        bmpRouter.setName("router-1");
+        bmpRouter.setIpAddress("10.1.4.10");
+        bmpRouter.setTimestamp(lastUpdated);
+        return bmpRouter;
+    }
+
+
+    private BmpPeer buildBmpPeer(Date lastUpdated) {
+        BmpPeer bmpPeer = new BmpPeer();
+        bmpPeer.setHashId("61e5a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpPeer.setPeerRd("0:0");
+        bmpPeer.setIpv4(true);
+        bmpPeer.setPeerAddr("10.0.0.3");
+        bmpPeer.setState(State.UP);
+        bmpPeer.setL3VPNPeer(false);
+        bmpPeer.setPrePolicy(true);
+        bmpPeer.setLocRib(false);
+        bmpPeer.setLocRibFiltered(false);
+        bmpPeer.setPeerAsn(2083L);
+        bmpPeer.setTimestamp(lastUpdated);
+        return bmpPeer;
+    }
+
+    private BmpUnicastPrefix buildBmpUnicastPrefix(Date lastUpdated) {
+        BmpUnicastPrefix bmpUnicastPrefix = new BmpUnicastPrefix();
+        bmpUnicastPrefix.setHashId("83e12a7ff8f5673es6ae6fcd9a3b345uy");
+        bmpUnicastPrefix.setPrefix("10.0.0.1");
+        bmpUnicastPrefix.setPrefixLen(15);
+        bmpUnicastPrefix.setWithDrawn(false);
+        bmpUnicastPrefix.setFirstAddedTimestamp(lastUpdated);
+        bmpUnicastPrefix.setBaseAttrHashId("23212a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpUnicastPrefix.setAdjRibIn(false);
+        bmpUnicastPrefix.setPrePolicy(true);
+        bmpUnicastPrefix.setIpv4(true);
+        bmpUnicastPrefix.setTimestamp(lastUpdated);
+        return bmpUnicastPrefix;
+    }
+
+
 }

@@ -138,7 +138,7 @@ public class RouteInfo {
         return Optional.empty();
     }
 
-    private static boolean isValidIpAddress(String prefix) {
+    static boolean isValidIpAddress(String prefix) {
 
         try {
             InetAddress.getByName(prefix);
