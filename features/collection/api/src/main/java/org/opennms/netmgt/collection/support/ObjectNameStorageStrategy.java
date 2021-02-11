@@ -42,6 +42,7 @@ public class ObjectNameStorageStrategy extends JexlIndexStorageStrategy {
 
     public ObjectNameStorageStrategy() {
         super();
+        jexlEngine.white(ObjectName.class.getName());
     }
 
     @Override

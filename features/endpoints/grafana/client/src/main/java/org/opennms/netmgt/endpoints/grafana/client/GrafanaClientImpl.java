@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -129,7 +129,7 @@ public class GrafanaClientImpl implements GrafanaClient {
     }
 
     @Override
-    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, String utcOffset, Map<String, String> variables) {
+    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, String timezone, Map<String, String> variables) {
         final HttpUrl.Builder builder = baseUrl.newBuilder()
                 .addPathSegment("render")
                 .addPathSegment("d-solo")
@@ -145,8 +145,8 @@ public class GrafanaClientImpl implements GrafanaClient {
                 // Set a render timeout equal to the client's read timeout
                 .addQueryParameter("timeout", Integer.toString(config.getReadTimeoutSeconds()))
                 .addQueryParameter("theme", "light"); // Use the light theme
-        if (!Strings.isNullOrEmpty(utcOffset)) {
-            builder.addQueryParameter("tz", utcOffset);
+        if (!Strings.isNullOrEmpty(timezone)) {
+            builder.addQueryParameter("tz", timezone);
         }
         variables.forEach((k,v) -> builder.addQueryParameter("var-"+ k, v));
 

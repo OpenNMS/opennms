@@ -2,6 +2,50 @@
 
 === Changelog
 
+[releasenotes-changelog-27.0.5]
+
+==== Release 27.0.5
+
+Release 27.0.5 contains just a couple of bug fixes, most importantly a
+fix to provisioning that could break update to existing nodes when scanning.
+
+The codename for 27.0.5 is link:$$https://wikipedia.org/wiki/Vogon$$[_Vogon_].
+
+===== Bug
+
+* Flow Rest API: Name lookup is happening per bucket and not per interval (Aggregation Only) (Issue http://issues.opennms.org/browse/NMS-13065[NMS-13065])
+* Provisioning stopped working after upgrade to 27.0.4 (Issue http://issues.opennms.org/browse/NMS-13128[NMS-13128])
+
+[releasenotes-changelog-27.0.4]
+
+==== Release 27.0.4
+
+Release 27.0.4 contains a number of bug fixes relating to WMI, the Minion, flows,
+reports, JEXL processing, and more, as well as a few small enhancements.
+
+The codename for 27.0.4 is link:$$https://hitchhikers.fandom.com/wiki/Towel$$[_Towel_].
+
+===== Bug
+
+* Searching for event context that contains single quotes is not possible  (Issue http://issues.opennms.org/browse/NMS-12517[NMS-12517])
+* WmiCollector does not work on Minion (Issue http://issues.opennms.org/browse/NMS-12944[NMS-12944])
+* Discrepancy between Flows "top N" and SNMP for same interface (Issue http://issues.opennms.org/browse/NMS-12967[NMS-12967])
+* Increase length of snmpinterfaces.snmpifdescr (Issue http://issues.opennms.org/browse/NMS-12976[NMS-12976])
+* requisition meta data are deleted if node meta data defined with "db only" synchronize (Issue http://issues.opennms.org/browse/NMS-12990[NMS-12990])
+* Timezone and date range inconsistencies when scheduling database reports associated with Grafana dashboards. (Issue http://issues.opennms.org/browse/NMS-13070[NMS-13070])
+* Exception messages during node import (log noise) (Issue http://issues.opennms.org/browse/NMS-13082[NMS-13082])
+* Fix vmwareconfigbuilder script to run with JDK9+ (Issue http://issues.opennms.org/browse/NMS-13084[NMS-13084])
+* Keep and adjust flows with negative duration (Issue http://issues.opennms.org/browse/NMS-13088[NMS-13088])
+* SFlow enhancment is not functional (Issue http://issues.opennms.org/browse/NMS-13093[NMS-13093])
+* Karaf Poller commands won't work if Telemetryd is disabled (Issue http://issues.opennms.org/browse/NMS-13094[NMS-13094])
+* JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
+* Telemetryd: Reload daemon always fails and stops Temetryd (Issue http://issues.opennms.org/browse/NMS-13112[NMS-13112])
+
+===== Enhancement
+
+* Optionally silence file not found warnings for JICMP, JRRD when properties are not set (Issue http://issues.opennms.org/browse/NMS-13081[NMS-13081])
+* Update opennms.spec to take advantage of maven smart builder plugin (Issue http://issues.opennms.org/browse/NMS-13083[NMS-13083])
+
 [releasenotes-changelog-27.0.3]
 
 ==== Release 27.0.3

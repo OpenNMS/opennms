@@ -153,7 +153,6 @@ public class AutomationProcessor implements ReadyRunnable {
 		 * @param trigRowCount
 		 * @param trigOp
 		 * @param resultRows
-		 * @param processor TODO
 		 */
 		public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
 		    
@@ -230,10 +229,6 @@ public class AutomationProcessor implements ReadyRunnable {
             m_automationName = automationName;
             m_action = action;
         }
-        
-        public boolean hasAction() {
-            return m_action != null;
-        }
 
         public Action getAction() {
             return m_action;
@@ -258,7 +253,6 @@ public class AutomationProcessor implements ReadyRunnable {
          * Returns an ArrayList containing the names of column defined
          * as tokens in the action statement defined in the config.  If no
          * tokens are found, an empty list is returned.
-         * @param targetString
          * @return
          */
         public List<String> getActionColumns() {
@@ -376,8 +370,6 @@ public class AutomationProcessor implements ReadyRunnable {
          * are available in the ResultSet of the paired trigger
          * @param rs
          * @param actionColumns TODO
-         * @param actionSQL
-         * @param processor TODO
          * @return
          */
         public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection<String> actionColumns) {
@@ -641,7 +633,11 @@ public class AutomationProcessor implements ReadyRunnable {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName().orElse(null)));
-        m_action = new ActionProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAction(m_automation.getActionName()));
+        String actionName = automation.getActionName();
+        Action actionForAutomation = VacuumdConfigFactory.getInstance()
+                .getAction(actionName)
+                .orElseThrow(() -> new IllegalArgumentException("Could not find an action for automation action named '" + actionName + "'"));
+        m_action = new ActionProcessor(m_automation.getName(), actionForAutomation);
         m_autoEvent = new AutoEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getAutoEvent(m_automation.getAutoEventName().orElse(null)));
         m_actionEvent = new ActionEventProcessor(m_automation.getName(),VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent().orElse(null)));
     }
@@ -709,7 +705,6 @@ public class AutomationProcessor implements ReadyRunnable {
         if (hasTrigger()) {
             LOG.debug("runAutomation: {} trigger statement is: {}", m_automation.getName(), m_trigger.getTriggerSQL());
         }
-            
         LOG.debug("runAutomation: {} action statement is: {}", m_automation.getName(), m_action.getActionSQL());
 
         LOG.debug("runAutomation: Executing trigger: {}", m_automation.getTriggerName().orElse(null));

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.event.filter;
+package org.opennms.core.utils.jexl;
 
-import org.opennms.web.filter.OrFilter;
+import java.util.Objects;
 
-public class EventTextFilter extends OrFilter {
-    public static final String TYPE = "eventtext";
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    private final String value;
+public class OnmsJexlEngine extends JexlEngine {
+    final static Log LOG = LogFactory.getLog(OnmsJexlEngine.class);
 
-    public EventTextFilter(String substring) {
-        super(new LogMessageSubstringFilter(substring), new DescriptionSubstringFilter(substring));
-        this.value = substring;
+    final OnmsJexlSandbox onmsJexlSandbox;
+
+    public OnmsJexlEngine() {
+        this(new OnmsJexlSandbox(false));
     }
 
-    @Override
-    public String getTextDescription() {
-        return ("Event text containing \"" + value + "\"");
+    public OnmsJexlEngine(final OnmsJexlSandbox onmsJexlSandbox) {
+        super(new OnmsJexlUberspect(LOG, Objects.requireNonNull(onmsJexlSandbox)), null, null, LOG);
+        this.onmsJexlSandbox = onmsJexlSandbox;
+        setStrict(true);
+        setLenient(false);
+
     }
 
-    @Override
-    public String toString() {
-        return ("<EventTextFilter: " + this.getDescription() + ">");
+    public OnmsJexlSandbox.Permissions white(String clazz) {
+        return this.onmsJexlSandbox.white(clazz);
     }
 
-    @Override
-    public String getDescription() {
-        return TYPE + "=" + value;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof EventTextFilter)) return false;
-        return (this.toString().equals(obj.toString()));
+    public OnmsJexlSandbox.Permissions black(String clazz) {
+        return this.onmsJexlSandbox.black(clazz);
     }
 }

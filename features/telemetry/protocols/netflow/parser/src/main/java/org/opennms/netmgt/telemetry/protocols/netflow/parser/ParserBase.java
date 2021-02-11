@@ -55,10 +55,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessageOrBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,6 +134,8 @@ public abstract class ParserBase implements Parser {
     private long clockSkewEventRate = 0;
 
     private long illegalFlowEventRate = 0;
+
+    private int sequenceNumberPatience = 32;
 
     private boolean dnsLookupsEnabled = true;
 
@@ -257,6 +259,14 @@ public abstract class ParserBase implements Parser {
 
     public long getIllegalFlowEventRate() {
         return illegalFlowEventRate;
+    }
+
+    public int getSequenceNumberPatience() {
+        return this.sequenceNumberPatience;
+    }
+
+    public void setSequenceNumberPatience(final int sequenceNumberPatience) {
+        this.sequenceNumberPatience = sequenceNumberPatience;
     }
 
     public boolean getDnsLookupsEnabled() {
@@ -452,5 +462,9 @@ public abstract class ParserBase implements Parser {
         }
 
         return corrections;
+    }
+
+    protected SequenceNumberTracker sequenceNumberTracker() {
+        return new SequenceNumberTracker(this.sequenceNumberPatience);
     }
 }

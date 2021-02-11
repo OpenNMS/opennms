@@ -55,7 +55,9 @@ sudo killall -9 apt || true && \
             sudo apt update && \
             sudo apt -y install debconf-utils && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt install -f r-base rrdtool
+            sudo env DEBIAN_FRONTEND=noninteractive apt install -f r-base rrdtool || exit 1
+
+# use JDK11
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 echo "#### Building Assembly Dependencies"
