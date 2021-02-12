@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,30 @@
                 document.snmpConfigForm.action="admin/index.jsp";
                 document.snmpConfigForm.submit();
         }
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function readystatechange() {
+            try {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    var config = JSON.parse(xhr.responseText);
+                    console.debug('got config:', config);
+                    var services = document.getElementById('services');
+                    var contents = [];
+                    for (var key of Object.keys(config.services).sort()) {
+                        if (config.services[key] == 'running') {
+                            contents.push(key);
+                        }
+                    }
+                    services.innerHTML = contents.join('<br>');
+                }
+            } catch (err) {
+                console.error('Failed to get service info: ' + err);
+                document.getElementById('services').innerHTML = 'Unknown';
+            }
+        };
+        xhr.open('GET', 'rest/info');
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.send();
 </script>
 
 <%
@@ -125,6 +149,10 @@
         <tr>
           <th>Syslog port:</th>
           <td><%=syslogPort%></td>
+        </tr>
+        <tr>
+            <th>Running services:</th>
+            <td id="services"></td>
         </tr>
       </table>
     </div> <!-- panel -->
