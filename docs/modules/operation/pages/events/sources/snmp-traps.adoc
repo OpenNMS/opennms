@@ -19,7 +19,10 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 .Configuration example for using RFC 3584 helper varbinds in forwarded traps
 [source, xml]
 ----
-<trapd-configuration<1> snmp-trap-port="162" new-suspect-on-trap="false" use-address-from-varbind="true"<2>/>
+<trapd-configuration snmp-trap-port="1162"<1>
+                     new-suspect-on-trap="false"<2>
+                     use-address-from-varbind="true" /><3>
 ----
-<1> Top-level `trapd-configuration` element
-<2> New attribute to enable use of `snmpTrapAddress` varbind, when present
+<1> Set the SNMP trap daemon listening port to 1162/udp
+<2> Don't create new nodes when receiving a SNMP Trap with an uknown source IP address
+<3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address

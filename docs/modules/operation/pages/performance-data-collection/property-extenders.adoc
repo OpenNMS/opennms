@@ -496,6 +496,8 @@ This example shows how to use `dot1dBasePortIfIndex` as a pointer-like index to 
 ----
 <1> First we collect all of `ifIndex`, `ifDescr`, `ifName`, and `ifAlias` in a group associated with the `ifIndex` source resource-type, using modified names to avoid collisions with internal workings (the `ifIndex` type is built in, so we do not need a custom resource-type definition for it)
 <2> Then we collect the pointer-like column `dot1dBasePortIfIndex` in the target group
-<3> To derive the `dot1dBasePortIfDescr` string property, we tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to "pull over" the `interfaceDescr` property <4> from the source group
-<5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName` <6> from the source group instead
+<3> To derive the `dot1dBasePortIfDescr` string property, we tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to "pull over" the `interfaceDescr` property
+<4> from the source group
+<5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName`
+<6> from the source group instead
 <7> Again with `dot1dBasePortIfAlias`, we repeat ourselves except that our desired property from the source group is `interfaceAlias` <8>
