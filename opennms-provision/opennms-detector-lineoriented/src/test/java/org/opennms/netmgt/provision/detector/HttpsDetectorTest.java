@@ -64,7 +64,9 @@ public class HttpsDetectorTest {
     private HttpsDetector m_detector;
 
     @Rule
-    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().dynamicHttpsPort());
+    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig()
+            .dynamicPort()
+            .dynamicHttpsPort());
 
     private ResponseDefinitionBuilder getOKResponse() {
         return aResponse()
