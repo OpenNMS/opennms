@@ -4,9 +4,7 @@
 
 [options="autowidth"]
 |===
-|Version:      |{page-component-display-version}
 |Release date: |{docdatetime}
-|Source:       |{page-origin-url}
 |===
 
 OpenNMS {page-component-title} is an open source solution that helps you visualize and monitor everything on your local and remote networks. 
