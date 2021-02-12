@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class InfoDTO {
     private String packageDescription;
     private TicketerConfig ticketerConfig;
     private DatetimeformatConfig datetimeformatConfig;
-    private Map<String,String> services;
+    private Map<String,String> services = Collections.emptyMap();
 
     public DatetimeformatConfig getDatetimeformatConfig() {
         return datetimeformatConfig;
