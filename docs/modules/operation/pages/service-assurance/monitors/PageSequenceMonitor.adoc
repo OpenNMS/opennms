@@ -240,7 +240,7 @@ NOTE: Each page is checked to ensure its _HTTP_ response code fits into the `res
             failureMatch="(?s)Your log-in attempt failed.*Reason: ([^<]*)"
             failureMessage="Login Failed: ${1}"
             successMatch="Log out">"
-        <parameter key="j_username" value="${username}" />
+        <parameter key="j_username" value="$\{username\}" />
         <parameter key="j_password" value="${password}" />
       </page>
       <page path="/opennms/event/index.jsp"
@@ -276,7 +276,7 @@ NOTE: Each page is checked to ensure its _HTTP_ response code fits into the `res
             virtual-host="demo.opennms.org"
             method="POST"
             successMatch="Log out">"
-        <parameter key="j_username" value="${username}" />
+        <parameter key="j_username" value="$\{username\}" />
         <parameter key="j_password" value="${password}" />
       </page>
       <page path="/opennms/j_acegi_logout"

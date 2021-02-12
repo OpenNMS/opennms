@@ -109,7 +109,7 @@ Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a stora
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
-  <parameter key="index-format" value="$\{domain}_${type}_${name}" />
+  <parameter key="index-format" value="$\{domain}_${type}_$\{name\}" />
   <parameter key="clean-output" value="true" />
 </storageStrategy>
 ----

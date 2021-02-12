@@ -8,11 +8,11 @@ Data provided from the RTC is available to the REST API.
 
 [options="header", cols="5,10"]
 |===
-| Resource                                             | Description
-| `/availability/categories/{category}`                | Get all nodes and availability data from a given SLA category filter, i.e., Web Servers (Web+Servers).
-| `/availability/categories/{category}/nodes`          | Get node availability data for each node of a given SLA category filter.
-| `/availability/categories/{category}/nodes/{\nodeidl}` | Get detailed service availability for a given node in a given SLA category filter.
-| `/availability/nodes/{\nodeidl}`                       | Get detailed availability for all services on a given node.
+| Resource                                                 | Description
+| `/availability/categories/\{category\}`                  | Get all nodes and availability data from a given SLA category filter, i.e., Web Servers (Web+Servers).
+| `/availability/categories/\{category\}/nodes`            | Get node availability data for each node of a given SLA category filter.
+| `/availability/categories/\{category\}/nodes/{\nodeid\}` | Get detailed service availability for a given node in a given SLA category filter.
+| `/availability/nodes/{\nodeidl}`                         | Get detailed availability for all services on a given node.
 |===
 
 == Example

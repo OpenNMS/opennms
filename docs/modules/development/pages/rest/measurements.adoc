@@ -8,8 +8,8 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 
 [options="header", cols="5,10"]
 |===
-| Resource                                 | Description
-| `/measurements/{resourceId}/{attribute}` | Retrieve the measurements for a single attribute.
+| Resource                                     | Description
+| `/measurements/\{resourceid\}/\{attribute\}` | Retrieve the measurements for a single attribute.
 |===
 
 The following table shows all supported query string parameters and their default values.

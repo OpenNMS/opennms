@@ -13,16 +13,16 @@ If a request says that it gets the "active" foreign source, that means it return
 
 [options="header, autowidth", cols="5,10"]
 |===
-| Resource                                      | Description
-| `/foreignSources`                             | Get all active foreign sources.
-| `/foreignSources/default`                     | Get the active default foreign source.
-| `/foreignSources/deployed`                    | Get the list of all deployed (active) foreign sources.
-| `/foreignSources/deployed/count`              | Get the number of deployed foreign sources. (Returns plaintext, rather than XML or JSON.)
-| `/foreignSources/{name}`                      | Get the active foreign source named {name}
-| `/foreignSources/{name}/detectors`            | Get the configured detectors for the foreign source named {name}
-| `/foreignSources/{name}/detectors/{detector}` | Get the specified detector for the foreign source named {name}
-| `/foreignSources/{name}/policies`             | Get the configured policies for the foreign source named {name}
-| `/foreignSources/{name}/policies/{policy}`    | Get the specified policy for the foreign source named {name}
+| Resource                                            | Description
+| `/foreignSources`                                   | Get all active foreign sources.
+| `/foreignSources/default`                           | Get the active default foreign source.
+| `/foreignSources/deployed`                          | Get the list of all deployed (active) foreign sources.
+| `/foreignSources/deployed/count`                    | Get the number of deployed foreign sources. (Returns plaintext, rather than XML or JSON.)
+| `/foreignSources/\{name\}`                          | Get the active foreign source named \{name\}
+| `/foreignSources/\{name\}/detectors`                | Get the configured detectors for the foreign source named \{name\}
+| `/foreignSources/\{name\}/detectors/\{detector\}`   | Get the specified detector for the foreign source named \{name\}
+| `/foreignSources/\{name\}/policies`                 | Get the configured policies for the foreign source named \{name\}
+| `/foreignSources/\{name\}/policies/\{policy\}`      | Get the specified policy for the foreign source named \{name\}
 |===
 
 == POSTs (Adding Data)
@@ -31,10 +31,10 @@ POST requires XML using application/xml as its Content-Type.
 
 [options="header", cols="5,10"]
 |===
-| Resource                           | Description
-| `/foreignSources`                  | Add a foreign source.
-| `/foreignSources/{name}/detectors` | Add a detector to the named foreign source.
-| `/foreignSources/{name}/policies`  | Add a policy to the named foreign source.
+| Resource                             | Description
+| `/foreignSources`                    | Add a foreign source.
+| `/foreignSources/\{name\}/detectors` | Add a detector to the named foreign source.
+| `/foreignSources/\{name\}/policies`  | Add a policy to the named foreign source.
 |===
 
 == PUTs (Modifying Data)
@@ -43,16 +43,16 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 
 [options="header", cols="5,10"]
 |===
-| Resource                 | Description
-| `/foreignSources/{name}` | Modify a foreign source with the given name.
+| Resource                   | Description
+| `/foreignSources/\{name\}` | Modify a foreign source with the given name.
 |===
 
 == DELETEs (Removing Data)
 
 [options="header", cols="5,10"]
 |===
-| Resource                                      | Description
-| `/foreignSources/{name}`                      | Delete the named foreign source.
-| `/foreignSources/{name}/detectors/{detector}` | Delete the specified detector from the named foreign source.
-| `/foreignSources/{name}/policies/{policy}`    | Delete the specified policy from the named foreign source.
+| Resource                                            | Description
+| `/foreignSources/\{name\}`                          | Delete the named foreign source.
+| `/foreignSources/\{name\}/detectors/\{detector\}`   | Delete the specified detector from the named foreign source.
+| `/foreignSources/\{name\}/policies/\{policy\}`      | Delete the specified policy from the named foreign source.
 |===

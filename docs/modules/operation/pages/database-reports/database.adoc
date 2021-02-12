@@ -227,7 +227,7 @@ The following example shows the use of that helper.
 [source, xml]
 ------
 <parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{\nodeidl}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{\nodeidl}), $P\{foreignsource\}, $P\{foreignid\})]]></defaultValueExpression>
 </parameter>
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">

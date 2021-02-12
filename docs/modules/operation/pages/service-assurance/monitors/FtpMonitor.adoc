@@ -50,7 +50,7 @@ Some example configuration how to configure the monitor in the 'poller-configura
  <parameter key="retry" value="1"/>
  <parameter key="timeout" value="3000"/>
  <parameter key="port" value="21"/>
- <parameter key="userid" value="{username}"/>
+ <parameter key="userid" value="\{username\}"/>
  <parameter key="password" value="{password}"/>
 </service>
 

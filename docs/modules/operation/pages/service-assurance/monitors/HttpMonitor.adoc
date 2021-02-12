@@ -109,7 +109,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="timeout" value="3000"/>
   <parameter key="port" value="8080"/>
   <parameter key="url" value="/opennms/event/list"/>
-  <parameter key="basic-authentication" value="{username}:{password}"/>
+  <parameter key="basic-authentication" value="\{username\}:{password}"/>
   <parameter key="response" value="200"/>
 </service>
 <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
