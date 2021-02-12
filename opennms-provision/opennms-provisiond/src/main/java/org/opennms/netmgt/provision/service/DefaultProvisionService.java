@@ -258,6 +258,35 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
         node.setCategories(dbNode.getCategories());
 
+        for (final OnmsMetaData onmsMetaData : dbNode.getMetaData()) {
+            if (!node.findMetaDataForContextAndKey(onmsMetaData.getContext(), onmsMetaData.getKey()).isPresent()) {
+                node.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+            }
+        }
+        for(final OnmsIpInterface dbNodeInterface : dbNode.getIpInterfaces()) {
+            final InetAddress inetAddress = dbNodeInterface.getIpAddress();
+            if (inetAddress != null) {
+                final OnmsIpInterface nodeInterface = node.getIpInterfaceByIpAddress(inetAddress);
+                if (nodeInterface != null) {
+                    for(final OnmsMetaData onmsMetaData : dbNodeInterface.getMetaData()) {
+                        if (!nodeInterface.findMetaDataForContextAndKey(onmsMetaData.getContext(), onmsMetaData.getKey()).isPresent()) {
+                            nodeInterface.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                        }
+                    }
+                    for (OnmsMonitoredService dbNodeMonitoredService:dbNodeInterface.getMonitoredServices()) {
+                        final OnmsMonitoredService nodeMonitoredService = nodeInterface.getMonitoredServiceByServiceType(dbNodeMonitoredService.getServiceName());
+                        if (nodeMonitoredService != null) {
+                            for(final OnmsMetaData onmsMetaData : dbNodeMonitoredService.getMetaData()) {
+                                if (!nodeMonitoredService.findMetaDataForContextAndKey(onmsMetaData.getContext(), onmsMetaData.getKey()).isPresent()) {
+                                    nodeMonitoredService.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
         dbNode.mergeNode(node, accumulator, false);
 

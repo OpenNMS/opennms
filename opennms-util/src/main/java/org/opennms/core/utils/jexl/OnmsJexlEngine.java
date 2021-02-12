@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd.wmi;
+package org.opennms.core.utils.jexl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import org.opennms.netmgt.config.datacollection.ResourceType;
+public class OnmsJexlEngine extends JexlEngine {
+    final static Log LOG = LogFactory.getLog(OnmsJexlEngine.class);
 
-@XmlRootElement
-public class WmiResourceTypeListWrapper {
-    private List<ResourceType> resourceTypes = new ArrayList<>();
+    final OnmsJexlSandbox onmsJexlSandbox;
 
-    public WmiResourceTypeListWrapper() {
+    public OnmsJexlEngine() {
+        this(new OnmsJexlSandbox(false));
     }
 
-    public WmiResourceTypeListWrapper(final Map<String, ResourceType> resourceTypesMap) {
-        this.resourceTypes = new ArrayList<>(resourceTypesMap.values());
+    public OnmsJexlEngine(final OnmsJexlSandbox onmsJexlSandbox) {
+        super(new OnmsJexlUberspect(LOG, Objects.requireNonNull(onmsJexlSandbox)), null, null, LOG);
+        this.onmsJexlSandbox = onmsJexlSandbox;
+        setStrict(true);
+        setLenient(false);
+
     }
 
-    public Map<String, ResourceType> getMap() {
-        return resourceTypes.stream()
-                .collect(Collectors.toMap(r -> r.getName(), Function.identity()));
+    public OnmsJexlSandbox.Permissions white(String clazz) {
+        return this.onmsJexlSandbox.white(clazz);
     }
 
-    public List<ResourceType> getResourceTypes() {
-        return resourceTypes;
-    }
-
-    public void setResourceTypes(final List<ResourceType> resourceTypes) {
-        this.resourceTypes = resourceTypes;
+    public OnmsJexlSandbox.Permissions black(String clazz) {
+        return this.onmsJexlSandbox.black(clazz);
     }
 }

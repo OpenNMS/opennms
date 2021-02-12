@@ -34,12 +34,16 @@ import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.jexl2.Expression;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
+import org.opennms.core.utils.jexl.OnmsJexlSandbox;
+import org.opennms.core.utils.jexl.OnmsJexlUberspect;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
 
 /**
  * Generic JEXL expression filter
@@ -52,10 +56,14 @@ public class JEXL implements Filter {
     @FilterParam(key="expression", required=true, displayName="Expression", description="JEXL expression.")
     private String m_expression;
 
-    private final JexlEngine jexl;
+    private final OnmsJexlEngine jexl;
 
     protected JEXL() {
-        jexl = new JexlEngine();
+        jexl = new OnmsJexlEngine();
+        jexl.white(Math.class.getName());
+        jexl.white(StrictMath.class.getName());
+        jexl.white(TreeBasedTable.class.getName());
+
         // Add additional functions to the engine
         Map<String, Object> functions = Maps.newHashMap();
         functions.put("math", Math.class);
