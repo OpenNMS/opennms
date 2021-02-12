@@ -25,6 +25,7 @@ asciidoc:
     postgresql-version: '13'
 nav:
 - modules/ROOT/index.adoc
+- modules/releasenotes/nav.adoc
 - modules/deployment/nav.adoc
 - modules/operation/nav.adoc
 - modules/development/nav.adoc
