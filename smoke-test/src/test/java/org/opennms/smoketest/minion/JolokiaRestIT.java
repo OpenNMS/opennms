@@ -66,10 +66,10 @@ public class JolokiaRestIT {
                 .statusCode(200);
 
         given().get("/read/java.lang:type=Memory/HeapMemoryUsage")
-                .then().assertThat().content(Matchers.containsString("HeapMemoryUsage"));
+                .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
 
         given().get("/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
-                .then().assertThat().content(Matchers.containsString("Heartbeat"));
+                .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
 
 
