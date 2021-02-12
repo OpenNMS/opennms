@@ -55,14 +55,14 @@ The procedure and rules are the same as with images: the path is relative to the
 .Include complete external file
  [source,xml]
  ----
- include::../configs/wmi-config.xml[]
+ include::wmi-config.xml[]
  ----
 
 This is how it's rendered:
 
 [source,xml]
 ----
-include::../configs/wmi-config.xml[]
+include::configs/wmi-config.xml[]
 ----
 
 [[gd-docs-include-parts]]
@@ -102,11 +102,11 @@ In the 'poller-configuration.xml', tag the section in the following manner:
 .Include this tagged part in the documentation using the _tag_ parameter
  [source,xml]
  ----
- include::../configs/poller-configuration.xml[tags=IcmpServiceConfig]
+ include::configs/poller-configuration.xml[tags=IcmpServiceConfig]
  ----
 
 .This is how it rendered
 [source,xml]
-include::../configs/poller-configuration.xml[tags=IcmpServiceConfig]
+include::configs/poller-configuration.xml[tags=IcmpServiceConfig]
 
 NOTE: Spaces and tabs are taken from the original file.
