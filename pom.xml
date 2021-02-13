@@ -1211,12 +1211,12 @@
       Surefire forked JVM arguments
       @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
 
-      Use 1GB of heap for running tests.
+      Use 1.5GB of heap for running tests.
 
       Set java.security.egd so that entropy exhaustion doesn't cause
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
-    <argLineMemory>-Xmx1g</argLineMemory>
+    <argLineMemory>-Xmx1536m</argLineMemory>
     <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
     <skipITs>true</skipITs>
 
