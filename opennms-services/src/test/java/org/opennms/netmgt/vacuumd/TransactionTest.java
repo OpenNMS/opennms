@@ -144,6 +144,7 @@ public class TransactionTest extends TestCase {
         Transaction.end();
         
         m_ezMock.verifyAll();
+
     }
     
     public void testCloseResources() throws Exception {
