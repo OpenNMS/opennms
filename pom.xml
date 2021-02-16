@@ -1039,6 +1039,7 @@
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
           <useModulePath>false</useModulePath>
+          <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
       </plugin>
       <plugin>
