@@ -735,11 +735,12 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 2
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g

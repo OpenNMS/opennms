@@ -94,6 +94,8 @@ my $RCCS = "512m";
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 	$MAVEN_OPTS = "-Xmx${MEM} -XX:ReservedCodeCacheSize=${RCCS}";
+	# Number of retries, ref: https://github.com/apache/maven-wagon/blob/wagon-3.4.2/wagon-providers/wagon-http/src/site/apt/index.apt#L77
+	$MAVEN_OPTS = "${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3";
 }
 
 if (not $MAVEN_OPTS =~ /TieredCompilation/) {
