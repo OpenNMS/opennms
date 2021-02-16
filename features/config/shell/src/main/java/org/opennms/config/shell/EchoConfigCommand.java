@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.config.osgi;
+package org.opennms.config.shell;
 
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
@@ -38,7 +39,8 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.config.configservice.api.ConfigurationService;
-import org.opennms.config.configservice.impl.DictionaryUtil;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 @Command(scope = "onmsconfig", name = "echoconfig", description = "Shows the config of a pid")
 @Service
@@ -47,22 +49,46 @@ public class EchoConfigCommand implements Action {
     @Reference
     private ConfigurationService configService;
 
+    @Reference
+    private ConfigurationAdmin configurationAdmin;
+
     @Option(name = "-p", aliases = "--pid", description = "PID to show", required = true)
     private String pid;
 
     @Override
     public Object execute() throws Exception {
-        System.out.println("Config of: %s:" + pid);
-        Dictionary properties = configService.getConfigurationAsString(pid)
-                .map(DictionaryUtil::createFromRawString)
-                .orElse(new Hashtable());
-        Collections
-                .list(properties.keys())
-                .stream()
-                .map(key -> key + "=" + properties.get(key))
-                .sorted()
-                .forEachOrdered(System.out::println);
 
+        // OpenNMS
+        Optional<Map<String, String>> properties = configService.getConfigurationAsMap(pid);
+        if (!properties.isPresent()) {
+            System.out.println("No OpenNMS config found for: " + pid);
+        } else {
+            System.out.println("OpenNMS config of:" + pid);
+            System.out.println("===========================================================");
+            properties
+                    .get()
+                    .entrySet().stream()
+                    .map(entry -> entry.getKey() + "=" + entry.getValue())
+                    .sorted()
+                    .forEachOrdered(System.out::println);
+        }
+
+        // OSGI
+        System.out.println();
+        Configuration configOsgi = this.configurationAdmin.getConfiguration(pid, "?org.opennms");
+        Dictionary<?, ?> dictionary = configOsgi.getProperties();
+        if(dictionary == null) {
+            System.out.println("No osgi config found for: " + pid);
+        } else {
+            System.out.println("Osgi config of:" + pid);
+            System.out.println("===========================================================");
+            Collections
+                    .list(dictionary.keys())
+                    .stream()
+                    .map(key -> key + "=" + dictionary.get(key))
+                    .sorted()
+                    .forEachOrdered(System.out::println);
+        }
         return null;
     }
 }

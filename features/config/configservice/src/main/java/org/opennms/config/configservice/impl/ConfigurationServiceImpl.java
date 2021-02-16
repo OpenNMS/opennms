@@ -43,12 +43,16 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.config.configservice.api.ConfigurationChangeListener;
 import org.opennms.config.configservice.api.ConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * We maintain and serve configurations from a centralized place in a uniform way.
  */
 public class ConfigurationServiceImpl implements ConfigurationService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
     private final String STORE_CONTEXT = "config";
 
@@ -90,13 +94,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (!config.equals(oldVersion.orElse(null))) {
             // config has actually changed => let's inform the listeners
             for (ConfigurationChangeListener listener : listeners.getOrDefault(uri, Collections.emptyList())) {
-                listener.configurationHasChanged(uri);
+                try {
+                    listener.configurationHasChanged(uri);
+                } catch (final Throwable e) {
+                    LOG.warn("An error occurred while notifying listener={} for uri={}", listener, uri);
+                }
             }
         }
-
     }
 
     @Override
+    public Optional<Map<String, String>> getConfigurationAsMap(String uri) {
+        return getConfigurationAsString(uri)
+                .map(MapConfigUtil::createFromRawString);
+    }
+
     public Optional<Dictionary<String, String>> getConfigurationAsDictionary(String uri) {
         return getConfigurationAsString(uri)
                 .map(DictionaryUtil::createFromRawString);
@@ -107,6 +119,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.putConfiguration(uri, DictionaryUtil.writeToRawString(config));
     }
 
+    @Override
+    public void putConfiguration(String uri, Map<String, String> config) {
+        this.putConfiguration(uri, MapConfigUtil.writeToRawString(config));
+    }
+
+    @Override
     public synchronized void registerForUpdates(final String uriOfConfig, final ConfigurationChangeListener listener) {
         listeners.computeIfAbsent(uriOfConfig, s -> new CopyOnWriteArrayList<>()).add(listener);
     }

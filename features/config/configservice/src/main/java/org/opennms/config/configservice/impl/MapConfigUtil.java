@@ -31,65 +31,40 @@ package org.opennms.config.configservice.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-@Deprecated // I don't think we need that anymore
-public class DictionaryUtil {
-    public static boolean equalsWithoutRevision(Dictionary<String, String> a, Dictionary<String, String> b) {
-        if (a == null && b == null) {
-            return true;
-        } else if (a == null || b == null) {
-            return false;
-        } else if (a.size() != b.size()) {
-            return false;
-        }
-
-        return Collections.list(a.keys())
-                .stream()
-                .filter(key -> !":org.apache.felix.configadmin.revision:".equals(key))
-                .allMatch(key -> a.get(key).equals(b.get(key)));
-    }
-
-    public static Dictionary createFromRawString(String propertiesString) {
+public class MapConfigUtil {
+    public static Map<String, String> createFromRawString(String propertiesString) {
         Objects.requireNonNull(propertiesString);
         try {
             Properties props = new Properties();
             props.load(new StringReader(propertiesString));
-            return props;
+            Map<String, String> map = new HashMap<>();
+            props.forEach((key, value) -> map.put((String) key, (String) value));
+            return map;
         } catch (IOException e) {
             // should not happen since we have a StringReader...
             throw new RuntimeException(e);
         }
     }
 
-    public static String writeToRawString(final Dictionary dictionary) {
-        Objects.requireNonNull(dictionary);
+    public static String writeToRawString(final Map<String, String> config) {
+        Objects.requireNonNull(config);
 
-        Properties props;
-        if(dictionary instanceof Properties) {
-            props = (Properties) dictionary;
-        } else {
-            props = new Properties();
-            Enumeration keys = dictionary.keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
-                Object value = dictionary.get(key);
-                props.setProperty(key.toString(), value.toString());
-            }
+        Properties props = new Properties();
+        for(Map.Entry<String, String> entry : config.entrySet()) {
+            props.put(entry.getKey(), entry.getValue());
         }
-
         StringWriter writer = new StringWriter();
         try {
-            props.store(writer, "Created by " + DictionaryUtil.class.getName());
+            props.store(writer, "Created by " + MapConfigUtil.class.getName());
             return writer.toString();
         } catch (IOException e) {
             // should not happen since we have a StringWriter...
             throw new RuntimeException(e);
         }
-
     }
 }

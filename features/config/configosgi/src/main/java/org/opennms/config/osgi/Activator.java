@@ -31,32 +31,39 @@ package org.opennms.config.osgi;
 import java.util.Hashtable;
 import java.util.Optional;
 
-import org.apache.felix.cm.PersistenceManager;
 import org.opennms.config.configservice.api.ConfigurationService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
-    private ServiceReference<PersistenceManager> reference;
-    private ServiceRegistration<PersistenceManager> registration;
-    
+    private final static Logger LOG = LoggerFactory.getLogger(Activator.class);
+
+    // TODO: Patrick we need to register for all OSGI PIDs
+    @Deprecated
+    private final static String PID = "org.opennms.features.topology.app.icons.application";
+
+    private ServiceRegistration<OsgiConfigAdaptor> registration;
+
     @Override
     public void start(BundleContext context) throws Exception {
         Hashtable<String,String> config = new Hashtable<>();
-        config.put("service.ranking", "1000");
-        config.put("name", OpenNMSPersistenceManager.class.getName());
-        System.out.printf("Registering service %s.%n", OpenNMSPersistenceManager.class.getSimpleName());
+        config.put("name", OsgiConfigAdaptor.class.getName());
+        LOG.info("Registering service {}.", OsgiConfigAdaptor.class.getSimpleName());
 
         final ConfigurationService configService = Optional.ofNullable(context.getServiceReference(ConfigurationService.class))
                 .map(context::getService)
                 .orElseThrow(() -> new IllegalStateException("Cannot find " + ConfigurationService.class.getName()));
 
-        registration = context.registerService(PersistenceManager.class, new OpenNMSPersistenceManager(context, configService), config);
-//        reference = registration
-//                .getReference();
+        OsgiConfigAdaptor adaptor = new OsgiConfigAdaptor(context, configService);
+        registration = context.registerService(OsgiConfigAdaptor.class, adaptor, config);
+
+        // Synchronize all OSGI PIDs
+        // TODO: Patrick: make this generic
+        adaptor.configurationHasChanged(PID); // does not work
     }
 
     @Override
@@ -64,6 +71,28 @@ public class Activator implements BundleActivator {
         if(registration != null ) {
             registration.unregister();
         }
-        System.out.println(OpenNMSPersistenceManager.class.getSimpleName() + "stopped");
+        LOG.info(OsgiConfigAdaptor.class.getSimpleName() + "stopped");
     }
+
+//    @Override
+//    public void start(BundleContext context) throws Exception {
+//        Hashtable<String,String> config = new Hashtable<>();
+//        config.put("service.ranking", "1000");
+//        config.put("name", OpenNMSPersistenceManager.class.getName());
+//        LOG.info("Registering service {}.", OpenNMSPersistenceManager.class.getSimpleName());
+//
+//        final ConfigurationService configService = Optional.ofNullable(context.getServiceReference(ConfigurationService.class))
+//                .map(context::getService)
+//                .orElseThrow(() -> new IllegalStateException("Cannot find " + ConfigurationService.class.getName()));
+//
+//        registration = context.registerService(PersistenceManager.class, new OpenNMSPersistenceManager(context, configService), config);
+//    }
+//
+//    @Override
+//    public void stop(BundleContext context) throws Exception {
+//        if(registration != null ) {
+//            registration.unregister();
+//        }
+//        LOG.info(OpenNMSPersistenceManager.class.getSimpleName() + "stopped");
+//    }
 }

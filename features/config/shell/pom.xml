@@ -42,6 +42,18 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
+      <version>1.9.14</version><!-- TODO: Patrick move Felix version somewhere? -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>configosgi</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
@@ -59,6 +71,7 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+
 
   </dependencies>
   <repositories>

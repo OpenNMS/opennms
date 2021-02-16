@@ -28,47 +28,28 @@
 
 package org.opennms.config.shell;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.config.configservice.api.ConfigurationService;
+import org.opennms.config.osgi.OsgiConfigAdaptor;
 
 
-@Command(scope = "onmsconfig", name = "update", description = "updates the config")
+@Command(scope = "onmsconfig", name = "updateosgi", description = "Updates the osgi config with the configuration from OpenNMS.")
 @Service
-public class UpdateConfigCommand implements Action {
+public class UpdateOsgiCommand implements Action {
 
     @Reference
-    private ConfigurationService configService;
+    private OsgiConfigAdaptor adaptor;
 
     @Option(name = "-p", aliases = "--pid", description = "PID to update", required = true)
     private String pid;
 
-    @Option(name = "-k", aliases = "--key", description = "Key to update", required = true)
-    private String key;
-
-    @Option(name = "-v", aliases = "--value", description = "Value to update", required = true)
-    private String value;
-
     @Override
     public Object execute() throws Exception {
-        if (pid.isEmpty() || key.isEmpty()) {
-            System.out.println("pid and key must not be empty.");
-            return null;
-        }
-
-        // we only support property files currently.
-        Map<String, String> properties = configService
-                .getConfigurationAsMap(pid)
-                .orElse(new HashMap<>());
-        properties.put(key, value);
-        configService.putConfiguration(pid, properties);
-        System.out.printf("Updated %s: %s=%s.%n", pid, key, value);
+        System.out.println("Trigger update for: " + pid);
+        adaptor.configurationHasChanged(pid);
         return null;
     }
 }
