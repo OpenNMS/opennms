@@ -53,6 +53,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
@@ -60,6 +61,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * RpkiValidator Client that fetches josn response from Rpki Validator Rest API.
+ * (https://github.com/RIPE-NCC/rpki-validator-3)
+ */
 public class RpkiValidatorClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpkiValidatorClient.class);
@@ -127,7 +132,7 @@ public class RpkiValidatorClient {
         return bmpRpkiInfo;
     }
 
-
+    @VisibleForTesting
     List<RpkiInfo> parseRpkiInfoFromResponse(String jsonResponse) {
         List<RpkiInfo> rpkiInfos = new ArrayList<>();
         try {
@@ -171,10 +176,11 @@ public class RpkiValidatorClient {
                     rpkiInfos.add(rpkiInfo);
                 } catch (Exception e) {
                     // skip element.
+                    LOG.warn("Exception while parsing Rpki element {}", jsonElement, e);
                 }
             }
         } catch (Exception e) {
-
+            LOG.error("Exception while parsing Rpki Info from json response {}", jsonResponse, e);
         }
         return rpkiInfos;
     }
@@ -191,7 +197,7 @@ public class RpkiValidatorClient {
             Response response = builder.get();
             return response.readEntity(String.class);
         } catch (Exception e) {
-
+            LOG.error("Exception while fetching response from {}", rpkiUrl, e);
         }
         return null;
     }
