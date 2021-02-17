@@ -1,12 +1,12 @@
 
 ==== Tuning Apache Kafka
 
-The configuration is shipped with sane defaults, but depending on the size and network topology it can be required to tune the _Apache Kafka_ environment to meet certain needs.
-_Apache Kafka_ options can be set directly in the `org.opennms.core.ipc.rpc.kafka.cfg` and `org.opennms.core.ipc.sink.kafka.cfg` file.
+The configuration is shipped with some defaults, but depending on the size and network topology you might need to tune the _Apache Kafka_ environment to meet certain needs.
+Set _Apache Kafka_ options directly in the `org.opennms.core.ipc.rpc.kafka.cfg` and `org.opennms.core.ipc.sink.kafka.cfg` file.
 
-Alternatively: _Kafka_ producer/consumer options can be set by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka` and `org.opennms.core.ipc.sink.kafka`.
+Alternatively, you can set _Kafka_ producer/consumer options by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka` and `org.opennms.core.ipc.sink.kafka`.
 
-You can find available configuration parameters for _Kafka_ here:
+Find available configuration parameters for _Kafka_ here:
 
 * link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs] for RPC communication
 * link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[New Consumer Configs] for Sink communication
@@ -14,7 +14,7 @@ You can find available configuration parameters for _Kafka_ here:
 ===== Multiple {opennms-product-name} instances
 
 Topics will be automatically created and are prefixed by default with `OpenNMS`. 
-If you want to use an _Apache Kafka_ cluster with multiple _{opennms-product-name}_ instances, the topic prefix can be customized by setting `org.opennms.core.ipc.rpc.kafka.group.id` and `org.opennms.core.ipc.sink.kafka.group.id` to a string value which identifies your instance.
+If you want to use an _Apache Kafka_ cluster with multiple _{opennms-product-name}_ instances, customize the topic prefix by setting `org.opennms.core.ipc.rpc.kafka.group.id`, `org.opennms.core.ipc.sink.kafka.group.id`, and `org.opennms.instance.id` in _{opennms-product-name}_ and its Minions to a string value that identifies your instance.
 
 ===== Tips for Kafka
 
