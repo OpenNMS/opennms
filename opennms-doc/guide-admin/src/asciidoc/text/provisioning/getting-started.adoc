@@ -117,7 +117,7 @@ Links to additional information on customizing a requisition appear at the end o
 
 . In the web UI, click the gear icon in the top right. 
 . In the *Provisioning* area, choose *Manage Provisioning Requisitions*. 
-. If you haven't already, xref:foreign-source-definition[edit the default foreign soruce definition] to define services to detect. 
+. If you haven't already, xref:foreign-source-definition[edit the default foreign source definition] to define services to detect. 
 . Click *Add Requisition*, type a name, and click *OK*. 
 . Click the edit icon beside the requisition you created. 
 . (optional) Click *Edit Definition* to define the services, policies, and scan interval to use for this requisition. 

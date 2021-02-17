@@ -87,7 +87,7 @@ Each service is associated with a specific collector; the collector and its rela
 <7> Run the _SnmpCollector_ implementation for the service named `SNMP`.
 
 The following table lists service attributes common to all services.
-For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<collectors.adoc, Collectors>> section. 
+For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<collectors-configure, Collectors>> section. 
 
 [options="autowidth"]
 |===

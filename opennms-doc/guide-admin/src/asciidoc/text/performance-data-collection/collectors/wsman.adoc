@@ -21,7 +21,7 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 
 ===== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the WsManCollector
 [options="header, autowidth"]
@@ -108,7 +108,7 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 [[ga-performance-mgmt-collectors-wsman-agent-config]]
 ===== WS-Management Agent Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 The agent-specific configuration details are maintained in `etc/wsman-config.xml`.
 This file has a similar structure as `etc/snmp-config.xml`, which the reader may already be familiar with.

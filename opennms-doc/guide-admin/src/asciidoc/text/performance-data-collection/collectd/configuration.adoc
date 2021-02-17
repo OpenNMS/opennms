@@ -12,11 +12,11 @@ The file is located in `$OPENNMS_HOME`.
 
 Edit the _collectd-configuration.xml_ file to:
 
-* <<ga-edit-collectd-config, set the thread pool>>
-* <<collection-packages.adoc, configure collector packages>>
-* <<collection-packages.adoc#ga-collector-list-edit, specify collectors to use>>
+* <<ga-thread-pool-edit, set the thread pool>>
+* <<ga-collectd-packages, configure collector packages>>
+* specify collectors to use
 
-In addtion to editing the _collectd-configuration.xml_, you need to <<collectors.adoc,configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
+In addtion to editing the _collectd-configuration.xml_, you need to <<collectors-configure, configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
 
 [[ga-thread-pool-edit]]
 ==== Setting the Thread Pool
