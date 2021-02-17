@@ -43,7 +43,7 @@ public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long
     }
 
     @Override
-    public BmpRouteInfo findByPrefix(String prefix, Integer prefixLen, Long originAsn) {
+    public BmpRouteInfo findByPrefixAndOriginAs(String prefix, Integer prefixLen, Long originAsn) {
 
         Criteria criteria = new Criteria(BmpRouteInfo.class);
         criteria.addRestriction(new EqRestriction("prefix", prefix));
@@ -54,5 +54,12 @@ public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long
             return bmpRouteInfoList.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<BmpRouteInfo> findByPrefix(String prefix) {
+        Criteria criteria = new Criteria(BmpRouteInfo.class);
+        criteria.addRestriction(new EqRestriction("prefix", prefix));
+        return findMatching(criteria);
     }
 }

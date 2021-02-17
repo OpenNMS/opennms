@@ -7,6 +7,16 @@
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="bmp-external-properties" persistent-id="org.opennms.features.telemetry.protocols.bmp.adapter.persist" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="rpkiUrl" value="http://localhost:8080/api/export.json"/>
+      <cm:property name="rpkiUsername" value=""/>
+      <cm:property name="rpkiPassword" value=""/>
+      <cm:property name="routeInfoDbPath" value="$[karaf.etc]$[file.separator]"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
   <reference id="bmpUnicastPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" />
   <reference id="bmpIpRibLogDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" />
   <reference id="bmpStatsByPeerDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" />
@@ -17,7 +27,7 @@
   <reference id="bmpAsnInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" />
   <reference id="bmpRouteInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" />
   <reference id="bmpStatsIpOriginsDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" />
-  <reference id="bmpRpkiValidatorDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidatorDao" />
+  <reference id="bmpRpkiInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao" />
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
 
   <!-- BMP Stats Aggregator that should only run on OpenNMS -->
@@ -34,25 +44,23 @@
     <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
     <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
     <property name="bmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao"/>
+    <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
   </bean>
 
-  <!-- Configuration properties -->
-  <cm:property-placeholder id="bmp-external-properties" persistent-id="org.opennms.features.telemetry.protocols.bmp.adapter.persist" update-strategy="reload">
-    <cm:default-properties>
-      <cm:property name="rpkiUrl" value="http://localhost:8080/api/export.json"/>
-      <cm:property name="rpkiUsername" value=""/>
-      <cm:property name="rpkiPassword" value=""/>
-    </cm:default-properties>
-  </cm:property-placeholder>
 
   <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
   <bean id="rpkiValidatorClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.RpkiValidatorClient"
         init-method="init" destroy-method="destroy">
     <argument value="${rpkiUrl}"/>
-    <property name="bmpRpkiValidatorDao" ref="bmpRpkiValidatorDao"/>
+    <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
     <property name="rpkiUsername" value="${rpkiUsername}"/>
     <property name="rpkiPassword" value="${rpkiUsername}"/>
   </bean>
 
+  <bean id="routeInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.RouteInfoClient"
+        init-method="init" destroy-method="destroy">
+    <argument value="${routeInfoDbPath}"/>
+    <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+  </bean>
 </blueprint>

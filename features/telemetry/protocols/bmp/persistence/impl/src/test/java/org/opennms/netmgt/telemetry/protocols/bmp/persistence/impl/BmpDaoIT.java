@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.time.Instant;
 import java.util.Date;
@@ -36,6 +37,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +52,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidator;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidatorDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
@@ -95,7 +97,7 @@ public class BmpDaoIT {
     private BmpIpRibLogDao bmpIpRibLogDao;
 
     @Autowired
-    private BmpRpkiValidatorDao bmpRpkiValidatorDao;
+    private BmpRpkiInfoDao bmpRpkiInfoDao;
 
 
     @Test
@@ -133,14 +135,17 @@ public class BmpDaoIT {
     @Test
     public void testGlobalIpRibsPersistence() {
 
+        Instant tenSecondsBefore = Instant.now().minusSeconds(10);
+
         BmpGlobalIpRib bmpGlobalIpRib = new BmpGlobalIpRib();
         bmpGlobalIpRib.setPrefix("10.0.0.1");
         bmpGlobalIpRib.setRecvOriginAs(64512L);
         bmpGlobalIpRib.setPrefixLen(1);
-        bmpGlobalIpRib.setTimeStamp(Date.from(Instant.now()));
+        bmpGlobalIpRib.setTimeStamp(Date.from(tenSecondsBefore));
         bmpGlobalIpRib.setIrrSource("ARIN-WHOIS");
         bmpGlobalIpRib.setIrrOriginAs(2314L);
         bmpGlobalIpRib.setNumPeers(4);
+        bmpGlobalIpRib.setShouldDelete(true);
 
         bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
 
@@ -164,6 +169,9 @@ public class BmpDaoIT {
         StatsIpOrigins stats = statsIpOrigins.get(0);
         assertEquals(2L, stats.getV4prefixes().longValue());
         assertEquals(0L, stats.getV6withrpki().longValue());
+        result = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(5L);
+        assertThat(result, Matchers.hasSize(1));
+
     }
 
 
@@ -199,14 +207,14 @@ public class BmpDaoIT {
     @Test
     public void testRpkiValidator() {
 
-        BmpRpkiValidator bmpRpkiValidator = new BmpRpkiValidator();
-        bmpRpkiValidator.setPrefix("10.1.23.34");
-        bmpRpkiValidator.setPrefixLen(22);
-        bmpRpkiValidator.setPrefixLenMax(24);
-        bmpRpkiValidator.setOriginAs(5645L);
-        bmpRpkiValidator.setTimestamp(new Date());
-        bmpRpkiValidatorDao.saveOrUpdate(bmpRpkiValidator);
-        BmpRpkiValidator retrieved = bmpRpkiValidatorDao.findRpkiValidatorWith("10.1.23.34", 24, 5645L);
+        BmpRpkiInfo bmpRpkiInfo = new BmpRpkiInfo();
+        bmpRpkiInfo.setPrefix("10.1.23.34");
+        bmpRpkiInfo.setPrefixLen(22);
+        bmpRpkiInfo.setPrefixLenMax(24);
+        bmpRpkiInfo.setOriginAs(5645L);
+        bmpRpkiInfo.setTimestamp(new Date());
+        bmpRpkiInfoDao.saveOrUpdate(bmpRpkiInfo);
+        BmpRpkiInfo retrieved = bmpRpkiInfoDao.findBmpRpkiInfoWith("10.1.23.34", 24, 5645L);
         Assert.assertNotNull(retrieved);
 
 

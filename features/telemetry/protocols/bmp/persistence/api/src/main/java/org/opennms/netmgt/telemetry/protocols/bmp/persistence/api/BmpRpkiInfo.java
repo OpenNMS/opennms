@@ -42,15 +42,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Table(name = "bmp_rpki_validator")
+@Table(name = "bmp_rpki_info")
 @Entity
-public class BmpRpkiValidator implements Serializable {
+public class BmpRpkiInfo implements Serializable {
 
     private static final long serialVersionUID = -2194393458129973561L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpRpkiValidatorSequence")
-    @SequenceGenerator(name = "bmpRpkiValidatorSequence", sequenceName = "bmprpkivalidatornxtid")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpRpkiInfoSequence")
+    @SequenceGenerator(name = "bmpRpkiInfoSequence", sequenceName = "bmprpkiinfonxtid")
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -123,7 +123,7 @@ public class BmpRpkiValidator implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BmpRpkiValidator that = (BmpRpkiValidator) o;
+        BmpRpkiInfo that = (BmpRpkiInfo) o;
         return Objects.equals(prefix, that.prefix) &&
                 Objects.equals(prefixLen, that.prefixLen) &&
                 Objects.equals(prefixLenMax, that.prefixLenMax) &&
@@ -138,7 +138,7 @@ public class BmpRpkiValidator implements Serializable {
 
     @Override
     public String toString() {
-        return "BmpRpkiValidator{" +
+        return "BmpRpkiInfo{" +
                 "id=" + id +
                 ", prefix='" + prefix + '\'' +
                 ", prefixLen=" + prefixLen +

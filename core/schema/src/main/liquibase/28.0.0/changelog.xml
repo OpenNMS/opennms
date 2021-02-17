@@ -559,7 +559,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_ip_rib_log';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_ip_rib_log';
         </sqlCheck>
       </and>
     </preConditions>
@@ -645,7 +645,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_by_peer';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_peer';
         </sqlCheck>
       </and>
     </preConditions>
@@ -713,7 +713,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_by_asn';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_asn';
         </sqlCheck>
       </and>
     </preConditions>
@@ -784,7 +784,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_by_prefix';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_by_prefix';
         </sqlCheck>
       </and>
     </preConditions>
@@ -846,7 +846,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_peer_rib';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_peer_rib';
         </sqlCheck>
       </and>
     </preConditions>
@@ -916,7 +916,7 @@
           WHERE e.extname LIKE 'timescaledb';
         </sqlCheck>
         <sqlCheck expectedResult="0">
-          SELECT COUNT(table_name) FROM timescaledb_information.hypertable WHERE table_name = 'bmp_stats_ip_origins';
+          SELECT COUNT(hypertable_name) FROM timescaledb_information.hypertables WHERE hypertable_name = 'bmp_stats_ip_origins';
         </sqlCheck>
       </and>
     </preConditions>
@@ -926,22 +926,22 @@
     </sql>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-rpki-validator-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-rpki-info-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
-        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprpkivalidatornxtid'
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmprpkiinfonxtid'
       </sqlCheck>
     </preConditions>
-    <createSequence sequenceName="bmprpkivalidatornxtid"/>
+    <createSequence sequenceName="bmprpkiinfonxtid"/>
     <rollback>
-      <dropSequence sequenceName="bmprpkivalidatornxtid"/>
+      <dropSequence sequenceName="bmprpkiinfonxtid"/>
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-rpki-validator">
+  <changeSet author="cgorantla" id="28.0.0-bmp-rpki-info">
 
-    <createTable tableName="bmp_rpki_validator" remarks="bmp rpki validator">
+    <createTable tableName="bmp_rpki_info" remarks="bmp rpki info">
       <column name="id" type="bigint">
         <constraints nullable="false"/>
       </column>
@@ -961,9 +961,9 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
-    <addPrimaryKey tableName="bmp_rpki_validator" constraintName="pk_bmp_rpki_validator"
+    <addPrimaryKey tableName="bmp_rpki_info" constraintName="pk_bmp_rpki_validator"
                    columnNames="prefix, prefix_len_max, origin_as"/>
-    <createIndex tableName="bmp_rpki_validator" indexName="bmp_rpki_validator_origin_as">
+    <createIndex tableName="bmp_rpki_info" indexName="bmp_rpki_info_origin_as">
       <column name="origin_as" />
     </createIndex>
   </changeSet>

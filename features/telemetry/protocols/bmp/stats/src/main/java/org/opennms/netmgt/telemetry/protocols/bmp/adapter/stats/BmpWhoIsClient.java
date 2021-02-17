@@ -75,7 +75,7 @@ class BmpWhoIsClient {
                 String rawOutput = whoisClient.query(prefix);
                 whoisClient.disconnect();
                 if (rawOutput.contains("route")) {
-                    RouteInfo parsed = RouteInfo.parseOutput(rawOutput);
+                    RouteInfo parsed = RouteInfo.parseOneRecord(rawOutput);
                     if(parsed.getPrefix() != null && parsed.getPrefixLen() != null
                             && parsed.getOriginAs() != null) {
                         routeInfo = Optional.of(parsed);

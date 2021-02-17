@@ -48,11 +48,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.utils.StringUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidator;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidatorDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -69,8 +68,7 @@ public class RpkiValidatorClient {
 
     private String authorizationHeader;
 
-    @Autowired
-    private BmpRpkiValidatorDao bmpRpkiValidatorDao;
+    private BmpRpkiInfoDao bmpRpkiInfoDao;
 
     private String rpkiUsername;
 
@@ -103,31 +101,30 @@ public class RpkiValidatorClient {
         if (jsonResponse != null) {
             List<RpkiInfo> rpkiInfoList = parseRpkiInfoFromResponse(jsonResponse);
             rpkiInfoList.forEach(rpkiInfo -> {
-                BmpRpkiValidator bmpRpkiValidator = buildBmpRpkiValidator(rpkiInfo);
-                if (bmpRpkiValidator != null) {
+                BmpRpkiInfo bmpRpkiInfo = buildBmpRpkiValidator(rpkiInfo);
+                if (bmpRpkiInfo != null && bmpRpkiInfoDao != null) {
                     try {
-                        bmpRpkiValidatorDao.saveOrUpdate(bmpRpkiValidator);
+                        bmpRpkiInfoDao.saveOrUpdate(bmpRpkiInfo);
                     } catch (Exception e) {
-                        LOG.error("Exception while persisting BMP Rpki validator {}", bmpRpkiValidator, e);
+                        LOG.error("Exception while persisting BMP Rpki validator {}", bmpRpkiInfo, e);
                     }
                 }
             });
         }
     }
 
-    private BmpRpkiValidator buildBmpRpkiValidator(RpkiInfo rpkiInfo) {
-
-        BmpRpkiValidator bmpRpkiValidator = bmpRpkiValidatorDao.findRpkiValidatorWith(rpkiInfo.getPrefix(),
+    private BmpRpkiInfo buildBmpRpkiValidator(RpkiInfo rpkiInfo) {
+        BmpRpkiInfo bmpRpkiInfo = bmpRpkiInfoDao.findBmpRpkiInfoWith(rpkiInfo.getPrefix(),
                 rpkiInfo.getPrefixMaxLen(), rpkiInfo.getAsn());
-        if (bmpRpkiValidator == null) {
-            bmpRpkiValidator = new BmpRpkiValidator();
-            bmpRpkiValidator.setOriginAs(rpkiInfo.getAsn());
-            bmpRpkiValidator.setPrefix(rpkiInfo.getPrefix());
-            bmpRpkiValidator.setPrefixLenMax(rpkiInfo.getPrefixMaxLen());
+        if (bmpRpkiInfo == null) {
+            bmpRpkiInfo = new BmpRpkiInfo();
+            bmpRpkiInfo.setOriginAs(rpkiInfo.getAsn());
+            bmpRpkiInfo.setPrefix(rpkiInfo.getPrefix());
+            bmpRpkiInfo.setPrefixLenMax(rpkiInfo.getPrefixMaxLen());
         }
-        bmpRpkiValidator.setPrefixLen(rpkiInfo.getPrefixLen());
-        bmpRpkiValidator.setTimestamp(Date.from(Instant.now()));
-        return bmpRpkiValidator;
+        bmpRpkiInfo.setPrefixLen(rpkiInfo.getPrefixLen());
+        bmpRpkiInfo.setTimestamp(Date.from(Instant.now()));
+        return bmpRpkiInfo;
     }
 
 
@@ -199,8 +196,8 @@ public class RpkiValidatorClient {
         return null;
     }
 
-    public void setBmpRpkiValidatorDao(BmpRpkiValidatorDao bmpRpkiValidatorDao) {
-        this.bmpRpkiValidatorDao = bmpRpkiValidatorDao;
+    public void setBmpRpkiInfoDao(BmpRpkiInfoDao bmpRpkiInfoDao) {
+        this.bmpRpkiInfoDao = bmpRpkiInfoDao;
     }
 
     public void setRpkiUsername(String rpkiUsername) {

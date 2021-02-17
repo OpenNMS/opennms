@@ -26,15 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
+import static org.junit.Assert.assertThat;
+
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.List;
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-public interface BmpRouteInfoDao extends OnmsDao<BmpRouteInfo, Long> {
+public class RouteInfoClientTest {
 
-    BmpRouteInfo findByPrefixAndOriginAs(String prefix, Integer prefixLen, Long originAsn);
 
-    List<BmpRouteInfo> findByPrefix(String prefix);
+    @Test
+    public void testRouteInfoClient() throws URISyntaxException {
+        URL resourceURL = getClass().getResource("/routeinfo/sample.db");
+        RouteInfoClient routeInfoClient = new RouteInfoClient(resourceURL.getPath());
+        List<RouteInfo> routeInfoList = routeInfoClient.parseEachFile(Paths.get(resourceURL.toURI()));
+        assertThat(routeInfoList, Matchers.hasSize(19));
+        routeInfoList.forEach(routeInfo -> {
+            System.out.println(routeInfo.getPrefix());
+            System.out.println(routeInfo.getOriginAs());
+        });
+    }
 }

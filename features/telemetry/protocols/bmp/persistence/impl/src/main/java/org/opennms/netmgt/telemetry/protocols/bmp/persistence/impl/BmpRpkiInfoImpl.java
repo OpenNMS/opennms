@@ -32,24 +32,39 @@ import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.GeRestriction;
+import org.opennms.core.criteria.restrictions.LeRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidator;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiValidatorDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 
-public class BmpRpkiValidatorImpl extends AbstractDaoHibernate<BmpRpkiValidator, Long> implements BmpRpkiValidatorDao {
-    public BmpRpkiValidatorImpl() {
-        super(BmpRpkiValidator.class);
+public class BmpRpkiInfoImpl extends AbstractDaoHibernate<BmpRpkiInfo, Long> implements BmpRpkiInfoDao {
+    public BmpRpkiInfoImpl() {
+        super(BmpRpkiInfo.class);
     }
 
     @Override
-    public BmpRpkiValidator findRpkiValidatorWith(String prefix, Integer prefixLenMax, Long origiAs) {
-        Criteria criteria = new Criteria(BmpRpkiValidator.class);
+    public BmpRpkiInfo findBmpRpkiInfoWith(String prefix, Integer prefixLenMax, Long originAsn) {
+        Criteria criteria = new Criteria(BmpRpkiInfo.class);
         criteria.addRestriction(new EqRestriction("prefix", prefix));
         criteria.addRestriction(new EqRestriction("prefixLenMax", prefixLenMax));
-        criteria.addRestriction(new EqRestriction("originAs", origiAs));
-        List<BmpRpkiValidator> bmpRpkiValidators = findMatching(criteria);
-        if (bmpRpkiValidators != null && bmpRpkiValidators.size() > 0) {
-            return bmpRpkiValidators.get(0);
+        criteria.addRestriction(new EqRestriction("originAs", originAsn));
+        List<BmpRpkiInfo> bmpRpkiInfos = findMatching(criteria);
+        if (bmpRpkiInfos != null && bmpRpkiInfos.size() > 0) {
+            return bmpRpkiInfos.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public BmpRpkiInfo findMatchingRpkiInfoForGlobalRIb(String prefix, Integer prefixLen) {
+        Criteria criteria = new Criteria(BmpRpkiInfo.class);
+        criteria.addRestriction(new EqRestriction("prefix", prefix));
+        criteria.addRestriction(new LeRestriction("prefixLenMax", prefixLen));
+        criteria.addRestriction(new GeRestriction("prefixLen", prefixLen));
+        List<BmpRpkiInfo> bmpRpkiInfos = findMatching(criteria);
+        if (bmpRpkiInfos != null && bmpRpkiInfos.size() > 0) {
+            return bmpRpkiInfos.get(0);
         }
         return null;
     }

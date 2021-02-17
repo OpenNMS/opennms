@@ -30,9 +30,11 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BmpRpkiValidatorDao extends OnmsDao<BmpRpkiValidator, Long> {
+public interface BmpRpkiInfoDao extends OnmsDao<BmpRpkiInfo, Long> {
 
-    BmpRpkiValidator findRpkiValidatorWith(String prefix, Integer prefixLenMax, Long origiAs);
+    BmpRpkiInfo findBmpRpkiInfoWith(String prefix, Integer prefixLenMax, Long originAs);
+
+    BmpRpkiInfo findMatchingRpkiInfoForGlobalRIb(String prefix, Integer prefixLen);
 
 }
 
