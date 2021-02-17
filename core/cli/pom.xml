@@ -78,6 +78,7 @@
                 <phase>test</phase>
                 <goals><goal>exec</goal></goals>
                 <configuration>
+                  <skip>${skipTests}</skip>
                   <executable>${project.basedir}/src/test/shell/run-tests.sh</executable>
                 </configuration>
               </execution>
