@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -146,19 +146,19 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="severity-Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
+              <td class="severity-Cleared nobright interface address" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+                <td class="severity-Cleared nobright interface header empty"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+                <td class="severity-Cleared nobright interface header monitored"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
               <%
                   }
               %>
-              <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
+              <td class="severity-<%= availClass %> nobright interface percent"><%= availValue %></td>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
@@ -198,12 +198,12 @@
                     <%
                         if (j==0) {
                     %>
-                    <td class="severity-Cleared nobright" rowspan="<%=svcs.length%>"></td>
+                    <td class="severity-Cleared nobright spacer" rowspan="<%=svcs.length%>"></td>
                     <%
                         }
                     %>
-                  <td class="severity-<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
-                  <td class="severity-Cleared nobright">
+                  <td class="severity-<%= warnClass %> bright service name"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
+                  <td class="severity-Cleared nobright service timeline">
                     <%
                          if (service.isManaged()) {
                     %>
@@ -216,7 +216,7 @@
                         }
                     %>
                   </td>
-                  <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
+                  <td class="severity-<%= availClass %> nobright service percent"><%= availValue %></td>
                 </tr>
             <% } %>
           <% } else { %>
