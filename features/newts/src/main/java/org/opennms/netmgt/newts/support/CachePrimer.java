@@ -58,7 +58,7 @@ public class CachePrimer implements InitializingBean, Runnable {
 
     @Override
     public void afterPropertiesSet() {
-        if (!primingDisabled) {
+        if (primingDisabled) {
             LOG.debug("Cache priming disabled. Skipping cache priming.");
             return;
         }
