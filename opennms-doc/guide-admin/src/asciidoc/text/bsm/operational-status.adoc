@@ -14,7 +14,7 @@ The _Operational Status_ uses the _Severities_ known from _Events_ and _Alarms_.
 | Name            | Numerical code | Color       / Code   | Description
 | `Critical`      | _7_            | Purple      / `#c00` | This event means that a severe service affecting event has occurred.
 | `Major`         | _6_            | Red         / `#f30` | Indicates serious disruption or malfunction of a service or system.
-| `Minor`         | _5_            | Orange      / `#f90` | Used for troubles that have no immediate effect on service or system performance.
+| `Minor`         | _5_            | Orange      / `#f90` | Used for troubles that have not immediate effect on service or system performance.
 | `Warning`       | _4_            | Yellow      / `#fc0` | An event has occurred that may require action.
                                                             This severity can also be used to indicate a condition that should be noted (logged) but does not require immediate action.
 | `Normal`        | _3_            | Dark green  / `#360` | Informational message. No action required.
