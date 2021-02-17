@@ -6,7 +6,7 @@ executors:
       - image: opennms/build-env:11.0.9.11-3.6.3-b5958
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk11-b5956
+      - image: opennms/build-env:debian-jdk11-b6222
   docker-executor:
     docker:
       - image: docker:20.10.1-git
