@@ -506,6 +506,12 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.cm</groupId>
+      <artifactId>org.opennms.core.cm.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <!-- Required for com.eclipsesource.jaxrs/* -->

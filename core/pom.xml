@@ -30,6 +30,7 @@
     <module>cache</module>
     <module>camel</module>
     <module>cli</module>
+    <module>cm</module>
     <module>config</module>
     <module>criteria</module>
     <module>daemon</module>

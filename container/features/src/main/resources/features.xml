@@ -1741,4 +1741,7 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
+    <feature name="opennms-cm-rest" description="OpenNMS :: Features :: CM :: ReST" version="${project.version}">
+        <bundle>mvn:org.opennms.core.cm/org.opennms.core.cm.rest/${project.version}</bundle>
+    </feature>
 </features>

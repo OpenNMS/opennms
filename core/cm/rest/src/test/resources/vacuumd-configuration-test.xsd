@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/vacuumd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/vacuumd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the vacuumd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="VacuumdConfiguration">
+    <annotation>
+      <documentation>Top-level element for the vacuumd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:statement">
+          <annotation>
+            <documentation>This represents the SQL that is performed every
+            &lt;period&gt; seconds</documentation>
+          </annotation>
+        </element>
+
+        <element name="automations" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element ref="this:automation" maxOccurs="unbounded" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="triggers" minOccurs="0" maxOccurs="1">
+          <annotation>
+            <documentation>A collection of triggers</documentation>
+          </annotation>
+
+          <complexType>
+            <sequence>
+              <element ref="this:trigger" maxOccurs="unbounded" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="actions" minOccurs="0" maxOccurs="1">
+          <annotation>
+            <documentation>A collection of actions</documentation>
+          </annotation>
+
+          <complexType>
+            <sequence>
+              <element ref="this:action" maxOccurs="unbounded" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="auto-events" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element ref="this:auto-event" maxOccurs="unbounded" minOccurs="0" />
+            </sequence>
+          </complexType>
+        </element>
+
+        <element name="action-events" minOccurs="0" maxOccurs="1">
+          <complexType>
+            <sequence>
+              <element ref="this:action-event"  minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+          </complexType>
+        </element>
+
+      </sequence>
+
+      <attribute name="period" use="required">
+        <annotation>
+          <documentation>how often to vacuum the database in
+          seconds</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="automation">
+    <annotation>
+      <documentation>Triggers and Actions hooked up and run by the Vacuumd
+      schedule using interval for frequency</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name of this automation</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="interval" type="int" use="required">
+        <annotation>
+          <documentation>How often should this automation run</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="trigger-name" type="string" use="optional">
+        <annotation>
+          <documentation>reference a trigger from the collection of
+          triggers</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="action-name" type="string" use="required">
+        <annotation>
+          <documentation>reference an action from the collection of
+          actions</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="auto-event-name" type="string" use="optional">
+        <annotation>
+          <documentation>specify an event UEI to send</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="action-event" type="string" use="optional">
+        <annotation>
+          <documentation>Create an Event from Result of Trigger</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="active" type="boolean" use="optional">
+        <annotation>
+          <documentation>enable/disable this automation</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="trigger">
+    <annotation>
+      <documentation>A query to the database with a resultset used for
+      actions</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:statement"/>
+      </sequence>
+
+      <attribute name="name" type="string" use="required"/>
+
+      <attribute name="data-source" type="string" default="opennms" />
+
+      <attribute name="operator" use="optional">
+        <annotation>
+          <documentation>only run the action if the row count evaluates with
+          the operator (defaults to &gt; 0)</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(&lt;|&lt;=|=|&gt;=|&gt;)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="row-count" type="int" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="action">
+    <annotation>
+      <documentation>actions modify the database based on results of a
+      trigger</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:statement"/>
+      </sequence>
+
+      <attribute name="name" type="string" use="required"/>
+
+      <attribute name="data-source" type="string" default="opennms" />
+
+    </complexType>
+  </element>
+
+  <element name="auto-event">
+    <annotation>
+      <documentation>(THIS IS BEING DEPRECATED) actions modify the database based on results of a
+      trigger</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:uei">
+          <annotation>
+            <documentation>Must be a UEI defined in
+            event-conf.xml</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required"/>
+
+      <attribute name="fields" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="uei">
+    <complexType>
+      <simpleContent>
+        <extension base="string"/>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="action-event">
+    <complexType>
+      <sequence>
+        <element ref="this:assignment" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="for-each-result" type="boolean" use="optional" default="false" />
+      <attribute name="add-all-parms" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+
+  <element name="assignment">
+    <complexType>
+      <attribute name="type" type="string" use="required" />
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+
+  <element name="statement">
+    <annotation>
+      <documentation>Just a generic string used for SQL
+      statements</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="transactional" type="boolean" use="optional" default="true" />
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+</schema>

@@ -478,6 +478,7 @@
                 <feature>opennms-activemq-pool</feature>
                 <feature>opennms-activemq-shell</feature>
                 <feature>opennms-bootstrap</feature>
+                <feature>opennms-cm-rest</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
