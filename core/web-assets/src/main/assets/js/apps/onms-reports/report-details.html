@@ -23,7 +23,7 @@
         <h3 class="">Report Parameters</h3>
 
         <!-- Grafana Parameters -->
-        <div ng-show="report.isGrafanaReport()" class="form-group">
+        <div ng-show="report.isGrafanaReport() && !options.hideEndpointsChooser" class="form-group">
             <label>Grafana Endpoint</label>
             <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
             <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>

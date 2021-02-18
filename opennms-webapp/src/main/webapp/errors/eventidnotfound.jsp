@@ -48,7 +48,7 @@
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
 
-<h2>Event ID Not Found</h2>
+<h1>Event ID Not Found</h1>
 
 <p>
   The event ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
