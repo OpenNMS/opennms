@@ -254,7 +254,7 @@ We will create a threshold group called "demo_group".
 
 ----
 
-. Once you have created the group in the _thresholds.xml_ file, switch to the UI, go to the threshold screen and click `Request a reload threshold packages configuration`.
+. Once you have created the group in the _thresholds.xml_ file, switch to the UI, go to the threshold screen and click `Reload Threshold Configuration`.
 
 .. The group you created should appear in the UI.
 
