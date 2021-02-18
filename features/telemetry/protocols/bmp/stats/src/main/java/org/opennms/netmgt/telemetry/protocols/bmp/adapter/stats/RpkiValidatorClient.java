@@ -62,7 +62,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * RpkiValidator Client that fetches josn response from Rpki Validator Rest API.
+ * RpkiValidator Client that fetches json response from Rpki Validator Rest API.
  * (https://github.com/RIPE-NCC/rpki-validator-3)
  */
 public class RpkiValidatorClient {

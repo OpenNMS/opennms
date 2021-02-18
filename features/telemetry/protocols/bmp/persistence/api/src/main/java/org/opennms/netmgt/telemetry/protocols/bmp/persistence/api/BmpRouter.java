@@ -323,7 +323,6 @@ public class BmpRouter implements Serializable {
                 ", termData='" + termData + '\'' +
                 ", initData='" + initData + '\'' +
                 ", geoIpStart='" + geoIpStart + '\'' +
-                ", bmpCollector=" + bmpCollector +
                 ", bgpId='" + bgpId + '\'' +
                 ", connectionCount=" + connectionCount +
                 ", bmpPeers=" + bmpPeers +

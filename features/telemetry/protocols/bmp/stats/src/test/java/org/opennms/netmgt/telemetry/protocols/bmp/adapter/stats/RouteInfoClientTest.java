@@ -47,9 +47,5 @@ public class RouteInfoClientTest {
         RouteInfoClient routeInfoClient = new RouteInfoClient(resourceURL.getPath());
         List<RouteInfo> routeInfoList = routeInfoClient.parseEachFile(Paths.get(resourceURL.toURI()));
         assertThat(routeInfoList, Matchers.hasSize(19));
-        routeInfoList.forEach(routeInfo -> {
-            System.out.println(routeInfo.getPrefix());
-            System.out.println(routeInfo.getOriginAs());
-        });
     }
 }

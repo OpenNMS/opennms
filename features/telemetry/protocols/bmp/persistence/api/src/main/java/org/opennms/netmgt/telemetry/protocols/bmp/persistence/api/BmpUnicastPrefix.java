@@ -290,7 +290,6 @@ public class BmpUnicastPrefix implements Serializable {
         return "BmpUnicastPrefix{" +
                 "id=" + id +
                 ", hashId='" + hashId + '\'' +
-                ", bmpPeer=" + bmpPeer +
                 ", baseAttrHashId='" + baseAttrHashId + '\'' +
                 ", isIpv4=" + isIpv4 +
                 ", originAs=" + originAs +
