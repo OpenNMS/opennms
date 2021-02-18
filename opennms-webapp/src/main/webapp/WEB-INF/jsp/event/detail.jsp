@@ -41,6 +41,7 @@
 
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
 <%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.event.EventIdNotFoundException"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.springframework.util.Assert"%>
 
@@ -70,6 +71,9 @@
 	    parms = event.getParms();
 	}
 
+    if (event == null) {
+      throw new EventIdNotFoundException("Event not found in database.", (String) req.getAttribute("eventId"));
+    }
 %>
 
 <% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
