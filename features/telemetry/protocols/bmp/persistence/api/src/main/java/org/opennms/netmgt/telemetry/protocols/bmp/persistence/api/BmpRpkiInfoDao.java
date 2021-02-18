@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BmpRouteInfoDao extends OnmsDao<BmpRouteInfo, Long> {
+public interface BmpRpkiInfoDao extends OnmsDao<BmpRpkiInfo, Long> {
 
-    BmpRouteInfo findByPrefixAndOriginAs(String prefix, Integer prefixLen, Long originAsn);
+    BmpRpkiInfo findBmpRpkiInfoWith(String prefix, Integer prefixLenMax, Long originAs);
 
-    List<BmpRouteInfo> findByPrefix(String prefix);
+    BmpRpkiInfo findMatchingRpkiInfoForGlobalRIb(String prefix, Integer prefixLen);
+
 }
+

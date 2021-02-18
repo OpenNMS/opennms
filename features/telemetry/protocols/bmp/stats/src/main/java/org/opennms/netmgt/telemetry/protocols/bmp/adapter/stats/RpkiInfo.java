@@ -26,15 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
-import java.util.List;
+public class RpkiInfo {
 
-import org.opennms.netmgt.dao.api.OnmsDao;
+    private Long asn;
 
-public interface BmpRouteInfoDao extends OnmsDao<BmpRouteInfo, Long> {
+    private String prefix;
 
-    BmpRouteInfo findByPrefixAndOriginAs(String prefix, Integer prefixLen, Long originAsn);
+    private Integer prefixLen;
 
-    List<BmpRouteInfo> findByPrefix(String prefix);
+    private Integer prefixMaxLen;
+
+    public Long getAsn() {
+        return asn;
+    }
+
+    public void setAsn(Long asn) {
+        this.asn = asn;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public Integer getPrefixLen() {
+        return prefixLen;
+    }
+
+    public void setPrefixLen(Integer prefixLen) {
+        this.prefixLen = prefixLen;
+    }
+
+    public Integer getPrefixMaxLen() {
+        return prefixMaxLen;
+    }
+
+    public void setPrefixMaxLen(Integer prefixMaxLen) {
+        this.prefixMaxLen = prefixMaxLen;
+    }
 }

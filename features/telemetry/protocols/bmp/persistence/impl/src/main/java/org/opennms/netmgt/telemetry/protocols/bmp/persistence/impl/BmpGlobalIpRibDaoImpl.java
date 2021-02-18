@@ -29,12 +29,14 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
@@ -85,6 +87,16 @@ public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, 
                 return collection;
             }
         }).list());
+    }
+
+    @Override
+    public List<BmpGlobalIpRib> findGlobalRibsBeforeGivenTime(long timeInSecs) {
+        Criteria criteria = new Criteria(BmpGlobalIpRib.class);
+        Instant instantForGivenTime = Instant.now().minusSeconds(timeInSecs);
+        criteria.addRestriction(new EqRestriction("shouldDelete", true));
+        criteria.addRestriction(new LtRestriction("timeStamp", Date.from(instantForGivenTime)));
+        return findMatching(criteria);
+
     }
 
 }
