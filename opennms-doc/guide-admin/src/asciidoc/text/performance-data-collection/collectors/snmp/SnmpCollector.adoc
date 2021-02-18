@@ -5,7 +5,7 @@
 ==== SnmpCollector
 
 The _SnmpCollector_ collects performance data through the _SNMP protocol_.
-Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web UI (<<provisioning/getting-started.adoc#provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
+Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web UI (<<provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
 
 ===== Collector Facts
 
@@ -18,7 +18,7 @@ Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web
 
 ===== Collector Parameters
 
-Use these parameters used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters used in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the SnmpCollector
 [options="header, autowidth"]
@@ -31,7 +31,7 @@ Use these parameters used in the <<collection-packages.adoc,_collectd-configurat
 
 ===== SNMP Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml`.
 
