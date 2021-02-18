@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -137,17 +137,17 @@
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">
-    <td class="severity-Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
-    <td class="severity-<%=overallStatus%> nobright"><%=overallStatusString%></td>
+    <td class="severity-Cleared nobright interface address" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright interface header"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+    <td class="severity-<%=overallStatus%> nobright interface percent"><%=overallStatusString%></td>
   </tr>
   <tr class="CellStatus"/>
-    <td class="severity-Cleared nobright"></td>
-    <td class="severity-<%=warnClass%> bright"><%=service.getServiceName()%></td>
+    <td class="severity-Cleared nobright spacer"></td>
+    <td class="severity-<%=warnClass%> bright service name"><%=service.getServiceName()%></td>
     <%
         if (service.isManaged()) {
     %>
-    <td class="severity-Cleared nobright"><span data-src="<%=timelineUrl%>"></span></td>
+    <td class="severity-Cleared nobright service timeline"><span data-src="<%=timelineUrl%>"></span></td>
     <%
         } else {
     %>
@@ -155,7 +155,7 @@
     <%
         }
     %>
-    <td class="severity-<%= styleClass %> nobright"><%= statusContent %></td>
+    <td class="severity-<%= styleClass %> nobright service percent"><%= statusContent %></td>
   </tr>
 </table>
 </div>
