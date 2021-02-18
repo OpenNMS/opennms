@@ -36,7 +36,7 @@ _{opennms-product-name}_ applies these algorithms against any performance data (
 This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, etc. 
 
 NOTE: The basic walkthrough focuses on how to set simple thresholds using default values in the {opennms-product-name} setup. 
-For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see xref:performance-data-collection/introduction.adoc[Performance Management].
+For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see <<performance-management, Performance Management>>.
 
 [[threshold-bw]]
 === Basic Walk-through – Thresholding
