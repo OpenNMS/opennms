@@ -2,6 +2,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[performance-management]]
+
 _{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. 
 _Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
 Each collector has its own associated configuration that defines parameters for the collector.

@@ -4,8 +4,8 @@
 
 ==== SnmpCollector
 
-The _SnmpCollector_ collects performance data through the _SNMP protocol_.
-Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web UI (<<provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
+The _SnmpCollector_ collects performance data through the SNMP protocol.
+Configure access to the SNMP agent through the SNMP configuration in the Web UI (<<provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
 
 ===== Collector Facts
 
@@ -33,7 +33,7 @@ Use these parameters used in the <<ga-collectd-packages,_collectd-configuration.
 
 NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
-Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml`.
+Define SNMP dollection in _etc/datacollection-config.xml_ and _etc/datacollection.d/*.xml_.
 
 [source, xml]
 ----
@@ -57,7 +57,7 @@ Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollect
 </datacollection-config>
 ----
 <1> Directory where to persist _RRD_ files on the file system, ignored if _NewTS_ is used as time-series storage.
-<2> Name of the _SNMP_ data collection referenced in the collection package in `collectd-configuration.xml`.
+<2> Name of the _SNMP_ data collection referenced in the collection package in _collectd-configuration.xml_.
 <3> Configure SNMP MIB-II interface metric collection behavior: _all_ means collect metrics from all interfaces, _primary_ only from interface provisioned as  _primary_ interface, _select_ only from manually selected interfaces from the _Web UI_.
 <4> _RRD_ archive configuration for this set of performance metrics, ignored when _NewTS_ is used as time series storage.
 <5> Include device- or application-specific performance metric _OIDS_ to collect.
@@ -65,6 +65,159 @@ Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollect
 [[ga-performance-management-collectors-snmp-datacollection-configuration]]
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
+
+====== SNMP Data Collection Parsing Example
+
+This section relates to the SNMP collector, since _datacollectiion-config.xml_ builds _snmp-collections_.
+
+*Scenario* 
+
+a) Node A belongs to categories CatA and CatB, and it has a sysObjectID of .1.100.1.1
+
+b) Node B belongs to category CatB, and it has a sysObjectID of .1.100.1.2
+
+Be aware of the distinction between the following two concepts:
+
+. Build the effective `snmp-collection` based on the `systemDef` list associated with a given list of `datacollection-groups`.
+. Build the effective list of `mibObj` to collect from a given node using its `sysObjectID`.
+
+The first process starts when the spring context initializes. 
+It also happens during runtime when a change in _datacollection-config.xml_ is detected (not the files in the `datacollection` directory).
+
+The second process starts every time the SNMP collector will collect data from the node.
+
+Categories and filters require different `Collectd` packages, in _collectd-configuration.xml_:
+
+[source, xml]
+----
+<package name="package-1" remote="false">
+ <filter>catincCatA</filter>
+ <service name="SNMP" interval="300000" user-defined="false" status="on">
+  <parameter key="collection" value="group1"/>
+ </service>
+</package>
+<package name="package-2" remote="false">
+ <filter>catincCatB</filter>
+ <service name="SNMP" interval="300000" user-defined="false" status="on">
+  <parameter key="collection" value="group2"/>
+ </service>
+</package>
+----
+
+The following in _datacollection-config.xml_:
+
+[source, xml]
+----
+<snmp-collection name="group1" snmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:2016</rra>
+   </rrd>
+   <include-collection dataCollectionGroup="UniqueA"/>
+   <include-collection dataCollectionGroup="UniqueB"/>
+</snmp-collection>
+<snmp-collection name="group2" snmpStorageFlag="select">
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:2016</rra>
+   </rrd>
+   <include-collection dataCollectionGroup="UniqueB"/>
+   <include-collection dataCollectionGroup="UniqueC"/>
+</snmp-collection>
+----
+
+Then, inside the datacollection directory, would be three files, for example, _unique-a.xml_, _unique-b.xml_, and _unique-c.xml_, with the following content, respectively:
+
+[source, xml]
+----
+<datacollection-group name="UniqueA">
+  <systemDef name="Collect-A">
+   <sysoid>.1.100.1.1</sysoid>
+   <collect>
+     <includeGroup>test-group-1</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-B">
+   <sysoid>.1.100.1.2</sysoid>
+   <collect>
+     <includeGroup>test-group-2</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-C">
+   <sysoidMask>.1.100.</sysoidMask>
+   <collect>
+     <includeGroup>test-group-3</includeGroup>
+   </collect>
+  </systemDef>
+</datacollection-group>
+
+<datacollection-group name="UniqueB">
+  <systemDef name="Collect-D">
+   <sysoidMask>.1.100.1.</sysoidMask>
+   <collect>
+     <includeGroup>test-group-4</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-E">
+   <sysoid>.1.100.1.3</sysoid>
+   <collect>
+     <includeGroup>test-group-5</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-F">
+   <sysoidMask>.1.100.1.</sysoidMask>
+   <collect>
+     <includeGroup>test-group-6</includeGroup>
+   </collect>
+  </systemDef>
+</datacollection-group>
+
+<datacollection-group name="UniqueC">
+  <systemDef name="Collect-G">
+   <sysoidMask>.1.</sysoidMask>
+   <collect>
+     <includeGroup>test-group-7</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-H">
+   <sysoid>.1.100.3.1</sysoid>
+   <collect>
+     <includeGroup>test-group-8</includeGroup>
+   </collect>
+  </systemDef>
+  <systemDef name="Collect-I">
+   <sysoid>.1.100.1.1.2</sysoid>
+   <collect>
+     <includeGroup>test-group-9</includeGroup>
+   </collect>
+  </systemDef>
+</datacollection-group>
+----
+
+As mentioned, there will be two effective `snmp-collections` called `group1` and `group2`, as the SNMP service appears twice in _collectd-configuration.xml_.
+Each one matches a different set of nodes.
+
+Because all the `systemDefs` have unique names, `group1` will contain `UniqueA` plus `UniqueB`, meaning it would have `Collect-A` through `Collect-F`. 
+Similarly, `group2` would contain `Collect-D` through `Collect-I`. 
+Regardless of the `sysoid` and `sysoidMasks` inside the `systemDef`, what matters at this level is the `systemDef` name.
+
+*For node A*
+
+Because it matches two collectd packages for the SNMP service, the collector uses both collections (`group1` and `group2`). 
+It will check `Collect-A` through `Collect-I`. 
+Note that even if `UniqueB` is referenced twice, it will be included once.
+
+Now, as the node’s `sysObjectID` is ``.1.100.1.1`, only the `systemDefs` `Collect-A`, `Collect-C`, `Collect-D`, `Collect-F`, and `Collect-G` will be included, as those are the only ones with a `sysoid` or `sysoidMask` that matches the `sysObjectID`.
+
+However, it will add the `mibObj groups` in the order they appear. 
+If one `systemDef` references a group already included, it won’t add it again (knowing the groups are done by checking their names).
+
+The idea is to extract the list of `systemDefs` that match the `sysObjectID`, to get the list of `mibObj groups`, to finally get the list of `OIDs` to retrieve via SNMP.
+
+*For node B*
+
+Because it matches one `collectd` package for the SNMP service, the collector uses one collection (`group2`). 
+It will check `Collect-D` through `Collect-I`.
+
+Now, as the node’s `sysObjectID` is ``.1.100.1.2`, only the `systemDefs` `Collect-D`, `Collect-F`, and `Collect-G` will be included.
 
 ====== SnmpCollectorNG
 
