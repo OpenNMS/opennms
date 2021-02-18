@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,21 +32,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.core.cm.api.ConfigurationManager;
+import org.opennms.core.cm.api.SchemaManager;
 
 import com.google.common.io.Resources;
 
-public class ConfigurationManagerImpl implements ConfigurationManager {
-
-    private final Map<String,XmlSchema> schemaMap = new ConcurrentSkipListMap<>();
-    private final Map<String,Object> objectStore = new ConcurrentSkipListMap<>();
+public class SchemaManagerSvc implements SchemaManager {
+    private final Map<String, XmlSchema> schemaMap = new ConcurrentSkipListMap<>();
 
     @Override
     public void registerXSD(String service, String pathToXsd) throws IOException {
@@ -61,19 +58,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public <T> Optional<T> getModel(String service, Class<T> clazz) {
-        if (!schemaMap.containsKey(service)) {
-            throw new IllegalStateException("Oops. I don't know about this service yet: " + service);
-        }
-        final Object o = objectStore.get(service);
-        if (o == null) {
-            return Optional.empty();
-        }
-        return Optional.of((T)o);
-    }
-
-    @Override
-    public <T> void setModel(String service, T model) {
-        objectStore.put(service, model);
+    public boolean hasSchemaForService(String service) {
+        return schemaMap.containsKey(service);
     }
 }

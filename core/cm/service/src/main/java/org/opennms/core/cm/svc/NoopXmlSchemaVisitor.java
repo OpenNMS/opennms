@@ -1,59 +1,62 @@
-package org.opennms.core.cm.rest.internal;
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
-import org.apache.ws.commons.schema.XmlSchema;
+package org.opennms.core.cm.svc;
+
 import org.apache.ws.commons.schema.XmlSchemaAll;
 import org.apache.ws.commons.schema.XmlSchemaAny;
 import org.apache.ws.commons.schema.XmlSchemaAnyAttribute;
 import org.apache.ws.commons.schema.XmlSchemaChoice;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.apache.ws.commons.schema.XmlSchemaElement;
 import org.apache.ws.commons.schema.XmlSchemaSequence;
 import org.apache.ws.commons.schema.walker.XmlSchemaAttrInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaVisitor;
-import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 
-import io.swagger.v3.oas.models.OpenAPI;
-
-public class SwaggerConverter implements XmlSchemaVisitor {
-
-    private OpenAPI openAPI = new OpenAPI();
-
-    public OpenAPI convert(XmlSchemaCollection collection) {
-        XmlSchemaWalker walker = new XmlSchemaWalker(collection, this);
-        walker.walk(getElementOf(collection, "VacuumdConfiguration"));
-        return openAPI;
-    }
-
-    private static XmlSchemaElement getElementOf(XmlSchemaCollection collection, String name) {
-        XmlSchemaElement elem = null;
-        for (XmlSchema schema : collection.getXmlSchemas()) {
-            elem = schema.getElementByName(name);
-            if (elem != null) {
-                break;
-            }
-        }
-        return elem;
-    }
-
+public class NoopXmlSchemaVisitor implements XmlSchemaVisitor {
     @Override
     public void onEnterElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
-        System.out.println("onEnterElement(" + xmlSchemaElement.getQName() + ")");
+
     }
 
     @Override
     public void onExitElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
-        System.out.println("onExitElement(" + xmlSchemaElement.getQName() + ")");
+
     }
 
     @Override
     public void onVisitAttribute(XmlSchemaElement xmlSchemaElement, XmlSchemaAttrInfo xmlSchemaAttrInfo) {
-        System.out.println("onVisitAttribute(" + xmlSchemaElement.getQName() + ")");
+
     }
 
     @Override
     public void onEndAttributes(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo) {
-        System.out.println("onEndAttributes(" + xmlSchemaElement.getQName() + ")");
+
     }
 
     @Override

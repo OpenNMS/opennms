@@ -31,9 +31,7 @@ package org.opennms.core.cm.api;
 import java.io.IOException;
 import java.util.Optional;
 
-public interface ConfigurationManager {
-
-    void registerXSD(String service, String pathToXsd) throws IOException;
+public interface ConfigStore {
 
     <T> Optional<T> getModel(String service, Class<T> clazz) throws IOException;
 

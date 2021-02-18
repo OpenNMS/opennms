@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,10 +36,12 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Test;
+import org.opennms.core.cm.api.ConfigStore;
+import org.opennms.core.cm.api.SchemaManager;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 
-public class ConfigurationManagerImplTest {
+public class ConfigStoreSvcTest {
 
     private final String VACUUMD_SVC = "vacuumd";
     private final String VACUUMD_XSD = "xsds/vacuumd-configuration.xsd";
@@ -47,21 +49,22 @@ public class ConfigurationManagerImplTest {
     @Test
     public void canRetrieveJaxbObject() throws IOException {
         // Create a new instance of the service
-        ConfigurationManagerImpl cmSvc = new ConfigurationManagerImpl();
+        SchemaManager schemaManager = new SchemaManagerSvc();
+        ConfigStore configStore = new ConfigStoreSvc(schemaManager);
 
         // Attempt to retrieve our configuration should fail, since we haven't registered any model yet
         try {
-            cmSvc.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
+            configStore.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
             fail("Expecting exception");
         } catch (IllegalStateException e) {
             // pass
         }
 
         // Register the XSD
-        cmSvc.registerXSD(VACUUMD_SVC, VACUUMD_XSD);
+        schemaManager.registerXSD(VACUUMD_SVC, VACUUMD_XSD);
 
         // Retrieve the configuration, should be empty
-        Optional<VacuumdConfiguration> vacuumdConfigOpt = cmSvc.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
+        Optional<VacuumdConfiguration> vacuumdConfigOpt = configStore.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
         assertThat(vacuumdConfigOpt.isPresent(), equalTo(false));
 
         // Create a new config.
@@ -72,10 +75,10 @@ public class ConfigurationManagerImplTest {
         vacuumdConfig.addStatement(stmt);
 
         // Set the configuration
-        cmSvc.setModel(VACUUMD_SVC, vacuumdConfig);
+        configStore.setModel(VACUUMD_SVC, vacuumdConfig);
 
         // Now try retrieving the configuration again, should match what we set
-        vacuumdConfigOpt = cmSvc.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
+        vacuumdConfigOpt = configStore.getModel(VACUUMD_SVC, VacuumdConfiguration.class);
         //noinspection OptionalGetWithoutIsPresent
         assertThat(vacuumdConfig, equalTo(vacuumdConfigOpt.get()));
     }

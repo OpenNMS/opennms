@@ -1,0 +1,295 @@
+{
+  "openapi": "3.0.1",
+  "components": {
+    "schemas": {
+      "VacuumdConfiguration": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "number",
+            "exampleSetFlag": false
+          },
+          "statement": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/statement",
+              "exampleSetFlag": false
+            }
+          },
+          "automations": {
+            "type": "object",
+            "$ref": "#/components/schemas/automations",
+            "exampleSetFlag": false
+          },
+          "triggers": {
+            "type": "object",
+            "$ref": "#/components/schemas/triggers",
+            "exampleSetFlag": false
+          },
+          "actions": {
+            "type": "object",
+            "$ref": "#/components/schemas/actions",
+            "exampleSetFlag": false
+          },
+          "auto-events": {
+            "type": "object",
+            "$ref": "#/components/schemas/auto-events",
+            "exampleSetFlag": false
+          },
+          "action-events": {
+            "type": "object",
+            "$ref": "#/components/schemas/action-events",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "statement": {
+        "type": "object",
+        "properties": {
+          "transactional": {
+            "type": "boolean",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "automations": {
+        "type": "object",
+        "properties": {
+          "automation": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/automation",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "automation": {
+        "type": "object",
+        "properties": {
+          "action-name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "trigger-name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "auto-event-name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "action-event": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "active": {
+            "type": "boolean",
+            "exampleSetFlag": false
+          },
+          "interval": {
+            "type": "number",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "triggers": {
+        "type": "object",
+        "properties": {
+          "trigger": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/trigger",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "trigger": {
+        "required": ["statement"],
+        "type": "object",
+        "properties": {
+          "operator": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "row-count": {
+            "type": "number",
+            "exampleSetFlag": false
+          },
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "data-source": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "statement": {
+            "type": "object",
+            "$ref": "#/components/schemas/statement",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "actions": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/action",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "action": {
+        "required": ["statement"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "data-source": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "statement": {
+            "type": "object",
+            "$ref": "#/components/schemas/statement",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "auto-events": {
+        "type": "object",
+        "properties": {
+          "auto-event": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/auto-event",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "auto-event": {
+        "required": ["uei"],
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "uei": {
+            "type": "object",
+            "$ref": "#/components/schemas/uei",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "uei": {
+        "type": "object",
+        "exampleSetFlag": false
+      },
+      "action-events": {
+        "type": "object",
+        "properties": {
+          "action-event": {
+            "minItems": 0,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/action-event",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "action-event": {
+        "required": ["assignment"],
+        "type": "object",
+        "properties": {
+          "add-all-parms": {
+            "type": "boolean",
+            "exampleSetFlag": false
+          },
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "for-each-result": {
+            "type": "boolean",
+            "exampleSetFlag": false
+          },
+          "assignment": {
+            "minItems": 1,
+            "type": "array",
+            "exampleSetFlag": false,
+            "items": {
+              "type": "object",
+              "$ref": "#/components/schemas/assignment",
+              "exampleSetFlag": false
+            }
+          }
+        },
+        "exampleSetFlag": false
+      },
+      "assignment": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "value": {
+            "type": "string",
+            "exampleSetFlag": false
+          },
+          "name": {
+            "type": "string",
+            "exampleSetFlag": false
+          }
+        },
+        "exampleSetFlag": false
+      }
+    }
+  }
+}

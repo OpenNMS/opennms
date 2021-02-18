@@ -28,5 +28,11 @@
 
 package org.opennms.core.cm.api;
 
-public interface Schema {
+import java.io.IOException;
+
+public interface SchemaManager {
+
+    void registerXSD(String service, String pathToXsd) throws IOException;
+
+    boolean hasSchemaForService(String service);
 }
