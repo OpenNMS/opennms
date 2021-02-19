@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modelChangeLog
+        xmlns="https://www.opennms.org/xml/ns/cm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="https://www.opennms.org/xml/ns/cm-ext"
+        xsi:schemaLocation="https://www.opennms.org/xml/ns/cm https://www.opennms.org/xml/ns/cm/cm-1.0.xsd
+    https://www.opennms.org/xml/ns/cm-ext https://www.opennms.org/xml/ns/cm-ext.xsd">
+
+    <include file="changelog-29.0.0.xml" />
+</modelChangeLog>

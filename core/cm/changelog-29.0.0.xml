@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modelChangeLog
+        xmlns="https://www.opennms.org/xml/ns/cm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="https://www.opennms.org/xml/ns/cm-ext"
+        xsi:schemaLocation="https://www.opennms.org/xml/ns/cm https://www.opennms.org/xml/ns/cm/cm-1.0.xsd
+    https://www.opennms.org/xml/ns/cm-ext https://www.opennms.org/xml/ns/cm-ext.xsd">
+
+    <changeSet author="jwhite" id="29.0.0-init-vacuumd">
+        <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
+        <importConfig configPath="etc/vacuumd-configuration.xml" schemaRef="vacuumd"/>
+        <deleteConfig configPath="etc/vacuumd-configuration.xml"/>
+    </changeSet>
+
+    <changeSet author="jwhite" id="29.0.0-init-vacuumd">
+        <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
+        <importConfig configPath="etc/vacuumd-configuration.xml" schemaRef="vacuumd"/>
+        <deleteConfig configPath="etc/vacuumd-configuration.xml"/>
+    </changeSet>
+
+    <changeSet author="jwhite" id="29.0.0-init-sysprops">
+        <systemProperty name="org.opennms.ipc.sink.aggregation.stripes" type="int" min-max="1" max-val="123"></systemProperty>
+        <systemProperty name="org.opennms.instance.id" type="string" match-regex="[\d]+"></systemProperty>
+    </changeSet>
+
+    <changeSet author="jwhite" id="29.0.0-init-blueprint-amqp-forwarder">
+        <registerOsgiPid persitentId="org.opennms.features.amqp.eventforwarder">
+            <property name="connectionUrl" value="amqp://localhost:5672"/>
+            <property name="username" value="guest"/>
+            <property name="password" value="guest"/>
+            <property name="destination" value="amqp:topic:opennms-events"/>
+            <property name="processorName" value="default-event-forwarder-processor"/>
+        </registerOsgiPid>
+    </changeSet>
+
+</modelChangeLog>
