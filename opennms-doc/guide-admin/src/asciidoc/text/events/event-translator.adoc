@@ -75,12 +75,12 @@ The value returned is then substituted for the existing nodeid into a new event 
 
 Here is an example for an Adtran TA4303. 
 Created a SQL table 'etlookup' to lookup varbinds. 
-In that table we would look up the variable name and the input value and an output value. 
+Look up the variable name and the input value and an output value in that table. 
 The specific value that this node uses is different for each of the different problems that each interface can have (AIS, Yellow alarm, LOS, etc.). 
 All of the problems that have a trackable state are created as services (the T1s tend to flap). 
 Since each of the 80 T1 ports on this box do not have IP addresses we made a new node. 
 When we tried to add those to the existing node it kept disabling all of the services that we added. 
-To get the IP address, we made another SQL table 'ta4303' and to do query with the port and slot to get the description. 
+To get the IP address, we made another SQL table 'ta4303' and query with the port and slot to get the description. 
 Store that text value in a new variable 'portdesc', then use that variable in the event and later the notification '%parm[portdesc]%'.
 
 *translator-configuration.xml*
