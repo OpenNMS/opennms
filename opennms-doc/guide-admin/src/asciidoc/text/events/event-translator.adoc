@@ -4,22 +4,18 @@
 [[event-translator]]
 === Event Translator
 
-The Event Translator (ET) helps transform and enhance the data from OpenNMS events that other daemons generate. 
+The Event Translator (ET) can transform and enhance the data from OpenNMS events that other daemons generate. 
 This enterprise-grade feature enables better integration with external systems, based on data from sources internal and external to OpenNMS. 
 
-When an event is published on the event bus for which the ET has configuration, the ET clones the event and changes the event's attributes (fields and parameters) as defined in the translator configuration by the administrator. 
+When an event is published on the event bus for which the ET has configuration, the ET clones the event and changes the event's attributes (fields and parameters) as defined by the administrator in the translator configuration. 
 These transformations can come from the result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event. 
 
 ==== Event Translator Service
 
 As with most OpenNMS daemons, the EventTranslator has a companion configuration "factory" class that marshals its configuration from an XML-formated file. 
 The _translator-configuration.xml_ file contains elements and attributes that create/change the fields or parameters of one event and publish a new event with these changes. 
-This feature has been used extensively
 
-. To create passive status events (PSE) (see Passive Status Keeper).
-. To associate an event with a different node.
-
-===== Example 1
+===== Example 1: associate traps with a node other than the SNMP manager
 
 The following example associates an event with a different node. 
 The typical case for this would be an SNMP manager that proxies informational messages from non-SNMP entities to OpenNMS via an SNMP trap. 
@@ -79,14 +75,13 @@ The value returned is then substituted for the existing nodeid into a new event 
 
 Here is an example for an Adtran TA4303. 
 Created a SQL table 'etlookup' to lookup varbinds. 
-In that table I would lookup the variable name and the input value and an output value. 
+In that table we would look up the variable name and the input value and an output value. 
 The specific value that this node uses is different for each of the different problems that each interface can have (AIS, Yellow alarm, LOS, etc.). 
 All of the problems that have a trackable state are created as services (the T1s tend to flap). 
-Since each of the 80 T1 ports on this box do not have IP addresses I ended up making a new node. 
-When I tried to add those to the existing node it kept disabling all of the services that I added. 
-To get the IP address I made another SQL table 'ta4303' and to do query with the port & slot to get the description. 
-I store that text value in a new variable 'portdesc'. 
-I use that variable in the event and later the notification '%parm[portdesc]%'.
+Since each of the 80 T1 ports on this box do not have IP addresses we made a new node. 
+When we tried to add those to the existing node it kept disabling all of the services that we added. 
+To get the IP address, we made another SQL table 'ta4303' and to do query with the port and slot to get the description. 
+Store that text value in a new variable 'portdesc', then use that variable in the event and later the notification '%parm[portdesc]%'.
 
 *translator-configuration.xml*
 
@@ -131,10 +126,10 @@ I use that variable in the event and later the notification '%parm[portdesc]%'.
 </event-translation-spec>
 ----
 
-===== Example 3
+===== Example 3: include multiple category names in an event
 
-Say the SQL statement you want to read data with returns multiple rows. 
-The ET will give you only one result row a the new parameter. 
+A SQL statement you want to read data with returns multiple rows. 
+The ET will give you only one result row for a new parameter. 
 A workaround is to create an aggregate function in psql that accumulates the output to one single row. 
 A use case was to include (probably multiple) categories' names into a nodeCategoryMembershipChanged event.
 
