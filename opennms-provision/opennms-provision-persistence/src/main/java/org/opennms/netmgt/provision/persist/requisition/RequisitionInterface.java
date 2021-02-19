@@ -403,8 +403,8 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             Set<String> serviceNameSet = new HashSet<>();
             for (final RequisitionMonitoredService svc : m_monitoredServices) {
                 svc.validate();
-                if(!serviceNameSet.add(svc.getServiceName())){
-                    throw new ValidationException("Duplicate service names are not allowed.");
+                if (!serviceNameSet.add(svc.getServiceName())) {
+                    throw new ValidationException("Duplicate service name: " + svc.getServiceName());
                 }
             }
         }
