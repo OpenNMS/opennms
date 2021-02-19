@@ -56,7 +56,7 @@ public class SwaggerConverterTest {
         }
 
         SwaggerConverter converter = new SwaggerConverter();
-        OpenAPI actualApi = converter.convert(schemaCol);
+        OpenAPI actualApi = converter.convert(schemaCol, "VacuumdConfiguration");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

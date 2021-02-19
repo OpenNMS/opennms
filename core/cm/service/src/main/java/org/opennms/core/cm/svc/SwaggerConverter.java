@@ -44,6 +44,8 @@ import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.IntegerSchema;
@@ -56,13 +58,12 @@ public class SwaggerConverter extends NoopXmlSchemaVisitor {
 
     private OpenAPI openAPI = new OpenAPI();
 
-    public OpenAPI convert(XmlSchemaCollection collection) {
+    public OpenAPI convert(XmlSchemaCollection collection, String topLevelElement) {
         Components components = new Components();
         openAPI.setComponents(components);
 
         XmlSchemaWalker walker = new XmlSchemaWalker(collection, this);
-        // FIXME: This would need to be provided as well
-        walker.walk(getElementOf(collection, "VacuumdConfiguration"));
+        walker.walk(getElementOf(collection, topLevelElement));
 
         schemaMap.forEach((k,v) -> components.addSchemas(k.getLocalPart(),v));
         return openAPI;
@@ -92,9 +93,28 @@ public class SwaggerConverter extends NoopXmlSchemaVisitor {
         schemaForCurrentElement = schemaMap.get(xmlSchemaElement.getQName());
         if (schemaForCurrentElement == null) {
             schemaForCurrentElement = new ObjectSchema();
+            schemaForCurrentElement.setName(xmlSchemaElement.getQName().getLocalPart());
             schemaMap.put(xmlSchemaElement.getQName(), schemaForCurrentElement);
         }
         schemaStack.add(schemaForCurrentElement);
+
+        // Build a path for the GET
+        String pathName = getPathForStack(schemaStack);
+        PathItem pathItem = new PathItem();
+        Operation getOp = new Operation();
+        getOp.setDescription("Retrieve a " + xmlSchemaElement.getQName().getLocalPart());
+        pathItem.setGet(getOp);
+        openAPI.path(pathName, pathItem);
+
+        // Build a path for the GET of elements in the array
+        if (xmlSchemaElement.getMaxOccurs() > 1) {
+            pathName = getPathForStack(schemaStack);
+            pathItem = new PathItem();
+            getOp = new Operation();
+            getOp.setDescription("Retrieve a " + xmlSchemaElement.getQName().getLocalPart());
+            pathItem.setGet(getOp);
+            openAPI.path(pathName, pathItem);
+        }
 
         ObjectSchema schemaForParent = getSchemaForParentElement();
         if (schemaForParent != null) {
@@ -116,7 +136,7 @@ public class SwaggerConverter extends NoopXmlSchemaVisitor {
                 }
                 schemaForArray.setItems(schemaForRef);
 
-                schemaForParent.addProperties(xmlSchemaElement.getQName().getLocalPart(),  schemaForArray);
+                schemaForParent.addProperties(xmlSchemaElement.getQName().getLocalPart(), schemaForArray);
                 if (xmlSchemaElement.getMinOccurs() > 0) {
                     schemaForParent.addRequiredItem(xmlSchemaElement.getQName().getLocalPart());
                 }
@@ -148,6 +168,24 @@ public class SwaggerConverter extends NoopXmlSchemaVisitor {
     @Override
     public void onEndAttributes(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo) {
         System.out.println("onEndAttributes(" + xmlSchemaElement.getQName() + ")");
+    }
+
+    public static String getPathForStack(List<ObjectSchema> schemaStack) {
+        StringBuilder path = new StringBuilder();
+        boolean first = true;
+        for (ObjectSchema schema : schemaStack) {
+            if (first) {
+                first = false;
+                continue;
+            }
+            path.append("/");
+            path.append(schema.getName());
+        }
+        String thePath = path.toString();
+        if (thePath.isEmpty()) {
+            return "/";
+        }
+        return thePath;
     }
 
     public static Schema<?> getSchemaForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
