@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,9 +109,9 @@
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">
-    <td class="severity-Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
-    <td class="severity-<%= overallStatus %> nobright"><%= overallStatusString %></td>
+    <td class="severity-Cleared nobright interface address" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright interface header"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+    <td class="severity-<%= overallStatus %> nobright interface percent"><%= overallStatusString %></td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>
@@ -121,7 +121,7 @@
     <%
         if (i==0) {
     %>
-    <td class="severity-Cleared nobright" rowspan="<%=services.length%>"></td>
+    <td class="severity-Cleared nobright spacer" rowspan="<%=services.length%>"></td>
     <%
         }
         double svcValue = 0;
@@ -152,15 +152,15 @@
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td class="severity-<%=warnClass%> bright service name"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
-      <td class="severity-Cleared nobright">
+      <td class="severity-Cleared nobright service timeline">
         <span data-src="<%=timelineUrl%>"></span>
       </td>
       <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
       <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
-      <td class="severity-<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
+      <td class="severity-<%=serviceClass%> nobright service percent"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
     </tr>
   <% } %>
