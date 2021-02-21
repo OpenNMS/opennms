@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
@@ -132,10 +133,10 @@ public class RouteInfo {
         return routeInfo;
     }
 
-    public static List<RouteInfo> parseRouteInfo(List<String> lines) {
+    public static List<RouteInfo> parseRouteInfo(Stream<String> lines) {
         List<RouteInfo> routeInfoList = new ArrayList<>();
         List<String> record = new ArrayList<>();
-        for(String line: lines) {
+        for(String line: (Iterable<String>) lines::iterator) {
             // All the route info related lines consists of :
             if(line.contains(":")) {
                 // Add to the record till empty line.

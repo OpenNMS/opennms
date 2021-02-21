@@ -98,7 +98,7 @@ public class RouteInfoClient {
         try (Stream<Path> paths = Files.walk(Paths.get(folderName))) {
 
             paths.filter(Files::isRegularFile).forEach(path -> {
-                List<RouteInfo> returned = parseEachFile(path);
+                 List<RouteInfo> returned = parseEachFile(path);
                 routeInfoList.addAll(returned);
             });
         } catch (IOException e) {
@@ -110,7 +110,7 @@ public class RouteInfoClient {
     @VisibleForTesting
     List<RouteInfo> parseEachFile(Path dbPath) {
         try {
-            List<String> lines = Files.readAllLines(dbPath);
+            Stream<String> lines = Files.lines(dbPath);
             return RouteInfo.parseRouteInfo(lines);
         } catch (IOException e) {
             LOG.error("Exception while reading lines from path {} ", dbPath.toString());
