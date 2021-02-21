@@ -123,7 +123,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setOrgId(String orgId) {
-        this.orgId = orgId;
+        if(orgId != null && orgId.length() > 255) {
+            this.orgId = orgId.substring(0, 254);
+        } else {
+            this.orgId = orgId;
+        }
     }
 
     public String getOrgName() {
@@ -131,7 +135,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setOrgName(String orgName) {
-        this.orgName = orgName;
+        if(orgName != null && orgName.length() > 255) {
+            this.orgName = orgName.substring(0, 254);
+        } else {
+            this.orgName = orgName;
+        }
     }
 
     public String getRemarks() {
@@ -155,7 +163,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setCity(String city) {
-        this.city = city;
+        if(city != null && city.length() > 255) {
+            this.city = city.substring(0, 254);
+        } else {
+            this.city = city;
+        }
     }
 
     public String getStateProv() {
@@ -163,7 +175,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setStateProv(String stateProv) {
-        this.stateProv = stateProv;
+        if(stateProv != null && stateProv.length() > 255) {
+            this.stateProv = stateProv.substring(0, 254);
+        } else {
+            this.stateProv = stateProv;
+        }
     }
 
     public String getPostalCode() {
@@ -171,7 +187,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+        if(postalCode != null && postalCode.length() > 255) {
+            this.postalCode = postalCode.substring(0, 254);
+        } else {
+            this.postalCode = postalCode;
+        }
     }
 
     public String getCountry() {
@@ -179,7 +199,11 @@ public class BmpAsnInfo implements Serializable {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        if(country != null && country.length() > 255) {
+            this.country = country.substring(0, 254);
+        } else {
+            this.country = country;
+        }
     }
 
     public String getRawOutput() {

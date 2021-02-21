@@ -62,5 +62,13 @@
         init-method="init" destroy-method="destroy">
     <argument value="${routeInfoDbPath}"/>
     <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+  </bean>
+
+  <bean id="asnInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.AsnInfoClient"
+        init-method="init" destroy-method="destroy">
+    <property name="bmpGlobalIpRibDao" ref="bmpGlobalIpRibDao"/>
+    <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
   </bean>
 </blueprint>

@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -133,21 +134,32 @@ public class BmpDaoIT {
     }
 
     @Test
-    public void testGlobalIpRibsPersistence() {
+    public void testGlobalIpRibsDeletion() {
 
-        Instant tenSecondsBefore = Instant.now().minusSeconds(10);
+        Instant thirtySecondsBefore = Instant.now().minusSeconds(30);
 
         BmpGlobalIpRib bmpGlobalIpRib = new BmpGlobalIpRib();
         bmpGlobalIpRib.setPrefix("10.0.0.1");
         bmpGlobalIpRib.setRecvOriginAs(64512L);
-        bmpGlobalIpRib.setPrefixLen(1);
-        bmpGlobalIpRib.setTimeStamp(Date.from(tenSecondsBefore));
+        bmpGlobalIpRib.setPrefixLen(22);
+        bmpGlobalIpRib.setTimeStamp(Date.from(thirtySecondsBefore));
         bmpGlobalIpRib.setIrrSource("ARIN-WHOIS");
         bmpGlobalIpRib.setIrrOriginAs(2314L);
         bmpGlobalIpRib.setNumPeers(4);
         bmpGlobalIpRib.setShouldDelete(true);
 
+        BmpGlobalIpRib bmpGlobalIpRib1 = new BmpGlobalIpRib();
+        bmpGlobalIpRib1.setPrefix("10.0.0.2");
+        bmpGlobalIpRib1.setRecvOriginAs(6452L);
+        bmpGlobalIpRib1.setPrefixLen(12);
+        bmpGlobalIpRib1.setTimeStamp(Date.from(thirtySecondsBefore));
+        bmpGlobalIpRib1.setIrrSource("ARIN-WHOIS");
+        bmpGlobalIpRib1.setIrrOriginAs(2316L);
+        bmpGlobalIpRib1.setNumPeers(4);
+        bmpGlobalIpRib1.setShouldDelete(true);
+
         bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
+        bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib1);
 
         List<BmpGlobalIpRib> result = bmpGlobalIpRibDao.findAll();
         Assert.assertFalse(result.isEmpty());
@@ -163,15 +175,19 @@ public class BmpDaoIT {
 
         bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib2);
         result = bmpGlobalIpRibDao.findAll();
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         List<StatsIpOrigins> statsIpOrigins = bmpGlobalIpRibDao.getStatsIpOrigins();
-        assertEquals(1, statsIpOrigins.size());
+        assertEquals(2, statsIpOrigins.size());
         StatsIpOrigins stats = statsIpOrigins.get(0);
         assertEquals(2L, stats.getV4prefixes().longValue());
         assertEquals(0L, stats.getV6withrpki().longValue());
-        result = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(5L);
-        assertThat(result, Matchers.hasSize(1));
+        List<BigInteger> asnList = bmpGlobalIpRibDao.getAsnsNotExistInAsnInfo();
+        assertThat(asnList, Matchers.hasSize(2));
 
+        result = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(5L);
+        assertThat(result, Matchers.hasSize(2));
+        int deleted = bmpGlobalIpRibDao.deleteGlobalRibsBeforeGivenTime(5L);
+        assertThat(deleted, Matchers.equalTo(2));
     }
 
 

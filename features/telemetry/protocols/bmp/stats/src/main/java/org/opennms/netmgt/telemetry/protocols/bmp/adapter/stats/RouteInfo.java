@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.core.utils.StringUtils;
@@ -166,10 +167,10 @@ public class RouteInfo {
                         String[] prefixArray = route.split("/", 2);
                         if(isValidIpAddress(prefixArray[0])) {
                             routeInfo.setPrefix(prefixArray[0]);
-                        }
-                        Integer prefixLen = StringUtils.parseInt(prefixArray[1], null);
-                        if (prefixLen != null) {
-                            routeInfo.setPrefixLen(prefixLen);
+                            Integer prefixLen = StringUtils.parseInt(prefixArray[1], null);
+                            if (prefixLen != null) {
+                                routeInfo.setPrefixLen(prefixLen);
+                            }
                         }
                     }
                 });
@@ -215,4 +216,18 @@ public class RouteInfo {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RouteInfo routeInfo = (RouteInfo) o;
+        return Objects.equals(prefix, routeInfo.prefix) &&
+                Objects.equals(prefixLen, routeInfo.prefixLen) &&
+                Objects.equals(originAs, routeInfo.originAs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prefix, prefixLen, originAs);
+    }
 }

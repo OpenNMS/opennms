@@ -35,17 +35,21 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
@@ -64,7 +68,11 @@ public class RouteInfoClient {
 
     private final String routeInfoDbPath;
 
+    @Autowired
     private BmpRouteInfoDao bmpRouteInfoDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
 
 
     public RouteInfoClient(String routeInfoDbPath) {
@@ -80,7 +88,8 @@ public class RouteInfoClient {
     }
 
 
-    private void updateRouteInfo(String folderName) {
+    @VisibleForTesting
+    void updateRouteInfo(String folderName) {
 
         if (Strings.isNullOrEmpty(folderName)) {
             return;
@@ -95,7 +104,7 @@ public class RouteInfoClient {
         } catch (IOException e) {
             LOG.error("Exception while walking through files in folder {}", folderName, e);
         }
-        saveAndUpdateInDB(routeInfoList);
+        saveOrUpdateInDB(routeInfoList);
     }
 
     @VisibleForTesting
@@ -109,17 +118,30 @@ public class RouteInfoClient {
         return new ArrayList<>();
     }
 
-    private void saveAndUpdateInDB(List<RouteInfo> routeInfos) {
+    private void saveOrUpdateInDB(List<RouteInfo> routeInfos) {
 
-        routeInfos.forEach(routeInfo -> {
-            BmpRouteInfo bmpRouteInfo = buildBmpRouteInfo(routeInfo);
-            if (bmpRouteInfo != null && bmpRouteInfoDao != null) {
-                try {
-                    bmpRouteInfoDao.saveOrUpdate(bmpRouteInfo);
-                } catch (Exception e) {
-                    LOG.error("Exception while persisting BMP Route Info {}", bmpRouteInfo, e);
-                }
+        Set<RouteInfo> batchedRouteInfo = new HashSet<>();
+        for (int i = 0; i < routeInfos.size(); i++) {
+            batchedRouteInfo.add(routeInfos.get(i));
+            if ((i % 100 == 0 && i != 0) || i == routeInfos.size() - 1) {
+                Set<BmpRouteInfo> bmpRouteInfoList = buildBmpRouteInfoList(batchedRouteInfo);
+                saveOrUpdateInSession(bmpRouteInfoList);
+                batchedRouteInfo = new HashSet<>();
             }
+        }
+    }
+
+
+    private void saveOrUpdateInSession(Set<BmpRouteInfo> bmpRouteInfos) {
+
+        sessionUtils.withTransaction(() -> {
+            bmpRouteInfos.forEach(routeInfo -> {
+                try {
+                    bmpRouteInfoDao.saveOrUpdate(routeInfo);
+                } catch (Exception e) {
+                    LOG.error("Exception while persisting BMP Route Info {}", routeInfo, e);
+                }
+            });
         });
     }
 
@@ -128,7 +150,8 @@ public class RouteInfoClient {
         String prefix = routeInfo.getPrefix();
         Integer prefixLen = routeInfo.getPrefixLen();
         Long originAs = routeInfo.getOriginAs();
-        if (prefix != null && originAs != null && prefixLen != null) {
+        String source = routeInfo.getSource();
+        if (prefix != null && originAs != null && prefixLen != null && source != null) {
             BmpRouteInfo bmpRouteInfo = bmpRouteInfoDao.findByPrefixAndOriginAs(prefix, prefixLen, originAs);
             if (bmpRouteInfo == null) {
                 bmpRouteInfo = new BmpRouteInfo();
@@ -144,7 +167,24 @@ public class RouteInfoClient {
         return null;
     }
 
+    private Set<BmpRouteInfo> buildBmpRouteInfoList(Set<RouteInfo> routeInfoList) {
+        Set<BmpRouteInfo> bmpRouteInfoSet = new HashSet<>();
+        routeInfoList.forEach(routeInfo -> {
+            BmpRouteInfo bmpRouteInfo = buildBmpRouteInfo(routeInfo);
+            if(bmpRouteInfo != null) {
+                bmpRouteInfoSet.add(bmpRouteInfo);
+            }
+        });
+        return bmpRouteInfoSet;
+    }
+
+
     public void setBmpRouteInfoDao(BmpRouteInfoDao bmpRouteInfoDao) {
         this.bmpRouteInfoDao = bmpRouteInfoDao;
     }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
+
 }

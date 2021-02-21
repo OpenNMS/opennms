@@ -217,6 +217,9 @@ public class BmpParser implements TcpParser {
                     buffer.resetReaderIndex();
                     return Optional.empty();
                 }
+                if(!header.type.equals(Header.Type.ROUTE_MONITORING)) {
+                    LOG.debug("Got header other than Route Monitoring {}", header.type);
+                }
 
                 final Packet packet;
                 if (buffer.isReadable(header.payloadLength())) {
