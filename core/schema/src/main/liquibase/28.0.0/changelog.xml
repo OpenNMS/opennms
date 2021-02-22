@@ -92,6 +92,12 @@
       <column name="bgp_id" type="varchar(40)"/>
       <column name="connection_count" type="int" defaultValue="0"/>
     </createTable>
+    <createIndex tableName="bmp_routers" indexName="bmp_routers_name">
+      <column name="name" />
+    </createIndex>
+    <createIndex tableName="bmp_routers" indexName="bmp_routers_ip_address">
+      <column name="ip_address" />
+    </createIndex>
   </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmppeernxtid">
@@ -167,6 +173,18 @@
       </column>
       <column name="table_name" type="varchar(255)"/>
     </createTable>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_peer_addr">
+      <column name="peer_addr" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_name">
+      <column name="name" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_peer_asn">
+      <column name="peer_asn" />
+    </createIndex>
+    <createIndex tableName="bmp_peers" indexName="bmp_peers_router_hash_id">
+      <column name="router_hash_id" />
+    </createIndex>
   </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-baseattrsnxtid">
@@ -218,6 +236,18 @@
       </column>
       <column name="originator_id" type="varchar(40)"/>
     </createTable>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_origin_as">
+      <column name="origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_as_path_count">
+      <column name="as_path_count" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_as_path">
+      <column name="as_path" />
+    </createIndex>
+    <createIndex tableName="bmp_base_attributes" indexName="bmp_base_attributes_peer_hash_id">
+      <column name="peer_hash_id" />
+    </createIndex>
   </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-unicastsequence">
@@ -275,6 +305,15 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_peer_hash_id">
+      <column name="peer_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_base_attr_hash_id">
+      <column name="base_attr_hash_id" />
+    </createIndex>
+    <createIndex tableName="bmp_ip_ribs" indexName="bmp_ip_ribs_origin_as">
+      <column name="origin_as" />
+    </createIndex>
   </changeSet>
 
 
@@ -319,6 +358,18 @@
     </createTable>
     <addPrimaryKey tableName="bmp_global_ip_ribs" constraintName="pk_bmp_global_ip_ribs"
                    columnNames="prefix,recv_origin_as"/>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_recv_origin_as">
+      <column name="recv_origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_should_delete">
+      <column name="should_delete" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_rpki_origin_as">
+      <column name="rpki_origin_as" />
+    </createIndex>
+    <createIndex tableName="bmp_global_ip_ribs" indexName="bmp_global_ip_ribs_irr_origin_as">
+      <column name="irr_origin_as" />
+    </createIndex>
   </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-asninfo-nxtid">
@@ -388,6 +439,12 @@
     </createTable>
     <addPrimaryKey tableName="bmp_asn_path_analysis" constraintName="pk_bmp_asn_path"
                    columnNames="asn, asn_left, asn_right, asn_left_is_peering"/>
+    <createIndex tableName="bmp_asn_path_analysis" indexName="bmp_asn_path_analysis_asn_left">
+      <column name="asn_left"/>
+    </createIndex>
+    <createIndex tableName="bmp_asn_path_analysis" indexName="bmp_asn_path_analysis_asn_right">
+      <column name="asn_right"/>
+    </createIndex>
   </changeSet>
 
   <changeSet id="28.0.0-bmp-view-peer" author="cgorantla">
