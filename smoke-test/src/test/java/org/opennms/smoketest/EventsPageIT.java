@@ -68,7 +68,18 @@ public class EventsPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testNodeIdNotFoundPage() throws InterruptedException {
         driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=999999999");
-        driver.findElement(By.xpath("//p[text()='Event not found in database.']"));
+        findElementByXpath("//h1[text()='Event ID Not Found']");
     }
 
+    @Test
+    public void testEventIdEmpty() throws InterruptedException {
+        driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=");
+        findElementByXpath("//h1[text()='Event ID Not Found']");
+    }
+
+    @Test
+    public void testEventIdNotParsable() throws InterruptedException {
+        driver.get(getBaseUrlInternal() + "opennms/event/detail.jsp?id=foo");
+        findElementByXpath("//h1[text()='Event ID Not Found']");
+    }
 }

@@ -138,9 +138,17 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
     	// asking for a specific ID; only filter should be event ID
-    	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(WebSecurityUtils.safeParseInt(idString)));
+        final int eventId;
+        try {
+            eventId = WebSecurityUtils.safeParseInt(idString);
+        } catch (NumberFormatException e) {
+            throw new EventIdNotFoundException("Could not parse event ID '" + idString + "' to integer.", idString);
+        }
+    	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(eventId));
     	modelAndView.setViewName("event/detail");
-    	return modelAndView;
+        modelAndView.addObject("eventId", idString);
+
+        return modelAndView;
     }
     
     // index view
