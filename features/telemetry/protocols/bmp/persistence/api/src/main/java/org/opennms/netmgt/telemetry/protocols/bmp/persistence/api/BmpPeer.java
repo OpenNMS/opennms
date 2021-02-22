@@ -451,7 +451,6 @@ public class BmpPeer implements Serializable {
         return "BmpPeer{" +
                 "id=" + id +
                 ", hashId='" + hashId + '\'' +
-                ", bmpRouter=" + bmpRouter +
                 ", peerRd='" + peerRd + '\'' +
                 ", isIpv4=" + isIpv4 +
                 ", peerAddr='" + peerAddr + '\'' +

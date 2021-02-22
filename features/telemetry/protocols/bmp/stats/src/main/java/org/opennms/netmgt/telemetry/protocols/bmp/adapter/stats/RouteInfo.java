@@ -29,7 +29,10 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.StringUtils;
 import org.slf4j.Logger;
@@ -89,7 +92,7 @@ public class RouteInfo {
         this.source = source;
     }
 
-    public static RouteInfo parseOutput(String rawOutput) {
+    public static RouteInfo parseOneRecord(String rawOutput) {
         RouteInfo routeInfo = new RouteInfo();
         // Split output into lines
         String[] lines = rawOutput.split("\\r?\\n");
@@ -129,6 +132,71 @@ public class RouteInfo {
         return routeInfo;
     }
 
+    public static List<RouteInfo> parseRouteInfo(Stream<String> lines) {
+        List<RouteInfo> routeInfoList = new ArrayList<>();
+        List<String> record = new ArrayList<>();
+        for(String line: (Iterable<String>) lines::iterator) {
+            // All the route info related lines consists of :
+            if(line.contains(":")) {
+                // Add to the record till empty line.
+                record.add(line);
+            }
+            // Empty line is a completed routeInfo Object
+            if(line.length() == 0) {
+                // Parse the record
+               RouteInfo routeInfo = parseOneRecord(record);
+               routeInfoList.add(routeInfo);
+               // Reset the record again.
+               record = new ArrayList<>();
+            }
+        }
+        if(record.size() > 0) {
+            // Parse the record
+            RouteInfo routeInfo = parseOneRecord(record);
+            routeInfoList.add(routeInfo);
+        }
+        return routeInfoList;
+    }
+
+    private static RouteInfo parseOneRecord(List<String> lines) {
+        RouteInfo routeInfo = new RouteInfo();
+        for (String line : lines) {
+            if (line.contains("route") || line.contains("route6")) {
+                getSubStringAfterColon(line).ifPresent(route -> {
+                    if (route.contains("/")) {
+                        String[] prefixArray = route.split("/", 2);
+                        if(isValidIpAddress(prefixArray[0])) {
+                            routeInfo.setPrefix(prefixArray[0]);
+                        }
+                        Integer prefixLen = StringUtils.parseInt(prefixArray[1], null);
+                        if (prefixLen != null) {
+                            routeInfo.setPrefixLen(prefixLen);
+                        }
+                    }
+                });
+            }
+            if (line.contains("descr")) {
+                getSubStringAfterColon(line).ifPresent(routeInfo::setDescription);
+            }
+            if (line.contains("source")) {
+                getSubStringAfterColon(line).ifPresent(routeInfo::setSource);
+            }
+            if (line.contains("origin")) {
+                getSubStringAfterColon(line).ifPresent(origin -> {
+                    if(origin.length() > 2 ) {
+                        String originAsnString = origin.substring(2, origin.length());
+                        Long originAsn = StringUtils.parseLong(originAsnString, null);
+                        if (originAsn != null) {
+                            routeInfo.setOriginAs(originAsn);
+                        }
+                    }
+                });
+            }
+        }
+        return routeInfo;
+    }
+
+
     private static Optional<String> getSubStringAfterColon(String segment) {
         int index = segment.indexOf(":");
         if (index > 0) {
@@ -138,7 +206,7 @@ public class RouteInfo {
         return Optional.empty();
     }
 
-    private static boolean isValidIpAddress(String prefix) {
+    static boolean isValidIpAddress(String prefix) {
 
         try {
             InetAddress.getByName(prefix);

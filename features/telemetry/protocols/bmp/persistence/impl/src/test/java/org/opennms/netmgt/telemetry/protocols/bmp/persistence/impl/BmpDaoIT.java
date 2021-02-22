@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.time.Instant;
 import java.util.Date;
@@ -36,6 +37,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +52,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
@@ -92,6 +96,9 @@ public class BmpDaoIT {
     @Autowired
     private BmpIpRibLogDao bmpIpRibLogDao;
 
+    @Autowired
+    private BmpRpkiInfoDao bmpRpkiInfoDao;
+
 
     @Test
     public void testPersistence() {
@@ -128,14 +135,17 @@ public class BmpDaoIT {
     @Test
     public void testGlobalIpRibsPersistence() {
 
+        Instant tenSecondsBefore = Instant.now().minusSeconds(10);
+
         BmpGlobalIpRib bmpGlobalIpRib = new BmpGlobalIpRib();
         bmpGlobalIpRib.setPrefix("10.0.0.1");
         bmpGlobalIpRib.setRecvOriginAs(64512L);
         bmpGlobalIpRib.setPrefixLen(1);
-        bmpGlobalIpRib.setTimeStamp(Date.from(Instant.now()));
+        bmpGlobalIpRib.setTimeStamp(Date.from(tenSecondsBefore));
         bmpGlobalIpRib.setIrrSource("ARIN-WHOIS");
         bmpGlobalIpRib.setIrrOriginAs(2314L);
         bmpGlobalIpRib.setNumPeers(4);
+        bmpGlobalIpRib.setShouldDelete(true);
 
         bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
 
@@ -159,6 +169,9 @@ public class BmpDaoIT {
         StatsIpOrigins stats = statsIpOrigins.get(0);
         assertEquals(2L, stats.getV4prefixes().longValue());
         assertEquals(0L, stats.getV6withrpki().longValue());
+        result = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(5L);
+        assertThat(result, Matchers.hasSize(1));
+
     }
 
 
@@ -167,42 +180,10 @@ public class BmpDaoIT {
 
         long oneMinBack = new Date().getTime() - 60000;
         Date lastUpdated = new Date(oneMinBack);
-        BmpUnicastPrefix bmpUnicastPrefix = new BmpUnicastPrefix();
-        bmpUnicastPrefix.setHashId("83e12a7ff8f5673es6ae6fcd9a3b345uy");
-        bmpUnicastPrefix.setPrefix("10.0.0.1");
-        bmpUnicastPrefix.setPrefixLen(15);
-        bmpUnicastPrefix.setWithDrawn(false);
-        bmpUnicastPrefix.setFirstAddedTimestamp(lastUpdated);
-        bmpUnicastPrefix.setBaseAttrHashId("23212a7ff9f5433ed6ae6fcd9a2b432gf");
-        bmpUnicastPrefix.setAdjRibIn(false);
-        bmpUnicastPrefix.setPrePolicy(true);
-        bmpUnicastPrefix.setIpv4(true);
-        bmpUnicastPrefix.setTimestamp(lastUpdated);
-        BmpPeer bmpPeer = new BmpPeer();
-        bmpPeer.setHashId("61e5a7ff9f5433ed6ae6fcd9a2b432gf");
-        bmpPeer.setPeerRd("0:0");
-        bmpPeer.setIpv4(true);
-        bmpPeer.setPeerAddr("10.0.0.3");
-        bmpPeer.setState(State.UP);
-        bmpPeer.setL3VPNPeer(false);
-        bmpPeer.setPrePolicy(true);
-        bmpPeer.setLocRib(false);
-        bmpPeer.setLocRibFiltered(false);
-        bmpPeer.setPeerAsn(2083L);
-        bmpPeer.setTimestamp(lastUpdated);
-        BmpRouter bmpRouter = new BmpRouter();
-        bmpRouter.setState(State.UP);
-        bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
-        bmpRouter.setName("router-1");
-        bmpRouter.setIpAddress("10.1.4.10");
-        bmpRouter.setTimestamp(lastUpdated);
-        BmpCollector bmpCollector = new BmpCollector();
-        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
-        bmpCollector.setState(State.UP);
-        bmpCollector.setAdminId("admin1");
-        bmpCollector.setName("collector1");
-        bmpCollector.setRoutersCount(2);
-        bmpCollector.setTimestamp(new Date());
+        BmpUnicastPrefix bmpUnicastPrefix = buildBmpUnicastPrefix(lastUpdated);
+        BmpPeer bmpPeer = buildBmpPeer(lastUpdated);
+        BmpRouter bmpRouter = buildBmpRouter(lastUpdated);
+        BmpCollector bmpCollector = buildBmpCollector(lastUpdated);
         bmpCollectorDao.save(bmpCollector);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
@@ -222,6 +203,75 @@ public class BmpDaoIT {
         Assert.assertFalse(statsPeerRibs.isEmpty());
         assertEquals(1L, statsPeerRibs.get(0).getV4prefixes().longValue());
     }
-    
-    
+
+    @Test
+    public void testRpkiValidator() {
+
+        BmpRpkiInfo bmpRpkiInfo = new BmpRpkiInfo();
+        bmpRpkiInfo.setPrefix("10.1.23.34");
+        bmpRpkiInfo.setPrefixLen(22);
+        bmpRpkiInfo.setPrefixLenMax(24);
+        bmpRpkiInfo.setOriginAs(5645L);
+        bmpRpkiInfo.setTimestamp(new Date());
+        bmpRpkiInfoDao.saveOrUpdate(bmpRpkiInfo);
+        BmpRpkiInfo retrieved = bmpRpkiInfoDao.findBmpRpkiInfoWith("10.1.23.34", 24, 5645L);
+        Assert.assertNotNull(retrieved);
+
+
+    }
+
+    private BmpCollector buildBmpCollector(Date lastUpdated) {
+        BmpCollector bmpCollector = new BmpCollector();
+        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        bmpCollector.setState(State.UP);
+        bmpCollector.setAdminId("admin1");
+        bmpCollector.setName("collector1");
+        bmpCollector.setRoutersCount(2);
+        bmpCollector.setTimestamp(lastUpdated);
+        return bmpCollector;
+    }
+
+    private BmpRouter buildBmpRouter(Date lastUpdated) {
+        BmpRouter bmpRouter = new BmpRouter();
+        bmpRouter.setState(State.UP);
+        bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
+        bmpRouter.setName("router-1");
+        bmpRouter.setIpAddress("10.1.4.10");
+        bmpRouter.setTimestamp(lastUpdated);
+        return bmpRouter;
+    }
+
+
+    private BmpPeer buildBmpPeer(Date lastUpdated) {
+        BmpPeer bmpPeer = new BmpPeer();
+        bmpPeer.setHashId("61e5a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpPeer.setPeerRd("0:0");
+        bmpPeer.setIpv4(true);
+        bmpPeer.setPeerAddr("10.0.0.3");
+        bmpPeer.setState(State.UP);
+        bmpPeer.setL3VPNPeer(false);
+        bmpPeer.setPrePolicy(true);
+        bmpPeer.setLocRib(false);
+        bmpPeer.setLocRibFiltered(false);
+        bmpPeer.setPeerAsn(2083L);
+        bmpPeer.setTimestamp(lastUpdated);
+        return bmpPeer;
+    }
+
+    private BmpUnicastPrefix buildBmpUnicastPrefix(Date lastUpdated) {
+        BmpUnicastPrefix bmpUnicastPrefix = new BmpUnicastPrefix();
+        bmpUnicastPrefix.setHashId("83e12a7ff8f5673es6ae6fcd9a3b345uy");
+        bmpUnicastPrefix.setPrefix("10.0.0.1");
+        bmpUnicastPrefix.setPrefixLen(15);
+        bmpUnicastPrefix.setWithDrawn(false);
+        bmpUnicastPrefix.setFirstAddedTimestamp(lastUpdated);
+        bmpUnicastPrefix.setBaseAttrHashId("23212a7ff9f5433ed6ae6fcd9a2b432gf");
+        bmpUnicastPrefix.setAdjRibIn(false);
+        bmpUnicastPrefix.setPrePolicy(true);
+        bmpUnicastPrefix.setIpv4(true);
+        bmpUnicastPrefix.setTimestamp(lastUpdated);
+        return bmpUnicastPrefix;
+    }
+
+
 }

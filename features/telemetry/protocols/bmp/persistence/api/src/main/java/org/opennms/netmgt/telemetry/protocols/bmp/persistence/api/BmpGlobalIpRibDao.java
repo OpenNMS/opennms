@@ -38,4 +38,6 @@ public interface BmpGlobalIpRibDao extends OnmsDao<BmpGlobalIpRib, Long> {
 
     List<StatsIpOrigins> getStatsIpOrigins();
 
+    List<BmpGlobalIpRib> findGlobalRibsBeforeGivenTime(long timeInSecs);
+
 }

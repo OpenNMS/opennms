@@ -45,6 +45,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsn;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeer;
@@ -113,6 +115,9 @@ public class BmpStatsAggregator {
     private BmpStatsIpOriginsDao bmpStatsIpOriginsDao;
 
     @Autowired
+    private BmpRpkiInfoDao bmpRpkiInfoDao;
+
+    @Autowired
     private SessionUtils sessionUtils;
 
     public void init() {
@@ -130,6 +135,7 @@ public class BmpStatsAggregator {
 
     private void updateGlobalRibsAndAsnInfo() {
         LOG.debug("Updating GlobalRibs ++");
+        setShouldDeleteForExisting();
         List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
         LOG.debug("Retrieved {} PrefixByAS elements", prefixByASList.size());
         prefixByASList.forEach(prefixByAS -> {
@@ -143,7 +149,25 @@ public class BmpStatsAggregator {
 
             }
         });
+        deleteExpiredGlobalRibs();
         LOG.debug("Updating GlobalRibs --");
+    }
+
+    private void setShouldDeleteForExisting() {
+
+        List<BmpGlobalIpRib> bmpGlobalIpRibs = bmpGlobalIpRibDao.findAll();
+        bmpGlobalIpRibs.forEach(bmpGlobalIpRib -> {
+            bmpGlobalIpRib.setShouldDelete(true);
+            bmpGlobalIpRibDao.update(bmpGlobalIpRib);
+        });
+    }
+
+    private void deleteExpiredGlobalRibs() {
+        // Delete Global ribs before given time in Secs.
+        List<BmpGlobalIpRib> bmpGlobalIpRibList = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(2 * 60 * 60);
+        bmpGlobalIpRibList.forEach(bmpGlobalIpRib -> {
+            bmpGlobalIpRibDao.delete(bmpGlobalIpRib);
+        });
     }
 
     private BmpGlobalIpRib buildGlobalIpRib(PrefixByAS prefixByAS) {
@@ -155,7 +179,6 @@ public class BmpStatsAggregator {
                 bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
                 bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
                 bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
-                bmpGlobalIpRib.setNumPeers(prefixByAS.getCount());
                 Long asn = bmpGlobalIpRib.getRecvOriginAs();
                 if (asn != null) {
                     BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
@@ -172,18 +195,19 @@ public class BmpStatsAggregator {
                 }
                 String prefix = bmpGlobalIpRib.getPrefix();
                 if (!Strings.isNullOrEmpty(prefix)) {
-                    BmpRouteInfo bmpRouteInfo = fetchAndBuildRouteInfo(prefix);
+                    BmpRouteInfo bmpRouteInfo = fetchRouteInfo(prefix);
                     if (bmpRouteInfo != null) {
-                        try {
-                            bmpGlobalIpRib.setIrrOriginAs(bmpRouteInfo.getOriginAs());
-                            bmpGlobalIpRib.setIrrSource(bmpRouteInfo.getSource());
-                            bmpRouteInfoDao.saveOrUpdate(bmpRouteInfo);
-                        } catch (Exception e) {
-                            LOG.error("Exception while persisting BMP Route Info  {}", bmpRouteInfo, e);
-                        }
+                        bmpGlobalIpRib.setIrrOriginAs(bmpRouteInfo.getOriginAs());
+                        bmpGlobalIpRib.setIrrSource(bmpRouteInfo.getSource());
                     }
                 }
+                // Fetch Rpki info
+                BmpRpkiInfo bmpRpkiInfo = bmpRpkiInfoDao.findMatchingRpkiInfoForGlobalRIb(prefix, bmpGlobalIpRib.getPrefixLen());
+                if(bmpRpkiInfo != null) {
+                    bmpGlobalIpRib.setRpkiOriginAs(bmpRpkiInfo.getOriginAs());
+                }
             }
+            bmpGlobalIpRib.setNumPeers(prefixByAS.getCount());
             return bmpGlobalIpRib;
         } catch (Exception e) {
             LOG.error("Exception while mapping prefix {} to GlobalIpRib entity", prefixByAS.getPrefix(), e);
@@ -214,23 +238,11 @@ public class BmpStatsAggregator {
         return null;
     }
 
-    private BmpRouteInfo fetchAndBuildRouteInfo(String prefix) {
-        Optional<RouteInfo> routeInfoOptional = BmpWhoIsClient.getRouteInfo(prefix);
-        if (routeInfoOptional.isPresent() && routeInfoOptional.get().getPrefix() != null) {
-            RouteInfo routeInfo = routeInfoOptional.get();
-            Integer prefixLen = routeInfo.getPrefixLen();
-            Long originAs = routeInfo.getOriginAs();
-            BmpRouteInfo bmpRouteInfo = bmpRouteInfoDao.findByPrefix(routeInfo.getPrefix(), prefixLen, originAs);
-            if (bmpRouteInfo == null) {
-                bmpRouteInfo = new BmpRouteInfo();
-                bmpRouteInfo.setPrefix(routeInfo.getPrefix());
-                bmpRouteInfo.setPrefixLen(routeInfo.getPrefixLen());
-                bmpRouteInfo.setDescr(routeInfo.getDescription());
-                bmpRouteInfo.setOriginAs(routeInfo.getOriginAs());
-                bmpRouteInfo.setSource(routeInfo.getSource());
-            }
-            bmpRouteInfo.setLastUpdated(Date.from(Instant.now()));
-            return bmpRouteInfo;
+    private BmpRouteInfo fetchRouteInfo(String prefix) {
+        List<BmpRouteInfo> routeInfoList = bmpRouteInfoDao.findByPrefix(prefix);
+        // Any RouteInfo will have same source and originAsn
+        if (routeInfoList.size() > 0) {
+            return routeInfoList.get(0);
         }
         return null;
     }
@@ -488,6 +500,10 @@ public class BmpStatsAggregator {
 
     public void setBmpStatsIpOriginsDao(BmpStatsIpOriginsDao bmpStatsIpOriginsDao) {
         this.bmpStatsIpOriginsDao = bmpStatsIpOriginsDao;
+    }
+
+    public void setBmpRpkiInfoDao(BmpRpkiInfoDao bmpRpkiInfoDao) {
+        this.bmpRpkiInfoDao = bmpRpkiInfoDao;
     }
 
     public void setSessionUtils(SessionUtils sessionUtils) {

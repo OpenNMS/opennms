@@ -1,0 +1,296 @@
+route:          1.0.32.0/24
+descr:          CMI IP Transit
+origin:         AS133948
+admin-c:        MAINT-CMI-INT-HK
+tech-c:         MAINT-CMI-INT-HK
+mnt-by:         MAINT-CMI-INT-HK
+changed:        qas_support@cmi.chinamobile.com 20170727
+source:         NTTCOM
+
+route:          1.0.38.0/23
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.38.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.39.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.40.0/21
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.40.0/22
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.40.0/23
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.40.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.41.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.42.0/23
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.42.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.43.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.44.0/22
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.44.0/23
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.44.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.45.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.46.0/23
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.46.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM
+
+route:          1.0.47.0/24
+descr:          Proxy-registered route object
+origin:         AS135414
+remarks:        This is a HGC customer route-object
+remarks:        which is being exported under this origin AS.
+remarks:
+remarks:        This route object was created because no existing
+remarks:        route object with the same origin was found.
+remarks:
+remarks:        Please contact radb@hutchcity.com if you have any
+remarks:        questions regarding this object.
+notify:         radb@hutchcity.com
+mnt-by:         MAINT-AS9304
+changed:        radb@hutchcity.com 20160527
+source:         NTTCOM

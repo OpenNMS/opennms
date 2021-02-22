@@ -89,5 +89,10 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao" />
 
+  <bean id="bmpRpkiInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRpkiInfoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao" ref="bmpRpkiInfoDao" />
+
 
 </beans>

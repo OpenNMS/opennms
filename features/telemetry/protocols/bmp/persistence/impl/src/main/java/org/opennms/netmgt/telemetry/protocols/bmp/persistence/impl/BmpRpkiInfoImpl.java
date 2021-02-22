@@ -32,34 +32,40 @@ import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.GeRestriction;
+import org.opennms.core.criteria.restrictions.LeRestriction;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfo;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao;
 
-public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long> implements BmpRouteInfoDao {
-
-    public BmpRouteInfoDaoImpl() {
-        super(BmpRouteInfo.class);
+public class BmpRpkiInfoImpl extends AbstractDaoHibernate<BmpRpkiInfo, Long> implements BmpRpkiInfoDao {
+    public BmpRpkiInfoImpl() {
+        super(BmpRpkiInfo.class);
     }
 
     @Override
-    public BmpRouteInfo findByPrefixAndOriginAs(String prefix, Integer prefixLen, Long originAsn) {
-
-        Criteria criteria = new Criteria(BmpRouteInfo.class);
+    public BmpRpkiInfo findBmpRpkiInfoWith(String prefix, Integer prefixLenMax, Long originAsn) {
+        Criteria criteria = new Criteria(BmpRpkiInfo.class);
         criteria.addRestriction(new EqRestriction("prefix", prefix));
-        criteria.addRestriction(new EqRestriction("prefixLen", prefixLen));
+        criteria.addRestriction(new EqRestriction("prefixLenMax", prefixLenMax));
         criteria.addRestriction(new EqRestriction("originAs", originAsn));
-        List<BmpRouteInfo> bmpRouteInfoList = findMatching(criteria);
-        if (bmpRouteInfoList != null && bmpRouteInfoList.size() > 0) {
-            return bmpRouteInfoList.get(0);
+        List<BmpRpkiInfo> bmpRpkiInfos = findMatching(criteria);
+        if (bmpRpkiInfos != null && bmpRpkiInfos.size() > 0) {
+            return bmpRpkiInfos.get(0);
         }
         return null;
     }
 
     @Override
-    public List<BmpRouteInfo> findByPrefix(String prefix) {
-        Criteria criteria = new Criteria(BmpRouteInfo.class);
+    public BmpRpkiInfo findMatchingRpkiInfoForGlobalRIb(String prefix, Integer prefixLen) {
+        Criteria criteria = new Criteria(BmpRpkiInfo.class);
         criteria.addRestriction(new EqRestriction("prefix", prefix));
-        return findMatching(criteria);
+        criteria.addRestriction(new LeRestriction("prefixLenMax", prefixLen));
+        criteria.addRestriction(new GeRestriction("prefixLen", prefixLen));
+        List<BmpRpkiInfo> bmpRpkiInfos = findMatching(criteria);
+        if (bmpRpkiInfos != null && bmpRpkiInfos.size() > 0) {
+            return bmpRpkiInfos.get(0);
+        }
+        return null;
     }
 }
