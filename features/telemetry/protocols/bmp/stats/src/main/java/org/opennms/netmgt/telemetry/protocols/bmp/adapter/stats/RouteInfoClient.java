@@ -33,6 +33,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -59,6 +62,8 @@ public class RouteInfoClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteInfoClient.class);
 
+    private static final Integer DEFAULT_HOUR_OF_THE_DAY = 1;
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("UpdateRouteInfo-%d")
             .build();
@@ -67,6 +72,8 @@ public class RouteInfoClient {
             threadFactory);
 
     private final String routeInfoDbPath;
+
+    private Integer hourOfTheDay = DEFAULT_HOUR_OF_THE_DAY;
 
     @Autowired
     private BmpRouteInfoDao bmpRouteInfoDao;
@@ -80,31 +87,38 @@ public class RouteInfoClient {
     }
 
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(() -> updateRouteInfo(routeInfoDbPath), 1, 24, TimeUnit.HOURS);
+        Long midnight = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay(), ChronoUnit.MINUTES);
+        Long hourOfTheDayInMinutes = midnight + hourOfTheDay * 60;
+        scheduledExecutorService.scheduleAtFixedRate(() -> updateRouteInfo(routeInfoDbPath), hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
     }
 
     public void destroy() {
-        scheduledExecutorService.shutdown();
+        scheduledExecutorService.shutdownNow();
     }
 
 
     @VisibleForTesting
     void updateRouteInfo(String folderName) {
-
+        LOG.debug("Update RouteInfo ++");
         if (Strings.isNullOrEmpty(folderName)) {
             return;
         }
-        List<RouteInfo> routeInfoList = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(Paths.get(folderName))) {
-
-            paths.filter(Files::isRegularFile).forEach(path -> {
-                 List<RouteInfo> returned = parseEachFile(path);
-                routeInfoList.addAll(returned);
-            });
+            paths.filter(Files::isRegularFile).forEach(this::parseAndSaveInDB);
         } catch (IOException e) {
             LOG.error("Exception while walking through files in folder {}", folderName, e);
         }
-        saveOrUpdateInDB(routeInfoList);
+        LOG.debug("Update RouteInfo --");
+    }
+
+    private void parseAndSaveInDB(Path dbPath) {
+        try {
+            List<RouteInfo> returned = parseEachFile(dbPath);
+            LOG.debug("Fetched {} routeinfo elements", returned.size());
+            saveOrUpdateInDB(returned);
+        } catch (Exception e) {
+            LOG.error("Exception while persisting elements from path {} ", dbPath, e);
+        }
     }
 
     @VisibleForTesting
@@ -113,7 +127,7 @@ public class RouteInfoClient {
             Stream<String> lines = Files.lines(dbPath);
             return RouteInfo.parseRouteInfo(lines);
         } catch (IOException e) {
-            LOG.error("Exception while reading lines from path {} ", dbPath.toString());
+            LOG.error("Exception while reading lines from path {} ", dbPath, e);
         }
         return new ArrayList<>();
     }
@@ -124,6 +138,9 @@ public class RouteInfoClient {
         for (int i = 0; i < routeInfos.size(); i++) {
             batchedRouteInfo.add(routeInfos.get(i));
             if ((i % 100 == 0 && i != 0) || i == routeInfos.size() - 1) {
+                if(Thread.currentThread().isInterrupted()) {
+                    break;
+                }
                 Set<BmpRouteInfo> bmpRouteInfoList = buildBmpRouteInfoList(batchedRouteInfo);
                 saveOrUpdateInSession(bmpRouteInfoList);
                 batchedRouteInfo = new HashSet<>();
@@ -171,7 +188,7 @@ public class RouteInfoClient {
         Set<BmpRouteInfo> bmpRouteInfoSet = new HashSet<>();
         routeInfoList.forEach(routeInfo -> {
             BmpRouteInfo bmpRouteInfo = buildBmpRouteInfo(routeInfo);
-            if(bmpRouteInfo != null) {
+            if (bmpRouteInfo != null) {
                 bmpRouteInfoSet.add(bmpRouteInfo);
             }
         });
@@ -187,4 +204,7 @@ public class RouteInfoClient {
         this.sessionUtils = sessionUtils;
     }
 
+    public void setHourOfTheDay(Integer hourOfTheDay) {
+        this.hourOfTheDay = hourOfTheDay;
+    }
 }

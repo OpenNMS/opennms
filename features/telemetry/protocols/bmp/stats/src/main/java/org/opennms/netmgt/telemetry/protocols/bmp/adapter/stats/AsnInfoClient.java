@@ -54,6 +54,8 @@ public class AsnInfoClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsnInfoClient.class);
 
+    private static final Integer DEFAULT_HOUR_OF_THE_DAY = 2;
+
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("UpdateAsnInfo-%d")
             .build();
@@ -70,12 +72,15 @@ public class AsnInfoClient {
     @Autowired
     private SessionUtils sessionUtils;
 
+    private Integer hourOfTheDay = DEFAULT_HOUR_OF_THE_DAY;
+
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updateAsnInfo, 0, 24, TimeUnit.HOURS);
+        Long hourOfTheDayInMinutes = Utils.getHourOfTheDayInMinutes(hourOfTheDay);
+        scheduledExecutorService.scheduleAtFixedRate(this::updateAsnInfo, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
     }
 
     public void destroy() {
-        scheduledExecutorService.shutdown();
+        scheduledExecutorService.shutdownNow();
     }
 
 
@@ -160,5 +165,9 @@ public class AsnInfoClient {
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;
+    }
+
+    public void setHourOfTheDay(Integer hourOfTheDay) {
+        this.hourOfTheDay = hourOfTheDay;
     }
 }
