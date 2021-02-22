@@ -49,6 +49,7 @@ import java.util.function.Consumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
@@ -408,6 +409,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                     producer.send(producerRecord, (recordMetadata, e) -> {
                         if (e != null) {
                             LOG.warn("Failed to send record to producer: {}.", producerRecord, e);
+                            if(e instanceof TimeoutException) {
+                                // If Kafka is Offline, buffer the record again.
+                                kafkaSendQueue.offer(kafkaRecord);
+                            }
                             return;
                         }
                         if (consumer != null) {
