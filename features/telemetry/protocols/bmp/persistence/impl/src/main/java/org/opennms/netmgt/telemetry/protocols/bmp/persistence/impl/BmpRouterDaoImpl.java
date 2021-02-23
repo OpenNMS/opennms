@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
@@ -62,12 +60,11 @@ public class BmpRouterDaoImpl extends AbstractDaoHibernate<BmpRouter, Long> impl
 
     @Override
     public List<BmpRouter> findRoutersByCollectorHashId(String collectorHashId) {
-        if(Strings.isNullOrEmpty(collectorHashId)) {
+        if (Strings.isNullOrEmpty(collectorHashId)) {
             return new ArrayList<>();
         }
-        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(BmpRouter.class);
-        criteriaBuilder.alias("bmpCollector", "bmpCollector")
-                .and(Restrictions.eq("bmpCollector.hashId", collectorHashId));
-        return findMatching(criteriaBuilder.toCriteria());
+        Criteria criteria = new Criteria(BmpRouter.class);
+        criteria.addRestriction(new EqRestriction("collectorHashId", collectorHashId));
+        return findMatching(criteria);
     }
 }

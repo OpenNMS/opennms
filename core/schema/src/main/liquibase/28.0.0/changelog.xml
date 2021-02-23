@@ -1019,7 +1019,7 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
-    <addPrimaryKey tableName="bmp_rpki_info" constraintName="pk_bmp_rpki_validator"
+    <addPrimaryKey tableName="bmp_rpki_info" constraintName="pk_bmp_rpki_info"
                    columnNames="prefix, prefix_len_max, origin_as"/>
     <createIndex tableName="bmp_rpki_info" indexName="bmp_rpki_info_origin_as">
       <column name="origin_as" />

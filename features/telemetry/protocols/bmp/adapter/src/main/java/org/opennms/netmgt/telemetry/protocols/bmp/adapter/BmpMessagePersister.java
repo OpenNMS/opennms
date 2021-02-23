@@ -112,13 +112,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     List<BmpCollector> bmpCollectors = buildBmpCollectors(message);
                     // Update routers state to down when collector is just starting or going into stopped state.
                     bmpCollectors.forEach(collector -> {
-                        if (collector.getAction().equals(Collector.Action.STARTED.value) ||
-                                collector.getAction().equals(Collector.Action.STOPPED.value)) {
-                            collector.getBmpRouters().forEach(bmpRouter -> {
-                                // Set down state for routers.
-                                bmpRouter.setState(State.DOWN);
-                            });
-                        }
                         try {
                             bmpCollectorDao.saveOrUpdate(collector);
                         } catch (Exception e) {
@@ -127,9 +120,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     });
                     break;
                 case ROUTER:
-                    BmpCollector bmpCollector = bmpCollectorDao.findByCollectorHashId(message.getCollectorHashId());
-                    if (bmpCollector != null) {
-                        List<BmpRouter> bmpRouters = buildBmpRouters(message, bmpCollector);
+                        List<BmpRouter> bmpRouters = buildBmpRouters(message);
                         bmpRouters.forEach(router -> {
                             Integer connections = router.getConnectionCount();
                             // Upon initial router message in INIT/FIRST state,  update all corresponding peer state to down.
@@ -150,7 +141,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
                             }
 
                         });
-                    }
                     break;
                 case PEER:
                     List<BmpPeer> bmpPeers = buildBmpPeers(message);
@@ -261,7 +251,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
         return bmpCollectors;
     }
 
-    private List<BmpRouter> buildBmpRouters(Message message, BmpCollector bmpCollector) {
+    private List<BmpRouter> buildBmpRouters(Message message) {
         List<BmpRouter> bmpRouters = new ArrayList<>();
         message.getRecords().forEach(record -> {
             if (record.getType().equals(Type.ROUTER)) {
@@ -271,6 +261,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     if (bmpRouterEntity == null) {
                         bmpRouterEntity = new BmpRouter();
                     }
+                    bmpRouterEntity.setCollectorHashId(message.getCollectorHashId());
                     bmpRouterEntity.setHashId(router.hash);
                     bmpRouterEntity.setName(router.name);
                     bmpRouterEntity.setIpAddress(InetAddressUtils.str(router.ipAddress));
@@ -284,7 +275,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     State state = !(router.action.equals(Router.Action.TERM)) ? State.UP : State.DOWN;
                     bmpRouterEntity.setAction(router.action.value);
                     bmpRouterEntity.setState(state);
-                    bmpRouterEntity.setBmpCollector(bmpCollector);
                     bmpRouters.add(bmpRouterEntity);
                 } catch (Exception e) {
                     LOG.error("Exception while mapping Router with IpAddress '{}' to Router entity", InetAddressUtils.str(router.ipAddress), e);

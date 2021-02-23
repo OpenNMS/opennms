@@ -122,7 +122,7 @@ public class BmpDaoIT {
         bmpRouter.setName("router-1");
         bmpRouter.setIpAddress("10.1.4.10");
         bmpRouter.setTimestamp(new Date());
-        bmpRouter.setBmpCollector(bmpCollector);
+        bmpRouter.setCollectorHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
         bmpRouterDao.saveOrUpdate(bmpRouter);
         BmpRouter persistedRouter = bmpRouterDao.findByRouterHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
         assertEquals(bmpRouter.getName(), persistedRouter.getName());
@@ -199,11 +199,12 @@ public class BmpDaoIT {
         BmpUnicastPrefix bmpUnicastPrefix = buildBmpUnicastPrefix(lastUpdated);
         BmpPeer bmpPeer = buildBmpPeer(lastUpdated);
         BmpRouter bmpRouter = buildBmpRouter(lastUpdated);
-        BmpCollector bmpCollector = buildBmpCollector(lastUpdated);
+        String collectorHashId = "91e3a7ff9f5676ed6ae6fcd8a6b455ec";
+        BmpCollector bmpCollector = buildBmpCollector(collectorHashId, lastUpdated);
         bmpCollectorDao.save(bmpCollector);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
-        bmpRouter.setBmpCollector(bmpCollector);
+        bmpRouter.setCollectorHashId(collectorHashId);
         bmpRouterDao.saveOrUpdate(bmpRouter);
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertFalse(routers.isEmpty());
@@ -236,9 +237,9 @@ public class BmpDaoIT {
 
     }
 
-    private BmpCollector buildBmpCollector(Date lastUpdated) {
+    private BmpCollector buildBmpCollector(String collectorHashId, Date lastUpdated) {
         BmpCollector bmpCollector = new BmpCollector();
-        bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        bmpCollector.setHashId(collectorHashId);
         bmpCollector.setState(State.UP);
         bmpCollector.setAdminId("admin1");
         bmpCollector.setName("collector1");

@@ -32,8 +32,6 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Record;
-
 public class Context {
 
     public final String adminId;
@@ -67,6 +65,6 @@ public class Context {
     }
 
     public String getRouterHash() {
-        return Record.hash(sourceAddress.getHostAddress(), collectorHashId);
+        return routerHashId;
     }
 }

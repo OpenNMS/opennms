@@ -135,7 +135,7 @@ public class BmpMessagePersisterIT {
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertEquals(2, routers.size());
         BmpRouter bmpRouter = routers.get(0);
-        Assert.assertEquals(bmpRouter.getBmpCollector().getHashId(), "91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        Assert.assertEquals(bmpRouter.getCollectorHashId(), "91e3a7ff9f5676ed6ae6fcd8a6b455ec");
 
         // Change collector state to stop and persist collector again. Routers should be down when collector is stopped.
         collector.action = Collector.Action.STOPPED;
@@ -145,10 +145,6 @@ public class BmpMessagePersisterIT {
         Assert.assertFalse(collectors.isEmpty());
         bmpCollector = collectors.get(0);
         Assert.assertEquals(State.DOWN, bmpCollector.getState());
-        routers = bmpRouterDao.findAll();
-        Assert.assertFalse(routers.isEmpty());
-        bmpRouter = routers.get(0);
-        Assert.assertEquals(State.DOWN, bmpRouter.getState());
 
         // Persist peer.
         Peer peer = getPeer();

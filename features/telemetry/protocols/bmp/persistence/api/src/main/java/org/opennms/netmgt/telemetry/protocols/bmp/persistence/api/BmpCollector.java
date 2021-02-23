@@ -30,9 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,7 +39,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -85,9 +82,6 @@ public class BmpCollector implements Serializable {
 
     @Column(name = "routers")
     private String routers;
-
-    @OneToMany(mappedBy="bmpCollector")
-    private Set<BmpRouter> bmpRouters = new LinkedHashSet<>();
 
     @Transient
     private String action;
@@ -164,14 +158,6 @@ public class BmpCollector implements Serializable {
         this.routers = routers;
     }
 
-    public Set<BmpRouter> getBmpRouters() {
-        return bmpRouters;
-    }
-
-    public void setBmpRouters(Set<BmpRouter> bmpRouters) {
-        this.bmpRouters = bmpRouters;
-    }
-
     public String getAction() {
         return action;
     }
@@ -193,7 +179,6 @@ public class BmpCollector implements Serializable {
                 ", name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", routers='" + routers + '\'' +
-                ", bmpRouters=" + bmpRouters +
                 ", action='" + action + '\'' +
                 '}';
     }

@@ -38,12 +38,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -103,9 +100,8 @@ public class BmpRouter implements Serializable {
     @Column(name = "geo_ip_start")
     private String geoIpStart;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "collector_hash_id", referencedColumnName = "hash_id", nullable = false)
-    private BmpCollector bmpCollector;
+    @Column(name = "collector_hash_id")
+    private String collectorHashId;
 
     @Column(name = "bgp_id")
     private String bgpId;
@@ -231,12 +227,12 @@ public class BmpRouter implements Serializable {
         this.geoIpStart = geoIpStart;
     }
 
-    public BmpCollector getBmpCollector() {
-        return bmpCollector;
+    public String getCollectorHashId() {
+        return collectorHashId;
     }
 
-    public void setBmpCollector(BmpCollector bmpCollector) {
-        this.bmpCollector = bmpCollector;
+    public void setCollectorHashId(String collectorHashId) {
+        this.collectorHashId = collectorHashId;
     }
 
     public String getBgpId() {
@@ -295,15 +291,15 @@ public class BmpRouter implements Serializable {
                 Objects.equals(termData, bmpRouter.termData) &&
                 Objects.equals(initData, bmpRouter.initData) &&
                 Objects.equals(geoIpStart, bmpRouter.geoIpStart) &&
-                Objects.equals(bmpCollector, bmpRouter.bmpCollector) &&
                 Objects.equals(bgpId, bmpRouter.bgpId) &&
+                Objects.equals(collectorHashId, bmpRouter.collectorHashId) &&
                 Objects.equals(connectionCount, bmpRouter.connectionCount) &&
                 Objects.equals(action, bmpRouter.action);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashId, name, ipAddress, routerAS, timestamp, description, state, isPassive, termReasonCode, termReasonText, termData, initData, geoIpStart, bmpCollector, bgpId, connectionCount, action);
+        return Objects.hash(hashId, name, ipAddress, routerAS, timestamp, description, state, isPassive, termReasonCode, termReasonText, termData, initData, geoIpStart, collectorHashId, bgpId, connectionCount, action);
     }
 
     @Override
@@ -323,6 +319,7 @@ public class BmpRouter implements Serializable {
                 ", termData='" + termData + '\'' +
                 ", initData='" + initData + '\'' +
                 ", geoIpStart='" + geoIpStart + '\'' +
+                ", collectorHashId='" + collectorHashId + '\'' +
                 ", bgpId='" + bgpId + '\'' +
                 ", connectionCount=" + connectionCount +
                 ", bmpPeers=" + bmpPeers +

@@ -41,6 +41,7 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,7 +49,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.AddressFamilyIdentifier;
@@ -71,6 +73,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -180,7 +183,55 @@ public class BmpAdapterCommon {
         }
     }
 
-    static void handleHeartbeatMessage(final BmpMessageHandler messageHandler,
+    public static void handleTelemetryMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog,
+                                              BmpMessageHandler messageHandler, final AtomicLong sequence) {
+        LOG.trace("Parsing packet: {}", messageLogEntry);
+        final Transport.Message message;
+        try {
+            message = Transport.Message.parseFrom(messageLogEntry.getByteArray());
+        } catch (final InvalidProtocolBufferException e) {
+            LOG.error("Invalid message", e);
+            return;
+        }
+
+        final String collectorHashId = Record.hash(messageLog.getSystemId());
+        final String routerHashId = Record.hash(messageLog.getSourceAddress());
+        final Context context = new Context(messageLog.getSystemId(),
+                collectorHashId,
+                routerHashId,
+                Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
+                InetAddressUtils.addr(messageLog.getSourceAddress()),
+                messageLog.getSourcePort(), messageLog.getLocation());
+
+        switch(message.getPacketCase()) {
+            case HEARTBEAT:
+                handleHeartbeatMessage(messageHandler, message, message.getHeartbeat(), context, sequence);
+                break;
+            case INITIATION:
+                handleInitiationMessage(messageHandler, message, message.getInitiation(), context, sequence);
+                break;
+            case TERMINATION:
+                handleTerminationMessage(messageHandler, message, message.getTermination(), context, sequence);
+                break;
+            case PEER_UP:
+                handlePeerUpNotification(messageHandler, message, message.getPeerUp(), context, sequence);
+                break;
+            case PEER_DOWN:
+                handlePeerDownNotification(messageHandler, message, message.getPeerDown(), context, sequence);
+                break;
+            case STATISTICS_REPORT:
+                handleStatisticReport(messageHandler, message, message.getStatisticsReport(), context, sequence);
+                break;
+            case ROUTE_MONITORING:
+                handleRouteMonitoringMessage(messageHandler, message, message.getRouteMonitoring(), context, sequence);
+                break;
+            case PACKET_NOT_SET:
+                break;
+        }
+
+    }
+
+    public static void handleHeartbeatMessage(final BmpMessageHandler messageHandler,
                                         final Transport.Message message,
                                         final Transport.Heartbeat heartbeat,
                                         final Context context,
@@ -211,7 +262,7 @@ public class BmpAdapterCommon {
         messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), context);
     }
 
-    static void handleInitiationMessage(final BmpMessageHandler messageHandler,
+    public static void handleInitiationMessage(final BmpMessageHandler messageHandler,
                                          final Transport.Message message,
                                          final Transport.InitiationPacket initiation,
                                          final Context context,
@@ -235,7 +286,7 @@ public class BmpAdapterCommon {
         messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
-    static void handleTerminationMessage(final BmpMessageHandler messageHandler, final Transport.Message message,
+    public static void handleTerminationMessage(final BmpMessageHandler messageHandler, final Transport.Message message,
                                           final Transport.TerminationPacket termination,
                                           final Context context,
                                           final AtomicLong sequence) {
@@ -276,7 +327,7 @@ public class BmpAdapterCommon {
         messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
-    static void handlePeerUpNotification(final BmpMessageHandler messageHandler, final Transport.Message message,
+    public static void handlePeerUpNotification(final BmpMessageHandler messageHandler, final Transport.Message message,
                                           final Transport.PeerUpPacket peerUp,
                                           final Context context,
                                           final AtomicLong sequence) {
@@ -322,7 +373,7 @@ public class BmpAdapterCommon {
         messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
-    static void handlePeerDownNotification(final BmpMessageHandler messageHandler,
+    public static void handlePeerDownNotification(final BmpMessageHandler messageHandler,
                                             final Transport.Message message,
                                             final Transport.PeerDownPacket peerDown,
                                             final Context context,
@@ -372,7 +423,7 @@ public class BmpAdapterCommon {
         }
 
         if (peer.bgpErrorCode != null && peer.bgpErrorSubcode != null) {
-            peer.errorText = BmpIntegrationAdapter.Error.from(peer.bgpErrorCode, peer.bgpErrorSubcode).getErrorText();
+            peer.errorText = Error.from(peer.bgpErrorCode, peer.bgpErrorSubcode).getErrorText();
         }
 
         peer.l3vpn = bgpPeer.getType() == Transport.Peer.Type.RD_INSTANCE;
@@ -385,7 +436,7 @@ public class BmpAdapterCommon {
         messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
-    static void handleStatisticReport(final BmpMessageHandler messageHandler,
+    public static void handleStatisticReport(final BmpMessageHandler messageHandler,
                                        final Transport.Message message,
                                        final Transport.StatisticsReportPacket statisticsReport,
                                        final Context context,
