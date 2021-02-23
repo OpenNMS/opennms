@@ -146,9 +146,7 @@ public class AlarmDetailController extends MultiActionController {
         mv.addObject("alarm", alarm);
         mv.addObject("alarmId", alarmIdString);
         mv.addObject("acknowledgments", acknowledgments);
-        if (Boolean.getBoolean("org.opennms.web.console.alarms.relatedEvents")) {
-            mv.addObject("related", this.getRelatedEvents(alarm, httpServletRequest));
-        }
+        mv.addObject("related", this.getRelatedEvents(alarm, httpServletRequest));
         return mv;
     }
 
@@ -274,8 +272,6 @@ public class AlarmDetailController extends MultiActionController {
 
     private List<Filter> getFilters(final OnmsAlarm alarm, final ServletContext context) {
         final List<Filter> filters = new ArrayList<>();
-
-        // final AlarmIDFilter alarmIDFilter = new AlarmIDFilter(alarm.getId());
 
         if (alarm.getNodeId() != null) {
             filters.add(new NodeFilter(alarm.getNodeId(), context));

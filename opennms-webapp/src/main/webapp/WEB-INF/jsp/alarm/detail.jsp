@@ -399,7 +399,6 @@
 </div>
 <% } %>
 
-<% if (Boolean.getBoolean("org.opennms.web.console.alarms.relatedEvents")) { %>
 <div class="card">
     <div class="card-header">
         <span>Related Events</span>
@@ -436,7 +435,6 @@
     </table>
     <% } %>
 </div>
-<% } /* org.opennms.web.console.alarms.relatedEvents */  %>
 
 <% if (acks != null && acks.size() > 0) {%>
 <div class="card severity">
