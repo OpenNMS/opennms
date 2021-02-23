@@ -47,7 +47,6 @@ public class Activator implements BundleActivator {
     private final static String PID = "org.opennms.features.topology.app.icons.application";
 
     private ServiceRegistration<OsgiConfigAdaptor> registration;
-
     @Override
     public void start(BundleContext context) throws Exception {
         Hashtable<String,String> config = new Hashtable<>();
@@ -58,12 +57,8 @@ public class Activator implements BundleActivator {
                 .map(context::getService)
                 .orElseThrow(() -> new IllegalStateException("Cannot find " + ConfigurationService.class.getName()));
 
-        OsgiConfigAdaptor adaptor = new OsgiConfigAdaptor(context, configService);
+        OsgiConfigAdaptor adaptor = new OsgiConfigAdaptorImpl(context, configService);
         registration = context.registerService(OsgiConfigAdaptor.class, adaptor, config);
-
-        // Synchronize all OSGI PIDs
-        // TODO: Patrick: make this generic
-        adaptor.configurationHasChanged(PID); // does not work
     }
 
     @Override
@@ -71,28 +66,6 @@ public class Activator implements BundleActivator {
         if(registration != null ) {
             registration.unregister();
         }
-        LOG.info(OsgiConfigAdaptor.class.getSimpleName() + "stopped");
+        LOG.info(OsgiConfigAdaptorImpl.class.getSimpleName() + "stopped");
     }
-
-//    @Override
-//    public void start(BundleContext context) throws Exception {
-//        Hashtable<String,String> config = new Hashtable<>();
-//        config.put("service.ranking", "1000");
-//        config.put("name", OpenNMSPersistenceManager.class.getName());
-//        LOG.info("Registering service {}.", OpenNMSPersistenceManager.class.getSimpleName());
-//
-//        final ConfigurationService configService = Optional.ofNullable(context.getServiceReference(ConfigurationService.class))
-//                .map(context::getService)
-//                .orElseThrow(() -> new IllegalStateException("Cannot find " + ConfigurationService.class.getName()));
-//
-//        registration = context.registerService(PersistenceManager.class, new OpenNMSPersistenceManager(context, configService), config);
-//    }
-//
-//    @Override
-//    public void stop(BundleContext context) throws Exception {
-//        if(registration != null ) {
-//            registration.unregister();
-//        }
-//        LOG.info(OpenNMSPersistenceManager.class.getSimpleName() + "stopped");
-//    }
 }

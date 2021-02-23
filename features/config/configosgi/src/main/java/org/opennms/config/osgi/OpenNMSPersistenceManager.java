@@ -65,7 +65,7 @@ public class OpenNMSPersistenceManager implements PersistenceManager, Configurat
 
     public OpenNMSPersistenceManager(final BundleContext bundleContext, final ConfigurationService configService) {
         this.configService = configService;
-        this.configService.registerForUpdates(PID, this);
+        // this.configService.registerForUpdates(PID, this);
         this.bundleContext = bundleContext;
         this.delegate = new FilePersistenceManager(bundleContext, null);
     }

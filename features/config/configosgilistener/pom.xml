@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <description>Provides an OpenNMS specific PersistenceManager.</description>
+    <parent>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.config</artifactId>
+        <version>28.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.config</groupId>
+    <artifactId>configosgilistener</artifactId>
+    <name>OpenNMS :: Features :: Config :: Configurationlistener for Osgi</name>
+    <packaging>bundle</packaging>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.9.14</version><!-- TODO: Patrick move Felix version somewhere? -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config</groupId>
+            <artifactId>configservice</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config</groupId>
+            <artifactId>configosgi</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>org.opennms.config.osgilistener*;version=${project.version};-noimport:=true</Export-Package>
+                        <Karaf-Commands>org.opennms.config.osgilistener*</Karaf-Commands>
+                        <Bundle-Activator>org.opennms.config.osgi.Activator</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

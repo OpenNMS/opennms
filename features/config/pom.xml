@@ -12,6 +12,7 @@
     <name>OpenNMS :: Features :: Config</name>
     <modules>
         <module>configosgi</module>
+        <module>configosgilistener</module>
         <module>configservice</module>
         <module>shell</module>
     </modules>

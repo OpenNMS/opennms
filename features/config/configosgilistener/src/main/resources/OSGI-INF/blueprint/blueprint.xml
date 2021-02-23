@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <reference id="configurationService" interface="org.opennms.config.configservice.api.ConfigurationService"/>
+    <reference id="osgiConfigAdaptor" interface="org.opennms.config.osgi.OsgiConfigAdaptor"/>
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+
+    <bean id="managedServiceListener" class="org.opennms.config.osgilistener.ManagedServiceListener">
+        <argument ref="configurationService"/>
+        <argument ref="osgiConfigAdaptor"/>
+        <argument ref="configurationAdmin"/>
+    </bean>
+
+    <reference-list interface="org.osgi.service.cm.ManagedService" availability="optional">
+        <reference-listener  bind-method="onBind" unbind-method="onUnbind" ref="managedServiceListener" />
+    </reference-list>
+
+</blueprint>

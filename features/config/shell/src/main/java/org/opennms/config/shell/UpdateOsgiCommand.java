@@ -33,7 +33,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.config.osgi.OsgiConfigAdaptor;
+import org.opennms.config.osgi.OsgiConfigAdaptorImpl;
 
 
 @Command(scope = "onmsconfig", name = "updateosgi", description = "Updates the osgi config with the configuration from OpenNMS.")
@@ -41,7 +41,7 @@ import org.opennms.config.osgi.OsgiConfigAdaptor;
 public class UpdateOsgiCommand implements Action {
 
     @Reference
-    private OsgiConfigAdaptor adaptor;
+    private OsgiConfigAdaptorImpl adaptor;
 
     @Option(name = "-p", aliases = "--pid", description = "PID to update", required = true)
     private String pid;

@@ -28,86 +28,11 @@
 
 package org.opennms.config.osgi;
 
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.opennms.config.configservice.api.ConfigurationChangeListener;
-import org.opennms.config.configservice.api.ConfigurationService;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/** Gets notified of configuration changes that happened in OpenNMS and passes them on to the OSGI world. */
-public class OsgiConfigAdaptor implements ConfigurationChangeListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(OpenNMSPersistenceManager.class);
 
+public interface OsgiConfigAdaptor extends ConfigurationChangeListener {
     // TODO: Patrick we need to register for all OSGI PIDs
-    private final static String PID = "org.opennms.features.topology.app.icons.application";
-
-    private final ConfigurationService configServiceOpennms;
-    private ConfigurationAdmin configurationAdminOsgi;
-    private final BundleContext bundleContext;
-
-    public OsgiConfigAdaptor(final BundleContext bundleContext, final ConfigurationService configService) {
-        this.bundleContext = bundleContext;
-        this.configServiceOpennms = configService;
-        this.configServiceOpennms.registerForUpdates(PID, this);
-    }
-
-    // Hook to be notified of changes from ConfigurationService
-    @Override
-    public void configurationHasChanged(final String pid) {
-        Objects.requireNonNull(pid);
-
-        // Get opennms config
-        Optional<Map<String, String>> dictionary = configServiceOpennms.getConfigurationAsMap(pid);
-        if (!dictionary.isPresent()) {
-            LOG.warn("Cannot find configuration, even though we were informed of a change on {}. Will ignore it.", pid);
-            return;
-        }
-        Map<String, String> confFromConfigService = dictionary.get();
-
-        // Get osgi config
-        Optional<ConfigurationAdmin> configAdminOpt = getConfigurationAdminOsgi();
-        if(!configAdminOpt.isPresent()) {
-            LOG.warn("Can't get hold of {}, thus I can't update the configuration for {}. Will ignore it.", ConfigurationAdmin.class.getSimpleName(), pid);
-            return;
-        }
-        final Configuration configFromAdminServiceOsgi;
-        try {
-            configFromAdminServiceOsgi = configAdminOpt.get().getConfiguration(pid, "?org.opennms");
-        } catch (IOException e) {
-            LOG.warn("Can't get load the configuration for {} from {}. Will ignore it.", pid, ConfigurationAdmin.class.getSimpleName(), e);
-            return;
-        }
-        Dictionary<String, Object> confFromAdminService = Optional.ofNullable(configFromAdminServiceOsgi.getProperties())
-                .orElse(new Hashtable<>());
-
-        // Set / update properties. We can't remove properties that are no longer present from configServiceOpennms since osgi stores
-        // also internal configuration so we can't do a real diff.
-        for (Map.Entry<String, String> entry : confFromConfigService.entrySet()) {
-            confFromAdminService.put(entry.getKey(), entry.getValue());
-        }
-        try {
-            configFromAdminServiceOsgi.update(confFromAdminService);
-        } catch (final IOException e) {
-            LOG.warn("An error occurred trying to update the config for {}. Will ignore it.", pid, e);
-        }
-    }
-
-    private Optional<ConfigurationAdmin> getConfigurationAdminOsgi() {
-        if(this.configurationAdminOsgi == null) {
-           this.configurationAdminOsgi = Optional.ofNullable(bundleContext.getServiceReference(ConfigurationAdmin.class))
-                   .map(bundleContext::getService)
-                   .orElse(null);
-        }
-        return Optional.ofNullable(configurationAdminOsgi);
-    }
+    String PID = "org.opennms.features.topology.app"; // "org.opennms.features.topology.app.icons.application";
 }

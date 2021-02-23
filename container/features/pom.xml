@@ -518,6 +518,12 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>configosgilistener</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <!-- Required for com.eclipsesource.jaxrs/* -->
