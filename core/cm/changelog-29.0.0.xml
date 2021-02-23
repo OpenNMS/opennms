@@ -8,6 +8,7 @@
 
     <changeSet author="jwhite" id="29.0.0-init-vacuumd">
         <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
+        <!-- TODO: What do do when the vacuumd configuration does not exist i.e. new install - need to seed default config. -->
         <importConfig configPath="etc/vacuumd-configuration.xml" schemaRef="vacuumd"/>
         <deleteConfig configPath="etc/vacuumd-configuration.xml"/>
     </changeSet>
