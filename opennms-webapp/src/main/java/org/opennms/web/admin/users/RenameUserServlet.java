@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 
@@ -59,6 +60,10 @@ public class RenameUserServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userID = request.getParameter("userID");
         String newID = request.getParameter("newID");
+
+        if (newID != null && newID.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("User ID must not contain any HTML markup.");
+        }
 
         // now save to the xml file
         try {

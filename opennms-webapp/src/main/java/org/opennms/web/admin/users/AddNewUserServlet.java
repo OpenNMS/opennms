@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.Password;
@@ -69,6 +70,11 @@ public class AddNewUserServlet extends HttpServlet {
         UserManager userFactory = UserFactory.getInstance();
 
         String userID = request.getParameter("userID");
+
+        if (userID != null && userID.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("User ID must not contain any HTML markup.");
+        }
+
         String password = request.getParameter("pass1");
 
         boolean hasUser = false;
