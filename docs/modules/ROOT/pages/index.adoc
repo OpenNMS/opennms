@@ -29,14 +29,14 @@ The following shows a sample full stack {page-component-title} implementation:
 
 image::opennms-full-stack.png[]
 
-. OpenNMS platform 
+. OpenNMS platform
 . Kafka message broker
 . PostgreSQL database
 . Elasticsearch
 . Apache Cassandra
 . Sentinel
-. Grafana 
-. Kibana 
+. Grafana
+. Kibana
 . Minions (at remote locations)
 
 See the xref:deployment:core/introduction.adoc#basic-deployment[Deployment] and xref:operation:overview/overview.adoc#overview[Operation] sections for more detail about these components.
@@ -52,5 +52,3 @@ The {page-component-title} documentation contains the following sections:
 * xref:development:overview/overview.adoc#overview[Development] (information and procedures on setting up and using a development environment)
 * xref:reference:glossary.adoc#glossary[Reference] (glossary, code snippets, and other reference material)
 
-== Legal Notice
-include::legal-notice.adoc[]
