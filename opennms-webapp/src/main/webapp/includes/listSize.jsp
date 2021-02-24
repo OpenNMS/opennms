@@ -28,9 +28,32 @@
  *******************************************************************************/
 
 --%>
+<% int limitSize = Integer.parseInt(request.getParameter("limitSize")); %>
+
 <script type="text/javascript">
+function setParameter(params, name, value) {
+    var matcher = new RegExp('^' + name + '=(\\d*)$');
+
+    var matched = false;
+    for (var i=0; i < params.length; i++) {
+        if (params[i].match(matcher)) {
+            params[i] = name + '=' + value;
+            matched = true;
+            break;
+        }
+    }
+
+    if (!matched) {
+        params.push(name + '=' + value);
+    }
+}
+
 function UpdateLimitSize(value) {
-    var matcher = new RegExp('^limit=(\\d*)$');
+    if (value == <%= limitSize %>) {
+        console.debug('limit unchanged:', value);
+        return;
+    }
+
     var params = [];
     var url = window.location.href;
     var parts = url.split('?');
@@ -39,17 +62,9 @@ function UpdateLimitSize(value) {
         params = query.split('&');
     }
 
-    var matched = false;
-    for (var i=0; i < params.length; i++) {
-        if (params[i].match(matcher)) {
-            params[i] = 'limit=' + value;
-            matched = true;
-            break;
-        }
-    }
-    if (!matched) {
-        params.push('limit=' + value);
-    }
+    setParameter(params, 'limit', value);
+    setParameter(params, 'multiple', 0);
+
     window.location.href = parts[0] + '?' + params.join('&');
 }
 </script>
@@ -57,7 +72,6 @@ function UpdateLimitSize(value) {
 Show:
 <select class="limit1"  id="limitSize" onchange="UpdateLimitSize(this.value)">
 <%
-    int limitSize = Integer.parseInt(request.getParameter("limitSize"));
     if (limitSize == 0) {
         limitSize = 20;
     }
