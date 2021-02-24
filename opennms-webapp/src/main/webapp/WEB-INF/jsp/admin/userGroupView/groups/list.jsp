@@ -77,7 +77,7 @@
     {
         var newName = prompt("Enter new name for group.", groupName);
 
-        if (newName != null) {
+        if (newName != null && newName != "") {
           if (/.*[&<>"`']+.*/.test(newName)) {
             alert("The group ID must not contain any HTML markup.");
             return;
