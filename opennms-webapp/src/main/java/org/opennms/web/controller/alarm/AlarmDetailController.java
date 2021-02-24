@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,23 +28,35 @@
 
 package org.opennms.web.controller.alarm;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.alarm.AlarmIdNotFoundException;
+import org.opennms.web.event.Event;
+import org.opennms.web.event.SortStyle;
+import org.opennms.web.event.WebEventRepository;
+import org.opennms.web.event.filter.EventCriteria;
+import org.opennms.web.event.filter.IPAddrLikeFilter;
+import org.opennms.web.event.filter.IfIndexFilter;
+import org.opennms.web.event.filter.NodeFilter;
+import org.opennms.web.event.filter.ServiceFilter;
+import org.opennms.web.filter.Filter;
+import org.opennms.web.servlet.XssRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
-import org.opennms.web.servlet.XssRequestWrapper;
-
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -54,6 +66,10 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author Ronny Trommer <ronny@opennms.org>
  */
 public class AlarmDetailController extends MultiActionController {
+    private static final int DEFAULT_SHORT_LIMIT = 20;
+    private static final int DEFAULT_MULTIPLE = 0;
+
+    private static final Logger logger = LoggerFactory.getLogger(AlarmDetailController.class);
 
     /**
      * OpenNMS alarm repository
@@ -61,19 +77,19 @@ public class AlarmDetailController extends MultiActionController {
     private AlarmRepository m_webAlarmRepository;
 
     /**
-     * Logging
+     * OpenNMS event repository
      */
-    private Logger logger = LoggerFactory.getLogger(AlarmDetailController.class);
+    private WebEventRepository m_webEventRepository;
 
-    /**
-     * <p>setWebAlarmRepository</p>
-     *
-     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.api.AlarmRepository}
-     * object.
-     */
-    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
-        m_webAlarmRepository = webAlarmRepository;
+    private Integer m_defaultShortLimit = DEFAULT_SHORT_LIMIT;
+
+    public void setAlarmRepository(AlarmRepository repository) {
+        m_webAlarmRepository = repository;
     }
+    public void setWebEventRepository(final WebEventRepository repository) {
+        m_webEventRepository = repository;
+    }
+    public void setDefaultShortLimit(final Integer limit) { m_defaultShortLimit = limit; }
 
     /**
      * <p>afterPropertiesSet</p>
@@ -82,6 +98,7 @@ public class AlarmDetailController extends MultiActionController {
      */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
+        Assert.notNull(m_webEventRepository, "webEventRepository must be set");
     }
 
     /**
@@ -100,7 +117,7 @@ public class AlarmDetailController extends MultiActionController {
      */
     public ModelAndView detail(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
 
-        OnmsAlarm m_alarm = null;
+        OnmsAlarm alarm = null;
         XssRequestWrapper safeRequest = new XssRequestWrapper(httpServletRequest);
         String alarmIdString = "";
         List<OnmsAcknowledgment> acknowledgments = Collections.emptyList();
@@ -112,23 +129,24 @@ public class AlarmDetailController extends MultiActionController {
             acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
 
             // Get alarm by ID
-            m_alarm = m_webAlarmRepository.getAlarm(alarmId);
-            logger.debug("Alarm retrieved: '{}'", m_alarm.toString());
+            alarm = m_webAlarmRepository.getAlarm(alarmId);
+            logger.debug("Alarm retrieved: '{}'", alarm.toString());
         } catch (NumberFormatException e) {
             logger.error("Could not parse alarm ID '{}' to integer.", safeRequest.getParameter("id"));
         } catch (Throwable e) {
             logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'", alarmIdString);
         }
 
-        if (m_alarm == null) {
+        if (alarm == null) {
             throw new AlarmIdNotFoundException("Could not find alarm with ID: " + alarmIdString, alarmIdString);
         }
 
         // return to view WEB-INF/jsp/alarm/detail.jsp
         ModelAndView mv = new ModelAndView("alarm/detail");
-        mv.addObject("alarm", m_alarm);
+        mv.addObject("alarm", alarm);
         mv.addObject("alarmId", alarmIdString);
         mv.addObject("acknowledgments", acknowledgments);
+        mv.addObject("related", this.getRelatedEvents(alarm, httpServletRequest));
         return mv;
     }
 
@@ -199,5 +217,79 @@ public class AlarmDetailController extends MultiActionController {
             logger.error("Could not parse alarm ID '{}' to integer.", httpServletRequest.getParameter("alarmId"));
             throw new ServletException("Could not parse alarm ID " + httpServletRequest.getParameter("alarmId") + " to integer.");
         }
+    }
+
+    private List<RelatedEvent> getRelatedEvents(final OnmsAlarm alarm, final HttpServletRequest request) {
+        Assert.notNull(alarm);
+
+        final List<RelatedEvent> relatedEvents = new ArrayList<>();
+
+        final List<Filter> filters = getFilters(alarm, request.getServletContext());
+
+        SortStyle sortStyle = SortStyle.ID;
+        final String sortStyleString = request.getParameter("sortby");
+        if (sortStyleString != null) {
+            try {
+                sortStyle = SortStyle.getSortStyle(sortStyleString);
+            } catch (final IllegalArgumentException e) {
+                logger.error("Unable to determine SortStyle for '{}'", sortStyleString, e);
+            }
+        }
+
+        int limit = m_defaultShortLimit;
+        final String limitString = request.getParameter("limit");
+        if (limitString != null) {
+            try {
+                int newLimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newLimit > 0) {
+                    limit = newLimit;
+                }
+            } catch (final NumberFormatException e) {
+                logger.error("Unable to parse query limit '{}'", limitString, e);
+            }
+        }
+
+        int multiple = DEFAULT_MULTIPLE;
+        final String multipleString = request.getParameter("multiple");
+        if (multipleString != null) {
+            try {
+                multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
+            } catch (final NumberFormatException e) {
+                logger.error("Unable to parse query multiple '{}'", multipleString, e);
+            }
+        }
+
+        final EventCriteria queryCriteria = new EventCriteria(filters, sortStyle, null, limit, limit * multiple);
+        try {
+            for (final Event event : m_webEventRepository.getMatchingEvents(queryCriteria)) {
+                relatedEvents.add(new RelatedEvent(event.getId(), event.getAlarmId(), event.getCreateTime(), event.getSeverity()));
+            }
+        } catch (final Exception e) {
+            logger.error("Could not retrieve events for queryCriteria '{}'.", queryCriteria);
+        }
+        return relatedEvents;
+    }
+
+    private List<Filter> getFilters(final OnmsAlarm alarm, final ServletContext context) {
+        final List<Filter> filters = new ArrayList<>();
+
+        if (alarm.getNodeId() != null) {
+            filters.add(new NodeFilter(alarm.getNodeId(), context));
+        }
+
+        if (alarm.getIpAddr() != null) {
+            filters.add(new IPAddrLikeFilter(InetAddressUtils.str(alarm.getIpAddr())));
+        }
+
+        if (alarm.getServiceType() != null) {
+            filters.add(new ServiceFilter(alarm.getServiceType().getId(), context));
+        }
+
+        if (alarm.getIfIndex() != null) {
+            filters.add(new IfIndexFilter(alarm.getIfIndex()));
+        }
+
+        return filters;
+
     }
 }
