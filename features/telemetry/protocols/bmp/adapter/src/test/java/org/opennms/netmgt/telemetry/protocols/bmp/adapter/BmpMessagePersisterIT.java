@@ -43,8 +43,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
@@ -59,6 +57,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribu
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLog;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
@@ -102,6 +102,9 @@ public class BmpMessagePersisterIT {
     private BmpUnicastPrefixDao bmpUnicastPrefixDao;
 
     @Autowired
+    private BmpIpRibLogDao bmpIpRibLogDao;
+
+    @Autowired
     private BmpBaseAttributeDao bmpBaseAttributeDao;
 
     @Autowired
@@ -114,8 +117,6 @@ public class BmpMessagePersisterIT {
     @Test
     public void testPersistence() {
 
-        CollectionAgent collectionAgent = mock(CollectionAgent.class);
-        CollectionAgentFactory collectionAgentFactory = mock(CollectionAgentFactory.class);
         Context context = mock(Context.class);
         when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
         // Persist collector
@@ -171,6 +172,9 @@ public class BmpMessagePersisterIT {
         bmpMessageHandler.handle(msg, context);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
+
+        List<BmpIpRibLog> ipRibLogs = bmpIpRibLogDao.findAll();
+        Assert.assertFalse(ipRibLogs.isEmpty());
 
         //New Peer message should remove all previous prefixes.
         peer.action = Peer.Action.DOWN;

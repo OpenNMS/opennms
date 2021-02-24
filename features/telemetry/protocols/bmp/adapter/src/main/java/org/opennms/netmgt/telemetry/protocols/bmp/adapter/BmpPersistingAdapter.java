@@ -51,6 +51,6 @@ public class BmpPersistingAdapter extends AbstractAdapter {
 
     @Override
     public void handleMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
-        BmpAdapterCommon.handleTelemetryMessage(messageLogEntry, messageLog, bmpMessageHandler, sequence);
+        BmpAdapterCommon.handleBmpMessage(messageLogEntry, messageLog, bmpMessageHandler, sequence);
     }
 }

@@ -60,7 +60,7 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
     
     @Override
     public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
-        BmpAdapterCommon.handleTelemetryMessage(messageLogEntry, messageLog, messageHandler, sequence);
+        BmpAdapterCommon.handleBmpMessage(messageLogEntry, messageLog, messageHandler, sequence);
         return Stream.empty();
     }
 

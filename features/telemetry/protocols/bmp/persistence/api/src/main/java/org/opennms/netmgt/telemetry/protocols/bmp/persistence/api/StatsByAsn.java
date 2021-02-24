@@ -43,7 +43,7 @@ public class StatsByAsn {
 
     private BigInteger originAs;
 
-    public StatsByAsn(Date intervalTime, String peerHashId, BigInteger originAs, BigInteger updates, BigInteger withdraws) {
+    public StatsByAsn(Date intervalTime, String peerHashId, BigInteger originAs, BigInteger withdraws, BigInteger updates) {
         this.intervalTime = intervalTime;
         this.peerHashId = peerHashId;
         this.updates = updates;

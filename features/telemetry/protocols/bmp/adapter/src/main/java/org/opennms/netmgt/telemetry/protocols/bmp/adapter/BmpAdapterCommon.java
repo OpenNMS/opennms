@@ -183,8 +183,8 @@ public class BmpAdapterCommon {
         }
     }
 
-    public static void handleTelemetryMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog,
-                                              BmpMessageHandler messageHandler, final AtomicLong sequence) {
+    public static void handleBmpMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog,
+                                        BmpMessageHandler messageHandler, final AtomicLong sequence) {
         LOG.trace("Parsing packet: {}", messageLogEntry);
         final Transport.Message message;
         try {

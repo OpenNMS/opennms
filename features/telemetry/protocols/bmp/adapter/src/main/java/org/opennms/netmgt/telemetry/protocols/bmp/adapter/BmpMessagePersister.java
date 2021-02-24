@@ -210,7 +210,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
             bmpIpRibLog.setTimestamp(new Date());
             bmpIpRibLog.setWithDrawn(unicastPrefix.isWithDrawn());
             bmpIpRibLogDao.saveOrUpdate(bmpIpRibLog);
-
         }
 
     }
