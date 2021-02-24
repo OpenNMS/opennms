@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,6 +69,12 @@
 %>
 
 <%
+    final Comparator<OnmsAlarm> SORT_ALARMS_BY_ID = new Comparator<OnmsAlarm>() {
+        public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
+            return Integer.compare(o1.getId(), o2.getId());
+        }
+    };
+
     XssRequestWrapper req = new XssRequestWrapper(request);
     OnmsAlarm alarm = (OnmsAlarm) request.getAttribute("alarm");
     final String alarmId = (String)request.getAttribute("alarmId");
@@ -287,11 +293,7 @@
         </tr>
         </thead>
         <%
-            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
-                public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
-                    return Integer.compare(o1.getId(), o2.getId());
-                }
-            });
+            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<>(SORT_ALARMS_BY_ID);
 
             sortedSet.addAll(alarm.getRelatedSituations());
             pageContext.setAttribute("sortedSet", sortedSet);
@@ -348,11 +350,7 @@
         </tr>
         </thead>
         <%
-            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<OnmsAlarm>(new Comparator<OnmsAlarm>() {
-                public int compare(final OnmsAlarm o1, final OnmsAlarm o2) {
-                    return Integer.compare(o1.getId(), o2.getId());
-                }
-            });
+            final TreeSet<OnmsAlarm> sortedSet = new TreeSet<>(SORT_ALARMS_BY_ID);
 
             sortedSet.addAll(alarm.getRelatedAlarms());
             pageContext.setAttribute("sortedSet", sortedSet);
@@ -400,6 +398,43 @@
     </table>
 </div>
 <% } %>
+
+<div class="card">
+    <div class="card-header">
+        <span>Related Events</span>
+    </div>
+    <%
+        final List<RelatedEvent> related = (List<RelatedEvent>)request.getAttribute("related");
+        if (related.size() > 0) {
+    %>
+    <table class="table table-sm severity">
+        <thead>
+            <tr>
+                <th class="divider" width="50em">Event</th>
+                <!-- <th class="divider" width="50em">Alarm ID</th> -->
+                <th width="200em">Creation Time</th>
+                <th class="divider" width="100em">Severity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (final RelatedEvent entry : related) { %>
+                <tr class="severity-<%=entry.getSeverity().getLabel().toLowerCase()%>">
+                    <td>
+                        <% if (entry.getEventId() != 0) { %>
+                            <a href="event/detail.jsp?id=<%= entry.getEventId() %>"><%= entry.getEventId() %></a>
+                        <% } %>
+                    </td>
+                    <!-- <td><%= entry.getAlarmId() %></td> -->
+                    <td><%= Util.formatDateToUIString(entry.getCreationTime()) %></td>
+                    <td><%= entry.getSeverity().getLabel() %></td>
+                    <td style="width: auto">&nbsp;</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } %>
+</div>
 
 <% if (acks != null && acks.size() > 0) {%>
 <div class="card severity">
