@@ -8,6 +8,8 @@
 
     <!-- General ideas:
 
+         * We follow the liquibase approach and apply it to configuration files.
+
          SCHEMA:
          * we register schemas for configuration validation. For now we support a subset of xsd (no attributes).
          * every configuration needs a schema.
@@ -21,6 +23,13 @@
          * we can address any element in the tree via a path. For now we support XPath
          * we can insert, update and remove data at the given path. Either directly within the changeSet or via
            referencing some other file
+
+         XML PARTS
+         * A CHANGESET is an atomic operation that will be applied to the configuration manager at a given time.
+           It won't be repeated after successfully applied. No surprise here, same as liquibase. TODO: How to be transactional here?
+         * SCHEMAS can be registered and unregistered. Unregistering works only if no configuration uses the schema any more.
+         * CONFIGURATION can be registered, deleted and modified. A modification consists of a sequence of steps. They can add,
+           change and remove nodes in the configuration tree. Additional a schema change can be applied.
      -->
     <changeSet author="jwhite" id="29.0.0-init-vacuumd">
         <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
@@ -28,9 +37,11 @@
         <modifyConfiguration id="vacuumd">
             <import path="/" uri="config-templates/vacuumd-configuration.xml" /><!-- imports (and possibly overrides) a full vacuumd-configuration -->
             <insert path="/VacuumdConfiguration/"><!-- inserts a new statement in the vacuumd configuration -->
+                <!-- this snippet will become part of the configuration -->
                 <statement>
                     DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
                 </statement>
+                <!-- snippet end. -->
             </insert>
             <import path="/VacuumdConfiguration/" uri="myclasspath/super-complicated-statement.xml" /><!-- imports an xml fragment at the given path -->
         </modifyConfiguration>
