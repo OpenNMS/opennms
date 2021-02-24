@@ -6,32 +6,75 @@
         xsi:schemaLocation="https://www.opennms.org/xml/ns/cm https://www.opennms.org/xml/ns/cm/cm-1.0.xsd
     https://www.opennms.org/xml/ns/cm-ext https://www.opennms.org/xml/ns/cm-ext.xsd">
 
+    <!-- General ideas:
+
+         SCHEMA:
+         * we register schemas for configuration validation. For now we support a subset of xsd (no attributes).
+         * every configuration needs a schema.
+         * multiple configurations may share the same schema, e.g. all property based schemas
+         * over time the schema of a configuration can be changed. If necessary a SchemaChangedHandler can be used to
+           migrate the config data
+
+         CONFIGURATION:
+         * every configuration can be addressed by a unique id
+         * every configuration represents a tree structure
+         * we can address any element in the tree via a path. For now we support XPath
+         * we can insert, update and remove data at the given path. Either directly within the changeSet or via
+           referencing some other file
+     -->
     <changeSet author="jwhite" id="29.0.0-init-vacuumd">
         <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
-        <!-- TODO: What do do when the vacuumd configuration does not exist i.e. new install - need to seed default config. -->
-        <importConfig configPath="etc/vacuumd-configuration.xml" schemaRef="vacuumd"/>
-        <deleteConfig configPath="etc/vacuumd-configuration.xml"/>
+        <registerConfiguration id="vacuumd" schema="vacuumd" />
+        <modifyConfiguration id="vacuumd">
+            <import path="/" uri="config-templates/vacuumd-configuration.xml" /><!-- imports (and possibly overrides) a full vacuumd-configuration -->
+            <insert path="/VacuumdConfiguration/"><!-- inserts a new statement in the vacuumd configuration -->
+                <statement>
+                    DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
+                </statement>
+            </insert>
+            <import path="/VacuumdConfiguration/" uri="myclasspath/super-complicated-statement.xml" /><!-- imports an xml fragment at the given path -->
+        </modifyConfiguration>
     </changeSet>
 
-    <changeSet author="jwhite" id="29.0.0-init-vacuumd">
-        <registerSchema xsdPath="classpath:/xsds/vacuumd-2005.xsd" schemaName="vacuumd" />
-        <importConfig configPath="etc/vacuumd-configuration.xml" schemaRef="vacuumd"/>
-        <deleteConfig configPath="etc/vacuumd-configuration.xml"/>
+    <changeSet author="jwhite" id="29.0.0-migrate-schema-vacuumd">
+        <registerSchema xsdPath="classpath:/xsds/vacuumd-2020.xsd" schemaName="vacuumd2020" />
+        <modifyConfiguration id="vacuumd">
+            <updateSchema schemaName="vacuumd2020" schemaChangeHandler="org.opennms.vacuumd.Vacuum2020SchemaChangeHandler" />
+        </modifyConfiguration>
     </changeSet>
 
-    <changeSet author="jwhite" id="29.0.0-init-sysprops">
-        <systemProperty name="org.opennms.ipc.sink.aggregation.stripes" type="int" min-max="1" max-val="123"></systemProperty>
-        <systemProperty name="org.opennms.instance.id" type="string" match-regex="[\d]+"></systemProperty>
+    <changeSet author="jwhite" id="29.0.0-retire-vacuumd">
+        <deleteConfiguration name="vacuumd"/>
+    </changeSet>
+
+    <!-- system properties -->
+    <changeSet author="jwhite" id="29.0.0-init-sysprops-with-generic-properties">
+        <registerSchema xsdPath="classpath:/xsds/key-value-map.xsd" schemaName="key-value-map" />
+        <registerConfiguration id="system-properties" schemaName="key-value-map" />
+        <modifyConfiguration id="system-properties" path="/map/">
+            <put path="org.opennms.ipc.sink.aggregation.stripes">1234</put>
+            <put path="org.opennms.instance.id">42</put>
+        </modifyConfiguration>
+    </changeSet>
+
+    <changeSet author="jwhite" id="29.0.0-sysprops-with-specific-validation">
+        <!-- we need now validation on system properties. Let's use our own specific schema for that: -->
+        <registerSchema xsdPath="classpath:/xsds/systemPropertiesValidationSchema.xsd" schemaName="systemPropertiesValidationSchema" />
+        <modifyConfiguration id="system-properties">
+            <updateSchema schemaName="systemPropertiesValidationSchema" schemaChangeHandler="org.opennms.MySchemaChangeHandler" />
+        </modifyConfiguration>
     </changeSet>
 
     <changeSet author="jwhite" id="29.0.0-init-blueprint-amqp-forwarder">
-        <registerOsgiPid persitentId="org.opennms.features.amqp.eventforwarder">
-            <property name="connectionUrl" value="amqp://localhost:5672"/>
-            <property name="username" value="guest"/>
-            <property name="password" value="guest"/>
-            <property name="destination" value="amqp:topic:opennms-events"/>
-            <property name="processorName" value="default-event-forwarder-processor"/>
-        </registerOsgiPid>
+        <registerConfiguration id="org.opennms.features.amqp.eventforwarder" schemaName="key-value-map" />
+        <modifyConfiguration id="org.opennms.features.amqp.eventforwarder" path="/map/">
+            <put path="connectionUrl">amqp://localhost:5672"</put> <!-- put as in upsert? -->
+            <put path="username">guest</put>
+            <put path="password">guest</put>
+            <put path="destination">amqp:topic:opennms-events"</put>
+            <put path="processorName">default-event-forwarder-processor"</put>
+            <remove path="propertyWeDontLikeAnymore"/>
+        </modifyConfiguration>
     </changeSet>
 
 </modelChangeLog>
