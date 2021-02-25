@@ -95,9 +95,13 @@
     {
         document.allUsers.userID.value=userID;
         var newID = prompt("Enter new name for user.", userID);
-        
-        if (newID != null && newID != "")
-        {
+
+        if (newID != null && newID != "") {
+          if (/.*[&<>"`']+.*/.test(newId)) {
+            alert("The user ID must not contain any HTML markup.");
+            return;
+          }
+
           document.allUsers.newID.value = newID;
           document.allUsers.action="admin/userGroupView/users/renameUser";
           document.allUsers.submit();
