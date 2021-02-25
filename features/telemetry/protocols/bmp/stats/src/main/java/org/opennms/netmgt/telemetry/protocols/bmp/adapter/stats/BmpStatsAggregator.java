@@ -28,17 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
@@ -164,10 +160,9 @@ public class BmpStatsAggregator {
 
     private void deleteExpiredGlobalRibs() {
         // Delete Global ribs before given time in Secs.
-        List<BmpGlobalIpRib> bmpGlobalIpRibList = bmpGlobalIpRibDao.findGlobalRibsBeforeGivenTime(2 * 60 * 60);
-        bmpGlobalIpRibList.forEach(bmpGlobalIpRib -> {
-            bmpGlobalIpRibDao.delete(bmpGlobalIpRib);
-        });
+        LOG.debug("Deleting expired global ribs ++ ");
+        bmpGlobalIpRibDao.deleteGlobalRibsBeforeGivenTime(2*60*60);
+        LOG.debug("Deleting expired global ribs -- ");
     }
 
     private BmpGlobalIpRib buildGlobalIpRib(PrefixByAS prefixByAS) {
@@ -179,20 +174,6 @@ public class BmpStatsAggregator {
                 bmpGlobalIpRib.setPrefixLen(prefixByAS.getPrefixLen());
                 bmpGlobalIpRib.setTimeStamp(prefixByAS.getTimeStamp());
                 bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
-                Long asn = bmpGlobalIpRib.getRecvOriginAs();
-                if (asn != null) {
-                    BmpAsnInfo bmpAsnInfo = bmpAsnInfoDao.findByAsn(asn);
-                    if (bmpAsnInfo == null) {
-                        bmpAsnInfo = fetchAndBuildAsnInfo(asn);
-                        if (bmpAsnInfo != null) {
-                            try {
-                                bmpAsnInfoDao.saveOrUpdate(bmpAsnInfo);
-                            } catch (Exception e) {
-                                LOG.error("Exception while persisting BMP ASN Info  {}", bmpAsnInfo, e);
-                            }
-                        }
-                    }
-                }
                 String prefix = bmpGlobalIpRib.getPrefix();
                 if (!Strings.isNullOrEmpty(prefix)) {
                     BmpRouteInfo bmpRouteInfo = fetchRouteInfo(prefix);
@@ -216,27 +197,6 @@ public class BmpStatsAggregator {
 
     }
 
-    private BmpAsnInfo fetchAndBuildAsnInfo(Long asn) {
-        Optional<AsnInfo> asnInfoOptional = BmpWhoIsClient.getAsnInfo(asn);
-        if (asnInfoOptional.isPresent()) {
-            BmpAsnInfo bmpAsnInfo = new BmpAsnInfo();
-            AsnInfo asnInfo = asnInfoOptional.get();
-            bmpAsnInfo.setAsn(asnInfo.getAsn());
-            bmpAsnInfo.setOrgId(asnInfo.getOrgId());
-            bmpAsnInfo.setAsName(asnInfo.getAsName());
-            bmpAsnInfo.setOrgName(asnInfo.getOrgName());
-            bmpAsnInfo.setAddress(asnInfo.getAddress());
-            bmpAsnInfo.setCity(asnInfo.getCity());
-            bmpAsnInfo.setStateProv(asnInfo.getStateProv());
-            bmpAsnInfo.setPostalCode(asnInfo.getPostalCode());
-            bmpAsnInfo.setCountry(asnInfo.getCountry());
-            bmpAsnInfo.setSource(asnInfo.getSource());
-            bmpAsnInfo.setRawOutput(asnInfo.getRawOutput());
-            bmpAsnInfo.setLastUpdated(Date.from(Instant.now()));
-            return bmpAsnInfo;
-        }
-        return null;
-    }
 
     private BmpRouteInfo fetchRouteInfo(String prefix) {
         List<BmpRouteInfo> routeInfoList = bmpRouteInfoDao.findByPrefix(prefix);

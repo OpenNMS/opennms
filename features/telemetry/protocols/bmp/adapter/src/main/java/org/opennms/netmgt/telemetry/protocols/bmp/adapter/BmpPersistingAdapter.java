@@ -28,28 +28,29 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter;
-import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class BmpPersistingAdapter extends BmpIntegrationAdapter {
+public class BmpPersistingAdapter extends AbstractAdapter {
 
-    private final BmpPersistenceMessageHandler bmpMessagePersister;
+    private final BmpMessageHandler bmpMessageHandler;
 
-    public BmpPersistingAdapter(AdapterDefinition adapterConfig, MetricRegistry metricRegistry, BmpPersistenceMessageHandler messageHandler) {
-        super(adapterConfig, metricRegistry, messageHandler);
-        this.bmpMessagePersister = messageHandler;
+    private final AtomicLong sequence = new AtomicLong();
+
+    public BmpPersistingAdapter(AdapterDefinition adapterConfig, MetricRegistry metricRegistry, BmpMessageHandler bmpMessageHandler) {
+        super(adapterConfig, metricRegistry);
+        this.bmpMessageHandler = bmpMessageHandler;
     }
 
     @Override
-    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
-        super.handleCollectionMessage(messageLogEntry, messageLog);
-        return bmpMessagePersister.getCollectionSet();
+    public void handleMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
+        BmpAdapterCommon.handleBmpMessage(messageLogEntry, messageLog, bmpMessageHandler, sequence);
     }
 }

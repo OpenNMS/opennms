@@ -39,13 +39,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
@@ -60,6 +57,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribu
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLog;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
@@ -103,6 +102,9 @@ public class BmpMessagePersisterIT {
     private BmpUnicastPrefixDao bmpUnicastPrefixDao;
 
     @Autowired
+    private BmpIpRibLogDao bmpIpRibLogDao;
+
+    @Autowired
     private BmpBaseAttributeDao bmpBaseAttributeDao;
 
     @Autowired
@@ -115,12 +117,8 @@ public class BmpMessagePersisterIT {
     @Test
     public void testPersistence() {
 
-        CollectionAgent collectionAgent = mock(CollectionAgent.class);
-        CollectionAgentFactory collectionAgentFactory = mock(CollectionAgentFactory.class);
         Context context = mock(Context.class);
         when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
-        when(collectionAgentFactory.createCollectionAgent(Mockito.anyString(), Mockito.any())).thenReturn(collectionAgent);
-        bmpMessageHandler.setCollectionAgentFactory(collectionAgentFactory);
         // Persist collector
         final Collector collector = getCollector();
         Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
@@ -138,7 +136,7 @@ public class BmpMessagePersisterIT {
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertEquals(2, routers.size());
         BmpRouter bmpRouter = routers.get(0);
-        Assert.assertEquals(bmpRouter.getBmpCollector().getHashId(), "91e3a7ff9f5676ed6ae6fcd8a6b455ec");
+        Assert.assertEquals(bmpRouter.getCollectorHashId(), "91e3a7ff9f5676ed6ae6fcd8a6b455ec");
 
         // Change collector state to stop and persist collector again. Routers should be down when collector is stopped.
         collector.action = Collector.Action.STOPPED;
@@ -148,10 +146,6 @@ public class BmpMessagePersisterIT {
         Assert.assertFalse(collectors.isEmpty());
         bmpCollector = collectors.get(0);
         Assert.assertEquals(State.DOWN, bmpCollector.getState());
-        routers = bmpRouterDao.findAll();
-        Assert.assertFalse(routers.isEmpty());
-        bmpRouter = routers.get(0);
-        Assert.assertEquals(State.DOWN, bmpRouter.getState());
 
         // Persist peer.
         Peer peer = getPeer();
@@ -178,6 +172,9 @@ public class BmpMessagePersisterIT {
         bmpMessageHandler.handle(msg, context);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
+
+        List<BmpIpRibLog> ipRibLogs = bmpIpRibLogDao.findAll();
+        Assert.assertFalse(ipRibLogs.isEmpty());
 
         //New Peer message should remove all previous prefixes.
         peer.action = Peer.Action.DOWN;

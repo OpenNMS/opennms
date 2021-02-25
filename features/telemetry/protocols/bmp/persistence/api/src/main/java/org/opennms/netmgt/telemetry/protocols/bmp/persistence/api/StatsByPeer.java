@@ -41,7 +41,7 @@ public class StatsByPeer {
 
     private Date intervalTime;
 
-    public StatsByPeer(Date intervalTime, String peerHashId, BigInteger updates, BigInteger withdraws) {
+    public StatsByPeer(Date intervalTime, String peerHashId, BigInteger withdraws, BigInteger updates) {
         this.peerHashId = peerHashId;
         this.updates = updates;
         this.withdraws = withdraws;

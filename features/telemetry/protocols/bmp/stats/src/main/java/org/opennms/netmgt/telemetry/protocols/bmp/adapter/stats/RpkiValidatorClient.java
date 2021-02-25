@@ -69,6 +69,8 @@ public class RpkiValidatorClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(RpkiValidatorClient.class);
 
+    private static final Integer DEFAULT_HOUR_OF_THE_DAY = 3;
+
     private final String rpkiUrl;
 
     private String authorizationHeader;
@@ -78,6 +80,8 @@ public class RpkiValidatorClient {
     private String rpkiUsername;
 
     private String rpkiPassword;
+
+    private Integer hourOfTheDay = DEFAULT_HOUR_OF_THE_DAY;
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("UpdateRpkiInfo-%d")
@@ -94,7 +98,8 @@ public class RpkiValidatorClient {
     }
 
     public void init() {
-        scheduledExecutorService.scheduleAtFixedRate(this::updateRpkiInfo, 1, 24, TimeUnit.HOURS);
+        Long hourOfTheDayInMinutes = Utils.getHourOfTheDayInMinutes(hourOfTheDay);
+        scheduledExecutorService.scheduleAtFixedRate(this::updateRpkiInfo, hourOfTheDayInMinutes, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
     }
 
     public void destroy() {
@@ -212,5 +217,9 @@ public class RpkiValidatorClient {
 
     public void setRpkiPassword(String rpkiPassword) {
         this.rpkiPassword = rpkiPassword;
+    }
+
+    public void setHourOfTheDay(Integer hourOfTheDay) {
+        this.hourOfTheDay = hourOfTheDay;
     }
 }

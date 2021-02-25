@@ -43,9 +43,9 @@ public class RouteInfoClientTest {
 
     @Test
     public void testRouteInfoClient() throws URISyntaxException {
-        URL resourceURL = getClass().getResource("/routeinfo/sample.db");
+        URL resourceURL = getClass().getResource("/routeinfo/bmp-test.db");
         RouteInfoClient routeInfoClient = new RouteInfoClient(resourceURL.getPath());
         List<RouteInfo> routeInfoList = routeInfoClient.parseEachFile(Paths.get(resourceURL.toURI()));
-        assertThat(routeInfoList, Matchers.hasSize(19));
+        assertThat(routeInfoList, Matchers.hasSize(2705));
     }
 }

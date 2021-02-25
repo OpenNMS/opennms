@@ -21,6 +21,9 @@
       <cm:property name="rpkiUsername" value=""/>
       <cm:property name="rpkiPassword" value=""/>
       <cm:property name="routeInfoDbPath" value="$[karaf.etc]/routeinfo"/>
+      <cm:property name="hourOfTheDayForRouteInfo" value="1"/>
+      <cm:property name="hourOfTheDayForAsnInfo" value="2"/>
+      <cm:property name="hourOfTheDayForRpki" value="3"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -63,11 +66,22 @@
     <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
     <property name="rpkiUsername" value="${rpkiUsername}"/>
     <property name="rpkiPassword" value="${rpkiUsername}"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForRpki}"/>
   </bean>
 
   <bean id="routeInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.RouteInfoClient"
         init-method="init" destroy-method="destroy">
     <argument value="${routeInfoDbPath}"/>
     <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForRouteInfo}"/>
+  </bean>
+
+  <bean id="asnInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.AsnInfoClient"
+        init-method="init" destroy-method="destroy">
+    <property name="bmpGlobalIpRibDao" ref="bmpGlobalIpRibDao"/>
+    <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForAsnInfo}"/>
   </bean>
 </blueprint>

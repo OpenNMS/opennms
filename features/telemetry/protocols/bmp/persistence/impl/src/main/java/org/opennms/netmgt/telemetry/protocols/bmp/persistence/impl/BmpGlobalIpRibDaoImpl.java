@@ -99,4 +99,34 @@ public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, 
 
     }
 
+    @Override
+    public int deleteGlobalRibsBeforeGivenTime(long timeInSecs) {
+        Instant instantForGivenTime = Instant.now().minusSeconds(timeInSecs);
+        Date givenTime = Date.from(instantForGivenTime);
+        String hql = "DELETE FROM BmpGlobalIpRib where shouldDelete = true and timeStamp < ?";
+        Object[] values = {givenTime};
+        return bulkDelete(hql, values);
+    }
+
+    @Override
+    public List<BigInteger> getAsnsNotExistInAsnInfo() {
+
+        return  getHibernateTemplate().execute(session -> (List<BigInteger>) session.createSQLQuery(
+                "SELECT DISTINCT recv_origin_as FROM bmp_global_ip_ribs r" +
+                " LEFT JOIN bmp_asn_info asnInfo ON asnInfo.asn = r.recv_origin_as" +
+                        " WHERE asnInfo.asn is null")
+                .setResultTransformer(new ResultTransformer() {
+                    @Override
+                    public Object transformTuple(Object[] tuple, String[] aliases) {
+                        return tuple[0];
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public List transformList(List collection) {
+                        return collection;
+                    }
+                }).list());
+    }
+
 }

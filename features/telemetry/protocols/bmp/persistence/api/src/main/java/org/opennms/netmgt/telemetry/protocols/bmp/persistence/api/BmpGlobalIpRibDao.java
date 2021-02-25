@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -39,5 +40,9 @@ public interface BmpGlobalIpRibDao extends OnmsDao<BmpGlobalIpRib, Long> {
     List<StatsIpOrigins> getStatsIpOrigins();
 
     List<BmpGlobalIpRib> findGlobalRibsBeforeGivenTime(long timeInSecs);
+
+    int deleteGlobalRibsBeforeGivenTime(long timeInSecs);
+
+    List<BigInteger> getAsnsNotExistInAsnInfo();
 
 }

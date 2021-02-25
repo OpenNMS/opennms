@@ -45,7 +45,7 @@ public class StatsByPrefix {
 
     private Integer prefixLen;
 
-    public StatsByPrefix(Date intervalTime, String peerHashId, String prefix, Integer prefixLen, BigInteger updates, BigInteger withdraws) {
+    public StatsByPrefix(Date intervalTime, String peerHashId, String prefix, Integer prefixLen, BigInteger withdraws, BigInteger updates) {
         this.intervalTime = intervalTime;
         this.peerHashId = peerHashId;
         this.updates = updates;

@@ -31,21 +31,17 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
@@ -65,23 +61,19 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLog;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfo;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
-import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
-public class BmpMessagePersister implements BmpPersistenceMessageHandler {
+public class BmpMessagePersister implements BmpMessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpMessagePersister.class);
 
@@ -112,13 +104,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
-    private CollectionAgentFactory collectionAgentFactory;
-
-    @Autowired
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    private ConcurrentLinkedQueue<CollectionSetWithAgent> collectionSetQueue = new ConcurrentLinkedQueue<>();
-
     @Override
     public void handle(Message message, Context context) {
         sessionUtils.withTransaction(() -> {
@@ -127,13 +112,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     List<BmpCollector> bmpCollectors = buildBmpCollectors(message);
                     // Update routers state to down when collector is just starting or going into stopped state.
                     bmpCollectors.forEach(collector -> {
-                        if (collector.getAction().equals(Collector.Action.STARTED.value) ||
-                                collector.getAction().equals(Collector.Action.STOPPED.value)) {
-                            collector.getBmpRouters().forEach(bmpRouter -> {
-                                // Set down state for routers.
-                                bmpRouter.setState(State.DOWN);
-                            });
-                        }
                         try {
                             bmpCollectorDao.saveOrUpdate(collector);
                         } catch (Exception e) {
@@ -142,9 +120,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     });
                     break;
                 case ROUTER:
-                    BmpCollector bmpCollector = bmpCollectorDao.findByCollectorHashId(message.getCollectorHashId());
-                    if (bmpCollector != null) {
-                        List<BmpRouter> bmpRouters = buildBmpRouters(message, bmpCollector);
+                        List<BmpRouter> bmpRouters = buildBmpRouters(message);
                         bmpRouters.forEach(router -> {
                             Integer connections = router.getConnectionCount();
                             // Upon initial router message in INIT/FIRST state,  update all corresponding peer state to down.
@@ -165,7 +141,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                             }
 
                         });
-                    }
                     break;
                 case PEER:
                     List<BmpPeer> bmpPeers = buildBmpPeers(message);
@@ -235,7 +210,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             bmpIpRibLog.setTimestamp(new Date());
             bmpIpRibLog.setWithDrawn(unicastPrefix.isWithDrawn());
             bmpIpRibLogDao.saveOrUpdate(bmpIpRibLog);
-
         }
 
     }
@@ -276,7 +250,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         return bmpCollectors;
     }
 
-    private List<BmpRouter> buildBmpRouters(Message message, BmpCollector bmpCollector) {
+    private List<BmpRouter> buildBmpRouters(Message message) {
         List<BmpRouter> bmpRouters = new ArrayList<>();
         message.getRecords().forEach(record -> {
             if (record.getType().equals(Type.ROUTER)) {
@@ -286,6 +260,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     if (bmpRouterEntity == null) {
                         bmpRouterEntity = new BmpRouter();
                     }
+                    bmpRouterEntity.setCollectorHashId(message.getCollectorHashId());
                     bmpRouterEntity.setHashId(router.hash);
                     bmpRouterEntity.setName(router.name);
                     bmpRouterEntity.setIpAddress(InetAddressUtils.str(router.ipAddress));
@@ -299,7 +274,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     State state = !(router.action.equals(Router.Action.TERM)) ? State.UP : State.DOWN;
                     bmpRouterEntity.setAction(router.action.value);
                     bmpRouterEntity.setState(state);
-                    bmpRouterEntity.setBmpCollector(bmpCollector);
                     bmpRouters.add(bmpRouterEntity);
                 } catch (Exception e) {
                     LOG.error("Exception while mapping Router with IpAddress '{}' to Router entity", InetAddressUtils.str(router.ipAddress), e);
@@ -582,80 +556,4 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         this.sessionUtils = sessionUtils;
     }
 
-    public CollectionAgentFactory getCollectionAgentFactory() {
-        return collectionAgentFactory;
-    }
-
-    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
-        this.collectionAgentFactory = collectionAgentFactory;
-    }
-
-    public InterfaceToNodeCache getInterfaceToNodeCache() {
-        return interfaceToNodeCache;
-    }
-
-    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
-        this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-
-    @Override
-    public Stream<CollectionSetWithAgent> getCollectionSet() {
-        List<CollectionSetWithAgent> collectionSetWithAgentList = new ArrayList<>();
-        while (!collectionSetQueue.isEmpty()) {
-            collectionSetWithAgentList.add(collectionSetQueue.poll());
-        }
-        return collectionSetWithAgentList.stream();
-    }
-
-    static class AsnKey {
-        private final String peerHashId;
-        private final Long peerAsn;
-
-        public AsnKey(String peerHashId, Long peerAsn) {
-            this.peerHashId = peerHashId;
-            this.peerAsn = peerAsn;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            AsnKey asnKey = (AsnKey) o;
-            return Objects.equals(peerHashId, asnKey.peerHashId) &&
-                    Objects.equals(peerAsn, asnKey.peerAsn);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(peerHashId, peerAsn);
-        }
-    }
-
-    static class PrefixKey {
-        private final String peerHashId;
-        private final String prefix;
-        private final Integer prefixLen;
-
-        public PrefixKey(String peerHashId, String prefix, Integer prefixLen) {
-            this.peerHashId = peerHashId;
-            this.prefix = prefix;
-            this.prefixLen = prefixLen;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            PrefixKey prefixKey = (PrefixKey) o;
-            return Objects.equals(peerHashId, prefixKey.peerHashId) &&
-                    Objects.equals(prefix, prefixKey.prefix) &&
-                    Objects.equals(prefixLen, prefixKey.prefixLen);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(peerHashId, prefix, prefixLen);
-        }
-    }
 }

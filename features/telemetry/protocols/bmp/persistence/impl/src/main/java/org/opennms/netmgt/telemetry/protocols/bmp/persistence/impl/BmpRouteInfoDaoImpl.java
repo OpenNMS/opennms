@@ -62,4 +62,5 @@ public class BmpRouteInfoDaoImpl extends AbstractDaoHibernate<BmpRouteInfo, Long
         criteria.addRestriction(new EqRestriction("prefix", prefix));
         return findMatching(criteria);
     }
+
 }

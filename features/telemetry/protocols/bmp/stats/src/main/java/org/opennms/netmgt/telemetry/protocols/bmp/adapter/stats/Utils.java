@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats;
 
-import java.util.stream.Stream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
-import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
+public class Utils {
 
-public interface BmpPersistenceMessageHandler extends BmpMessageHandler {
-
-    Stream<CollectionSetWithAgent> getCollectionSet();
+    static Long getHourOfTheDayInMinutes(Integer hourOfTheDay) {
+        Long midnight = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay(), ChronoUnit.MINUTES);
+        return midnight + hourOfTheDay * 60;
+    }
 }
