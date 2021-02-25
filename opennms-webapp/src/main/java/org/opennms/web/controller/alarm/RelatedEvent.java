@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.daemon;
+package org.opennms.web.controller.alarm;
 
-public enum DaemonReloadEnum {
+import java.util.Date;
 
-    ALARMD("alarmd"),
-    COLLECTD("Collectd"),
-    EVENTD("Eventd"),
-    NOTIFD("Notifd"),
-    POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
-    TELEMETRYD("Telemetryd"),
-    TRAPD("trapd"),
-    Discovery("Discovery");
+import org.opennms.netmgt.model.OnmsSeverity;
 
-    private String daemonName;
+public class RelatedEvent {
+    final Integer eventId;
+    final Integer alarmId;
+    final Date creationTime;
+    final OnmsSeverity severity;
 
-    DaemonReloadEnum(String daemonName) {
-        this.daemonName = daemonName;
+    public RelatedEvent(final Integer eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity) {
+        this.eventId = eventId;
+        this.alarmId = alarmId;
+        this.creationTime = creationTime;
+        this.severity = severity;
     }
 
-    public String getDaemonName() {
-       return this.daemonName;
+    public Integer getEventId() {
+        return eventId;
+    }
+
+    public Integer getAlarmId() {
+        return alarmId;
+    }
+
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public OnmsSeverity getSeverity() {
+        return severity;
     }
 }

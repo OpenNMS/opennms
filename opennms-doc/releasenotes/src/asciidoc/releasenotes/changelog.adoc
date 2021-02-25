@@ -2,6 +2,20 @@
 
 === Changelog
 
+[releasenotes-changelog-27.0.5]
+
+==== Release 27.0.5
+
+Release 27.0.5 contains just a couple of bug fixes, most importantly a
+fix to provisioning that could break update to existing nodes when scanning.
+
+The codename for 27.0.5 is link:$$https://wikipedia.org/wiki/Vogon$$[_Vogon_].
+
+===== Bug
+
+* Flow Rest API: Name lookup is happening per bucket and not per interval (Aggregation Only) (Issue http://issues.opennms.org/browse/NMS-13065[NMS-13065])
+* Provisioning stopped working after upgrade to 27.0.4 (Issue http://issues.opennms.org/browse/NMS-13128[NMS-13128])
+
 [releasenotes-changelog-27.0.4]
 
 ==== Release 27.0.4

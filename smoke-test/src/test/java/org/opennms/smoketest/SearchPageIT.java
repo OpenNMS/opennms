@@ -58,7 +58,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllFormsArePresent() throws Exception {
-        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 12);
+        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 13);
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",
@@ -68,7 +68,8 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
                 "select[@id='byservice_service']",
                 "input[@name='maclike']",
                 "input[@name='foreignSource']",
-                "select[@name='flows']"
+                "select[@name='flows']",
+                "input[@name='topology']"
         }) {
             findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
         }

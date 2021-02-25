@@ -1,6 +1,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[resource-types]]
+
 Resource types group sets of performance data measurements for persisting, indexing, and display in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 

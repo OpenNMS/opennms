@@ -85,6 +85,14 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.service.api</artifactId>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

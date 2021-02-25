@@ -1,10 +1,12 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[collectors-configure]]
+
 Collectors collect performance data via specific agents and protocols. 
 This section includes the following information for each collector:
 
-* collector-specific parameters (used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>)
+* collector-specific parameters (used in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>)
 * configuration file(s)
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 

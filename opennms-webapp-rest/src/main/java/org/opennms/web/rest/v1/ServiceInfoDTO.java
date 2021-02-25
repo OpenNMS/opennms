@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.daemon;
+package org.opennms.web.rest.v1;
 
-public enum DaemonReloadEnum {
+import javax.xml.bind.annotation.XmlRootElement;
 
-    ALARMD("alarmd"),
-    COLLECTD("Collectd"),
-    EVENTD("Eventd"),
-    NOTIFD("Notifd"),
-    POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
-    TELEMETRYD("Telemetryd"),
-    TRAPD("trapd"),
-    Discovery("Discovery");
+@XmlRootElement(name="service")
+public class ServiceInfoDTO {
+    public String name;
+    public String status;
 
-    private String daemonName;
-
-    DaemonReloadEnum(String daemonName) {
-        this.daemonName = daemonName;
+    public ServiceInfoDTO(final String name, final String status) {
+        this.name = name;
+        this.status = status;
     }
 
-    public String getDaemonName() {
-       return this.daemonName;
+    public String getName() {
+        return this.name;
+    }
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+    public void setStatus(final String status) {
+        this.status = status;
     }
 }

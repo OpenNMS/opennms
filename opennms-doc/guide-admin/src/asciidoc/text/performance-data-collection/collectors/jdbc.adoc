@@ -27,7 +27,7 @@ By default, only the _JDBC_ driver for _PostgreSQL_ is available.
 
 ===== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the JdbcCollector
 [options="header, autowidth"]
@@ -43,7 +43,7 @@ Use these parameters in the <<collection-packages.adoc,_collectd-configuration.x
 
 ===== JDBC Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 Define _JDBC Collections_ in `etc/jdbc-datacollection-config.xml`.
 

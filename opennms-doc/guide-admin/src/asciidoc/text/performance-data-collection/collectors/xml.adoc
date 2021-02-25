@@ -25,7 +25,7 @@ The following handlers are not currently supported on _Minion_:
 
 ===== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmlCollector
 [options="header, autowidth"]
@@ -46,7 +46,7 @@ The available handlers include:
 
 ===== XML Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 _XML Collections_ are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 

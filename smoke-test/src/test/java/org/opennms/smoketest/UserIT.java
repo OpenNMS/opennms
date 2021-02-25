@@ -31,6 +31,8 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.junit.Before;
@@ -158,4 +160,86 @@ public class UserIT extends OpenNMSSeleniumIT {
         assertTrue(wait.until(pageContainsText("Password successfully changed")));
     }
 
+    @Test
+    public void testInvalidUserIds() {
+        testInvalidUserId("John<b>Doe</b>",true);
+        testInvalidUserId("Jane'Doe'",true);
+        testInvalidUserId("John&Doe",true);
+        testInvalidUserId("Jane\"\"Doe",true);
+    }
+
+    @Test
+    public void testValidUserIds() {
+        testInvalidUserId("John-Doe",false);
+        testInvalidUserId("Jane/Doe",false);
+        testInvalidUserId("John.Doe",false);
+        testInvalidUserId("Jane#Doe", false);
+        testInvalidUserId("John@Döe.com", false);
+        testInvalidUserId("JohnDoé", false);
+    }
+
+    @Test
+    public void testInvalidGroupIds() {
+        testInvalidGroupId("John<b>Doe</b>",true);
+        testInvalidGroupId("Jane'Doe'",true);
+        testInvalidGroupId("John&Doe",true);
+        testInvalidGroupId("Jane\"\"Doe",true);
+    }
+
+    @Test
+    public void testValidGroupIds() {
+        testInvalidGroupId("John-Doe",false);
+        testInvalidGroupId("Jane/Doe",false);
+        testInvalidGroupId("John.Doe",false);
+        testInvalidGroupId("Jane#Doe", false);
+        testInvalidGroupId("John@Döe.com", false);
+        testInvalidGroupId("JohnDoé", false);
+    }
+
+    public void testInvalidUserId(final String userId, final boolean mustFail) {
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+        findElementByLink("Add new user").click();
+
+        enterText(By.id("userID"), userId);
+        enterText(By.id("pass1"), "SmokeTestPassword");
+        enterText(By.id("pass2"), "SmokeTestPassword");
+        findElementByXpath("//button[@type='submit' and text()='OK']").click();
+
+        if (mustFail) {
+            try {
+                final Alert alert = wait.withTimeout(Duration.of(5, ChronoUnit.SECONDS)).until(ExpectedConditions.alertIsPresent());
+                alert.dismiss();
+            } catch (final Exception e) {
+                LOG.debug("Got an exception waiting for a 'invalid user ID' alert.", e);
+                throw e;
+            }
+        } else {
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("finish")));
+        }
+    }
+
+    public void testInvalidGroupId(final String groupId, final boolean mustFail) {
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Groups").click();
+        findElementByLink("Add new group").click();
+
+        enterText(By.id("groupName"), groupId);
+        enterText(By.id("groupComment"), "SmokeTestComment");
+        findElementByXpath("//button[@type='submit' and text()='OK']").click();
+
+        if (mustFail) {
+            try {
+                final Alert alert = wait.withTimeout(Duration.of(5, ChronoUnit.SECONDS)).until(ExpectedConditions.alertIsPresent());
+                alert.dismiss();
+            } catch (final Exception e) {
+                LOG.debug("Got an exception waiting for a 'invalid group ID' alert.", e);
+                throw e;
+            }
+        } else {
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("finish")));
+        }
+    }
 }

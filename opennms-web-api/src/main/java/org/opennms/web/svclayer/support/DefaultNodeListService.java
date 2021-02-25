@@ -44,6 +44,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
@@ -159,7 +160,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         } else if(command.hasMonitoringLocation()) {
             addCriteriaForMonitoringLocation(criteria, command.getMonitoringLocation());
         } else if(command.hasFlows()) {
-                addCriteriaForFlows(criteria, command.getFlows());
+            addCriteriaForFlows(criteria, command.getFlows());
+        } else if(command.hasTopology()) {
+            addTopoSearch(criteria, command.getTopology());
         } else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
@@ -234,6 +237,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         
         // This SQL restriction does work fine, however 
         criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select ip.nodeId from outages o, ifservices if, ipinterface ip where o.perspective is null and if.id = o.ifserviceid and ip.id = if.ipinterfaceid and o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
+    }
+
+    private static void addTopoSearch(final OnmsCriteria criteria, final String topology) {
+        final String searchTerm = "%" + topology + "%";
+        final String sql = "{alias}.nodeId in (select nodeId from cdplink where cdpinterfacename ilike ? union select nodeId from cdpelement where cdpglobaldeviceid ilike ? union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? union select nodeId from lldpelement where lldpsysname ilike ?)";
+        criteria.add(Restrictions.sqlRestriction(sql, new Object[]{ searchTerm, searchTerm, searchTerm, searchTerm, searchTerm }, new Type[]{ new StringType(), new StringType(), new StringType(), new StringType(), new StringType() }));
     }
 
     private static void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
