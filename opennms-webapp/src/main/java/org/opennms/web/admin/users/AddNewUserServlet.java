@@ -69,6 +69,11 @@ public class AddNewUserServlet extends HttpServlet {
         UserManager userFactory = UserFactory.getInstance();
 
         String userID = request.getParameter("userID");
+
+        if (userID != null && userID.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("User ID must not contain any HTML markup.");
+        }
+
         String password = request.getParameter("pass1");
 
         boolean hasUser = false;
