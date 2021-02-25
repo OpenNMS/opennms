@@ -151,7 +151,11 @@ public class GroupController extends AbstractController implements InitializingB
         
         String oldName = request.getParameter("groupName");
         String newName = request.getParameter("newName");
-        
+
+        if (newName != null && newName.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("Group ID must not contain any HTML markup.");
+        }
+
         if (StringUtils.hasText(oldName) && StringUtils.hasText(newName)) {
             m_groupRepository.renameGroup(oldName, newName);
         }
@@ -310,6 +314,14 @@ public class GroupController extends AbstractController implements InitializingB
         String groupComment = request.getParameter("groupComment");
         if (groupComment == null) {
             groupComment = "";
+        }
+
+        if (groupName != null && groupName.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("Group ID must not contain any HTML markup.");
+        }
+
+        if (groupComment != null && groupComment.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("Group comment must not contain any HTML markup.");
         }
 
         boolean hasGroup = false;
