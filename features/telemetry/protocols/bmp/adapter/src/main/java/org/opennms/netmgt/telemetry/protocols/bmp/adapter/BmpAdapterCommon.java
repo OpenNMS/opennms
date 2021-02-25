@@ -301,16 +301,16 @@ public class BmpAdapterCommon {
 
         switch (router.termCode) {
             case 0:
-                router.termReason = "Session administratively closed.  The session might be re-initiated";
+                router.termReason = "Session administratively closed. The session might be re-initiated";
                 break;
             case 1:
                 router.termReason = "Unspecified reason";
                 break;
             case 2:
-                router.termReason = "Out of resources.  The router has exhausted resources available for the BMP session";
+                router.termReason = "Out of resources. The router has exhausted resources available for the BMP session";
                 break;
             case 3:
-                router.termReason = "Redundant connection.  The router has determined that this connection is redundant with another one";
+                router.termReason = "Redundant connection. The router has determined that this connection is redundant with another one";
                 break;
             case 4:
                 router.termReason = "Session permanently administratively closed, will not be re-initiated";
