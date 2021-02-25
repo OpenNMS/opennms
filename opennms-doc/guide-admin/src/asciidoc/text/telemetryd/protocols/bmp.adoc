@@ -135,3 +135,89 @@ This setup replaces the _Collector_ component of _OpenBMP_.
 | `kafka.*`            | Uses options to create OpenBMP Kafka producer. Allows all known Kafka settings, but prefixed with `kafka.`. | no       |
 | `topicPrefix`        | Prefix used before each Kafka topic.                                            | no       |
 |===
+
+[[telemetryd-bmp-persisting-adapter]]
+===== BMP Persisting Adapter
+
+The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
+It handles _BMP_ messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates _OpenBMP_-compatible messages, which are then
+persisted in OpenNMS Postgres DB.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter`
+|===
+
+Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {opennms-product-name}.
+For this `opennms-telemetry-bmp-stats` feature need to be installed on {opennms-product-name}.
+
+[source]
+----
+admin@opennms()> feature:install opennms-telemetry-bmp-stats
+----
+
+In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+
+====== Configuring BMP persistence for external sources.
+
+Following parameters can be configured when connecting to external sources like RPKI or RouteInfo DB tables.
+
+[options="header, autowidth"]
+|===
+| Name                    | Default Value        | Description
+| `rpkiUrl`            | `http://localhost:8080/api/export.json`             | Rest API URL to retrieve RPKI roas.
+| `rpkiUsername`            | ``             | username for RPKI Rest API.
+| `rpkiPassword`    | ``      | password for RPKI Rest API.
+| `routeInfoDbPath`    | `$[karaf.etc]/routeinfo`      | Path for RouteInfo DB tables.
+|===
+
+Above parameters can be configured as following.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.telemetry.protocols.bmp.adapter.persist
+admin@opennms()> config:property-set rpkiUrl http://localhost:8080/api/export.json
+admin@opennms()> config:update
+----
+
+
+====== Running BMP Adapter on Sentinel
+
+BMP Persisting Adapter can also be run on Sentinel. , _Sentinel_ must start appropriate BMP adapter.
+In _Sentinel_ adapters are configured by either be placing a `.cfg` file in `${SENTINEL_HOME}/etc` or via `config:edit` statement.
+
+The following example will configure the consumption of `BMP` messages and saves the configuration in
+`${SENTINEL_HOME/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
+
+First login to the _Karaf Shell_
+
+----
+$ ssh -p 8301 admin@localhost
+----
+
+----
+admin@sentinel> config:edit --alias BMP --factory org.opennms.features.telemetry.adapters
+admin@sentinel> config:property-set name BMP
+admin@sentinel> config:property-set adapters.0.name BMP-Persisting-Adapter
+admin@sentinel> config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter
+admin@sentinel> config:update
+----
+
+Following features need to be installed to start processing BMP messages on Sentinel.
+[source]
+----
+admin@opennms()> feature:install sentinel-core
+admin@opennms()> feature:install sentinel-persistence <1>
+admin@opennms()> feature:install sentinel-jms <2>
+admin@opennms()> feature:install sentinel-blobstore-noop
+admin@opennms()> feature:install sentinel-jsonstore-postgres
+admin@opennms()> feature:install sentinel-telemetry-bmp-persist
+----
+
+<1> needs datasource configuration. Refer to link:#ga-sentinel-persistence[Sentinel Persistence] for configuring datasource.
+<2> or `sentinel-kafka`. Refer to link:#ga-sentinel-kafka[Sentinel Kafka] for configuring Kafka on Sentinel.

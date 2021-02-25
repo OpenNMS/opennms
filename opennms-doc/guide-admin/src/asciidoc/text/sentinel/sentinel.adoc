@@ -32,6 +32,7 @@ Therefore at least the following configurations are necessary:
  - Configure the communication layer (for now either JMS or Kafka)
  - Install features
 
+[[ga-sentinel-persistence]]
 ==== Configure the datasource
 
 This is required in order to have _Sentinel_ connect to the PostgreSQL database _{opennms-product-name}_.
@@ -74,6 +75,7 @@ As with _Minion_ the _Sentinel_ can also be configured to consume messages from 
 
 When Using _Sentinel_ with _Kafka_ the same rules for using _Kafka with Minions_ apply.
 
+[[ga-sentinel-kafka]]
 ====== Kafka Configuration
 
 Each _Minion_ works as a Producer and must be configured beforehead.
