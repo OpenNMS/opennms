@@ -57,6 +57,8 @@ IMPORTANT: Change the default _admin_ password to a secure password.
 . _Optional_: Set a schedule when a _User_ should receive _Notifications_
 . Click *Finish* to persist and apply the changes
 
+WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the user ID.
+
 NOTE: By default a new _User_ has the _Security Role_ similar to _ROLE_USER_ assigned.
      Acknowledgment and working with _Alarms_ and _Notifications_ is possible.
      The _Configure OpenNMS_ administration menu is not available.
