@@ -6,7 +6,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmpcollectornxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmpcollectornxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -19,7 +19,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-collector">
+  <changeSet author="cgorantla" id="27.1.0-bmp-collector">
 
     <createTable tableName="bmp_collectors" remarks="bmp collectors">
       <column name="id" type="bigint">
@@ -44,7 +44,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmprouternxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmprouternxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -57,7 +57,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-router">
+  <changeSet author="cgorantla" id="27.1.0-bmp-router">
 
     <createTable tableName="bmp_routers" remarks="bmp routers">
       <column name="id" type="bigint">
@@ -100,7 +100,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmppeernxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmppeernxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -113,7 +113,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-peers">
+  <changeSet author="cgorantla" id="27.1.0-bmp-peers">
 
     <createTable tableName="bmp_peers" remarks="bmp peers">
       <column name="id" type="bigint">
@@ -187,7 +187,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-baseattrsnxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-baseattrsnxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -200,7 +200,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-baseattrs">
+  <changeSet author="cgorantla" id="27.1.0-bmp-baseattrs">
 
     <createTable tableName="bmp_base_attributes" remarks="bmp base attributes">
       <column name="id" type="bigint">
@@ -250,7 +250,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-unicastsequence">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-unicastsequence">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -263,7 +263,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-unicast">
+  <changeSet author="cgorantla" id="27.1.0-bmp-unicast">
 
     <createTable tableName="bmp_ip_ribs" remarks="bmp unicast prefixes ">
       <column name="id" type="bigint">
@@ -317,7 +317,7 @@
   </changeSet>
 
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-global-ip-ribs-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-global-ip-ribs-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -330,7 +330,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-global-ip-ribs">
+  <changeSet author="cgorantla" id="27.1.0-global-ip-ribs">
 
     <createTable tableName="bmp_global_ip_ribs" remarks="bmp global ip ribs">
       <column name="id" type="bigint">
@@ -372,7 +372,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-asninfo-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-asninfo-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -385,7 +385,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-asn-info">
+  <changeSet author="cgorantla" id="27.1.0-bmp-asn-info">
 
     <createTable tableName="bmp_asn_info" remarks="bmp asn info">
       <column name="id" type="bigint">
@@ -410,7 +410,7 @@
     <addPrimaryKey tableName="bmp_asn_info" constraintName="pk_bmp_asn_info" columnNames="asn"/>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-asnpath-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-asnpath-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -423,7 +423,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-asn-path-analysis">
+  <changeSet author="cgorantla" id="27.1.0-bmp-asn-path-analysis">
 
     <createTable tableName="bmp_asn_path_analysis" remarks="bmp asn path analysis">
       <column name="id" type="bigint">
@@ -447,7 +447,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="28.0.0-bmp-view-peer" author="cgorantla">
+  <changeSet id="27.1.0-bmp-view-peer" author="cgorantla">
     <createView replaceIfExists="true" viewName="bmp_v_peers">
       SELECT CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName, rtr.ip_address as
       RouterIP,
@@ -472,7 +472,7 @@
     </createView>
   </changeSet>
 
-  <changeSet id="28.0.0-bmp-view-ip-routes" author="cgorantla">
+  <changeSet id="27.1.0-bmp-view-ip-routes" author="cgorantla">
     <createView replaceIfExists="true" viewName="bmp_v_ip_routes">
       SELECT CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
       CASE WHEN length(p.name) > 0 THEN p.name ELSE p.peer_addr END AS PeerName,
@@ -497,7 +497,7 @@
   </changeSet>
 
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-route-info-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-route-info-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -510,7 +510,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-route-info">
+  <changeSet author="cgorantla" id="27.1.0-bmp-route-info">
 
     <createTable tableName="bmp_route_info" remarks="bmp route info">
       <column name="id" type="bigint">
@@ -541,7 +541,7 @@
   </changeSet>
 
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-ip-rib-log-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-ip-rib-log-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -554,7 +554,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-ip-rib-log">
+  <changeSet author="cgorantla" id="27.1.0-bmp-ip-rib-log">
 
     <createTable tableName="bmp_ip_rib_log" remarks="bmp ip rib log">
       <column name="id" type="bigint">
@@ -593,7 +593,7 @@
     </createIndex>
   </changeSet>
 
-  <!--  <changeSet  author="cgorantla" id="28.0.0.bmp-add-timescaledb-extension">
+  <!--  <changeSet  author="cgorantla" id="27.1.0.bmp-add-timescaledb-extension">
       <preConditions onFail="MARK_RAN">
         <sqlCheck expectedResult="0">
           SELECT COUNT(e.extname)
@@ -607,7 +607,7 @@
       </sql>
     </changeSet>-->
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-ip-rib-log-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-ip-rib-log-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -627,7 +627,7 @@
     </sql>
   </changeSet>
 
-  <changeSet id="28.0.0-bmp-view-ip-routes-history" author="cgorantla">
+  <changeSet id="27.1.0-bmp-view-ip-routes-history" author="cgorantla">
     <createView replaceIfExists="true" viewName="bmp_v_ip_routes_history">
       SELECT
       CASE WHEN length(rtr.name) > 0 THEN rtr.name ELSE rtr.ip_address END AS RouterName,
@@ -652,7 +652,7 @@
     </createView>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-bypeer-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-bypeer-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -665,7 +665,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-stats-bypeer">
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-bypeer">
 
     <createTable tableName="bmp_stats_by_peer" remarks="bmp stats by peer">
       <column name="id" type="bigint">
@@ -693,7 +693,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-peer-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-peer-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -713,7 +713,7 @@
     </sql>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-byasn-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-byasn-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -726,7 +726,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-stats-by-asn">
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-by-asn">
 
     <createTable tableName="bmp_stats_by_asn" remarks="bmp stats by asn">
       <column name="id" type="bigint">
@@ -761,7 +761,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-asn-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-asn-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -781,7 +781,7 @@
     </sql>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-byprefix-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-byprefix-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -794,7 +794,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-stats-by-prefix">
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-by-prefix">
 
     <createTable tableName="bmp_stats_by_prefix" remarks="bmp stats by prefix">
       <column name="id" type="bigint">
@@ -832,7 +832,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-stats_by-prefix-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats_by-prefix-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -853,7 +853,7 @@
   </changeSet>
 
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-peer-rib-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-peer-rib-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -866,7 +866,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-stats-peer-rib">
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-peer-rib">
 
     <createTable tableName="bmp_stats_peer_rib" remarks="bmp stats peer rib prefix counts">
       <column name="id" type="bigint">
@@ -894,7 +894,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-stats-peer-rib-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats-peer-rib-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -914,7 +914,7 @@
     </sql>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-stats-ip-origins-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-stats-ip-origins-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -927,7 +927,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-stats-ip-origins">
+  <changeSet author="cgorantla" id="27.1.0-bmp-stats-ip-origins">
 
     <createTable tableName="bmp_stats_ip_origins" remarks="bmp stats ip origins">
       <column name="id" type="bigint">
@@ -964,7 +964,7 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0.bmp-stats-ip-origins-create-hypertable">
+  <changeSet author="cgorantla" id="27.1.0.bmp-stats-ip-origins-create-hypertable">
     <preConditions onFail="MARK_RAN">
       <and>
         <sqlCheck expectedResult="1">
@@ -984,7 +984,7 @@
     </sql>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="28.0.0-bmp-rpki-info-nxtid">
+  <changeSet runOnChange="false" author="cgorantla" id="27.1.0-bmp-rpki-info-nxtid">
     <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
@@ -997,7 +997,7 @@
     </rollback>
   </changeSet>
 
-  <changeSet author="cgorantla" id="28.0.0-bmp-rpki-info">
+  <changeSet author="cgorantla" id="27.1.0-bmp-rpki-info">
 
     <createTable tableName="bmp_rpki_info" remarks="bmp rpki info">
       <column name="id" type="bigint">
