@@ -1434,7 +1434,7 @@
     <minionKarafVersion>4.0.5</minionKarafVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
     <netty4Version>4.1.9.Final</netty4Version>
-    <newtsVersion>1.5.1</newtsVersion>
+    <newtsVersion>1.5.4</newtsVersion>
     <paxExamVersion>4.11.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>4.3.0</paxWebVersion>
