@@ -104,7 +104,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String alarmFeedbackTopic;
     private String topologyVertexTopic;
     private String topologyEdgeTopic;
-        
+
     private boolean forwardEvents;
     private boolean forwardAlarms;
     private boolean forwardAlarmFeedback;
@@ -121,7 +121,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedTopologyEdgeMessage = new CountDownLatch(1);
 
     private KafkaProducer<byte[], byte[]> producer;
-    
+
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
@@ -142,7 +142,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
-        this.topologyDao=Objects.requireNonNull(topologyDao);
+        this.topologyDao = Objects.requireNonNull(topologyDao);
     }
 
     public void init() throws IOException {
@@ -162,11 +162,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Class-loader hack for accessing the kafka classes when initializing producer.
         producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
         // Start processing records that have been queued for sending
-        if(kafkaSendQueueCapacity <= 0) {
+        if (kafkaSendQueueCapacity <= 0) {
             kafkaSendQueueCapacity = 1000;
             LOG.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
         }
-        
+
         kafkaSendQueue = new LinkedBlockingDeque<>(kafkaSendQueueCapacity);
         kafkaSendQueueExecutor.execute(this::processKafkaSendQueue);
 
@@ -221,7 +221,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // Let other threads know when we've successfully forwarded an event
             forwardedTopologyEdgeMessage.countDown();
         });
-        
+
     }
 
     private void forwardEvent(Event event) {
@@ -263,7 +263,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public boolean shouldForwardAlarm(OnmsAlarm alarm) {
         if (alarmFilterExpression != null) {
             // The expression is not necessarily thread safe
-            synchronized(this) {
+            synchronized (this) {
                 try {
                     final boolean shouldForwardAlarm = alarmFilterExpression.getValue(alarm, Boolean.class);
                     if (LOG.isTraceEnabled()) {
@@ -298,7 +298,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (alarm == null) {
             // The alarm has been deleted so we shouldn't track it in the map of outstanding alarms any longer
             outstandingAlarms.remove(reductionKey);
-            
+
             // The alarm was deleted, push a null record to the reduction key
             sendRecord(() -> {
                 LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
@@ -370,7 +370,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         });
     }
 
-    private void sendRecord(Callable<ProducerRecord<byte[],byte[]>> callable) {
+    private void sendRecord(Callable<ProducerRecord<byte[], byte[]>> callable) {
         sendRecord(callable, null);
     }
 
@@ -412,10 +412,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                             if (e instanceof TimeoutException) {
                                 // If Kafka is Offline, buffer the record again for events.
                                 // This is best effort to keep the order although in-flight elements may still miss the order.
-                                if (kafkaRecord.producerRecord != null &&
-                                        kafkaRecord.producerRecord.topic() != null &&
+                                if (producerRecord != null &&
                                         this.eventTopic.equalsIgnoreCase(kafkaRecord.producerRecord.topic())) {
-                                    kafkaSendQueue.offerFirst(kafkaRecord);
+                                    if(!kafkaSendQueue.offerFirst(kafkaRecord)) {
+                                        RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
+                                    }
                                 }
                             }
                             return;
@@ -503,7 +504,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public void setTopologyEdgeTopic(String topologyEdgeTopic) {
         this.topologyEdgeTopic = topologyEdgeTopic;
     }
-    
+
     public void setEventTopic(String eventTopic) {
         this.eventTopic = eventTopic;
         forwardEvents = !Strings.isNullOrEmpty(eventTopic);
@@ -579,7 +580,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public CountDownLatch getNodeForwardedLatch() {
         return forwardedNode;
     }
-    
+
     public CountDownLatch getAlarmFeedbackForwardedLatch() {
         return forwardedAlarmFeedback;
     }
