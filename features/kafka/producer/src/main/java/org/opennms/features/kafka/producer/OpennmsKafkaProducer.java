@@ -37,13 +37,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Consumer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -129,7 +129,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
     private final OnmsTopologyDao topologyDao;
     private int kafkaSendQueueCapacity;
-    private BlockingQueue<KafkaRecord> kafkaSendQueue;
+    private BlockingDeque<KafkaRecord> kafkaSendQueue;
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
@@ -167,7 +167,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             LOG.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
         }
         
-        kafkaSendQueue = new LinkedBlockingQueue<>(kafkaSendQueueCapacity);
+        kafkaSendQueue = new LinkedBlockingDeque<>(kafkaSendQueueCapacity);
         kafkaSendQueueExecutor.execute(this::processKafkaSendQueue);
 
         if (forwardEvents) {
@@ -409,9 +409,14 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                     producer.send(producerRecord, (recordMetadata, e) -> {
                         if (e != null) {
                             LOG.warn("Failed to send record to producer: {}.", producerRecord, e);
-                            if(e instanceof TimeoutException) {
-                                // If Kafka is Offline, buffer the record again.
-                                kafkaSendQueue.offer(kafkaRecord);
+                            if (e instanceof TimeoutException) {
+                                // If Kafka is Offline, buffer the record again for events.
+                                // This is best effort to keep the order although in-flight elements may still miss the order.
+                                if (kafkaRecord.producerRecord != null &&
+                                        kafkaRecord.producerRecord.topic() != null &&
+                                        this.eventTopic.equalsIgnoreCase(kafkaRecord.producerRecord.topic())) {
+                                    kafkaSendQueue.offerFirst(kafkaRecord);
+                                }
                             }
                             return;
                         }
