@@ -29,7 +29,7 @@ Regardless of the method, provisioning is an iterative process: you will need to
 
 {opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
 Using link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
-link:#import-handlers[Import handlers] allow you to further control provisioning. #is this just through directed discovery?#
+link:#import-handlers[Import handlers] allow you to further control provisioning. 
 
 Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the link:#foreign-source-definition[default foreign source definition]:
 
