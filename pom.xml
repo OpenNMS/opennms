@@ -1419,7 +1419,7 @@
     <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
-    <newtsVersion>1.5.0</newtsVersion>
+    <newtsVersion>1.5.4</newtsVersion>
     <paxExamVersion>4.8.0</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <protobufVersion>2.6.1</protobufVersion>
