@@ -97,18 +97,18 @@
     <property name="staticMethod" value="org.opennms.netmgt.newts.support.ContextConfigurationFactory.getContextConfigurations"/>
   </bean>
 
-  <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" primary="true" />
 
-  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-      <constructor-arg ref="newtsMetricRegistry"/>
+  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="metricRegistry"/>
   </bean>
 
-  <bean id="newtsMetricRegistryDomainedJmxReporterBuilder" factory-bean="newtsMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
       <constructor-arg value="org.opennms.newts"/>
   </bean>
 
-  <bean id="newtsMetricRegistryJmxReporter"
-        factory-bean="newtsMetricRegistryDomainedJmxReporterBuilder"
+  <bean id="metricRegistryJmxReporter"
+        factory-bean="metricRegistryDomainedJmxReporterBuilder"
         factory-method="build"
         init-method="start"
         destroy-method="stop" />

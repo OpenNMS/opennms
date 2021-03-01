@@ -107,7 +107,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     @Inject
     public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
-            @Named("newts.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry) {
+            @Named("newts.writer_threads") Integer numWriterThreads, MetricRegistry registry) {
         Preconditions.checkArgument(maxBatchSize > 0, "maxBatchSize must be strictly positive");
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
