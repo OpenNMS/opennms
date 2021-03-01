@@ -33,7 +33,6 @@ import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.RPC_REQUEST_TO
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME;
 import static org.opennms.core.ipc.common.kafka.KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES;
 
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.SystemInfoUtils;
 
 public class KafkaTopicProvider {
@@ -49,7 +48,7 @@ public class KafkaTopicProvider {
     }
 
     public KafkaTopicProvider() {
-        this.singleTopic = SystemProperties.getBooleanWithDefaultAsTrue(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
+        this.singleTopic = Boolean.getBoolean(String.format("%s%s", KAFKA_RPC_CONFIG_SYS_PROP_PREFIX, SINGLE_TOPIC_FOR_ALL_MODULES));
     }
 
     public String getRequestTopicAtLocation(String location, String module) {
@@ -65,5 +64,6 @@ public class KafkaTopicProvider {
         }
         return String.format(TOPIC_NAME_WITH_MODULE, SystemInfoUtils.getInstanceId(), RPC_RESPONSE_TOPIC_NAME, module);
     }
+
 
 }

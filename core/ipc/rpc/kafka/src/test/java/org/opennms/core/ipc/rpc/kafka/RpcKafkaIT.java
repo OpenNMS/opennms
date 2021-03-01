@@ -123,16 +123,14 @@ public class RpcKafkaIT {
         public void init(String serviceName) {
         }
     };
-
+    
 
     @Before
     public void setup() throws Exception {
-        System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES), "false");
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%s%s", KAFKA_CONFIG_PID, ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(KafkaRpcConstants.SINGLE_TOPIC_FOR_ALL_MODULES, "false");
         kafkaConfig.put(KafkaRpcConstants.MAX_CONCURRENT_CALLS_PROPERTY, MAX_CONCURRENT_CALLS);
         kafkaConfig.put(KafkaRpcConstants.MAX_DURATION_BULK_HEAD, MAX_DURATION_BULK_HEAD);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
@@ -148,7 +146,6 @@ public class RpcKafkaIT {
         kafkaRpcServer.init();
         kafkaRpcServer.bind(getEchoRpcModule());
     }
-
 
     @Test(timeout = 30000)
     public void testKafkaRpcAtDefaultLocation() throws InterruptedException, ExecutionException {

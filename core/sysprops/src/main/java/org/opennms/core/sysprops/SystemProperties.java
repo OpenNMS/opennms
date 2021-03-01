@@ -87,19 +87,4 @@ public class SystemProperties {
         return defaultValue;
     }
 
-
-    public static Boolean getBooleanWithDefaultAsTrue(String name) {
-        boolean defaultValue = true;
-        try {
-            String singleTopic = System.getProperty(name);
-            if(singleTopic != null) {
-                defaultValue = !singleTopic.equalsIgnoreCase("false");
-            }
-        } catch (NullPointerException | IllegalArgumentException e) {
-            // Ignore
-        }
-        return defaultValue;
-    }
-
-
 }
