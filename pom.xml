@@ -1445,7 +1445,7 @@
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
-    <newtsVersion>1.5.2</newtsVersion>
+    <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
