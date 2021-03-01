@@ -129,7 +129,7 @@
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
-    <feature name="commons-net" version="3.6" description="Apache :: commons-net">
+    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/3.6</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
@@ -1012,13 +1012,24 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
-        <feature>opennms-telemetry-collection</feature>
-        <feature>opennms-kafka</feature>
+        <feature>opennms-telemetry-bmp-adapter</feature>
         <feature>rate-limited-logger</feature>
         <feature>resilience4j</feature>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
+        <feature>opennms-dnsresolver-api</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
+        <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-kafka</feature>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
+    </feature>
+    <!-- Currently, this only runs on OpenNMS -->
+    <feature name="opennms-telemetry-bmp-stats" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Stats Aggregator">
+        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.stats/${project.version}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
+        <feature>commons-net</feature>
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>

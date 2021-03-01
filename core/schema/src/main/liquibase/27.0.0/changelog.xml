@@ -138,4 +138,5 @@
         <dropTable tableName="scanreportproperties"/>
         <dropTable tableName="scanreports"/>
     </changeSet>
+
 </databaseChangeLog>

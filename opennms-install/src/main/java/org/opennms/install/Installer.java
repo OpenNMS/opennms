@@ -108,6 +108,7 @@ public class Installer {
     String m_library_search_path = null;
     String m_fix_constraint_name = null;
     boolean m_fix_constraint_remove_rows = false;
+    boolean m_timescaleDB = false;
 
     protected Options options = new Options();
     protected CommandLine m_commandLine;
@@ -222,7 +223,7 @@ public class Installer {
                 LOG.info(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migrator.getSchemaName()));
             }
 
-            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike);
+            m_migrator.setupDatabase(m_update_database, m_do_vacuum, m_do_vacuum, m_update_iplike, m_timescaleDB);
 
             // XXX why do both options need to be set to remove the database?
             if (m_update_database && m_remove_database) {
@@ -467,6 +468,8 @@ public class Installer {
         // upgrade tools options
         options.addOption("S", "skip-upgrade-tools", false,
                 "Skip the execution of the upgrade tools (post-processing tasks)");
+        options.addOption("t", "timescaledb", false,
+                "Installs TimescaleDB extension");
 
         CommandLineParser parser = new PosixParser();
         m_commandLine = parser.parse(options, argv);
@@ -521,6 +524,7 @@ public class Installer {
         m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+        m_timescaleDB = m_commandLine.hasOption("t");
 
         Configurator.setRootLevel(Level.INFO);
         if (m_commandLine.hasOption("x")) {

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+	">
+
+  <context:annotation-config />
+  <tx:annotation-driven />
+
+  <bean id="bmpCollectorDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpCollectorDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao" ref="bmpCollectorDao" />
+
+  <bean id="bmpRouterDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRouterDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao" ref="bmpRouterDao" />
+
+  <bean id="bmpPeerDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpPeerDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao" ref="bmpPeerDao" />
+
+  <bean id="bmpUnicastPrefixDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpUnicastPrefixDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" ref="bmpUnicastPrefixDao" />
+
+  <bean id="bmpBaseAttributeDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpBaseAttributeDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao" ref="bmpBaseAttributeDao" />
+
+  <bean id="bmpGlobalIpRibDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpGlobalIpRibDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" ref="bmpGlobalIpRibDao" />
+
+  <bean id="bmpAsnInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpAsnInfoDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" ref="bmpAsnInfoDao" />
+
+  <bean id="bmpAsnPathDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpAsnPathAnalysisDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" ref="bmpAsnPathDao" />
+
+  <bean id="bmpRouteInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRouteInfoDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" ref="bmpRouteInfoDao" />
+
+  <bean id="bmpIpRibLogDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpIpRibLogDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" ref="bmpIpRibLogDao" />
+
+  <bean id="bmpStatsByPeerDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPeerDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" ref="bmpStatsByPeerDao" />
+
+  <bean id="bmpStatsByAsnDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByAsnDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" ref="bmpStatsByAsnDao" />
+
+  <bean id="bmpStatsByPrefixDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPrefixDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" ref="bmpStatsByPrefixDao" />
+
+  <bean id="bmpStatsPeerRibDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsPeerRibDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" ref="bmpStatsPeerRibDao" />
+
+  <bean id="bmpStatsIpOriginsDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsIpOriginsDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao" />
+
+  <bean id="bmpRpkiInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRpkiInfoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao" ref="bmpRpkiInfoDao" />
+
+
+</beans>
