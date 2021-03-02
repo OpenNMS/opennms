@@ -85,6 +85,20 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.26]
+
+==== Release Meridian-2018.1.26
+
+Release 2018.1.26 is a small update with a fix to Newts caching, and a dependency
+update on Apache POI.
+
+The codename for 2018.1.26 is _https://wikipedia.org/wiki/Drought[Drought]_.
+
+===== Bug
+
+* Newts Cache priming flag is inverted (Issue http://issues.opennms.org/browse/NMS-13156[NMS-13156])
+* Dependabot: Upgrade Apache POI to 3.17 (CVE-2017-12626) (Issue http://issues.opennms.org/browse/NMS-13161[NMS-13161])
+
 [releasenotes-changelog-Meridian-2018.1.25]
 
 ==== Release Meridian-2018.1.25
