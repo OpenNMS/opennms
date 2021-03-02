@@ -92,7 +92,7 @@ public class CollectionSetMapper {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
-                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
+                        interfaceResourceBuilder.setInstance(resource.getInstance());
                         collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
