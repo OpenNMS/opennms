@@ -309,6 +309,28 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.17]
+
+==== Release Meridian-2019.1.17
+
+Release 2019.1.17 contains a number of small bug fixes and enhancements, including some
+UI cleanups, Newts fixes, and a security update to Apache POI.
+
+The codename for 2019.1.17 is link:$$https://en.wikipedia.org/wiki/10252_Heidigraf$$[Heidigraf].
+
+===== Bug
+
+* Actively collected metrics suddenly become unavailable through API and Web UI due to static TTL on Newts search index (Issue http://issues.opennms.org/browse/NMS-13029[NMS-13029])
+* No option provided to change the number of records per page in Events ILP and Events/Alarms ILP under Topology (Issue http://issues.opennms.org/browse/NMS-13137[NMS-13137])
+* The OpenNMS Web User Interface Has Experienced an Error observed when searching for a Event under Event notifications (Issue http://issues.opennms.org/browse/NMS-13148[NMS-13148])
+* Node's sub-option 'Availability' exceeds table alignment and overlaps next table of 'Notifications' under Topology section (Issue http://issues.opennms.org/browse/NMS-13153[NMS-13153])
+* Newts Cache priming flag is inverted (Issue http://issues.opennms.org/browse/NMS-13156[NMS-13156])
+* Dependabot: Upgrade Apache POI to 3.17 (CVE-2017-12626) (Issue http://issues.opennms.org/browse/NMS-13161[NMS-13161])
+
+===== Enhancement
+
+* create a table to show related events in the alarm detail view (Issue http://issues.opennms.org/browse/NMS-13170[NMS-13170])
+
 [releasenotes-changelog-Meridian-2019.1.16]
 
 ==== Release Meridian-2019.1.16
