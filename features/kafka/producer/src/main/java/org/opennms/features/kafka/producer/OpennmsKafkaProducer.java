@@ -129,7 +129,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
     private final OnmsTopologyDao topologyDao;
     private int kafkaSendQueueCapacity;
-    private BlockingDeque<KafkaRecord> kafkaSendQueue;
+    private BlockingDeque<KafkaRecord> kafkaSendDeque;
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
@@ -167,7 +167,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             LOG.info("Defaulted the 'kafkaSendQueueCapacity' to 1000 since no property was set");
         }
 
-        kafkaSendQueue = new LinkedBlockingDeque<>(kafkaSendQueueCapacity);
+        kafkaSendDeque = new LinkedBlockingDeque<>(kafkaSendQueueCapacity);
         kafkaSendQueueExecutor.execute(this::processKafkaSendQueue);
 
         if (forwardEvents) {
@@ -392,7 +392,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Any offer that fails due to capacity overflow will simply be dropped and will have to wait until the next
         // sync to be processed so this is just a best effort attempt
-        if (!kafkaSendQueue.offer(new KafkaRecord(record, callback))) {
+        if (!kafkaSendDeque.offer(new KafkaRecord(record, callback))) {
             RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
         }
     }
@@ -401,7 +401,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         //noinspection InfiniteLoopStatement
         while (true) {
             try {
-                KafkaRecord kafkaRecord = kafkaSendQueue.take();
+                KafkaRecord kafkaRecord = kafkaSendDeque.take();
                 ProducerRecord<byte[], byte[]> producerRecord = kafkaRecord.getProducerRecord();
                 Consumer<RecordMetadata> consumer = kafkaRecord.getConsumer();
 
@@ -413,8 +413,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                                 // If Kafka is Offline, buffer the record again for events.
                                 // This is best effort to keep the order although in-flight elements may still miss the order.
                                 if (producerRecord != null &&
-                                        this.eventTopic.equalsIgnoreCase(kafkaRecord.producerRecord.topic())) {
-                                    if(!kafkaSendQueue.offerFirst(kafkaRecord)) {
+                                        this.eventTopic.equalsIgnoreCase(producerRecord.topic())) {
+                                    if(!kafkaSendDeque.offerFirst(kafkaRecord)) {
                                         RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
                                     }
                                 }
