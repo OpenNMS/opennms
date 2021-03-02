@@ -32,7 +32,9 @@ import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -55,6 +57,7 @@ import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -109,7 +112,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     private void cleanUpApplications() {
         final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
-        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
+        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class);
 
         try {
             applicationDao.findAll().forEach(applicationDao::delete);
@@ -442,7 +445,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         final String perspectiveName = "Default";
 
         final String testServiceName = "ICMP";
-        final String clearedSeverity = OnmsSeverity.CLEARED.getLabel();
         final String minorSeverity = OnmsSeverity.MINOR.getLabel();
         final String criticalSeverity = OnmsSeverity.CRITICAL.getLabel();
 
@@ -527,11 +529,20 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .getEvent();
 
         getDriver().get(getBaseUrlInternal() + "opennms/topology");
-        waitForElement(By.id("vaadin-content"));
-        selectVaadinFrame();
+        waitForElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'View')]"));
+
         clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'View')]"));
         clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'Application')]"));
 
+        // Waiting for perspective poller to detect services as UP
+        await().atMost(2, MINUTES)
+               .until(() -> this.restClient.getEventsForNodeByEventUei(nodeId1, EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI).getTotalCount(),
+                      Matchers.greaterThan(0));
+
+        await().atMost(2, MINUTES)
+               .until(() -> this.restClient.getEventsForNodeByEventUei(nodeId2, EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI).getTotalCount(),
+                      Matchers.greaterThan(0));
+
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
         awaitForApplicationStatus(application, "Minor");
@@ -553,101 +564,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
         verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
         verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Critical", 1); // we expect the same severity as the interface with the highest severity
-
-        /*
-        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
-        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
-        final MonitoringLocationDaoHibernate locationDao = daoFactory.getDao(MonitoringLocationDaoHibernate.class);
-        final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
-        final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
-        final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
-        final AlarmDao alarmDao = daoFactory.getDao(AlarmDaoHibernate.class); // TODO: Patrick remove later
-        final EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class); // TODO: Patrick remove later
-
-        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
-        final int nodeId1 = services.get(0).getNodeId();
-        final int nodeId2 = services.get(1).getNodeId();
-
-        // Fetch data nothing down
-        final JSONObject query = new JSONObject()
-                .put("semanticZoomLevel", 1)
-                .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
-        given().log().ifValidationFails()
-                .body(query.toString())
-                .contentType(ContentType.JSON)
-                .post("{container_id}/{namespace}", "application", "application")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(3))
-                .content("vertices[0].status.severity", Matchers.is("Normal"))
-                .content("vertices[1].status.severity", Matchers.is("Normal"))
-                .content("vertices[2].status.severity", Matchers.is("Normal"))
-                .content("vertices[0].status.count", Matchers.is(0))
-                .content("vertices[1].status.count", Matchers.is(0))
-                .content("vertices[2].status.count", Matchers.is(0));
-
-        // Prepare simulated outages
-        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
-                .setNodeid(nodeId1)
-                .setInterface(localhost)
-                .setService(testServiceName)
-                .setParam(perspectiveKey, perspectiveName)
-                .setSeverity(minorSeverity)
-                .getEvent();
-        final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
-                .setNodeid(nodeId2)
-                .setInterface(localhost)
-                .setService(testServiceName)
-                .setParam(perspectiveKey, perspectiveName)
-                .setSeverity(criticalSeverity)
-                .getEvent();
-
-        // Take service down, reload graph and verify
-        restClient.sendEvent(nodeLostServiceEvent);
-        Thread.sleep(10000); // TODO: Patrick remove later
-
-        transactionTemplate.execute(status -> { // TODO: Patrick remove later
-            for(final OnmsMonitoredService service : application.getMonitoredServices()) {
-                final Collection<CurrentOutageDetails> currentOutages = outageDao.newestCurrentOutages(Arrays.asList(testServiceName));
-                LOG.warn("NEW OUTAGES: " + service + " " + currentOutages);
-                final Collection<OnmsOutage> perspectiveOutages = outageDao.currentOutagesForServiceFromPerspectivePoller(service);
-                LOG.warn("OUTAGES for service: " + service + " " + perspectiveOutages);
-            }
-            LOG.warn("APPLICATION ALARMS: " + applicationDao.getAlarmStatus().stream()
-                    .map(s -> s.getNodeId()+"::"+s.getServiceTypeId() +"::"+ s.getIpAddress().toString() + "=" + s.getSeverity())
-                    .collect(Collectors.joining()));
-            LOG.warn("ALL ALARMS: " + alarmDao.findAll().stream().map(a-> a.toString() + " last eventid=" + a.getLastEvent().getId()).collect(Collectors.joining(", ")));
-            LOG.warn("ALL EVENTS: " + eventDao.findAll().stream().map(e -> "id="+e.getId()+", uei=" + e.getEventUei() + " severity=" + e.getEventSeverity() +"/"+ e.getSeverityLabel()).collect(Collectors.joining(", ")));
-            return null;
-        });
-
-        awaitForApplicationStatus(application, "Minor");
-
-        final Response response = getApplicationViewResponse(query.toString());
-        final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
-        assertThat(applicationViewResponse.length(), Matchers.is(3));
-        verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
-        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
-        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
-
-        // Take service down with severity higher than Major
-        restClient.sendEvent(nodeLostServiceEventApp2);
-        awaitForApplicationStatus(application, "Critical");
-
-        final Response response2 = getApplicationViewResponse(query.toString());
-        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
-        assertThat(applicationViewResponse2.length(), Matchers.is(3));
-        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
-        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
-        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Critical", 1); // we expect the same severity as the interface with the highest severity
-
-        // Finally clean up
-        applicationDao.delete(application);
-
-        */
     }
 
     private void awaitForApplicationStatus(final OnmsApplication application, final String severity) {
@@ -655,7 +571,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .put("semanticZoomLevel", 1)
                 .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
         await()
-                .atMost(1, MINUTES)
+                .atMost(2, MINUTES)
                 .until(() -> {
                     karafShell.runCommand("opennms:graph-force-reload --container application");
                     final String status = new ApplicationViewResponse(getApplicationViewResponse(query.toString()))

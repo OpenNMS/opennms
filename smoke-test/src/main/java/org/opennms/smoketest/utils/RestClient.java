@@ -238,6 +238,11 @@ public class RestClient {
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
     }
 
+    public OnmsEventCollection getEventsForNodeByEventUei(int nodeId, String eventUei) {
+        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId).queryParam("eventUei", eventUei);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
+    }
+
     public OnmsAlarmCollection getAlarmsByEventUei(String eventUei) {
         final WebTarget target = getTarget().path("alarms").queryParam("uei", eventUei);
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
