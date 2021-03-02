@@ -2,6 +2,72 @@
 
 === Changelog
 
+[releasenotes-changelog-27.1.0]
+
+==== Release 27.1.0
+
+Release 27.1.0 contains a bunch of bug fixes, as well as a number of
+enhancements including a refactor of our BGP Monitoring Protocol
+integration.
+
+The codename for 27.1.0 is link:$$https://hitchhikers.fandom.com/wiki/Ravenous_Bugblatter_Beast_of_Traal$$[_Ravenous Bugblatter Beast of Traal_].
+
+
+===== Bug
+
+* Notification link in Admin menu goes to start page (Issue http://issues.opennms.org/browse/NMS-8184[NMS-8184])
+* Change password does not go to Change password page (Issue http://issues.opennms.org/browse/NMS-8770[NMS-8770])
+* Wrong label in event search menu (Issue http://issues.opennms.org/browse/NMS-8977[NMS-8977])
+* Footer in Alarm view is broken (Issue http://issues.opennms.org/browse/NMS-9139[NMS-9139])
+* Clarify clone detectors and policies (Issue http://issues.opennms.org/browse/NMS-9308[NMS-9308])
+* REST API allows to import a requistion from XML with same services (Issue http://issues.opennms.org/browse/NMS-12739[NMS-12739])
+* Broken provisiond policy does not appear in the logs (Issue http://issues.opennms.org/browse/NMS-12834[NMS-12834])
+* Vacuumd throws NullPointer Exception on startup (Issue http://issues.opennms.org/browse/NMS-12884[NMS-12884])
+* Change installation guide to run as non-root user (Issue http://issues.opennms.org/browse/NMS-12989[NMS-12989])
+* Cortex plugin shows only data for counters in a window > 3 hours  (Issue http://issues.opennms.org/browse/NMS-13014[NMS-13014])
+* Timezone and Grafana Dashboard fields not preserved when editing a scheduled report (Issue http://issues.opennms.org/browse/NMS-13064[NMS-13064])
+* Flow Rest API: Name lookup is happening per bucket and not per interval (Aggregation Only) (Issue http://issues.opennms.org/browse/NMS-13065[NMS-13065])
+* Make OpenNMS compile on Apple Silicon (Issue http://issues.opennms.org/browse/NMS-13079[NMS-13079])
+* Fix NPE in Vaccumd (Issue http://issues.opennms.org/browse/NMS-13098[NMS-13098])
+* Make sequence number trackin thread-save and patient about out-of-order (Issue http://issues.opennms.org/browse/NMS-13106[NMS-13106])
+* Vmware-importer requisition meta-data lost at import (Issue http://issues.opennms.org/browse/NMS-13109[NMS-13109])
+* XSS in user management (Issue http://issues.opennms.org/browse/NMS-13125[NMS-13125])
+* No option provided to change the number of records per page in Events ILP and Events/Alarms ILP under Topology (Issue http://issues.opennms.org/browse/NMS-13137[NMS-13137])
+* The OpenNMS Web User Interface Has Experienced an Error observed when searching for a Event under Event notifications (Issue http://issues.opennms.org/browse/NMS-13148[NMS-13148])
+* Node's sub-option 'Availability' exceeds table alignment and overlaps next table of 'Notifications' under Topology section (Issue http://issues.opennms.org/browse/NMS-13153[NMS-13153])
+* Newts Cache priming flag is inverted (Issue http://issues.opennms.org/browse/NMS-13156[NMS-13156])
+* Dependabot: Upgrade Apache POI to 3.17 (CVE-2017-12626) (Issue http://issues.opennms.org/browse/NMS-13161[NMS-13161])
+
+===== Enhancement
+
+* Cloning of  Foreign Source Definition (Issue http://issues.opennms.org/browse/NMS-8854[NMS-8854])
+* Depend on haveged (and supply it in our repo) (Issue http://issues.opennms.org/browse/NMS-8959[NMS-8959])
+* Rename button on Threshold Groups screen (Issue http://issues.opennms.org/browse/NMS-12606[NMS-12606])
+* Upgrade Kafka components to 2.7.0 (Issue http://issues.opennms.org/browse/NMS-12704[NMS-12704])
+* Handle all possible values of ifOperStatus in the SNMP Interface Poller (Issue http://issues.opennms.org/browse/NMS-12980[NMS-12980])
+* Remote poller: review all documentation to update RP references (Issue http://issues.opennms.org/browse/NMS-12879[NMS-12879])
+* Persist basic BMP messages in OpenNMS (Issue http://issues.opennms.org/browse/NMS-12949[NMS-12949])
+* Handle stats for BMP (Issue http://issues.opennms.org/browse/NMS-12952[NMS-12952])
+* Get dashboards from OpenBMP working (Issue http://issues.opennms.org/browse/NMS-12953[NMS-12953])
+* Enhance Routes with ASN info (Issue http://issues.opennms.org/browse/NMS-12963[NMS-12963])
+* Enhance Routes with WhoIs info  (Issue http://issues.opennms.org/browse/NMS-12964[NMS-12964])
+* Enhance Routes with RPKI info  (Issue http://issues.opennms.org/browse/NMS-12965[NMS-12965])
+* Create confd templates to handle Slack properties (Issue http://issues.opennms.org/browse/NMS-12982[NMS-12982])
+* Create confd templates to handle Mattermost properties (Issue http://issues.opennms.org/browse/NMS-13004[NMS-13004])
+* Updating UI to clarify rescan process (Issue http://issues.opennms.org/browse/NMS-13040[NMS-13040])
+* Update PostgreSQL JDBC drivers (Issue http://issues.opennms.org/browse/NMS-13049[NMS-13049])
+* Move Stats handling to TimeScaleDB (Issue http://issues.opennms.org/browse/NMS-13061[NMS-13061])
+* Upgrade Container base images (Issue http://issues.opennms.org/browse/NMS-13071[NMS-13071])
+* Add SNMP Data Collection example to Horizon Docs (Issue http://issues.opennms.org/browse/NMS-13107[NMS-13107])
+* Nephron: Replace JacksonJsonCoder for FlowSummaries (Issue http://issues.opennms.org/browse/NMS-13115[NMS-13115])
+* Nephron: fix rounding errors in flow sampling (Issue http://issues.opennms.org/browse/NMS-13116[NMS-13116])
+* Create smoke test that verifies all Reload daemon are successful (Issue http://issues.opennms.org/browse/NMS-13117[NMS-13117])
+* Searching node link informations (Issue http://issues.opennms.org/browse/NMS-13129[NMS-13129])
+* add service status to rest `/info` API (Issue http://issues.opennms.org/browse/NMS-13135[NMS-13135])
+* Update Kafka settings for multiple instances documentation (Issue http://issues.opennms.org/browse/NMS-13136[NMS-13136])
+* Move some model objects from opennms-webapp  to opennms-web-api  (Issue http://issues.opennms.org/browse/NMS-13168[NMS-13168])
+* create a table to show related events in the alarm detail view (Issue http://issues.opennms.org/browse/NMS-13170[NMS-13170])
+
 [releasenotes-changelog-27.0.5]
 
 ==== Release 27.0.5
