@@ -93,11 +93,12 @@ public class CollectionSetMapper {
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
                         interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
+                        // See NMS-13185
                         if (!Strings.isNullOrEmpty(resource.getInstance())) {
                             CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
                                     .newBuilder();
                             attributeBuilder.setValue(resource.getInstance());
-                            attributeBuilder.setName("interfaceInstance");
+                            attributeBuilder.setName("__ifIndex");
                             collectionSetResourceBuilder.addString(attributeBuilder);
                         }
                         collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
