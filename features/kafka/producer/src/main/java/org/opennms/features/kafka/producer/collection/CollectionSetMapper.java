@@ -92,19 +92,15 @@ public class CollectionSetMapper {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
+                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
                         if (!Strings.isNullOrEmpty(resource.getInstance())) {
-                            interfaceResourceBuilder.setInstance(resource.getInstance());
-                            // Skip elements without instance ( aliased resources will be skipped)
-                            collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
-                        }
-                        // Add interface label as a String attribute.
-                        if (!Strings.isNullOrEmpty(resource.getInterfaceLabel())) {
                             CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
                                     .newBuilder();
-                            attributeBuilder.setName("label");
-                            attributeBuilder.setValue(resource.getInterfaceLabel());
+                            attributeBuilder.setValue(resource.getInstance());
+                            attributeBuilder.setName("interfaceInstance");
                             collectionSetResourceBuilder.addString(attributeBuilder);
                         }
+                        collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
@@ -263,5 +259,4 @@ public class CollectionSetMapper {
         });
         return nodeResourceBuilder;
     }
-
 }
