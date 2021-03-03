@@ -97,6 +97,14 @@ public class CollectionSetMapper {
                             // Skip elements without instance ( aliased resources will be skipped)
                             collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
                         }
+                        // Add interface label as a String attribute.
+                        if (!Strings.isNullOrEmpty(resource.getInterfaceLabel())) {
+                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
+                                    .newBuilder();
+                            attributeBuilder.setName("label");
+                            attributeBuilder.setValue(resource.getInterfaceLabel());
+                            collectionSetResourceBuilder.addString(attributeBuilder);
+                        }
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
