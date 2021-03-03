@@ -111,8 +111,8 @@ const QuickNode = require('../model/QuickNode');
     */
     $scope.provision = function() {
       $scope.isSaving = true;
-      growl.info($sanitize('The node ' + $scope.node.nodeLabel + ' is being added to requisition ' + $scope.node.foreignSource + '. Please wait...'));
-      var successMessage = $sanitize('The node ' + $scope.node.nodeLabel + ' has been added to requisition ' + $scope.node.foreignSource);
+      growl.info('The node ' + _.escape($scope.node.nodeLabel) + ' is being added to requisition ' + _.escape($scope.node.foreignSource) + '. Please wait...');
+      var successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           $scope.reset();
@@ -238,7 +238,7 @@ const QuickNode = require('../model/QuickNode');
             function() { // success
               RequisitionsService.synchronizeRequisition(foreignSource, false).then(
                 function() {
-                  growl.success('The requisition ' + foreignSource + ' has been created and synchronized.');
+                  growl.success('The requisition ' + _.escape(foreignSource) + ' has been created and synchronized.');
                   $scope.foreignSources.push(foreignSource);
                 },
                 $scope.errorHandler

@@ -454,7 +454,7 @@ require('../services/Requisitions');
       RequisitionsService.startTiming();
       RequisitionsService.saveForeignSourceDefinition($scope.foreignSourceDef).then(
         function() { // success
-          growl.success('The definition for the requisition ' + $scope.foreignSource + ' has been saved.');
+          growl.success('The definition for the requisition ' + _.escape($scope.foreignSource) + ' has been saved.');
           form.$dirty = false;
         },
         $scope.errorHandler
@@ -474,7 +474,7 @@ require('../services/Requisitions');
           RequisitionsService.startTiming();
           RequisitionsService.deleteForeignSourceDefinition($scope.foreignSource).then(
             function() { // success
-              growl.success('The foreign source definition for ' + $scope.foreignSource + 'has been reseted.');
+              growl.success('The foreign source definition for ' + _.escape($scope.foreignSource) + 'has been reseted.');
               $scope.initialize();
             },
             $scope.errorHandler
@@ -517,7 +517,7 @@ require('../services/Requisitions');
     * @methodOf ForeignSourceController
     */
     $scope.initialize = function() {
-      growl.success('Retrieving definition for requisition ' + $scope.foreignSource + '...');
+      growl.success('Retrieving definition for requisition ' + _.escape($scope.foreignSource) + '...');
       RequisitionsService.getForeignSourceDefinition($scope.foreignSource).then(
         function(foreignSourceDef) { // success
           $scope.foreignSourceDef = foreignSourceDef;
