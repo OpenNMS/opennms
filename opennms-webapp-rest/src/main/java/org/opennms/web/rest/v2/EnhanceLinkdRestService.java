@@ -66,7 +66,7 @@ public class EnhanceLinkdRestService {
     private NodeDao m_nodeDao;
 
     @GET
-    @Path("LldpLinks/{nodeId}}")
+    @Path("lldplinks/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getLldpLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -84,7 +84,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("cdpLinks/{nodeId}}")
+    @Path("cdplinks/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getCdpLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -93,7 +93,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("ospfLinks/{nodeId}}")
+    @Path("ospflinks/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getOspfLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -102,7 +102,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("isisLinks/{nodeId}}")
+    @Path("isislinks/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getIsisLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -111,7 +111,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("lldpelems/{nodeId}}")
+    @Path("lldpelem/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getLldpelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -120,7 +120,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("cdpelems/{nodeId}}")
+    @Path("cdpelem/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getCdpelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -129,7 +129,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("ospfelems/{nodeId}}")
+    @Path("ospfelem/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getOspfelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
@@ -138,7 +138,7 @@ public class EnhanceLinkdRestService {
     }
 
     @GET
-    @Path("isiselems/{nodeId}}")
+    @Path("isiselem/{nodeId}}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getIsiselem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
         checkNodeInDB(nodeId);
