@@ -71,6 +71,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
@@ -221,6 +222,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         Hashtable<String, Object> producerConfig = new Hashtable<>();
         producerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaForwarderIT.class.getCanonicalName());
         producerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+        producerConfig.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 3000);
+        producerConfig.put(ProducerConfig.LINGER_MS_CONFIG, 0);
+        producerConfig.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 2000);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         Hashtable<String, Object> streamsConfig = new Hashtable<>();
         streamsConfig.put(StreamsConfig.STATE_DIR_CONFIG, data.getAbsolutePath());
@@ -418,6 +422,27 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             fail("Same alarm was sync'd!");
         } catch (Exception e) {
         }
+    }
+
+
+    @Test
+    public void testNotDroppingOfMessagesWhenKafkaIsOffline() throws Exception {
+
+        eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
+        if (!kafkaProducer.getEventForwardedLatch().await(1, TimeUnit.MINUTES)) {
+            throw new Exception("No events were successfully forwarded in time!");
+        }
+        kafkaConsumer = startConsumer();
+        await().atMost(1, TimeUnit.MINUTES).until(this::getUeisForConsumedEvents, hasItems(
+                EventConstants.NODE_DOWN_EVENT_UEI));
+        kafkaServer.stopKafkaServer();
+        eventdIpcMgr.sendNow(MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode2()).getEvent());
+        // Sleep long enough to account for delivery.timeout.ms = 3 secs.
+        Thread.sleep(10000);
+        kafkaServer.startKafkaServer();
+        await().atMost(1, TimeUnit.MINUTES).until(this::getUeisForConsumedEvents, hasItems(
+                EventConstants.NODE_DOWN_EVENT_UEI, EventConstants.NODE_UP_EVENT_UEI));
+
     }
 
     private KafkaMessageConsumerRunner startConsumer() {
