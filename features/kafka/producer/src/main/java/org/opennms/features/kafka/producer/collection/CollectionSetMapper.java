@@ -92,8 +92,24 @@ public class CollectionSetMapper {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
-                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
-                        collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                        if (!Strings.isNullOrEmpty(resource.getInstance())) {
+                            interfaceResourceBuilder.setInstance(resource.getInstance());
+                            collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                        }
+                        if (!Strings.isNullOrEmpty(resource.getInstance())) {
+                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
+                                    .newBuilder();
+                            attributeBuilder.setValue(resource.getInstance());
+                            attributeBuilder.setName("interfaceInstance");
+                            collectionSetResourceBuilder.addString(attributeBuilder);
+                        }
+                        if (!Strings.isNullOrEmpty(resource.getInterfaceLabel())) {
+                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
+                                    .newBuilder();
+                            attributeBuilder.setValue(resource.getInterfaceLabel());
+                            attributeBuilder.setName("interfaceLabel");
+                            collectionSetResourceBuilder.addString(attributeBuilder);
+                        }
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
@@ -156,7 +172,9 @@ public class CollectionSetMapper {
 
             @Override
             public void completeResource(CollectionResource resource) {
-                builder.addResource(collectionSetResourceBuilder);
+                if(hasResource(collectionSetResourceBuilder)) {
+                    builder.addResource(collectionSetResourceBuilder);
+                }
             }
 
             @Override
@@ -167,6 +185,12 @@ public class CollectionSetMapper {
         });
 
         return builder.build();
+    }
+
+    private boolean hasResource(CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder) {
+        return collectionSetResourceBuilder.hasNode() || collectionSetResourceBuilder.hasInterface()
+                || collectionSetResourceBuilder.hasGeneric() || collectionSetResourceBuilder.hasResponse();
+
     }
 
     private String getNodeCriteriaFromResource(CollectionResource resource) {
