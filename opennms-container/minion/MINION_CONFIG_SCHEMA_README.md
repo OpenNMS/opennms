@@ -32,7 +32,11 @@ Ultimately the configuration that Minion's confd templates expect is a set of ke
 ### integer
 A raw integer number.
 
-Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted).
+Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted, ex `0..` for any positive integer).
+
+`N..M` forms a range where `N` <= `X` <= `M`
+
+`N..` forms a range where `X` >= `N`
 
 examples:
 ```
@@ -44,7 +48,11 @@ examples:
 ### decimal
 A raw decimal number.
 
-Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted).
+Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted, ex `0.0..` for any positive decimal).
+
+`N..M` forms a range where `N` <= `X` <= `M`
+
+`N..` forms a range where `X` >= `N`
 
 examples:
 ```
