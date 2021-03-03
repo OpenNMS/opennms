@@ -449,7 +449,7 @@
     </tr>
     <% for (OnmsAcknowledgment ack : acks) {%>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
-        <td><%=ack.getAckUser()%></td>
+        <td><%=WebSecurityUtils.sanitizeString(ack.getAckUser())%></td>
         <td><%=ack.getAckAction()%></td>
         <td><onms:datetime date="<%=ack.getAckTime()%>" /></td>
     </tr>

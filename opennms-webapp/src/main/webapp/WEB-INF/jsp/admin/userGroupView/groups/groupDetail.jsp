@@ -40,6 +40,7 @@
 %>
 
 <%@page import="org.opennms.web.group.WebGroup"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
     WebGroup group = (WebGroup)request.getAttribute("group");
@@ -60,13 +61,13 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>Details for Group: <%=group.getName()%></span>
+        <span>Details for Group: <%=WebSecurityUtils.sanitizeString(group.getName())%></span>
       </div>
       <table class="table table-sm">
         <tr>
           <th>Comments:</th>
           <td width="75%">
-            <%=group.getComments()%>
+            <%=WebSecurityUtils.sanitizeString(group.getComments())%>
           </td>
         </tr>
         <tr>
@@ -79,7 +80,7 @@
             <% } else { %>
               <ul class="list-unstyled">
               <% for (String user : users) { %>
-               <li> <%=user%> </li>
+               <li> <%=WebSecurityUtils.sanitizeString(user)%> </li>
               <% } %>
               </ul>
             <% } %>
