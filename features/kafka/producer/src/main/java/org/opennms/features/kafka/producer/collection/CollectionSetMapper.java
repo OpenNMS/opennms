@@ -31,7 +31,9 @@ package org.opennms.features.kafka.producer.collection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -92,23 +94,12 @@ public class CollectionSetMapper {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
+                        Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
+                        // Skip Aliased Resources which doesn't have instance.
                         if (!Strings.isNullOrEmpty(resource.getInstance())) {
-                            interfaceResourceBuilder.setInstance(resource.getInstance());
+                            Integer ifIndex = StringUtils.parseInt(resource.getInstance(), null);
+                            Optional.ofNullable(ifIndex).ifPresent(interfaceResourceBuilder::setIfIndex);
                             collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
-                        }
-                        if (!Strings.isNullOrEmpty(resource.getInstance())) {
-                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
-                                    .newBuilder();
-                            attributeBuilder.setValue(resource.getInstance());
-                            attributeBuilder.setName("interfaceInstance");
-                            collectionSetResourceBuilder.addString(attributeBuilder);
-                        }
-                        if (!Strings.isNullOrEmpty(resource.getInterfaceLabel())) {
-                            CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
-                                    .newBuilder();
-                            attributeBuilder.setValue(resource.getInterfaceLabel());
-                            attributeBuilder.setName("interfaceLabel");
-                            collectionSetResourceBuilder.addString(attributeBuilder);
                         }
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
