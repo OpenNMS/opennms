@@ -44,7 +44,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.web.enlinkd.BridgeLinkNode;
 import org.opennms.web.enlinkd.CdpElementNode;
 import org.opennms.web.enlinkd.CdpLinkNode;
-import org.opennms.web.enlinkd.EnLinkdElementFactory;
+import org.opennms.web.enlinkd.EnLinkdElementFactoryInterface;
 import org.opennms.web.enlinkd.IsisElementNode;
 import org.opennms.web.enlinkd.IsisLinkNode;
 import org.opennms.web.enlinkd.LldpElementNode;
@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EnhanceLinkdRestService {
     @Autowired
-    private EnLinkdElementFactory enLinkdElementFactory;
+    private EnLinkdElementFactoryInterface enLinkdElementFactory;
 
     @Autowired
     private NodeDao m_nodeDao;
