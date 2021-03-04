@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -2727,7 +2727,7 @@ public final class CollectionSetProtos {
         getInstanceBytes();
 
     /**
-     * <code>int32 ifIndex = 3;</code>
+     * <code>int32 if_index = 3;</code>
      */
     int getIfIndex();
   }
@@ -2883,10 +2883,10 @@ public final class CollectionSetProtos {
       }
     }
 
-    public static final int IFINDEX_FIELD_NUMBER = 3;
+    public static final int IF_INDEX_FIELD_NUMBER = 3;
     private int ifIndex_;
     /**
-     * <code>int32 ifIndex = 3;</code>
+     * <code>int32 if_index = 3;</code>
      */
     public int getIfIndex() {
       return ifIndex_;
@@ -2977,7 +2977,7 @@ public final class CollectionSetProtos {
       }
       hash = (37 * hash) + INSTANCE_FIELD_NUMBER;
       hash = (53 * hash) + getInstance().hashCode();
-      hash = (37 * hash) + IFINDEX_FIELD_NUMBER;
+      hash = (37 * hash) + IF_INDEX_FIELD_NUMBER;
       hash = (53 * hash) + getIfIndex();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -3430,13 +3430,13 @@ public final class CollectionSetProtos {
 
       private int ifIndex_ ;
       /**
-       * <code>int32 ifIndex = 3;</code>
+       * <code>int32 if_index = 3;</code>
        */
       public int getIfIndex() {
         return ifIndex_;
       }
       /**
-       * <code>int32 ifIndex = 3;</code>
+       * <code>int32 if_index = 3;</code>
        */
       public Builder setIfIndex(int value) {
 
@@ -3445,7 +3445,7 @@ public final class CollectionSetProtos {
         return this;
       }
       /**
-       * <code>int32 ifIndex = 3;</code>
+       * <code>int32 if_index = 3;</code>
        */
       public Builder clearIfIndex() {
 
@@ -8070,23 +8070,23 @@ public final class CollectionSetProtos {
       "ER\020\001\"v\n\021NodeLevelResource\022\017\n\007node_id\030\001 \001" +
       "(\003\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id" +
       "\030\003 \001(\t\022\022\n\nnode_label\030\004 \001(\t\022\020\n\010location\030\005" +
-      " \001(\t\"]\n\026InterfaceLevelResource\022 \n\004node\030\001" +
+      " \001(\t\"^\n\026InterfaceLevelResource\022 \n\004node\030\001" +
       " \001(\0132\022.NodeLevelResource\022\020\n\010instance\030\002 \001" +
-      "(\t\022\017\n\007ifIndex\030\003 \001(\005\"W\n\023GenericTypeResour" +
-      "ce\022 \n\004node\030\001 \001(\0132\022.NodeLevelResource\022\014\n\004" +
-      "type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\":\n\024Response" +
-      "TimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010locati" +
-      "on\030\002 \001(\t\"\217\002\n\025CollectionSetResource\022\"\n\004no" +
-      "de\030\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\tinterf" +
-      "ace\030\002 \001(\0132\027.InterfaceLevelResourceH\000\022\'\n\007" +
-      "generic\030\003 \001(\0132\024.GenericTypeResourceH\000\022)\n" +
-      "\010response\030\004 \001(\0132\025.ResponseTimeResourceH\000" +
-      "\022 \n\006string\030\n \003(\0132\020.StringAttribute\022\"\n\007nu" +
-      "meric\030\013 \003(\0132\021.NumericAttributeB\n\n\010resour" +
-      "ce\"L\n\rCollectionSet\022\021\n\ttimestamp\030\001 \001(\003\022(" +
-      "\n\010resource\030\002 \003(\0132\026.CollectionSetResource" +
-      "B@\n)org.opennms.features.kafka.producer." +
-      "modelB\023CollectionSetProtosb\006proto3"
+      "(\t\022\020\n\010if_index\030\003 \001(\005\"W\n\023GenericTypeResou" +
+      "rce\022 \n\004node\030\001 \001(\0132\022.NodeLevelResource\022\014\n" +
+      "\004type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\":\n\024Respons" +
+      "eTimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010locat" +
+      "ion\030\002 \001(\t\"\217\002\n\025CollectionSetResource\022\"\n\004n" +
+      "ode\030\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\tinter" +
+      "face\030\002 \001(\0132\027.InterfaceLevelResourceH\000\022\'\n" +
+      "\007generic\030\003 \001(\0132\024.GenericTypeResourceH\000\022)" +
+      "\n\010response\030\004 \001(\0132\025.ResponseTimeResourceH" +
+      "\000\022 \n\006string\030\n \003(\0132\020.StringAttribute\022\"\n\007n" +
+      "umeric\030\013 \003(\0132\021.NumericAttributeB\n\n\010resou" +
+      "rce\"L\n\rCollectionSet\022\021\n\ttimestamp\030\001 \001(\003\022" +
+      "(\n\010resource\030\002 \003(\0132\026.CollectionSetResourc" +
+      "eB@\n)org.opennms.features.kafka.producer" +
+      ".modelB\023CollectionSetProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
