@@ -1,3 +1,13 @@
+opennms (27.1.0-1) stable; urgency=medium
+
+  * New minor release.  It contains a bunch of bug fixes, as well as a number of
+    enhancements including a refactor of our BGP Monitoring Protocol integration.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.1.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 02 Mar 2021 11:42:00 -0400
+ 
 opennms (27.0.5-1) stable; urgency=high
 
   * New minor release.  It contains just a couple of bug fixes, most importantly a
