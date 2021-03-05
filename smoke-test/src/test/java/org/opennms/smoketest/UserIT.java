@@ -125,42 +125,6 @@ public class UserIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void testChangeAdminPasswordWithDifferentPasswords() throws Exception {
-
-        driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
-        enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNM");
-        driver.findElement(By.cssSelector("button[type=submit]")).click();
-        try {
-            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-            alert.dismiss();
-        } catch (final Exception e) {
-            LOG.debug("Got an exception waiting for a 'wrong password' alert.", e);
-            throw e;
-        }
-    }
-
-    @Test
-    public void testChangeAdminPassword() throws Exception {
-
-        driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
-        enterText(By.cssSelector("input[type=password][name=oldpass]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "OpenNMS");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "OpenNMS");
-        driver.findElement(By.cssSelector("button[type=submit]")).click();
-        assertTrue(wait.until(pageContainsText("Password successfully changed")));
-
-        // Change password back to admin
-        driver.get(getBaseUrlInternal() + "opennms/account/selfService/newPasswordEntry");
-        enterText(By.cssSelector("input[type=password][name=oldpass]"), "OpenNMS");
-        enterText(By.cssSelector("input[type=password][name=pass1]"), "admin");
-        enterText(By.cssSelector("input[type=password][name=pass2]"), "admin");
-        driver.findElement(By.cssSelector("button[type=submit]")).click();
-        assertTrue(wait.until(pageContainsText("Password successfully changed")));
-    }
-
-    @Test
     public void testInvalidUserIds() {
         testInvalidUserId("John<b>Doe</b>",true);
         testInvalidUserId("Jane'Doe'",true);
