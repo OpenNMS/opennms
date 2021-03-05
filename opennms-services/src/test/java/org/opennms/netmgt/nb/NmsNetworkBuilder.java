@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1492,8 +1492,12 @@ public abstract class NmsNetworkBuilder {
             if (ifIndex == null)
                 nb.addInterface(ipaddr.getHostAddress()).setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");
             else {
-                nb.addInterface(ipaddr.getHostAddress(), ifindexsnmpbuildermap.get(ifIndex).getSnmpInterface()).
-                setIsSnmpPrimary(isSnmpPrimary).setIsManaged("M");            }
+                final String hostAddress = ipaddr.getHostAddress();
+                final SnmpInterfaceBuilder snmpBuilder = ifindexsnmpbuildermap.get(ifIndex);
+                nb.addInterface(hostAddress, snmpBuilder.getSnmpInterface())
+                    .setIsSnmpPrimary(isSnmpPrimary)
+                    .setIsManaged("M");
+            }
         }
             
         return nb.getCurrentNode();
