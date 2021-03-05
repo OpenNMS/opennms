@@ -20,6 +20,7 @@
         <include>com.codeborne:phantomjsdriver</include>
         <include>com.google.code.gson:gson</include>
         <include>junit:junit</include>
+        <include>org.hamcrest:hamcrest-library</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
