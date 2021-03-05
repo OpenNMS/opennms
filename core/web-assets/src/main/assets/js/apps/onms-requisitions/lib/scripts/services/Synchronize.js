@@ -46,14 +46,14 @@ require('./Requisitions');
           RequisitionsService.startTiming();
           RequisitionsService.synchronizeRequisition(requisition.foreignSource, rescanExisting).then(
             function() { // success
-              growl.success('The import operation has been started for ' + requisition.foreignSource + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
+              growl.success('The import operation has been started for ' + _.escape(requisition.foreignSource) + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
               requisition.setDeployed(true);
             },
             errorHandler
           );
         };
         bootbox.prompt({
-            title: 'Synchronize Requisition  ' +  requisition.foreignSource,
+            title: 'Synchronize Requisition  ' +  _.escape(requisition.foreignSource),
             message: '<p><b>Choose a scan option: </b></p>',
             inputType: 'radio',
             inputOptions: [
