@@ -35,10 +35,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.web.enlinkd.BridgeLinkNode;
@@ -66,81 +64,81 @@ public class EnhanceLinkdRestService {
     private NodeDao m_nodeDao;
 
     @GET
-    @Path("lldplinks/{nodeId}}")
+    @Path("lldplinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getLldpLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getLldpLinks(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         Collection<LldpLinkNode> lldpLinks = enLinkdElementFactory.getLldpLinks(nodeId);
         return Response.ok(lldpLinks).build();
     }
 
     @GET
-    @Path("bridgelinks/{nodeId}}")
+    @Path("bridgelinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getBridgelinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getBridgelinks(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         Collection<BridgeLinkNode> bridgelinks = enLinkdElementFactory.getBridgeLinks(nodeId);
         return Response.ok(bridgelinks).build();
     }
 
     @GET
-    @Path("cdplinks/{nodeId}}")
+    @Path("cdplinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getCdpLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getCdpLinks(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         Collection<CdpLinkNode> cdpLinks = enLinkdElementFactory.getCdpLinks(nodeId);
         return Response.ok(cdpLinks).build();
     }
 
     @GET
-    @Path("ospflinks/{nodeId}}")
+    @Path("ospflinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getOspfLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getOspfLinks(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         Collection<OspfLinkNode> ospfLinks = enLinkdElementFactory.getOspfLinks(nodeId);
         return Response.ok(ospfLinks).build();
     }
 
     @GET
-    @Path("isislinks/{nodeId}}")
+    @Path("isislinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getIsisLinks(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getIsisLinks(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         Collection<IsisLinkNode> isisLinks = enLinkdElementFactory.getIsisLinks(nodeId);
         return Response.ok(isisLinks).build();
     }
 
     @GET
-    @Path("lldpelem/{nodeId}}")
+    @Path("lldpelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getLldpelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getLldpelem(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         LldpElementNode lldpelem = enLinkdElementFactory.getLldpElement(nodeId);
         return Response.ok(lldpelem).build();
     }
 
     @GET
-    @Path("cdpelem/{nodeId}}")
+    @Path("cdpelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getCdpelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getCdpelem(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         CdpElementNode cdpelem = enLinkdElementFactory.getCdpElement(nodeId);
         return Response.ok(cdpelem).build();
     }
 
     @GET
-    @Path("ospfelem/{nodeId}}")
+    @Path("ospfelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getOspfelem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getOspfelem(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         OspfElementNode ospfelem = enLinkdElementFactory.getOspfElement(nodeId);
         return Response.ok(ospfelem).build();
     }
 
     @GET
-    @Path("isiselem/{nodeId}}")
+    @Path("isiselem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getIsiselem(@Context final SecurityContext securityContext, @PathParam("nodeId") final Integer nodeId) {
+    public Response getIsiselem(@PathParam("nodeId") int nodeId) {
         checkNodeInDB(nodeId);
         IsisElementNode isiselem = enLinkdElementFactory.getIsisElement(nodeId);
         return Response.ok(isiselem).build();
