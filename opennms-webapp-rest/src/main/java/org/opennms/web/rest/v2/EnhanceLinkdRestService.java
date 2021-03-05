@@ -49,96 +49,79 @@ import org.opennms.web.enlinkd.LldpElementNode;
 import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
+import org.opennms.web.rest.v2.api.EnhanceLinkdRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Path("enlinkd")
 @Transactional
-public class EnhanceLinkdRestService {
+public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
+
     @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
 
     @Autowired
     private NodeDao m_nodeDao;
 
-    @GET
-    @Path("lldplinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getLldpLinks(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getLldpLinks(int nodeId) {
         checkNodeInDB(nodeId);
         Collection<LldpLinkNode> lldpLinks = enLinkdElementFactory.getLldpLinks(nodeId);
         return Response.ok(lldpLinks).build();
     }
 
-    @GET
-    @Path("bridgelinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getBridgelinks(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getBridgelinks(int nodeId) {
         checkNodeInDB(nodeId);
         Collection<BridgeLinkNode> bridgelinks = enLinkdElementFactory.getBridgeLinks(nodeId);
         return Response.ok(bridgelinks).build();
     }
 
-    @GET
-    @Path("cdplinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getCdpLinks(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getCdpLinks(int nodeId) {
         checkNodeInDB(nodeId);
         Collection<CdpLinkNode> cdpLinks = enLinkdElementFactory.getCdpLinks(nodeId);
         return Response.ok(cdpLinks).build();
     }
 
-    @GET
-    @Path("ospflinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getOspfLinks(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getOspfLinks(int nodeId) {
         checkNodeInDB(nodeId);
         Collection<OspfLinkNode> ospfLinks = enLinkdElementFactory.getOspfLinks(nodeId);
         return Response.ok(ospfLinks).build();
     }
 
-    @GET
-    @Path("isislinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getIsisLinks(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getIsisLinks(int nodeId) {
         checkNodeInDB(nodeId);
         Collection<IsisLinkNode> isisLinks = enLinkdElementFactory.getIsisLinks(nodeId);
         return Response.ok(isisLinks).build();
     }
 
-    @GET
-    @Path("lldpelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getLldpelem(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getLldpelem(int nodeId) {
         checkNodeInDB(nodeId);
         LldpElementNode lldpelem = enLinkdElementFactory.getLldpElement(nodeId);
         return Response.ok(lldpelem).build();
     }
 
-    @GET
-    @Path("cdpelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getCdpelem(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getCdpelem(int nodeId) {
         checkNodeInDB(nodeId);
         CdpElementNode cdpelem = enLinkdElementFactory.getCdpElement(nodeId);
         return Response.ok(cdpelem).build();
     }
 
-    @GET
-    @Path("ospfelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getOspfelem(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getOspfelem(int nodeId) {
         checkNodeInDB(nodeId);
         OspfElementNode ospfelem = enLinkdElementFactory.getOspfElement(nodeId);
         return Response.ok(ospfelem).build();
     }
 
-    @GET
-    @Path("isiselem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getIsiselem(@PathParam("nodeId") int nodeId) {
+    @Override
+    public Response getIsiselem(int nodeId) {
         checkNodeInDB(nodeId);
         IsisElementNode isiselem = enLinkdElementFactory.getIsisElement(nodeId);
         return Response.ok(isiselem).build();

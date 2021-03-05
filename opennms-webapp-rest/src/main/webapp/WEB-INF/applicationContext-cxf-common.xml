@@ -43,4 +43,6 @@
     <!-- Interceptors -->
     <bean id="gzipOutInterceptor" class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor" />
 
+    <bean id="enLinkdElementFactory" class="org.opennms.web.enlinkd.EnLinkdElementFactory"/>
+
 </beans>
