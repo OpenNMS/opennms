@@ -39,6 +39,8 @@
 		org.opennms.web.servlet.MissingParameterException
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="java.util.stream.Collectors" %>
 
 <%
 	User user = null;
@@ -72,7 +74,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>Details for User: <%=user.getUserId()%></span>
+        <span>Details for User: <%=WebSecurityUtils.sanitizeString(user.getUserId())%></span>
       </div>
       <table class="table table-sm">
         <tr>
