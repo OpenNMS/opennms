@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2.api;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -35,51 +37,70 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.opennms.web.enlinkd.BridgeLinkNode;
+import org.opennms.web.enlinkd.CdpElementNode;
+import org.opennms.web.enlinkd.CdpLinkNode;
+import org.opennms.web.enlinkd.IsisElementNode;
+import org.opennms.web.enlinkd.IsisLinkNode;
+import org.opennms.web.enlinkd.LldpElementNode;
+import org.opennms.web.enlinkd.LldpLinkNode;
+import org.opennms.web.enlinkd.OspfElementNode;
+import org.opennms.web.enlinkd.OspfLinkNode;
+import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
+import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
+import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
+import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
+import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
+import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
+import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
+
 @Path("enlinkd")
 public interface EnhanceLinkdRestApi {
 
     @GET
     @Path("lldplinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getLldpLinks(@PathParam("nodeId") int nodeId);
+    List<LldpLinkNodeDTO> getLldpLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("bridgelinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getBridgelinks(@PathParam("nodeId") int nodeId);
+    List<BridgeLinkNodeDTO> getBridgelinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("cdplinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getCdpLinks(@PathParam("nodeId") int nodeId);
+    List<CdpLinkNodeDTO> getCdpLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("ospflinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getOspfLinks(@PathParam("nodeId") int nodeId);
+    List<OspfLinkNodeDTO> getOspfLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("isislinks/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getIsisLinks(@PathParam("nodeId") int nodeId);
+    List<IsisLinkNodeDTO> getIsisLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("lldpelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getLldpelem(@PathParam("nodeId") int nodeId);
+    LldpElementNodeDTO getLldpelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("cdpelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getCdpelem(@PathParam("nodeId") int nodeId);
+    CdpElementNodeDTO getCdpelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("ospfelem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getOspfelem(@PathParam("nodeId") int nodeId);
+    OspfElementNodeDTO getOspfelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("isiselem/{nodeId}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    Response getIsiselem(@PathParam("nodeId") int nodeId);
+    IsisElementNodeDTO getIsiselem(@PathParam("nodeId") int nodeId);
 }

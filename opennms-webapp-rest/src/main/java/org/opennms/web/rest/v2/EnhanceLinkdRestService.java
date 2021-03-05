@@ -28,15 +28,9 @@
 
 package org.opennms.web.rest.v2;
 
-import java.util.Collection;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.web.enlinkd.BridgeLinkNode;
@@ -50,6 +44,15 @@ import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
 import org.opennms.web.rest.v2.api.EnhanceLinkdRestApi;
+import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
+import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
+import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
+import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
+import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
+import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
+import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,78 +61,176 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
 
-    @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
 
-    @Autowired
     private NodeDao m_nodeDao;
 
-    @Override
-    public Response getLldpLinks(int nodeId) {
-        checkNodeInDB(nodeId);
-        Collection<LldpLinkNode> lldpLinks = enLinkdElementFactory.getLldpLinks(nodeId);
-        return Response.ok(lldpLinks).build();
+    @Autowired
+    private void setEnLinkdElementFactory(EnLinkdElementFactoryInterface enLinkdElementFactory){
+        this.enLinkdElementFactory = enLinkdElementFactory;
+    }
+
+    @Autowired
+    private void setNodeDao(NodeDao nodeDao){
+        this.m_nodeDao = nodeDao;
     }
 
     @Override
-    public Response getBridgelinks(int nodeId) {
+    public List<LldpLinkNodeDTO> getLldpLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        Collection<BridgeLinkNode> bridgelinks = enLinkdElementFactory.getBridgeLinks(nodeId);
-        return Response.ok(bridgelinks).build();
+        return enLinkdElementFactory.getLldpLinks(nodeId).stream().map(n -> mapLldpLindNodeToDTO(n)).collect(Collectors.toList());
     }
 
     @Override
-    public Response getCdpLinks(int nodeId) {
+    public List<BridgeLinkNodeDTO> getBridgelinks(int nodeId) {
         checkNodeInDB(nodeId);
-        Collection<CdpLinkNode> cdpLinks = enLinkdElementFactory.getCdpLinks(nodeId);
-        return Response.ok(cdpLinks).build();
+        return enLinkdElementFactory.getBridgeLinks(nodeId).stream().map(n -> mapBridgeLinkNodeToDTO(n)).collect(Collectors.toList());
     }
 
     @Override
-    public Response getOspfLinks(int nodeId) {
+    public List<CdpLinkNodeDTO> getCdpLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        Collection<OspfLinkNode> ospfLinks = enLinkdElementFactory.getOspfLinks(nodeId);
-        return Response.ok(ospfLinks).build();
+        return enLinkdElementFactory.getCdpLinks(nodeId).stream().map(n -> mapCdpLinkNodeToDTO(n)).collect(Collectors.toList());
     }
 
     @Override
-    public Response getIsisLinks(int nodeId) {
+    public List<OspfLinkNodeDTO> getOspfLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        Collection<IsisLinkNode> isisLinks = enLinkdElementFactory.getIsisLinks(nodeId);
-        return Response.ok(isisLinks).build();
+        return enLinkdElementFactory.getOspfLinks(nodeId).stream().map(n -> mapOspfLinkNodeToDTO(n)).collect(Collectors.toList());
     }
 
     @Override
-    public Response getLldpelem(int nodeId) {
+    public List<IsisLinkNodeDTO> getIsisLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        LldpElementNode lldpelem = enLinkdElementFactory.getLldpElement(nodeId);
-        return Response.ok(lldpelem).build();
+        return enLinkdElementFactory.getIsisLinks(nodeId).stream().map(n -> mapIsisLinkNodeToDTO(n)).collect(Collectors.toList());
     }
 
     @Override
-    public Response getCdpelem(int nodeId) {
+    public LldpElementNodeDTO getLldpelem(int nodeId) {
         checkNodeInDB(nodeId);
-        CdpElementNode cdpelem = enLinkdElementFactory.getCdpElement(nodeId);
-        return Response.ok(cdpelem).build();
+        return mapLldElementNodeToDTO(enLinkdElementFactory.getLldpElement(nodeId));
     }
 
     @Override
-    public Response getOspfelem(int nodeId) {
+    public CdpElementNodeDTO getCdpelem(int nodeId) {
         checkNodeInDB(nodeId);
-        OspfElementNode ospfelem = enLinkdElementFactory.getOspfElement(nodeId);
-        return Response.ok(ospfelem).build();
+        return mapCdpElementNodeToDTO(enLinkdElementFactory.getCdpElement(nodeId));
     }
 
     @Override
-    public Response getIsiselem(int nodeId) {
+    public OspfElementNodeDTO getOspfelem(int nodeId) {
         checkNodeInDB(nodeId);
-        IsisElementNode isiselem = enLinkdElementFactory.getIsisElement(nodeId);
-        return Response.ok(isiselem).build();
+        return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(nodeId));
+    }
+
+    @Override
+    public IsisElementNodeDTO getIsiselem(int nodeId) {
+        checkNodeInDB(nodeId);
+        return mapIsisElementNodeToDTO(enLinkdElementFactory.getIsisElement(nodeId));
     }
 
     private void checkNodeInDB(int nodeId) {
         if (m_nodeDao.get(nodeId) == null){
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity("No such node in database").build());
+            throw new NoSuchElementException();
         }
+    }
+
+    private BridgeLinkNodeDTO mapBridgeLinkNodeToDTO(BridgeLinkNode bridgeLinkNode){
+        return new BridgeLinkNodeDTO()
+                .withBridgeLocalPort(bridgeLinkNode.getBridgeLocalPort())
+                .withBridgeLocalPortUrl(bridgeLinkNode.getBridgeLocalPortUrl())
+                .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes())
+                .withBridgeInfo(bridgeLinkNode.getBridgeInfo())
+                .withBridgeLinkCreateTime(bridgeLinkNode.getBridgeLinkCreateTime())
+                .withBridgeLinkLastPollTime(bridgeLinkNode.getBridgeLinkLastPollTime());
+    }
+
+    private CdpElementNodeDTO mapCdpElementNodeToDTO(CdpElementNode cdpElementNode){
+        return new CdpElementNodeDTO()
+                .withCdpGlobalRun(cdpElementNode.getCdpGlobalRun())
+                .withCdpGlobalDeviceId(cdpElementNode.getCdpGlobalDeviceId())
+                .withCdpGlobalDeviceId(cdpElementNode.getCdpGlobalDeviceId())
+                .withCdpCreateTime(cdpElementNode.getCdpCreateTime())
+                .withCdpLastPollTime(cdpElementNode.getCdpLastPollTime());
+    }
+
+    private CdpLinkNodeDTO mapCdpLinkNodeToDTO(CdpLinkNode cdpLinkNode){
+        return new CdpLinkNodeDTO()
+                .withCdpLocalPort(cdpLinkNode.getCdpLocalPort())
+                .withCdpLocalPortUrl(cdpLinkNode.getCdpLocalPortUrl())
+                .withCdpCacheDevice(cdpLinkNode.getCdpCacheDevice())
+                .withCdpCacheDeviceUrl(cdpLinkNode.getCdpCacheDeviceUrl())
+                .withCdpCacheDevicePort(cdpLinkNode.getCdpCacheDevicePort())
+                .withCdpCacheDevicePortUrl(cdpLinkNode.getCdpCacheDevicePortUrl())
+                .withCdpCachePlatform(cdpLinkNode.getCdpCachePlatform())
+                .withCdpCreateTime(cdpLinkNode.getCdpCreateTime())
+                .withCdpLastPollTime(cdpLinkNode.getCdpLastPollTime());
+    }
+
+    private IsisElementNodeDTO mapIsisElementNodeToDTO(IsisElementNode isisElementNode){
+        return new IsisElementNodeDTO()
+                .withIsisSysID(isisElementNode.getIsisSysID())
+                .withIsisSysAdminState(isisElementNode.getIsisSysAdminState())
+                .withIsisCreateTime(isisElementNode.getIsisCreateTime())
+                .withIsisLastPollTime(isisElementNode.getIsisLastPollTime());
+    }
+
+    private IsisLinkNodeDTO mapIsisLinkNodeToDTO(IsisLinkNode isisLinkNode){
+        return new IsisLinkNodeDTO()
+                .withIsisCircIfIndex(isisLinkNode.getIsisCircIfIndex())
+                .withIsisCircAdminState(isisLinkNode.getIsisCircAdminState())
+                .withIsisISAdjNeighSysID(isisLinkNode.getIsisISAdjNeighSysID())
+                .withIsisISAdjNeighSysType(isisLinkNode.getIsisISAdjNeighSysType())
+                .withIsisISAdjNeighSysUrl(isisLinkNode.getIsisISAdjNeighSysUrl())
+                .withIsisISAdjNeighSNPAAddress(isisLinkNode.getIsisISAdjNeighSNPAAddress())
+                .withIsisISAdjNeighPort(isisLinkNode.getIsisISAdjNeighPort())
+                .withIsisISAdjState(isisLinkNode.getIsisISAdjState())
+                .withIsisISAdjNbrExtendedCircID(isisLinkNode.getIsisISAdjNbrExtendedCircID())
+                .withIsisISAdjUrl(isisLinkNode.getIsisISAdjUrl())
+                .withIsisLinkCreateTime(isisLinkNode.getIsisLinkCreateTime())
+                .withIsisLinkLastPollTime(isisLinkNode.getIsisLinkLastPollTime());
+    }
+
+    private LldpElementNodeDTO mapLldElementNodeToDTO(LldpElementNode lldpElementNode){
+        return new LldpElementNodeDTO()
+                .withLldpChassisId(lldpElementNode.getLldpChassisId())
+                .withLldpSysName(lldpElementNode.getLldpSysName())
+                .withLldpCreateTime(lldpElementNode.getLldpCreateTime())
+                .withLldpLastPollTime(lldpElementNode.getLldpLastPollTime());
+    }
+
+    private LldpLinkNodeDTO mapLldpLindNodeToDTO(LldpLinkNode lldpLinkNode){
+        return new LldpLinkNodeDTO()
+                .withLdpRemPort(lldpLinkNode.getLldpRemPort())
+                .withLldpLocalPortUrl(lldpLinkNode.getLldpLocalPortUrl())
+                .withLldpRemChassisId(lldpLinkNode.getLldpRemChassisId())
+                .withLldpRemChassisIdUrl(lldpLinkNode.getLldpRemChassisIdUrl())
+                .withLdpRemPort(lldpLinkNode.getLldpRemPort())
+                .withLldpRemInfo(lldpLinkNode.getLldpRemInfo())
+                .withLldpRemPortUrl(lldpLinkNode.getLldpRemPortUrl())
+                .withLldpCreateTime(lldpLinkNode.getLldpCreateTime())
+                .withLldpLastPollTime(lldpLinkNode.getLldpLastPollTime());
+    }
+
+    private OspfElementNodeDTO mapOspfElementNodeToDTO(OspfElementNode ospfElementNode){
+        return new OspfElementNodeDTO()
+                .withOspfRouterId(ospfElementNode.getOspfRouterId())
+                .withOspfVersionNumber(ospfElementNode.getOspfVersionNumber())
+                .withOspfAdminStat(ospfElementNode.getOspfAdminStat())
+                .withOspfCreateTime(ospfElementNode.getOspfCreateTime())
+                .withOspfLastPollTime(ospfElementNode.getOspfLastPollTime());
+    }
+
+    private OspfLinkNodeDTO mapOspfLinkNodeToDTO(OspfLinkNode ospfLinkNode){
+        return new OspfLinkNodeDTO()
+                .withOspfLocalPort(ospfLinkNode.getOspfLocalPort())
+                .withOspfLocalPortUrl(ospfLinkNode.getOspfLocalPortUrl())
+                .withOspfRemRouterId(ospfLinkNode.getOspfRemRouterId())
+                .withOspfRemRouterUrl(ospfLinkNode.getOspfRemRouterUrl())
+                .withOspfRemPort(ospfLinkNode.getOspfRemPort())
+                .withOspfRemPortUrl(ospfLinkNode.getOspfRemPortUrl())
+                .withOspfLinkInfo(ospfLinkNode.getOspfLinkInfo())
+                .withOspfLinkCreateTime(ospfLinkNode.getOspfLinkCreateTime())
+                .withOspfLinkLastPollTime(ospfLinkNode.getOspfLinkLastPollTime());
     }
 }
