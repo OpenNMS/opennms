@@ -119,7 +119,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("id", this.getId())
                 .add("reductionKeys", this.getReductionKeys())
                 .add("status", this.getOperationalStatus())

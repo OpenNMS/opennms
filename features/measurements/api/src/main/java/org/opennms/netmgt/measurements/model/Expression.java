@@ -127,7 +127,7 @@ public class Expression {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Label", this.label)
                  .add("Expression", this.expression)
                  .add("Transient", this.isTransient)

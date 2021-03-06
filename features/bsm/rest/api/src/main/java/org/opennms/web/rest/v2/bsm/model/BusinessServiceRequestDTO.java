@@ -167,7 +167,7 @@ public class BusinessServiceRequestDTO {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("reduceFunction", reduceFunction)

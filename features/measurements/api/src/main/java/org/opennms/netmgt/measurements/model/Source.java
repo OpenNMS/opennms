@@ -200,7 +200,7 @@ public class Source {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Label", this.label)
                  .add("Resource ID", this.resourceId)
                  .add("Attribute", this.attribute)

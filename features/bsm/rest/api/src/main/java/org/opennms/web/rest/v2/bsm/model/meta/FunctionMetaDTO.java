@@ -146,7 +146,7 @@ public class FunctionMetaDTO {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("Name", this.name)
                 .add("Description", this.description)
                 .add("Type", this.type)

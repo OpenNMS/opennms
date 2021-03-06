@@ -105,7 +105,7 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("id", this.getId())
                 .add("serviceName", this.getServiceName())
                 .add("nodeLabel", this.getNodeLabel())

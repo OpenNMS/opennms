@@ -47,6 +47,7 @@ import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvide
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdgeResponseDTO {
@@ -148,7 +149,7 @@ public abstract class AbstractEdgeResponseDTO {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("operationalStatus", operationalStatus)
                 .add("weight", weight)

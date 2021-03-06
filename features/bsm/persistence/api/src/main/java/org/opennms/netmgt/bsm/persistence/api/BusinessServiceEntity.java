@@ -198,7 +198,7 @@ public class BusinessServiceEntity {
     @Override
     public String toString() {
         // we do not include ip services here, otherwise we cannot use this object properly
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("id", m_id)
                 .add("name", m_name)
                 .add("attributes", m_attributes)

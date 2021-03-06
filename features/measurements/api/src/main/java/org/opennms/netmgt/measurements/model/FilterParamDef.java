@@ -100,7 +100,7 @@ public class FilterParamDef {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Key", this.key)
                  .add("Value", this.value)
                  .toString();
