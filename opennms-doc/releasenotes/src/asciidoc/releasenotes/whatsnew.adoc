@@ -184,3 +184,7 @@ A ton of other internal improvements have been made:
 * 2 new roles have been added:
   * `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
   * `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules
+
+==== Kafka Producer Metrics
+
+* For Interface Resources, a String attribute named `__ifIndex` is added to represent missing Interface ifIndex in String form.
