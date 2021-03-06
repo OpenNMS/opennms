@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -57,12 +58,12 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
     @Override
     public Map<VertexRef, Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         Map<VertexRef, Status> returnMap = new HashMap<>();
-        Map<Integer, Status> statusMap = new HashMap<>();
+        Map<String, Status> statusMap = new HashMap<>();
 
-        List<MonitoredServiceStatusEntity> result = applicationDao.getAlarmStatus();
-        for (MonitoredServiceStatusEntity eachRow : result) {
-            DefaultStatus status = createStatus(eachRow.getSeverity(), eachRow.getCount());
-            statusMap.put(eachRow.getNodeId(), status);
+        List<MonitoredServiceStatusEntity> statusEntities = applicationDao.getAlarmStatus();
+        for (MonitoredServiceStatusEntity entity : statusEntities) {
+            DefaultStatus status = createStatus(entity.getSeverity(), entity.getCount());
+            statusMap.put(toId(entity.getNodeId(), entity.getIpAddress().toString(), entity.getServiceTypeId()), status);
         }
 
         // status for all known node ids
@@ -74,7 +75,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
             LegacyApplicationVertex applicationVertex = (LegacyApplicationVertex) eachVertex;
-            Status alarmStatus = statusMap.get(applicationVertex.getNodeID());
+            Status alarmStatus = statusMap.get(toId(applicationVertex));
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
             }
@@ -86,19 +87,40 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
             LegacyApplicationVertex eachRootApplication = (LegacyApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
+            boolean allChildrenHaveActiveAlarms = eachRootApplication.getChildren().size() > 0 ;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
                 LegacyApplicationVertex eachChildApplication = (LegacyApplicationVertex) eachChild;
-                Integer childKey = eachChildApplication.getNodeID();
-                Status childStatus = statusMap.get(childKey);
-                if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
+                Status childStatus = statusMap.get(toId(eachChildApplication));
+                Optional<OnmsSeverity> childSeverity = Optional.ofNullable(childStatus)
+                        .map(Status::computeStatus)
+                        .map(this::createSeverity);
+                if (childSeverity.isPresent() && maxSeverity.isLessThan(childSeverity.get())) {
                     maxSeverity = createSeverity(childStatus.computeStatus());
-                    count = Integer.parseInt(childStatus.getStatusProperties().get("statusCount"));
+                } else if(!childSeverity.isPresent() || OnmsSeverity.NORMAL.equals(childSeverity.get())) {
+                    allChildrenHaveActiveAlarms = false; // at least one child has no active alarm
+                }
+
+                if(childStatus != null) {
+                    count = count + Integer.parseInt(childStatus.getStatusProperties().get("statusCount"));
                 }
             }
+
+            if (allChildrenHaveActiveAlarms && maxSeverity.isLessThan(OnmsSeverity.MAJOR)) {
+                maxSeverity = OnmsSeverity.MAJOR;
+            }
+
             returnMap.put(eachRoot, createStatus(maxSeverity, count));
         }
 
         return returnMap;
+    }
+
+    private String toId(LegacyApplicationVertex vertex) {
+        return toId(vertex.getNodeID(), vertex.getIpAddress(), vertex.getServiceTypeId());
+    }
+
+    private String toId(int nodeId, String ipAddress, int serviceTypeId) {
+        return nodeId + "-" + ipAddress + "-" +serviceTypeId;
     }
 
     private OnmsSeverity createSeverity(String label) {
