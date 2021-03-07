@@ -199,6 +199,10 @@ Mapping from previous to new commands is as follows:
 | `opennms-graph:force-reload` | `opennms:graph-force-reload`
 | `opennms-graph:search` | `opennms:graph-search`
 |===
+ 
+==== Kafka Producer Metrics
+
+* For Interface Resources, a String attribute named `__ifIndex` is added to represent missing Interface ifIndex in String form.
 
 === Notable Internal Changes
 
