@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,8 +68,8 @@
           </div>
 
           <div class="form-group col-md-2 text-center mb-auto mt-auto">
-            <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
-            <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
+            <input type="submit" id="input_addService" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" id="input_removeService" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
           </div>
 
           <div class="form-group col-md-5">
@@ -98,8 +98,8 @@
           </div>
 
           <div class="form-group col-md-2 text-center mb-auto mt-auto">
-            <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
-            <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
+            <input type="submit" id="input_addLocation" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" id="input_removeLocation" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
           </div>
 
           <div class="form-group col-md-5">
