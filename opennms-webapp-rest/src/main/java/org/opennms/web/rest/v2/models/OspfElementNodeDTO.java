@@ -30,12 +30,34 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="ospfElementNode")
+@JsonRootName("ospfElementNode")
 public class OspfElementNodeDTO {
 
+    @XmlElement(name="ospfRouterId")
+    @JsonProperty("ospfRouterId")
     private String ospfRouterId;
+
+    @XmlElement(name="ospfVersionNumber")
+    @JsonProperty("ospfVersionNumber")
     private Integer ospfVersionNumber;
+
+    @XmlElement(name="ospfAdminStat")
+    @JsonProperty("ospfAdminStat")
     private String ospfAdminStat;
+
+    @XmlElement(name="ospfCreateTime")
+    @JsonProperty("ospfCreateTime")
     private String ospfCreateTime;
+
+    @XmlElement(name="ospfLastPollTime")
+    @JsonProperty("ospfLastPollTime")
     private String ospfLastPollTime;
 
     public String getOspfRouterId() {

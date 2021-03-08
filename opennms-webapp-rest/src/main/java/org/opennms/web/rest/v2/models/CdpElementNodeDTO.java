@@ -30,12 +30,33 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
-public class CdpElementNodeDTO {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="cdpElementNode")
+@JsonRootName("cdpElementNode")
+public class CdpElementNodeDTO {
+    @XmlElement(name="cdpGlobalRun")
+    @JsonProperty("cdpGlobalRun")
     private String cdpGlobalRun;
+
+    @XmlElement(name="cdpGlobalDeviceId")
+    @JsonProperty("cdpGlobalDeviceId")
     private String cdpGlobalDeviceId;
+
+    @XmlElement(name="cdpGlobalDeviceIdFormat")
+    @JsonProperty("cdpGlobalDeviceIdFormat")
     private String cdpGlobalDeviceIdFormat;
+
+    @XmlElement(name="cdpCreateTime")
+    @JsonProperty("cdpCreateTime")
     private String cdpCreateTime;
+
+    @XmlElement(name="cdpLastPollTime")
+    @JsonProperty("cdpLastPollTime")
     private String cdpLastPollTime;
 
     public String getCdpGlobalRun() {

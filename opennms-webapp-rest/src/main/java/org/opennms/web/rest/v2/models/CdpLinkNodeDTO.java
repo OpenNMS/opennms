@@ -30,20 +30,50 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="cdpLinkNode")
+@JsonRootName("cdpLinkNode")
 public class CdpLinkNodeDTO {
 
+    @XmlElement(name="cdpLocalPort")
+    @JsonProperty("cdpLocalPort")
     private String  cdpLocalPort;
+
+    @XmlElement(name="cdpLocalPortUrl")
+    @JsonProperty("cdpLocalPortUrl")
     private String  cdpLocalPortUrl;
 
+    @XmlElement(name="cdpCacheDevice")
+    @JsonProperty("cdpCacheDevice")
     private String cdpCacheDevice;
+
+    @XmlElement(name="cdpCacheDeviceUrl")
+    @JsonProperty("cdpCacheDeviceUrl")
     private String cdpCacheDeviceUrl;
 
+    @XmlElement(name="cdpCacheDevicePort")
+    @JsonProperty("cdpCacheDevicePort")
     private String cdpCacheDevicePort;
+
+    @XmlElement(name="cdpCacheDevicePortUrl")
+    @JsonProperty("cdpCacheDevicePortUrl")
     private String cdpCacheDevicePortUrl;
 
+    @XmlElement(name="cdpCachePlatform")
+    @JsonProperty("cdpCachePlatform")
     private String cdpCachePlatform;
 
+    @XmlElement(name="cdpCreateTime")
+    @JsonProperty("cdpCreateTime")
     private String cdpCreateTime;
+
+    @XmlElement(name="cdpLastPollTime")
+    @JsonProperty("cdpLastPollTime")
     private String cdpLastPollTime;
 
     public String getCdpLocalPort() {

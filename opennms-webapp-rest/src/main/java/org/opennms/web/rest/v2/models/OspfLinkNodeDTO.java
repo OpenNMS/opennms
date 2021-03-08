@@ -30,19 +30,50 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="ospfLinkNode")
+@JsonRootName("ospfLinkNode")
 public class OspfLinkNodeDTO {
+
+    @XmlElement(name="ospfLocalPort")
+    @JsonProperty("ospfLocalPort")
     private String ospfLocalPort;
+
+    @XmlElement(name="ospfLocalPortUrl")
+    @JsonProperty("ospfLocalPortUrl")
     private String ospfLocalPortUrl;
 
+    @XmlElement(name="ospfRemRouterId")
+    @JsonProperty("ospfRemRouterId")
     private String ospfRemRouterId;
+
+    @XmlElement(name="ospfRemRouterUrl")
+    @JsonProperty("ospfRemRouterUrl")
     private String ospfRemRouterUrl;
 
+    @XmlElement(name="ospfRemPort")
+    @JsonProperty("ospfRemPort")
     private String ospfRemPort;
+
+    @XmlElement(name="ospfRemPortUrl")
+    @JsonProperty("ospfRemPortUrl")
     private String ospfRemPortUrl;
 
+    @XmlElement(name="ospfLinkInfo")
+    @JsonProperty("ospfLinkInfo")
     private String ospfLinkInfo;
 
+    @XmlElement(name="ospfLinkCreateTime")
+    @JsonProperty("ospfLinkCreateTime")
     private String ospfLinkCreateTime;
+
+    @XmlElement(name="ospfLinkLastPollTime")
+    @JsonProperty("ospfLinkLastPollTime")
     private String ospfLinkLastPollTime;
 
     public String getOspfLocalPort() {

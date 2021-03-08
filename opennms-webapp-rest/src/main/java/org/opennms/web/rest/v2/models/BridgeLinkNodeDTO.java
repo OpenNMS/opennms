@@ -32,14 +32,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.web.enlinkd.BridgeLinkRemoteNode;
 
+@XmlRootElement(name="bridgeLinkNode")
+@JsonRootName("bridgeLinkNode")
 public class BridgeLinkNodeDTO {
+    @XmlElement(name="bridgeLocalPort")
+    @JsonProperty("bridgeLocalPort")
     private String bridgeLocalPort;
+
+    @XmlElement(name="bridgeLocalPortUrl")
+    @JsonProperty("bridgeLocalPortUrl")
     private String bridgeLocalPortUrl;
+
+    @XmlElement(name="BridgeLinkRemoteNodes")
+    @JsonProperty("BridgeLinkRemoteNodes")
     private List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNode>();
+
+    @XmlElement(name="bridgeInfo")
+    @JsonProperty("bridgeInfo")
     private String bridgeInfo;
+
+    @XmlElement(name="bridgeLinkCreateTime")
+    @JsonProperty("bridgeLinkCreateTime")
     private String bridgeLinkCreateTime;
+
+    @XmlElement(name="bridgeLinkLastPollTime")
+    @JsonProperty("bridgeLinkLastPollTime")
     private String bridgeLinkLastPollTime;
 
     public String getBridgeLocalPort() {

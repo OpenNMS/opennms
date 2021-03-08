@@ -30,15 +30,50 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="lldpLinkNode")
+@JsonRootName("lldpLinkNode")
 public class LldpLinkNodeDTO {
+
+    @XmlElement(name="lldpLocalPort")
+    @JsonProperty("lldpLocalPort")
     private String   lldpLocalPort;
+
+    @XmlElement(name="lldpLocalPortUrl")
+    @JsonProperty("lldpLocalPortUrl")
     private String   lldpLocalPortUrl;
+
+    @XmlElement(name="lldpRemChassisId")
+    @JsonProperty("lldpRemChassisId")
     private String   lldpRemChassisId;
+
+    @XmlElement(name="lldpRemChassisIdUrl")
+    @JsonProperty("lldpRemChassisIdUrl")
     private String   lldpRemChassisIdUrl;
+
+    @XmlElement(name="lldpRemInfo")
+    @JsonProperty("lldpRemInfo")
     private String   lldpRemInfo;
+
+    @XmlElement(name="ldpRemPort")
+    @JsonProperty("ldpRemPort")
     private String   ldpRemPort;
+
+    @XmlElement(name="lldpRemPortUrl")
+    @JsonProperty("lldpRemPortUrl")
     private String   lldpRemPortUrl;
+
+    @XmlElement(name="lldpCreateTime")
+    @JsonProperty("lldpCreateTime")
     private String   lldpCreateTime;
+
+    @XmlElement(name="lldpLastPollTime")
+    @JsonProperty("lldpLastPollTime")
     private String   lldpLastPollTime;
 
     public String getLldpLocalPort() {

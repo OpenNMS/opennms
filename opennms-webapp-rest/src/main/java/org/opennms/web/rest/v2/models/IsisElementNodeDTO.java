@@ -30,11 +30,29 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
-public class IsisElementNodeDTO {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="isisElementNode")
+@JsonRootName("isisElementNode")
+public class IsisElementNodeDTO {
+    @XmlElement(name="isisSysID")
+    @JsonProperty("isisSysID")
     private String isisSysID;
+
+    @XmlElement(name="isisSysAdminState")
+    @JsonProperty("isisSysAdminState")
     private String isisSysAdminState;
+
+    @XmlElement(name="isisCreateTime")
+    @JsonProperty("isisCreateTime")
     private String isisCreateTime;
+
+    @XmlElement(name="isisLastPollTime")
+    @JsonProperty("isisLastPollTime")
     private String isisLastPollTime;
 
     public String getIsisSysID() {

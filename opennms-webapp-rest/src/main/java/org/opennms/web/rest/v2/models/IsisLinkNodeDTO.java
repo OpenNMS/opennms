@@ -30,22 +30,62 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="isisLinkNode")
+@JsonRootName("isisLinkNode")
 public class IsisLinkNodeDTO {
 
+    @XmlElement(name="isisCircIfIndex")
+    @JsonProperty("isisCircIfIndex")
     private Integer isisCircIfIndex;
+
+    @XmlElement(name="isisCircAdminState")
+    @JsonProperty("isisCircAdminState")
     private String  isisCircAdminState;
 
+    @XmlElement(name="isisISAdjNeighSysID")
+    @JsonProperty("isisISAdjNeighSysID")
     private String  isisISAdjNeighSysID;
+
+    @XmlElement(name="isisISAdjNeighSysType")
+    @JsonProperty("isisISAdjNeighSysType")
     private String  isisISAdjNeighSysType;
+
+    @XmlElement(name="isisISAdjNeighSysUrl")
+    @JsonProperty("isisISAdjNeighSysUrl")
     private String  isisISAdjNeighSysUrl;
 
+    @XmlElement(name="isisISAdjNeighSNPAAddress")
+    @JsonProperty("isisISAdjNeighSNPAAddress")
     private String  isisISAdjNeighSNPAAddress;
+
+    @XmlElement(name="isisISAdjNeighPort")
+    @JsonProperty("isisISAdjNeighPort")
     private String  isisISAdjNeighPort;
+
+    @XmlElement(name="isisISAdjState")
+    @JsonProperty("isisISAdjState")
     private String  isisISAdjState;
+
+    @XmlElement(name="isisISAdjNbrExtendedCircID")
+    @JsonProperty("isisISAdjNbrExtendedCircID")
     private Integer isisISAdjNbrExtendedCircID;
+
+    @XmlElement(name="isisISAdjUrl")
+    @JsonProperty("isisISAdjUrl")
     private String  isisISAdjUrl;
 
+    @XmlElement(name="isisLinkCreateTime")
+    @JsonProperty("isisLinkCreateTime")
     private String  isisLinkCreateTime;
+
+    @XmlElement(name="isisLinkLastPollTime")
+    @JsonProperty("isisLinkLastPollTime")
     private String  isisLinkLastPollTime;
 
     public Integer getIsisCircIfIndex() {

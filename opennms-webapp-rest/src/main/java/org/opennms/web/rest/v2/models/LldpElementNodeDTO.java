@@ -30,11 +30,30 @@ package org.opennms.web.rest.v2.models;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+
+@XmlRootElement(name="lldpElementNode")
+@JsonRootName("lldpElementNode")
 public class LldpElementNodeDTO {
 
+    @XmlElement(name="lldpChassisId")
+    @JsonProperty("lldpChassisId")
     private String lldpChassisId;
+
+    @XmlElement(name="lldpSysName")
+    @JsonProperty("lldpSysName")
     private String lldpSysName;
+
+    @XmlElement(name="lldpCreateTime")
+    @JsonProperty("lldpCreateTime")
     private String lldpCreateTime;
+
+    @XmlElement(name="lldpLastPollTime")
+    @JsonProperty("lldpLastPollTime")
     private String lldpLastPollTime;
 
     public String getLldpChassisId() {
