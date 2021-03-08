@@ -29,6 +29,38 @@ Each item in a list has the following mandatory fields:
 ## Input to Minion
 Ultimately the configuration that Minion's confd templates expect is a set of key-value pairs. All configuration generated based on the schema must reduce down to a set of key-value pairs. All arrays and maps must be flattened as per the rules associated with the appropriate type to produce a set of key-value pairs.
 ## Types
+### integer
+A raw integer number.
+
+Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted, ex `0..` for any positive integer).
+
+`N..M` forms a range where `N` <= `X` <= `M`
+
+`N..` forms a range where `X` >= `N`
+
+examples:
+```
+42
+```
+```
+-100
+```
+### decimal
+A raw decimal number.
+
+Accepts `validation` in the form of a string `"N..M"` where `N` is the lower bound inclusive and `M` is the upper bound inclusive (the upper bound can be omitted, ex `0.0..` for any positive decimal).
+
+`N..M` forms a range where `N` <= `X` <= `M`
+
+`N..` forms a range where `X` >= `N`
+
+examples:
+```
+50.42
+```
+```
+-99.99
+```
 ### host
 A valid hostname such as a FQDN or IP address.
 
@@ -96,8 +128,6 @@ Key-values:
 "/foo/bar/1": "val-2"
 "/foo/bar/2": "val-3"
 ```
-### set
-A set is a collection with additional validation to ensure that no value appears multiple times.
 ### string
 A string is freeform it one it allows subject to optional validation being specified as part of its config.
 ### boolean
