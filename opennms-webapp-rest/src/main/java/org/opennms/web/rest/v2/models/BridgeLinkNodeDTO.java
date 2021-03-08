@@ -44,30 +44,20 @@ import org.opennms.web.enlinkd.BridgeLinkRemoteNode;
 @XmlRootElement(name="bridgeLinkNode")
 @JsonRootName("bridgeLinkNode")
 public class BridgeLinkNodeDTO {
-    @XmlElement(name="bridgeLocalPort")
-    @JsonProperty("bridgeLocalPort")
     private String bridgeLocalPort;
 
-    @XmlElement(name="bridgeLocalPortUrl")
-    @JsonProperty("bridgeLocalPortUrl")
     private String bridgeLocalPortUrl;
 
-    @XmlElement(name="BridgeLinkRemoteNodes")
-    @JsonProperty("BridgeLinkRemoteNodes")
     private List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNode>();
 
-    @XmlElement(name="bridgeInfo")
-    @JsonProperty("bridgeInfo")
     private String bridgeInfo;
 
-    @XmlElement(name="bridgeLinkCreateTime")
-    @JsonProperty("bridgeLinkCreateTime")
     private String bridgeLinkCreateTime;
 
-    @XmlElement(name="bridgeLinkLastPollTime")
-    @JsonProperty("bridgeLinkLastPollTime")
     private String bridgeLinkLastPollTime;
 
+    @XmlElement(name="bridgeLocalPort")
+    @JsonProperty("bridgeLocalPort")
     public String getBridgeLocalPort() {
         return bridgeLocalPort;
     }
@@ -81,6 +71,8 @@ public class BridgeLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="bridgeLocalPortUrl")
+    @JsonProperty("bridgeLocalPortUrl")
     public String getBridgeLocalPortUrl() {
         return bridgeLocalPortUrl;
     }
@@ -94,6 +86,8 @@ public class BridgeLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="BridgeLinkRemoteNodes")
+    @JsonProperty("BridgeLinkRemoteNodes")
     public List<BridgeLinkRemoteNode> getBridgeLinkRemoteNodes() {
         return bridgeLinkRemoteNodes;
     }
@@ -107,6 +101,8 @@ public class BridgeLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="bridgeInfo")
+    @JsonProperty("bridgeInfo")
     public String getBridgeInfo() {
         return bridgeInfo;
     }
@@ -120,6 +116,8 @@ public class BridgeLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="bridgeLinkCreateTime")
+    @JsonProperty("bridgeLinkCreateTime")
     public String getBridgeLinkCreateTime() {
         return bridgeLinkCreateTime;
     }
@@ -133,6 +131,8 @@ public class BridgeLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="bridgeLinkLastPollTime")
+    @JsonProperty("bridgeLinkLastPollTime")
     public String getBridgeLinkLastPollTime() {
         return bridgeLinkLastPollTime;
     }

@@ -40,42 +40,26 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("cdpLinkNode")
 public class CdpLinkNodeDTO {
 
-    @XmlElement(name="cdpLocalPort")
-    @JsonProperty("cdpLocalPort")
     private String  cdpLocalPort;
 
-    @XmlElement(name="cdpLocalPortUrl")
-    @JsonProperty("cdpLocalPortUrl")
     private String  cdpLocalPortUrl;
 
-    @XmlElement(name="cdpCacheDevice")
-    @JsonProperty("cdpCacheDevice")
     private String cdpCacheDevice;
 
-    @XmlElement(name="cdpCacheDeviceUrl")
-    @JsonProperty("cdpCacheDeviceUrl")
     private String cdpCacheDeviceUrl;
 
-    @XmlElement(name="cdpCacheDevicePort")
-    @JsonProperty("cdpCacheDevicePort")
     private String cdpCacheDevicePort;
 
-    @XmlElement(name="cdpCacheDevicePortUrl")
-    @JsonProperty("cdpCacheDevicePortUrl")
     private String cdpCacheDevicePortUrl;
 
-    @XmlElement(name="cdpCachePlatform")
-    @JsonProperty("cdpCachePlatform")
     private String cdpCachePlatform;
 
-    @XmlElement(name="cdpCreateTime")
-    @JsonProperty("cdpCreateTime")
     private String cdpCreateTime;
 
-    @XmlElement(name="cdpLastPollTime")
-    @JsonProperty("cdpLastPollTime")
     private String cdpLastPollTime;
 
+    @XmlElement(name="cdpLocalPort")
+    @JsonProperty("cdpLocalPort")
     public String getCdpLocalPort() {
         return cdpLocalPort;
     }
@@ -89,6 +73,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpLocalPortUrl")
+    @JsonProperty("cdpLocalPortUrl")
     public String getCdpLocalPortUrl() {
         return cdpLocalPortUrl;
     }
@@ -102,6 +88,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCacheDevice")
+    @JsonProperty("cdpCacheDevice")
     public String getCdpCacheDevice() {
         return cdpCacheDevice;
     }
@@ -115,6 +103,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCacheDeviceUrl")
+    @JsonProperty("cdpCacheDeviceUrl")
     public String getCdpCacheDeviceUrl() {
         return cdpCacheDeviceUrl;
     }
@@ -128,6 +118,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCacheDevicePort")
+    @JsonProperty("cdpCacheDevicePort")
     public String getCdpCacheDevicePort() {
         return cdpCacheDevicePort;
     }
@@ -141,6 +133,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCacheDevicePortUrl")
+    @JsonProperty("cdpCacheDevicePortUrl")
     public String getCdpCacheDevicePortUrl() {
         return cdpCacheDevicePortUrl;
     }
@@ -154,6 +148,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCachePlatform")
+    @JsonProperty("cdpCachePlatform")
     public String getCdpCachePlatform() {
         return cdpCachePlatform;
     }
@@ -167,6 +163,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCreateTime")
+    @JsonProperty("cdpCreateTime")
     public String getCdpCreateTime() {
         return cdpCreateTime;
     }
@@ -180,6 +178,8 @@ public class CdpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpLastPollTime")
+    @JsonProperty("cdpLastPollTime")
     public String getCdpLastPollTime() {
         return cdpLastPollTime;
     }

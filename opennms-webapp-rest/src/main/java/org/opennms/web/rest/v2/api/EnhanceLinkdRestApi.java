@@ -61,46 +61,46 @@ public interface EnhanceLinkdRestApi {
 
     @GET
     @Path("lldplinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<LldpLinkNodeDTO> getLldpLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("bridgelinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<BridgeLinkNodeDTO> getBridgelinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("cdplinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<CdpLinkNodeDTO> getCdpLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("ospflinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<OspfLinkNodeDTO> getOspfLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("isislinks/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<IsisLinkNodeDTO> getIsisLinks(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("lldpelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     LldpElementNodeDTO getLldpelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("cdpelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     CdpElementNodeDTO getCdpelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("ospfelem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     OspfElementNodeDTO getOspfelem(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("isiselem/{nodeId}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     IsisElementNodeDTO getIsiselem(@PathParam("nodeId") int nodeId);
 }

@@ -40,42 +40,26 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("lldpLinkNode")
 public class LldpLinkNodeDTO {
 
-    @XmlElement(name="lldpLocalPort")
-    @JsonProperty("lldpLocalPort")
     private String   lldpLocalPort;
 
-    @XmlElement(name="lldpLocalPortUrl")
-    @JsonProperty("lldpLocalPortUrl")
     private String   lldpLocalPortUrl;
 
-    @XmlElement(name="lldpRemChassisId")
-    @JsonProperty("lldpRemChassisId")
     private String   lldpRemChassisId;
 
-    @XmlElement(name="lldpRemChassisIdUrl")
-    @JsonProperty("lldpRemChassisIdUrl")
     private String   lldpRemChassisIdUrl;
 
-    @XmlElement(name="lldpRemInfo")
-    @JsonProperty("lldpRemInfo")
     private String   lldpRemInfo;
 
-    @XmlElement(name="ldpRemPort")
-    @JsonProperty("ldpRemPort")
     private String   ldpRemPort;
 
-    @XmlElement(name="lldpRemPortUrl")
-    @JsonProperty("lldpRemPortUrl")
     private String   lldpRemPortUrl;
 
-    @XmlElement(name="lldpCreateTime")
-    @JsonProperty("lldpCreateTime")
     private String   lldpCreateTime;
 
-    @XmlElement(name="lldpLastPollTime")
-    @JsonProperty("lldpLastPollTime")
     private String   lldpLastPollTime;
 
+    @XmlElement(name="lldpLocalPort")
+    @JsonProperty("lldpLocalPort")
     public String getLldpLocalPort() {
         return lldpLocalPort;
     }
@@ -89,6 +73,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpLocalPortUrl")
+    @JsonProperty("lldpLocalPortUrl")
     public String getLldpLocalPortUrl() {
         return lldpLocalPortUrl;
     }
@@ -102,6 +88,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpRemChassisId")
+    @JsonProperty("lldpRemChassisId")
     public String getLldpRemChassisId() {
         return lldpRemChassisId;
     }
@@ -115,6 +103,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpRemChassisIdUrl")
+    @JsonProperty("lldpRemChassisIdUrl")
     public String getLldpRemChassisIdUrl() {
         return lldpRemChassisIdUrl;
     }
@@ -128,6 +118,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpRemInfo")
+    @JsonProperty("lldpRemInfo")
     public String getLldpRemInfo() {
         return lldpRemInfo;
     }
@@ -141,6 +133,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ldpRemPort")
+    @JsonProperty("ldpRemPort")
     public String getLdpRemPort() {
         return ldpRemPort;
     }
@@ -154,6 +148,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpRemPortUrl")
+    @JsonProperty("lldpRemPortUrl")
     public String getLldpRemPortUrl() {
         return lldpRemPortUrl;
     }
@@ -167,6 +163,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpCreateTime")
+    @JsonProperty("lldpCreateTime")
     public String getLldpCreateTime() {
         return lldpCreateTime;
     }
@@ -180,6 +178,8 @@ public class LldpLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpLastPollTime")
+    @JsonProperty("lldpLastPollTime")
     public String getLldpLastPollTime() {
         return lldpLastPollTime;
     }

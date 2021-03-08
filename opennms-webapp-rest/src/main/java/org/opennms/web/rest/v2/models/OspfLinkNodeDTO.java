@@ -40,42 +40,26 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("ospfLinkNode")
 public class OspfLinkNodeDTO {
 
-    @XmlElement(name="ospfLocalPort")
-    @JsonProperty("ospfLocalPort")
     private String ospfLocalPort;
 
-    @XmlElement(name="ospfLocalPortUrl")
-    @JsonProperty("ospfLocalPortUrl")
     private String ospfLocalPortUrl;
 
-    @XmlElement(name="ospfRemRouterId")
-    @JsonProperty("ospfRemRouterId")
     private String ospfRemRouterId;
 
-    @XmlElement(name="ospfRemRouterUrl")
-    @JsonProperty("ospfRemRouterUrl")
     private String ospfRemRouterUrl;
 
-    @XmlElement(name="ospfRemPort")
-    @JsonProperty("ospfRemPort")
     private String ospfRemPort;
 
-    @XmlElement(name="ospfRemPortUrl")
-    @JsonProperty("ospfRemPortUrl")
     private String ospfRemPortUrl;
 
-    @XmlElement(name="ospfLinkInfo")
-    @JsonProperty("ospfLinkInfo")
     private String ospfLinkInfo;
 
-    @XmlElement(name="ospfLinkCreateTime")
-    @JsonProperty("ospfLinkCreateTime")
     private String ospfLinkCreateTime;
 
-    @XmlElement(name="ospfLinkLastPollTime")
-    @JsonProperty("ospfLinkLastPollTime")
     private String ospfLinkLastPollTime;
 
+    @XmlElement(name="ospfLocalPort")
+    @JsonProperty("ospfLocalPort")
     public String getOspfLocalPort() {
         return ospfLocalPort;
     }
@@ -89,6 +73,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfLocalPortUrl")
+    @JsonProperty("ospfLocalPortUrl")
     public String getOspfLocalPortUrl() {
         return ospfLocalPortUrl;
     }
@@ -102,6 +88,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfRemRouterId")
+    @JsonProperty("ospfRemRouterId")
     public String getOspfRemRouterId() {
         return ospfRemRouterId;
     }
@@ -115,6 +103,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfRemRouterUrl")
+    @JsonProperty("ospfRemRouterUrl")
     public String getOspfRemRouterUrl() {
         return ospfRemRouterUrl;
     }
@@ -128,6 +118,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfRemPort")
+    @JsonProperty("ospfRemPort")
     public String getOspfRemPort() {
         return ospfRemPort;
     }
@@ -141,6 +133,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfRemPortUrl")
+    @JsonProperty("ospfRemPortUrl")
     public String getOspfRemPortUrl() {
         return ospfRemPortUrl;
     }
@@ -154,6 +148,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfLinkInfo")
+    @JsonProperty("ospfLinkInfo")
     public String getOspfLinkInfo() {
         return ospfLinkInfo;
     }
@@ -167,6 +163,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfLinkCreateTime")
+    @JsonProperty("ospfLinkCreateTime")
     public String getOspfLinkCreateTime() {
         return ospfLinkCreateTime;
     }
@@ -180,6 +178,8 @@ public class OspfLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfLinkLastPollTime")
+    @JsonProperty("ospfLinkLastPollTime")
     public String getOspfLinkLastPollTime() {
         return ospfLinkLastPollTime;
     }

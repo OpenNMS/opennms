@@ -40,26 +40,18 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("ospfElementNode")
 public class OspfElementNodeDTO {
 
-    @XmlElement(name="ospfRouterId")
-    @JsonProperty("ospfRouterId")
     private String ospfRouterId;
 
-    @XmlElement(name="ospfVersionNumber")
-    @JsonProperty("ospfVersionNumber")
     private Integer ospfVersionNumber;
 
-    @XmlElement(name="ospfAdminStat")
-    @JsonProperty("ospfAdminStat")
     private String ospfAdminStat;
 
-    @XmlElement(name="ospfCreateTime")
-    @JsonProperty("ospfCreateTime")
     private String ospfCreateTime;
 
-    @XmlElement(name="ospfLastPollTime")
-    @JsonProperty("ospfLastPollTime")
     private String ospfLastPollTime;
 
+    @XmlElement(name="ospfRouterId")
+    @JsonProperty("ospfRouterId")
     public String getOspfRouterId() {
         return ospfRouterId;
     }
@@ -73,6 +65,8 @@ public class OspfElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfVersionNumber")
+    @JsonProperty("ospfVersionNumber")
     public Integer getOspfVersionNumber() {
         return ospfVersionNumber;
     }
@@ -86,6 +80,8 @@ public class OspfElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfAdminStat")
+    @JsonProperty("ospfAdminStat")
     public String getOspfAdminStat() {
         return ospfAdminStat;
     }
@@ -99,6 +95,8 @@ public class OspfElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfCreateTime")
+    @JsonProperty("ospfCreateTime")
     public String getOspfCreateTime() {
         return ospfCreateTime;
     }
@@ -112,6 +110,8 @@ public class OspfElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="ospfLastPollTime")
+    @JsonProperty("ospfLastPollTime")
     public String getOspfLastPollTime() {
         return ospfLastPollTime;
     }

@@ -110,7 +110,7 @@ import com.google.common.collect.Lists;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class DatabasePopulator {
+public class  DatabasePopulator {
 
     public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();

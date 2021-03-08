@@ -39,22 +39,16 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @XmlRootElement(name="isisElementNode")
 @JsonRootName("isisElementNode")
 public class IsisElementNodeDTO {
-    @XmlElement(name="isisSysID")
-    @JsonProperty("isisSysID")
     private String isisSysID;
 
-    @XmlElement(name="isisSysAdminState")
-    @JsonProperty("isisSysAdminState")
     private String isisSysAdminState;
 
-    @XmlElement(name="isisCreateTime")
-    @JsonProperty("isisCreateTime")
     private String isisCreateTime;
 
-    @XmlElement(name="isisLastPollTime")
-    @JsonProperty("isisLastPollTime")
     private String isisLastPollTime;
 
+    @XmlElement(name="isisSysID")
+    @JsonProperty("isisSysID")
     public String getIsisSysID() {
         return isisSysID;
     }
@@ -68,6 +62,8 @@ public class IsisElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisSysAdminState")
+    @JsonProperty("isisSysAdminState")
     public String getIsisSysAdminState() {
         return isisSysAdminState;
     }
@@ -81,6 +77,8 @@ public class IsisElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisCreateTime")
+    @JsonProperty("isisCreateTime")
     public String getIsisCreateTime() {
         return isisCreateTime;
     }
@@ -94,6 +92,8 @@ public class IsisElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisLastPollTime")
+    @JsonProperty("isisLastPollTime")
     public String getIsisLastPollTime() {
         return isisLastPollTime;
     }

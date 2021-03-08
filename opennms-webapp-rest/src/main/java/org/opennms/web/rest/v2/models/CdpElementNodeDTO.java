@@ -39,26 +39,18 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @XmlRootElement(name="cdpElementNode")
 @JsonRootName("cdpElementNode")
 public class CdpElementNodeDTO {
-    @XmlElement(name="cdpGlobalRun")
-    @JsonProperty("cdpGlobalRun")
     private String cdpGlobalRun;
 
-    @XmlElement(name="cdpGlobalDeviceId")
-    @JsonProperty("cdpGlobalDeviceId")
     private String cdpGlobalDeviceId;
 
-    @XmlElement(name="cdpGlobalDeviceIdFormat")
-    @JsonProperty("cdpGlobalDeviceIdFormat")
     private String cdpGlobalDeviceIdFormat;
 
-    @XmlElement(name="cdpCreateTime")
-    @JsonProperty("cdpCreateTime")
     private String cdpCreateTime;
 
-    @XmlElement(name="cdpLastPollTime")
-    @JsonProperty("cdpLastPollTime")
     private String cdpLastPollTime;
 
+    @XmlElement(name="cdpGlobalRun")
+    @JsonProperty("cdpGlobalRun")
     public String getCdpGlobalRun() {
         return cdpGlobalRun;
     }
@@ -72,6 +64,8 @@ public class CdpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpGlobalDeviceId")
+    @JsonProperty("cdpGlobalDeviceId")
     public String getCdpGlobalDeviceId() {
         return cdpGlobalDeviceId;
     }
@@ -85,6 +79,8 @@ public class CdpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpGlobalDeviceIdFormat")
+    @JsonProperty("cdpGlobalDeviceIdFormat")
     public String getCdpGlobalDeviceIdFormat() {
         return cdpGlobalDeviceIdFormat;
     }
@@ -98,6 +94,8 @@ public class CdpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpCreateTime")
+    @JsonProperty("cdpCreateTime")
     public String getCdpCreateTime() {
         return cdpCreateTime;
     }
@@ -111,6 +109,8 @@ public class CdpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="cdpLastPollTime")
+    @JsonProperty("cdpLastPollTime")
     public String getCdpLastPollTime() {
         return cdpLastPollTime;
     }

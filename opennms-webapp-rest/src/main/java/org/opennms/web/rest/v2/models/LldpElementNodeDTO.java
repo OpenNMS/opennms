@@ -40,22 +40,16 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("lldpElementNode")
 public class LldpElementNodeDTO {
 
-    @XmlElement(name="lldpChassisId")
-    @JsonProperty("lldpChassisId")
     private String lldpChassisId;
 
-    @XmlElement(name="lldpSysName")
-    @JsonProperty("lldpSysName")
     private String lldpSysName;
 
-    @XmlElement(name="lldpCreateTime")
-    @JsonProperty("lldpCreateTime")
     private String lldpCreateTime;
 
-    @XmlElement(name="lldpLastPollTime")
-    @JsonProperty("lldpLastPollTime")
     private String lldpLastPollTime;
 
+    @XmlElement(name="lldpChassisId")
+    @JsonProperty("lldpChassisId")
     public String getLldpChassisId() {
         return lldpChassisId;
     }
@@ -69,6 +63,8 @@ public class LldpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpSysName")
+    @JsonProperty("lldpSysName")
     public String getLldpSysName() {
         return lldpSysName;
     }
@@ -82,6 +78,8 @@ public class LldpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpCreateTime")
+    @JsonProperty("lldpCreateTime")
     public String getLldpCreateTime() {
         return lldpCreateTime;
     }
@@ -95,6 +93,8 @@ public class LldpElementNodeDTO {
         return this;
     }
 
+    @XmlElement(name="lldpLastPollTime")
+    @JsonProperty("lldpLastPollTime")
     public String getLldpLastPollTime() {
         return lldpLastPollTime;
     }

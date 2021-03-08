@@ -40,54 +40,32 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 @JsonRootName("isisLinkNode")
 public class IsisLinkNodeDTO {
 
-    @XmlElement(name="isisCircIfIndex")
-    @JsonProperty("isisCircIfIndex")
     private Integer isisCircIfIndex;
 
-    @XmlElement(name="isisCircAdminState")
-    @JsonProperty("isisCircAdminState")
     private String  isisCircAdminState;
 
-    @XmlElement(name="isisISAdjNeighSysID")
-    @JsonProperty("isisISAdjNeighSysID")
     private String  isisISAdjNeighSysID;
 
-    @XmlElement(name="isisISAdjNeighSysType")
-    @JsonProperty("isisISAdjNeighSysType")
     private String  isisISAdjNeighSysType;
 
-    @XmlElement(name="isisISAdjNeighSysUrl")
-    @JsonProperty("isisISAdjNeighSysUrl")
     private String  isisISAdjNeighSysUrl;
 
-    @XmlElement(name="isisISAdjNeighSNPAAddress")
-    @JsonProperty("isisISAdjNeighSNPAAddress")
     private String  isisISAdjNeighSNPAAddress;
 
-    @XmlElement(name="isisISAdjNeighPort")
-    @JsonProperty("isisISAdjNeighPort")
     private String  isisISAdjNeighPort;
 
-    @XmlElement(name="isisISAdjState")
-    @JsonProperty("isisISAdjState")
     private String  isisISAdjState;
 
-    @XmlElement(name="isisISAdjNbrExtendedCircID")
-    @JsonProperty("isisISAdjNbrExtendedCircID")
     private Integer isisISAdjNbrExtendedCircID;
 
-    @XmlElement(name="isisISAdjUrl")
-    @JsonProperty("isisISAdjUrl")
     private String  isisISAdjUrl;
 
-    @XmlElement(name="isisLinkCreateTime")
-    @JsonProperty("isisLinkCreateTime")
     private String  isisLinkCreateTime;
 
-    @XmlElement(name="isisLinkLastPollTime")
-    @JsonProperty("isisLinkLastPollTime")
     private String  isisLinkLastPollTime;
 
+    @XmlElement(name="isisCircIfIndex")
+    @JsonProperty("isisCircIfIndex")
     public Integer getIsisCircIfIndex() {
         return isisCircIfIndex;
     }
@@ -101,6 +79,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisCircAdminState")
+    @JsonProperty("isisCircAdminState")
     public String getIsisCircAdminState() {
         return isisCircAdminState;
     }
@@ -114,6 +94,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNeighSysID")
+    @JsonProperty("isisISAdjNeighSysID")
     public String getIsisISAdjNeighSysID() {
         return isisISAdjNeighSysID;
     }
@@ -127,6 +109,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNeighSysType")
+    @JsonProperty("isisISAdjNeighSysType")
     public String getIsisISAdjNeighSysType() {
         return isisISAdjNeighSysType;
     }
@@ -140,6 +124,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNeighSysUrl")
+    @JsonProperty("isisISAdjNeighSysUrl")
     public String getIsisISAdjNeighSysUrl() {
         return isisISAdjNeighSysUrl;
     }
@@ -153,6 +139,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNeighSNPAAddress")
+    @JsonProperty("isisISAdjNeighSNPAAddress")
     public String getIsisISAdjNeighSNPAAddress() {
         return isisISAdjNeighSNPAAddress;
     }
@@ -166,6 +154,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNeighPort")
+    @JsonProperty("isisISAdjNeighPort")
     public String getIsisISAdjNeighPort() {
         return isisISAdjNeighPort;
     }
@@ -179,6 +169,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjState")
+    @JsonProperty("isisISAdjState")
     public String getIsisISAdjState() {
         return isisISAdjState;
     }
@@ -192,6 +184,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjNbrExtendedCircID")
+    @JsonProperty("isisISAdjNbrExtendedCircID")
     public Integer getIsisISAdjNbrExtendedCircID() {
         return isisISAdjNbrExtendedCircID;
     }
@@ -205,6 +199,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisISAdjUrl")
+    @JsonProperty("isisISAdjUrl")
     public String getIsisISAdjUrl() {
         return isisISAdjUrl;
     }
@@ -218,6 +214,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisLinkCreateTime")
+    @JsonProperty("isisLinkCreateTime")
     public String getIsisLinkCreateTime() {
         return isisLinkCreateTime;
     }
@@ -231,6 +229,8 @@ public class IsisLinkNodeDTO {
         return this;
     }
 
+    @XmlElement(name="isisLinkLastPollTime")
+    @JsonProperty("isisLinkLastPollTime")
     public String getIsisLinkLastPollTime() {
         return isisLinkLastPollTime;
     }
