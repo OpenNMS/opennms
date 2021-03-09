@@ -45,6 +45,8 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
@@ -62,6 +64,7 @@ import org.opennms.netmgt.model.InetAddressUserType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
 import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
 import org.slf4j.Logger;
@@ -254,7 +257,33 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetIsisLinks() {
+    public void testGetIsisLinks() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        IsIsLink isIsLink = new IsIsLink();
+        isIsLink.setId(123);
+        isIsLink.setNode(node);
+        isIsLink.setIsisCircIndex(1);
+        isIsLink.setIsisISAdjIndex(1);
+        isIsLink.setIsisISAdjState(IsIsLink.IsisISAdjState.down);
+        isIsLink.setIsisISAdjNeighSNPAAddress("snpAddress");
+        isIsLink.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.l2IntermediateSystem);
+        isIsLink.setIsisISAdjNeighSysID("adjNeighSysID");
+        isIsLink.setIsisISAdjNbrExtendedCircID(2);
+        isIsLink.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
+        isIsLink.setIsisLinkCreateTime(new Date());
+        isIsLink.setIsisLinkLastPollTime(new Date());
+
+        isisLinkDao.save(isIsLink);
+        isisLinkDao.flush();
+
+        String url = "/enlinkd/isislinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<IsisLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, IsisLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
     }
 
     @Test
