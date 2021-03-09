@@ -120,4 +120,14 @@ public class LldpElementNodeDTO {
     public int hashCode() {
         return Objects.hash(lldpChassisId, lldpSysName, lldpCreateTime, lldpLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "LldpElementNodeDTO{" +
+                "lldpChassisId='" + lldpChassisId + '\'' +
+                ", lldpSysName='" + lldpSysName + '\'' +
+                ", lldpCreateTime='" + lldpCreateTime + '\'' +
+                ", lldpLastPollTime='" + lldpLastPollTime + '\'' +
+                '}';
+    }
 }

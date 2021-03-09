@@ -205,4 +205,19 @@ public class OspfLinkNodeDTO {
     public int hashCode() {
         return Objects.hash(ospfLocalPort, ospfLocalPortUrl, ospfRemRouterId, ospfRemRouterUrl, ospfRemPort, ospfRemPortUrl, ospfLinkInfo, ospfLinkCreateTime, ospfLinkLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "OspfLinkNodeDTO{" +
+                "ospfLocalPort='" + ospfLocalPort + '\'' +
+                ", ospfLocalPortUrl='" + ospfLocalPortUrl + '\'' +
+                ", ospfRemRouterId='" + ospfRemRouterId + '\'' +
+                ", ospfRemRouterUrl='" + ospfRemRouterUrl + '\'' +
+                ", ospfRemPort='" + ospfRemPort + '\'' +
+                ", ospfRemPortUrl='" + ospfRemPortUrl + '\'' +
+                ", ospfLinkInfo='" + ospfLinkInfo + '\'' +
+                ", ospfLinkCreateTime='" + ospfLinkCreateTime + '\'' +
+                ", ospfLinkLastPollTime='" + ospfLinkLastPollTime + '\'' +
+                '}';
+    }
 }

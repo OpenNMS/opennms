@@ -119,4 +119,14 @@ public class IsisElementNodeDTO {
     public int hashCode() {
         return Objects.hash(isisSysID, isisSysAdminState, isisCreateTime, isisLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "IsisElementNodeDTO{" +
+                "isisSysID='" + isisSysID + '\'' +
+                ", isisSysAdminState='" + isisSysAdminState + '\'' +
+                ", isisCreateTime='" + isisCreateTime + '\'' +
+                ", isisLastPollTime='" + isisLastPollTime + '\'' +
+                '}';
+    }
 }

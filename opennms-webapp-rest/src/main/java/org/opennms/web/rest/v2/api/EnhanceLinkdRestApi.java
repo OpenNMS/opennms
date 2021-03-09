@@ -85,22 +85,22 @@ public interface EnhanceLinkdRestApi {
     List<IsisLinkNodeDTO> getIsisLinks(@PathParam("nodeId") int nodeId);
 
     @GET
-    @Path("lldpelem/{nodeId}")
+    @Path("lldpelems/{nodeId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     LldpElementNodeDTO getLldpelem(@PathParam("nodeId") int nodeId);
 
     @GET
-    @Path("cdpelem/{nodeId}")
+    @Path("cdpelems/{nodeId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     CdpElementNodeDTO getCdpelem(@PathParam("nodeId") int nodeId);
 
     @GET
-    @Path("ospfelem/{nodeId}")
+    @Path("ospfelems/{nodeId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     OspfElementNodeDTO getOspfelem(@PathParam("nodeId") int nodeId);
 
     @GET
-    @Path("isiselem/{nodeId}")
+    @Path("isiselems/{nodeId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     IsisElementNodeDTO getIsiselem(@PathParam("nodeId") int nodeId);
 }

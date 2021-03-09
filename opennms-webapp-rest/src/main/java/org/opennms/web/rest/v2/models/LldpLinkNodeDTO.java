@@ -205,4 +205,19 @@ public class LldpLinkNodeDTO {
     public int hashCode() {
         return Objects.hash(lldpLocalPort, lldpLocalPortUrl, lldpRemChassisId, lldpRemChassisIdUrl, lldpRemInfo, ldpRemPort, lldpRemPortUrl, lldpCreateTime, lldpLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "LldpLinkNodeDTO{" +
+                "lldpLocalPort='" + lldpLocalPort + '\'' +
+                ", lldpLocalPortUrl='" + lldpLocalPortUrl + '\'' +
+                ", lldpRemChassisId='" + lldpRemChassisId + '\'' +
+                ", lldpRemChassisIdUrl='" + lldpRemChassisIdUrl + '\'' +
+                ", lldpRemInfo='" + lldpRemInfo + '\'' +
+                ", ldpRemPort='" + ldpRemPort + '\'' +
+                ", lldpRemPortUrl='" + lldpRemPortUrl + '\'' +
+                ", lldpCreateTime='" + lldpCreateTime + '\'' +
+                ", lldpLastPollTime='" + lldpLastPollTime + '\'' +
+                '}';
+    }
 }

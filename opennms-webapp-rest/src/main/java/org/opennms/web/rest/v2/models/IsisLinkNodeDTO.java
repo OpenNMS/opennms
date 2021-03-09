@@ -256,4 +256,22 @@ public class IsisLinkNodeDTO {
     public int hashCode() {
         return Objects.hash(isisCircIfIndex, isisCircAdminState, isisISAdjNeighSysID, isisISAdjNeighSysType, isisISAdjNeighSysUrl, isisISAdjNeighSNPAAddress, isisISAdjNeighPort, isisISAdjState, isisISAdjNbrExtendedCircID, isisISAdjUrl, isisLinkCreateTime, isisLinkLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "IsisLinkNodeDTO{" +
+                "isisCircIfIndex=" + isisCircIfIndex +
+                ", isisCircAdminState='" + isisCircAdminState + '\'' +
+                ", isisISAdjNeighSysID='" + isisISAdjNeighSysID + '\'' +
+                ", isisISAdjNeighSysType='" + isisISAdjNeighSysType + '\'' +
+                ", isisISAdjNeighSysUrl='" + isisISAdjNeighSysUrl + '\'' +
+                ", isisISAdjNeighSNPAAddress='" + isisISAdjNeighSNPAAddress + '\'' +
+                ", isisISAdjNeighPort='" + isisISAdjNeighPort + '\'' +
+                ", isisISAdjState='" + isisISAdjState + '\'' +
+                ", isisISAdjNbrExtendedCircID=" + isisISAdjNbrExtendedCircID +
+                ", isisISAdjUrl='" + isisISAdjUrl + '\'' +
+                ", isisLinkCreateTime='" + isisLinkCreateTime + '\'' +
+                ", isisLinkLastPollTime='" + isisLinkLastPollTime + '\'' +
+                '}';
+    }
 }

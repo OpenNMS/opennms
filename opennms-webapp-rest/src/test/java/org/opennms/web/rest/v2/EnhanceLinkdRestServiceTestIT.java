@@ -42,17 +42,19 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
@@ -60,19 +62,22 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.model.InetAddressUserType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
+import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
 import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
+import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
 import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
 import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -102,7 +107,7 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     private LldpLinkDao lldpLinkDao;
 
     @Autowired
-    private BridgeTopologyService bridgeTopologyService;
+    BridgeBridgeLinkDao bridgeBridgeLinkDao;
 
     @Autowired
     private CdpLinkDao cdpLinkDao;
@@ -127,18 +132,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
     @Autowired
     private BridgeElementDao bridgeElementDao;
-
-    @Autowired
-    private IpNetToMediaDao ipNetToMediaDao;
-
-    @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-
-    @Autowired
-    private SnmpInterfaceDao snmpInterfaceDao;
-
-    @Autowired
-    private PlatformTransactionManager transactionManager;
 
     public EnhanceLinkdRestServiceTestIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -189,8 +182,30 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetBridgelinks() {
+    public void testGetBridgelinks() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
 
+
+        BridgeBridgeLink bridgeBridgeLink = new BridgeBridgeLink();
+        bridgeBridgeLink.setId(2);
+        bridgeBridgeLink.setNode(node);
+        bridgeBridgeLink.setDesignatedNode(node);
+        bridgeBridgeLink.setDesignatedPort(80);
+        bridgeBridgeLink.setBridgePort(80);
+        bridgeBridgeLink.setBridgeBridgeLinkCreateTime(new Date());
+        bridgeBridgeLink.setBridgeBridgeLinkLastPollTime(new Date());
+
+        bridgeBridgeLinkDao.save(bridgeBridgeLink);
+        bridgeBridgeLinkDao.flush();
+
+        String url = "/enlinkd/bridgelinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        LOG.info(resultStr);
+        ObjectMapper mapper = new ObjectMapper();
+        List<BridgeLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
     }
 
     @Test
@@ -289,24 +304,111 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetLldpelem() {
+    public void testGetLldpelem() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        LldpElement lldpElement = new LldpElement();
+        lldpElement.setId(1);
+        lldpElement.setNode(node);
+        lldpElement.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+        lldpElement.setLldpSysname("lldpSysname");
+        lldpElement.setLldpChassisId("lldpChassisId");
+        lldpElement.setLldpNodeCreateTime(new Date());
+        lldpElement.setLldpNodeLastPollTime(new Date());
+
+        lldpElementDao.save(lldpElement);
+        lldpElementDao.flush();
+
+        String url = "/enlinkd/lldpelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
+        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetCdpelem() {
+    public void testGetCdpelem() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        CdpElement cdpElement = new CdpElement();
+        cdpElement.setId(1);
+        cdpElement.setNode(node);
+        cdpElement.setCdpGlobalRun(OspfElement.TruthValue.FALSE);
+        cdpElement.setCdpGlobalDeviceId("cdpGlobalDeviceId");
+        cdpElement.setCdpGlobalDeviceIdFormat(CdpElement.CdpGlobalDeviceIdFormat.macAddress);
+        cdpElement.setCdpNodeCreateTime(new Date());
+        cdpElement.setCdpNodeLastPollTime(new Date());
+
+        cdpElementDao.save(cdpElement);
+        cdpElementDao.flush();
+
+        String url = "/enlinkd/cdpelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        CdpElementNodeDTO result = mapper.readValue(resultStr, CdpElementNodeDTO.class);
+        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetOspfelem() {
+    public void testGetOspfelem() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        OspfElement ospfElement = new OspfElement();
+        ospfElement.setId(1);
+        ospfElement.setNode(node);
+        ospfElement.setOspfRouterId(InetAddress.getByName("127.0.0.1"));
+        ospfElement.setOspfAdminStat(OspfElement.Status.enabled);
+        ospfElement.setOspfVersionNumber(0);
+        ospfElement.setOspfBdrRtrStatus(OspfElement.TruthValue.FALSE);
+        ospfElement.setOspfASBdrRtrStatus(OspfElement.TruthValue.FALSE);
+        ospfElement.setOspfRouterIdNetmask(InetAddress.getByName("127.0.0.1"));
+        ospfElement.setOspfRouterIdIfindex(1);
+        ospfElement.setOspfNodeCreateTime(new Date());
+        ospfElement.setOspfNodeLastPollTime(new Date());
+
+        ospfElementDao.save(ospfElement);
+        ospfElementDao.flush();
+
+        String url = "/enlinkd/ospfelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
+        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetIsiselem() {
+    public void testGetIsiselem() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        IsIsElement isIsElement = new IsIsElement();
+        isIsElement.setId(2);
+        isIsElement.setNode(node);
+        isIsElement.setIsisSysID("isisSysID");
+        isIsElement.setIsisSysAdminState(IsIsElement.IsisAdminState.off);
+        isIsElement.setIsisNodeCreateTime(new Date());
+        isIsElement.setIsisNodeLastPollTime(new Date());
+
+        isisElementDao.save(isIsElement);
+        isisElementDao.flush();
+
+        String url = "/enlinkd/isiselems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        IsisElementNodeDTO result = mapper.readValue(resultStr, IsisElementNodeDTO.class);
+        LOG.info(result.toString());
     }
 }

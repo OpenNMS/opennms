@@ -158,4 +158,16 @@ public class BridgeLinkNodeDTO {
     public int hashCode() {
         return Objects.hash(bridgeLocalPort, bridgeLocalPortUrl, bridgeLinkRemoteNodes, bridgeInfo, bridgeLinkCreateTime, bridgeLinkLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "BridgeLinkNodeDTO{" +
+                "bridgeLocalPort='" + bridgeLocalPort + '\'' +
+                ", bridgeLocalPortUrl='" + bridgeLocalPortUrl + '\'' +
+                ", bridgeLinkRemoteNodes=" + bridgeLinkRemoteNodes +
+                ", bridgeInfo='" + bridgeInfo + '\'' +
+                ", bridgeLinkCreateTime='" + bridgeLinkCreateTime + '\'' +
+                ", bridgeLinkLastPollTime='" + bridgeLinkLastPollTime + '\'' +
+                '}';
+    }
 }

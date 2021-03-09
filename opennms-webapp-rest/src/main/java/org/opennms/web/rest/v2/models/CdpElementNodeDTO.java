@@ -136,4 +136,15 @@ public class CdpElementNodeDTO {
     public int hashCode() {
         return Objects.hash(cdpGlobalRun, cdpGlobalDeviceId, cdpGlobalDeviceIdFormat, cdpCreateTime, cdpLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "CdpElementNodeDTO{" +
+                "cdpGlobalRun='" + cdpGlobalRun + '\'' +
+                ", cdpGlobalDeviceId='" + cdpGlobalDeviceId + '\'' +
+                ", cdpGlobalDeviceIdFormat='" + cdpGlobalDeviceIdFormat + '\'' +
+                ", cdpCreateTime='" + cdpCreateTime + '\'' +
+                ", cdpLastPollTime='" + cdpLastPollTime + '\'' +
+                '}';
+    }
 }

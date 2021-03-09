@@ -205,4 +205,19 @@ public class CdpLinkNodeDTO {
     public int hashCode() {
         return Objects.hash(cdpLocalPort, cdpLocalPortUrl, cdpCacheDevice, cdpCacheDeviceUrl, cdpCacheDevicePort, cdpCacheDevicePortUrl, cdpCachePlatform, cdpCreateTime, cdpLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "CdpLinkNodeDTO{" +
+                "cdpLocalPort='" + cdpLocalPort + '\'' +
+                ", cdpLocalPortUrl='" + cdpLocalPortUrl + '\'' +
+                ", cdpCacheDevice='" + cdpCacheDevice + '\'' +
+                ", cdpCacheDeviceUrl='" + cdpCacheDeviceUrl + '\'' +
+                ", cdpCacheDevicePort='" + cdpCacheDevicePort + '\'' +
+                ", cdpCacheDevicePortUrl='" + cdpCacheDevicePortUrl + '\'' +
+                ", cdpCachePlatform='" + cdpCachePlatform + '\'' +
+                ", cdpCreateTime='" + cdpCreateTime + '\'' +
+                ", cdpLastPollTime='" + cdpLastPollTime + '\'' +
+                '}';
+    }
 }

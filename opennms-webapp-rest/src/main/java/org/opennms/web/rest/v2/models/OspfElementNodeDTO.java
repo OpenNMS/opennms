@@ -137,4 +137,15 @@ public class OspfElementNodeDTO {
     public int hashCode() {
         return Objects.hash(ospfRouterId, ospfVersionNumber, ospfAdminStat, ospfCreateTime, ospfLastPollTime);
     }
+
+    @Override
+    public String toString() {
+        return "OspfElementNodeDTO{" +
+                "ospfRouterId='" + ospfRouterId + '\'' +
+                ", ospfVersionNumber=" + ospfVersionNumber +
+                ", ospfAdminStat='" + ospfAdminStat + '\'' +
+                ", ospfCreateTime='" + ospfCreateTime + '\'' +
+                ", ospfLastPollTime='" + ospfLastPollTime + '\'' +
+                '}';
+    }
 }
