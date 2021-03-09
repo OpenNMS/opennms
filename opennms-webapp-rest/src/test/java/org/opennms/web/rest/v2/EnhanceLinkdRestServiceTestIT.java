@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
@@ -56,10 +58,12 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
+import org.opennms.netmgt.model.InetAddressUserType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +226,29 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetOspfLinks() {
+    public void testGetOspfLinks() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        OspfLink ospfLink = new OspfLink();
+        ospfLink.setId(123);
+        ospfLink.setNode(node);
+        ospfLink.setOspfRemRouterId(InetAddress.getByName("127.0.0.1"));
+        ospfLink.setOspfRemIpAddr(InetAddress.getByName("127.0.0.1"));
+        ospfLink.setOspfRemAddressLessIndex(0);
+        ospfLink.setOspfAddressLessIndex(0);
+        ospfLink.setOspfLinkCreateTime(new Date());
+        ospfLink.setOspfLinkLastPollTime(new Date());
+
+        ospfLinkDao.save(ospfLink);
+        ospfLinkDao.flush();
+
+        String url = "/enlinkd/ospflinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
     }
 
     @Test
