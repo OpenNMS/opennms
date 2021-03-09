@@ -42,8 +42,8 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
@@ -58,6 +58,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,6 +144,7 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetLldpLinks() throws Exception {
         OnmsNode node = new OnmsNode();
@@ -171,47 +173,84 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         String url = "/enlinkd/lldplinks/1";
         String resultStr = sendRequest(GET, url, 200);
+        LOG.info(resultStr);
         ObjectMapper mapper = new ObjectMapper();
         List<LldpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, LldpLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetBridgelinks() {
+
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
-    public void testGetCdpLinks() {
+    public void testGetCdpLinks() throws Exception {
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+
+        CdpLink cdpLink = new CdpLink();
+        cdpLink.setId(23);
+        cdpLink.setNode(node);
+        cdpLink.setCdpLinkCreateTime(new Date());
+        cdpLink.setCdpCacheIfIndex(5);
+        cdpLink.setCdpCacheDeviceIndex(6);
+        cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.cdm);
+        cdpLink.setCdpCacheAddress("cdpCacheAddress");
+        cdpLink.setCdpCacheVersion("1.0");
+        cdpLink.setCdpCacheDeviceId("123");
+        cdpLink.setCdpCacheDevicePort("80");
+        cdpLink.setCdpCacheDevicePlatform("platform");
+        cdpLink.setCdpLinkCreateTime(new Date());
+        cdpLink.setCdpLinkLastPollTime(new Date());
+
+        cdpLinkDao.save(cdpLink);
+        cdpLinkDao.flush();
+
+        String url = "/enlinkd/cdplinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<CdpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, CdpLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetOspfLinks() {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetIsisLinks() {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetLldpelem() {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetCdpelem() {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetOspfelem() {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testGetIsiselem() {
     }
