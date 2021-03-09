@@ -2,7 +2,6 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-[[gd-docs-migrating-from-wiki]]
 = Migrating Content from Project Wiki
 The https://wiki.opennms.org[project wiki] contains much information that ought to be migrated to the official documentation set.
 To help with this effort, we have a wiki template which informs readers of articles that are tagged for migration to the official docs, or that have already been migrated.
@@ -31,16 +30,16 @@ When you identify an article in the OpenNMS wiki whose information should be mig
 image::docs/03_officialdocs-wiki-template-source.png[]
 
 [start=6]
-6. Enter an edit summary such as *Tagged for migration to official docs, NMS-12345* and click *Show preview*
-7. After verifying that your changes render as expected (see image), click *Save changes*.
+1. Enter an edit summary such as *Tagged for migration to official docs, NMS-12345* and click *Show preview*
+2. After verifying that your changes render as expected (see image), click *Save changes*.
 
 .Rendering of `OfficialDocs` wiki template on an article pending migration
 image::docs/04_officialdocs-wiki-template-rendered-pending.png[]
 
 [start=8]
-8. Migrate the information, making sure to follow the guidelines laid out earlier in this section; do not just copy and paste, and watch out for obsolete information. If you need help, contact the developers through one of the methods mentioned above.
-9. Once the migration is complete and the issue is closed, edit the wiki article again and change `completed=false` to `completed=true`.
-10. The rendering of the template will change to indicate that the migration has been completed.
+1. Migrate the information, making sure to follow the guidelines laid out earlier in this section; do not just copy and paste, and watch out for obsolete information. If you need help, contact the developers through one of the methods mentioned above.
+2. Once the migration is complete and the issue is closed, edit the wiki article again and change `completed=false` to `completed=true`.
+3. The rendering of the template will change to indicate that the migration has been completed.
 
 .Rendering of `OfficialDocs` wiki template on an article whose migration is completed
 image::docs/04_officialdocs-wiki-template-rendered-completed.png[]
