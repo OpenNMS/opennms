@@ -97,6 +97,10 @@ Documentation improvements and additions have been made in a number of areas:
 
 ...plus TONS of smaller readability improvements.
 
+==== Kafka Producer Metrics
+
+* For Interface Resources, a String attribute named `__ifIndex` is added to represent missing Interface ifIndex in String form.
+
 == Important Internal Changes
 
 * Sink internals have been updated to use Protobuf 3.

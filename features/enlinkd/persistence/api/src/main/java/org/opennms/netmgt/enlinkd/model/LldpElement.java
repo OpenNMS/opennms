@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -176,7 +176,7 @@ public final class LldpElement implements Serializable {
 	public String toString() {
             StringBuffer strb = new StringBuffer();
             strb.append("lldpelement: nodeid:["); 
-            strb.append(getNode().getId());
+            strb.append(getNode() == null ? null : getNode().getId());
             strb.append("], chassis type/id:[");
             strb.append(LldpChassisIdSubType.getTypeString(getLldpChassisIdSubType().getValue()));
             strb.append("/");
