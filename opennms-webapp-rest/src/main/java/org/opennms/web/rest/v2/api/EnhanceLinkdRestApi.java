@@ -35,27 +35,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.opennms.web.enlinkd.BridgeLinkNode;
-import org.opennms.web.enlinkd.CdpElementNode;
-import org.opennms.web.enlinkd.CdpLinkNode;
-import org.opennms.web.enlinkd.IsisElementNode;
-import org.opennms.web.enlinkd.IsisLinkNode;
-import org.opennms.web.enlinkd.LldpElementNode;
-import org.opennms.web.enlinkd.LldpLinkNode;
-import org.opennms.web.enlinkd.OspfElementNode;
-import org.opennms.web.enlinkd.OspfLinkNode;
-import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
-import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.EnlinkdDTO;
-import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
-import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
-import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
-import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
-import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
+import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
+import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.EnlinkdDTO;
+import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
+import org.opennms.web.rest.model.v2.IsisLinkNodeDTO;
+import org.opennms.web.rest.model.v2.LldpElementNodeDTO;
+import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
+import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 
 @Path("enlinkd")
 public interface EnhanceLinkdRestApi {

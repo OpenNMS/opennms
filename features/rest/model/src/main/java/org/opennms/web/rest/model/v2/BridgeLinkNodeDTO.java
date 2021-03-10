@@ -26,20 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.models;
+package org.opennms.web.rest.model.v2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.web.enlinkd.BridgeLinkRemoteNode;
 
 @XmlRootElement(name="bridgeLinkNode")
 @JsonRootName("bridgeLinkNode")
@@ -48,7 +45,7 @@ public class BridgeLinkNodeDTO {
 
     private String bridgeLocalPortUrl;
 
-    private List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNode>();
+    private List<BridgeLinkRemoteNodeDTO> bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNodeDTO>();
 
     private String bridgeInfo;
 
@@ -88,15 +85,15 @@ public class BridgeLinkNodeDTO {
 
     @XmlElement(name="BridgeLinkRemoteNodes")
     @JsonProperty("BridgeLinkRemoteNodes")
-    public List<BridgeLinkRemoteNode> getBridgeLinkRemoteNodes() {
+    public List<BridgeLinkRemoteNodeDTO> getBridgeLinkRemoteNodes() {
         return bridgeLinkRemoteNodes;
     }
 
-    public void setBridgeLinkRemoteNodes(List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes) {
+    public void setBridgeLinkRemoteNodes(List<BridgeLinkRemoteNodeDTO> bridgeLinkRemoteNodes) {
         this.bridgeLinkRemoteNodes = bridgeLinkRemoteNodes;
     }
 
-    public BridgeLinkNodeDTO withBridgeLinkRemoteNodes(List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes) {
+    public BridgeLinkNodeDTO withBridgeLinkRemoteNodes(List<BridgeLinkRemoteNodeDTO> bridgeLinkRemoteNodes) {
         this.bridgeLinkRemoteNodes = bridgeLinkRemoteNodes;
         return this;
     }

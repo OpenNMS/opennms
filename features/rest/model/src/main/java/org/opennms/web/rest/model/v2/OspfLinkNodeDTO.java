@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.models;
+package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 

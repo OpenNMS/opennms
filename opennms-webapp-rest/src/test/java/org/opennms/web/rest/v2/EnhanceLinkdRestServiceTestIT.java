@@ -64,16 +64,16 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
-import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.EnlinkdDTO;
-import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
-import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
-import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
-import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
-import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
+import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
+import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.EnlinkdDTO;
+import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
+import org.opennms.web.rest.model.v2.IsisLinkNodeDTO;
+import org.opennms.web.rest.model.v2.LldpElementNodeDTO;
+import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
+import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,6 +165,15 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         ObjectMapper mapper = new ObjectMapper();
         EnlinkdDTO result = mapper.readValue(resultStr, EnlinkdDTO.class);
         LOG.info(result.toString());
+        Assert.assertEquals(1, result.getLldpLinkNodeDTOs().size());
+        Assert.assertEquals(1, result.getBridgeLinkNodeDTOS().size());
+        Assert.assertEquals(1, result.getCdpLinkNodeDTOS().size());
+        Assert.assertEquals(1, result.getOspfLinkNodeDTOS().size());
+        Assert.assertEquals(1, result.getIsisLinkNodeDTOS().size());
+        Assert.assertNotNull(result.getLldpElementNodeDTO());
+        Assert.assertNotNull(result.getCdpElementNodeDTO());
+        Assert.assertNotNull(result.getOspfElementNodeDTO());
+        Assert.assertNotNull(result.getIsisElementNodeDTO());
     }
 
     @Test
@@ -182,28 +191,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         Assert.assertEquals(1, result.size());
     }
 
-    private void creatLldpLink(OnmsNode node){
-        LldpLink link = new LldpLink();
-        link.setId(11);
-        link.setNode(node);
-        link.setLldpLocalPortNum(123);
-        link.setLldpPortId("1234");
-        link.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
-        link.setLldpPortDescr("portDescr");
-        link.setLldpRemChassisId("34");
-        link.setLldpRemSysname("remSysname");
-        link.setLldpRemChassisId("remChassisId");
-        link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_INTERFACENAME);
-        link.setLldpRemPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS);
-        link.setLldpRemPortId("remportId");
-        link.setLldpRemPortDescr("remPortDescr");
-        link.setLldpLinkCreateTime(new Date());
-        link.setLldpLinkLastPollTime(new Date());
-
-        lldpLinkDao.save(link);
-        lldpLinkDao.flush();
-    }
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
@@ -217,20 +204,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         ObjectMapper mapper = new ObjectMapper();
         List<BridgeLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
-    }
-
-    private void createbridgeBridgeLink(OnmsNode node){
-        BridgeBridgeLink bridgeBridgeLink = new BridgeBridgeLink();
-        bridgeBridgeLink.setId(2);
-        bridgeBridgeLink.setNode(node);
-        bridgeBridgeLink.setDesignatedNode(node);
-        bridgeBridgeLink.setDesignatedPort(80);
-        bridgeBridgeLink.setBridgePort(80);
-        bridgeBridgeLink.setBridgeBridgeLinkCreateTime(new Date());
-        bridgeBridgeLink.setBridgeBridgeLinkLastPollTime(new Date());
-
-        bridgeBridgeLinkDao.save(bridgeBridgeLink);
-        bridgeBridgeLinkDao.flush();
     }
 
     @Test
@@ -247,26 +220,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         Assert.assertEquals(1, result.size());
     }
 
-    private void createCdpLink(OnmsNode node){
-        CdpLink cdpLink = new CdpLink();
-        cdpLink.setId(23);
-        cdpLink.setNode(node);
-        cdpLink.setCdpLinkCreateTime(new Date());
-        cdpLink.setCdpCacheIfIndex(5);
-        cdpLink.setCdpCacheDeviceIndex(6);
-        cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.cdm);
-        cdpLink.setCdpCacheAddress("cdpCacheAddress");
-        cdpLink.setCdpCacheVersion("1.0");
-        cdpLink.setCdpCacheDeviceId("123");
-        cdpLink.setCdpCacheDevicePort("80");
-        cdpLink.setCdpCacheDevicePlatform("platform");
-        cdpLink.setCdpLinkCreateTime(new Date());
-        cdpLink.setCdpLinkLastPollTime(new Date());
-
-        cdpLinkDao.save(cdpLink);
-        cdpLinkDao.flush();
-    }
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
@@ -279,21 +232,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         ObjectMapper mapper = new ObjectMapper();
         List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
-    }
-
-    private void createOspfLink(OnmsNode node) throws UnknownHostException {
-        OspfLink ospfLink = new OspfLink();
-        ospfLink.setId(123);
-        ospfLink.setNode(node);
-        ospfLink.setOspfRemRouterId(InetAddress.getByName("127.0.0.1"));
-        ospfLink.setOspfRemIpAddr(InetAddress.getByName("127.0.0.1"));
-        ospfLink.setOspfRemAddressLessIndex(0);
-        ospfLink.setOspfAddressLessIndex(0);
-        ospfLink.setOspfLinkCreateTime(new Date());
-        ospfLink.setOspfLinkLastPollTime(new Date());
-
-        ospfLinkDao.save(ospfLink);
-        ospfLinkDao.flush();
     }
 
     @Test
@@ -310,25 +248,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         Assert.assertEquals(1, result.size());
     }
 
-    private void createIsIsLink(OnmsNode node){
-        IsIsLink isIsLink = new IsIsLink();
-        isIsLink.setId(123);
-        isIsLink.setNode(node);
-        isIsLink.setIsisCircIndex(1);
-        isIsLink.setIsisISAdjIndex(1);
-        isIsLink.setIsisISAdjState(IsIsLink.IsisISAdjState.down);
-        isIsLink.setIsisISAdjNeighSNPAAddress("snpAddress");
-        isIsLink.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.l2IntermediateSystem);
-        isIsLink.setIsisISAdjNeighSysID("adjNeighSysID");
-        isIsLink.setIsisISAdjNbrExtendedCircID(2);
-        isIsLink.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
-        isIsLink.setIsisLinkCreateTime(new Date());
-        isIsLink.setIsisLinkLastPollTime(new Date());
-
-        isisLinkDao.save(isIsLink);
-        isisLinkDao.flush();
-    }
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
@@ -341,20 +260,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         ObjectMapper mapper = new ObjectMapper();
         LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
         LOG.info(result.toString());
-    }
-
-    private void createLldpElement(OnmsNode node){
-        LldpElement lldpElement = new LldpElement();
-        lldpElement.setId(1);
-        lldpElement.setNode(node);
-        lldpElement.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-        lldpElement.setLldpSysname("lldpSysname");
-        lldpElement.setLldpChassisId("lldpChassisId");
-        lldpElement.setLldpNodeCreateTime(new Date());
-        lldpElement.setLldpNodeLastPollTime(new Date());
-
-        lldpElementDao.save(lldpElement);
-        lldpElementDao.flush();
     }
 
     @Test
@@ -371,20 +276,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         LOG.info(result.toString());
     }
 
-    private void createCdpElement(OnmsNode node){
-        CdpElement cdpElement = new CdpElement();
-        cdpElement.setId(1);
-        cdpElement.setNode(node);
-        cdpElement.setCdpGlobalRun(OspfElement.TruthValue.FALSE);
-        cdpElement.setCdpGlobalDeviceId("cdpGlobalDeviceId");
-        cdpElement.setCdpGlobalDeviceIdFormat(CdpElement.CdpGlobalDeviceIdFormat.macAddress);
-        cdpElement.setCdpNodeCreateTime(new Date());
-        cdpElement.setCdpNodeLastPollTime(new Date());
-
-        cdpElementDao.save(cdpElement);
-        cdpElementDao.flush();
-    }
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
@@ -397,24 +288,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         ObjectMapper mapper = new ObjectMapper();
         OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
         LOG.info(result.toString());
-    }
-
-    private void createOspfElement(OnmsNode node) throws UnknownHostException {
-        OspfElement ospfElement = new OspfElement();
-        ospfElement.setId(1);
-        ospfElement.setNode(node);
-        ospfElement.setOspfRouterId(InetAddress.getByName("127.0.0.1"));
-        ospfElement.setOspfAdminStat(OspfElement.Status.enabled);
-        ospfElement.setOspfVersionNumber(0);
-        ospfElement.setOspfBdrRtrStatus(OspfElement.TruthValue.FALSE);
-        ospfElement.setOspfASBdrRtrStatus(OspfElement.TruthValue.FALSE);
-        ospfElement.setOspfRouterIdNetmask(InetAddress.getByName("127.0.0.1"));
-        ospfElement.setOspfRouterIdIfindex(1);
-        ospfElement.setOspfNodeCreateTime(new Date());
-        ospfElement.setOspfNodeLastPollTime(new Date());
-
-        ospfElementDao.save(ospfElement);
-        ospfElementDao.flush();
     }
 
     @Test
@@ -450,5 +323,141 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
         node.setNodeId("1");
         node.setLabel("lable");
         return node;
+    }
+
+    private void creatLldpLink(OnmsNode node){
+        LldpLink link = new LldpLink();
+        link.setId(11);
+        link.setNode(node);
+        link.setLldpLocalPortNum(123);
+        link.setLldpPortId("1234");
+        link.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
+        link.setLldpPortDescr("portDescr");
+        link.setLldpRemChassisId("34");
+        link.setLldpRemSysname("remSysname");
+        link.setLldpRemChassisId("remChassisId");
+        link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_INTERFACENAME);
+        link.setLldpRemPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS);
+        link.setLldpRemPortId("remportId");
+        link.setLldpRemPortDescr("remPortDescr");
+        link.setLldpLinkCreateTime(new Date());
+        link.setLldpLinkLastPollTime(new Date());
+
+        lldpLinkDao.save(link);
+        lldpLinkDao.flush();
+    }
+
+    private void createbridgeBridgeLink(OnmsNode node){
+        BridgeBridgeLink bridgeBridgeLink = new BridgeBridgeLink();
+        bridgeBridgeLink.setId(2);
+        bridgeBridgeLink.setNode(node);
+        bridgeBridgeLink.setDesignatedNode(node);
+        bridgeBridgeLink.setDesignatedPort(80);
+        bridgeBridgeLink.setBridgePort(80);
+        bridgeBridgeLink.setBridgeBridgeLinkCreateTime(new Date());
+        bridgeBridgeLink.setBridgeBridgeLinkLastPollTime(new Date());
+
+        bridgeBridgeLinkDao.save(bridgeBridgeLink);
+        bridgeBridgeLinkDao.flush();
+    }
+
+    private void createCdpLink(OnmsNode node){
+        CdpLink cdpLink = new CdpLink();
+        cdpLink.setId(23);
+        cdpLink.setNode(node);
+        cdpLink.setCdpLinkCreateTime(new Date());
+        cdpLink.setCdpCacheIfIndex(5);
+        cdpLink.setCdpCacheDeviceIndex(6);
+        cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.cdm);
+        cdpLink.setCdpCacheAddress("cdpCacheAddress");
+        cdpLink.setCdpCacheVersion("1.0");
+        cdpLink.setCdpCacheDeviceId("123");
+        cdpLink.setCdpCacheDevicePort("80");
+        cdpLink.setCdpCacheDevicePlatform("platform");
+        cdpLink.setCdpLinkCreateTime(new Date());
+        cdpLink.setCdpLinkLastPollTime(new Date());
+
+        cdpLinkDao.save(cdpLink);
+        cdpLinkDao.flush();
+    }
+
+    private void createOspfLink(OnmsNode node) throws UnknownHostException {
+        OspfLink ospfLink = new OspfLink();
+        ospfLink.setId(123);
+        ospfLink.setNode(node);
+        ospfLink.setOspfRemRouterId(InetAddress.getByName("127.0.0.1"));
+        ospfLink.setOspfRemIpAddr(InetAddress.getByName("127.0.0.1"));
+        ospfLink.setOspfRemAddressLessIndex(0);
+        ospfLink.setOspfAddressLessIndex(0);
+        ospfLink.setOspfLinkCreateTime(new Date());
+        ospfLink.setOspfLinkLastPollTime(new Date());
+
+        ospfLinkDao.save(ospfLink);
+        ospfLinkDao.flush();
+    }
+
+    private void createIsIsLink(OnmsNode node){
+        IsIsLink isIsLink = new IsIsLink();
+        isIsLink.setId(123);
+        isIsLink.setNode(node);
+        isIsLink.setIsisCircIndex(1);
+        isIsLink.setIsisISAdjIndex(1);
+        isIsLink.setIsisISAdjState(IsIsLink.IsisISAdjState.down);
+        isIsLink.setIsisISAdjNeighSNPAAddress("snpAddress");
+        isIsLink.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.l2IntermediateSystem);
+        isIsLink.setIsisISAdjNeighSysID("adjNeighSysID");
+        isIsLink.setIsisISAdjNbrExtendedCircID(2);
+        isIsLink.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
+        isIsLink.setIsisLinkCreateTime(new Date());
+        isIsLink.setIsisLinkLastPollTime(new Date());
+
+        isisLinkDao.save(isIsLink);
+        isisLinkDao.flush();
+    }
+
+    private void createLldpElement(OnmsNode node){
+        LldpElement lldpElement = new LldpElement();
+        lldpElement.setId(1);
+        lldpElement.setNode(node);
+        lldpElement.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+        lldpElement.setLldpSysname("lldpSysname");
+        lldpElement.setLldpChassisId("lldpChassisId");
+        lldpElement.setLldpNodeCreateTime(new Date());
+        lldpElement.setLldpNodeLastPollTime(new Date());
+
+        lldpElementDao.save(lldpElement);
+        lldpElementDao.flush();
+    }
+
+    private void createCdpElement(OnmsNode node){
+        CdpElement cdpElement = new CdpElement();
+        cdpElement.setId(1);
+        cdpElement.setNode(node);
+        cdpElement.setCdpGlobalRun(OspfElement.TruthValue.FALSE);
+        cdpElement.setCdpGlobalDeviceId("cdpGlobalDeviceId");
+        cdpElement.setCdpGlobalDeviceIdFormat(CdpElement.CdpGlobalDeviceIdFormat.macAddress);
+        cdpElement.setCdpNodeCreateTime(new Date());
+        cdpElement.setCdpNodeLastPollTime(new Date());
+
+        cdpElementDao.save(cdpElement);
+        cdpElementDao.flush();
+    }
+
+    private void createOspfElement(OnmsNode node) throws UnknownHostException {
+        OspfElement ospfElement = new OspfElement();
+        ospfElement.setId(1);
+        ospfElement.setNode(node);
+        ospfElement.setOspfRouterId(InetAddress.getByName("127.0.0.1"));
+        ospfElement.setOspfAdminStat(OspfElement.Status.enabled);
+        ospfElement.setOspfVersionNumber(0);
+        ospfElement.setOspfBdrRtrStatus(OspfElement.TruthValue.FALSE);
+        ospfElement.setOspfASBdrRtrStatus(OspfElement.TruthValue.FALSE);
+        ospfElement.setOspfRouterIdNetmask(InetAddress.getByName("127.0.0.1"));
+        ospfElement.setOspfRouterIdIfindex(1);
+        ospfElement.setOspfNodeCreateTime(new Date());
+        ospfElement.setOspfNodeLastPollTime(new Date());
+
+        ospfElementDao.save(ospfElement);
+        ospfElementDao.flush();
     }
 }

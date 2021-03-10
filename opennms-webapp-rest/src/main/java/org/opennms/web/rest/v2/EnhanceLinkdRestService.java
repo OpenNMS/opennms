@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.web.enlinkd.BridgeLinkNode;
+import org.opennms.web.enlinkd.BridgeLinkRemoteNode;
 import org.opennms.web.enlinkd.CdpElementNode;
 import org.opennms.web.enlinkd.CdpLinkNode;
 import org.opennms.web.enlinkd.EnLinkdElementFactoryInterface;
@@ -43,17 +44,18 @@ import org.opennms.web.enlinkd.LldpElementNode;
 import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
+import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.api.EnhanceLinkdRestApi;
-import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
-import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.EnlinkdDTO;
-import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
-import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
-import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
-import org.opennms.web.rest.v2.models.LldpLinkNodeDTO;
-import org.opennms.web.rest.v2.models.OspfElementNodeDTO;
-import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
+import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
+import org.opennms.web.rest.model.v2.BridgeLinkRemoteNodeDTO;
+import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.EnlinkdDTO;
+import org.opennms.web.rest.model.v2.IsisElementNodeDTO;
+import org.opennms.web.rest.model.v2.IsisLinkNodeDTO;
+import org.opennms.web.rest.model.v2.LldpElementNodeDTO;
+import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
+import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
+import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,10 +150,18 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
         return bridgeLinkNode == null ? null : new BridgeLinkNodeDTO()
                 .withBridgeLocalPort(bridgeLinkNode.getBridgeLocalPort())
                 .withBridgeLocalPortUrl(bridgeLinkNode.getBridgeLocalPortUrl())
-                .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes())
+                .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes().stream().map(n -> mapBridgeLinkRemoteNodeToDTO(n)).collect(Collectors.toList()))
                 .withBridgeInfo(bridgeLinkNode.getBridgeInfo())
                 .withBridgeLinkCreateTime(bridgeLinkNode.getBridgeLinkCreateTime())
                 .withBridgeLinkLastPollTime(bridgeLinkNode.getBridgeLinkLastPollTime());
+    }
+
+    private BridgeLinkRemoteNodeDTO mapBridgeLinkRemoteNodeToDTO(BridgeLinkRemoteNode bridgeLinkRemoteNode) {
+        return bridgeLinkRemoteNode == null ? null : new BridgeLinkRemoteNodeDTO()
+                .withBridgeRemote(bridgeLinkRemoteNode.getBridgeRemote())
+                .withBridgeRemotePort(bridgeLinkRemoteNode.getBridgeRemotePort())
+                .withBridgeRemoteUrl(bridgeLinkRemoteNode.getBridgeRemoteUrl())
+                .withBridgeRemotePortUrl(bridgeLinkRemoteNode.getBridgeRemotePortUrl());
     }
 
     private CdpElementNodeDTO mapCdpElementNodeToDTO(CdpElementNode cdpElementNode) {
