@@ -39,6 +39,7 @@
 	"
 %>
 <%@page import="org.opennms.web.group.WebGroup"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
@@ -463,7 +464,7 @@
     private String createSelectList(String name, String[] categories) {
         StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String category : categories){
-            buffer.append("<option>" + category + "</option>");
+            buffer.append("<option>" + WebSecurityUtils.sanitizeString(category) + "</option>");
         }
         buffer.append("</select>");
         

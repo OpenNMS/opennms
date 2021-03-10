@@ -272,7 +272,7 @@ categories:
             config:
               - name: "bootstrap-servers"
                 type:
-                  name: "set"
+                  name: "collection"
                   strategy: "concat"
                   items:
                     label: "Server"
@@ -310,7 +310,7 @@ categories:
             config:
               - name: "bootstrap-servers"
                 type:
-                  name: "set"
+                  name: "collection"
                   strategy: "concat"
                   items:
                     label: "Server"
@@ -376,7 +376,7 @@ categories:
             example: "8181"
           - name: "listen-address"
             type:
-              name: "set"
+              name: "collection"
               strategy: "concat"
               items:
                 label: "Listen Address"

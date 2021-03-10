@@ -107,7 +107,7 @@
           <th class="col-1">Node</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
-              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
+              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>

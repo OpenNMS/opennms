@@ -36,6 +36,10 @@
 <%@page import="java.util.*" %>
 <%@page import="org.opennms.netmgt.config.*" %>
 <%@page import="org.opennms.netmgt.config.users.*" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <%
 	UserManager userFactory;
   	Map<String,User> users = null;
@@ -97,7 +101,7 @@
         var newID = prompt("Enter new name for user.", userID);
 
         if (newID != null && newID != "") {
-          if (/.*[&<>"`']+.*/.test(newId)) {
+          if (/.*[&<>"`']+.*/.test(newID)) {
             alert("The user ID must not contain any HTML markup.");
             return;
           }
@@ -154,11 +158,12 @@
 	      String textService = userFactory.getTextPage(userid);
 	      String numericPin = userFactory.getNumericPin(userid);
 	      String textPin = userFactory.getTextPin(userid);
+	      String sanitizedUserId = WebSecurityUtils.sanitizeString(curUser.getUserId());
          %>
          <tr id="user-<%= userid %>">
           <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
-            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
+            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fa fa-trash-o fa-2x"></i></a>
           </td>
           <% } else { %>
           <td rowspan="2" class="text-center">
@@ -166,42 +171,42 @@
           </td>
           <% } %>
           <td rowspan="2" class="text-center">
-            <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><i class="fa fa-edit fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doModify" %>" href="javascript:modifyUser('<%=sanitizedUserId%>')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
           <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
+                <button id="<%= "users("+sanitizedUserId+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=sanitizedUserId%>')">Rename</button>
               <% } else { %>
-                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
+                <button id="<%= "users("+sanitizedUserId+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
           <td>
-            <a id="<%= "users("+curUser.getUserId()+").doDetails" %>" href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
+            <a id="<%= "users("+sanitizedUserId+").doDetails" %>" href="javascript:detailUser('<%=sanitizedUserId%>')"><%=sanitizedUserId%></a>
           </td>
           <td>
-           <div id="<%= "users("+curUser.getUserId()+").fullName" %>">
+           <div id="<%= "users("+sanitizedUserId+").fullName" %>">
 		    <%= (curUser.getFullName().orElse("")) %>
 	      </div>
           </td>
           <td>
-            <div id="<%= "users("+curUser.getUserId()+").email" %>">
+            <div id="<%= "users("+sanitizedUserId+").email" %>">
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
             </div>
           </td>
           <td>
-           <div id="<%= "users("+curUser.getUserId()+").pagerEmail" %>">
+           <div id="<%= "users("+sanitizedUserId+").pagerEmail" %>">
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
             </div>
           </td>
           <td>
-           <div id="<%= "users("+curUser.getUserId()+").xmppAddress" %>">
+           <div id="<%= "users("+sanitizedUserId+").xmppAddress" %>">
             <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
            </div>
           </td>
           </tr>
           <tr>
             <td colspan="5">
-             <div id="<%= "users("+curUser.getUserId()+").userComments" %>">
+             <div id="<%= "users("+sanitizedUserId+").userComments" %>">
              <%= (curUser.getUserComments().orElse("No Comments")) %>
 	        </div>
             </td>
