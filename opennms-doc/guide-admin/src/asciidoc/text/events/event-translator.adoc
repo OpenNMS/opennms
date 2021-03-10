@@ -1,0 +1,166 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[event-translator]]
+=== Event Translator
+
+The Event Translator (ET) can transform and enhance the data from OpenNMS events that other daemons generate. 
+This enterprise-grade feature enables better integration with external systems, based on data from sources internal and external to OpenNMS. 
+
+When an event is published on the event bus for which the ET has configuration, the ET clones the event and changes the event's attributes (fields and parameters) as defined by the administrator in the translator configuration. 
+These transformations can come from the result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event. 
+
+==== Event Translator Service
+
+As with most OpenNMS daemons, the EventTranslator has a companion configuration "factory" class that marshals its configuration from an XML-formated file. 
+The _translator-configuration.xml_ file contains elements and attributes that create/change the fields or parameters of one event and publish a new event with these changes. 
+
+===== Example 1: associate traps with a node other than the SNMP manager
+
+The following example associates an event with a different node. 
+The typical case for this would be an SNMP manager that proxies informational messages from non-SNMP entities to OpenNMS via an SNMP trap. 
+This allows the user to associate the traps with a node other than the SNMP manager (typically a passive node) making correlation much easier. 
+
+*translator-configuration.xml*
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<event-translator-configuration
+xmlns="http://xmlns.opennms.org/xsd/translator-configuration"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+  <translation>
+    <event-translation-spec uei="uei.opennms.org/mib2opennms/tspEventPCRRepetitionError">
+      <!-- Each event can have 1 or more mappings. -->
+      <mappings>
+        <mapping>
+          <!-- This mapping uses the SQL value type to query the DB and change the nodeid of the new event -->
+          <assignment type="field" name="nodeid">
+            <value type="sql" result="select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D'" >
+              <!-- These are sub value types that are used as parameters to the above sql as in JDBC speak -->
+              <value type="parameter" name=".1.3.6.1.4.1.6768.6.2.2.5.0" matches="^([A-z]+) ([0-9]+).*" result="${1}-${2}" />
+              <value type="constant" result="169.254.1.1" />
+            </value>
+          </assignment>
+        </mapping>
+      </mappings>
+    </event-translation-spec>
+  </translation>
+</event-translator-configuration>
+----
+
+In this example, the nodeid will be replaced with the resulting nodeid from the SQL query when an event with the uei "uei.opennms.org/mib2opennms/tspEventPCRRepetitionError" is received. 
+The ?s in the SQL query are populated with the values obtained from the nested value elements. 
+The first of the nested value elements creates a result string from a regular expression match of the event parameter named ".1.3.6.1.4.1.6768.6.2.2.5.0". 
+This example uses the string "DEMO 10 example server" to represent the value of the parameter. 
+The resulting match would produce "DEMO-10". 
+The second nested value is a constant and simply returns the value "169.254.1.1". 
+These are assembled into the SQL query.
+
+[source]
+----
+SELECT node.nodeid
+FROM node, ipInterface
+WHERE node.nodeLabel='DEMO-10'
+    AND ipinterface.ipaddr='169.254.1.1'
+    AND node.nodeId=ipinterface.nodeid
+    AND ipInterface.isManaged != 'D'
+    AND node.nodeType != 'D'
+----
+
+The query runs. 
+The value returned is then substituted for the existing nodeid into a new event cloned from the original event. 
+
+===== Example 2
+
+Here is an example for an Adtran TA4303. 
+Created a SQL table 'etlookup' to lookup varbinds. 
+Look up the variable name and the input value and an output value in that table. 
+The specific value that this node uses is different for each of the different problems that each interface can have (AIS, Yellow alarm, LOS, etc.). 
+All of the problems that have a trackable state are created as services (the T1s tend to flap). 
+Since each of the 80 T1 ports on this box do not have IP addresses we made a new node. 
+When we tried to add those to the existing node it kept disabling all of the services that we added. 
+To get the IP address, we made another SQL table 'ta4303' and query with the port and slot to get the description. 
+Store that text value in a new variable 'portdesc', then use that variable in the event and later the notification '%parm[portdesc]%'.
+
+*translator-configuration.xml*
+
+[source,xml]
+----
+<event-translation-spec uei="uei.opennms.org/vendor/adtran/traps/adta4303">
+<mappings>
+	<mapping>
+	        <assignment type="field" name="passiveNodeLabel">
+			<value type="constant" result="Switch - TA4303" />
+		</assignment>
+	        <assignment type="field" name="nodeid">
+			<value type="constant" result="307" />
+		</assignment>
+		<assignment type="parameter" name="passiveIpAddr">
+			<value type="sql" result="select ta4303.ip from ta4303 where ta4303.slot=? and ta4303.port=? " >
+				<value type="parameter" name=".1.3.6.1.4.1.664.5.13.2.3.1.1" matches="^([0-9]+)" result="${1}" />
+				<value type="parameter" name=".1.3.6.1.4.1.664.5.13.3.3.1.1" matches="^([0-9]+)" result="${1}" />
+			</value>
+		</assignment>
+		<assignment type="parameter" name="portdesc">
+			<value type="sql" result="select ta4303.description from ta4303 where ta4303.slot=? and ta4303.port=? " >
+				<value type="parameter" name=".1.3.6.1.4.1.664.5.13.2.3.1.1" matches="^([0-9]+)" result="${1}" />
+				<value type="parameter" name=".1.3.6.1.4.1.664.5.13.3.3.1.1" matches="^([0-9]+)" result="${1}" />
+			</value>
+		</assignment>
+		<assignment type="parameter" name="passiveServiceName">
+			<value type="sql" result="select etlookup.output from etlookup where etlookup.variable='ta4303service' and etlookup.input=? " >
+				<value type="parameter" name="specifc" matches="^([0-9]+)" result="${1}" />
+			</value>
+		</assignment>
+        	<assignment type="parameter" name="passiveStatus" >
+			<value type="sql" result="select etlookup.output from etlookup where etlookup.variable='ta4303status' and etlookup.input=? " >
+				<value type="parameter" name="specifc" matches="^([0-9]+)" result="${1}" />
+			</value>
+		</assignment>
+		<assignment type="field" name="uei">
+            		<value type="constant" result="uei.opennms.org/services/passiveServiceStatus" />
+		</assignment>
+	</mapping>
+</mappings>
+</event-translation-spec>
+----
+
+===== Example 3: include multiple category names in an event
+
+A SQL statement you want to read data with returns multiple rows. 
+The ET will give you only one result row for a new parameter. 
+A workaround is to create an aggregate function in psql that accumulates the output to one single row. 
+A use case was to include (probably multiple) categories' names into a nodeCategoryMembershipChanged event.
+
+*create SQL aggregate*
+
+[source,xml]
+----
+CREATE AGGREGATE array_accum (anyelement)
+(
+    sfunc = array_append,
+    stype = anyarray,
+    initcond = '{}'
+);
+----
+
+*translator-configuration.xml*
+
+[source, xml]
+----
+<event-translation-spec uei="uei.opennms.org/nodes/nodeCategoryMembershipChanged">
+	<mappings>
+		<mapping>
+			<assignment name="uei" type="field" >
+				<value type="constant" result="uei.opennms.org/test/nodeCategoryMembershipChanged" />
+			</assignment>
+			<assignment name="categories" type="parameter">
+				<value type="sql" result="select array_accum(categoryname) from categories,category_node,node where node.nodeid=?::integer and node.nodeid=category_node.nodeid and category_node.categoryid=categories.categoryid;" >
+					<value type="field" name="nodeid" matches=".*" result="${0}" />
+				</value>
+			</assignment>
+		</mapping>
+	</mappings>
+</event-translation-spec>
+----
