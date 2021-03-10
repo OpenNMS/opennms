@@ -108,7 +108,7 @@
 
           var element =  document.getElementById('users(' + _.escape(newID) + ').doModify');
           if (typeof(element) != 'undefined' && element != null) {
-            alert("An user with this ID already exist.");
+            alert("A user with this ID already exist.");
             return;
           }
 
