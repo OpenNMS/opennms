@@ -62,19 +62,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
 
+    @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
 
+    @Autowired
     private NodeDao m_nodeDao;
-
-    @Autowired
-    private void setEnLinkdElementFactory(EnLinkdElementFactoryInterface enLinkdElementFactory) {
-        this.enLinkdElementFactory = enLinkdElementFactory;
-    }
-
-    @Autowired
-    private void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
-    }
 
     @Override
     public EnlinkdDTO getEnlinkd(int nodeId) {
