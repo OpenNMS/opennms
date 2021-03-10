@@ -49,6 +49,7 @@ import org.opennms.web.enlinkd.OspfLinkNode;
 import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
 import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.EnlinkdDTO;
 import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
 import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
@@ -58,6 +59,11 @@ import org.opennms.web.rest.v2.models.OspfLinkNodeDTO;
 
 @Path("enlinkd")
 public interface EnhanceLinkdRestApi {
+
+    @GET
+    @Path("{nodeId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    EnlinkdDTO getEnlinkd(@PathParam("nodeId") int nodeId);
 
     @GET
     @Path("lldplinks/{nodeId}")

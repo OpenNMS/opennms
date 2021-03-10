@@ -47,6 +47,7 @@ import org.opennms.web.rest.v2.api.EnhanceLinkdRestApi;
 import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
 import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.EnlinkdDTO;
 import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
 import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
@@ -66,13 +67,29 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
     private NodeDao m_nodeDao;
 
     @Autowired
-    private void setEnLinkdElementFactory(EnLinkdElementFactoryInterface enLinkdElementFactory){
+    private void setEnLinkdElementFactory(EnLinkdElementFactoryInterface enLinkdElementFactory) {
         this.enLinkdElementFactory = enLinkdElementFactory;
     }
 
     @Autowired
-    private void setNodeDao(NodeDao nodeDao){
+    private void setNodeDao(NodeDao nodeDao) {
         this.m_nodeDao = nodeDao;
+    }
+
+    @Override
+    public EnlinkdDTO getEnlinkd(int nodeId) {
+        return new EnlinkdDTO()
+                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
+                .withLldpLinkNodeDTOs(getLldpLinks(nodeId))
+                .withBridgeLinkNodeDTOS(getBridgelinks(nodeId))
+                .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
+                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
+                .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
+                .withLldpElementNodeDTO(getLldpelem(nodeId))
+                .withCdpElementNodeDTO(getCdpelem(nodeId))
+                .withOspfElementNodeDTO(getOspfelem(nodeId))
+                .withIsisElementNodeDTO(getIsiselem(nodeId))
+                ;
     }
 
     @Override
@@ -130,13 +147,13 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
     }
 
     private void checkNodeInDB(int nodeId) {
-        if (m_nodeDao.get(nodeId) == null){
-            throw new NoSuchElementException();
+        if (m_nodeDao.get(nodeId) == null) {
+            throw new NoSuchElementException("Node Id does not exist in database: " + nodeId);
         }
     }
 
-    private BridgeLinkNodeDTO mapBridgeLinkNodeToDTO(BridgeLinkNode bridgeLinkNode){
-        return new BridgeLinkNodeDTO()
+    private BridgeLinkNodeDTO mapBridgeLinkNodeToDTO(BridgeLinkNode bridgeLinkNode) {
+        return bridgeLinkNode == null ? null : new BridgeLinkNodeDTO()
                 .withBridgeLocalPort(bridgeLinkNode.getBridgeLocalPort())
                 .withBridgeLocalPortUrl(bridgeLinkNode.getBridgeLocalPortUrl())
                 .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes())
@@ -145,8 +162,8 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withBridgeLinkLastPollTime(bridgeLinkNode.getBridgeLinkLastPollTime());
     }
 
-    private CdpElementNodeDTO mapCdpElementNodeToDTO(CdpElementNode cdpElementNode){
-        return new CdpElementNodeDTO()
+    private CdpElementNodeDTO mapCdpElementNodeToDTO(CdpElementNode cdpElementNode) {
+        return cdpElementNode == null ? null : new CdpElementNodeDTO()
                 .withCdpGlobalRun(cdpElementNode.getCdpGlobalRun())
                 .withCdpGlobalDeviceId(cdpElementNode.getCdpGlobalDeviceId())
                 .withCdpGlobalDeviceId(cdpElementNode.getCdpGlobalDeviceId())
@@ -154,8 +171,8 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withCdpLastPollTime(cdpElementNode.getCdpLastPollTime());
     }
 
-    private CdpLinkNodeDTO mapCdpLinkNodeToDTO(CdpLinkNode cdpLinkNode){
-        return new CdpLinkNodeDTO()
+    private CdpLinkNodeDTO mapCdpLinkNodeToDTO(CdpLinkNode cdpLinkNode) {
+        return cdpLinkNode == null ? null : new CdpLinkNodeDTO()
                 .withCdpLocalPort(cdpLinkNode.getCdpLocalPort())
                 .withCdpLocalPortUrl(cdpLinkNode.getCdpLocalPortUrl())
                 .withCdpCacheDevice(cdpLinkNode.getCdpCacheDevice())
@@ -167,16 +184,16 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withCdpLastPollTime(cdpLinkNode.getCdpLastPollTime());
     }
 
-    private IsisElementNodeDTO mapIsisElementNodeToDTO(IsisElementNode isisElementNode){
-        return new IsisElementNodeDTO()
+    private IsisElementNodeDTO mapIsisElementNodeToDTO(IsisElementNode isisElementNode) {
+        return isisElementNode == null ? null : new IsisElementNodeDTO()
                 .withIsisSysID(isisElementNode.getIsisSysID())
                 .withIsisSysAdminState(isisElementNode.getIsisSysAdminState())
                 .withIsisCreateTime(isisElementNode.getIsisCreateTime())
                 .withIsisLastPollTime(isisElementNode.getIsisLastPollTime());
     }
 
-    private IsisLinkNodeDTO mapIsisLinkNodeToDTO(IsisLinkNode isisLinkNode){
-        return new IsisLinkNodeDTO()
+    private IsisLinkNodeDTO mapIsisLinkNodeToDTO(IsisLinkNode isisLinkNode) {
+        return isisLinkNode == null ? null : new IsisLinkNodeDTO()
                 .withIsisCircIfIndex(isisLinkNode.getIsisCircIfIndex())
                 .withIsisCircAdminState(isisLinkNode.getIsisCircAdminState())
                 .withIsisISAdjNeighSysID(isisLinkNode.getIsisISAdjNeighSysID())
@@ -191,16 +208,16 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withIsisLinkLastPollTime(isisLinkNode.getIsisLinkLastPollTime());
     }
 
-    private LldpElementNodeDTO mapLldElementNodeToDTO(LldpElementNode lldpElementNode){
-        return new LldpElementNodeDTO()
+    private LldpElementNodeDTO mapLldElementNodeToDTO(LldpElementNode lldpElementNode) {
+        return lldpElementNode == null ? null : new LldpElementNodeDTO()
                 .withLldpChassisId(lldpElementNode.getLldpChassisId())
                 .withLldpSysName(lldpElementNode.getLldpSysName())
                 .withLldpCreateTime(lldpElementNode.getLldpCreateTime())
                 .withLldpLastPollTime(lldpElementNode.getLldpLastPollTime());
     }
 
-    private LldpLinkNodeDTO mapLldpLindNodeToDTO(LldpLinkNode lldpLinkNode){
-        return new LldpLinkNodeDTO()
+    private LldpLinkNodeDTO mapLldpLindNodeToDTO(LldpLinkNode lldpLinkNode) {
+        return lldpLinkNode == null ? null : new LldpLinkNodeDTO()
                 .withLdpRemPort(lldpLinkNode.getLldpRemPort())
                 .withLldpLocalPortUrl(lldpLinkNode.getLldpLocalPortUrl())
                 .withLldpRemChassisId(lldpLinkNode.getLldpRemChassisId())
@@ -212,8 +229,8 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withLldpLastPollTime(lldpLinkNode.getLldpLastPollTime());
     }
 
-    private OspfElementNodeDTO mapOspfElementNodeToDTO(OspfElementNode ospfElementNode){
-        return new OspfElementNodeDTO()
+    private OspfElementNodeDTO mapOspfElementNodeToDTO(OspfElementNode ospfElementNode) {
+        return ospfElementNode == null ? null : new OspfElementNodeDTO()
                 .withOspfRouterId(ospfElementNode.getOspfRouterId())
                 .withOspfVersionNumber(ospfElementNode.getOspfVersionNumber())
                 .withOspfAdminStat(ospfElementNode.getOspfAdminStat())
@@ -221,8 +238,8 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
                 .withOspfLastPollTime(ospfElementNode.getOspfLastPollTime());
     }
 
-    private OspfLinkNodeDTO mapOspfLinkNodeToDTO(OspfLinkNode ospfLinkNode){
-        return new OspfLinkNodeDTO()
+    private OspfLinkNodeDTO mapOspfLinkNodeToDTO(OspfLinkNode ospfLinkNode) {
+        return ospfLinkNode == null ? null : new OspfLinkNodeDTO()
                 .withOspfLocalPort(ospfLinkNode.getOspfLocalPort())
                 .withOspfLocalPortUrl(ospfLinkNode.getOspfLocalPortUrl())
                 .withOspfRemRouterId(ospfLinkNode.getOspfRemRouterId())

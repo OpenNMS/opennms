@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -61,12 +62,12 @@ import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.models.BridgeLinkNodeDTO;
 import org.opennms.web.rest.v2.models.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.models.CdpLinkNodeDTO;
+import org.opennms.web.rest.v2.models.EnlinkdDTO;
 import org.opennms.web.rest.v2.models.IsisElementNodeDTO;
 import org.opennms.web.rest.v2.models.IsisLinkNodeDTO;
 import org.opennms.web.rest.v2.models.LldpElementNodeDTO;
@@ -146,11 +147,42 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Test
     @JUnitTemporaryDatabase
     @Transactional
-    public void testGetLldpLinks() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+    public void testGetEnlinkd() throws Exception{
+        OnmsNode node1 = createNode1();
+        creatLldpLink(node1);
+        createbridgeBridgeLink(node1);
+        createCdpLink(node1);
+        createOspfLink(node1);
+        createIsIsLink(node1);
+        createLldpElement(node1);
+        createCdpElement(node1);
+        createOspfElement(node1);
+        createIsIsElement(node1);
 
+        String url = "/enlinkd/1";
+        String resultStr = sendRequest(GET, url, 200);
+        LOG.info(resultStr);
+        ObjectMapper mapper = new ObjectMapper();
+        EnlinkdDTO result = mapper.readValue(resultStr, EnlinkdDTO.class);
+        LOG.info(result.toString());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testGetLldpLinks() throws Exception {
+        OnmsNode node1 = createNode1();
+        creatLldpLink(node1);
+
+        String url = "/enlinkd/lldplinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        LOG.info(resultStr);
+        ObjectMapper mapper = new ObjectMapper();
+        List<LldpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, LldpLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
+
+    private void creatLldpLink(OnmsNode node){
         LldpLink link = new LldpLink();
         link.setId(11);
         link.setNode(node);
@@ -170,24 +202,24 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         lldpLinkDao.save(link);
         lldpLinkDao.flush();
-
-        String url = "/enlinkd/lldplinks/1";
-        String resultStr = sendRequest(GET, url, 200);
-        LOG.info(resultStr);
-        ObjectMapper mapper = new ObjectMapper();
-        List<LldpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, LldpLinkNodeDTO.class));
-        Assert.assertEquals(1, result.size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetBridgelinks() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createbridgeBridgeLink(node1);
 
+        String url = "/enlinkd/bridgelinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        LOG.info(resultStr);
+        ObjectMapper mapper = new ObjectMapper();
+        List<BridgeLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
 
+    private void createbridgeBridgeLink(OnmsNode node){
         BridgeBridgeLink bridgeBridgeLink = new BridgeBridgeLink();
         bridgeBridgeLink.setId(2);
         bridgeBridgeLink.setNode(node);
@@ -199,23 +231,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         bridgeBridgeLinkDao.save(bridgeBridgeLink);
         bridgeBridgeLinkDao.flush();
-
-        String url = "/enlinkd/bridgelinks/1";
-        String resultStr = sendRequest(GET, url, 200);
-        LOG.info(resultStr);
-        ObjectMapper mapper = new ObjectMapper();
-        List<BridgeLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeLinkNodeDTO.class));
-        Assert.assertEquals(1, result.size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetCdpLinks() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createCdpLink(node1);
 
+        String url = "/enlinkd/cdplinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<CdpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, CdpLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
+
+    private void createCdpLink(OnmsNode node){
         CdpLink cdpLink = new CdpLink();
         cdpLink.setId(23);
         cdpLink.setNode(node);
@@ -233,22 +265,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         cdpLinkDao.save(cdpLink);
         cdpLinkDao.flush();
-
-        String url = "/enlinkd/cdplinks/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        List<CdpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, CdpLinkNodeDTO.class));
-        Assert.assertEquals(1, result.size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetOspfLinks() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createOspfLink(node1);
 
+        String url = "/enlinkd/ospflinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
+
+    private void createOspfLink(OnmsNode node) throws UnknownHostException {
         OspfLink ospfLink = new OspfLink();
         ospfLink.setId(123);
         ospfLink.setNode(node);
@@ -261,22 +294,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         ospfLinkDao.save(ospfLink);
         ospfLinkDao.flush();
-
-        String url = "/enlinkd/ospflinks/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
-        Assert.assertEquals(1, result.size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetIsisLinks() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createIsIsLink(node1);
 
+        String url = "/enlinkd/isislinks/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<IsisLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, IsisLinkNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
+
+    private void createIsIsLink(OnmsNode node){
         IsIsLink isIsLink = new IsIsLink();
         isIsLink.setId(123);
         isIsLink.setNode(node);
@@ -293,22 +327,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         isisLinkDao.save(isIsLink);
         isisLinkDao.flush();
-
-        String url = "/enlinkd/isislinks/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        List<IsisLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, IsisLinkNodeDTO.class));
-        Assert.assertEquals(1, result.size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetLldpelem() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createLldpElement(node1);
 
+        String url = "/enlinkd/lldpelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
+        LOG.info(result.toString());
+    }
+
+    private void createLldpElement(OnmsNode node){
         LldpElement lldpElement = new LldpElement();
         lldpElement.setId(1);
         lldpElement.setNode(node);
@@ -320,22 +355,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         lldpElementDao.save(lldpElement);
         lldpElementDao.flush();
-
-        String url = "/enlinkd/lldpelems/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
-        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetCdpelem() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createCdpElement(node1);
 
+        String url = "/enlinkd/cdpelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        CdpElementNodeDTO result = mapper.readValue(resultStr, CdpElementNodeDTO.class);
+        LOG.info(result.toString());
+    }
+
+    private void createCdpElement(OnmsNode node){
         CdpElement cdpElement = new CdpElement();
         cdpElement.setId(1);
         cdpElement.setNode(node);
@@ -347,22 +383,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         cdpElementDao.save(cdpElement);
         cdpElementDao.flush();
-
-        String url = "/enlinkd/cdpelems/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        CdpElementNodeDTO result = mapper.readValue(resultStr, CdpElementNodeDTO.class);
-        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetOspfelem() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createOspfElement(node1);
 
+        String url = "/enlinkd/ospfelems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
+        LOG.info(result.toString());
+    }
+
+    private void createOspfElement(OnmsNode node) throws UnknownHostException {
         OspfElement ospfElement = new OspfElement();
         ospfElement.setId(1);
         ospfElement.setNode(node);
@@ -378,22 +415,23 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         ospfElementDao.save(ospfElement);
         ospfElementDao.flush();
-
-        String url = "/enlinkd/ospfelems/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
-        LOG.info(result.toString());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testGetIsiselem() throws Exception {
-        OnmsNode node = new OnmsNode();
-        node.setId(22);
-        node.setNodeId("1");
+        OnmsNode node1 = createNode1();
+        createIsIsElement(node1);
 
+        String url = "/enlinkd/isiselems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        IsisElementNodeDTO result = mapper.readValue(resultStr, IsisElementNodeDTO.class);
+        LOG.info(result.toString());
+    }
+
+    private void createIsIsElement(OnmsNode node){
         IsIsElement isIsElement = new IsIsElement();
         isIsElement.setId(2);
         isIsElement.setNode(node);
@@ -404,11 +442,13 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
         isisElementDao.save(isIsElement);
         isisElementDao.flush();
+    }
 
-        String url = "/enlinkd/isiselems/1";
-        String resultStr = sendRequest(GET, url, 200);
-        ObjectMapper mapper = new ObjectMapper();
-        IsisElementNodeDTO result = mapper.readValue(resultStr, IsisElementNodeDTO.class);
-        LOG.info(result.toString());
+    private OnmsNode createNode1(){
+        OnmsNode node = new OnmsNode();
+        node.setId(22);
+        node.setNodeId("1");
+        node.setLabel("lable");
+        return node;
     }
 }
