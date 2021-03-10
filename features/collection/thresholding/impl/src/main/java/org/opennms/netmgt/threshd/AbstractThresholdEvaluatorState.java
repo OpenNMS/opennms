@@ -154,7 +154,11 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
                 threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType());
-
+        // Multiple threshold levels for trigger/rearm may end up with the same key.
+        // Fair to assume that threshold definitions with different threshold levels will have different uei.
+        if(threshold.getTriggeredUEI().isPresent()) {
+            key = String.format("%s-%s", key, threshold.getTriggeredUEI().get());
+        }
         stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
                 (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
         initializeState();
