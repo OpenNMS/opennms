@@ -16,34 +16,34 @@
       See the License for the specific language governing permissions and
       limitations under the License.
 -->
-<features name="standard-4.2.6" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+<features name="standard-4.2.10" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
-	<!-- ################ START OPENNMS CUSTOMIZATION ############ -->
-	<!-- <repository>mvn:org.ops4j.pax.web/pax-web-features/7.2.10/xml/features</repository> -->
-	<repository>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</repository>
-	<!-- ################ END OPENNMS CUSTOMIZATION ############ -->
+    <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
+    <!-- <repository>mvn:org.ops4j.pax.web/pax-web-features/7.2.19/xml/features</repository> -->
+    <repository>mvn:org.ops4j.pax.web/pax-web-features/${paxWebVersion}/xml/features</repository>
+    <!-- ################ END OPENNMS CUSTOMIZATION ############ -->
 
-    <feature version="4.2.6" description="OSGi Security for Karaf" name="framework-security">
+    <feature version="4.2.10" description="OSGi Security for Karaf" name="framework-security">
         <bundle start="false" start-level="1">mvn:org.apache.felix/org.apache.felix.framework.security/2.6.1</bundle>
     </feature>
 
-    <feature version="4.2.6" description="Services Security for Karaf" name="service-security">
+    <feature version="4.2.10" description="Services Security for Karaf" name="service-security">
         <feature>jaas-boot</feature>
         <feature>aries-proxy</feature>
-        <bundle start-level="10">mvn:org.apache.karaf.service/org.apache.karaf.service.guard/4.2.6</bundle>
+        <bundle start-level="10">mvn:org.apache.karaf.service/org.apache.karaf.service.guard/4.2.10</bundle>
     </feature>
 
-    <feature name="aries-proxy" description="Aries Proxy" version="4.2.6">
+    <feature name="aries-proxy" description="Aries Proxy" version="4.2.10">
         <!-- false to avoid restarts of proxy which cascades badly -->
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm/7.1</bundle>
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-util/7.1</bundle>
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-tree/7.1</bundle>
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-analysis/7.1</bundle>
-        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-commons/7.1</bundle>
-        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy/1.1.4</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm/8.0.1</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-util/8.0.1</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-tree/8.0.1</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-analysis/8.0.1</bundle>
+        <bundle dependency="false" start-level="20">mvn:org.ow2.asm/asm-commons/8.0.1</bundle>
+        <bundle start-level="20">mvn:org.apache.aries.proxy/org.apache.aries.proxy/1.1.8</bundle>
     </feature>
 
-    <feature name="aries-blueprint" description="Aries Blueprint" version="4.2.6">
+    <feature name="aries-blueprint" description="Aries Blueprint" version="4.2.10">
         <feature>aries-proxy</feature>
         <bundle dependency="true" start-level="20">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core.compatibility/1.0.0</bundle>
@@ -52,7 +52,7 @@
         <bundle start-level="20">mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.core/1.10.2</bundle>
         <conditional>
             <condition>bundle</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.blueprintstate/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.blueprintstate/4.2.10</bundle>
         </conditional>
         <capability>
             osgi.service;effective:=active;objectClass=org.apache.aries.blueprint.services.ParserService,
@@ -60,9 +60,9 @@
         </capability>
     </feature>
 
-    <feature name="feature" description="Features Support" version="4.2.6">
-        <bundle start-level="1">mvn:org.apache.karaf.features/org.apache.karaf.features.extension/4.2.6</bundle>
-        <bundle start-level="15">mvn:org.apache.karaf.features/org.apache.karaf.features.core/4.2.6</bundle>
+    <feature name="feature" description="Features Support" version="4.2.10">
+        <bundle start-level="1">mvn:org.apache.karaf.features/org.apache.karaf.features.extension/4.2.10</bundle>
+        <bundle start-level="15">mvn:org.apache.karaf.features/org.apache.karaf.features.core/4.2.10</bundle>
         <config name="org.apache.karaf.features.repos">
 ################################################################################
 #
@@ -153,19 +153,18 @@ install = admin
 uninstall = admin
 start = admin
 stop = admin
-update = admin
             </config>
-            <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.command/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.features/org.apache.karaf.features.command/4.2.10</bundle>
         </conditional>
     </feature>
 
-    <feature name="jaas-boot" hidden="true" version="4.2.6">
+    <feature name="jaas-boot" hidden="true" version="4.2.10">
         <library export="true" delegate="true" type="boot">
-            mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/4.2.6
+            mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.boot/4.2.10
         </library>
     </feature>
 
-    <feature name="shell" description="Karaf Shell" version="4.2.6">
+    <feature name="shell" description="Karaf Shell" version="4.2.10">
         <feature>jaas-boot</feature>
         <config name="org.apache.karaf.command.acl.shell">
 ################################################################################
@@ -255,14 +254,14 @@ shell=org.apache.karaf.shell.commands
 #
 # Via sshPort and sshHost you define the address you can login into Karaf.
 #
-sshPort = 8101
-sshHost = 0.0.0.0
+sshPort = ${env:ORG_APACHE_KARAF_SSH_SSHPORT:-8101}
+sshHost = ${env:ORG_APACHE_KARAF_SSH_SSHHOST:-0.0.0.0}
 
 #
 # The sshIdleTimeout defines the inactivity timeout to logout the SSH session.
 # The sshIdleTimeout is in milliseconds, and the default is set to 30 minutes.
 #
-sshIdleTimeout = 1800000
+sshIdleTimeout = ${env:ORG_APACHE_KARAF_SSH_SSHIDLETIMEOUT:-1800000}
 
 #
 # Define the number of the NIO workers for the sshd server. Default is 2.
@@ -277,29 +276,29 @@ sshIdleTimeout = 1800000
 #
 # sshRealm defines which JAAS domain to use for password authentication.
 #
-sshRealm = karaf
+sshRealm = ${env:ORG_APACHE_KARAF_SSH_SSHREALM:-karaf}
 
 #
 # sshRole defines the role required to access the console through ssh
 #
-sshRole = ssh
+sshRole = ${env:ORG_APACHE_KARAF_SSH_SSHROLE:-ssh}
 
 #
 # Defines if the SFTP system is enabled or not in the SSH server
 #
-sftpEnabled=true
+sftpEnabled = ${env:ORG_APACHE_KARAF_SSH_SFTPENABLED:-true}
 
 #
-# The location of the hostKey file defines where the private/public key of the server
+# The location of the hostKey file defines where the private key of the server
 # is located. If no file is at the defined location it will be ignored.
 #
 hostKey = ${karaf.etc}/host.key
 
 #
-# The format used for hostKey.
-# Possible values are simple (Karaf internal), or PEM (OpenSSH format)
+# The location of the hostKeyPub file defines where the public key of the server
+# is located. If no file is at the defined location it will be ignored.
 #
-hostKeyFormat = simple
+#hostKeyPub = ${karaf.etc}/host.key.pub
 
 #
 # Self defined key size in 1024, 2048, 3072, or 4096
@@ -338,25 +337,25 @@ hostKeyFormat = simple
 # This property define the default value when you use the Karaf shell console.
 # You can change the completion mode directly in the shell console, using shell:completion command.
 #
-completionMode = GLOBAL
+completionMode = ${env:ORG_APACHE_KARAF_SHELL_COMPLETIONMODE:-GLOBAL}
 
 #
 # Override allowed SSH cipher algorithms.
-# Default: aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+# Default: aes256-ctr,aes192-ctr,aes128-ctr
 #
-# ciphers = aes128-ctr,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc
+# ciphers = aes256-ctr,aes192-ctr,aes128-ctr
 
 #
 # Override allowed SSH HMAC algorithms.
-# Default: hmac-sha2-512,hmac-sha2-256,hmac-sha1
+# Default: hmac-sha2-512,hmac-sha2-256
 #
-# macs = hmac-sha2-512,hmac-sha2-256,hmac-sha1
+# macs = hmac-sha2-512,hmac-sha2-256
 
 #
 # Override allowed SSH key exchange algorithms.
-# Default: diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+# Default: ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 #
-# kexAlgorithms = diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+# kexAlgorithms = ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
 #
 # Override moduli-url.
@@ -366,58 +365,58 @@ completionMode = GLOBAL
 
         </config>
         <feature>jline</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/4.2.6</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.commands/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/4.2.10</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.commands/4.2.10</bundle>
     </feature>
 
-    <feature name="jline" version="3.11.0" hidden="true">
+    <feature name="jline" version="3.16.0" hidden="true">
         <bundle dependency="true" start-level="30">mvn:org.fusesource.jansi/jansi/1.18</bundle>
-        <bundle start-level="30">mvn:org.jline/jline-terminal/3.11.0</bundle>
-        <bundle start-level="30">mvn:org.jline/jline-terminal-jansi/3.11.0</bundle>
-        <bundle start-level="30">mvn:org.jline/jline-reader/3.11.0</bundle>
-        <bundle start-level="30">mvn:org.jline/jline-builtins/3.11.0</bundle>
+        <bundle start-level="30">mvn:org.jline/jline-terminal/3.16.0</bundle>
+        <bundle start-level="30">mvn:org.jline/jline-terminal-jansi/3.16.0</bundle>
+        <bundle start-level="30">mvn:org.jline/jline-reader/3.16.0</bundle>
+        <bundle start-level="30">mvn:org.jline/jline-builtins/3.16.0</bundle>
     </feature>
 
-    <feature name="shell-compat" description="Karaf Shell Compatibility" version="4.2.6">
+    <feature name="shell-compat" description="Karaf Shell Compatibility" version="4.2.10">
         <feature>aries-blueprint</feature>
         <feature>shell</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.2.6</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.table/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/4.2.10</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.table/4.2.10</bundle>
     </feature>
 
-    <feature name="deployer" description="Karaf Deployer" version="4.2.6">
-        <bundle start-level="26">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.features/4.2.6</bundle>
+    <feature name="deployer" description="Karaf Deployer" version="4.2.10">
+        <bundle start-level="26">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.features/4.2.10</bundle>
         <conditional>
             <condition>wrap</condition>
-            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.wrap/4.2.6</bundle>
+            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.wrap/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>req:osgi.extender;filter:="(&amp;(osgi.extender=osgi.blueprint)(version>=1.0))"</condition>
-            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.blueprint/4.2.6</bundle>
+            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.blueprint/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>kar</condition>
-            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.kar/4.2.6</bundle>
+            <bundle start-level="24">mvn:org.apache.karaf.deployer/org.apache.karaf.deployer.kar/4.2.10</bundle>
         </conditional>
     </feature>
 
-    <feature name="wrapper" description="Provide OS integration" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.wrapper/org.apache.karaf.wrapper.core/4.2.6</bundle>
+    <feature name="wrapper" description="Provide OS integration" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.wrapper/org.apache.karaf.wrapper.core/4.2.10</bundle>
     </feature>
-    <feature name="service-wrapper" description="Provide OS integration (alias to wrapper feature)" version="4.2.6">
+    <feature name="service-wrapper" description="Provide OS integration (alias to wrapper feature)" version="4.2.10">
         <feature>wrapper</feature>
     </feature>
 
-    <feature name="obr" description="Provide OSGi Bundle Repository (OBR) support" version="4.2.6">
+    <feature name="obr" description="Provide OSGi Bundle Repository (OBR) support" version="4.2.10">
         <bundle start-level="30">mvn:org.apache.felix/org.osgi.service.obr/1.0.2</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.bundlerepository/2.0.10</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.obr/org.apache.karaf.obr.core/4.2.6</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.6.1/jar/uber</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.obr/org.apache.karaf.obr.core/4.2.10</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-obr/2.6.2/jar/uber</bundle>
     </feature>
 
-    <feature name="bundle" description="Provide Bundle support" version="4.2.6">
+    <feature name="bundle" description="Provide Bundle support" version="4.2.10">
         <feature>jaas-boot</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.core/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.bundle/org.apache.karaf.bundle.core/4.2.10</bundle>
         <conditional>
             <condition>management</condition>
             <config name="jmx.acl.org.apache.karaf.bundle">
@@ -512,8 +511,8 @@ watch = admin
         </conditional>
     </feature>
 
-    <feature name="config" description="Provide OSGi ConfigAdmin support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.config/org.apache.karaf.config.core/4.2.6</bundle>
+    <feature name="config" description="Provide OSGi ConfigAdmin support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.config/org.apache.karaf.config.core/4.2.10</bundle>
         <conditional>
             <condition>management</condition>
             <config name="jmx.acl.org.apache.karaf.config">
@@ -622,18 +621,18 @@ update = manager
         </conditional>
     </feature>
 
-    <feature name="diagnostic" description="Provide Diagnostic support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.core/4.2.6</bundle>
+    <feature name="diagnostic" description="Provide Diagnostic support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.core/4.2.10</bundle>
         <library export="true" type="boot">
-            mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.boot/4.2.6
+            mvn:org.apache.karaf.diagnostic/org.apache.karaf.diagnostic.boot/4.2.10
         </library>
     </feature>
 
-    <feature name="instance" description="Provide Instance support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.instance/org.apache.karaf.instance.core/4.2.6</bundle>
+    <feature name="instance" description="Provide Instance support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.instance/org.apache.karaf.instance.core/4.2.10</bundle>
     </feature>
 
-    <feature name="jaas" description="Provide JAAS support" version="4.2.6">
+    <feature name="jaas" description="Provide JAAS support" version="4.2.10">
         <config name="org.apache.karaf.jaas">
 ################################################################################
 #
@@ -657,7 +656,7 @@ update = manager
 #
 # Boolean enabling / disabling encrypted passwords
 #
-encryption.enabled = false
+encryption.enabled = ${env:ORG_APACHE_KARAF_JAAS_ENCRYPTION_ENABLED:-false}
 
 #
 # Encryption Service name
@@ -665,7 +664,7 @@ encryption.enabled = false
 #   a more powerful one named 'jasypt' is available
 #       when installing the encryption feature
 #
-encryption.name =
+encryption.name = ${env:ORG_APACHE_KARAF_JAAS_ENCRYPTION_NAME:-basic}
 
 #
 # Encryption prefix
@@ -687,7 +686,7 @@ encryption.suffix = {CRYPT}
 #   SHA-384
 #   SHA-512
 #
-encryption.algorithm = MD5
+encryption.algorithm = ${env:ORG_APACHE_KARAF_JAAS_ENCRYPTION_ALGORITHM:-MD5}
 
 #
 # Encoding of the encrypted password.
@@ -695,14 +694,14 @@ encryption.algorithm = MD5
 #   hexadecimal
 #   base64
 #
-encryption.encoding = hexadecimal
+encryption.encoding = ${env:ORG_APACHE_KARAF_JAAS_ENCRYPTION_ENCODING:-hexadecimal}
         </config>
         <feature>jaas-boot</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/4.2.6</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/4.2.10</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/4.2.10</bundle>
         <conditional>
             <condition>aries-blueprint</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.config/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.config/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>shell</condition>
@@ -731,11 +730,11 @@ encryption.encoding = hexadecimal
 # Jaas commands commands have no effect until update is called.
 update = admin
             </config>
-            <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.command/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.command/4.2.10</bundle>
         </conditional>
     </feature>
 
-    <feature name="log" description="Provide Log support" version="4.2.6">
+    <feature name="log" description="Provide Log support" version="4.2.10">
         <config name="org.apache.karaf.log">
 ################################################################################
 #
@@ -780,19 +779,19 @@ color.debug = "cyan"
 color.trace = "cyan"
 pattern = "\u001b[90m%d{HH:mm:ss.SSS}\u001b[0m %h{%p}{FATAL=${color.fatal}, ERROR=${color.error}, WARN=${color.warn}, INFO=${color.info}, DEBUG=${color.debug}, TRACE=${color.trace}} \u001b[90m[%t]\u001b[0m %m%n"
         </config>
-        <bundle start-level="30">mvn:org.apache.karaf.log/org.apache.karaf.log.core/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.log/org.apache.karaf.log.core/4.2.10</bundle>
     </feature>
 
-    <feature name="package" version="4.2.6" description="Package commands and mbeans">
-        <bundle start-level="30">mvn:org.apache.karaf.package/org.apache.karaf.package.core/4.2.6</bundle>
+    <feature name="package" version="4.2.10" description="Package commands and mbeans">
+        <bundle start-level="30">mvn:org.apache.karaf.package/org.apache.karaf.package.core/4.2.10</bundle>
     </feature>
 
-    <feature name="service" description="Provide Service support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.service/org.apache.karaf.service.core/4.2.6</bundle>
+    <feature name="service" description="Provide Service support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.service/org.apache.karaf.service.core/4.2.10</bundle>
     </feature>
 
-    <feature name="system" description="Provide System support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.system/org.apache.karaf.system.core/4.2.6</bundle>
+    <feature name="system" description="Provide System support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.system/org.apache.karaf.system.core/4.2.10</bundle>
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.system">
@@ -828,7 +827,7 @@ start-level = admin                           # admin can set any start level, i
     </feature>
 
     <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
-    <feature name="http" version="4.2.6" description="Implementation of the OSGI HTTP Service">
+    <feature name="http" version="4.2.10" description="Implementation of the OSGI HTTP Service">
         <!-- <feature dependency="true">pax-http-service</feature> -->
         <feature dependency="true">opennms-bridge-http-service</feature>
         <requirement>http-service</requirement>
@@ -839,7 +838,7 @@ start-level = admin                           # admin can set any start level, i
         <capability>http-service;provider:=felix-httplite</capability>
     </feature>
 
-    <feature name="felix-http" version="4.0.8" description="Felix HTTP Service">
+    <feature name="felix-http" version="4.0.20" description="Felix HTTP Service">
         <config name="org.apache.felix.http">
 ################################################################################
 #
@@ -860,44 +859,45 @@ start-level = admin                           # admin can set any start level, i
 #
 ################################################################################
 
-org.osgi.service.http.port=8181
+org.osgi.service.http.port=${env:ORG_APACHE_FELIX_HTTP_ORG_OSGI_SERVICE_HTTP_PORT:-8181}
         </config>
         <bundle start-level="30" dependency="true">mvn:org.apache.felix/org.apache.felix.http.servlet-api/1.1.2</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/4.0.8</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/4.0.20</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.whiteboard/4.0.0</bundle>
         <capability>http-service;provider:=felix-http</capability>
         <conditional>
             <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.10</bundle>
         </conditional>
     </feature>
 
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <!--<feature>pax-http</feature>-->
-        <!--<bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.2.6</bundle>-->
+        <!--<bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.2.10</bundle>-->
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
         <!--<bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>-->
         <capability>http-service;provider:=pax-http</capability>
         <conditional>
             <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.10</bundle>
         </conditional>
     </feature>
 
-    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="4.2.6">
+    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="4.2.10">
         <feature>http</feature>
         <!--<feature>pax-http-whiteboard</feature>-->
         <feature>opennms-http-whiteboard</feature>
     </feature>
 
-    <feature name="war" description="Turn Karaf as a full WebContainer" version="4.2.6">
+    <feature name="war" description="Turn Karaf as a full WebContainer" version="4.2.10">
         <feature>http</feature>
         <!--<feature>pax-war</feature>-->
         <feature>opennms-war</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.web/org.apache.karaf.web.core/4.2.10</bundle>
     </feature>
+
 
     <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
         <feature>opennms-bridge-http-service</feature>
@@ -916,87 +916,51 @@ org.osgi.service.http.port=8181
         <feature>opennms-http-whiteboard</feature>
         <bundle start-level="30" dependency="true">mvn:javax.el/javax.el-api/3.0.0</bundle>
         <!--<bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-descriptor/7.2.8</bundle>-->
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/7.2.8</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/7.2.8</bundle>
-        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/7.2.8</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-war/7.2.19</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/7.2.19</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-deployer/7.2.19</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.url/pax-url-war/2.6.1/jar/uber</bundle>
     </feature>
 
-    <feature name="jetty" version="9.4.29.v20200521">
+    <feature name="jetty" version="9.4.31.v20200723">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.mail/mail/1.4.7</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/9.4.29.v20200521</bundle>
-       	<bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-security/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-server/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlet/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlets/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util-ajax/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-webapp/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaas/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-xml/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-servlet/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/9.4.29.v20200521</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/9.4.29.v20200521</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2.4</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/9.4.31.v20200723</bundle>
+       	<bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-security/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-server/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlet/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlets/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util-ajax/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-webapp/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaas/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-xml/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-proxy/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-servlet/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/9.4.31.v20200723</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/9.4.31.v20200723</bundle>
         <bundle start-level="30">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
     </feature>
 
     <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
-
-    <feature name="jetty" version="9.4.18.v20190429">
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.mail/mail/1.4.7</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec/1.1</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaspi/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-plus/9.4.18.v20190429</bundle>
-       	<bundle start-level="30">mvn:org.eclipse.jetty/jetty-jndi/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-rewrite/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-security/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-server/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlet/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-servlets/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-util-ajax/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-webapp/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jaas/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-xml/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-client/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-deploy/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty/jetty-jmx/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-server/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-client/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-common/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-servlet/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/9.4.18.v20190429</bundle>
-        <bundle start-level="30">mvn:javax.websocket/javax.websocket-api/1.1</bundle>
-    </feature>
 
     <feature name="jetty" version="8.1.14.v20131031">
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0</bundle>
@@ -1008,8 +972,8 @@ org.osgi.service.http.port=8181
         <bundle start-level="30">mvn:org.eclipse.jetty.aggregate/jetty-all-server/8.1.14.v20131031</bundle>
     </feature>
 
-    <feature name="kar" description="Provide KAR (KARaf archive) support" version="4.2.6">
-        <bundle start-level="30">mvn:org.apache.karaf.kar/org.apache.karaf.kar.core/4.2.6</bundle>
+    <feature name="kar" description="Provide KAR (KARaf archive) support" version="4.2.10">
+        <bundle start-level="30">mvn:org.apache.karaf.kar/org.apache.karaf.kar.core/4.2.10</bundle>
         <conditional>
             <condition>shell</condition>
             <config name="org.apache.karaf.command.acl.kar">
@@ -1044,7 +1008,7 @@ uninstall = admin
         </conditional>
     </feature>
 
-    <feature name="webconsole" description="Base support of the Karaf WebConsole" version="4.2.6">
+    <feature name="webconsole" description="Base support of the Karaf WebConsole" version="4.2.10">
         <feature>jaas-boot</feature>
         <config name="org.apache.karaf.webconsole">
 ################################################################################
@@ -1066,35 +1030,43 @@ uninstall = admin
 #
 ################################################################################
 
-realm=karaf
+# The JAAS realm name to use for authentication
+realm=${env:ORG_APACHE_KARAF_WEBCONSOLE_REALM:-karaf}
+
+# The role required to access the WebConsole
+role=${env:ORG_APACHE_KARAF_WEBCONSOLE_ROLE:-admin}
         </config>
         <feature>http</feature>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.2.2</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/4.2.10</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.memoryusage/1.0.10</bundle>
         <conditional>
             <condition>instance</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.instance/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.instance/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>feature</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/4.2.10</bundle>
         </conditional>
     </feature>
 
-    <feature name="ssh" description="Provide a SSHd server on Karaf" version="4.2.6">
+    <feature name="ssh" description="Provide a SSHd server on Karaf" version="4.2.10">
         <feature>shell</feature>
         <feature>jaas</feature>
-        <bundle start-level="30">mvn:org.apache.sshd/sshd-core/1.7.0</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-osgi/2.5.1</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-scp/2.5.1</bundle>
+        <bundle start-level="30">mvn:org.apache.sshd/sshd-sftp/2.5.1</bundle>
         <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.not-yet-commons-ssl/0.3.11_1</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcprov-jdk15on/1.66</bundle>
+        <bundle start-level="30">mvn:org.bouncycastle/bcpkix-jdk15on/1.66</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/4.2.10</bundle>
     </feature>
 
-    <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="4.2.6">
+    <feature name="management" description="Provide a JMX MBeanServer and a set of MBeans in Karaf" version="4.2.10">
         <config name="jmx.acl">
 ################################################################################
 #
@@ -1308,47 +1280,72 @@ updateForLocation(java.lang.String,java.lang.String,javax.management.openmbean.T
 #
 # Port number for RMI registry connection
 #
-rmiRegistryPort = 1099
+rmiRegistryPort = ${env:ORG_APACHE_KARAF_MANAGEMENT_RMIREGISTRYPORT:-1099}
 
 #
 # Host for RMI registry
 #
-rmiRegistryHost = 127.0.0.1
+rmiRegistryHost = ${env:ORG_APACHE_KARAF_MANAGEMENT_RMIREGISTRYHOST:-127.0.0.1}
 
 #
-# Port number for RMI server connection
+# Port number for RMI connector server connection
 #
-rmiServerPort = 44444
+rmiServerPort = ${env:ORG_APACHE_KARAF_MANAGEMENT_RMISERVERPORT:-44444}
 
 #
-# Host for RMI server
+# Host for RMI connector server
 #
-rmiServerHost = 127.0.0.1
+rmiServerHost = ${env:ORG_APACHE_KARAF_MANAGEMENT_RMISERVERHOST:-127.0.0.1}
 
 #
 # Name of the JAAS realm used for authentication
 #
-jmxRealm = karaf
+jmxRealm = ${env:ORG_APACHE_KARAF_MANAGEMENT_JMXREALM:-karaf}
 
 #
-# The service URL for the JMXConnectorServer
+# The service URL for the JMX RMI connector
 #
 serviceUrl = service:jmx:rmi://${rmiServerHost}:${rmiServerPort}/jndi/rmi://${rmiRegistryHost}:${rmiRegistryPort}/karaf-${karaf.name}
 
 #
+# JMXMP connector enabled
+#
+jmxmpEnabled = ${env:ORG_APACHE_KARAF_MANAGEMENT_JMXMPENABLED:-false}
+
+#
+# JMXMP connector host name
+#
+jmxmpHost = ${env:ORG_APACHE_KARAF_MANAGEMENT_JMXMPHOST:-127.0.0.1}
+
+#
+# JMXMP connector port number
+#
+jmxmpPort = ${env:ORG_APACHE_KARAF_MANAGEMENT_JMXMPPORT:-9999}
+
+#
+# JMXMP connector service URL
+#
+jmxmpServiceUrl = service:jmx:jmxmp://${jmxmpHost}:${jmxmpPort}
+
+#
 # Whether any threads started for the JMXConnectorServer should be started as daemon threads
 #
-daemon = true
+daemon = ${env:ORG_APACHE_KARAF_MANAGEMENT_DAEMON:-true}
 
 #
 # Whether the JMXConnectorServer should be started in a separate thread
 #
-threaded = true
+threaded = ${env:ORG_APACHE_KARAF_MANAGEMENT_THREADED:-true}
 
 #
-# The ObjectName used to register the JMXConnectorServer
+# The ObjectName used to register the JMX RMI connector
 #
 objectName = connector:name=rmi
+
+#
+# The ObjectName used to register the JMXMP connector
+#
+jmxmpObjectName = connector:name=jmxmp
 
 #
 # Timeout to lookup for the keystore in case of SSL authentication usage
@@ -1407,7 +1404,7 @@ objectName = connector:name=rmi
         </config>
         <feature>jaas</feature>
         <bundle dependency="true" start-level="20">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.management/org.apache.karaf.management.server/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.management/org.apache.karaf.management.server/4.2.10</bundle>
         <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.api/1.1.5</bundle>
         <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.core/1.1.8</bundle>
         <bundle start-level="30">mvn:org.apache.aries.jmx/org.apache.aries.jmx.whiteboard/1.2.0</bundle>
@@ -1418,7 +1415,7 @@ objectName = connector:name=rmi
         </conditional>
     </feature>
 
-    <feature name="scheduler" description="Provide a scheduler service in Karaf to fire events" version="4.2.6">
+    <feature name="scheduler" description="Provide a scheduler service in Karaf to fire events" version="4.2.10">
         <config name="org.apache.karaf.scheduler.quartz">
 ################################################################################
 #
@@ -1442,25 +1439,25 @@ objectName = connector:name=rmi
 #============================================================================
 # Configure Karaf Scheduler Properties
 #============================================================================
-org.quartz.scheduler.instanceName=Karaf
-org.quartz.scheduler.instanceId=AUTO
+org.quartz.scheduler.instanceName=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_SCHEDULER_INSTANCENAME:-Karaf}
+org.quartz.scheduler.instanceId=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_SCHEDULER_INSTANCEID:-AUTO}
 
 #============================================================================
 # Configure ThreadPool
 #============================================================================
-org.quartz.threadPool.class=org.quartz.simpl.SimpleThreadPool
-org.quartz.threadPool.threadCount=30
-org.quartz.threadPool.threadPriority=5
+org.quartz.threadPool.class=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_THREADPOOL_CLASS:-org.quartz.simpl.SimpleThreadPool}
+org.quartz.threadPool.threadCount=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_THREADPOOL_THREADCOUNT:-30}
+org.quartz.threadPool.threadPriority=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_THREADPOOL_THREADPRIORITY:-5}
 
 #============================================================================
 # Configure JobStore
 #============================================================================
-org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
+org.quartz.jobStore.class=${env:ORG_APACHE_KARAF_SCHEDULER_QUARTZ_ORG_QUARTZ_JOBSTORE_CLASS:-org.quartz.simpl.RAMJobStore}
         </config>
-        <bundle start-level="30">mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/4.2.6</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.scheduler/org.apache.karaf.scheduler.core/4.2.10</bundle>
     </feature>
 
-    <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="4.2.6">
+    <feature name="eventadmin" description="OSGi Event Admin service specification for event-based communication" version="4.2.10">
         <config name="org.apache.felix.eventadmin.impl.EventAdmin">
 ################################################################################
 #
@@ -1481,14 +1478,14 @@ org.quartz.jobStore.class=org.quartz.simpl.RAMJobStore
 #
 ################################################################################
 
-org.apache.felix.eventadmin.AddTimestamp=true
-org.apache.felix.eventadmin.AddSubject=true
+org.apache.felix.eventadmin.AddTimestamp=${env:ORG_APACHE_FELIX_EVENTADMIN_IMPL_EVENTADMIN_ORG_APACHE_FELIX_EVENTADMIN_ADDTIMESTAMP:-true}
+org.apache.felix.eventadmin.AddSubject=${env:ORG_APACHE_FELIX_EVENTADMIN_IMPL_EVENTADMIN_ORG_APACHE_FELIX_EVENTADMIN_ADDSUBJECT:-true}
         </config>
         <bundle start-level="5">mvn:org.apache.felix/org.apache.felix.metatype/1.2.2</bundle>
-        <bundle start-level="5">mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/4.2.6</bundle>
+        <bundle start-level="5">mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/4.2.10</bundle>
         <conditional>
             <condition>shell</condition>
-            <bundle>mvn:org.apache.karaf/org.apache.karaf.event/4.2.6</bundle>
+            <bundle>mvn:org.apache.karaf/org.apache.karaf.event/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>webconsole</condition>
@@ -1496,39 +1493,39 @@ org.apache.felix.eventadmin.AddSubject=true
         </conditional>
     </feature>
 
-    <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="4.2.6">
+    <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="4.2.10">
         <feature>jaas</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-codec/commons-codec/1.12</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-codec/commons-codec/1.14</bundle>
         <bundle dependency="true" start-level="30">mvn:commons-lang/commons-lang/2.6</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.9.2_1</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.jasypt/4.2.6</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.9.3_1</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.jasypt/4.2.10</bundle>
         <conditional>
             <condition>aries-blueprint</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.jasypt/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.jaas.blueprint/org.apache.karaf.jaas.blueprint.jasypt/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>spring</condition>
-            <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/1.9.2_1</bundle>
+            <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/1.9.3_1</bundle>
         </conditional>
     </feature>
 
-    <feature name="scr" description="Declarative Service support" version="4.2.6">
+    <feature name="scr" description="Declarative Service support" version="4.2.10">
         <bundle dependency="true" start-level="30">mvn:org.osgi/org.osgi.util.function/1.0.0</bundle>
         <bundle dependency="true" start-level="30">mvn:org.osgi/org.osgi.util.promise/1.0.0</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.2.2</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.scr/2.1.16</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.scr/2.1.24</bundle>
         <conditional>
             <condition>management</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.management/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.management/4.2.10</bundle>
         </conditional>
         <conditional>
             <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.inventory/1.0.4</bundle>
+            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.inventory/1.0.6</bundle>
             <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.ds/2.1.0</bundle>
         </conditional>
         <conditional>
             <condition>bundle</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.state/4.2.6</bundle>
+            <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.state/4.2.10</bundle>
         </conditional>
         <capability>
             osgi.service;effective:=active;objectClass=org.apache.felix.scr.ScrService,
@@ -1537,17 +1534,17 @@ org.apache.felix.eventadmin.AddSubject=true
     </feature>
 
     <feature name="blueprint-web" description="Provides an OSGI-aware Servlet ContextListener for bootstrapping
-        blueprint inside web-bundle containers" version="4.2.6">
+        blueprint inside web-bundle containers" version="4.2.10">
         <feature>war</feature>
         <feature>aries-blueprint</feature>
         <bundle>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint.webosgi/1.0.1</bundle>
     </feature>
 
-    <feature name="wrap" description="Wrap URL handler" version="2.6.1">
-        <bundle start-level="5">mvn:org.ops4j.pax.url/pax-url-wrap/2.6.1/jar/uber</bundle>
+    <feature name="wrap" description="Wrap URL handler" version="2.6.2">
+        <bundle start-level="10">mvn:org.ops4j.pax.url/pax-url-wrap/2.6.2/jar/uber</bundle>
     </feature>
 
-    <feature name="profile" description="Profiles support" version="4.2.6">
+    <feature name="profile" description="Profiles support" version="4.2.10">
         <config name="org.apache.karaf.profile">
 ################################################################################
 #
@@ -1570,12 +1567,12 @@ org.apache.felix.eventadmin.AddSubject=true
 
 profilesDirectory = ${karaf.home}/profiles
         </config>
-        <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/4.2.6</bundle>
-        <bundle>mvn:org.apache.karaf.tooling/org.apache.karaf.tools.utils/4.2.6</bundle>
-        <bundle>mvn:commons-io/commons-io/2.6</bundle>
+        <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/4.2.10</bundle>
+        <bundle>mvn:org.apache.karaf.tooling/org.apache.karaf.tools.utils/4.2.10</bundle>
+        <bundle>mvn:commons-io/commons-io/2.7</bundle>
     </feature>
 
-    <feature name="jolokia" description="Jolokia monitoring support" version="1.6.1">
+    <feature name="jolokia" description="Jolokia monitoring support" version="1.6.2">
         <feature>http</feature>
         <config name="org.jolokia.osgi">
 ################################################################################
@@ -1597,17 +1594,17 @@ profilesDirectory = ${karaf.home}/profiles
 #
 ################################################################################
 
-org.jolokia.user=karaf
-org.jolokia.realm=karaf
-org.jolokia.authMode=jaas
+org.jolokia.user=${env:ORG_JOLOKIA_OSGI_ORG_JOLOKIA_USER:-karaf}
+org.jolokia.realm=${env:ORG_JOLOKIA_OSGI_ORG_JOLOKIA_REALM:-karaf}
+org.jolokia.authMode=${env:ORG_JOLOKIA_OSGI_ORG_JOLOKIA_AUTHMODE:-jaas}
         </config>
-        <bundle>mvn:org.jolokia/jolokia-osgi/1.6.1</bundle>
+        <bundle>mvn:org.jolokia/jolokia-osgi/1.6.2</bundle>
     </feature>
 
-    <feature name="maven" description="Commands for Maven configuration of services from pax-url-aether" version="4.2.6">
+    <feature name="maven" description="Commands for Maven configuration of services from pax-url-aether" version="4.2.10">
         <feature>shell</feature>
-        <bundle start-level="30">mvn:org.apache.karaf.maven/org.apache.karaf.maven.core/4.2.6</bundle>
-        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.9</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.maven/org.apache.karaf.maven.core/4.2.10</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.11</bundle>
         <config name="org.apache.karaf.command.acl.maven">
 ################################################################################
 #
@@ -1645,9 +1642,9 @@ repository-remove = admin
         </config>
     </feature>
 
-    <feature name="audit-log" description="Security audit logging" version="4.2.6">
+    <feature name="audit-log" description="Security audit logging" version="4.2.10">
         <feature>eventadmin</feature>
-        <bundle start-level="20">mvn:org.apache.karaf.audit/org.apache.karaf.audit.core/4.2.6</bundle>
+        <bundle start-level="20">mvn:org.apache.karaf.audit/org.apache.karaf.audit.core/4.2.10</bundle>
         <config name="org.apache.karaf.audit">
 ################################################################################
 #
@@ -1715,12 +1712,12 @@ jul.layout.type = simple
         </config>
     </feature>
 
-    <feature name="documentation" description="Documentation of Karaf project in HTML" version="4.2.6">
+    <feature name="documentation" description="Documentation of Karaf project in HTML" version="4.2.10">
         <feature>war</feature>
-        <bundle>mvn:org.apache.karaf/manual/4.2.6</bundle>
+        <bundle>mvn:org.apache.karaf/manual/4.2.10</bundle>
     </feature>
 
-    <feature name="standard" description="Wrap feature describing all features part of a standard distribution" version="4.2.6">
+    <feature name="standard" description="Wrap feature describing all features part of a standard distribution" version="4.2.10">
         <feature>wrap</feature>
         <feature>aries-blueprint</feature>
         <feature>shell</feature>
@@ -1742,7 +1739,7 @@ jul.layout.type = simple
         <feature>system</feature>
     </feature>
 
-    <feature name="minimal" description="Wrap feature describing all features part of a minimal distribution" version="4.2.6">
+    <feature name="minimal" description="Wrap feature describing all features part of a minimal distribution" version="4.2.10">
         <feature>jaas</feature>
         <feature>shell</feature>
         <feature>feature</feature>
