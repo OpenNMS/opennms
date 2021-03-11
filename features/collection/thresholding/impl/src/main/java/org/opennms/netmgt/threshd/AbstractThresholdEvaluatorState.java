@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Map;
@@ -56,6 +57,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -98,14 +101,16 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     protected final ThresholdingSession thresholdingSession;
     
     static final String THRESHOLDING_KV_CONTEXT = "thresholding";
-    
-    private final int stateTTL;
+
+    private final int stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
+            (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
     
     private Long sequenceNumber;
 
     private boolean firstEvaluation = true;
     
     private String instance;
+
 
     private static final Map<Class<? extends AbstractThresholdEvaluatorState.AbstractState>,
             SerializingBlobStore<? extends AbstractThresholdEvaluatorState.AbstractState>> serdesMap
@@ -151,17 +156,28 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         this.thresholdingSession = thresholdingSession;
         kvStore = getKvStoreForType(stateType, thresholdingSession.getBlobStore());
-        key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
+        key = String.format("%d-%s-%s-%s-%s-%s-%d", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
-                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType());
-        // Multiple threshold levels for trigger/rearm may end up with the same key.
-        // Fair to assume that threshold definitions with different threshold levels will have different uei.
-        if(threshold.getTriggeredUEI().isPresent()) {
-            key = String.format("%s-%s", key, threshold.getTriggeredUEI().get());
-        }
-        stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
-                (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
+                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType(),
+                generateHashForThresholdState(threshold));
+
         initializeState();
+    }
+
+    // Multiple threshold levels for trigger/rearm may end up with the same key.
+    // Generate unique hashcode for threshold values.
+    private int generateHashForThresholdState(BaseThresholdDefConfigWrapper threshold) {
+        Hasher hasher = Hashing.murmur3_128().newHasher();
+        if (threshold.getTriggeredUEI().isPresent()) {
+            hasher.putString(threshold.getTriggeredUEI().get(), StandardCharsets.UTF_8);
+        }
+        if (threshold.getRearmedUEI().isPresent()) {
+            hasher.putString(threshold.getRearmedUEI().get(), StandardCharsets.UTF_8);
+        }
+        hasher.putDouble(threshold.getValue());
+        hasher.putDouble(threshold.getRearm());
+        hasher.putInt(threshold.getTrigger());
+        return hasher.hashCode();
     }
 
     /**
