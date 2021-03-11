@@ -73,7 +73,6 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
     @Override
     public EnlinkdDTO getEnlinkd(int nodeId) {
         return new EnlinkdDTO()
-                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
                 .withLldpLinkNodeDTOs(getLldpLinks(nodeId))
                 .withBridgeLinkNodeDTOS(getBridgelinks(nodeId))
                 .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
@@ -89,31 +88,31 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
     @Override
     public List<LldpLinkNodeDTO> getLldpLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        return enLinkdElementFactory.getLldpLinks(nodeId).stream().map(n -> mapLldpLindNodeToDTO(n)).collect(Collectors.toList());
+        return enLinkdElementFactory.getLldpLinks(nodeId).stream().map(this::mapLldpLindNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<BridgeLinkNodeDTO> getBridgelinks(int nodeId) {
         checkNodeInDB(nodeId);
-        return enLinkdElementFactory.getBridgeLinks(nodeId).stream().map(n -> mapBridgeLinkNodeToDTO(n)).collect(Collectors.toList());
+        return enLinkdElementFactory.getBridgeLinks(nodeId).stream().map(this::mapBridgeLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<CdpLinkNodeDTO> getCdpLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        return enLinkdElementFactory.getCdpLinks(nodeId).stream().map(n -> mapCdpLinkNodeToDTO(n)).collect(Collectors.toList());
+        return enLinkdElementFactory.getCdpLinks(nodeId).stream().map(this::mapCdpLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<OspfLinkNodeDTO> getOspfLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        return enLinkdElementFactory.getOspfLinks(nodeId).stream().map(n -> mapOspfLinkNodeToDTO(n)).collect(Collectors.toList());
+        return enLinkdElementFactory.getOspfLinks(nodeId).stream().map(this::mapOspfLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<IsisLinkNodeDTO> getIsisLinks(int nodeId) {
         checkNodeInDB(nodeId);
-        return enLinkdElementFactory.getIsisLinks(nodeId).stream().map(n -> mapIsisLinkNodeToDTO(n)).collect(Collectors.toList());
+        return enLinkdElementFactory.getIsisLinks(nodeId).stream().map(this::mapIsisLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -150,7 +149,7 @@ public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
         return bridgeLinkNode == null ? null : new BridgeLinkNodeDTO()
                 .withBridgeLocalPort(bridgeLinkNode.getBridgeLocalPort())
                 .withBridgeLocalPortUrl(bridgeLinkNode.getBridgeLocalPortUrl())
-                .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes().stream().map(n -> mapBridgeLinkRemoteNodeToDTO(n)).collect(Collectors.toList()))
+                .withBridgeLinkRemoteNodes(bridgeLinkNode.getBridgeLinkRemoteNodes().stream().map(this::mapBridgeLinkRemoteNodeToDTO).collect(Collectors.toList()))
                 .withBridgeInfo(bridgeLinkNode.getBridgeInfo())
                 .withBridgeLinkCreateTime(bridgeLinkNode.getBridgeLinkCreateTime())
                 .withBridgeLinkLastPollTime(bridgeLinkNode.getBridgeLinkLastPollTime());
