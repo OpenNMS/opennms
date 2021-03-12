@@ -45,7 +45,7 @@ import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
 import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
-import org.opennms.web.rest.v2.api.EnhanceLinkdRestApi;
+import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkRemoteNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class EnhanceLinkdRestService implements EnhanceLinkdRestApi {
+public class EnhanceLinkdRestService implements NodeLinkRestApi {
 
     @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;

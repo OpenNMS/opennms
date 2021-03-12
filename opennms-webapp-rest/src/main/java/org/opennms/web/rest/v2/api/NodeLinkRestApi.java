@@ -48,7 +48,7 @@ import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
 import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 
 @Path("enlinkd")
-public interface EnhanceLinkdRestApi {
+public interface NodeLinkRestApi {
 
     @GET
     @Path("{nodeId}")
