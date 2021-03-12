@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.Timeout;
+import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
@@ -50,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // Verifies that all exposed service DAOs can be loaded in a sentinel container
+@Category(SentinelTests.class)
 public class DaoIT {
 
     @Rule
