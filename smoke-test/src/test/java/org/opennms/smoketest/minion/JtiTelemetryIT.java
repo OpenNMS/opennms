@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ import java.util.List;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.telemetry.Packet;
@@ -76,6 +78,7 @@ import org.slf4j.LoggerFactory;
  * @author cgorantla
  */
 
+@Category(MinionTests.class)
 public class JtiTelemetryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(JtiTelemetryIT.class);
