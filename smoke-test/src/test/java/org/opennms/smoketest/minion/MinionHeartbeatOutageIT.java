@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.Timeout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
@@ -49,8 +50,9 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -62,6 +64,7 @@ import org.opennms.smoketest.utils.TestContainerUtils;
  * 
  * @author Seth
  */
+@Category(MinionTests.class)
 public class MinionHeartbeatOutageIT {
 
     @Rule

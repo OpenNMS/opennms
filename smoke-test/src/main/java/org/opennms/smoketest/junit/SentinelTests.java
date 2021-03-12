@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,24 +25,8 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.smoketest.minion;
 
-import org.junit.experimental.categories.Category;
-import org.opennms.smoketest.junit.MinionTests;
-import org.opennms.smoketest.stacks.IpcStrategy;
+package org.opennms.smoketest.junit;
 
-/**
- * This test starts up Minion with the Apache Kafka sink and makes sure
- * that heartbeat messages continue to be processed even if the Minion
- * and OpenNMS instances are restarted.
- * 
- * @author Seth
- */
-@Category(MinionTests.class)
-public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
-
-    @Override
-    public IpcStrategy getIpcStrategy() {
-        return IpcStrategy.KAFKA;
-    }
+public interface SentinelTests {
 }

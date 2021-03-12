@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,12 +47,14 @@ import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port;
 import org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop;
+import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.BlobStoreStrategy;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
@@ -67,6 +69,7 @@ import org.opennms.smoketest.utils.KarafShell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Category(SentinelTests.class)
 public class SentinelThresholdingIT {
     private static final Logger LOG = LoggerFactory.getLogger(SentinelThresholdingIT.class);
     private static final String NODE_IP = "192.168.1.1";
