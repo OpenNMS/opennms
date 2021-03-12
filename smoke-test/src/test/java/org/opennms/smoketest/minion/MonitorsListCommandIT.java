@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,8 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.SshClient;
@@ -50,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
+@Category(MinionTests.class)
 public class MonitorsListCommandIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandIT.class);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,7 +42,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.SshClient;
@@ -54,6 +56,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Verifies the output of "opennms:list-collectors" on both OpenNMS and Minion.
  */
+@Category(MinionTests.class)
 public class CollectorListIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectorListIT.class);

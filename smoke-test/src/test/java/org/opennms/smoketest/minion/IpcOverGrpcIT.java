@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,12 +36,15 @@ import static org.opennms.smoketest.minion.RpcOverKafkaIT.addRequisition;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Category(MinionTests.class)
 public class IpcOverGrpcIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(IpcOverGrpcIT.class);

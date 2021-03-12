@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,13 +30,16 @@ package org.opennms.smoketest.sentinel;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.BlobStoreStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.KarafShell;
 
+@Category(SentinelTests.class)
 public class KeyValueStoresIT {
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,11 +38,13 @@ import java.util.Date;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
@@ -66,6 +68,7 @@ import io.searchbox.core.SearchResult;
  * 
  * @author Seth
  */
+@Category(MinionTests.class)
 public class SyslogKafkaElasticsearchIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchIT.class);

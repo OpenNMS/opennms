@@ -10,6 +10,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>never</updatePolicy>
     <camelVersion>2.19.1</camelVersion>
+    <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.10.0</jackson2Version>
     <jersey.version>2.28</jersey.version>
@@ -49,6 +50,37 @@
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${failsafeVersion}</version>
+          <configuration>
+            <!-- Don't specify argLine here or it will override the argLine property value -->
+            <systemPropertyVariables/>
+            <!--
+              Configure failsafe to put reports in the surefire unit test directory so that
+              Bamboo and Sonar tally the test results properly.
+  
+              https://jira.atlassian.com/browse/BAM-15446
+            -->
+            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+            <forkCount>${test.fork.count}</forkCount>
+            <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
+            <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
+            <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
+            <reuseForks>false</reuseForks>
+            <!-- Configure heap and GC -->
+            <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -121,37 +153,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.22.2</version>
-        <configuration>
-          <!-- Don't specify argLine here or it will override the argLine property value -->
-          <systemPropertyVariables/>
-          <!--
-            Configure failsafe to put reports in the surefire unit test directory so that
-            Bamboo and Sonar tally the test results properly.
-
-            https://jira.atlassian.com/browse/BAM-15446
-          -->
-          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-          <forkCount>${test.fork.count}</forkCount>
-          <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
-          <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
-          <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
-          <reuseForks>false</reuseForks>
-          <!-- Configure heap and GC -->
-          <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -177,6 +178,50 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>smoke.core</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <excludedGroups>org.opennms.smoketest.junit.MinionTests,org.opennms.smoketest.junit.SentinelTests</excludedGroups>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>smoke.minion</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <groups>org.opennms.smoketest.junit.MinionTests</groups>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>smoke.sentinel</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <groups>org.opennms.smoketest.junit.SentinelTests</groups>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencyManagement>
     <dependencies>
       <dependency>
