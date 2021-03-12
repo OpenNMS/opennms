@@ -124,7 +124,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a double.
      */
-    public double getRearm() {
+    public Double getRearm() {
         return m_baseDef.getRearm();
     }
     
@@ -133,7 +133,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a int.
      */
-    public int getTrigger() {
+    public Integer getTrigger() {
         return m_baseDef.getTrigger();
     }
     
@@ -151,7 +151,7 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a double.
      */
-    public double getValue() {
+    public Double getValue() {
         return m_baseDef.getValue();
     }
     
