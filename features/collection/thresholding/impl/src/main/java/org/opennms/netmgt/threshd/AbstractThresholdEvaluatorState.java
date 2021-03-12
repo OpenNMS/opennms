@@ -156,17 +156,17 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         this.thresholdingSession = thresholdingSession;
         kvStore = getKvStoreForType(stateType, thresholdingSession.getBlobStore());
-        key = String.format("%d-%s-%s-%s-%s-%s-%d", thresholdingSession.getKey().getNodeId(),
+        key = String.format("%d-%s-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
                 threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType(),
-                generateHashForThresholdState(threshold));
+                generateHashForThresholdValues(threshold));
 
         initializeState();
     }
 
     // Multiple threshold levels for trigger/rearm may end up with the same key.
     // Generate unique hashcode for threshold values.
-    private int generateHashForThresholdState(BaseThresholdDefConfigWrapper threshold) {
+    private String generateHashForThresholdValues(BaseThresholdDefConfigWrapper threshold) {
         Hasher hasher = Hashing.murmur3_128().newHasher();
         if (threshold.getTriggeredUEI().isPresent()) {
             hasher.putString(threshold.getTriggeredUEI().get(), StandardCharsets.UTF_8);
@@ -174,10 +174,16 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         if (threshold.getRearmedUEI().isPresent()) {
             hasher.putString(threshold.getRearmedUEI().get(), StandardCharsets.UTF_8);
         }
-        Optional.ofNullable(threshold.getValue()).ifPresent(hasher::putDouble);
-        Optional.ofNullable(threshold.getRearm()).ifPresent(hasher::putDouble);
-        Optional.ofNullable(threshold.getTrigger()).ifPresent(hasher::putInt);
-        return hasher.hash().asInt();
+        if (threshold.getValue() != null) {
+            hasher.putDouble(threshold.getValue());
+        }
+        if (threshold.getRearm() != null) {
+            hasher.putDouble(threshold.getRearm());
+        }
+        if (threshold.getTrigger() != null) {
+            hasher.putInt(threshold.getTrigger());
+        }
+        return hasher.hash().toString();
     }
 
     /**
