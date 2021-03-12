@@ -76,6 +76,7 @@
   <div class="card-body">
     <form role="form" class="form" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
       <input type="hidden" name="operation" />
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
       <div class="form-group">
         <label for="groupName" class="">Group Name</label>
