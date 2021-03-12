@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class EnhanceLinkdRestService implements NodeLinkRestApi {
+public class NodeLinkRestService implements NodeLinkRestApi {
 
     @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
