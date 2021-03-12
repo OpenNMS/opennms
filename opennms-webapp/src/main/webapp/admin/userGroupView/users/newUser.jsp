@@ -82,6 +82,7 @@
   </div>
   <div class="card-body">
     <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <div class="form-group">
         <label for="userID" class="">User ID</label>
         <input id="userID" type="text" name="userID" class="form-control">
