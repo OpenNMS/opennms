@@ -52,7 +52,7 @@ docs-docker: deps-docs-docker
 	@echo "Build Antora docs with docker ..."
 	docker run --rm -v $(WORKING_DIRECTORY):/antora $(DOCKER_ANTORA_IMAGE) --stacktrace generate $(SITE_FILE)
 
-doc-clean:
+docs-clean:
 	@echo "Delete build and public artifacts ..."
 	@rm -rf build public
 
