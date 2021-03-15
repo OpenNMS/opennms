@@ -5,7 +5,7 @@
 The _collectd-configuration.xml_ file defines the nodes, services and parameters on which _collectd_ collects metrics. 
 It also specifies the list of available collectors. 
 
-The file is located in `$OPENNMS_HOME`.
+The file is located in `$\{OPENNMS_HOME}`.
 
 Edit the _collectd-configuration.xml_ file to:
 
@@ -19,7 +19,7 @@ In addtion to editing the _collectd-configuration.xml_, you need to <<collectors
 == Setting the Thread Pool
 
 A globally defined thread attribute limits the number of threads the data collection process uses in parallel. 
-Increase or decrease this value based on your network and the size of your server by changing the value in `$OPENNMS_HOME/etc/collectd-configuration.xml`:
+Increase or decrease this value based on your network and the size of your server by changing the value in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml`:
 
 [source, xml]
 ----

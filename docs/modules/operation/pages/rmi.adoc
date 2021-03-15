@@ -4,7 +4,7 @@
 By default, the RMI port in the {page-component-title} server is disabled, for security reasons.  
 To enable it so that you can access {page-component-title} through jconsole or remote-manage {page-component-title}, you will have to add some settings to the default {page-component-title} install.
 
-To enable the RMI port in {page-component-title}, add the following to the `$\{opennms_home}/etc/opennms.conf` file.  
+To enable the RMI port in {page-component-title}, add the following to the `$\{OPENNMS_HOME}/etc/opennms.conf` file.  
 If you do not have an `opennms.conf` file, you can create it.
 
 [source, bash, options="nowrap", opennms.conf]
@@ -30,7 +30,7 @@ To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user i
 To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`, and also the `ROLE_USER` role if it is required to provide access to the Web UI.
 (Also see <<user-management/security-roles.adoc#ga-role-user-management-roles, Assigning User Permissions>>).
 
-Make sure `$OPENNMS_HOME/etc/jmxremote.access` has the appropriate settings:
+Make sure `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate settings:
 
 [options="nowrap"]
 ----

@@ -9,7 +9,7 @@ To use this functionality you must enable the Kafka forwarder as described in <<
 
 NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
 
-YOu can set the following properties in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
+YOu can set the following properties in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
 [options="header, %autowidth"]
 |===

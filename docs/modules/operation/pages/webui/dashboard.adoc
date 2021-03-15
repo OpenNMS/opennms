@@ -144,7 +144,7 @@ image::dashboard/08_dashboard-user-roles.png[]
 ----
 
 ==== Step 3: Define Surveillance View
-Edit the `$OPENNMS_HOME/etc/surveilliance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
+Edit the `$\{OPENNMS_HOME}/etc/surveilliance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
 [source, xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>

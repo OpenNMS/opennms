@@ -129,7 +129,7 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
 <monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 ----
 
-To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in '$OPENNMS_HOME/etc/response-graph.properties'.
+To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in '$\{OPENNMS_HOME}/etc/response-graph.properties'.
 
 == DNSResolutionMonitor vs. DnsMonitor
 

@@ -48,7 +48,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-To monitor the session state _Established_ it is necessary to add a service to your poller configuration in '$OPENNMS_HOME/etc/poller-configuration.xml', for example:
+To monitor the session state _Established_ it is necessary to add a service to your poller configuration in '$\{OPENNMS_HOME}/etc/poller-configuration.xml', for example:
 
 [source, xml]
 ----

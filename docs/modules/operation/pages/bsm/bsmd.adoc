@@ -27,7 +27,7 @@ If the reload of the configuration is done an event of type `uei.opennms.org/int
 .Example reloading bsmd configuration from CLI
 [source,shell]
 ----
-$OPENNMS_HOME/bin/send-event.pl -p 'daemonName bsmd' uei.opennms.org/internal/reloadDaemonConfig
+$\{OPENNMS_HOME}/bin/send-event.pl -p 'daemonName bsmd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 .Example reloading bsmd configuration through ReST POST

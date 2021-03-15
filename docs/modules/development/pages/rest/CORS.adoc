@@ -20,7 +20,7 @@ For further details, see:
 
 Engalbe CORS support for the REST interface (or any other part of the Web UI) as follows:
 
-. Open '$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml' for editing.
+. Open '$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/web.xml' for editing.
 
 . Apply the CORS filter to the '/rest/' path by removing the comments around the *<filter-mapping>* definition.
 The result should look like:

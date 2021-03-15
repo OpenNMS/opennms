@@ -10,14 +10,14 @@ The Jira ticketing plugin creates JIRA issues in response to {page-component-tit
 First, you'll need to install the `opennms-plugin-ticketer-jira` package for your system.
 The Jira ticketing plugin and its dependencies are not part of the core packages.
 
-To enable the plugin, start by setting following property in `$\{opennms_home}/etc/opennms.properties`:
+To enable the plugin, start by setting following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
 opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
 ----
 
-Configure the plugin options by setting the following properties in `$\{opennms_home}/etc/jira.properties`:
+Configure the plugin options by setting the following properties in `$\{OPENNMS_HOME}/etc/jira.properties`:
 
 [options="header, %autowidth"]
 |===
@@ -42,7 +42,7 @@ NOTES: The transition names for `resolve` and `reopen` are typically found on bu
 
 Either use `opennms:jist-list-issue-types` OSGI Command or https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types[Finding the Id for Issue Types] for determining the appropriate issue type ID.
 
-Next, add `jira-troubleticketer` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`
+Next, add `jira-troubleticketer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
 
 Restart {page-component-title}.
 
@@ -75,21 +75,21 @@ In some cases, even so-called additional custom fields are defined.
 
 To set these fields, the Jira ticketing plugin provides the opportunity to define those in the OpenNMS ticket attributes, which can be overwritten with Drools use.
 
-To enable the Drools ticketing integration, set the following property in `$\{opennms_home}/etc/opennms.properties`:
+To enable the Drools ticketing integration, set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
 opennms.ticketer.servicelayer=org.opennms.netmgt.ticketd.DroolsTicketerServiceLayer
 ----
 
-In addition, the property in `${OPENNMS_HOME/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
+In addition, the property in `$\{OPENNMS_HOME/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
 
 [source]
 ----
-drools-ticketer.rules-file=${OPENNMS_HOME/etc/drools-ticketer-rules.drl
+drools-ticketer.rules-file=$\{OPENNMS_HOME/etc/drools-ticketer-rules.drl
 ----
 
-Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in `$\{opennms_home}/etc`.
+Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in `$\{OPENNMS_HOME}/etc`.
 
 
 The following Drools example snippet defines attributes to set custom fields:
@@ -242,7 +242,7 @@ ticket.addAttribute("customfield_10101", "2016-12-06"); <9>
 
 When troubleshooting, consult the following log files:
 
-* $\{opennms_home}/data/log/karaf.log
-* $\{opennms_home}/logs/trouble-ticketer.log
+* $\{OPENNMS_HOME}/data/log/karaf.log
+* $\{OPENNMS_HOME}/logs/trouble-ticketer.log
 
 You can also try the `opennms:jira-verify` OSGi command to help identify problems in your configuration.

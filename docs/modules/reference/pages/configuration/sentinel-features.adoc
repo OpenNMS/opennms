@@ -308,9 +308,9 @@ See the previous _Flow Processing_ chapter for more details.
 Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
 
- * `$\{opennms_home}/etc/datacollection`
- * `$\{opennms_home}/etc/datacollection-config.xml`
- * `$\{opennms_home}/etc/resource-types.d`
+ * `$\{OPENNMS_HOME}/etc/datacollection`
+ * `$\{OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `$\{OPENNMS_HOME}/etc/resource-types.d`
 
 Afterwards the adapter can be set up:
 
@@ -338,9 +338,9 @@ See the previous _Flow Processing_ chapter for more details.
 Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
 
- * `$\{opennms_home}/etc/datacollection`
- * `$\{opennms_home}/etc/datacollection-config.xml`
- * `$\{opennms_home}/etc/resource-types.d`
+ * `$\{OPENNMS_HOME}/etc/datacollection`
+ * `$\{OPENNMS_HOME}/etc/datacollection-config.xml`
+ * `$\{OPENNMS_HOME}/etc/resource-types.d`
 
 Afterwards the adapter can be set up:
 

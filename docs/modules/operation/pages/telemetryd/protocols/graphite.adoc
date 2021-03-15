@@ -3,7 +3,7 @@
 
 The Graphite telemetry adapter allows you to push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
 
-To enable support for plaintext Graphite over UDP, edit `$\{opennms_home}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
+To enable support for plaintext Graphite over UDP, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
 
 .Enable Graphite protocol in telemetryd-configuration.xml
 [source, xml]
@@ -34,7 +34,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:2003` to which _Graphite_ messages can be forwarded.

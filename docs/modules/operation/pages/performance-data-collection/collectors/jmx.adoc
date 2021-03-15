@@ -44,7 +44,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 NOTE: The deprecated parameters `port`, `protocol`, `urlPath`, `rmiServerPort` and `remoteJMX` should be replaced with the `url` parameter.
 If `url` is not defined the collector falls back to legacy mode and the deprecated parameters are used instead to build the connection url.
 
-NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/etc/jmx-config.xml` can overwrite it.
+NOTE: If a service requires different configuration, an entry in `$\{OPENNMS_HOME}/etc/jmx-config.xml` can overwrite it.
 
 == JMX Collection Configuration
 
@@ -132,7 +132,7 @@ To use the `objectname` itself as a resource label, use `IndexStorageStrategy` a
 Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g., the Java application server Wildfly.
 To successfully collect data, you may need to do the following:
 
-  * Place the jmx client lib to the $OPENNMS_HOME/lib folder (e.g., jboss-cli-client.jar)
+  * Place the jmx client lib to the $\{OPENNMS_HOME}/lib folder (e.g., jboss-cli-client.jar)
   * Configure the collection accordingly (see above)
   * Configure the JMX-Collector in _collectd-configuration.xml_ (see below)
   

@@ -28,7 +28,7 @@ Currently supported Remedy product versions are listed below:
 
 The Remedy ticketing plugin and its dependencies are part of the {page-component-title} core packages.
 
-Start by enabling the plugin and the ticket controls in the {page-component-title} web interface, by setting the following properties in `$\{opennms_home}/etc/opennms.properties`:
+Start by enabling the plugin and the ticket controls in the {page-component-title} web interface, by setting the following properties in `$\{OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -39,7 +39,7 @@ opennms.alarmTroubleTicketEnabled = true
 In the same file, set the property `opennms.alarmTroubleTicketLinkTemplate` to a value appropriate for constructing a link to tickets in the Remedy web interface.
 You must customize the sample value for your site; the token `${\id}` will be replaced with the Remedy ticket ID when the link is rendered.
 
-Now configure the plugin itself by setting the following properties in `$\{opennms_home}/etc/remedy.properties`:
+Now configure the plugin itself by setting the following properties in `$\{OPENNMS_HOME}/etc/remedy.properties`:
 
 [options="header, %autowidth"]
 |===
@@ -83,4 +83,4 @@ Restart {page-component-title}.
 The plugin should be ready to use. 
 When troubleshooting, consult the following log files:
 
-* $\{opennms_home}/logs/trouble-ticketer.log
+* $\{OPENNMS_HOME}/logs/trouble-ticketer.log

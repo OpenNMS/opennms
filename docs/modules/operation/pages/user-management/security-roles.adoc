@@ -44,7 +44,7 @@ endif::opennms-prime[]
 
 To create a custom security role you need to define the name and specify the security permissions.
 
-* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
+* Create a file called `$\{OPENNMS_HOME}/etc/security-roles.properties`.
 * Add a property called `roles`, and for its value, a comma-separated list of the custom security roles, for example:
 
 ```

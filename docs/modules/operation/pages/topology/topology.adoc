@@ -22,7 +22,7 @@ The topology map supports the following properties, which can be influenced by c
 == Icons
 
 Each Vertex on the topology map is represented by an icon.
-The default icon is configured in the icon mapping file: `$\{opennms_home}/etc/org.opennms.features.topology.app.icons.<topology-namespace>.cfg`.
+The default icon is configured in the icon mapping file: `$\{OPENNMS_HOME}/etc/org.opennms.features.topology.app.icons.<topology-namespace>.cfg`.
 If an icon mapping file does not exist for a _Topology Provider_, the provider does not support customization.
 
 [source]
@@ -50,7 +50,7 @@ If multiple `segments` exist they must be separated by `.`, e.g. `my.custom.key`
 Any existing default `icon keys` are not configurable and should not be changed.
 
 Icon id::
-The `icon id` is a unique icon identifier to reference an icon within one of the available SVG icons located in `$\{opennms_home}/jetty-webapps/opennms/svg`.
+The `icon id` is a unique icon identifier to reference an icon within one of the available SVG icons located in `$\{OPENNMS_HOME}/jetty-webapps/opennms/svg`.
 For more details see <<ga-topology-add-icons>>.
 
 [source]
@@ -115,7 +115,7 @@ WARNING: Do NOT remove the default mappings and do NOT change the icon keys in t
 [[ga-topology-add-icons]]
 === Add new icons
 
-All available icons are stored in SVG files located in `$\{opennms_home}/jetty-webapps/opennms/svg`.
+All available icons are stored in SVG files located in `$\{OPENNMS_HOME}/jetty-webapps/opennms/svg`.
 To add new icons, either add definitions to an existing SVG file or create a new SVG file in that directory.
 
 Whatever way new icons are added to OpenNMS it is important that each new `icon id` describes a set of icons, rather than a single icon.
@@ -149,7 +149,7 @@ Each SVG `<icon id>_icon` group must contain three sub groups with the ids: `<ic
 
 NOTE: It is important that each `icon id` is unique overall SVG files. This means there cannot be another `my-custom` icon id in any other SVG file.
 
-If the new icons should be selectable from the topology map's icon selection dialog an entry with the new `icon id` must be added to the file `$\{opennms_home}/etc/org.opennms.features.topology.app.icons.properties`.
+If the new icons should be selectable from the topology map's icon selection dialog an entry with the new `icon id` must be added to the file `$\{OPENNMS_HOME}/etc/org.opennms.features.topology.app.icons.properties`.
 
 [source]
 .Snippet of `org.opennms.features.topology.app.icons.list`

@@ -14,7 +14,7 @@ Event definitions are included with {page-component-title} for traps from many v
 When SNMP traps are forwarded through a proxy using SNMPv2c or SNMPv3, preserving the original source IP address is a challenge due to the lack of an `agent-addr` field in the `TRAP-V2` PDU used in those protocol versions.
 https://tools.ietf.org/html/rfc3584#page-42[RFC 3584] defines an optional varbind `snmpTrapAddress (.1.3.6.1.6.3.18.1.3.0)` that can be added to forwarded traps to convey the original source IP address.
 
-To configure {page-component-title} to honor `snmpTrapAddress` when present, set `use-address-from-varbind="true"` in the top-level element of `$\{opennms_home}/etc/trapd-configuration.xml` and restart {page-component-title}.
+To configure {page-component-title} to honor `snmpTrapAddress` when present, set `use-address-from-varbind="true"` in the top-level element of `$\{OPENNMS_HOME}/etc/trapd-configuration.xml` and restart {page-component-title}.
 
 .Configuration example for using RFC 3584 helper varbinds in forwarded traps
 [source, xml]

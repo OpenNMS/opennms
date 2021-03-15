@@ -11,7 +11,7 @@ NOTE: If you use Kibana, make sure you are using the version that is compatible 
 
 == Configuration
 
-The configuration is held in `$\{opennms_home}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+The configuration is held in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
 Please refer to <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Configuring Elasticsearch>> for information on how to configure Elasticsearch connection settings.
 
 Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:

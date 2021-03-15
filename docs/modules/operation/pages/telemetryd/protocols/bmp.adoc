@@ -77,7 +77,6 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 | `metaDataNodeLookup` | Enables lookup using BGP IDs.                                                  | no       |
 |===
 
-
 [[telemetryd-bmp-peer-status-adapter]]
 == BMP Peer Status Adapter
 
@@ -135,22 +134,21 @@ This setup replaces the collector component of OpenBMP.
 |===
 
 [[telemetryd-bmp-persisting-adapter]]
-===== BMP Persisting Adapter
+== BMP Persisting Adapter
 
 The BMP Persisting adapter persists OpenBMP messages received without the need for any additional OpenBMP components.
 It handles BMP messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates OpenBMP-compatible messages, which are then
 persisted in OpenNMS Postgres DB.
 
-
-====== Facts
+=== Facts
 
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter`
 |===
 
-Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {opennms-product-name}.
-The `opennms-telemetry-bmp-stats` feature needs to be installed on {opennms-product-name}.
+Stats and retrieving data from external data for rpki/routeinfo/asinfo are handled only on {page-component-title}.
+The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
 
 BMP Stats are stored as time series data in Postgres with TimescaleDB extension.
 You can install TimescaleDB 2.x extension from link:https://docs.timescale.com/latest/getting-started/installation[here].
@@ -162,10 +160,9 @@ In case TimescaleDB extension is not installed, stat tables will not be converte
 admin@opennms()> feature:install opennms-telemetry-bmp-stats
 ----
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in  `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in  `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
 
-
-====== Configuring BMP persistence for external sources
+==== Configuring BMP persistence for external sources
 
 You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
 
@@ -189,14 +186,13 @@ admin@opennms()> config:property-set rpkiUrl http://localhost:8080/api/export.js
 admin@opennms()> config:update
 ----
 
-
-====== Running BMP Adapter on Sentinel
+==== Running BMP Adapter on Sentinel
 
 BMP Persisting Adapter can also run on Sentinel. , _Sentinel_ must start appropriate BMP adapter.
-In Sentinel, adapters are configured either by placing a .cfg file in ${SENTINEL_HOME}/etc or via a config:edit statement.
+In Sentinel, adapters are configured either by placing a .cfg file in $\{SENTINEL_HOME}/etc or via a config:edit statement.
 
 The following example will configure the consumption of `BMP` messages and saves the configuration in
-`${SENTINEL_HOME/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
+`$\{SENTINEL_HOME}/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
 
 First, login to the Karaf Shell.
 

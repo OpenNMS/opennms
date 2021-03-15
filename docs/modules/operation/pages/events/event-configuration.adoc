@@ -6,7 +6,7 @@ The back-end configuration surrounding events is broken into two areas: the conf
 
 == The eventd-configuration.xml file
 
-The overall behavior of `Eventd` is configured in the file `OPENNMS_HOME/etc/eventd-configuration.xml`.
+The overall behavior of `Eventd` is configured in the file `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
 This file does not need to be changed in most installations.
 The configurable items include:
 
@@ -33,13 +33,13 @@ logEventSummaries::
 
 == The eventconf.xml file and its tributaries
 
-The set of known events is configured in `OPENNMS_HOME/etc/eventconf.xml`.
+The set of known events is configured in `$\{OPENNMS_HOME}/etc/eventconf.xml`.
 This file opens with a `<global>` element, whose `<security>` child element defines which event fields may not be overridden in the body of an event submitted via any `Eventd` listener.
 This mechanism stops a mailicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
 
 After the `<global>` element, this file consists of a series of `<event-file>` elements.
 The content of each `<event-file>` element specifies the path of a *tributary file* whose contents will be read and incorporated into the event configuration.
-These paths are resolved relative to the `OPENNMS_HOME/etc` directory; absolute paths are not allowed.
+These paths are resolved relative to the `$\{OPENNMS_HOME}/etc` directory; absolute paths are not allowed.
 
 Each *tributary file* contains a top-level `<events>` element with one or more `<event>` child elements.
 Consider the following event definition:
@@ -192,17 +192,17 @@ When slotting your own event definitions, take care not to place them below thes
 
 ==== Reloading the Event onfiguration
 
-After making manual changes to `OPENNMS_HOME/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {page-component-title} server:
+After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {page-component-title} server:
 
 [source,sh]
 ----
-OPENNMS_HOME/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+$\{OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
 ----
 
 === Debugging
 
 When debugging events, it may be helpful to lower the minimum severity at which `Eventd` will log from the default level of `WARN`.
-To change this setting, edit `OPENNMS_HOME/etc/log4j2.xml` and locate the following line:
+To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the following line:
 
 [source,xml]
 ----
@@ -210,9 +210,9 @@ To change this setting, edit `OPENNMS_HOME/etc/log4j2.xml` and locate the follow
 ----
 
 Changes to `log42.xml` will take effect within 60 seconds with no extra action needed.
-At level `DEBUG`, `Eventd` will log a verbose description of every event it handles to `OPENNMS_HOME/logs/eventd.log`.
+At level `DEBUG`, `Eventd` will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
 On busy systems, this setting may create so much noise as to be impractical.
-In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `OPENNMS_HOME/etc/eventd-configuration.xml`.
+In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
 Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
 
 === Karaf Shell

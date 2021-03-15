@@ -25,7 +25,7 @@ NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.f
 
 == Enabling a Protocol
 
-Next, enable one or more of the protocols you would like to handle in `$\{opennms_home}/etc/telemetryd-configuration.xml`.
+Next, enable one or more of the protocols you would like to handle in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`.
 
 NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
 
@@ -49,7 +49,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event via
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 This will open a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages can be forwarded.
@@ -76,7 +76,7 @@ Once configured, an icon will appear on the top-right corner of a resource graph
 In this example, we enable a generic listener for the NetFlow v5 protocol on Minion.
 
 IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
-           See the examples in `$\{opennms_home}/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#listener-ref, Telemetryd Listener Reference>> for details.
+           See the examples in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#listener-ref, Telemetryd Listener Reference>> for details.
 
 To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
 
@@ -128,7 +128,7 @@ The value used for the lookup corresponds to the following fields from the vario
 By default, each flow document - if {page-component-title} knows it - is  enriched with node information.
 To reduce the number of queries to the database, the data is cached.
 
-The following cache properties are available to be set in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
+The following cache properties are available to be set in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
 
 [options="header, autowidth"]
 |===
@@ -157,7 +157,7 @@ A rule in the Classification Engine may define an `exporterFilter`.
 To resolve if the filter criteria match the address of an exporter, a database query is executed.
 A cache can be configured to cache the result to improve performance.
 
-The following cache properties are available to be set in `${OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
+The following cache properties are available to be set in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
 
 [options="header, autowidth"]
 |===

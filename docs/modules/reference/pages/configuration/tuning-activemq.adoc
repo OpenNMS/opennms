@@ -1,6 +1,6 @@
 = Tuning ActiveMQ
 
-The settings for the embedded _ActiveMQ_ broker are found in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
+The settings for the embedded _ActiveMQ_ broker are found in `$\{OPENNMS_HOME}/etc/opennms-activemq.xml`.
 Memory and storage limits are conservative by default and should be tuned to accommodate your workload.
 Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, assuming you have enough heap available.
 
@@ -37,7 +37,7 @@ Users associated with the `ADMIN` role can read, write or create any queue or to
 
 Users associated with the `MINION` role are restricted in such a way that prevents them from making RPC requests to other locations, but can otherwise read or write to the queues they need.
 
-See the `authorizationPlugin` section in `$OPENNMS_HOME/etc/opennms-activemq.xml` for details.
+See the `authorizationPlugin` section in `$\{OPENNMS_HOME}/etc/opennms-activemq.xml` for details.
 
 == Multi-tenancy with _{page-component-title}_ and ActiveMQ
 
@@ -47,7 +47,7 @@ In order to isolate multiple instances on the same broker, you can customize the
 
 [source, sh]
 ----
-echo 'org.opennms.instance.id=MyNMS' > "$OPENNMS_HOME/etc/opennms.properties.d/instance-id.properties"
+echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/instance-id.properties"
 ----
 
 CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.

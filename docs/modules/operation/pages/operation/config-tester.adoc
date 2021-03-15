@@ -3,7 +3,7 @@
 [[ga-operation-config-tester]]
 = Configuration Tester
 
-To identify configuration problems there is a config-tester located in `$OPENNMS_HOME/bin/`.
+To identify configuration problems there is a config-tester located in `$\{OPENNMS_HOME}/bin/`.
 Use `config-tester` to check configuration files. 
 Type `-l, --list` to view the list of files checked. 
 It prints issues into `output.log`.
@@ -13,7 +13,7 @@ Possible Parameters:
 
 [source,bash]
 ---
- $OPENNMS_HOME/bin/config-tester -h
+ $\{OPENNMS_HOME}/bin/config-tester -h
  usage: config-tester -a
                      OR: config-tester [config files]
                      OR: config-tester -l

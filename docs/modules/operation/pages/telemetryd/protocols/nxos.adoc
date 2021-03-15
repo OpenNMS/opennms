@@ -6,7 +6,7 @@ The Cisco NX-OS Telemetry allows you to push operational statistics asynchronous
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 Detailed information about NX-OS can be found in link:https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/programmability/guide/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x_chapter_011000.html[NXOS documentation].
 
-To enable support for NX-OS Telemetry, edit `$\{opennms_home}/etc/telemetryd-configuration.xml` and set `enabled=true` for `NXOS` protocol.
+To enable support for NX-OS Telemetry, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` and set `enabled=true` for `NXOS` protocol.
 
 .Enable NX-OS protocol in telemetryd-configuration.xml
 [source, xml]
@@ -39,7 +39,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:50001` to which NXOS messages can be forwarded.

@@ -35,7 +35,7 @@ keytool \
   -trustcacerts \ <3>
   -alias localhost \ <4>
   -file localhost.cert \ <5>
-  -keystore /$OPENNMS_HOME/etc/trust-store.jks  <6>
+  -keystore /$\{OPENNMS_HOME}/etc/trust-store.jks  <6>
 ----
 <1> Define to import a certificate or a certificate chain
 <2> Use verbose output
@@ -74,12 +74,12 @@ openssl \
 === Configure {page-component-title} to use the defined Java Truststore
 
 To setup {page-component-title} to use the defined Java Truststore the according `javax.net.ssl.trustStore*` properties have to be set.
-Open `$OPENNMS_HOME/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
+Open `$\{OPENNMS_HOME}/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
 
-.$OPENNMS_HOME/etc/opennms.properties snippet to define a Java Truststore
+.$\{OPENNMS_HOME}/etc/opennms.properties snippet to define a Java Truststore
 [source]
 ----
-javax.net.ssl.trustStore=/$OPENNMS_HOME/etc/trust-store.jks <1>
+javax.net.ssl.trustStore=/$\{OPENNMS_HOME}/etc/trust-store.jks <1>
 javax.net.ssl.trustStorePassword=change-me <2>
 ----
 <1> The location of the Java Truststore

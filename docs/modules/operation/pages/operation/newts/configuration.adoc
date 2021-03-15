@@ -3,7 +3,7 @@
 
 == Enabling Newts
 
-{page-component-title} can be configured to use Newts by setting the following property in in `$\{opennms_home}/etc/opennms.properties`:
+{page-component-title} can be configured to use Newts by setting the following property in in `$\{OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -24,7 +24,7 @@ Additional configuration options are presented in the next section.
 
 == Configuration Reference
 
-The following properties, found in `$\{opennms_home}/etc/opennms.properties`, can be used to configure and tune Newts.
+The following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, can be used to configure and tune Newts.
 
 [[ga-opennms-operation-newts-properties-general]]
 === General

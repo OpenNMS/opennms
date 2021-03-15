@@ -38,9 +38,9 @@ During the EnLink discovery process, informational and error output is logged to
 [options="header, autowidth"]
 |===
 | File                        | Location             | Description
-| `enlinkd-configuration.xml` | `$OPENNMS_HOME/etc`  | Global configuration for the daemon process
-| `enlinkd.log`               | `$OPENNMS_HOME/logs` | Global Enlinkd log file
-| `log4j2.xml`                | `$OPENNMS_HOME/etc`  | Configuration file to set the log level for Enlinkd
+| `enlinkd-configuration.xml` | `$\{OPENNMS_HOME}/etc`  | Global configuration for the daemon process
+| `enlinkd.log`               | `$\{OPENNMS_HOME}/logs` | Global Enlinkd log file
+| `log4j2.xml`                | `$\{OPENNMS_HOME}/etc`  | Configuration file to set the log level for Enlinkd
 |===
 
 .Configuration file for Enlinkd
@@ -88,7 +88,7 @@ Configuration changes are applied by restarting OpenNMS and Enlinkd. It is also 
 
 [source, shell]
 ----
-cd $OPENNMS_HOME/bin
+cd $\{OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Enlinkd'
 ----
 

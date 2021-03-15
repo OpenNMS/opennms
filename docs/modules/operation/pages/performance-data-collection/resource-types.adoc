@@ -14,9 +14,9 @@ The storage strategy is used to convert an index into a resource path label for 
 There are two special resource types that do not have a resource-type definition.
 They are `node` and `ifIndex`.
 
-Resource types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
+Resource types can be defined inside files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`, with the latter being specific for SNMP.
 
-Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
+Here is the diskIOIndex resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`:
 
 [source, xml]
 ----

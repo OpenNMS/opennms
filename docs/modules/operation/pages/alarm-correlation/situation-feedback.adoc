@@ -14,7 +14,7 @@ Enable situation feedback by installing the feature from the Karaf shell:
 
 `feature:install opennms-situation-feedback`
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-situation-feedback` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`.
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-situation-feedback` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
 
 === Requirements
 
@@ -33,7 +33,7 @@ admin@opennms()> config:property-set elasticUrl http://elastic:9200
 admin@opennms()> config:update
 ----
 
-NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.situation-feedback.persistence.elastic.cfg`.
+NOTE: This configuration is stored in `$\{OPENNMS_HOME/etc/org.opennms.features.situation-feedback.persistence.elastic.cfg`.
       See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration, Elasticsearch Integration>> for more information.
 
 Installing the feature exposes a REST endpoint that OpenNMS Helm uses to display and submit feedback. 

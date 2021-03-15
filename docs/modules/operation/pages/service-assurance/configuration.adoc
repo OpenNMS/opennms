@@ -6,10 +6,10 @@
 [options="header, autowidth"]
 |===
 | File                                          | Description
-| `$OPENNMS_HOME/etc/poller-configuration.xml`  | Configuration file for monitors and global daemon configuration
-| `$OPENNMS_HOME/logs/poller.log`               | Log file for all monitors and the global _Pollerd_
-| `$OPENNMS_HOME/etc/response-graph.properties` | RRD graph definitions for service response time measurements
-| `$OPENNMS_HOME/etc/events/opennms.events.xml` | Event definitions for _Pollerd_, i.e. _nodeLostService_, _interfaceDown_ or _nodeDown_
+| `$\{OPENNMS_HOME}/etc/poller-configuration.xml`  | Configuration file for monitors and global daemon configuration
+| `$\{OPENNMS_HOME}/logs/poller.log`               | Log file for all monitors and the global _Pollerd_
+| `$\{OPENNMS_HOME}/etc/response-graph.properties` | RRD graph definitions for service response time measurements
+| `$\{OPENNMS_HOME}/etc/events/opennms.events.xml` | Event definitions for _Pollerd_, i.e. _nodeLostService_, _interfaceDown_ or _nodeDown_
 |===
 
 To change the behavior for service monitoring, the `poller-configuration.xml` can be modified.
@@ -41,7 +41,7 @@ An _Event_ can be sent on the _CLI_ or the _Web User Interface_.
 .Send configuration reload event on CLI
 [source, shell]
 ----
-cd $OPENNMS_HOME/bin
+cd $\{OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Pollerd'
 ----
 

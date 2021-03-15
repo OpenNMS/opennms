@@ -43,9 +43,9 @@ This monitor implements the <<serivce-assurance/monitors/introduction.adoc#ga-se
                        considered valid responses in extendedMode.                                                  | optional | `false`
 | `requestIpAddress` | This parameter applies only to REQUEST queries sent to the DHCP server when
                        extendedMode is true. The IP address  specified will be requested in the query.              | optional | `127.0.0.1`
-| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from the default.       | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from the default.  | required | `$\{OPENNMS_HOME}/share/rrd/response`
 | `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | required | `dhcp`
-| `ds-name`        | This is the name as reference for this particular data source in the RRD file.                  | required | `dhcp`
+| `ds-name`        | This is the name as reference for this particular data source in the RRD file.                 | required | `dhcp`
 |===
 
 .Visualization of DHCP message flow in broadcast mode

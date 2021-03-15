@@ -158,7 +158,7 @@ To do so, set the GraphML attribute `nodeID` on the GraphML node accordingly.
 
 === Script Vertex Status Provider
 The `script` status provider uses scripts similar to the <<gd-topology-graphml-edge-status-provider>>.
-Just place Groovy scripts (with file extension .groovy) in the directory `$OPENNMS_HOME/etc/graphml-vertex-status`.
+Just place Groovy scripts (with file extension .groovy) in the directory `$\{OPENNMS_HOME}/etc/graphml-vertex-status`.
 All of the scripts will be evaluated and the most severe status will be used for the vertex in the topology's visualization.
 
 If the script shouldn't contribute any status to a vertex just return `null`.
@@ -171,7 +171,7 @@ It uses the status of these nodes to calculate the status by determining the wor
 == Edge Status Provider
 
 It is also possible to compute a status for each edge in a given graph.
-Just place Groovy scripts (with file extension .groovy) in the directory `$OPENNMS_HOME/etc/graphml-edge-status`.
+Just place Groovy scripts (with file extension .groovy) in the directory `$\{OPENNMS_HOME}/etc/graphml-edge-status`.
 All of the scripts will be evaluated and the most severe status will be used for the edge in the topology's visualization.
 
 The following simple Groovy script example will apply a different style and severity if the edge's associated source node is down.

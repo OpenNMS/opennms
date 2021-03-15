@@ -36,7 +36,7 @@ By default {page-component-title} does not enable alarm sounds or flashing alarm
 The default settings are included in opennms.properties.
 However rather than editing the default opennms.properties file, the system administrator should enable these features by creating a new file in opennms.properties.d and applying the following settings;
 
-`$\{opennms_home}/etc/opennms.properties.d/alarm.listpage.properties`
+`$\{OPENNMS_HOME}/etc/opennms.properties.d/alarm.listpage.properties`
 
 .Configuration properties related to Alarm sound and flashing visualization
 [source]
@@ -67,6 +67,6 @@ opennms.alarmlist.sound.status=off
 opennms.alarmlist.unackflash=true
 ----
 
-The sound played is determined by the contents of the following file `$\{opennms_home}/jetty-webapps/opennms/sounds/alert.wav`
+The sound played is determined by the contents of the following file `$\{OPENNMS_HOME}/jetty-webapps/opennms/sounds/alert.wav`
 
 If you want to change the sound, create a new wav file with your desired sound, name it `alert.wav` and replace the default file in the same directory.

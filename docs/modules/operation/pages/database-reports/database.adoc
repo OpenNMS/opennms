@@ -32,12 +32,12 @@ For more details on how JasperReports works, please refer to the Jaspersoft Stud
 
 == Modify Existing Reports
 
-All default {page-component-title} reports are located in `$OPENNMS_HOME/etc/report-templates`.
+All default {page-component-title} reports are located in `$\{OPENNMS_HOME}/etc/report-templates`.
 Each `.jrxml` file located there can be modified; the changes are applied the next time {page-component-title} creates a report.
 
 When a subreport has been modified, {page-component-title} will detect a change based on the report's `lastModified` time and will recompile the report.
 A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
-Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
+Subreports are located in `$\{OPENNMS_HOME}/etc/report-templates/subreports`.
 
 TIP: If unsure, simply delete all `.jasper` files and {page-component-title} will automatically compile the subreports if needed.
 
@@ -45,7 +45,7 @@ TIP: If unsure, simply delete all `.jasper` files and {page-component-title} wil
 
 To add a new JasperReport report to the local {page-component-title} report repository, do the following:
 
-Create a new entry in the `$OPENNMS_HOME/etc/database-reports.xml` file.
+Create a new entry in the `$\{OPENNMS_HOME}/etc/database-reports.xml` file.
 
 [source, xml]
 -----
@@ -63,7 +63,7 @@ Create a new entry in the `$OPENNMS_HOME/etc/database-reports.xml` file.
 <4> The report service implementation to use. In most cases this is `jasperReportService`.
 <5> A description of the report. Appears in the web UI.
 
-In addition, create a new entry in the `$OPENNMS_HOME/etc/jasper-reports.xml` file.
+In addition, create a new entry in the `$\{OPENNMS_HOME}/etc/jasper-reports.xml` file.
 
 [source, xml]
 -----
@@ -73,8 +73,8 @@ In addition, create a new entry in the `$OPENNMS_HOME/etc/jasper-reports.xml` fi
   engine="jdbc" <3>
 />
 -----
-<1> The identifier defined in the previous step. This identifier must exist in `$OPENNMS_HOME/etc/database-reports.xml`.
-<2> The name of the template. The template must be located in `$OPENNMS_HOME/etc/report-templates`.
+<1> The identifier defined in the previous step. This identifier must exist in `$\{OPENNMS_HOME}/etc/database-reports.xml`.
+<2> The name of the template. The template must be located in `$\{OPENNMS_HOME}/etc/report-templates`.
 <3> The engine to use. It is either `jdbc` or `null`.
 
 [[ga-database-reports-usage-jaspersoft-studio]]
@@ -101,7 +101,7 @@ To do so, right click in the `Project Explorer` and select `Configure Buildpath`
 image::database-reports/1_configure-build-path-1.png[]
 
 . Switch to the `Libraries` tab.
-. Click `Add External JARs` and select the `opennms-jasperstudio-extension-{\opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
+. Click `Add External JARs` and select the `opennms-jasperstudio-extension-{\opennms-version}-jar-with-dependencies.jar` file located in `$\{OPENNMS_HOME}/contrib/jasperstudio-extension`.
 . Close the file selection dialog.
 
 +
@@ -175,7 +175,7 @@ In addition to the `queryString`, the following JasperReports parameters are sup
 == Disable Scheduler
 
 In cases where the scheduler executing the reports must be disabled, set the system property `opennms.report.scheduler.enabled` to `false`.
-You can set this in `$\{opennms_home}/etc/opennms.properties` or `$\{opennms_home}/etc/opennms.properties.d/<my-properties-file>.properties`.
+You can set this in `$\{OPENNMS_HOME}/etc/opennms.properties` or `$\{OPENNMS_HOME}/etc/opennms.properties.d/<my-properties-file>.properties`.
 
 [[ga-database-reports-helper-methods]]
 == Helper Methods
@@ -267,7 +267,7 @@ To establish a secure connection to the Measurements API, you must import the pu
 In addition, {page-component-title} must be configured to use that Java Truststore.
 Please follow the instructions in this <<operation/ssl/ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
 
-In addition please also set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to `true` to ensure that only secure connections are established.
+In addition please also set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$\{OPENNMS_HOME}\etc\opennms.properties` to `true` to ensure that only secure connections are established.
 
 WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false` an accidentally insecure connection can be established to the Measurements API location.
          An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`.

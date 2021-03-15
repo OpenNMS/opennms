@@ -4,7 +4,7 @@
 Since users are not currently stored in the database, the REST interface for them is not as full-fledged as that of nodes, etc.
 
 IMPORTANT: You cannot use hibernate criteria for filtering.
-You may need to touch the `$OPENNMS_HOME/etc/users.xml` file on the filesystem for any addition or modification actions to take effect (see link:http://jira.opennms.org/browse/NMS-6469[NMS-6469] for details).
+You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesystem for any addition or modification actions to take effect (see link:http://jira.opennms.org/browse/NMS-6469[NMS-6469] for details).
 
 == GETs (Reading Data)
 

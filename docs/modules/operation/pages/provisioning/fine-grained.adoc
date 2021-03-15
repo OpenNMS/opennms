@@ -18,7 +18,7 @@ _provision.pl_ provides easy access to the requisition REST service using the _r
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl requisition customer1
+$\{OPENNMS_HOME}/bin/provision.pl requisition customer1
 ----
 
 This command will create a new, empty (containing no nodes) requisition in {page-component-title}.
@@ -32,14 +32,14 @@ You can get a list of all existing requisitions with the `list` option of the `p
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl list
+$\{OPENNMS_HOME}/bin/provision.pl list
 ----
 
 === Create a new Node
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl node add customer1 1 node-a
+$\{OPENNMS_HOME}/bin/provision.pl node add customer1 1 node-a
 ----
 
 This command creates a node element in the requisition _customer1_ called _node-a_ using the script's _node_ option. The node's foreign-ID is _1_ but it can be any alphanumeric value as long as it is unique within the requisition.
@@ -49,7 +49,7 @@ Note the node has no interfaces or services yet.
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl interface add customer1 1 127.0.0.1
+$\{OPENNMS_HOME}/bin/provision.pl interface add customer1 1 127.0.0.1
 ----
 
 This command adds an interface element to the node element using the _interface_ option to the `provision.pl` command and it can now be seen in the pending requisition by running `provision.pl requisition list customer1`.
@@ -58,8 +58,8 @@ This command adds an interface element to the node element using the _interface_
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl service add customer1 1 127.0.0.1 ICMP
-$\{opennms_home}/bin/provision.pl service add customer1 1 127.0.0.1 SNMP
+$\{OPENNMS_HOME}/bin/provision.pl service add customer1 1 127.0.0.1 ICMP
+$\{OPENNMS_HOME}/bin/provision.pl service add customer1 1 127.0.0.1 SNMP
 ----
 
 This adds the 2 services to the specified 127.0.0.1 interface and is now in the pending requisition.
@@ -68,7 +68,7 @@ This adds the 2 services to the specified 127.0.0.1 interface and is now in the 
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl interface set customer1 1 127.0.0.1 snmp-primary P
+$\{OPENNMS_HOME}/bin/provision.pl interface set customer1 1 127.0.0.1 snmp-primary P
 ----
 
 This sets the 127.0.0.1 interface to be the node's Primary SNMP interface.
@@ -77,8 +77,8 @@ This sets the 127.0.0.1 interface to be the node's Primary SNMP interface.
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl category add customer1 1 Routers
-$\{opennms_home}/bin/provision.pl category add customer1 1 Production
+$\{OPENNMS_HOME}/bin/provision.pl category add customer1 1 Routers
+$\{OPENNMS_HOME}/bin/provision.pl category add customer1 1 Production
 ----
 
 This adds the two categories to the node and is now in the pending requisition.
@@ -90,7 +90,7 @@ They will be created on the fly during the import if they do not already exist.
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl asset add customer1 1 serialnumber 9999
+$\{OPENNMS_HOME}/bin/provision.pl asset add customer1 1 serialnumber 9999
 ----
 
 This will add value of `9999` to the asset field: _serialnumber_.
@@ -98,7 +98,7 @@ This will add value of `9999` to the asset field: _serialnumber_.
 .Deploy the Import Requisition (Creating the Group)
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl requisition import customer1
+$\{OPENNMS_HOME}/bin/provision.pl requisition import customer1
 ----
 
 This will cause {page-component-title} Provisiond to import the pending `customer1` requisition.
@@ -111,7 +111,7 @@ What happens is that the audit phase is run by Provisiond and it will be determi
 
 [source, bash]
 ----
-$\{opennms_home}/bin/provision.pl node delete customer1 1 node-a
-$\{opennms_home}/bin/provision.pl requisition import customer1
+$\{OPENNMS_HOME}/bin/provision.pl node delete customer1 1 node-a
+$\{OPENNMS_HOME}/bin/provision.pl requisition import customer1
 ----
 This completes the life cycle of managing a node element, iteratively, in a import requisition.

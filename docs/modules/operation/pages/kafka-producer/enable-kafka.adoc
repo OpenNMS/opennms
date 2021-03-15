@@ -22,4 +22,4 @@ Next, install the `opennms-kafka-producer` feature from that same shell using:
 admin@opennms()> feature:install opennms-kafka-producer
 ----
 
-To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-producer` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`.
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-producer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.

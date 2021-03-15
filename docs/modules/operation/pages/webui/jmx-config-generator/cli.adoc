@@ -49,7 +49,7 @@ java -jar target/jmxconfiggenerator-28.0.0-SNAPSHOT-onejar.jar
 
 == Use
 
-After installing the the JMX Config Generator the tool's wrapper script is located in the `$\{opennms_home}/bin` directory.
+After installing the the JMX Config Generator the tool's wrapper script is located in the `$\{OPENNMS_HOME}}/bin` directory.
 
 [source, shell]
 ----

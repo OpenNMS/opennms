@@ -28,7 +28,7 @@ org.opennms.core.ipc.aws.sqs.aws_secret_access_key=my-secret-access-key<7>
 TIP: The default credential provider chain looks for credentials in the following order:
 
 1. Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
-2. Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
+2. Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$\{OPENNMS_HOME}/etc/opennms.conf`)
 3. Default credential profiles file (i.e. `~/.aws/credentials`)
 4. Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
 5. Instance profile credentials (i.e. through the metadata service when running on EC2)

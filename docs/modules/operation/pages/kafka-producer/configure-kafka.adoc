@@ -92,7 +92,7 @@ Once metric forwarding is enabled, you can use this as the exclusive persistence
 
 [source, sh]
 ----
-echo 'org.opennms.timeseries.strategy=osgi' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka-for-metrics.properties"
+echo 'org.opennms.timeseries.strategy=osgi' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka-for-metrics.properties"
 ----
 
 == Configuring Topic Names

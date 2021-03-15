@@ -8,14 +8,14 @@ The TSRM ticketing plugin creates TSRM incidents in response to {page-component-
 [[ga-ticketing-tsrm-setup]]
 == Setup
 
-To enable the plugin start by setting following property in `$\{opennms_home}/etc/opennms.properties`:
+To enable the plugin start by setting following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
 opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
 ----
 
-Configure the plugin options by setting the following properties in `$\{opennms_home}/etc/tsrm.properties`:
+Configure the plugin options by setting the following properties in `$\{OPENNMS_HOME}/etc/tsrm.properties`:
 
 [options="header, autowidth"]
 |===
@@ -26,7 +26,7 @@ Configure the plugin options by setting the following properties in `$\{opennms_
 | `tsrm.status.close`      | TSRM status for close ticket
 |===
 
-Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`
+Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
 
 Restart OpenNMS.
 
@@ -40,8 +40,8 @@ feature:install tsrm-troubleticketer
 The plugin should be ready to use. 
 When troubleshooting, consult the following log files:
 
-* $\{opennms_home}/data/log/karaf.log
-* $\{opennms_home}/logs/trouble-ticketer.log
+* $\{OPENNMS_HOME}/data/log/karaf.log
+* $\{OPENNMS_HOME}/logs/trouble-ticketer.log
 
 == Mapping OpenNMS Ticket with TSRM Incident
 

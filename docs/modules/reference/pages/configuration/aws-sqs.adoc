@@ -1,6 +1,6 @@
 = Amazon Simple Queue Service
 
-From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following tables list parameters which can be added to either Minion (via `$\{MINION_HOME}/etc/org.opennms.core.ipc.aws.sqs.cfg`) or _{page-component-title}_ (via `OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties`), along with the correct syntax for each environment.
+From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following tables list parameters which can be added to either Minion (via `$\{MINION_HOME}/etc/org.opennms.core.ipc.aws.sqs.cfg`) or _{page-component-title}_ (via `$\{OPENNMS_HOME}/etc/opennms.properties.d/aws-sqs.properties`), along with the correct syntax for each environment.
 
 == Sink Settings
 

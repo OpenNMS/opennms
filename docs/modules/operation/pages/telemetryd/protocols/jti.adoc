@@ -6,7 +6,7 @@ The Junos Telemetry Interface (JTI) allows users to push operational statistics 
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 For detailed information about JTI, see the https://www.juniper.net/documentation/en_US/junos/topics/concept/junos-telemetry-interface-oveview.html[Juniper Documentation].
 
-To enable support for JTI, edit `$\{opennms_home}/etc/telemetryd-configuration.xml` and set `enabled=true` for `JTI` protocol.
+To enable support for JTI, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` and set `enabled=true` for `JTI` protocol.
 
 .Enable JTI protocol in telemetryd-configuration.xml 
 [source, xml]
@@ -39,7 +39,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:50000` to which JTI messages can be forwarded.

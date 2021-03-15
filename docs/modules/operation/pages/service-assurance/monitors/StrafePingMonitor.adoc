@@ -31,7 +31,7 @@ Monitor specific parameters for the StrafePingMonitor
 | `dscp`                | DSCP traffic-control value.                                                                | optional | `0`
 | `packet-size`         | Number of bytes of the ICMP packet to send.                                                | optional | `64`
 | `wait-interval`       | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                     | required | `50`
-| `rrd-repository`      | The location to write _RRD data_. Generally, you will not want to change this from default | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-repository`      | The location to write _RRD data_. Generally, you will not want to change this from default | required | `$\{OPENNMS_HOME}/share/rrd/response`
 | `rrd-base-name`       | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
 |===
 

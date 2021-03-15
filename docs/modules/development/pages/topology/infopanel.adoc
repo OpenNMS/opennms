@@ -86,7 +86,7 @@ The following `blueprint.xml` snippet describes how to expose any custom InfoPan
 
 == Scriptable
 
-By simply dropping Jinjava templates (with file extension .html) to `$OPENNMS_HOME/etc/infopanel` a more scriptable approach is available.
+By simply dropping Jinjava templates (with file extension .html) to `$\{OPENNMS_HOME}/etc/infopanel` a more scriptable approach is available.
 For more information on Jinjava refer to https://github.com/HubSpot/jinjava.
 
 The following example describes a very simple Jinjava template which is always visible.

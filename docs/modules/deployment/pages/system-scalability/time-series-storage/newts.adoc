@@ -10,7 +10,7 @@ For further information see link:https://cassandra.apache.org/doc/latest/getting
 
 TIP: To avoid unwanted updates and disable the Cassandra repository on DNF/YUM based distributions or use `apt-mark hold cassandra` on APT based distributions.
 
-IMPORTANT: For simplicity we use the `$\\{opennms_home}/bin/newts init` command which initializes a Newts keyspace for you and the defaults are not optimal tuned for a production-ready environment.
+IMPORTANT: For simplicity we use the `$\{OPENNMS_HOME}/bin/newts init` command which initializes a Newts keyspace for you and the defaults are not optimal tuned for a production-ready environment.
            If you want to build a production environment please consult link:https://opennms.discourse.group/t/sizing-cassandra-for-newts/771[Sizing Cassandra for Newts] and link:https://docs.datastax.com/en/dse-planning/doc/planning/planningAntiPatterns.html[planning Anti-patterns in Cassandra] articles.
 
 == Objectives
