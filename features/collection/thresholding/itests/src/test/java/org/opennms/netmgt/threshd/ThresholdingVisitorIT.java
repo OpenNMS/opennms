@@ -454,6 +454,11 @@ public class ThresholdingVisitorIT {
         verifyEvents(0);
     }
 
+    /**
+     * This test checks multiple threshold levels for the same DS.
+     * It verifies that events with correct values are triggered when those levels are met.
+     * @throws Exception
+     */
     @Test
     public void testZeroIntervalResourceCounterData() throws Exception {
         initFactories("/threshd-configuration.xml", "/test-thresholds-counters.xml");
@@ -1709,6 +1714,66 @@ public class ThresholdingVisitorIT {
         // *wmiLogicalDisk-wmiLDPctFreeSpace*I
         int numExpectedPersistedKeys = 4;
         assertEquals("Incorrect # of persisted states", numExpectedPersistedKeys, persistedKeys.size());
+    }
+
+
+    @Test
+    public void testMultipleThresholdLevelsForTheSameDS() throws Exception {
+        initFactories("/threshd-configuration.xml", "/test-multiple-threshold-levels.xml");
+        ThresholdingVisitor visitor = createVisitor();
+
+        SnmpCollectionAgent agent = createCollectionAgent();
+        NodeResourceType resourceType = createNodeResourceType(agent);
+        MibObject mibObject = createMibObject("counter", "myCounter", "0");
+        SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
+
+        // Both "test1" "test2" events should be triggered.
+        addEvent("test1","127.0.0.1", "SNMP", 1, 10.0, 5.0, 15.00, "node", "node", "myCounter", null, null ,
+                m_anticipator, m_anticipatedEvents);
+        addEvent("test2","127.0.0.1", "SNMP", 1, 12.0, 5.0, 15.00, "node", "node", "myCounter", null, null ,
+                m_anticipator, m_anticipatedEvents);
+        addHighRearmEvent(1, 10, 5, 2, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 12, 5, 2, "node", "node", "myCounter", null, null);
+
+
+        long baseDate = new Date().getTime();
+        // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held
+        // Normally visiting the CollectionSet would end up visiting the resources, but we're fudging that for the test
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate));
+
+        // Collect Step 1 : Initialize counter cache.
+        SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(1000));
+        resource.visit(visitor);
+
+        // Collect Step 2 : Trigger. (last-current)/step => (5500-1000)/300=15
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+300000));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(5500));
+        resource.visit(visitor);
+
+
+        // Collect Step 3 : Rearm. (last-current)/step => (6100-5500)/300=2
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+600000));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(6100));
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        verifyEvents(0);
+
+        // For a value of 11, only "test1" should be triggered.
+        addEvent("test1","127.0.0.1", "SNMP", 1, 10.0, 5.0, 11.00, "node", "node", "myCounter", null, null ,
+                m_anticipator, m_anticipatedEvents);
+
+        // Collect Step 3 : Trigger. (last-current)/step => (9400-6100)/300=11
+        visitor.visitCollectionSet(createAnonymousCollectionSet(baseDate+900000));
+        resource = new NodeInfo(resourceType, agent);
+        resource.setAttributeValue(attributeType, SnmpUtils.getValueFactory().getCounter32(9400));
+        resource.visit(visitor);
+        EasyMock.verify(agent);
+        verifyEvents(0);
+
     }
 
     private ThresholdingVisitor createVisitor() throws ThresholdInitializationException {

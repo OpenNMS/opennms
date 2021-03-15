@@ -122,6 +122,18 @@
   <!-- Allow anonymous access to the webstart portion of the app -->
   <http pattern="/webstart/**" security="none"/>
 
+  <http pattern="/admin/userGroupView/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
+    <!-- see NMS-13124 -->
+    <csrf />
+    <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+    <logout logout-success-url="/" />
+    <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only one <http> section can match the implicit '/**' pattern -->
   <http pattern="/**" use-expressions="true" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
@@ -158,7 +170,7 @@
     <intercept-url pattern="/graph/graph.png" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/dashboard/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/coreweb/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
-    
+
     <!-- DO NOT ALLOW ACCESS TO /osgi -->
     <intercept-url pattern="/osgi/**" access="denyAll" />
 

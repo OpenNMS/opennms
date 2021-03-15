@@ -93,6 +93,7 @@
 <form action="<c:url value='${reqUrl}'/>" method="post" name="roleForm">
 	<input type="hidden" name="operation" />
 	<input type="hidden" name="role" />
+	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 </form>
 
 <div class="card">
@@ -148,6 +149,7 @@
 </div> <!-- panel -->
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <input name="operation" type="hidden" value="new"/>
   <button type="submit" class="btn btn-secondary">Add New On-Call Role</button>
 </form>

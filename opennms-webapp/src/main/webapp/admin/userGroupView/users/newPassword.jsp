@@ -66,6 +66,8 @@
   </div>
   <div class="card-body">
     <form role="form" class="form" method="post" name="goForm">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
       <div class="form-group">
         <label for="pass1" class="">Password</label>
         <input type="password" class="form-control" id="pass1" name="pass1">

@@ -36,6 +36,7 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Notifications" />
@@ -109,31 +110,31 @@
           <c:forEach items="${notifications}" var="notification">
           <tr>
             <td>
-              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${e:forJavaScript(notification.escapedName)}')"/>
             </td>
             <td>
-              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${e:forJavaScript(notification.escapedName)}')"/>
             </td>
             <td>
             <c:choose>
               <c:when test="${notification.isOn}">
-                <input type="radio" value="Off" onclick="javascript:setStatus('${notification.escapedName}','off')"/>Off
-                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('${notification.escapedName}','on')"/>On
+                <input type="radio" value="Off" onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','off')"/>Off
+                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','on')"/>On
               </c:when>
               <c:otherwise>
-                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('${notification.escapedName}','off')"/>Off
-                <input type="radio" value="On" onclick="javascript:setStatus('${notification.escapedName}','on')"/>On
+                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','off')"/>Off
+                <input type="radio" value="On" onclick="javascript:setStatus('${e:forJavaScript(notification.escapedName)}','on')"/>On
               </c:otherwise>
             </c:choose>
             </td>
             <td>
-              ${notification.name}
+            ${fn:escapeXml(notification.name)}
             </td>
             <td>
-              ${notification.eventLabel}
+              ${fn:escapeXml(notification.eventLabel)}
             </td>
             <td>
-              ${notification.displayUei}
+              ${fn:escapeXml(notification.displayUei)}
             </td>
           </tr>
           </c:forEach>

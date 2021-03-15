@@ -293,6 +293,7 @@
 <form role="form" class="form" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
     <div class="card">
         <div class="card-header">

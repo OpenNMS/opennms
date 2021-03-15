@@ -39,6 +39,10 @@
 		org.opennms.netmgt.config.*
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 
 <%!
     public void init() throws ServletException {
@@ -116,7 +120,7 @@
   
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="info"
       action="admin/notification/noticeWizard/notificationWizard">
@@ -135,7 +139,7 @@
             <label>Name:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="name" value='<%=(newNotice.getName()!=null ? newNotice.getName() : "")%>'/>
+            <input type="text" class="form-control" name="name" value='<%=(newNotice.getName()!=null ? WebSecurityUtils.sanitizeString(newNotice.getName()) : "")%>'/>
           </td>
         </tr>
         <tr>
@@ -143,7 +147,7 @@
             <label>Description:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="description" value='<%=newNotice.getDescription().orElse("")%>'/>
+            <input type="text" class="form-control" name="description" value='<%=WebSecurityUtils.sanitizeString(newNotice.getDescription().orElse(""))%>'/>
           </td>
         </tr>
         <tr>
@@ -153,10 +157,10 @@
           <td valign="top" align="left">
             <div class="row">
               <div class="col-md-6">
-                <label>Name:</label> <input type="text" class="form-control" size="30" name="varbindName" value='<%=varbindName%>'/>
+                <label>Name:</label> <input type="text" class="form-control" size="30" name="varbindName" value='<%=WebSecurityUtils.sanitizeString(varbindName)%>'/>
               </div>
               <div class="col-md-6">
-                <label>Value:</label> <input class="form-control" type="text" size="30" name="varbindValue" value='<%=varbindValue%>'/>
+                <label>Value:</label> <input class="form-control" type="text" size="30" name="varbindValue" value='<%=WebSecurityUtils.sanitizeString(varbindValue)%>'/>
               </div>
             </div>
           </td>
@@ -174,7 +178,7 @@
             <label>Text Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? newNotice.getTextMessage() : "")%></textarea>
+            <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? WebSecurityUtils.sanitizeString(newNotice.getTextMessage()) : "")%></textarea>
           </td>
          </tr>
          <tr>
@@ -182,7 +186,7 @@
             <label>Short Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="1" class="form-control" name="numMsg"><%=newNotice.getNumericMessage().orElse("")%></textarea>
+            <textarea rows="1" class="form-control" name="numMsg"><%=WebSecurityUtils.sanitizeString(newNotice.getNumericMessage().orElse(""))%></textarea>
           </td>
          </tr>
          <tr>
@@ -190,7 +194,7 @@
             <label>Email Subject:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="subject" value='<%=newNotice.getSubject().orElse("")%>'/>
+            <input type="text" class="form-control" name="subject" value='<%=WebSecurityUtils.sanitizeString(newNotice.getSubject().orElse(""))%>'/>
           </td>
          </tr>
          <tr>

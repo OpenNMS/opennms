@@ -995,6 +995,10 @@ public abstract class UserManager implements UserConfig {
                     m_users.remove(oldName);
                     throw new Exception("UserFactory:rename the data contained for old user " + oldName + " is null");
                 } else {
+                    if (m_users.containsKey(newName)) {
+                        throw new Exception("UserFactory: cannot rename user " + oldName + ". An user with the given name " + newName + " already exists");
+                    }
+
                     // Rename the user in the user map.
                     m_users.remove(oldName);
                     data.setUserId(newName);

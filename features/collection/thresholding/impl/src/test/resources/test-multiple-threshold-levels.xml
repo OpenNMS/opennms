@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+  <group name="generic-snmp" rrdRepository = "${install.share.dir}/rrd/snmp/">
+    <threshold type="high" ds-name="myCounter"  ds-type="node" value="10" rearm="5" trigger="1" triggeredUEI="test1"/>
+    <threshold type="high" ds-name="myCounter"  ds-type="node" value="12" rearm="5" trigger="1" triggeredUEI="test2"/>
+  </group>
+
+</thresholding-config>
