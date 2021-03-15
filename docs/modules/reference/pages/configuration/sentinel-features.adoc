@@ -358,4 +358,3 @@ admin@sentinel> config:update
 
 Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
 e.g. by manually copying it over from _{page-component-title}_.
-

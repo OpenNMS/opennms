@@ -15,7 +15,7 @@ Attributes are extracted from the available MBeans.
 
 == Collector Parameters
 
-Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the Jsr160Collector
 [options="header, autowidth"]
@@ -48,7 +48,7 @@ NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/
 
 == JMX Collection Configuration
 
-NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 Define JMX Collections in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
 

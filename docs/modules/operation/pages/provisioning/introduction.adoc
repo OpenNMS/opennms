@@ -25,8 +25,8 @@ Regardless of the method, provisioning is an iterative process: you will need to
 == Automatic Discovery
 
 {page-component-title} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
-Using <<provisioning/auto-discovery-detectors.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
-<<provisioning/import-handler.adoc#import-handlers, Import handlers>> allow you to further control provisioning. 
+Using link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
+link:#import-handlers[Import handlers] allow you to further control provisioning. 
 
 Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
 

@@ -162,8 +162,13 @@
 
     <feature name="sentinel-telemetry-bmp" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
-        <feature>opennms-telemetry-bmp</feature>
+        <feature>opennms-telemetry-bmp-adapter</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-telemetry-bmp-persist" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
+        <feature>opennms-telemetry-bmp-adapter</feature>
     </feature>
 
 

@@ -22,7 +22,7 @@ The following handlers are not currently supported on Minion:
 
 == Collector Parameters
 
-Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmlCollector
 [options="header, autowidth"]
@@ -43,7 +43,7 @@ The available handlers include:
 
 == XML Collection Configuration
 
-NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 

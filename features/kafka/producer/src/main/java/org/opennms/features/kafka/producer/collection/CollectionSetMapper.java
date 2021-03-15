@@ -31,7 +31,9 @@ package org.opennms.features.kafka.producer.collection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.NumericAttribute.Type;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -92,8 +94,13 @@ public class CollectionSetMapper {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
-                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
-                        collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                        Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
+                        // Skip Aliased Resources which doesn't have instance.
+                        if (!Strings.isNullOrEmpty(resource.getInstance())) {
+                            Integer ifIndex = StringUtils.parseInt(resource.getInstance(), null);
+                            Optional.ofNullable(ifIndex).ifPresent(interfaceResourceBuilder::setIfIndex);
+                            collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                        }
                     }
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
                     CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
@@ -156,7 +163,9 @@ public class CollectionSetMapper {
 
             @Override
             public void completeResource(CollectionResource resource) {
-                builder.addResource(collectionSetResourceBuilder);
+                if(hasResource(collectionSetResourceBuilder)) {
+                    builder.addResource(collectionSetResourceBuilder);
+                }
             }
 
             @Override
@@ -167,6 +176,12 @@ public class CollectionSetMapper {
         });
 
         return builder.build();
+    }
+
+    private boolean hasResource(CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder) {
+        return collectionSetResourceBuilder.hasNode() || collectionSetResourceBuilder.hasInterface()
+                || collectionSetResourceBuilder.hasGeneric() || collectionSetResourceBuilder.hasResponse();
+
     }
 
     private String getNodeCriteriaFromResource(CollectionResource resource) {

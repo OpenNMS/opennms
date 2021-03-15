@@ -2,7 +2,7 @@
 = SnmpCollector
 
 The _SnmpCollector_ collects performance data through the SNMP protocol.
-Configure access to the SNMP agent through the SNMP configuration in the Web UI (<<provisioning/getting-started.adoc#provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
+Configure access to the SNMP agent through the SNMP configuration in the Web UI (<<provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>).
 
 == Collector Facts
 
@@ -15,20 +15,20 @@ Configure access to the SNMP agent through the SNMP configuration in the Web UI 
 
 == Collector Parameters
 
-Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
+Use these parameters used in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the SnmpCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
 | `collection`           | The name of the _SNMP Collection_ to use.                                      | required | `default`
-| `thresholding-enabled` | Whether collected performance data should be tested against thresholds.         | optional | `true`
+| `thresholding-enabled` | Whether collected performance data should be tested against thresholds.        | optional | `true`
 | `timeout`              | Timeout in milliseconds to wait for SNMP responses.                            | optional | _SNMP_ configuration
 |===
 
 == SNMP Collection Configuration
 
-NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
 
 Define SNMP collection in _etc/datacollection-config.xml_ and _etc/datacollection.d/*.xml_.
 
@@ -65,7 +65,7 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 
 === SNMP Data Collection Parsing Example
 
-This section relates to the SNMP collector, since _datacollectiion-config.xml_ builds _snmp-collections_.
+This section relates to the SNMP collector, since _datacollection-config.xml_ builds _snmp-collections_.
 
 *Scenario* 
 
@@ -213,7 +213,6 @@ Because it matches one `collectd` package for the SNMP service, the collector us
 It will check `Collect-D` through `Collect-I`.
 
 Now, as the node’s `sysObjectID` is ``.1.100.1.2`, only the `systemDefs` `Collect-D`, `Collect-F`, and `Collect-G` will be included.
-
 
 === SnmpCollectorNG
 

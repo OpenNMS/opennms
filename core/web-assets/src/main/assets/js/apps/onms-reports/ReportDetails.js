@@ -187,20 +187,21 @@ export default class ReportDetails {
         this.parameters.filter((parameter) => {
             return parameter.type === 'timezone';
          }).forEach((parameter) => {
-             if (this.timezoneEditable) {
-                if (this.supportedTimezones.indexOf(parameter.value) >= 0) {
+            if (this.timezoneEditable) {
+                if (parameter.value && parameter.value.trim().length > 0 && this.supportedTimezones.indexOf(parameter.value) >= 0) {
                     // we have already selected a valid timezone, carry on
-                    return;
+                } else {
+                    // otherwise, guess the timezone; If it actually exists, it is used;
+                    // if it doesn't exist, the first from the list is selected
+                    const guessedTimezone = moment.tz.guess(true);
+                    if (this.supportedTimezones.indexOf(guessedTimezone) >= 0) {
+                        parameter.value = guessedTimezone;
+                    } else {
+                        parameter.value = this.supportedTimezones[0];
+                    }
                 }
 
-                // otherwise, guess the timezone; If it actually exists, it is used;
-                // if it doesn't exist, the first from the list is selected
-                const guessedTimezone = moment.tz.guess(true);
-                if (this.supportedTimezones.indexOf(guessedTimezone) >= 0) {
-                    parameter.value = guessedTimezone;
-                } else {
-                    parameter.value = this.supportedTimezones[0];
-                }
+                this.parametersByName['timezone'] = parameter;
             } else {
                 // if the timezone is not editable, it should already be
                 // set to something in the supported list, so it's safe
@@ -219,16 +220,18 @@ export default class ReportDetails {
             // special case: Grafana passes UTC as `utc` (sigh)
             timezone = 'UTC';
         }
-        this.parametersByName['timezone'].value = timezone;
-        this.scheduleOptions.timezone = timezone;
+        if (timezone) {
+            this.parametersByName['timezone'].value = timezone;
+            this.scheduleOptions.timezone = timezone;
+        }
         this.validateTimezone();
     }
 
     // Before sending the report we must replace the values for the Endpoint UID and Dashboard UID
     updateGrafanaParameters(selected) {
         if (this.isGrafanaReport()) {
-            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : undefined;
-            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : undefined;
+            this.parametersByName['GRAFANA_ENDPOINT_UID'].value = selected.endpoint ? selected.endpoint.uid : this.parametersByName['GRAFANA_ENDPOINT_UID'].value;
+            this.parametersByName['GRAFANA_DASHBOARD_UID'].value = selected.dashboard ? selected.dashboard.uid : this.parametersByName['GRAFANA_DASHBOARD_UID'].value;
             this.updateTimezoneParameter(selected);
         }
     }

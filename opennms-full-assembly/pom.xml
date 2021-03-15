@@ -571,6 +571,7 @@
                 <feature>eif-adapter</feature>
                 <feature>opennms-telemetry-collection</feature>
                 <feature>opennms-telemetry-bmp</feature>
+                <feature>opennms-telemetry-bmp-stats</feature>
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
                 <feature>opennms-telemetry-graphite</feature>
@@ -1053,10 +1054,14 @@
       <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.stats</artifactId>
       <version>${project.version}</version>
     </dependency>
 

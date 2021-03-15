@@ -10,9 +10,10 @@ The file is located in `$OPENNMS_HOME`.
 Edit the _collectd-configuration.xml_ file to:
 
 * <<ga-thread-pool-edit, set the thread pool>>
-* <<performance-data-collection/collectd/collection-packages.adoc#ga-collector-list-edit, configure collector packages and specifying collectors to use>>
+* <<ga-collectd-packages, configure collector packages>>
+* specify collectors to use
 
-In addtion to editing the _collectd-configuration.xml_, you need to <<performance-data-collection/collectors/collectors.adoc#collectors-overview, configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
+In addtion to editing the _collectd-configuration.xml_, you need to <<collectors-configure, configure collectors>> for the protocols from which you want to collect data by editing the configuration files associated with them.
 
 [[ga-thread-pool-edit]]
 == Setting the Thread Pool

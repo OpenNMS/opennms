@@ -634,13 +634,17 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             $scope.refresh();
         }])
-        .controller('ScheduleEditController', ['$scope', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($scope, userInfo, meta, setGlobalError, ReportScheduleResource) {
+        .controller('ScheduleEditController', ['$http', '$q', '$scope', '$timeout', 'userInfo', 'meta', 'setGlobalError', 'ReportScheduleResource', function($http, $q, $scope, $timeout, userInfo, meta, setGlobalError, ReportScheduleResource) {
             $scope.meta = meta;
             $scope.userInfo = userInfo;
-            $scope.report = new ReportDetails({id: $scope.meta.reportId, scope: $scope});
+            $scope.report = null;
             $scope.options = {};
             $scope.loading = false;
             $scope.reportForm = { $invalid : false };
+
+            const getReportDetails = (reportId) => {
+                return $http.get('rest/reports/scheduled/' + reportId).then((res) => res.data);
+            };
 
             $scope.onReportFormInvalidStateChange = function(invalidState) {
                 $scope.reportForm.$invalid = invalidState;
@@ -651,34 +655,44 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
             };
 
             $scope.loadDetails = function() {
+                if ($scope.loading) {
+                    return;
+                }
                 $scope.loading = true;
-                $scope.selected = {
-                    endpoint: undefined,
-                    dashboard: undefined
-                };
 
-                $scope.options = {
-                    showReportFormatOptions: false,    // Options are not shown, as we are editing a schedule
-                    showDeliveryOptions: true,         // always show when editing
-                    showDeliveryOptionsToggle: false,  // Toggling is disabled
-                    showScheduleOptions: true,         // always show when editing
-                    showScheduleOptionsToggle: false, // Toggling is disabled
-                    deliverReport: true,        // when editing schedule and delivery is enabled
-                    scheduleReport: true,       // when editing schedule and delivery is enabled
-                    canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
-                };
+                $scope.$evalAsync(() => {
+                    $scope.selected = {
+                        endpoint: undefined,
+                        dashboard: undefined
+                    };
 
-                ReportScheduleResource.get({id: $scope.meta.triggerName}, function(response) {
-                    $scope.loading = false;
-                    $scope.report = new ReportDetails(Object.assign(response, {scope: $scope}));
-                }, function(response) {
-                    $scope.loading = false;
-                    $scope.setGlobalError(response);
-                    $scope.$close();
+                    $scope.options = {
+                        hideEndpointsChooser: true,        // endpoint should not be changed when editing
+                        showReportFormatOptions: false,    // Options are not shown, as we are editing a schedule
+                        showDeliveryOptions: true,         // always show when editing
+                        showDeliveryOptionsToggle: false,  // Toggling is disabled
+                        showScheduleOptions: true,         // always show when editing
+                        showScheduleOptionsToggle: false, // Toggling is disabled
+                        deliverReport: true,        // when editing schedule and delivery is enabled
+                        scheduleReport: true,       // when editing schedule and delivery is enabled
+                        canEditTriggerName: false,  // When in edit mode, the trigger name should be unique
+                    };
+
+                    getReportDetails($scope.meta.triggerName).then((reportData) => {
+                        $scope.report = new ReportDetails(Object.assign(reportData, {scope: $scope}));
+                    }).catch((err) => {
+                        $scope.setGlobalError(err);
+                        $scope.$close();
+                    }).finally(() => {
+                        $scope.loading = false;
+                    });
                 });
             };
 
             $scope.update = function() {
+                if (!$scope.report) {
+                    return $q.reject('report not initialized');
+                }
                 $scope.report.resetErrors();
                 const data = {
                     id: $scope.report.id,
@@ -688,14 +702,15 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     deliveryOptions: $scope.report.deliveryOptions,
                     cronExpression: $scope.report.scheduleOptions.getCronExpression(),
                 };
-                ReportScheduleResource.update(data, function() {
-                 $scope.$close();
-              }, function(response) {
-                    handleReportError(response, $scope.report, () => {
-                        $scope.setGlobalError(response);
-                        $scope.$close();
+                return ReportScheduleResource.update(data).$promise.catch((err) => {
+                    // eslint-disable-next-line no-console
+                    console.error(err);
+                    handleReportError(err, $scope.report, () => {
+                        $scope.setGlobalError(err);
                     });
-              });
+                }).finally(() => {
+                    $scope.$close();
+                });
             };
 
             $scope.loadDetails();

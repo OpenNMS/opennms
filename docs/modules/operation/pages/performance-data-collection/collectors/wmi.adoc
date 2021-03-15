@@ -14,7 +14,7 @@ The WmiCollector collects peformance metrics from Windows systems using Windows 
 
 == Collector Parameters
 
-Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the WmiCollector
 [options="header, autowidth"]

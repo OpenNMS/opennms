@@ -1308,7 +1308,6 @@
     <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
-    <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
   
@@ -1374,6 +1373,7 @@
     <commonsIoVersion>2.5</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
+    <commonsNetVersion>3.6</commonsNetVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
     <commonsMath3Version>3.5</commonsMath3Version>
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
@@ -1433,7 +1433,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.2.6</karafVersion>
+    <karafVersion>4.2.10</karafVersion>
     <kafkaBundleVersion>2.7.0_1</kafkaBundleVersion>
     <kafkaVersion>2.7.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1444,10 +1444,10 @@
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
-    <newtsVersion>1.5.2</newtsVersion>
+    <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>7.2.8</paxWebVersion>
+    <paxWebVersion>7.2.19</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
@@ -3421,7 +3421,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.6</version>
+        <version>${commonsNetVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -4252,7 +4252,7 @@
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
-        <version>3.16</version>
+        <version>3.17</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>

@@ -20,7 +20,10 @@ WARNING: Do not delete the default _admin_ and _rtc_ users.
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 
 . Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
-. Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
+. Click *Add new user* and specify a user ID, password, password confirmation and click *OK*.
+
+WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the user ID.
+
 . _Optional_: add user information in the appropriate fields.  
 . _Optional_: assign <<user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
 +

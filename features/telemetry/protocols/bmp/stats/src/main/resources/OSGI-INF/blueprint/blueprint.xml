@@ -1,0 +1,87 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+  <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" />
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="bmp-external-properties" persistent-id="org.opennms.features.telemetry.protocols.bmp.adapter.persist"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="rpkiUrl" value="http://localhost:8080/api/export.json"/>
+      <cm:property name="rpkiUsername" value=""/>
+      <cm:property name="rpkiPassword" value=""/>
+      <cm:property name="routeInfoDbPath" value="$[karaf.etc]/routeinfo"/>
+      <cm:property name="hourOfTheDayForRouteInfo" value="1"/>
+      <cm:property name="hourOfTheDayForAsnInfo" value="2"/>
+      <cm:property name="hourOfTheDayForRpki" value="3"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="bmpUnicastPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" />
+  <reference id="bmpIpRibLogDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" />
+  <reference id="bmpStatsByPeerDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" />
+  <reference id="bmpStatsByAsnDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" />
+  <reference id="bmpStatsByPrefixDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" />
+  <reference id="bmpStatsPeerRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" />
+  <reference id="bmpGlobalIpRibDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" />
+  <reference id="bmpAsnInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" />
+  <reference id="bmpRouteInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" />
+  <reference id="bmpStatsIpOriginsDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" />
+  <reference id="bmpRpkiInfoDao" interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao" />
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+
+  <!-- BMP Stats Aggregator that should only run on OpenNMS -->
+  <bean id="bmpStatsAggregator" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.BmpStatsAggregator"
+        init-method="init" destroy-method="destroy">
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="bmpUnicastPrefixDao" ref="bmpUnicastPrefixDao"/>
+    <property name="bmpIpRibLogDao" ref="bmpIpRibLogDao"/>
+    <property name="bmpStatsByPeerDao" ref="bmpStatsByPeerDao"/>
+    <property name="bmpStatsByAsnDao" ref="bmpStatsByAsnDao"/>
+    <property name="bmpStatsByPrefixDao" ref="bmpStatsByPrefixDao"/>
+    <property name="bmpStatsPeerRibDao" ref="bmpStatsPeerRibDao"/>
+    <property name="bmpGlobalIpRibDao" ref="bmpGlobalIpRibDao"/>
+    <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
+    <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+    <property name="bmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao"/>
+    <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
+  </bean>
+
+
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+
+  <bean id="rpkiValidatorClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.RpkiValidatorClient"
+        init-method="init" destroy-method="destroy">
+    <argument value="${rpkiUrl}"/>
+    <property name="bmpRpkiInfoDao" ref="bmpRpkiInfoDao"/>
+    <property name="rpkiUsername" value="${rpkiUsername}"/>
+    <property name="rpkiPassword" value="${rpkiUsername}"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForRpki}"/>
+  </bean>
+
+  <bean id="routeInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.RouteInfoClient"
+        init-method="init" destroy-method="destroy">
+    <argument value="${routeInfoDbPath}"/>
+    <property name="bmpRouteInfoDao" ref="bmpRouteInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForRouteInfo}"/>
+  </bean>
+
+  <bean id="asnInfoClient" class="org.opennms.netmgt.telemetry.protocols.bmp.adapter.stats.AsnInfoClient"
+        init-method="init" destroy-method="destroy">
+    <property name="bmpGlobalIpRibDao" ref="bmpGlobalIpRibDao"/>
+    <property name="bmpAsnInfoDao" ref="bmpAsnInfoDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="hourOfTheDay" value="${hourOfTheDayForAsnInfo}"/>
+  </bean>
+</blueprint>

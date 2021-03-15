@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,10 @@ package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -44,8 +48,12 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.timeformat.api.TimeformatService;
+import org.opennms.netmgt.vmmgr.Controller;
+import org.opennms.netmgt.vmmgr.StatusGetter;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 import org.opennms.web.rest.v1.config.TicketerConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +62,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("info")
 @Transactional
 public class InfoRestService extends OnmsRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(InfoRestService.class);
+
+    private static StatusGetter s_statusGetter;
 
     @Autowired
     TimeformatService timeformatService;
@@ -70,6 +81,7 @@ public class InfoRestService extends OnmsRestService {
         info.setPackageDescription(sysInfoUtils.getPackageDescription());
         info.setTicketerConfig(getTicketerConfig());
         info.setDatetimeformatConfig(getDateformatConfig(httpServletRequest.getSession(false)));
+        info.setServices(this.getServices());
         return Response.ok().entity(info).build();
     }
 
@@ -98,5 +110,23 @@ public class InfoRestService extends OnmsRestService {
             ticketerConfig.setPlugin(System.getProperty("opennms.ticketer.plugin"));
         }
         return ticketerConfig;
+    }
+
+    private Map<String,String> getServices() {
+        if (InfoRestService.s_statusGetter == null) {
+            InfoRestService.s_statusGetter = new StatusGetter(new Controller());
+        }
+
+        try {
+            return s_statusGetter.retrieveStatus();
+        } catch (final IllegalStateException e) {
+            LOG.warn("Failed to retrieve statuses.  Info will be incomplete.");
+        }
+
+        return Collections.emptyMap();
+    }
+
+    static void setStatusGetter(final StatusGetter getter) {
+        s_statusGetter = getter;
     }
 }

@@ -3,7 +3,7 @@
 = Performance Management
 
 {page-component-title} collects performance data using the _Collectd_ daemon, which is enabled by default. 
-Collectd schedules data collection on {page-component-title} entities (currently nodes and interfaces), using management agents and protocol-specific collectors (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+_Collectd_ schedules data collection on {page-component-title} entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
 Each collector has its own associated configuration that defines parameters for the collector.
 
 [[ga-performance-management-collectd-overview]]
