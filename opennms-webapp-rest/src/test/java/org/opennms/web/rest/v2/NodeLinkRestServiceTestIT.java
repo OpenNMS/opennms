@@ -98,8 +98,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(EnhanceLinkdRestServiceTestIT.class);
+public class NodeLinkRestServiceTestIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeLinkRestServiceTestIT.class);
 
     @Autowired
     private DatabasePopulator databasePopulator;
@@ -134,7 +134,7 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
     @Autowired
     private BridgeElementDao bridgeElementDao;
 
-    public EnhanceLinkdRestServiceTestIT() {
+    public NodeLinkRestServiceTestIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
 
@@ -319,7 +319,6 @@ public class EnhanceLinkdRestServiceTestIT extends AbstractSpringJerseyRestTestC
 
     private OnmsNode createNode1(){
         OnmsNode node = new OnmsNode();
-        node.setId(22);
         node.setNodeId("1");
         node.setLabel("lable");
         return node;
