@@ -1126,7 +1126,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 12
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1157,7 +1157,7 @@ jobs:
       - save-sonar-cache
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 12
+    parallelism: 6
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1168,7 +1168,7 @@ jobs:
           suite: core
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 6
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
