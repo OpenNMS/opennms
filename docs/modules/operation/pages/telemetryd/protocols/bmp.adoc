@@ -162,7 +162,7 @@ admin@opennms()> feature:install opennms-telemetry-bmp-stats
 
 To ensure that the feature continues to be installed on subsequent restarts, add `opennms-telemetry-bmp-stats` to the `featuresBoot` property in  `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
 
-==== Configuring BMP persistence for external sources
+=== Configuration BMP persistence for external sources
 
 You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
 
