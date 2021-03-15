@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,11 @@
 </jsp:include>
 
 <script type="text/javascript" >
+    function doReset()
+    {
+      $('#uei-list-filter').val('');
+      $('#filteringModal').modal('show');
+    }
 
     function next()
     {
@@ -66,8 +71,8 @@ $(document).ready(function() {
     $('#regexp').prop('disabled', ueiLabel !== 'REGEX_FIELD');
   }
 
-  var allUeiOptions = $("#uei > option");
-  var unavailableUeiOptGroup = $("#uei > optgroup");
+  var allUeiOptions = $("#uei > option").clone();
+  var unavailableUeiOptGroup = $("#uei > optgroup").clone();
 
   function filterUeiList() {
     var filterText = $("#uei-list-filter").val().toLowerCase();
@@ -84,14 +89,14 @@ $(document).ready(function() {
     }
     $('#filteringModal').modal('hide');
     $('#uei-list-filter').focus();
+    toggleRegexpField();
   }
 
   $("#uei-list-filter").keydown(function(event) {
     if (event.which == 27) {
       event.preventDefault();
       if ($("#uei-list-filter").val().length > 0) {
-        $('#uei-list-filter').val("");
-        $('#filteringModal').modal('show');
+        doReset();
       }
     }
   });
@@ -160,7 +165,7 @@ $(document).ready(function() {
 <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12 col-lg-8">
     <div class="card">
       <div class="card-header">
         <span>Choose the event UEI that will trigger this notification.</span>
@@ -183,7 +188,7 @@ $(document).ready(function() {
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset" class="btn btn-secondary"/>
+            <input type="reset" class="btn btn-secondary" onclick="doReset()" />
           </td>
         </tr>
         <tr>
