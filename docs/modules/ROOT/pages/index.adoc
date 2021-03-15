@@ -4,6 +4,7 @@
 
 [options="autowidth"]
 |===
+|Version:     |{page-component-display-version}
 |Last update: |{docdatetime}
 |===
 
