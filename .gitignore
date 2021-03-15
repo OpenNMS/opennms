@@ -49,3 +49,6 @@ __pycache__
 # Antora artificats
 build/
 public/
+
+# Ignore jenv files
+.java-version
