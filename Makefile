@@ -1,7 +1,7 @@
 ## 
 # Makefile to build PRIS
 ##
-.PHONY: help docs docs-docker deps-docs deps-docs-docker clean-docs clean-docs-cache clean-all
+.PHONY: help docs docs-docker docs-deps docs-deps-docker docs-serve docs-serve-stop docs-clean docs-clean-cache clean-all
 
 .DEFAULT_GOAL := docs
 
@@ -20,15 +20,15 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  help:             Show this help"
-	@echo "  deps-docs:        Test requirements to run Antora from the local system"
-	@echo "  deps-docs-docker: Test requirements to run Antora with Docker"
+	@echo "  docs-deps:        Test requirements to run Antora from the local system"
+	@echo "  docs-deps-docker: Test requirements to run Antora with Docker"
 	@echo "  docs:             Build Antora docs with a local install Antora, default target"
 	@echo "  docs-docker:      Build Antora docs with from Docker"
-	@echo "  clean-docs:       Clean all build artifacts in build and public directory"
-	@echo "  clean-docs-cache: Clear git repository cache and UI components from .cache directory"
+	@echo "  docs-clean:       Clean all build artifacts in build and public directory"
+	@echo "  docs-clean-cache: Clear git repository cache and UI components from .cache directory"
 	@echo "  clean-all:        Clean build artifacts and Antora cache"
-	@echo "  serve-docs:       Run a local web server with Docker and Nginx to serve the docs locally"
-	@echo "  stop-serve-docs:  Stop the local web server for serving the docs"
+	@echo "  docs-serve:       Run a local web server with Docker and Nginx to serve the docs locally"
+	@echo "  docs-serve-stop:  Stop the local web server for serving the docs"
 	@echo ""
 	@echo "Arguments: "
 	@echo "  DOCKER_ANTORA_IMAGE: Antora Docker image to build the documenation, default: $(DOCKER_ANTORA_IMAGE)"
@@ -52,20 +52,23 @@ docs-docker: deps-docs-docker
 	@echo "Build Antora docs with docker ..."
 	docker run --rm -v $(WORKING_DIRECTORY):/antora $(DOCKER_ANTORA_IMAGE) --stacktrace generate $(SITE_FILE)
 
-clean-docs:
+doc-clean:
 	@echo "Delete build and public artifacts ..."
 	@rm -rf build public
 
-clean-docs-cache:
+docs-clean-cache:
 	@echo "Clean Antora cache for git repositories and UI components ..."
 	@rm -rf .cache
 
-clean-all: clean-docs clean-docs-cache
+clean-all: docs-clean docs-clean-cache
 
-serve-docs:
+docs-serve:
 	@echo "Start Nginx with public folder as html root ..."
 	docker run --rm -v $(WORKING_DIRECTORY)/public:/usr/share/nginx/html --name opennms-docs -p 8080:80 -d nginx
 
-stop-serve-docs:
+docs-serve-stop:
 	@echo "Stopping Nginx docs server ..."
 	docker stop opennms-docs
+
+clean-all: docs-clean docs-clean-cache
+    
