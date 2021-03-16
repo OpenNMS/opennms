@@ -19,7 +19,7 @@ NOTE: This API is v2-only
 | `/enlinkd/isiselems/{nodeId}`  | Retrieve isis element for a given node
 |===
 
-===== Usage examples with curl
+===== Usage example with curl
 .Retrieve all types of links for a given _nodeId_.
 [source,bash]
 ----
