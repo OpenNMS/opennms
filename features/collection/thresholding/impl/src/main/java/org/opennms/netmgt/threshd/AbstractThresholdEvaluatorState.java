@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.hash.Hasher;
@@ -195,12 +196,18 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         }
         if (threshold.getValue() != null) {
             hasher.putDouble(threshold.getValue());
+        } else if (!Strings.isNullOrEmpty(threshold.getValueString())) {
+            hasher.putString(threshold.getValueString(), StandardCharsets.UTF_8);
         }
         if (threshold.getRearm() != null) {
             hasher.putDouble(threshold.getRearm());
+        } else if (!Strings.isNullOrEmpty(threshold.getRearmString())) {
+            hasher.putString(threshold.getRearmString(), StandardCharsets.UTF_8);
         }
         if (threshold.getTrigger() != null) {
             hasher.putInt(threshold.getTrigger());
+        } else if (!Strings.isNullOrEmpty(threshold.getTriggerString())) {
+            hasher.putString(threshold.getTriggerString(), StandardCharsets.UTF_8);
         }
         return hasher.hash().toString();
     }
