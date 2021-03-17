@@ -65,69 +65,119 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NodeLinkRestService implements NodeLinkRestApi {
 
-    @Autowired
     private EnLinkdElementFactoryInterface enLinkdElementFactory;
 
-    @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    public NodeLinkRestService(EnLinkdElementFactoryInterface enLinkdElementFactory, NodeDao m_nodeDao){
+        this.enLinkdElementFactory = enLinkdElementFactory;
+        this.m_nodeDao = m_nodeDao;
+    }
 
     @Override
     public EnlinkdDTO getEnlinkd(String nodeCriteria) {
+        int nodeId = getNodeIdInDB(nodeCriteria);
         return new EnlinkdDTO()
-                .withLldpLinkNodeDTOs(getLldpLinks(nodeCriteria))
-                .withBridgeLinkNodeDTOS(getBridgelinks(nodeCriteria))
-                .withCdpLinkNodeDTOS(getCdpLinks(nodeCriteria))
-                .withOspfLinkNodeDTOS(getOspfLinks(nodeCriteria))
-                .withIsisLinkNodeDTOS(getIsisLinks(nodeCriteria))
-                .withLldpElementNodeDTO(getLldpelem(nodeCriteria))
-                .withCdpElementNodeDTO(getCdpelem(nodeCriteria))
-                .withOspfElementNodeDTO(getOspfelem(nodeCriteria))
-                .withIsisElementNodeDTO(getIsiselem(nodeCriteria));
+                .withLldpLinkNodeDTOs(getLldpLinks(nodeId))
+                .withBridgeLinkNodeDTOS(getBridgeLinks(nodeId))
+                .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
+                .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
+                .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
+                .withLldpElementNodeDTO(getLldpelem(nodeId))
+                .withCdpElementNodeDTO(getCdpelem(nodeId))
+                .withOspfElementNodeDTO(getOspfelem(nodeId))
+                .withIsisElementNodeDTO(getIsiselem(nodeId));
     }
 
     @Override
     public List<LldpLinkNodeDTO> getLldpLinks(String nodeCriteria) {
-        return enLinkdElementFactory.getLldpLinks(getNodeIdInDB(nodeCriteria)).stream().map(this::mapLldpLindNodeToDTO).collect(Collectors.toList());
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getLldpLinks(nodeId);
+    }
+
+    private List<LldpLinkNodeDTO> getLldpLinks(int nodeId) {
+        return enLinkdElementFactory.getLldpLinks(nodeId).stream().map(this::mapLldpLindNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<BridgeLinkNodeDTO> getBridgelinks(String nodeCriteria) {
-        return enLinkdElementFactory.getBridgeLinks(getNodeIdInDB(nodeCriteria)).stream().map(this::mapBridgeLinkNodeToDTO).collect(Collectors.toList());
+    public List<BridgeLinkNodeDTO> getBridgeLinks(String nodeCriteria) {
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getBridgeLinks(nodeId);
+    }
+
+    private List<BridgeLinkNodeDTO> getBridgeLinks(int nodeId) {
+        return enLinkdElementFactory.getBridgeLinks(nodeId).stream().map(this::mapBridgeLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<CdpLinkNodeDTO> getCdpLinks(String nodeCriteria) {
-        return enLinkdElementFactory.getCdpLinks(getNodeIdInDB(nodeCriteria)).stream().map(this::mapCdpLinkNodeToDTO).collect(Collectors.toList());
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getCdpLinks(nodeId);
+    }
+
+    public List<CdpLinkNodeDTO> getCdpLinks(int nodeId) {
+        return enLinkdElementFactory.getCdpLinks(nodeId).stream().map(this::mapCdpLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<OspfLinkNodeDTO> getOspfLinks(String nodeCriteria) {
-        return enLinkdElementFactory.getOspfLinks(getNodeIdInDB(nodeCriteria)).stream().map(this::mapOspfLinkNodeToDTO).collect(Collectors.toList());
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getOspfLinks(nodeId);
+    }
+
+    public List<OspfLinkNodeDTO> getOspfLinks(int nodeId) {
+        return enLinkdElementFactory.getOspfLinks(nodeId).stream().map(this::mapOspfLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<IsisLinkNodeDTO> getIsisLinks(String nodeCriteria) {
-        return enLinkdElementFactory.getIsisLinks(getNodeIdInDB(nodeCriteria)).stream().map(this::mapIsisLinkNodeToDTO).collect(Collectors.toList());
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getIsisLinks(nodeId);
+    }
+
+    public List<IsisLinkNodeDTO> getIsisLinks(int nodeId) {
+        return enLinkdElementFactory.getIsisLinks(nodeId).stream().map(this::mapIsisLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
     public LldpElementNodeDTO getLldpelem(String nodeCriteria) {
-        return mapLldElementNodeToDTO(enLinkdElementFactory.getLldpElement(getNodeIdInDB(nodeCriteria)));
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getLldpelem(nodeId);
+    }
+
+    public LldpElementNodeDTO getLldpelem(int nodeId) {
+        return mapLldElementNodeToDTO(enLinkdElementFactory.getLldpElement(nodeId));
     }
 
     @Override
     public CdpElementNodeDTO getCdpelem(String nodeCriteria) {
-        return mapCdpElementNodeToDTO(enLinkdElementFactory.getCdpElement(getNodeIdInDB(nodeCriteria)));
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getCdpelem(nodeId);
+    }
+
+    public CdpElementNodeDTO getCdpelem(int nodeId) {
+        return mapCdpElementNodeToDTO(enLinkdElementFactory.getCdpElement(nodeId));
     }
 
     @Override
     public OspfElementNodeDTO getOspfelem(String nodeCriteria) {
-        return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(getNodeIdInDB(nodeCriteria)));
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(nodeId));
+    }
+
+    public OspfElementNodeDTO getOspfelem(int nodeId) {
+        return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(nodeId));
     }
 
     @Override
     public IsisElementNodeDTO getIsiselem(String nodeCriteria) {
-        return mapIsisElementNodeToDTO(enLinkdElementFactory.getIsisElement(getNodeIdInDB(nodeCriteria)));
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getIsiselem(nodeId);
+    }
+
+    public IsisElementNodeDTO getIsiselem(int nodeId) {
+        return mapIsisElementNodeToDTO(enLinkdElementFactory.getIsisElement(nodeId));
     }
 
     private int getNodeIdInDB(String nodeCriteria) {

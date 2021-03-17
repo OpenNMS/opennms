@@ -63,7 +63,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("bridgelinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<BridgeLinkNodeDTO> getBridgelinks(@PathParam("node_criteria") String nodeCriteria);
+    List<BridgeLinkNodeDTO> getBridgeLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("cdplinks/{node_criteria}")
