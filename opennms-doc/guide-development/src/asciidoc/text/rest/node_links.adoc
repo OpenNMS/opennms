@@ -7,20 +7,20 @@ NOTE: This API is v2-only
 [options="header", cols="5,10"]
 |===
 | Resource                                                          | Description
-| `/enlinkd/{nodeId}`  | Retrieve all types of links for a given node
-| `/enlinkd/lldplinks/{nodeId}`  | Retrieve lldp link for a given node
-| `/enlinkd/bridgelinks/{nodeId}`| Retrieve bridge link for a given node
-| `/enlinkd/cdplinks/{nodeId}`   | Retrieve cdp link for a given node
-| `/enlinkd/ospflinks/{nodeId}`  | Retrieve ospf link for a given node
-| `/enlinkd/isislinks/{nodeId}`  | Retrieve isis link for a given node
-| `/enlinkd/lldpelems/{nodeId}`  | Retrieve lldp element for a given node
-| `/enlinkd/cdpelems/{nodeId}`   | Retrieve cdp element for a given node
-| `/enlinkd/ospfelems/{nodeId}`  | Retrieve ospf element for a given node
-| `/enlinkd/isiselems/{nodeId}`  | Retrieve isis element for a given node
+| `/enlinkd/{node_criteria}`  | Retrieve all types of links for a given node.
+| `/enlinkd/lldplinks/{node_criteria}`  | Retrieve LLDP link for a given node.
+| `/enlinkd/bridgelinks/{node_criteria}`| Retrieve bridge link for a given node.
+| `/enlinkd/cdplinks/{node_criteria}`   | Retrieve CDP link for a given node.
+| `/enlinkd/ospflinks/{node_criteria}`  | Retrieve OSPF link for a given node.
+| `/enlinkd/isislinks/{node_criteria}`  | Retrieve IS-IS link for a given node.
+| `/enlinkd/lldpelems/{node_criteria}`  | Retrieve LLDP element for a given node.
+| `/enlinkd/cdpelems/{node_criteria}`   | Retrieve CDP element for a given node.
+| `/enlinkd/ospfelems/{node_criteria}`  | Retrieve OSPF element for a given node.
+| `/enlinkd/isiselems/{node_criteria}`  | Retrieve IS-IS element for a given node.
 |===
 
 ===== Usage example with curl
-.Retrieve all types of links for a given _nodeId_.
+.Retrieve all types of links for a given _nodeCriteria_.
 [source,bash]
 ----
 curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/enlinkd/1"

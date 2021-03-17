@@ -51,52 +51,52 @@ import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 public interface NodeLinkRestApi {
 
     @GET
-    @Path("{nodeId}")
+    @Path("{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    EnlinkdDTO getEnlinkd(@PathParam("nodeId") String nodeId);
+    EnlinkdDTO getEnlinkd(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("lldplinks/{nodeId}")
+    @Path("lldplinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<LldpLinkNodeDTO> getLldpLinks(@PathParam("nodeId") String nodeId);
+    List<LldpLinkNodeDTO> getLldpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("bridgelinks/{nodeId}")
+    @Path("bridgelinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<BridgeLinkNodeDTO> getBridgelinks(@PathParam("nodeId") String nodeId);
+    List<BridgeLinkNodeDTO> getBridgelinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("cdplinks/{nodeId}")
+    @Path("cdplinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<CdpLinkNodeDTO> getCdpLinks(@PathParam("nodeId") String nodeId);
+    List<CdpLinkNodeDTO> getCdpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("ospflinks/{nodeId}")
+    @Path("ospflinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<OspfLinkNodeDTO> getOspfLinks(@PathParam("nodeId") String nodeId);
+    List<OspfLinkNodeDTO> getOspfLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("isislinks/{nodeId}")
+    @Path("isislinks/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    List<IsisLinkNodeDTO> getIsisLinks(@PathParam("nodeId") String nodeId);
+    List<IsisLinkNodeDTO> getIsisLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("lldpelems/{nodeId}")
+    @Path("lldpelems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    LldpElementNodeDTO getLldpelem(@PathParam("nodeId") String nodeId);
+    LldpElementNodeDTO getLldpelem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("cdpelems/{nodeId}")
+    @Path("cdpelems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    CdpElementNodeDTO getCdpelem(@PathParam("nodeId") String nodeId);
+    CdpElementNodeDTO getCdpelem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("ospfelems/{nodeId}")
+    @Path("ospfelems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    OspfElementNodeDTO getOspfelem(@PathParam("nodeId") String nodeId);
+    OspfElementNodeDTO getOspfelem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("isiselems/{nodeId}")
+    @Path("isiselems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    IsisElementNodeDTO getIsiselem(@PathParam("nodeId") String nodeId);
+    IsisElementNodeDTO getIsiselem(@PathParam("node_criteria") String nodeCriteria);
 }
