@@ -193,6 +193,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<LldpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, LldpLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("remSysname", result.get(0).getLldpRemInfo());
     }
 
     @Test
@@ -208,6 +209,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<BridgeLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("port(bridgeport:80)", result.get(0).getBridgeLocalPort());
     }
 
     @Test
@@ -222,6 +224,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<CdpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, CdpLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("123",  result.get(0).getCdpCacheDevice());
     }
 
     @Test
@@ -236,6 +239,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("(127.0.0.1)",  result.get(0).getOspfRemPort());
     }
 
     @Test
@@ -250,6 +254,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<IsisLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, IsisLinkNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("off",  result.get(0).getIsisCircAdminState());
     }
 
     @Test
@@ -264,6 +269,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
         LOG.info(result.toString());
+        Assert.assertEquals("lldpSysname", result.getLldpSysName());
     }
 
     @Test
@@ -278,6 +284,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         ObjectMapper mapper = new ObjectMapper();
         List<BridgeElementNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeElementNodeDTO.class));
         Assert.assertEquals(1, result.size());
+        Assert.assertEquals("srt", result.get(0).getBaseType());
     }
 
     @Test
@@ -291,7 +298,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         CdpElementNodeDTO result = mapper.readValue(resultStr, CdpElementNodeDTO.class);
-        LOG.info(result.toString());
+        Assert.assertEquals("cdpGlobalDeviceId", result.getCdpGlobalDeviceId());
     }
 
     @Test
@@ -305,7 +312,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
-        LOG.info(result.toString());
+        Assert.assertEquals("enabled", result.getOspfAdminStat());
     }
 
     @Test
@@ -319,7 +326,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         IsisElementNodeDTO result = mapper.readValue(resultStr, IsisElementNodeDTO.class);
-        LOG.info(result.toString());
+        Assert.assertEquals("off", result.getIsisSysAdminState());
     }
 
     @Test
@@ -369,7 +376,6 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         link.setLldpPortId("1234");
         link.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         link.setLldpPortDescr("portDescr");
-        link.setLldpRemChassisId("34");
         link.setLldpRemSysname("remSysname");
         link.setLldpRemChassisId("remChassisId");
         link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_INTERFACENAME);
