@@ -77,8 +77,11 @@
     {
         var newName = prompt("Enter new name for group.", groupName);
 
-        if (newName != null && newName != "")
-        {
+        if (newName != null && newName != "") {
+          if (/.*[&<>"`']+.*/.test(newName)) {
+            alert("The group ID must not contain any HTML markup.");
+            return;
+          }
           document.allGroups.newName.value = newName;
           document.allGroups.groupName.value=groupName;
           document.allGroups.operation.value="rename";
@@ -102,6 +105,7 @@
   <input type="hidden" name="operation"/>
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
   <div class="card">
     <table class="table table-sm table-bordered">
