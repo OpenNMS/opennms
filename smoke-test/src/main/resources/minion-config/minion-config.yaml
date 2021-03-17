@@ -1,8 +1,6 @@
 ---
 telemetry:
   flows:
-    single-port-listener:
-      enabled: true
     listeners:
       JTI-Listener:
         class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"

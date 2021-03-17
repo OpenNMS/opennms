@@ -77,7 +77,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private static final int MINION_SYSLOG_PORT = 1514;
     private static final int MINION_SSH_PORT = 8201;
     private static final int MINION_SNMP_TRAP_PORT = 1162;
-    private static final int MINION_TELEMETRY_FLOW_PORT = 50000;
+    private static final int MINION_TELEMETRY_FLOW_PORT = 9999;
     private static final int MINION_TELEMETRY_IPFIX_TCP_PORT = 4730;
     private static final int MINION_TELEMETRY_JTI_PORT = 50001;
     private static final int MINION_TELEMETRY_NXOS_PORT = 50002;
