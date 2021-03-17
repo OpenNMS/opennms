@@ -304,6 +304,25 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.info(result.toString());
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testGetEnlinkdNodeNotExist() throws Exception{
+        OnmsNode node1 = createNode1();
+        creatLldpLink(node1);
+        createbridgeBridgeLink(node1);
+        createCdpLink(node1);
+        createOspfLink(node1);
+        createIsIsLink(node1);
+        createLldpElement(node1);
+        createCdpElement(node1);
+        createOspfElement(node1);
+        createIsIsElement(node1);
+
+        String url = "/enlinkd/789";
+        sendRequest(GET, url, 404);
+    }
+
     private void createIsIsElement(OnmsNode node){
         IsIsElement isIsElement = new IsIsElement();
         isIsElement.setId(2);
