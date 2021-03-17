@@ -256,6 +256,7 @@
 <input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
 <input id="password" type="hidden" name="password"/>
 <input id="redirect" type="hidden" name="redirect"/>
+<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
 <div class="row">
   <div class="col-md-6">

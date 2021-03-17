@@ -157,10 +157,12 @@
 <form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
   <input type="hidden" name="operation" value="editDetails"/>
   <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <button type="submit" class="btn btn-secondary">Value Details</button>
 </form>
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="my-4">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
@@ -220,6 +222,7 @@
 </div>
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="mb-4">
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
   <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
