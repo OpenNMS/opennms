@@ -36,6 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
 import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
@@ -56,47 +57,52 @@ public interface NodeLinkRestApi {
     EnlinkdDTO getEnlinkd(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("lldplinks/{node_criteria}")
+    @Path("lldp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<LldpLinkNodeDTO> getLldpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("bridgelinks/{node_criteria}")
+    @Path("bridge_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<BridgeLinkNodeDTO> getBridgeLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("cdplinks/{node_criteria}")
+    @Path("cdp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<CdpLinkNodeDTO> getCdpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("ospflinks/{node_criteria}")
+    @Path("ospf_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<OspfLinkNodeDTO> getOspfLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("isislinks/{node_criteria}")
+    @Path("isis_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     List<IsisLinkNodeDTO> getIsisLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("lldpelems/{node_criteria}")
+    @Path("lldp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    LldpElementNodeDTO getLldpelem(@PathParam("node_criteria") String nodeCriteria);
+    LldpElementNodeDTO getLldpElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("cdpelems/{node_criteria}")
+    @Path("bridge_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    CdpElementNodeDTO getCdpelem(@PathParam("node_criteria") String nodeCriteria);
+    List<BridgeElementNodeDTO> getBridgeElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("ospfelems/{node_criteria}")
+    @Path("cdp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    OspfElementNodeDTO getOspfelem(@PathParam("node_criteria") String nodeCriteria);
+    CdpElementNodeDTO getCdpElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
-    @Path("isiselems/{node_criteria}")
+    @Path("ospf_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    IsisElementNodeDTO getIsiselem(@PathParam("node_criteria") String nodeCriteria);
+    OspfElementNodeDTO getOspfElem(@PathParam("node_criteria") String nodeCriteria);
+
+    @GET
+    @Path("isis_elems/{node_criteria}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    IsisElementNodeDTO getIsisElem(@PathParam("node_criteria") String nodeCriteria);
 }

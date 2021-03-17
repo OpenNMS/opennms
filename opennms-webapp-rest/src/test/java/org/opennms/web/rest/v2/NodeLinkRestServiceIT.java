@@ -44,6 +44,7 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.enlinkd.model.BridgeBridgeLink;
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.CdpElement;
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
 import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
 import org.opennms.web.rest.model.v2.CdpLinkNodeDTO;
@@ -183,7 +185,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         creatLldpLink(node1);
 
-        String url = "/enlinkd/lldplinks/1";
+        String url = "/enlinkd/lldp_links/1";
         String resultStr = sendRequest(GET, url, 200);
         LOG.info(resultStr);
         ObjectMapper mapper = new ObjectMapper();
@@ -198,7 +200,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createbridgeBridgeLink(node1);
 
-        String url = "/enlinkd/bridgelinks/1";
+        String url = "/enlinkd/bridge_links/1";
         String resultStr = sendRequest(GET, url, 200);
         LOG.info(resultStr);
         ObjectMapper mapper = new ObjectMapper();
@@ -213,7 +215,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createCdpLink(node1);
 
-        String url = "/enlinkd/cdplinks/1";
+        String url = "/enlinkd/cdp_links/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         List<CdpLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, CdpLinkNodeDTO.class));
@@ -227,7 +229,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createOspfLink(node1);
 
-        String url = "/enlinkd/ospflinks/1";
+        String url = "/enlinkd/ospf_links/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         List<OspfLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, OspfLinkNodeDTO.class));
@@ -241,7 +243,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createIsIsLink(node1);
 
-        String url = "/enlinkd/isislinks/1";
+        String url = "/enlinkd/isis_links/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         List<IsisLinkNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, IsisLinkNodeDTO.class));
@@ -255,7 +257,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createLldpElement(node1);
 
-        String url = "/enlinkd/lldpelems/1";
+        String url = "/enlinkd/lldp_elems/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         LldpElementNodeDTO result = mapper.readValue(resultStr, LldpElementNodeDTO.class);
@@ -265,11 +267,25 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     @JUnitTemporaryDatabase
     @Transactional
+    public void testGetBridgeelem() throws Exception {
+        OnmsNode node1 = createNode1();
+        createBridgeElement(node1);
+
+        String url = "/enlinkd/bridge_elems/1";
+        String resultStr = sendRequest(GET, url, 200);
+        ObjectMapper mapper = new ObjectMapper();
+        List<BridgeElementNodeDTO> result = mapper.readValue(resultStr, mapper.getTypeFactory().constructCollectionType(List.class, BridgeElementNodeDTO.class));
+        Assert.assertEquals(1, result.size());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
     public void testGetCdpelem() throws Exception {
         OnmsNode node1 = createNode1();
         createCdpElement(node1);
 
-        String url = "/enlinkd/cdpelems/1";
+        String url = "/enlinkd/cdp_elems/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         CdpElementNodeDTO result = mapper.readValue(resultStr, CdpElementNodeDTO.class);
@@ -283,7 +299,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createOspfElement(node1);
 
-        String url = "/enlinkd/ospfelems/1";
+        String url = "/enlinkd/ospf_elems/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         OspfElementNodeDTO result = mapper.readValue(resultStr, OspfElementNodeDTO.class);
@@ -297,7 +313,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsNode node1 = createNode1();
         createIsIsElement(node1);
 
-        String url = "/enlinkd/isiselems/1";
+        String url = "/enlinkd/isis_elems/1";
         String resultStr = sendRequest(GET, url, 200);
         ObjectMapper mapper = new ObjectMapper();
         IsisElementNodeDTO result = mapper.readValue(resultStr, IsisElementNodeDTO.class);
@@ -445,6 +461,22 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         lldpElementDao.save(lldpElement);
         lldpElementDao.flush();
+    }
+
+    private void createBridgeElement(OnmsNode node){
+        BridgeElement bridgeElement = new BridgeElement();
+        bridgeElement.setId(1);
+        bridgeElement.setNode(node);
+        bridgeElement.setBaseBridgeAddress("address");
+        bridgeElement.setBaseNumPorts(0);
+        bridgeElement.setBaseType(BridgeElement.BridgeDot1dBaseType.DOT1DBASETYPE_SRT);
+        bridgeElement.setVlan(3);
+        bridgeElement.setVlanname("vlanname");
+        bridgeElement.setBridgeNodeCreateTime(new Date());
+        bridgeElement.setBridgeNodeLastPollTime(new Date());
+
+        bridgeElementDao.save(bridgeElement);
+        bridgeElementDao.flush();
     }
 
     private void createCdpElement(OnmsNode node){

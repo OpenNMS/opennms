@@ -8,15 +8,16 @@ NOTE: This API is v2-only
 |===
 | Resource                                                          | Description
 | `/enlinkd/{node_criteria}`  | Retrieve all types of links for a given node.
-| `/enlinkd/lldplinks/{node_criteria}`  | Retrieve LLDP link for a given node.
-| `/enlinkd/bridgelinks/{node_criteria}`| Retrieve bridge link for a given node.
-| `/enlinkd/cdplinks/{node_criteria}`   | Retrieve CDP link for a given node.
-| `/enlinkd/ospflinks/{node_criteria}`  | Retrieve OSPF link for a given node.
-| `/enlinkd/isislinks/{node_criteria}`  | Retrieve IS-IS link for a given node.
-| `/enlinkd/lldpelems/{node_criteria}`  | Retrieve LLDP element for a given node.
-| `/enlinkd/cdpelems/{node_criteria}`   | Retrieve CDP element for a given node.
-| `/enlinkd/ospfelems/{node_criteria}`  | Retrieve OSPF element for a given node.
-| `/enlinkd/isiselems/{node_criteria}`  | Retrieve IS-IS element for a given node.
+| `/enlinkd/lldp_links/{node_criteria}`  | Retrieve LLDP link for a given node.
+| `/enlinkd/bridge_links/{node_criteria}`| Retrieve bridge link for a given node.
+| `/enlinkd/cdp_links/{node_criteria}`   | Retrieve CDP link for a given node.
+| `/enlinkd/ospf_links/{node_criteria}`  | Retrieve OSPF link for a given node.
+| `/enlinkd/isis_links/{node_criteria}`  | Retrieve IS-IS link for a given node.
+| `/enlinkd/lldp_elems/{node_criteria}`  | Retrieve LLDP element for a given node.
+| `/enlinkd/bridge_elems/{node_criteria}`  | Retrieve bridge element for a given node.
+| `/enlinkd/cdp_elems/{node_criteria}`   | Retrieve CDP element for a given node.
+| `/enlinkd/ospf_elems/{node_criteria}`  | Retrieve OSPF element for a given node.
+| `/enlinkd/isis_elems/{node_criteria}`  | Retrieve IS-IS element for a given node.
 |===
 
 ===== Usage example with curl

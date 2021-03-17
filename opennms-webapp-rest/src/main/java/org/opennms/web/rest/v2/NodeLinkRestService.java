@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.enlinkd.BridgeElementNode;
 import org.opennms.web.enlinkd.BridgeLinkNode;
 import org.opennms.web.enlinkd.BridgeLinkRemoteNode;
 import org.opennms.web.enlinkd.CdpElementNode;
@@ -45,6 +46,7 @@ import org.opennms.web.enlinkd.LldpElementNode;
 import org.opennms.web.enlinkd.LldpLinkNode;
 import org.opennms.web.enlinkd.OspfElementNode;
 import org.opennms.web.enlinkd.OspfLinkNode;
+import org.opennms.web.rest.model.v2.BridgeElementNodeDTO;
 import org.opennms.web.rest.model.v2.CdpElementNodeDTO;
 import org.opennms.web.rest.v2.api.NodeLinkRestApi;
 import org.opennms.web.rest.model.v2.BridgeLinkNodeDTO;
@@ -70,7 +72,7 @@ public class NodeLinkRestService implements NodeLinkRestApi {
     private NodeDao m_nodeDao;
 
     @Autowired
-    public NodeLinkRestService(EnLinkdElementFactoryInterface enLinkdElementFactory, NodeDao m_nodeDao){
+    public NodeLinkRestService(EnLinkdElementFactoryInterface enLinkdElementFactory, NodeDao m_nodeDao) {
         this.enLinkdElementFactory = enLinkdElementFactory;
         this.m_nodeDao = m_nodeDao;
     }
@@ -84,10 +86,10 @@ public class NodeLinkRestService implements NodeLinkRestApi {
                 .withCdpLinkNodeDTOS(getCdpLinks(nodeId))
                 .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
                 .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
-                .withLldpElementNodeDTO(getLldpelem(nodeId))
-                .withCdpElementNodeDTO(getCdpelem(nodeId))
+                .withLldpElementNodeDTO(getLldpElem(nodeId))
+                .withCdpElementNodeDTO(getCdpElem(nodeId))
                 .withOspfElementNodeDTO(getOspfelem(nodeId))
-                .withIsisElementNodeDTO(getIsiselem(nodeId));
+                .withIsisElementNodeDTO(getIsisElem(nodeId));
     }
 
     @Override
@@ -116,7 +118,7 @@ public class NodeLinkRestService implements NodeLinkRestApi {
         return getCdpLinks(nodeId);
     }
 
-    public List<CdpLinkNodeDTO> getCdpLinks(int nodeId) {
+    private List<CdpLinkNodeDTO> getCdpLinks(int nodeId) {
         return enLinkdElementFactory.getCdpLinks(nodeId).stream().map(this::mapCdpLinkNodeToDTO).collect(Collectors.toList());
     }
 
@@ -126,7 +128,7 @@ public class NodeLinkRestService implements NodeLinkRestApi {
         return getOspfLinks(nodeId);
     }
 
-    public List<OspfLinkNodeDTO> getOspfLinks(int nodeId) {
+    private List<OspfLinkNodeDTO> getOspfLinks(int nodeId) {
         return enLinkdElementFactory.getOspfLinks(nodeId).stream().map(this::mapOspfLinkNodeToDTO).collect(Collectors.toList());
     }
 
@@ -136,47 +138,57 @@ public class NodeLinkRestService implements NodeLinkRestApi {
         return getIsisLinks(nodeId);
     }
 
-    public List<IsisLinkNodeDTO> getIsisLinks(int nodeId) {
+    private List<IsisLinkNodeDTO> getIsisLinks(int nodeId) {
         return enLinkdElementFactory.getIsisLinks(nodeId).stream().map(this::mapIsisLinkNodeToDTO).collect(Collectors.toList());
     }
 
     @Override
-    public LldpElementNodeDTO getLldpelem(String nodeCriteria) {
+    public LldpElementNodeDTO getLldpElem(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
-        return getLldpelem(nodeId);
+        return getLldpElem(nodeId);
     }
 
-    public LldpElementNodeDTO getLldpelem(int nodeId) {
+    private LldpElementNodeDTO getLldpElem(int nodeId) {
         return mapLldElementNodeToDTO(enLinkdElementFactory.getLldpElement(nodeId));
     }
 
     @Override
-    public CdpElementNodeDTO getCdpelem(String nodeCriteria) {
+    public List<BridgeElementNodeDTO> getBridgeElem(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
-        return getCdpelem(nodeId);
+        return getBridgeElem(nodeId);
     }
 
-    public CdpElementNodeDTO getCdpelem(int nodeId) {
+    private List<BridgeElementNodeDTO> getBridgeElem(int nodeId) {
+        return enLinkdElementFactory.getBridgeElements(nodeId).stream().map(this::mapBridgeElementNodeToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public CdpElementNodeDTO getCdpElem(String nodeCriteria) {
+        int nodeId = getNodeIdInDB(nodeCriteria);
+        return getCdpElem(nodeId);
+    }
+
+    private CdpElementNodeDTO getCdpElem(int nodeId) {
         return mapCdpElementNodeToDTO(enLinkdElementFactory.getCdpElement(nodeId));
     }
 
     @Override
-    public OspfElementNodeDTO getOspfelem(String nodeCriteria) {
+    public OspfElementNodeDTO getOspfElem(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
-        return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(nodeId));
+        return getOspfelem(nodeId);
     }
 
-    public OspfElementNodeDTO getOspfelem(int nodeId) {
+    private OspfElementNodeDTO getOspfelem(int nodeId) {
         return mapOspfElementNodeToDTO(enLinkdElementFactory.getOspfElement(nodeId));
     }
 
     @Override
-    public IsisElementNodeDTO getIsiselem(String nodeCriteria) {
+    public IsisElementNodeDTO getIsisElem(String nodeCriteria) {
         int nodeId = getNodeIdInDB(nodeCriteria);
-        return getIsiselem(nodeId);
+        return getIsisElem(nodeId);
     }
 
-    public IsisElementNodeDTO getIsiselem(int nodeId) {
+    private IsisElementNodeDTO getIsisElem(int nodeId) {
         return mapIsisElementNodeToDTO(enLinkdElementFactory.getIsisElement(nodeId));
     }
 
@@ -197,6 +209,20 @@ public class NodeLinkRestService implements NodeLinkRestApi {
                 .withBridgeInfo(bridgeLinkNode.getBridgeInfo())
                 .withBridgeLinkCreateTime(bridgeLinkNode.getBridgeLinkCreateTime())
                 .withBridgeLinkLastPollTime(bridgeLinkNode.getBridgeLinkLastPollTime());
+    }
+
+    private BridgeElementNodeDTO mapBridgeElementNodeToDTO(BridgeElementNode bridgeElementNode) {
+        return bridgeElementNode == null ? null : new BridgeElementNodeDTO()
+                .withBaseBridgeAddress(bridgeElementNode.getBaseBridgeAddress())
+                .withBaseNumPorts(bridgeElementNode.getBaseNumPorts())
+                .withBaseType(bridgeElementNode.getBaseType())
+                .withStpProtocolSpecification(bridgeElementNode.getStpProtocolSpecification())
+                .withStpPriority(bridgeElementNode.getStpPriority())
+                .withStpDesignatedRoot(bridgeElementNode.getStpDesignatedRoot())
+                .withStpRootCost(bridgeElementNode.getStpRootCost())
+                .withStpRootPort(bridgeElementNode.getStpRootPort())
+                .withVlan(bridgeElementNode.getVlan())
+                .withVlanname(bridgeElementNode.getVlanname());
     }
 
     private BridgeLinkRemoteNodeDTO mapBridgeLinkRemoteNodeToDTO(BridgeLinkRemoteNode bridgeLinkRemoteNode) {
