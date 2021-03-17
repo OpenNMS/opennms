@@ -87,6 +87,7 @@ public class NodeLinkRestService implements NodeLinkRestApi {
                 .withOspfLinkNodeDTOS(getOspfLinks(nodeId))
                 .withIsisLinkNodeDTOS(getIsisLinks(nodeId))
                 .withLldpElementNodeDTO(getLldpElem(nodeId))
+                .withBridgeElementNodeDTOS(getBridgeElem(nodeId))
                 .withCdpElementNodeDTO(getCdpElem(nodeId))
                 .withOspfElementNodeDTO(getOspfelem(nodeId))
                 .withIsisElementNodeDTO(getIsisElem(nodeId));

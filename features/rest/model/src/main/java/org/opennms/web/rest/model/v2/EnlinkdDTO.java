@@ -53,6 +53,8 @@ public class EnlinkdDTO {
 
     LldpElementNodeDTO lldpElementNodeDTO;
 
+    List<BridgeElementNodeDTO> bridgeElementNodeDTOS;
+
     CdpElementNodeDTO cdpElementNodeDTO;
 
     OspfElementNodeDTO ospfElementNodeDTO;
@@ -60,8 +62,8 @@ public class EnlinkdDTO {
     IsisElementNodeDTO isisElementNodeDTO;
 
 
-    @XmlElement(name="lldpLinkNode")
-    @JsonProperty("lldpLinkNode")
+    @XmlElement(name="lldpLinkNodes")
+    @JsonProperty("lldpLinkNodes")
     public List<LldpLinkNodeDTO> getLldpLinkNodeDTOs() {
         return lldpLinkNodeDTOs;
     }
@@ -75,8 +77,8 @@ public class EnlinkdDTO {
         return this;
     }
 
-    @XmlElement(name="bridgeLinkNode")
-    @JsonProperty("bridgeLinkNode")
+    @XmlElement(name="bridgeLinkNodes")
+    @JsonProperty("bridgeLinkNodes")
     public List<BridgeLinkNodeDTO> getBridgeLinkNodeDTOS() {
         return bridgeLinkNodeDTOS;
     }
@@ -90,8 +92,8 @@ public class EnlinkdDTO {
         return this;
     }
 
-    @XmlElement(name="cdpLinkNode")
-    @JsonProperty("cdpLinkNode")
+    @XmlElement(name="cdpLinkNodes")
+    @JsonProperty("cdpLinkNodes")
     public List<CdpLinkNodeDTO> getCdpLinkNodeDTOS() {
         return cdpLinkNodeDTOS;
     }
@@ -105,8 +107,8 @@ public class EnlinkdDTO {
         return this;
     }
 
-    @XmlElement(name="ospfLinkNode")
-    @JsonProperty("ospfLinkNode")
+    @XmlElement(name="ospfLinkNodes")
+    @JsonProperty("ospfLinkNodes")
     public List<OspfLinkNodeDTO> getOspfLinkNodeDTOS() {
         return ospfLinkNodeDTOS;
     }
@@ -120,8 +122,8 @@ public class EnlinkdDTO {
         return this;
     }
 
-    @XmlElement(name="isisLinkNode")
-    @JsonProperty("isisLinkNode")
+    @XmlElement(name="isisLinkNodes")
+    @JsonProperty("isisLinkNodes")
     public List<IsisLinkNodeDTO> getIsisLinkNodeDTOS() {
         return isisLinkNodeDTOS;
     }
@@ -147,6 +149,22 @@ public class EnlinkdDTO {
 
     public EnlinkdDTO withLldpElementNodeDTO(LldpElementNodeDTO lldpElementNodeDTO) {
         this.lldpElementNodeDTO = lldpElementNodeDTO;
+        return this;
+    }
+
+
+    @XmlElement(name="bridgeElementNodes")
+    @JsonProperty("bridgeElementNodes")
+    public List<BridgeElementNodeDTO> getBridgeElementNodeDTOS() {
+        return bridgeElementNodeDTOS;
+    }
+
+    public void setBridgeElementNodeDTOS(List<BridgeElementNodeDTO> bridgeElementNodeDTOS) {
+        this.bridgeElementNodeDTOS = bridgeElementNodeDTOS;
+    }
+
+    public EnlinkdDTO withBridgeElementNodeDTOS(List<BridgeElementNodeDTO> bridgeElementNodeDTOS) {
+        this.bridgeElementNodeDTOS = bridgeElementNodeDTOS;
         return this;
     }
 
@@ -200,12 +218,12 @@ public class EnlinkdDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EnlinkdDTO that = (EnlinkdDTO) o;
-        return Objects.equals(lldpLinkNodeDTOs, that.lldpLinkNodeDTOs) && Objects.equals(bridgeLinkNodeDTOS, that.bridgeLinkNodeDTOS) && Objects.equals(cdpLinkNodeDTOS, that.cdpLinkNodeDTOS) && Objects.equals(ospfLinkNodeDTOS, that.ospfLinkNodeDTOS) && Objects.equals(isisLinkNodeDTOS, that.isisLinkNodeDTOS) && Objects.equals(lldpElementNodeDTO, that.lldpElementNodeDTO) && Objects.equals(cdpElementNodeDTO, that.cdpElementNodeDTO) && Objects.equals(ospfElementNodeDTO, that.ospfElementNodeDTO) && Objects.equals(isisElementNodeDTO, that.isisElementNodeDTO);
+        return Objects.equals(lldpLinkNodeDTOs, that.lldpLinkNodeDTOs) && Objects.equals(bridgeLinkNodeDTOS, that.bridgeLinkNodeDTOS) && Objects.equals(cdpLinkNodeDTOS, that.cdpLinkNodeDTOS) && Objects.equals(ospfLinkNodeDTOS, that.ospfLinkNodeDTOS) && Objects.equals(isisLinkNodeDTOS, that.isisLinkNodeDTOS) && Objects.equals(lldpElementNodeDTO, that.lldpElementNodeDTO) && Objects.equals(bridgeElementNodeDTOS, that.bridgeElementNodeDTOS) && Objects.equals(cdpElementNodeDTO, that.cdpElementNodeDTO) && Objects.equals(ospfElementNodeDTO, that.ospfElementNodeDTO) && Objects.equals(isisElementNodeDTO, that.isisElementNodeDTO);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lldpLinkNodeDTOs, bridgeLinkNodeDTOS, cdpLinkNodeDTOS, ospfLinkNodeDTOS, isisLinkNodeDTOS, lldpElementNodeDTO, cdpElementNodeDTO, ospfElementNodeDTO, isisElementNodeDTO);
+        return Objects.hash(lldpLinkNodeDTOs, bridgeLinkNodeDTOS, cdpLinkNodeDTOS, ospfLinkNodeDTOS, isisLinkNodeDTOS, lldpElementNodeDTO, bridgeElementNodeDTOS, cdpElementNodeDTO, ospfElementNodeDTO, isisElementNodeDTO);
     }
 
     @Override
@@ -217,6 +235,7 @@ public class EnlinkdDTO {
                 ", ospfLinkNodeDTOS=" + ospfLinkNodeDTOS +
                 ", isisLinkNodeDTOS=" + isisLinkNodeDTOS +
                 ", lldpElementNodeDTO=" + lldpElementNodeDTO +
+                ", bridgeElementNodeDTOS=" + bridgeElementNodeDTOS +
                 ", cdpElementNodeDTO=" + cdpElementNodeDTO +
                 ", ospfElementNodeDTO=" + ospfElementNodeDTO +
                 ", isisElementNodeDTO=" + isisElementNodeDTO +

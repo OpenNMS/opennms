@@ -157,6 +157,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createOspfLink(node1);
         createIsIsLink(node1);
         createLldpElement(node1);
+        createBridgeElement(node1);
         createCdpElement(node1);
         createOspfElement(node1);
         createIsIsElement(node1);
@@ -173,6 +174,7 @@ public class NodeLinkRestServiceIT extends AbstractSpringJerseyRestTestCase {
         Assert.assertEquals(1, result.getOspfLinkNodeDTOS().size());
         Assert.assertEquals(1, result.getIsisLinkNodeDTOS().size());
         Assert.assertNotNull(result.getLldpElementNodeDTO());
+        Assert.assertEquals(1, result.getBridgeElementNodeDTOS().size());
         Assert.assertNotNull(result.getCdpElementNodeDTO());
         Assert.assertNotNull(result.getOspfElementNodeDTO());
         Assert.assertNotNull(result.getIsisElementNodeDTO());
