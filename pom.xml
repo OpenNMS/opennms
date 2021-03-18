@@ -1433,7 +1433,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.2.6</karafVersion>
+    <karafVersion>4.2.10</karafVersion>
     <kafkaBundleVersion>2.7.0_1</kafkaBundleVersion>
     <kafkaVersion>2.7.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1447,7 +1447,7 @@
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>7.2.8</paxWebVersion>
+    <paxWebVersion>7.2.19</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
