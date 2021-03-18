@@ -21,6 +21,7 @@
 ** xref:provisioning/snmp-profile.adoc[]
 ** xref:provisioning/auto-discovery-detectors.adoc[]
 *** xref:provisioning/detectors.adoc[]
+**** xref:provisioning/detectors/BsfDetector.adoc[]
 **** xref:provisioning/detectors/HttpDetector.adoc[]
 **** xref:provisioning/detectors/HttpsDetector.adoc[]
 **** xref:provisioning/detectors/SnmpDetector.adoc[]
