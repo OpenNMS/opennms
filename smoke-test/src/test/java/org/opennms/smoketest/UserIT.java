@@ -262,7 +262,7 @@ public class UserIT extends OpenNMSSeleniumIT {
 
         // assign just the ROLE_USER
         final Select select = new Select(driver.findElement(By.name("availableRoles")));
-        select.selectByValue("ROLE_USER");
+        select.selectByVisibleText("ROLE_USER");
         findElementById("roles.doAdd").click();
         findElementById("saveUserButton").click();
 
