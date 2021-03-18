@@ -87,6 +87,7 @@ include::text/rest/syslognbi-config.adoc[]
 include::text/bsm/bsm-development.adoc[]
 include::text/rest/discovery.adoc[]
 include::text/rest/situation-feedback.adoc[]
+include::text/rest/node_links.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]
