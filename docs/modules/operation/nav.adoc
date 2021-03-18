@@ -30,6 +30,7 @@
 **** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[]
 **** xref:provisioning/detectors/WebDetector.adoc[]
 **** xref:provisioning/detectors/Win32ServiceDetector.adoc[]
+**** xref:provisioning/detectors/WmiDetector.adoc[]
 ** xref:provisioning/xml-samples.adoc[]
 
 * xref:thresholds/thresholding.adoc[]
