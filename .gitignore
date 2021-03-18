@@ -45,3 +45,6 @@ opennms-container/*/tarball/*.tar.gz
 # Python
 *.pyc
 __pycache__
+
+# Jenv local java version file
+.java-version

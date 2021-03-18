@@ -120,6 +120,88 @@ categories:
             description: "Set the scv provider."
             key: "/scv/provider"
             example: "TODO"
+
+  # Java Agent
+  - name: "java"
+    label: "Java"
+    description: "Java configuration parameters."
+    categories:
+      # Java :: Agent
+      - name: "agent"
+        label: "Agent"
+        description: "Configuration parameters for Java agents."
+        categories:
+          # Prometheus JMX exporter
+          - name: "prom-jmx-exporter"
+            label: "Prometheus JMX Exporter"
+            description: "Configuration for the Prometheus JMX Exporter agent."
+            config:
+              - name: "startDelaySeconds"
+                type:
+                  name: "string"
+                label: "Start delay"
+                description: "Start delay in seconds before serving requests. Any requests within the delay period will result in an empty metrics set."
+                key: "/java/agent/prom-jmx-exporter/startDelaySeconds"
+                example: "0"
+              - name: "jmxUrl"
+                type:
+                  name: "string"
+                label: "JMX URL"
+                description: "JMX URL connecting to the local JVM."
+                key: "/java/agent/prom-jmx-exporter/jmxUrl"
+                example: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
+              - name: "username"
+                type:
+                  name: "string"
+                label: "Username"
+                description: "Connection username to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/username"
+                example: "admin"
+              - name: "password"
+                type:
+                  name: "string"
+                label: "Password"
+                description: "Connection password to establish the JMX connection."
+                key: "/java/agent/prom-jmx-exporter/password"
+                example: "admin"
+              - name: "lowerCaseOutputName"
+                type:
+                  name: "boolean"
+                label: "Lowercase output name"
+                description: "Lowercase the output metric name."
+                key: "/java/agent/prom-jmx-exporter/lowerCaseOutputName"
+                example: "true"
+              - name: "lowercaseOutputLabelNames"
+                type:
+                  name: "boolean"
+                label: "Lowercase output label names"
+                description: "Lowercase the output metric label names."
+                key: "/java/agent/prom-jmx-exporter/lowercaseOutputLabelNames"
+                example: "true"
+              - name: "whitelistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Whitelist Object Names"
+                    type:
+                      name: "string"
+                label: "Whitelist Object Names"
+                description: "A list of ObjectNames to query."
+                key: "/java/agent/prom-jmx-exporter/whitelistObjectNames"
+                example: "org.opennms.core.ipc.sink.producer:*", "org.opennms.netmgt.dnsresolver.netty:*", "org.opennms.netmgt.telemetry:*"
+              - name: "blacklistObjectNames"
+                type:
+                  name: "collection"
+                  strategy: "indexed"
+                  items:
+                    label: "Blacklist Object Names"
+                    type:
+                      name: "string"
+                label: "Blacklist Object Names"
+                description: "A list of ObjectNames to not query. Takes precedence over whitelistObjectNames. Defaults to none."
+                key: "/java/agent/prom-jmx-exporter/blacklistObjectNames"
+                example: "org.apache.activemq:clientId=*,*"
   # Karaf
   - name: "karaf"
     label: "Karaf"

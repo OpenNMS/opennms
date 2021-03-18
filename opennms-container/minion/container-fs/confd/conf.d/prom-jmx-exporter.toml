@@ -1,0 +1,6 @@
+[template]
+src = "prom-jmx-exporter.yaml.tmpl"
+dest = "/opt/prom-jmx-exporter/config.yaml"
+keys = [
+    "/java/agent/prom-jmx-exporter"
+]
