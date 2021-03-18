@@ -179,9 +179,9 @@ commands:
   run-smoke-tests:
     description: "Run the smoke tests"
     parameters:
-      minimal:
-        default: false
-        type: boolean
+      suite:
+        default: core
+        type: string
     steps:
       - run:
           name: Enable swap
@@ -212,7 +212,7 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
-            .circleci/scripts/smoke.sh << parameters.minimal >>
+            .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
           when: always
@@ -545,7 +545,37 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-      - smoke-test-full:
+      - smoke-test-core:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-minion:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-sentinel:
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -642,8 +672,10 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -661,8 +693,10 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -676,8 +710,10 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -690,8 +726,11 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
+            - integration-test
           filters:
             branches:
               only:
@@ -1095,7 +1134,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 12
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1124,7 +1163,29 @@ jobs:
             export MAVEN_OPTS="-Xms3G -Xmx3G"
             .circleci/scripts/sonar.sh
       - save-sonar-cache
-  smoke-test-full:
+  smoke-test-core:
+    executor: smoke-test-executor
+    parallelism: 6
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: core
+  smoke-test-minion:
+    executor: smoke-test-executor
+    parallelism: 6
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minion
+  smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
@@ -1133,14 +1194,15 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run-smoke-tests
+      - run-smoke-tests:
+          suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:
       - attach_workspace:
           at: ~/
       - run-smoke-tests:
-          minimal: true
+          suite: minimal
   create-merge-foundation-branch:
     <<: *defaults
     <<: *docker_container_config
