@@ -32,9 +32,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -57,7 +55,6 @@ import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
