@@ -10,6 +10,9 @@ executors:
   docker-executor:
     docker:
       - image: docker:20.10.1-git
+  docs-executor:
+    docker:
+      - image: antora/antora:2.3.4
   integration-test-executor:
     machine: true
   smoke-test-executor:
@@ -516,6 +519,11 @@ workflows:
               ignore:
                 - /^from-foundation.*/
                 - jira/NMS-12497
+      - build-docs:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/   
       - tarball-assembly:
           requires:
             - build
@@ -746,7 +754,27 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-
+  build-docs:
+    executor: docs-executor
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            apk --no-cache add git openssh-client
+            npm i -g antora-site-generator-lunr
+            npm i -g gitlab:antora/xref-validator
+      - cached-checkout
+      - run:
+          name: Validate Xrefs in docs
+          command: |
+            NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
+      - run:
+          name: Build docs with Antora
+          command: |
+             DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+      - store_artifacts:
+          path: ~/project/build/site.zip
+          destination: site.zip
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
