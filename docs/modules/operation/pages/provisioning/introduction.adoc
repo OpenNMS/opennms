@@ -15,7 +15,7 @@ Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP
 
 * link:#discovery-auto[automatic discovery] (typically via the Discovery daemon)
 * link:#discovery-directed[directed discovery] using an import requisition (typically via the Provisioning UI)
-* asset import through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
+* link:development/rest/rest-api.adoc#rest-api[asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
 
 {page-component-title} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect. 
 

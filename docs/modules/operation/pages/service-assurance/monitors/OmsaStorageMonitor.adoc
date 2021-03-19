@@ -2,8 +2,8 @@
 [[OmsaStorageMonitor]]
 = OmsaStorageMonitor
 
-With _OmsaStorageMonitor_ you are able to monitor your #http://de.community.dell.com/techcenter/systems-management/w/wiki/438.dell-openmanage-server-administrator-omsa.aspx[Dell OpenManaged]# servers _RAID_ array status.
-The following _OIDs_ from the #http://support.dell.com/support/systemsinfo/document.aspx?~file=/software/svradmin/2.2/en/snmp/snmpc22.htm[STORAGEMANAGEMENT-MIB]# are supported by this monitor:
+With _OmsaStorageMonitor_ you are able to monitor your https://www.dell.com/support/kbdoc/en-ca/000126778/how-to-dell-server-manage-multiple-servers-with-omsa-and-ome[Dell OpenManaged] servers _RAID_ array status.
+The following _OIDs_ from the https://www.dell.com/support/manuals/en-ca/dell-openmanage-software-9.1/snmp_om_9.1_reference%20guide/server-administrator-storage-management-mib?guid=guid-a067ce36-3019-4bf6-8ce4-d92ad428194d&lang=en-us[STORAGEMANAGEMENT-MIB] are supported by this monitor:
 
  virtualDiskRollUpStatus                     .1.3.6.1.4.1.674.10893.1.20.140.1.1.19
  arrayDiskLogicalConnectionVirtualDiskNumber .1.3.6.1.4.1.674.10893.1.20.140.3.1.5

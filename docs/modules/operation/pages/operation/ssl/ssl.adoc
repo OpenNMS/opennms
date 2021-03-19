@@ -103,7 +103,7 @@ For more details, please check the link:http://docs.oracle.com/javase/8/docs/tec
 
 If you encounter issues while using HTTPS it might be useful to enable debugging or use one of the build-in Java System Properties to configure the proper use of SSL.
 
-.Java built-in System Properties #(link:https://access.redhat.com/documentation/en-US/Fuse_MQ_Enterprise/7.1/html/Security_Guide/files/SSL-SysProps.html[Source])#
+.Java built-in System Properties (link:https://access.redhat.com/documentation/en-us/red_hat_amq/6.3/html/security_guide/ssl-sysprops[Source])
 [options="header"]
 |===
 |System Property Name                |Description

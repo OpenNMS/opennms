@@ -47,6 +47,7 @@ This value can be configured.
 When using the JMS-based RPC implementation, set value of the `org.opennms.jms.timeout` system property to the desired number of milliseconds.
 When using the Kafka-based RPC implementation, set the value of the `org.opennms.core.ipc.rpc.kafka.ttl` system property to the desired number of milliseconds.
 
+[[metadata-ttls]]
 == Using metadata for TTLs
 
 For RPCs that derive TTLs from service parameters, the link:#ga-meta-data[metadata] feature can be used to customize these values on a node/interface/service basis.

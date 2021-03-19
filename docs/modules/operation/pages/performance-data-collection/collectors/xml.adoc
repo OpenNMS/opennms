@@ -76,7 +76,7 @@ The request element can have the following child elements:
 | `retries`               | How often should the request be repeated in case of an error?         | optional | 0
 | `use-system-proxy`      | Should the system-wide proxy settings be used? Configure the system proxy
                             settings
-                            via <<system-properties.adoc#ga-opennms-system-properties, system properties>>             | optional | false
+                            via <<system properties/introduction.adoc#system-properties, system properties>>             | optional | false
 |===
 
 The referenced `opennms-nodes.xml` file contains:

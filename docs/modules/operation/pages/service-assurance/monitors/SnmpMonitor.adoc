@@ -124,7 +124,7 @@ As a working example we want to monitor the thermal system fan status which is p
 The manufacturer _MIB_ gives the following information:
 
 
-.Description of the cpqHeThermalSystemFanStatus from #http://h18013.www1.hp.com/products/servers/management/hpsim/mibkit.html[CPQHLTH-MIB]#
+.Description of the cpqHeThermalSystemFanStatus from https://www.circitor.fr/Mibs/Mib/C/CPQHLTH-MIB.mib[CPQHLTH-MIB]
 [source, asn1]
 ----
 SYNTAX 	INTEGER  {

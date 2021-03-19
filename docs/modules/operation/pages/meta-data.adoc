@@ -10,7 +10,7 @@ Each node, each interface and each service can have an arbitrary number of metad
 The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
 The association of metadata with nodes, interfaces and services happens during <<provisioning/meta-data.adoc#ga-provisioning-meta-data[provisioning].
-Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the #xref:https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#_meta_data[ReST endpoints]#.
+Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development/rest/meta-data.adoc#metadata-rest[ReST endpoints].
 
 A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
 There is no limitation in defining metadata: users can decide how to define it and use it in expressions. 
@@ -169,6 +169,6 @@ The following places allow the use the Metadata DSL:
 * <<provisioning/auto-discovery-detectors.adoc#ga-provisioning-detectors-meta-data,Provisioning Detectors>>
 * <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service Assurance>>
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance Management>>
-* <<minion/ttl.adoc#ga-metadata-ttl, TTLs with Minion>>
+* <<reference/configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>
 * <<thresholds/thresholding.adoc#ga-threshhold-metadata, Expression-Based Thresholds>>
 * <<notifications/introduction.adoc#ga-notifications, Notifications>>

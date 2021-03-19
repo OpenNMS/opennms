@@ -5,7 +5,7 @@
 {page-component-title} monitors the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, the network.
 {page-component-title}, characterizes the state of these problems as alarms.
 
-While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network, (see also situations and <<bsb/introduction.adoc#ga-bsm-introduction, Business Services>>).
+While OpenNMS events (or messages) carry problem state attributes such as acknowledgement and severity, alarms are _the_ indicator for problems in the network, (see also situations and <<bsm/introduction.adoc#ga-bsm-introduction, Business Services>>).
 
 
 IMPORTANT: #Prior to H23, Alarmd was designed and configured to track the state of a problem using two alarms: down and up.

@@ -3,7 +3,7 @@
 
 The LDAPS monitor tests the response of an SSL-enabled LDAP server.
 The LDAPS monitor is an SSL-enabled extension of the LDAP monitor with a default TCP port value of 636.
-All LdapMonitor parameters apply, so please refer to <<service-assurance/monitors/LdapMonitor.adOC#poller-ldap-monitor, LdapMonitor>> for more information.
+All LdapMonitor parameters apply, so please refer to <<service-assurance/monitors/LdapMonitor.adoc#poller-ldap-monitor, LdapMonitor>> for more information.
 This monitor implements the same <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>> as LdapMonitor.
 
 == Monitor Facts

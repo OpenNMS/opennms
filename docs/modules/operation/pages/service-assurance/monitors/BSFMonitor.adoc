@@ -125,7 +125,7 @@ The _BSF_ supports many languages, the following table provides the required set
 |===
 | Language                            | lang-class  | bsf-engine                                    | required library
 | http://www.beanshell.org[BeanShell] | _beanshell_ | `bsh.util.BeanShellBSFEngine`                 | supported by default
-| http://groovy.codehaus.org[Groovy]  | _groovy_    | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
+| https://groovy-lang.org/[Groovy]  | _groovy_    | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
 | http://www.jython.org[Jython]       | _jython_    | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
 |===
 

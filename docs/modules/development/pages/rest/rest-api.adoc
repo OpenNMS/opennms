@@ -1,3 +1,4 @@
+[[rest-api]]
 = REST API
 
 A RESTful interface is a web service conforming to the REST architectural style as described in link:http://oreilly.com/catalog/9780596529260[_RESTful Web Services_].

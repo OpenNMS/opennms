@@ -2,7 +2,7 @@
 = Transparent Bridge Discovery
 
 Discovering Layer 2 network links using the Bridge Forwarding table requires a special algorithm.
-To discover Links an algorithm based on a scientific paper with the title #link:https://cs-pub.bu.edu/groups/nrg/readinglist/lowekamp-sigcomm01.pdf[Topology Discovery for Large Ethernet Networks]# is implemented.
+To discover Links an algorithm based on a scientific paper with the title link:https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.383.8579&rep=rep1&type=pdf[Topology Discovery for Large Ethernet Networks] is implemented.
 The gathered information is used to classify Links in macLink and bridgeLink.
 A macLink represents a Link between a workstation or server identified by a mac address.
 A bridgeLink is a connection between backbone ports.

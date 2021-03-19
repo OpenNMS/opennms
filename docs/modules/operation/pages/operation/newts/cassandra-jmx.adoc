@@ -86,7 +86,7 @@ The number of dropped messages in the different message queues are good indicato
 Apache Cassandra is based on a so called Staged Event Driven Architecture (SEDA).
 This seperates different operations in stages and these stages are loosely coupled using a messaging service.
 Each of these components use queues and thread pools to group and execute their tasks.
-The documentation for Cassandra Thread pool monitoring is originated from link:http://www.pythian.com/blog/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
+The documentation for Cassandra Thread pool monitoring is originated from link:https://blog.pythian.com/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
 
 .Collected metrics for Thread Pools
 [options="header, autowidth"]

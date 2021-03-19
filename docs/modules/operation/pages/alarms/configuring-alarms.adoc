@@ -49,7 +49,7 @@ NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" 
 </simpleType>
 ----
 *NOTE*
-See also: <<events/anataomy-events.adoc#ga-events-anatomy-of-an-event, anatomy of an event>>
+See also: <<events/anatomy-events.adoc#ga-events-anatomy-of-an-event, anatomy of an event>>
 
 .The reduction-key
 The critical attribute when defining the alarm-data of an event, is the reduction-key.

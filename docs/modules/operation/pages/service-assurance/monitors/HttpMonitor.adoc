@@ -122,7 +122,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 In case a filtering proxy server is set up to allow retrieval of some URLs but deny others, the HttpMonitor can be used to verify this behavior.
 
-As an example a proxy server is running on TCP port 3128, and serves http://www.opennms.org/ but never #http://www.myspace.com/#.
+As an example a proxy server is running on TCP port 3128, and serves http://www.opennms.org/ but never http://www.myspace.com/.
 To test this behaviour, the _HttpMonitor_ can be configured as the following:
 
 [source, xml]

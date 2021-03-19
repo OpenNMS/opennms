@@ -20,7 +20,7 @@ CAUTION: Make sure no DHCP client is running on the {page-component-title} serve
 | Remote Enabled | true
 |===
 
-This monitor implements the <<serivce-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == DhcpMonitor configuration
 

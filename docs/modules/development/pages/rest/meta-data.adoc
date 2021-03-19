@@ -1,3 +1,4 @@
+[[metadata-rest]]
 = Metadata
 
 You can qurey, add, modify, or delete the actual metadata of nodes, interfaces, and services via REST endpoints.
