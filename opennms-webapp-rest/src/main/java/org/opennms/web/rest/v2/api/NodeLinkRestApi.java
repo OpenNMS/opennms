@@ -48,6 +48,13 @@ import org.opennms.web.rest.model.v2.LldpLinkNodeDTO;
 import org.opennms.web.rest.model.v2.OspfElementNodeDTO;
 import org.opennms.web.rest.model.v2.OspfLinkNodeDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @Path("enlinkd")
 public interface NodeLinkRestApi {
 
@@ -59,6 +66,13 @@ public interface NodeLinkRestApi {
     @GET
     @Path("lldp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's LLDP Link", description = "Get LLDP link for a specific node", tags = { "LLDP" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = LldpLinkNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<LldpLinkNodeDTO> getLldpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET

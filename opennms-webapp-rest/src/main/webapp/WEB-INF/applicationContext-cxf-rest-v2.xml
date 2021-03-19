@@ -29,6 +29,12 @@
     -->
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
+    <!-- CXF OpenApiFeature -->
+    <bean id="openApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
+        <!-- customize some of the properties -->
+        <property name="description" value="OpenNMS V2 RESTful API" />
+    </bean>
+
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
       <jaxrs:properties>
         <!-- Use the ResourceContextProvider defined above -->
@@ -62,6 +68,9 @@
       <jaxrs:outInterceptors>
         <ref bean="gzipOutInterceptor" />
       </jaxrs:outInterceptors>
+        <jaxrs:features>
+            <ref bean="openApiFeature" />
+        </jaxrs:features>
     </jaxrs:server>
 
 </beans>
