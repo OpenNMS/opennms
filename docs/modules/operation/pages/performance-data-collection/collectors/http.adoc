@@ -27,7 +27,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 | `timeout`              | Connection and socket timeout in milliseconds                                  | optional | 3000
 | `retry`                | Number of retries                                                              | optional | 2
 | `use-system-proxy`     | Should the system-wide proxy settings be used? Configure system proxy settings
-                          via <<operation/system properties/introduction.adoc#system-properties, system properties>>        | optional | `false`
+                          via <<operation:system-properties/introduction.adoc#system-properties, system properties>>        | optional | `false`
 |===
 
 
