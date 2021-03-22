@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,10 +31,12 @@ package org.opennms.smoketest.health;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.Timeout;
 import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.stacks.OpenNMSStack;
+import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
@@ -50,6 +52,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
+@Category(SentinelTests.class)
 public class HealthCheckIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckIT.class);
