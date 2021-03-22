@@ -40,6 +40,7 @@ import org.opennms.api.integration.ticketing.RelatedAlarmSummary;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -72,6 +73,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private AlarmEntityNotifier m_alarmEntityNotifier;
 
     private Plugin m_ticketerPlugin;
     private EventIpcManager m_eventIpcManager;
@@ -113,7 +117,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be canceled.", alarmId, ticketId);
             return;
         }
-
+        TroubleTicketState previousState = alarm.getTTicketState();
         try {
             setTicketState(ticketId, Ticket.State.CANCELLED);
             alarm.setTTicketState(TroubleTicketState.CANCELLED);
@@ -125,6 +129,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 
         m_alarmDao.saveOrUpdate(alarm);
 
+        updateNewTicketState(alarm, previousState);
     }
 
     private void setTicketState(String ticketId, State state) throws PluginException { 
@@ -137,6 +142,14 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             throw e;
         }
     }
+
+    private void updateNewTicketState(OnmsAlarm alarm, TroubleTicketState prevState) {
+        TroubleTicketState newState = alarm.getTTicketState();
+        if (!newState.equals(prevState)) {
+            m_alarmEntityNotifier.didChangeTicketStateForAlarm(alarm, prevState);
+        }
+    }
+
 
 
     /*
@@ -151,7 +164,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be closed.", alarmId, ticketId);
             return;
         }
-
+        TroubleTicketState prevState = alarm.getTTicketState();
         if (SKIP_CLOSE_WHEN_NOT_CLEARED) {
             final OnmsSeverity currentSeverity = alarm.getSeverity();
             if (currentSeverity != null && !currentSeverity.equals(OnmsSeverity.CLEARED)) {
@@ -170,6 +183,8 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         }
 
         m_alarmDao.saveOrUpdate(alarm);
+
+        updateNewTicketState(alarm, prevState);
     }
 
     /*
@@ -213,6 +228,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         }
 
         m_alarmDao.saveOrUpdate(alarm);
+        updateNewTicketState(alarm, null);
 
     }
 
@@ -267,7 +283,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be updated.", alarmId, ticketId);
             return;
         }
-
+        TroubleTicketState prevState = alarm.getTTicketState();
         Ticket ticket = null;
 
         try {
@@ -288,6 +304,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         }
 
         m_alarmDao.saveOrUpdate(alarm);
+        updateNewTicketState(alarm, prevState);
     }
 
     /*
@@ -332,5 +349,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     @Override
     public void setTicketerPlugin(Plugin plugin) {
         m_ticketerPlugin = Objects.requireNonNull(plugin, "plugin cannot be null");
+    }
+
+    public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
+        this.m_alarmEntityNotifier = alarmEntityNotifier;
     }
 }
