@@ -111,6 +111,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      */
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public void cancelTicketForAlarm(int alarmId, String ticketId) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         if (alarm == null) {
@@ -158,6 +159,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      */
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public void closeTicketForAlarm(int alarmId, String ticketId) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         if (alarm == null) {
@@ -277,6 +279,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      */
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public void updateTicketForAlarm(int alarmId, String ticketId) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         if (alarm == null) {
