@@ -144,9 +144,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public String getEventLabel(final String uei) {
-		Event event = findByUei(uei);
+		// Optimistic lookup
+		Event event = m_events.getEventByUeiOptimistic(uei);
+		if (event == null) {
+			// Fallback to search if no match was found
+			event = findByUei(uei);
+		}
 		return event == null ? null : event.getEventLabel();
-
 	}
 
 	@Override

@@ -30,6 +30,7 @@
       <cm:property name="suppressIncrementalAlarms" value="true"/>
       <cm:property name="kafkaSendQueueCapacity" value="1000"/>
       <cm:property name="startAlarmSyncWithCleanState" value="false"/>
+      <cm:property name="numEventListenerThreads" value="4"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -75,6 +76,7 @@
     <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
     <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
     <property name="encoding" value="${encoding}"/>
+    <property name="numEventListenerThreads" value="${numEventListenerThreads}"/>
   </bean>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer">
