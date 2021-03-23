@@ -12,7 +12,7 @@ executors:
       - image: docker:20.10.1-git
   docs-executor:
     docker:
-      - image: antora/antora:2.3.4
+      - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine: true
   smoke-test-executor:
@@ -757,12 +757,6 @@ jobs:
   build-docs:
     executor: docs-executor
     steps:
-      - run:
-          name: Install dependencies
-          command: |
-            apk --no-cache add git openssh-client
-            npm i -g antora-site-generator-lunr
-            npm i -g gitlab:antora/xref-validator
       - cached-checkout
       - run:
           name: Validate Xrefs in docs
