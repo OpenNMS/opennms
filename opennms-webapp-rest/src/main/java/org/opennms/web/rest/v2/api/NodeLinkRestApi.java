@@ -137,6 +137,7 @@ public interface NodeLinkRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = LldpElementNodeDTO.class))),
+            @ApiResponse(responseCode = "204", description = "No corresponding element found"),
             @ApiResponse(responseCode = "404", description = "Node not found",
                     content = @Content)
     })
@@ -161,6 +162,7 @@ public interface NodeLinkRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = CdpElementNodeDTO.class))),
+            @ApiResponse(responseCode = "204", description = "No corresponding element found"),
             @ApiResponse(responseCode = "404", description = "Node not found",
                     content = @Content)
     })
@@ -173,6 +175,7 @@ public interface NodeLinkRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = OspfElementNodeDTO.class))),
+            @ApiResponse(responseCode = "204", description = "No corresponding element found"),
             @ApiResponse(responseCode = "404", description = "Node not found",
                     content = @Content)
     })
@@ -185,6 +188,7 @@ public interface NodeLinkRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = IsisElementNodeDTO.class))),
+            @ApiResponse(responseCode = "204", description = "No corresponding element found"),
             @ApiResponse(responseCode = "404", description = "Node not found",
                     content = @Content)
     })
