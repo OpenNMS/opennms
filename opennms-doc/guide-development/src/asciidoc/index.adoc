@@ -107,5 +107,9 @@ include::text/amqp/event_receiver.adoc[]
 include::text/amqp/alarm_northbounder.adoc[]
 include::text/amqp/custom_processors.adoc[]
 
+== InMemory Ticketer
+include::text/ticketing/inmemory-plugin.adoc[]
+
+
 == Design and Styleguidelines
 include::text/reporting/jasperreport-styleguide.adoc[]

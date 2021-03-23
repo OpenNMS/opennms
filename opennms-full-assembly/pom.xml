@@ -604,6 +604,7 @@
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
                 <feature>opennms-core-ipc-grpc-server</feature>
+                <feature>opennms-inmemory-ticketer</feature>
                 <feature>scv-api</feature>
                 <feature>scv-jceks-impl</feature>
                 <feature>scv-shell</feature>
@@ -1063,6 +1064,11 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.bmp.stats</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ticketing</groupId>
+      <artifactId>org.opennms.features.ticketing.inmemory</artifactId>
       <version>${project.version}</version>
     </dependency>
 
