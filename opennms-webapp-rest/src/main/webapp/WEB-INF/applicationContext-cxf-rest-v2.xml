@@ -30,9 +30,22 @@
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
     <!-- CXF OpenApiFeature -->
+    <bean id="securityScheme" class="io.swagger.v3.oas.models.security.SecurityScheme">
+        <property name="type">
+            <value type="io.swagger.v3.oas.models.security.SecurityScheme.Type">HTTP</value>
+        </property>
+        <property name="scheme" value="basic" />
+    </bean>
+    <util:map id="securityDefinitionsMap" map-class="java.util.HashMap">
+        <entry key="basicAuth" value-ref = "securityScheme" />
+    </util:map>
+    <bean id="openApiCustomizer" class="org.apache.cxf.jaxrs.openapi.OpenApiCustomizer">
+        <property name="dynamicBasePath" value="true" />
+    </bean>
     <bean id="openApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
-        <!-- customize some of the properties -->
         <property name="description" value="OpenNMS V2 RESTful API" />
+        <property name="securityDefinitions" ref="securityDefinitionsMap" />
+        <property name="customizer" ref="openApiCustomizer" />
     </bean>
 
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
