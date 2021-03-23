@@ -61,12 +61,19 @@ public interface NodeLinkRestApi {
     @GET
     @Path("{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's all types of links", description = "Get all types of links for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = EnlinkdDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     EnlinkdDTO getEnlinkd(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("lldp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's LLDP Link", description = "Get LLDP link for a specific node", tags = { "LLDP" })
+    @Operation(summary = "Get a node's LLDP Link", description = "Get LLDP link for a specific node", tags = { "Enlinkd" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = LldpLinkNodeDTO.class)))),
@@ -78,45 +85,108 @@ public interface NodeLinkRestApi {
     @GET
     @Path("bridge_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's bridge Link", description = "Get bridge link for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = BridgeLinkNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<BridgeLinkNodeDTO> getBridgeLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("cdp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's CDP Link", description = "Get CDP link for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CdpLinkNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<CdpLinkNodeDTO> getCdpLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("ospf_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's OSPF Link", description = "Get OSPF link for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = OspfLinkNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<OspfLinkNodeDTO> getOspfLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("isis_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's IS-IS Link", description = "Get IS-IS link for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = IsisLinkNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<IsisLinkNodeDTO> getIsisLinks(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("lldp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's LLDP element", description = "Get LLDP element for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = LldpElementNodeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     LldpElementNodeDTO getLldpElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("bridge_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's bridge element", description = "Get bridge element for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = BridgeElementNodeDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     List<BridgeElementNodeDTO> getBridgeElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("cdp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's CDP element", description = "Get CDP element for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = CdpElementNodeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     CdpElementNodeDTO getCdpElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("ospf_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's OSPF element", description = "Get OSPF element for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = OspfElementNodeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     OspfElementNodeDTO getOspfElem(@PathParam("node_criteria") String nodeCriteria);
 
     @GET
     @Path("isis_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(summary = "Get a node's IS-IS element", description = "Get IS-IS element for a specific node", tags = { "Enlinkd" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation",
+                    content = @Content(schema = @Schema(implementation = IsisElementNodeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Node not found",
+                    content = @Content)
+    })
     IsisElementNodeDTO getIsisElem(@PathParam("node_criteria") String nodeCriteria);
 }
