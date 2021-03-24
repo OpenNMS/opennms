@@ -355,6 +355,6 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     }
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
-        this.m_alarmEntityNotifier = alarmEntityNotifier;
+        m_alarmEntityNotifier = alarmEntityNotifier;
     }
 }
