@@ -1525,6 +1525,10 @@
     <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+
+    <!-- OpenAPI-->
+    <cxfServiceDescriptionOpenapiVersion>3.2.4</cxfServiceDescriptionOpenapiVersion>
+    <swaggerUIVersion>3.13.0</swaggerUIVersion>
   </properties>
 
   <profiles>
