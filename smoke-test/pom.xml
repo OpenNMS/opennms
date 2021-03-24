@@ -10,12 +10,13 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>never</updatePolicy>
     <camelVersion>2.19.1</camelVersion>
+    <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.6.6</jackson2Version>
+    <jackson2Version>2.9.8</jackson2Version>
     <jersey.version>2.28</jersey.version>
     <karafVersion>4.1.5</karafVersion>
     <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.12.5</testcontainers.version>
+    <testcontainers.version>1.15.2</testcontainers.version>
     <test.fork.count>1</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
@@ -121,7 +122,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.22.2</version>
+        <version>${failsafeVersion}</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables/>
