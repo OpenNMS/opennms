@@ -559,8 +559,9 @@ workflows:
       - smoke-test-core:
           requires:
             - meridian-rpm-build
-            - tarball-assembly
+            - minion-rpm-build
             - sentinel-rpm-build
+            - tarball-assembly
           filters:
             branches:
               only:
@@ -574,8 +575,9 @@ workflows:
       - smoke-test-minion:
           requires:
             - meridian-rpm-build
-            - tarball-assembly
+            - minion-rpm-build
             - sentinel-rpm-build
+            - tarball-assembly
           filters:
             branches:
               only:
@@ -591,6 +593,7 @@ workflows:
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
+            - tarball-assembly
           filters:
             branches:
               only:
@@ -606,6 +609,7 @@ workflows:
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
+            - tarball-assembly
           filters:
             branches:
               ignore:
