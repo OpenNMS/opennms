@@ -61,7 +61,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's all types of links", description = "Get all types of links for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's all types of links", description = "Get all types of links for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = EnlinkdDTO.class))),
@@ -73,7 +73,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("lldp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's LLDP Link", description = "Get LLDP link for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's LLDP Link", description = "Get LLDP link for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = LldpLinkNodeDTO.class)))),
@@ -85,7 +85,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("bridge_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's bridge Link", description = "Get bridge link for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's bridge Link", description = "Get bridge link for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = BridgeLinkNodeDTO.class)))),
@@ -97,7 +97,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("cdp_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's CDP Link", description = "Get CDP link for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's CDP Link", description = "Get CDP link for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CdpLinkNodeDTO.class)))),
@@ -109,7 +109,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("ospf_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's OSPF Link", description = "Get OSPF link for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's OSPF Link", description = "Get OSPF link for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OspfLinkNodeDTO.class)))),
@@ -121,7 +121,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("isis_links/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's IS-IS Link", description = "Get IS-IS link for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's IS-IS Link", description = "Get IS-IS link for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = IsisLinkNodeDTO.class)))),
@@ -133,7 +133,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("lldp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's LLDP element", description = "Get LLDP element for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's LLDP element", description = "Get LLDP element for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = LldpElementNodeDTO.class))),
@@ -146,7 +146,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("bridge_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's bridge element", description = "Get bridge element for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's bridge element", description = "Get bridge element for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = BridgeElementNodeDTO.class)))),
@@ -158,7 +158,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("cdp_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's CDP element", description = "Get CDP element for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's CDP element", description = "Get CDP element for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = CdpElementNodeDTO.class))),
@@ -171,7 +171,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("ospf_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's OSPF element", description = "Get OSPF element for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's OSPF element", description = "Get OSPF element for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = OspfElementNodeDTO.class))),
@@ -184,7 +184,7 @@ public interface NodeLinkRestApi {
     @GET
     @Path("isis_elems/{node_criteria}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a node's IS-IS element", description = "Get IS-IS element for a specific node", tags = { "Enlinkd" })
+    @Operation(summary = "Get a node's IS-IS element", description = "Get IS-IS element for a specific node", tags = {"Enlinkd"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(schema = @Schema(implementation = IsisElementNodeDTO.class))),
