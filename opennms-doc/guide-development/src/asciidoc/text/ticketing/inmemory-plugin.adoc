@@ -12,3 +12,23 @@ Following system properties need to be added to use Inmemory ticketer.
 
 opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
 opennms.alarmTroubleTicketEnabled = true
+
+===== Examples
+
+Query a ticket from InMemory ticketer:
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:inmemory-ticketer -t 4
+----
+
+Set ticket status to CLOSED on ticketId 4 :
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:inmemory-ticketer -t 4 CLOSED
+----
