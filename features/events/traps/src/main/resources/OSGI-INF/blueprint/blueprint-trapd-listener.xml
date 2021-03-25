@@ -22,6 +22,7 @@
 			<cm:property name="trapd.queue.size" value="10000" />
 			<cm:property name="trapd.batch.size" value="1000" />
 			<cm:property name="trapd.batch.interval" value="500" />
+			<cm:property name="trapd.config.interval" value="60000" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -54,9 +55,8 @@
 	<!-- The TrapdConfiguration is retreived via the OpenNMS ReST API every n ms and merged with the trapdConfiguration by invoking "trapdConfig.onUpdate"-->
 	<!-- @see http://www.davsclaus.com/2012/06/locking-down-jmx-naming-now-easier-with.html -->
 	<camelContext id="trapdListenerContext" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="minionproperties" location="blueprint:minionProperties" />
 		<route id="restClientToTrapdConfig">
-			<from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period=60000"/>
+			<from uri="timer://restTrapConfigurationTimer?fixedRate=true&amp;period={{trapd.config.interval}}"/>
 			<bean ref="restClient" method="getSnmpV3Users"/>
 			<bean ref="unmarshaller" />
 			<bean ref="trapListener" method="setSnmpV3Users" />
