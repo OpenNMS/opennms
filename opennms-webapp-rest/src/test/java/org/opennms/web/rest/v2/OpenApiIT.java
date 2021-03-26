@@ -64,7 +64,7 @@ public class OpenApiIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void jasonTest() throws Exception{
+    public void jsonTest() throws Exception{
         String url = "/openapi.json";
         String resultStr = sendRequest(GET, url, 200);
         LOG.info(resultStr);
