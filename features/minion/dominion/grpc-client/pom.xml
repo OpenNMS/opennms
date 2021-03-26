@@ -56,6 +56,10 @@
             <artifactId>grpc-protobuf</artifactId>
             <version>${grpcVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
