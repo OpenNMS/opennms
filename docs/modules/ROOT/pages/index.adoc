@@ -52,4 +52,3 @@ The {page-component-title} documentation contains the following sections:
 * xref:operation:overview/overview.adoc#overview[Operation] (setup, configuration, and use of the platform)
 * xref:development:overview/overview.adoc#overview[Development] (information and procedures on setting up and using a development environment)
 * xref:reference:glossary.adoc#glossary[Reference] (glossary, code snippets, and other reference material)
-
