@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -163,14 +163,13 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
     }
 
     private static class OpsBoardAdminPage extends AbstractPage {
-
         OpsBoardAdminPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
         public OpsBoardAdminPage open() {
             get("/admin/wallboardConfig.jsp");
-            getDriver().switchTo().frame(findElement(By.name("wallboard-config")));
+            getDriver().switchTo().frame(findElementByName("wallboard-config"));
             return this;
         }
 
@@ -191,15 +190,14 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
         public OpsBoardAdminEditorPage createNew(String name) {
             // Create new
-            getDriver().findElement(By.xpath("//div[@class='v-captiontext' and contains(text(), '+')]")).click();
+            findElementByXpath("//div[@class='v-captiontext' and contains(text(), '+')]").click();
             waitUntil(pageContainsText("New Ops Board"));
 
             // Set name
-            final WebElement element = findElement(By.id("newopsboard.name"));
-            element.sendKeys(name);
+            enterText(By.id("newopsboard.name"), name);
 
             // click save
-            findElement(By.id("newopsboard.save")).click();
+            clickElement(By.id("newopsboard.save"));
             return new OpsBoardAdminEditorPage(testCase);
         }
     }
@@ -210,13 +208,14 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardAdminEditorPage addDashlet(DashletConfig dashletConfig) {
-            findElement(By.id("opsboard.action.addDashlet")).click();
+            clickElement(By.id("opsboard.action.addDashlet"));
             if (dashletConfig.getDuration() != null) {
-                findElement(By.id("opsboard.duration")).clear();
-                findElement(By.id("opsboard.duration")).sendKeys("" + dashletConfig.getDuration());
+                final By id = By.id("opsboard.duration");
+                findElement(id).clear();
+                enterText(id, "" + dashletConfig.getDuration());
             }
             if (dashletConfig.getTitle() != null) {
-                findElement(By.id("opsboard.title")).sendKeys(dashletConfig.getTitle());
+                enterText(By.id("opsboard.title"), dashletConfig.getTitle());
             }
             if (dashletConfig.getType() != null) {
                 new Select(findElement(By.xpath("//*[@id='opsboard.type']//select"))).selectByVisibleText(dashletConfig.getType());
@@ -235,7 +234,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardPreviewPage open() {
-            findElement(By.id("opsboard.action.preview")).click();
+            clickElement(By.id("opsboard.action.preview"));
 
             waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 2);
             getDriver().switchTo().frame(1);
@@ -243,7 +242,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardAdminEditorPage close() {
-            findElement(By.id("//span[@class='v-button-caption' and contains(text(), 'Close')]")).click();
+            clickElement(By.id("//span[@class='v-button-caption' and contains(text(), 'Close')]"));
             getDriver().switchTo().parentFrame();
             return new OpsBoardAdminEditorPage(testCase);
         }
