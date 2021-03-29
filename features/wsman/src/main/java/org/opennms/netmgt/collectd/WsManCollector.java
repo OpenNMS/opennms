@@ -150,7 +150,13 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
 
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        LOG.debug("collect(agent={}, parameters={})", agent, parameters);
+        if (LOG.isDebugEnabled()) {
+            final Map<String, Object> sanitizedParameters = parameters.entrySet().stream()
+                    .filter(e -> !e.getKey().matches("(?i).*password.*"))
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+            LOG.debug("collect(agent={}, parameters={})", agent, sanitizedParameters);
+        }
 
         final WsmanAgentConfig config = (WsmanAgentConfig)parameters.get(WSMAN_AGENT_CONFIG_KEY);
         final Groups groups = (Groups)parameters.get(WSMAN_GROUPS_KEY);
