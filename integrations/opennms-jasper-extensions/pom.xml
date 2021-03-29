@@ -49,12 +49,12 @@
           <workingDirectory>${project.build.directory}</workingDirectory>
           <skipIfExist>true</skipIfExist>
           <alias>localhost</alias>
-          <keysize>1024</keysize>
-          <keyalg>DSA</keyalg>
+          <keysize>2048</keysize>
+          <keyalg>RSA</keyalg>
           <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
           <keystore>${project.build.directory}/test-keystore.jks</keystore>
-          <storepass>password</storepass>
-          <validity>2</validity>
+          <storepass>changeit</storepass>
+          <storetype>jks</storetype>
         </configuration>
       </plugin>
     </plugins>

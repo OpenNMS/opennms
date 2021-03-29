@@ -93,15 +93,6 @@ public class TlsExperiment {
     static {
         System.out.println("vendor : " + System.getProperty("java.vendor"));
         System.out.println("version: " + System.getProperty("java.version"));
-
-        // checks if TLS support 1.3 must be enabled by setting system properties
-        String javaVersion = System.getProperty("java.version");
-        if (javaVersion != null && javaVersion.startsWith("1.8")) {
-            if (Enum.class.isAssignableFrom(sun.security.ssl.ProtocolVersion.class)) {
-                System.setProperty("jdk.tls.client.protocols", "TLSv1.1,TLSv1.2,TLSv1.3");
-                System.setProperty("https.protocols", "TLSv1.1,TLSv1.2,TLSv1.3");
-            }
-        }
     }
 
     // starts an echo server that waits for connections

@@ -34,7 +34,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import net.sf.jasperreports.engine.JRException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,6 +44,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+
+import net.sf.jasperreports.engine.JRException;
 
 /**
  * Verifies that the {@link MeasurementQueryExecutor} works correctly when running locally in JVM mode.

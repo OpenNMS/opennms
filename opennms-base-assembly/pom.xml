@@ -216,6 +216,7 @@
                   <arguments>
                     <argument>${project.basedir}/src/test/shell</argument>
                   </arguments>
+                  <skip>${skipTests}</skip>
                 </configuration>
               </execution>
             </executions>

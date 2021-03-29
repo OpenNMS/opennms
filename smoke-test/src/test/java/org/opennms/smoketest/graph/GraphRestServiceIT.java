@@ -142,41 +142,41 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().accept(ContentType.JSON).get()
                 .then().statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].id", Matchers.is("application"))
-                .content("[0].label", Matchers.is("Application Graph"))
-                .content("[0].graphs.size()", Matchers.is(1))
-                .content("[0].graphs[0].namespace", Matchers.is("application"))
-                .content("[0].graphs[0].label", Matchers.is("Application Graph"))
-                .content("[0].graphs[0].description", Matchers.is("Displays all defined applications and their calculated states."))
+                .body("[0].id", Matchers.is("application"))
+                .body("[0].label", Matchers.is("Application Graph"))
+                .body("[0].graphs.size()", Matchers.is(1))
+                .body("[0].graphs[0].namespace", Matchers.is("application"))
+                .body("[0].graphs[0].label", Matchers.is("Application Graph"))
+                .body("[0].graphs[0].description", Matchers.is("Displays all defined applications and their calculated states."))
 
-                .content("[1].id", Matchers.is("bsm"))
-                .content("[1].label", Matchers.is("Business Service Graph"))
-                .content("[1].graphs.size()", Matchers.is(1))
-                .content("[1].graphs[0].namespace", Matchers.is("bsm"))
-                .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
-                .content("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
+                .body("[1].id", Matchers.is("bsm"))
+                .body("[1].label", Matchers.is("Business Service Graph"))
+                .body("[1].graphs.size()", Matchers.is(1))
+                .body("[1].graphs[0].namespace", Matchers.is("bsm"))
+                .body("[1].graphs[0].label", Matchers.is("Business Service Graph"))
+                .body("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
-                .content("[2].id", Matchers.is("nodes"))
-                .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                .content("[2].graphs.size()", Matchers.is(1))
-                .content("[2].graphs[0].namespace", Matchers.is("nodes"))
-                .content("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                .content("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+                .body("[2].id", Matchers.is("nodes"))
+                .body("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs.size()", Matchers.is(1))
+                .body("[2].graphs[0].namespace", Matchers.is("nodes"))
+                .body("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
-                .content("[3].id", Matchers.is(CONTAINER_ID))
-                .content("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                .content("[3].graphs.size()", Matchers.is(2))
-                .content("[3].graphs[0].namespace", Matchers.is("acme:markets"))
-                .content("[3].graphs[0].label", Matchers.is("Markets"))
-                .content("[3].graphs[0].description", Matchers.is("The Markets Layer"))
-                .content("[3].graphs[1].namespace", Matchers.is("acme:regions"))
+                .body("[3].id", Matchers.is(CONTAINER_ID))
+                .body("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                .body("[3].graphs.size()", Matchers.is(2))
+                .body("[3].graphs[0].namespace", Matchers.is("acme:markets"))
+                .body("[3].graphs[0].label", Matchers.is("Markets"))
+                .body("[3].graphs[0].description", Matchers.is("The Markets Layer"))
+                .body("[3].graphs[1].namespace", Matchers.is("acme:regions"))
 
-                .content("[4].id", Matchers.is("vmware"))
-                .content("[4].label", Matchers.is("VMware Topology Provider"))
-                .content("[4].graphs.size()", Matchers.is(1))
-                .content("[4].graphs[0].namespace", Matchers.is("vmware"))
-                .content("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
-                .content("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+                .body("[4].id", Matchers.is("vmware"))
+                .body("[4].label", Matchers.is("VMware Topology Provider"))
+                .body("[4].graphs.size()", Matchers.is(1))
+                .body("[4].graphs[0].namespace", Matchers.is("vmware"))
+                .body("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
+                .body("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
                 ;
     }
 
@@ -185,21 +185,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         createGraphMLAndWaitUntilDone(graphmlDocument);
         given().get(CONTAINER_ID).then()
                 .contentType(ContentType.JSON)
-                .content("graphs", Matchers.hasSize(2))
-                .content("graphs[0].id", Matchers.is("markets"))
-                .content("graphs[0].namespace", Matchers.is("acme:markets"))
-                .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
-                .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
-                .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                .content("graphs[0].vertices", Matchers.hasSize(16))
-                .content("graphs[0].edges", Matchers.hasSize(0))
+                .body("graphs", Matchers.hasSize(2))
+                .body("graphs[0].id", Matchers.is("markets"))
+                .body("graphs[0].namespace", Matchers.is("acme:markets"))
+                .body("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
+                .body("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
+                .body("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .body("graphs[0].vertices", Matchers.hasSize(16))
+                .body("graphs[0].edges", Matchers.hasSize(0))
 
-                .content("graphs[1].id", Matchers.is("regions"))
-                .content("graphs[1].namespace", Matchers.is("acme:regions"))
-                .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
-                .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
-                .content("graphs[1].vertices", Matchers.hasSize(4))
-                .content("graphs[1].edges", Matchers.hasSize(16));
+                .body("graphs[1].id", Matchers.is("regions"))
+                .body("graphs[1].namespace", Matchers.is("acme:regions"))
+                .body("graphs[1].defaultFocus.type", Matchers.is("ALL"))
+                .body("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
+                .body("graphs[1].vertices", Matchers.hasSize(4))
+                .body("graphs[1].edges", Matchers.hasSize(16));
     }
 
     @Test
@@ -208,21 +208,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().get(CONTAINER_ID + "/{namespace}", "acme:markets")
                 .then()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("markets"))
-                .content("defaultFocus.type", Matchers.is("SELECTION"))
-                .content("defaultFocus.vertexIds.size()", Matchers.is(1))
-                .content("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                .content("vertices", Matchers.hasSize(16))
-                .content("edges", Matchers.hasSize(0));
+                .body("id", Matchers.is("markets"))
+                .body("defaultFocus.type", Matchers.is("SELECTION"))
+                .body("defaultFocus.vertexIds.size()", Matchers.is(1))
+                .body("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .body("vertices", Matchers.hasSize(16))
+                .body("edges", Matchers.hasSize(0));
         given().get(CONTAINER_ID + "/{namespace}", "acme:regions")
                 .then()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("regions"))
-                .content("namespace", Matchers.is("acme:regions"))
-                .content("defaultFocus.type", Matchers.is("ALL"))
-                .content("defaultFocus.vertexIds.size()", Matchers.is(4))
-                .content("vertices", Matchers.hasSize(4))
-                .content("edges", Matchers.hasSize(16));
+                .body("id", Matchers.is("regions"))
+                .body("namespace", Matchers.is("acme:regions"))
+                .body("defaultFocus.type", Matchers.is("ALL"))
+                .body("defaultFocus.vertexIds.size()", Matchers.is(4))
+                .body("vertices", Matchers.hasSize(4))
+                .body("edges", Matchers.hasSize(16));
     }
 
     @Test
@@ -242,10 +242,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .then().log().ifValidationFails()
                .statusCode(200)
                .contentType(ContentType.JSON)
-               .content("[0].context", Matchers.is("GenericVertex"))
-               .content("[0].label", Matchers.is("North Region"))      
-               .content("[0].provider", Matchers.is("LabelSearchProvider"))
-               .content("", Matchers.hasSize(1));
+               .body("[0].context", Matchers.is("GenericVertex"))
+               .body("[0].label", Matchers.is("North Region"))      
+               .body("[0].provider", Matchers.is("LabelSearchProvider"))
+               .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -267,9 +267,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .then().log().ifValidationFails()
                .statusCode(200)
                .contentType(ContentType.JSON)
-               .content("[0].namespace", Matchers.is("acme:regions"))
-               .content("[0].id", Matchers.is("north"))
-               .content("", Matchers.hasSize(1));
+               .body("[0].namespace", Matchers.is("acme:regions"))
+               .body("[0].id", Matchers.is("north"))
+               .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -286,14 +286,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("focus.semanticZoomLevel", Matchers.is(1))
-                .content("focus.vertices", Matchers.hasSize(1))
-                .content("vertices", Matchers.hasSize(2))
-                .content("edges", Matchers.hasSize(1))
-                .content("vertices[0].id", Matchers.is("v1.1"))
-                .content("vertices[1].id", Matchers.is("v1.1.2"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("focus.semanticZoomLevel", Matchers.is(1))
+                .body("focus.vertices", Matchers.hasSize(1))
+                .body("vertices", Matchers.hasSize(2))
+                .body("edges", Matchers.hasSize(1))
+                .body("vertices[0].id", Matchers.is("v1.1"))
+                .body("vertices[1].id", Matchers.is("v1.1.2"));
     }
 
     @Test
@@ -313,12 +313,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(2))
-                .content("edges", Matchers.hasSize(1))
-                .content("vertices[0].id", Matchers.is("v1.1"))
-                .content("vertices[1].id", Matchers.is("v1.1.1"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("vertices", Matchers.hasSize(2))
+                .body("edges", Matchers.hasSize(1))
+                .body("vertices[0].id", Matchers.is("v1.1"))
+                .body("vertices[1].id", Matchers.is("v1.1.1"));
 
         //  Increase SZL
         query.put("semanticZoomLevel", 2);
@@ -329,14 +329,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(4))
-                .content("edges", Matchers.hasSize(3))
-                .content("vertices[0].id", Matchers.is("v1"))
-                .content("vertices[1].id", Matchers.is("v1.1"))
-                .content("vertices[2].id", Matchers.is("v1.1.1"))
-                .content("vertices[3].id", Matchers.is("v1.1.2"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("vertices", Matchers.hasSize(4))
+                .body("edges", Matchers.hasSize(3))
+                .body("vertices[0].id", Matchers.is("v1"))
+                .body("vertices[1].id", Matchers.is("v1.1"))
+                .body("vertices[2].id", Matchers.is("v1.1.1"))
+                .body("vertices[3].id", Matchers.is("v1.1.2"));
     }
 
     @Test
@@ -353,10 +353,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].context", Matchers.is("Node"))
-                .content("[0].label", Matchers.is("Node A"))
-                .content("[0].provider", Matchers.is("NodeSearchProvider"))
-                .content("", Matchers.hasSize(1))
+                .body("[0].context", Matchers.is("Node"))
+                .body("[0].label", Matchers.is("Node A"))
+                .body("[0].provider", Matchers.is("NodeSearchProvider"))
+                .body("", Matchers.hasSize(1))
                 .extract().response().asString();
         final JSONArray result = new JSONArray(new JSONTokener(response));
         assertThat(result.length(), Matchers.is(1));
@@ -372,9 +372,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].namespace", Matchers.is("acme:markets"))
-                .content("[0].id", Matchers.is("north.2"))
-                .content("", Matchers.hasSize(1));
+                .body("[0].namespace", Matchers.is("acme:markets"))
+                .body("[0].id", Matchers.is("north.2"))
+                .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -394,21 +394,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("markets"))
-                .content("namespace", Matchers.is("acme:markets"))
-                .content("vertices", Matchers.hasSize(3))
-                .content("edges", Matchers.hasSize(0))
-                .content("vertices[0].id", Matchers.is("north.1"))
-                .content("vertices[1].id", Matchers.is("north.2"))
-                .content("vertices[1].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
-                .content("vertices[1].nodeInfo.foreignId", Matchers.is("node1"))
-                .content("vertices[1].nodeInfo.label", Matchers.is("Node A"))
-                .content("vertices[1].nodeInfo.categories", Matchers.hasItems("Test", "Server"))
-                .content("vertices[2].id", Matchers.is("north.3"))
-                .content("vertices[2].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
-                .content("vertices[2].nodeInfo.foreignId", Matchers.is("node2"))
-                .content("vertices[2].nodeInfo.label", Matchers.is("Node B"))
-                .content("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
+                .body("id", Matchers.is("markets"))
+                .body("namespace", Matchers.is("acme:markets"))
+                .body("vertices", Matchers.hasSize(3))
+                .body("edges", Matchers.hasSize(0))
+                .body("vertices[0].id", Matchers.is("north.1"))
+                .body("vertices[1].id", Matchers.is("north.2"))
+                .body("vertices[1].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .body("vertices[1].nodeInfo.foreignId", Matchers.is("node1"))
+                .body("vertices[1].nodeInfo.label", Matchers.is("Node A"))
+                .body("vertices[1].nodeInfo.categories", Matchers.hasItems("Test", "Server"))
+                .body("vertices[2].id", Matchers.is("north.3"))
+                .body("vertices[2].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .body("vertices[2].nodeInfo.foreignId", Matchers.is("node2"))
+                .body("vertices[2].nodeInfo.label", Matchers.is("Node B"))
+                .body("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
     }
 
     @Test
@@ -426,8 +426,8 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .log().ifValidationFails()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                    .content("vertices", Matchers.hasSize(1))
-                    .content("vertices[0].status", Matchers.is("Normal"));
+                    .body("vertices", Matchers.hasSize(1))
+                    .body("vertices[0].status", Matchers.is("Normal"));
         } finally {
             karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
         }
@@ -501,13 +501,13 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(3))
-                .content("vertices[0].status.severity", Matchers.is("Normal"))
-                .content("vertices[1].status.severity", Matchers.is("Normal"))
-                .content("vertices[2].status.severity", Matchers.is("Normal"))
-                .content("vertices[0].status.count", Matchers.is(0))
-                .content("vertices[1].status.count", Matchers.is(0))
-                .content("vertices[2].status.count", Matchers.is(0));
+                .body("vertices", Matchers.hasSize(3))
+                .body("vertices[0].status.severity", Matchers.is("Normal"))
+                .body("vertices[1].status.severity", Matchers.is("Normal"))
+                .body("vertices[2].status.severity", Matchers.is("Normal"))
+                .body("vertices[0].status.count", Matchers.is(0))
+                .body("vertices[1].status.count", Matchers.is(0))
+                .body("vertices[2].status.count", Matchers.is(0));
 
         // Prepare simulated outages
         final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
@@ -644,12 +644,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(5))
-                .content("vertices[0].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[1].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[2].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
+                .body("vertices", Matchers.hasSize(5))
+                .body("vertices[0].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[1].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[2].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
         } finally {
             karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
         }
@@ -661,11 +661,11 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
             given().accept(ContentType.JSON).get()
                     .then().statusCode(200)
                     .contentType(ContentType.JSON)
-                    .content("[0].id", Matchers.is("application"))
-                    .content("[1].id", Matchers.is("bsm"))
-                    .content("[2].id", Matchers.is("nodes"))
-                    .content("[3].id", Matchers.is(CONTAINER_ID))
-                    .content("[4].id", Matchers.is("vmware"));
+                    .body("[0].id", Matchers.is("application"))
+                    .body("[1].id", Matchers.is("bsm"))
+                    .body("[2].id", Matchers.is("nodes"))
+                    .body("[3].id", Matchers.is(CONTAINER_ID))
+                    .body("[4].id", Matchers.is("vmware"));
         });
     }
     private void createRequisition() {

@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -76,7 +77,7 @@ public class NewtsFetchStrategyTest {
 
     private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
 
-    private Capture<ResultDescriptor> lastCapturedResultDescriptor = new Capture<>();
+    private Capture<ResultDescriptor> lastCapturedResultDescriptor = Capture.newInstance(CaptureType.LAST);
 
     @Before
     public void setUp() throws Exception {

@@ -138,6 +138,9 @@ public class Telemetryd implements SpringServiceDaemon {
                 continue;
             }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
+            if (listener == null) {
+                throw new IllegalStateException("Failed to create listener from registry for listener named: " + listenerConfig.getName());
+            }
             listeners.add(listener);
         }
 

@@ -56,7 +56,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
@@ -96,7 +95,6 @@ public class FlowQueryIT {
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
-        MockLogAppender.setupLogging(true, "DEBUG");
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
 
