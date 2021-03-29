@@ -17,7 +17,7 @@ The following implementations are installed by default:
                 The time series is stored on a dedicated _Cassandra_ cluster which gives growth flexibility and allows to persist time series data in a large scale.
 |===
 
-You can use time series storage integrations with plugins which ware based on our OpenNMS Integration API (OIA).
+You can use time series storage integrations with plugins which are based on our OpenNMS Integration API (OIA).
 The following plugins can be used as a replacement for the ones shipped with OpenNMS {page-component-title}:
 
 * https://github.com/OpenNMS/opennms-cortex-tss-plugin
