@@ -24,9 +24,16 @@
             <Embed-Dependency>*;artifactId=okhttp|gson|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
+              dalvik.system;resolution:=optional,
+              android.net;resolution:=optional,
+              android.net.http;resolution:=optional,
               android.os;resolution:=optional,
+              android.security;resolution:=optional,
               android.util;resolution:=optional,
+              org.apache.harmony.xnet.provider.jsse;resolution:=optional,
               org.conscrypt;resolution:=optional,
+              com.android.org.conscrypt;resolution:=optional,
+              sun.security.ssl;resolution:=optional,
               *
             </Import-Package>
           </instructions>

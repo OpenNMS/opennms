@@ -2,13 +2,13 @@ Source: opennms
 Section: contrib/net
 Priority: optional
 Maintainer: Jeff Gehlbach <jeffg@opennms.org>
-Build-Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync
+Build-Depends: oracle-java11-installer | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | openjdk-11-jdk-headless | openjdk-11-jdk | java11-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync
 Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
 Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
-Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk
+Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | java11-jdk
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
  OpenNMS is an enterprise-grade network management system written in Java.
@@ -74,7 +74,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Daemon)
 
 Package: opennms-jmx-config-generator
 Architecture: all
-Depends: adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | adoptopenjdk-8-openj9xl-jre | adoptopenjdk-8-openj9-jre | adoptopenjdk-8-hotspot-jre | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
+Depends: adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre
 Description: Enterprise-grade Open-source Network Management Platform (JMX Config Generator)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

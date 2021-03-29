@@ -154,6 +154,18 @@ public abstract class ConfigurationTestUtils extends Assert {
         assertNotNull("could not get resource '" + resource + "' as an input stream", is);
         return is;
     }
+
+    /**
+     * <p>getInputStreamForResource</p>
+     *
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     */
+    public static InputStream getInputStreamForResource(String resource) {
+        InputStream is = ConfigurationTestUtils.class.getResourceAsStream(resource);
+        assertNotNull("could not get resource '" + resource + "' as an input stream", is);
+        return is;
+    }
     
     /**
      * <p>getReaderForResourceWithReplacements</p>
