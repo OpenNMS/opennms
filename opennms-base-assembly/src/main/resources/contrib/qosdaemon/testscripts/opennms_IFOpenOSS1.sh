@@ -45,7 +45,7 @@ OPENNMS_ETC=/opt/opennms/etc
 
 echo running openoss ossj openoss sentinal interface 
 echo OPENNMS_LIB set to $OPENNMS_LIB
-echo OPENNMS_ETC set to $OPENNMS_ETC
+echo OPENNMS_ETC set to $OPENNMS_HOME/etc
 
 # echo commands to prompt
 set -x
@@ -54,7 +54,7 @@ set -x
 #  -Djava.naming.factory.initial=org.jnp.interfaces.NamingContextFactory  \
 #  -Djava.naming.factory.url.pkgs=org.jboss.naming \
 
-java -Djava.security.policy=$OPENNMS_ETC/rmi.policy \
+java -Djava.security.policy=$OPENNMS_HOME/etc/rmi.policy \
  -DpropertiesFile=./qosclientOpenOSS1.properties \
  -classpath "$OPENNMS_LIB/$OSSBEANS_XML_NAME\
 :$OPENNMS_LIB/xbean-2.1.0.jar\

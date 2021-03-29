@@ -60,7 +60,7 @@ dbSync()
 etcSync()
 {
   echo "Rsync'ing configuration files from $PRIMARY_NMS..."
-  rsync -e 'ssh -i ~$SYNC_USER/.ssh/id-rsa-key' -avz $SYNC_USER@$PRIMARY_NMS:$OPENNMS_ETC* $OPENNMS_ETC_FAILOVER/
+  rsync -e 'ssh -i ~$SYNC_USER/.ssh/id-rsa-key' -avz $SYNC_USER@$PRIMARY_NMS:$OPENNMS_HOME/etc* $OPENNMS_HOME/etc_FAILOVER/
 }
 
 
@@ -79,7 +79,7 @@ then
   exit 1
 fi
 
-# Synchronize the failover $OPENNMS_ETC_FAILOVER with the $PRIMARY_NMS:$OPENNMS_ETC/
+# Synchronize the failover $OPENNMS_HOME/etc_FAILOVER with the $PRIMARY_NMS:$OPENNMS_HOME/etc/
 etcSync
 if [ $? -ne 0 ]
 then

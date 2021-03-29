@@ -19,7 +19,7 @@ Clicking the _Add New Group_ button will create the group and will redisplay the
 
 image:provisioning/00028.jpeg[]
 
-NOTE: At this point, the XML structure for holding the new provisioning group (a.k.a. an import requisition) has been persisted to the '$OPENNMS_ETC/imports/pending' directory.
+NOTE: At this point, the XML structure for holding the new provisioning group (a.k.a. an import requisition) has been persisted to the '$OPENNMS_HOME/etc/imports/pending' directory.
 
 Clicking the _Edit_ link will bring you to the screen where you can begin the process of defining node entities that will be imported into {page-component-title}.
 Click the Add Node button will begin the node entity creation process fill in the node label and click the _Save_ button.
@@ -51,7 +51,7 @@ Two more node definitions will be added for the benefit of this example.
 image:provisioning/00021.jpeg[]
 
 This set of nodes represents an import requisition for the _Bronze_ provisioning group.
-As this requisition is being edited via the WebUI, changes are being persisted into the {page-component-title} configuration directory '$OPENNMS_etc/imports/' pending as an XML file having the name `bronze.xml`.
+As this requisition is being edited via the WebUI, changes are being persisted into the {page-component-title} configuration directory '$OPENNMS_HOME/etc/imports/' pending as an XML file having the name `bronze.xml`.
 
 NOTE: The name of the XML file containing the import requisition is the same as the provisioning group name.
 Therefore naming your provisioning group without the use of spaces makes them easier to manage on the file system.
@@ -134,7 +134,7 @@ From the main _Admin/Provisioning Groups_ screen in the Web-UI, click the _Delet
 This button deletes all the nodes defined in the Bronze requisition.
 It is very important to note that once this is done, it cannot be undone!
 Well it can’t be undone from the Web-UI and can only be undone if you’ve been good about keeping a backup copy of your '$OPENMS_ETC/' directory tree.
-If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the '$OPENNMS_ETC/imports' directory.
+If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the '$OPENNMS_HOME/etc/imports' directory.
 
 .All node definitions have been removed from the Bronze requisition. The Web-UI indicates an import is now required to remove them from {page-component-title}.
 image:provisioning/000019.png[]

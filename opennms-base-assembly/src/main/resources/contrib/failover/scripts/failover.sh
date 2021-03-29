@@ -45,19 +45,19 @@ case "$1" in
       exit 1
     fi 
 
-    echo "Changing the $OPENNMS_ETC symbolic link to $OPENNMS_ETC_FAILOVER..."
-    rm $OPENNMS_ETC
+    echo "Changing the $OPENNMS_HOME/etc symbolic link to $OPENNMS_HOME/etc_FAILOVER..."
+    rm $OPENNMS_HOME/etc
     if [ $? -ne 0 ]
     then
-      echo "ERROR:Failed to remove symbolic link to the $OPENNMS_ETC; not failing over!\nVerify OpenNMS state."
+      echo "ERROR:Failed to remove symbolic link to the $OPENNMS_HOME/etc; not failing over!\nVerify OpenNMS state."
       $SYNC_HOME/scripts/sync-state.sh on
       exit 1
     fi
 
-    ln -s $OPENNMS_ETC_FAILOVER $OPENNMS_ETC
+    ln -s $OPENNMS_HOME/etc_FAILOVER $OPENNMS_HOME/etc
     if [ $? -ne 0 ]
     then
-      echo "ERROR:Failed to create symbolic link to the $OPENNMS_ETC_FAILOVER; not failing over!\nVerify OpenNMS state."
+      echo "ERROR:Failed to create symbolic link to the $OPENNMS_HOME/etc_FAILOVER; not failing over!\nVerify OpenNMS state."
       $SYNC_HOME/scripts/sync-state.sh on
       exit 1
     fi
@@ -80,7 +80,7 @@ case "$1" in
     fi
 
     echo "Setting failover data sources configuration..."
-    cp -p ~$SYNC_HOME/etc/opennms-datasources-failover.xml $OPENNMS_ETC/opennms-datasources.xml
+    cp -p ~$SYNC_HOME/etc/opennms-datasources-failover.xml $OPENNMS_HOME/etc/opennms-datasources.xml
 
     echo "Restarting OpenNMS..."
     $OPENNMS_BIN/opennms start
@@ -96,19 +96,19 @@ case "$1" in
       exit 1
     fi 
 
-    echo "Changing the $OPENNMS_ETC symbolic link to $OPENNMS_ETC_STANDBY..."
-    rm $OPENNMS_ETC
+    echo "Changing the $OPENNMS_HOME/etc symbolic link to $OPENNMS_HOME/etc_STANDBY..."
+    rm $OPENNMS_HOME/etc
     if [ $? -ne 0 ]
     then
-      echo "ERROR:Failed to remove symbolic link to the $OPENNMS_ETC; not starting standby mode!\nVerify OpenNMS state."
+      echo "ERROR:Failed to remove symbolic link to the $OPENNMS_HOME/etc; not starting standby mode!\nVerify OpenNMS state."
       $SYNC_HOME/scripts/sync-state.sh off
       exit 1
     fi
 
-    ln -s $OPENNMS_ETC_STANDBY $OPENNMS_ETC
+    ln -s $OPENNMS_HOME/etc_STANDBY $OPENNMS_HOME/etc
     if [ $? -ne 0 ]
     then
-      echo "ERROR:Failed to create symbolic link to the $OPENNMS_ETC_STANDBY; not starting standby mode!\nVerify OpenNMS state."
+      echo "ERROR:Failed to create symbolic link to the $OPENNMS_HOME/etc_STANDBY; not starting standby mode!\nVerify OpenNMS state."
       $SYNC_HOME/scripts/sync-state.sh off
       exit 1
     fi
@@ -132,7 +132,7 @@ case "$1" in
     ln -s $OPENNMS_RRD_STANDBY $OPENNMS_RRD
 
 #    echo "Chaning failover data sources configuration to stand-by configuration..."
-#    cp -p $SYNC_USER/failover/etc/opennms-datasources-standby.xml $OPENNMS_ETC/opennms-datasources.xml
+#    cp -p $SYNC_USER/failover/etc/opennms-datasources-standby.xml $OPENNMS_HOME/etc/opennms-datasources.xml
 
     echo "Restarting OpenNMS..."
     $OPENNMS_BIN/opennms start

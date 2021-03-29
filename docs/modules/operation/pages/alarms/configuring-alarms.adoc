@@ -130,7 +130,7 @@ Alarms with matching resolutions with problems (Ups with Downs), should be indic
 .Instantiate new Alarms for existing cleared problem
 NOTE: Alarmd includes a global property setting that controls the behavior of alarm reduction of currently cleared alarms.
 
-Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
+Create a properties file called alarmd.properties in the $OPENNMS_HOME/etc/opennms.properties.d/ folder and add the following property set to true:
 [source]
 ----
 ###### Alarmd Properties ######
@@ -156,7 +156,7 @@ image:alarms/new_after_clear_4.png[]
 .Re-enable legacy dual Alarm state behavior
 NOTE: You can set a global property setting to re-enable the legacy (pre-H 23) dual alarm behavior.
 
-Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
+Create a properties file called alarmd.properties in the $OPENNMS_HOME/etc/opennms.properties.d/ folder and add the following property set to true:
 [source]
 ----
 ###### Alarmd Properties ######

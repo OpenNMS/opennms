@@ -8,5 +8,5 @@ It either instantiates a new alarm for tracking a problem's state or reducing a 
 https://www.drools.org/[Drools] in Alarmd provide a more robust infrastructure for the effective management of workflow and problem states in the network.
 Find these business rules in the `etc/alarmd/drools-rules.d/` folder.
 
-.$OPENNMS_ETC/.drools-rules.d/
+.$OPENNMS_HOME/etc/.drools-rules.d/
  alarmd.drl
