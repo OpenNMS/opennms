@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 /**
  * This interface provide functions that should be called
@@ -75,5 +76,7 @@ public interface AlarmEntityNotifier {
     void didUpdateLastAutomationTime(OnmsAlarm alarm, Date previousLastAutomationTime);
 
     void didUpdateRelatedAlarms(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms);
+
+    void didChangeTicketStateForAlarm(OnmsAlarm alarm, TroubleTicketState previousState);
 
 }
