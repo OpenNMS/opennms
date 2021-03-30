@@ -54,6 +54,9 @@ import com.google.common.primitives.UnsignedLong;
 
 public class IpFixMessageBuilder implements MessageBuilder {
 
+    private Long flowActiveTimeoutFallback;
+    private Long flowInactiveTimeoutFallback;
+
     public IpFixMessageBuilder() {
     }
 
@@ -117,8 +120,8 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long dot1qCustomerVlanId = null;
         Long postDot1qVlanId = null;
         Long postDot1qCustomerVlanId = null;
-        Long flowActiveTimeout = null;
-        Long flowInactiveTimeout = null;
+        Long flowActiveTimeout = this.flowActiveTimeoutFallback;
+        Long flowInactiveTimeout = this.flowInactiveTimeoutFallback;
 
         for (Value<?> value : values) {
             switch (value.getName()) {
@@ -579,5 +582,21 @@ public class IpFixMessageBuilder implements MessageBuilder {
 
         builder.setNetflowVersion(NetflowVersion.IPFIX);
         return builder;
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.flowActiveTimeoutFallback;
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.flowInactiveTimeoutFallback;
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
     }
 }
