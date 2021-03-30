@@ -36,19 +36,19 @@ defaults: &defaults
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: develop
+      default: foundation-2021
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: develop
+      default: foundation-2021
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: ""
+      default: develop
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: ""
+      default: develop
 
 docker_container_config: &docker_container_config
   executor: docker-executor
