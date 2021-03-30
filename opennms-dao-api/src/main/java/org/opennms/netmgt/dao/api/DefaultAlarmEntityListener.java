@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 public class DefaultAlarmEntityListener implements AlarmEntityListener {
     @Override
@@ -99,6 +100,11 @@ public class DefaultAlarmEntityListener implements AlarmEntityListener {
 
     @Override
     public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+
+    }
+
+    @Override
+    public void onTicketStateChanged(OnmsAlarm alarm, TroubleTicketState previousState) {
 
     }
 }
