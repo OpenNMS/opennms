@@ -7,11 +7,19 @@
 :toclevels: 3
 :numbered!:
 
-= OpenNMS Release Notes
+= {opennms-product-name} Release Notes
 :author: Copyright (c) 2016-2019 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
+
+== {opennms-product-name} Development Team
+[options="header"]
+|===
+| Tarus Balog <tarus@opennms.org>
+| David Hustace <david@opennms.org>
+| Benjamin Reed <ranger@opennms.org>
+|===
 
 :numbered:
 // Global header
@@ -21,5 +29,10 @@ include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
 :numbered!:
-include::releasenotes/whatsnew.adoc[]
-include::releasenotes/changelog.adoc[]
+include::releasenotes/whatsnew-2020.adoc[]
+//include::releasenotes/whatsnew-2019.adoc[]
+//include::releasenotes/whatsnew-2018.adoc[]
+//include::releasenotes/whatsnew-2017.adoc[]
+//include::releasenotes/whatsnew-2016.adoc[]
+//include::releasenotes/whatsnew-2015.adoc[]
+

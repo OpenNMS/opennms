@@ -4,7 +4,7 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11.0.9.11-b5706"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-base
 
 ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
 
@@ -40,10 +40,10 @@ RUN groupadd -g 10001 opennms && \
 ##
 # Install and setup OpenNMS RPMS
 ##
-FROM horizon-base
+FROM meridian-base
 
-# A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
+# A default which installs the required OpenNMS Meridian packages
+ARG ONMS_PACKAGES="meridian-core meridian-webapp-jetty meridian-webapp-hawtio"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -142,13 +142,13 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="OpenNMS Horizon ${VERSION}" \
+      org.opencontainers.image.title="OpenNMS Meridian ${VERSION}" \
       org.opencontainers.image.source="${SOURCE}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
       org.opencontainers.image.authors="OpenNMS Community" \
-      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opencontainers.image.licenses="OpenNMS Meridian Software License Agreement" \
       org.opennms.image.base="${BASE_IMAGE}:${BASE_IMAGE_VERSION}" \
       org.opennme.cicd.jobid="${BUILD_JOB_ID}" \
       org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \

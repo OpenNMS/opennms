@@ -1,9 +1,9 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
+<nav class="navbar navbar-expand-md navbar-light" style="background-color: #e9ecef" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />
-        <span style="vertical-align: middle" class="text-horizon ml-2">Horizon</span>
+        <img id="logo" src="${baseHref}images/o-blue-trans.svg" alt="OpenNMS Meridian Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-blue-trans.png'" />
+        <span style="vertical-align: middle" class="text-meridian ml-2">Meridian</span>
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>
@@ -25,7 +25,7 @@
                             <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
                         </#if>
                         <#if noticeStatus = 'On'>
-                            <i class="fa fa-bell text-horizon" title="Notices: On"></i>
+                            <i class="fa fa-bell text-meridian" title="Notices: On"></i>
                         </#if>
                     </span>
                 </li>

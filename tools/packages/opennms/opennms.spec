@@ -100,6 +100,8 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
+Requires(pre):	jrrd2 >= 2.0.0
+Requires:	jrrd2 >= 2.0.0
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}

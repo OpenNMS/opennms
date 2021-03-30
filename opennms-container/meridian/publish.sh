@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# we should not publish meridian containers
+exit 1
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 
@@ -10,5 +13,5 @@ set -o pipefail
 source ../set-build-environment.sh
 
 for TAG in ${OCI_TAGS[*]}; do
-  docker push "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/horizon:${TAG}"
+  docker push "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/meridian:${TAG}"
 done

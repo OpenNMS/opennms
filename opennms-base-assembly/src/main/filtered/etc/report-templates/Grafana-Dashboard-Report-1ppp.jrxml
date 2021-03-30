@@ -133,7 +133,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
         <text><![CDATA[End:]]></text>
       </staticText>
       <image hAlign="Center" vAlign="Middle">
-        <reportElement x="10" y="12" width="197" height="65" uuid="84f9fb75-2b8c-4a2a-ac51-f245ae29dcc3"/>
+        <reportElement x="10" y="20" width="197" height="51" uuid="84f9fb75-2b8c-4a2a-ac51-f245ae29dcc3"/>
         <imageExpression><![CDATA[$P{ONMS_REPORT_DIR} + "assets/images/logo_flat.png"]]></imageExpression>
       </image>
     </band>

@@ -116,7 +116,8 @@
                     <outputDirectory>${asciidoc.output.directory}</outputDirectory>
                     <imagesDir>images</imagesDir>
                     <attributes>
-                        <opennms-product-name>OpenNMS Horizon</opennms-product-name>
+                        <opennms-product-name>OpenNMS Meridian</opennms-product-name>
+                        <opennms-prime></opennms-prime>
                         <opennms-version>${project.version}</opennms-version>
                         <opennms-package-base-name>opennms</opennms-package-base-name>
                         <jasperReportsVersion>${jasperreportsVersion}</jasperReportsVersion>

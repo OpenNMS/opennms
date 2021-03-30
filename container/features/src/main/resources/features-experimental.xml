@@ -110,6 +110,7 @@
       <feature>jfreechart</feature>
       <feature>joda-time</feature>
       <feature>jrobin</feature>
+      <feature>jrrd2</feature>
       <feature>json-lib</feature>
       <feature>quartz</feature>
 

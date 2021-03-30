@@ -1,0 +1,879 @@
+[releasenotes-2017]
+=== OpenNMS Meridian 2017
+
+==== System Requirements
+
+* *Java 8*: OpenNMS Meridian 2017 requires Java 8 as the runtime environment.
+  To run Meridian 2017, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9*: Meridian 2017 requires PostgreSQL 9.x, version 9.2 or higher.
+
+[releasenotes-whatsnew-2017]
+==== What's New in Meridian 2017
+
+Since Meridian 2016, a huge number of backend changes have occurred, including a large refactor of provisioning, many cleanups in Enlinkd, and a number of new features including the Business Service Monitor.
+
+===== Important Upgrade Notes
+
+* *Clean Up Events and Alarms*: Please clean up your event and alarm lists as much as possible before performing an upgrade to Meridian 2017.
+  The upgrade process includes a change to move event parameters to a separate table, rather than being encoded in a column in the event table.
+  If you prune unused data from these tables beforehand, it will make the upgrade process much quicker.
+* *Remote Poller API Change*: Due to internal API changes, the Remote Poller API has changed in Meridian 2017.
+  If you upgrade to Meridian 2017, you will also need to upgrade all Remote Pollers attached to the system to 2017 as well.
+* *Cassandra JMX Metrics*: The default value for the `friendly-name` attribute on the `JMX-Cassandra` collection service has changed from `cassandra21x` to `cassandra`.
++
+This changes the path in which the metrics are stored.
+If you have already been collecting these metrics and wish to preserve them, you can ignore this change when merging your configuration.
+* *Jetty 9.4 Upgrade*: Jetty has been upgraded from `8.1` to the latest `9.4`.
++
+If you have a custom `jetty.xml` in your `etc` folder, you will need to migrate your changes.
+Use `etc/examples/jetty.xml` as a starting point.
+* *Drools 6.5.0 Upgrade*: Drools has been upgraded from `6.0.1.Final` to `6.5.0.Final`.
++
+If you have custom Drools rules, they may need to be revised.
+The compiler used in `6.5.0.Final` is stricter than the compiler in previous versions.
+* *Separate opennms-webapp-remoting Package*: The webapp that supports the Remote Poller has been separated from the main OpenNMS webapp.
++
+This will make installations much smaller for users that do not use the Remote Poller.
+If you use the Remote Poller, you will need to install the `meridian-webapp-remoting` package.
+* *User roles moved from magic-users.properties into users.xml*: The `users.xml` file now contains a list of roles for each user alongside the rest of the user attributes.
+* *JICMP 2.0 Upgrade*: Our Java ICMP library has been upgraded to version 2.0.
++
+You will need to upgrade to this version before upgrading to OpenNMS Meridian 2017.
+* *org.opennms.newts.nan_on_counter_wrap*: If you are using Newts, returning NaN when a counter-wrap is encountered now defaults to true.
++
+If you relied on the old behavior, you can change it back by setting `org.opennms.newts.nan_on_counter_wrap=false` in a file in `opennms.properties.d`.
+
+===== Breaking Changes
+
+* *Custom Topology Icon Definitions*: Custom Icon Definitions in the Topology Map are now handled differently.
++
+You will need to migrate your existing custom icons to the new layout.  The link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#_icons[Administrators Guide] covers this topic in more detail.
+* *Event Translator*: The default behavior of the event translator preserving SNMP data when cloning event has been changed to *_NOT_*
+preserve that data by default.
++
+To restore the old behavior, set `preserve-snmp-data="true"` on the event XML.
+For more information, see link:http://issues.opennms.org/browse/NMS-8374[issue NMS-8374].
+* *ReST API*: The ReST API has been normalized to give better and more consistent responses to queries.
++
+This includes dropping support for redirecting to the model URL on write operations (POST, etc.)
+If you were relying on this old (broken) behavior, please update your ReST API calls accordingly.
+Most client code should be unaffected.
+* link:https://issues.opennms.org/browse/NMS-9303[NMS-9303]: Deprecated Capsd and Linkd event definitions are removed.
++
+Otherwise unused event definitions are also cleaned up and removed from the code and configurations.
+For a detailed list of all removed events see link:https://issues.opennms.org/browse/NMS-9303[NMS-9303].
+For people maintaining databases prior to OpenNMS 1.8, we provide a maintenance script for Linux and Windows in the _opennms-contrib_ package to clean up old events in the database.
+The script is named `NMS-9303-cleanup-deprecated-events.sh` and executes a SQL script.
+In case you run PostgreSQL on Windows, you can use `psql.exe -d opennms -U opennms -W -a -f NMS-9303-cleanup-deprecated-events.sql` to run the maintenance script.
+
+===== New Features
+
+* *Business Service Monitor*: Correlation for root cause and business impact analysis.
++
+The goal of the Business Service Monitor is to provide a high-level correlation of business rules, and to display them in the topology map.
++
+In the BSM, you define a Business Service that encompasses a set of entities (nodes, interfaces, services, and other Business Services) and the relationships among them.
+The alarm states of the component entities are rolled up in a map-reduce fashion to drive a state machine.
+The state of a Business Service is reflected in a new type of event, and can also be visualized (along with the service hierarchy) in the existing OpenNMS topology map.
++
+For details on using the BSM, see link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-bsm#ga-bsm[the Administrators Guide].
+* *Modular Configuration Updates*: Now most properties set in the `opennms.properties` file can be instead overriden by creating a file in the `${OPENNMS_HOME}/etc/opennms.properties.d` directory.
+* *Notifications*: New notification strategies for Slack and Mattermost have been added.
+* *OpenNMS Plugin Manager*: An API for adding 3rd-party "plugins" to OpenNMS.
++
+The core of a tool for adding plugins into OpenNMS has been included in Meridian 2017.
+This provides a set of tools for finding and adding plugins to be loaded into the OpenNMS OSGi container.
+* *Provisioning Requisition UI*: A huge number of improvements have gone into the requisition UI.
+Also, the old "Quick-Add Node" functionality has been reimplemented using the same backend as the requisition UI.
+* *"Scan Report" Remote Poller GUI*: A new front-end for the remote poller that lets you perform a single scan and get a pass/fail report in a GUI has been added.
+You can enable this alternate UI with the "-s" option on the remote poller CLI.
+* *Topology UI Updates*: As part of the BSM work, the topology UI has been vastly improved for both performance and usability.
+* *TSRM Ticketing Plugin*: Create incidents in IBM's TSRM.
++
+Information on configuring the TSRM ticketing plugin can be found in link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-ticketing-tsrm[the Administrators Guide].
+* *Usage Statistics*: Collect anonymous usage statistics.
++
+To get a better idea of how to estimate hardware requirements and the performance characteristics of OpenNMS, we wrote a tool to occasionally submit anonymous diagnostic information about your OpenNMS install.
+It will submit information like the number of nodes, alarms, etc. as well as some basic system information to our servers for statistical reasons.
++
+When a user with the Admin role logs into the system for the first time, they will be prompted as to whether or not they want to opt-in to publish these statistics.
+Statistics will only be published once an Administrator has opted-in.
++
+These statistics are visualized on link:https://stats.opennms.org[stats.opennms.org].
+* *GraphML Topology Provider*: A new Topology Provider is available that reads GraphML formatted graphs and displays them in the the Topology UI.
+* *OpenNMS Elasticsearch ReST Forwarder*: This Elasticsearch forwarder can store events, alarms, and alarm state changes in Elasticsearch for archival or searching.
+It is compatible with all currently supported versions of Elasticsearch.
+* *Drools Persistence*: Drools working memory can now be persisted to disk upon shutdown of OpenNMS.
+* *Unified JAAS Authentication*: The web UI, the Apache Karaf OSGi console, and the built-in ActiveMQ broker all use a single authentication method.
+* *Monitoring Location Events*: Events will be sent when Monitoring Locations are added, updated, or deleted.
+* *External JMS broker*: It is possible to configure OpenNMS to use an external JMS broker if desired.
+* *New Syslog Parser*: A new syslog parser, the `RadixTreeSyslogParser`, has been added, which supports all major syslog message formats, and uses Grok for more performant parsing.
+* *String Persisting over TCP*: The TCP persister can now persist string values.
+* *ICMP traffic class and don't-fragment support*: It is possible to configure OpenNMS to set DSCP traffic class and "don't fragment" bits when polling ICMP.
+* *Geographical Maps*: Geographical maps are now included by default in the center of the Web UI front page.
+* *Web UI improvements*: Location information has been added to many places in the UI, and a number of pages have been enhanced including the BSM editor and topology UI.
+* *Asset Topology Provider*: The Asset Topology Provider generates a GraphML topology based on node metadata including asset fields.
+  link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#_asset_topology_provider[(more details)].
+* *Alarm Sounds*: The web UI can now optionally flash and play an alert sound when alarms are created and optionally updated.
+  link:http://meridian.opennms.com/docs/2017/latest/guide-admin/#ga-alarm-sounds[(more details)].
+
+===== Events
+
+New or updated trap definitions have been added for the following classes of devices:
+
+* APC
+* Juniper IVE
+* NetGear ProSafe Smart Switch
+* OpenWRT
+* SonicWall
+
+===== Data Collection
+
+* AKCP SensorProbe
+* Cisco ASA5515-X and ASA5525-X
+* Juniper SRX100h and SRX210he2 Router
+* *HTTP*:
+** Elasticsearch
+* *JMX*:
+** Apache Kafka
+** VMware vCenter Server 6.0.0
+
+===== Other Improvements
+
+As always, many updates and cleanups have been made to the OpenNMS core, through refactoring, addition of unit tests, and other code modernization.
+
+* *Minion Infrastructure*: Minion is OpenNMS's project to provide full distributed monitoring and collection.
++
+While the Minion is not supported in Meridian 2017, the work that went towards Minion support (modernizing polling and data collection) is included.
+* *ActiveMQ*: An ActiveMQ broker is now embedded in the OpenNMS JVM.
+* *Discovery Daemon Rewrite*: The discovery daemon has been replaced with a Camel-based implementation to facilitate future Minion support.
+* *Enhanced Linkd*: Enlinkd has had many bugs fixed and should perform orders of magnitude faster in many configurations.
+* *JNA*: The JNA ping implementation got cleaned up and received many improvements.
+* *Newts*: A number of bugfixes and improvements have been made to the Newts support since Meridian 2017.
+* *Syslog Daemon Updates*: The performance of the OpenNMS syslog support has been vastly improved and updated.
+* We replaced all of the GWT components in the web UI with AngularJS components.
++
+This reduces the complexity of the UI code and will make it easier for developers with Javascript experience to maintain and contribute to the UI.
+* All Javascript dependencies for the web UI are now managed by Bower and Gulp.
+* Jasper reports are now automatically recompiled if changed.
+* The JIRA ticketer has been improved.
+* The default database connection pool has been switched from c3p0 to HikariCP (http://brettwooldridge.github.io/HikariCP/) to increase performance.
+* Our ICMP libraries are now capable of being run by non-root users (although OpenNMS is not yet configured to support this).
+* The startup order of OpenNMS has been improved to make sure that a number of time-sensitive event-consuming daemons are ready immediately after Eventd, and before traps are consumed.
+* Collection APIs have been refactored and cleaned up immensely as part of refactoring for future Minion support.
+* JSON datacollection now supports properly handling responses that return an array.
+* Path handling for collection resources has been improved.
+* Many improvements have been made to the documentation, including documentation for collectors, detectors, and monitors, as well as Karaf shell commands and event sources.
+* A number of improvements to geolocation resolution and node maps have been made.
+* Internal OpenNMS events have been cleaned up and broken into logical parts in `$OPENNMS_HOME/etc`.
+* Graphs that use relative time periods have additional drop-down choices now.
+* The topology infrastructure has been vastly improved, with MANY bug fixes and performance improvements.
+* Fix a thread leak in SNMP queries that can happen when old connections don't get closed properly.
+* Fix a long-standing bug in the `vacuumd-configuration.xml` that referred to the wrong ticket state for "closed".
+* Fix calculation of KSC report "Last Week" and "This Week" timespans.
+* Fix startup on systems without any IPv6 support.
+* Reverse lookups in provisioning now handle IPs without a corresponding A record.
+
+[releasenotes-changelog-Meridian-2017.1.26]
+
+==== Release Meridian-2017.1.26
+
+Release 2017.1.26 is a small update to 2017.1.25 that fixes a few bugs.
+
+The codename for 2017.1.26 is _Philadelphia meridian_.
+
+===== Bug
+
+* Slack-compatible notification strategies expect "url" for switch name, should be "-url" (Issue http://issues.opennms.org/browse/NMS-10552[NMS-10552])
+* Can't install Horizon on Ubuntu 20.04 LTS (Issue http://issues.opennms.org/browse/NMS-12693[NMS-12693])
+* Wildcard certificate rejected after upgrade (Issue http://issues.opennms.org/browse/NMS-12805[NMS-12805])
+* SslContextFactory needs to be changed to SslContextFactory.Server in jetty.xml (Issue http://issues.opennms.org/browse/NMS-12847[NMS-12847])
+
+[releasenotes-changelog-Meridian-2017.1.25]
+
+==== Release Meridian-2017.1.25
+
+Release 2017.1.25 is a small update to 2017.1.24 that fixes a bug and updates some documentation.
+
+The codename for 2017.1.25 is _Mecca_.
+
+===== Bug
+
+* Support for optional snmpTrapAddress varbind needs documenting (Issue http://issues.opennms.org/browse/NMS-12795[NMS-12795])
+* RRD-to-Newts Converter doesn't handle fully-overlapping RRAs (Issue http://issues.opennms.org/browse/NMS-12835[NMS-12835])
+
+[releasenotes-changelog-Meridian-2017.1.24]
+
+==== Release Meridian-2017.1.24
+
+Release 2017.1.24 is a small update to 2017.1.23 that fixes a few bugs and makes some Docker-related
+improvements.
+
+The codename for 2017.1.24 is _Kew meridian_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+
+[releasenotes-changelog-Meridian-2017.1.23]
+
+==== Release Meridian-2017.1.23
+
+Release 2017.1.23 is a small update to 2017.1.22 that includes some build system
+updates and a fix for a bug when reloading Pollerd.
+
+The codename for 2017.1.23 is _New Naval Observatory meridian_.
+
+===== Bug
+
+* Reloading the Pollerd daemon causes multiple nodeDown messages (Issue http://issues.opennms.org/browse/NMS-12681[NMS-12681])
+
+[releasenotes-changelog-Meridian-2017.1.22]
+
+==== Release Meridian-2017.1.22
+
+Release 2017.1.22 is a small update to 2017.1.21 that fixes another security issue that affects
+most current OpenNMS releases.  Hat tip to Johannes Moritz for reporting this.
+
+The codename for 2017.1.22 is _meridianu(s) Budense_.
+
+===== Bug
+
+* Security issue disclosures, 31 Jan 2020 (Issue http://issues.opennms.org/browse/NMS-12513[NMS-12513])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+
+===== Enhancement
+
+*  Backport CircleCI pipeline to foundation-2017 (Issue http://issues.opennms.org/browse/NMS-12603[NMS-12603])
+
+[releasenotes-changelog-Meridian-2017.1.21]
+
+==== Release Meridian-2017.1.21
+
+Release 2017.1.21 is a small update to 2017.1.20 that fixes an HQL injection issue that affects
+most current OpenNMS releases.  Hat tip to Johannes Moritz for reporting this.
+
+The codename for 2017.1.21 is _Capitol meridian_.
+
+===== Bug
+
+* HQL Injection (Issue http://issues.opennms.org/browse/NMS-12572[NMS-12572])
+
+[releasenotes-changelog-Meridian-2017.1.20]
+
+==== Release Meridian-2017.1.20
+
+Release 2017.1.20 is a small update to 2017.1.19 that fixes an issue with the display of availability on the
+node page.
+
+The codename for 2017.1.20 is _Lisbon_.
+
+===== Enhancement
+
+* Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
+* Clarify that LDAPS is supported for external authentication (Issue http://issues.opennms.org/browse/NMS-12339[NMS-12339])
+
+[releasenotes-changelog-Meridian-2017.1.19]
+
+==== Release Meridian-2017.1.19
+
+Release 2017.1.19 is a small update to 2017.1.18 that fixes an exception and adds a utility for viewing config changes.
+
+The codename for 2017.1.19 is _Ujjain_.
+
+===== Bug
+
+* No class found exception in OSGi for org.osgi.service.jdbc.DataSourceFactory (Issue http://issues.opennms.org/browse/NMS-9341[NMS-9341])
+
+===== Enhancement
+
+* Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
+
+[releasenotes-changelog-Meridian-2017.1.18]
+
+==== Release Meridian-2017.1.18
+
+Release 2017.1.18 is a small update to 2017.1.17 that fixes an issue with timeline graphs in the node details page.
+
+The codename for 2017.1.18 is _Kyoto_.
+
+===== Bug
+
+* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
+
+[releasenotes-changelog-Meridian-2017.1.17]
+
+==== Release Meridian-2017.1.17
+
+Release 2017.1.17 is a small update to 2017.1.16 that has a few UI fixes and security updates, as well as a fix for memory leaks
+in WS-Man monitoring and the JMX collector.
+
+The codename for 2017.1.17 is _Old Naval Observatory meridian_.
+
+===== Bug
+
+* Node detail page renders with no content when invalid node ID specified (Issue http://issues.opennms.org/browse/NMS-10679[NMS-10679])
+* Apparent memory leak in JMX collector, possibly restricted to "weird" JMX transports (Issue http://issues.opennms.org/browse/NMS-10684[NMS-10684])
+* CVE-2018-20433: XXE Vulnerability in c3p0 < 0.9.5.3 (Issue http://issues.opennms.org/browse/NMS-10694[NMS-10694])
+* Memory leak in WS-Man (Issue http://issues.opennms.org/browse/NMS-10696[NMS-10696])
+* Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
+
+[releasenotes-changelog-Meridian-2017.1.16]
+
+==== Release Meridian-2017.1.16
+
+Release 2017.1.16 is a small update to 2017.1.15 that has a few changes including UI updates and an SNMP loop bug that could cause out-of-memory crashes.
+
+The codename for 2017.1.16 is _Florence meridian_.
+
+===== Bug
+
+* ROLE_PROVISION doesn't work on the UI when the ACL feature is enabled. (Issue http://issues.opennms.org/browse/NMS-9786[NMS-9786])
+* Search on KSC Reports page in WebUI does not work (Issue http://issues.opennms.org/browse/NMS-10416[NMS-10416])
+* Backport SNMP successor validation (Issue http://issues.opennms.org/browse/NMS-10622[NMS-10622])
+* ArrayIndexOutOfBoundsException during error handling in SNMP MIB Compiler (Issue http://issues.opennms.org/browse/NMS-10647[NMS-10647])
+* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
+* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
+
+===== Enhancement
+
+* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
+
+[releasenotes-changelog-Meridian-2017.1.15]
+
+==== Release Meridian-2017.1.15
+
+Release 2017.1.15 is a small update to 2017.1.14 that fixes a performance issue in the measurements API.
+
+The codename for 2017.1.15 is _Warsaw meridian_.
+
+===== Bug
+
+* Poor performance when using filters in the Measurements API (Issue http://issues.opennms.org/browse/NMS-10589[NMS-10589])
+* Update webapp copyright dates to 2019 (Issue http://issues.opennms.org/browse/NMS-10591[NMS-10591])
+
+[releasenotes-changelog-Meridian-2017.1.14]
+
+==== Release Meridian-2017.1.14
+
+Release 2017.1.14 is a minor update to OpenNMS Meridian 2017.1.13.
+It contains a few small bug fixes and documentation enhancements, including a fix for alarm
+criteria browsing, pinger initialization, and sending notifications for events without
+associated nodes.
+
+The codename for 2017.1.14 is _Tabulae Varadienses_.
+
+===== Bug
+
+* BestMatchPingerFactory returns NullPinger when better options are available (Issue http://issues.opennms.org/browse/NMS-9659[NMS-9659])
+* Alarm Dashlet CriteriaBuilder In-Restriction not working (Issue http://issues.opennms.org/browse/NMS-10479[NMS-10479])
+* syslog events are creating notifications and disregarding rules in place (Issue http://issues.opennms.org/browse/NMS-10486[NMS-10486])
+
+[releasenotes-changelog-Meridian-2017.1.13]
+
+==== Release Meridian-2017.1.13
+
+Release 2017.1.13 is a minor update to OpenNMS Meridian 2017.1.12.
+It contains a documentation fix and an enhancement to Drools engine stability.
+
+The codename for 2017.1.13 is _Cadiz meridian_.
+
+===== Bug
+
+* Typo in BSFMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-10428[NMS-10428])
+
+===== Enhancement
+
+* Detect and Attempt to Restart Failed Drools Engines (Issue http://issues.opennms.org/browse/NMS-10363[NMS-10363])
+
+[releasenotes-changelog-Meridian-2017.1.12]
+
+==== Release Meridian-2017.1.12
+
+Release 2017.1.12 is a small update to OpenNMS Meridian 2017.1.11.
+It contains a few small system-level bug fixes and improvements to VMware connection pooling.
+
+The codename for 2017.1.12 is _Meridian of Alexandria_.
+
+===== Bug
+
+* `find-java.sh` doesn't understand newer JDK output (Issue http://issues.opennms.org/browse/NMS-10401[NMS-10401])
+* int overflow in InstallerDb causes bamboo failures (Issue http://issues.opennms.org/browse/NMS-10402[NMS-10402])
+
+===== Enhancement
+
+* Improve concurrency in Vmware Connection Pool (Issue http://issues.opennms.org/browse/NMS-10373[NMS-10373])
+
+[releasenotes-changelog-Meridian-2017.1.11]
+
+==== Release Meridian-2017.1.11
+
+Release 2017.1.11 is a small update to OpenNMS Meridian 2017.1.10.
+It contains a few small bug fixes and enhancements.
+
+The codename for 2017.1.11 is _Paris meridian_.
+
+===== Bug
+
+* Content-Type tag wrong in emailed reports (Issue http://issues.opennms.org/browse/NMS-9027[NMS-9027])
+* The upgrade task for magic-users.properties fails because of the read-only attribute (Issue http://issues.opennms.org/browse/NMS-9267[NMS-9267])
+
+===== Enhancement
+
+* add polling interval definition on service UI (Issue http://issues.opennms.org/browse/NMS-9747[NMS-9747])
+* Release notes in Help / Support links to 2015 (Issue http://issues.opennms.org/browse/LTS-214[LTS-214])
+
+[releasenotes-changelog-Meridian-2017.1.10]
+
+==== Release Meridian-2017.1.10
+
+Release 2017.1.10 is a small update to OpenNMS Meridian 2017.1.9.
+It contains a critical RADIUS fix as well as a number of smaller enhancements.
+
+The codename for 2017.1.10 is _Capitol meridian_.
+
+===== Breaking Change: trapd-configuration.xml
+
+Meridian 2017.1.10 includes a https://issues.opennms.org/browse/NMS-10242[bug fix that introduces validation of the Trapd config file].
+In the process of testing this fix we found that the `trapd-configuration.xml` that shipped with Meridian 2017 had issues that could prevent proper configuration of the `snmp-trap-address`.
+
+To fix your `trapd-configuration.xml` file, make the following changes:
+
+* If your `trapd-configuration.xml` contains an attribute called `snmpv3-user-count`, delete it.
+* If your `trapd-configuration.xml` has `<snmp-trap-address>...</snmp-trap-address>`, delete that element and add an `snmp-trap-address="..."` attribute to the enclosing `<trapd-configuration />` tag instead.  (The only thing that should be inside the `<trapd-configuration>` tag is `<snmpv3-user>` elements.)
+
+.Before:
+----
+<trapd-configuration snmpv3-user-count="0" queue-size="10000"
+    include-raw-message="false" new-suspect-on-trap="false"
+    batch-interval="500" batch-size="1000" snmp-trap-port="162" threads="0">
+    <snmp-trap-address>*</snmp-trap-address>
+</trapd-configuration>
+----
+
+.After:
+----
+<trapd-configuration snmp-trap-address="*" queue-size="10000"
+    include-raw-message="false" new-suspect-on-trap="false"
+    batch-interval="500" batch-size="1000" snmp-trap-port="162" threads="0">
+</trapd-configuration>
+----
+
+===== Breaking Change: RADIUS Authentication Provider
+
+A security issue in the `RadiusAuthenticationProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
+Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
+
+.Before
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+ <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+   <!-- ... -->
+   <beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>
+   <!-- ... -->
+ </beans:bean>
+</beans:beans>
+----
+
+.After
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+<beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+  <!-- ... -->
+  <beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/>
+  <!-- ... -->
+</beans:bean>
+</beans:beans>
+----
+
+Supported values for `authTypeClass` are:
+
+* net.jradius.client.auth.TunnelAuthenticator
+* net.jradius.client.auth.PAPAuthenticator
+* net.jradius.client.auth.EAPMSCHAPv2Authenticator
+* net.jradius.client.auth.MSCHAPv2Authenticator
+* net.jradius.client.auth.EAPMD5Authenticator
+* net.jradius.client.auth.CHAPAuthenticator
+* net.jradius.client.auth.MSCHAPv1Authenticator
+* net.jradius.client.auth.RadiusAuthenticator
+* net.jradius.client.auth.EAPAuthenticator
+
+If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
+
+===== Bug
+
+* VMWare-Center-Monitoring make for every virtual machine a login/logout (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* LDAPMonitor causes Errors in ldap logfiles (Issue http://issues.opennms.org/browse/NMS-8891[NMS-8891])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* Trapd does not validate config against XSD (Issue http://issues.opennms.org/browse/NMS-10242[NMS-10242])
+* Drools correlation engine do not always respond to targeted reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-10257[NMS-10257])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+
+===== Enhancement
+
+* Failed to run Jasper report local_Serial-Interface-Utilization-Summary: Key receive rate is duplicated in pie dataset (Issue http://issues.opennms.org/browse/NMS-9875[NMS-9875])
+
+[releasenotes-changelog-Meridian-2017.1.9]
+
+==== Release Meridian-2017.1.9
+
+Release 2017.1.9 is a small update to OpenNMS Meridian 2017.1.8.
+It contains a few bug fixes and documentation updates.
+
+The codename for 2017.1.9 is _Antwerp meridian_.
+
+===== Bug
+
+* Entering new destination path in GUI with near identical name overwrites the current one (Issue http://issues.opennms.org/browse/NMS-3994[NMS-3994])
+* Just opening a foreign-source in the web UI causes it to be written to disk (Issue http://issues.opennms.org/browse/NMS-4720[NMS-4720])
+* Surveillance category membership of deleted nodes "leaks" in filters to interfaces of successor nodes (Issue http://issues.opennms.org/browse/NMS-4876[NMS-4876])
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* MBean "TasksCompleted" for Collectd and Pollerd returns wrong counters (Issue http://issues.opennms.org/browse/NMS-9741[NMS-9741])
+* The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
+
+===== Enhancement
+
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+
+[releasenotes-changelog-Meridian-2017.1.8]
+
+==== Release Meridian-2017.1.8
+
+Release 2017.1.8 is a small update to OpenNMS Meridian 2017.1.7.
+It contains a few bug fixes and an update to support Newts cache priming.
+
+The codename for 2017.1.8 is _IERS Reference Meridian_.
+
+===== Bug
+
+* ONMS starts with broken threshold configuration file (Issue http://issues.opennms.org/browse/NMS-9064[NMS-9064])
+* Interface delete from a node does not work (Issue http://issues.opennms.org/browse/NMS-9506[NMS-9506])
+* Topology map node icons vanish (IE10, IE11 only) when alarm status unchecked (Issue http://issues.opennms.org/browse/NMS-9614[NMS-9614])
+* Access Denied With Surveillance View In Ops Board (Issue http://issues.opennms.org/browse/NMS-9678[NMS-9678])
+* Enlinkd startup fails due to NPE in BroadcastDomain class (Issue http://issues.opennms.org/browse/NMS-9852[NMS-9852])
+* Value of ${nodeLabel} for PSM services apparently not eagerly updated (Issue http://issues.opennms.org/browse/NMS-9900[NMS-9900])
+* Wrong initial message displayed on AngularJS based tables. (Issue http://issues.opennms.org/browse/NMS-9932[NMS-9932])
+* Alarm favorite link URL does not have AddRefreshHeader-30 applied (Issue http://issues.opennms.org/browse/NMS-9938[NMS-9938])
+* Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
+* foreign-id with space (%20) at end causes issues with Newts (Issue http://issues.opennms.org/browse/NMS-9961[NMS-9961])
+* perfdata-receiver doesn't compile (Issue http://issues.opennms.org/browse/NMS-9967[NMS-9967])
+* Home Page Map does not display node details (Issue http://issues.opennms.org/browse/NMS-10008[NMS-10008])
+* Backport intermittent SNMPv3 failures to foundation-2016 (Issue http://issues.opennms.org/browse/NMS-10153[NMS-10153])
+
+===== Enhancement
+
+* Improve performance of newts.indexing to avoid overwhelm Cassandra cluster (Issue http://issues.opennms.org/browse/NMS-9959[NMS-9959])
+
+[releasenotes-changelog-Meridian-2017.1.7]
+
+==== Release Meridian-2017.1.7
+
+Release 2017.1.7 is a small update to OpenNMS Meridian 2017.1.6.
+It contains a few bug fixes and minor enhancements.
+
+The codename for 2017.1.7 is _United Kingdom Ordnance Survey Zero Meridian_.
+
+.Configuration Update
+[NOTE]
+Some updates to Cisco data collection and graph configuration have been made since 2017.1.6.
+They add collection from `CISCO-REMOTE-ACCESS-MONITOR-MIB` on a number of ASAxxxx devices, as well as alarm reduction keys for FRU insertion and removal.
+Additionally, graphs for tunnel sessions have been added.
+To avoid configuration conflicts, however, the updated files have been written with the extension `.xml-2017.1.7`.
+If you wish to use these new configurations, rename the `.xml-2017.1.7` files to `.xml`, overwriting the existing files.
+
+===== Bug
+
+* Node ReST service not handling assets and deleting properly (Issue http://issues.opennms.org/browse/NMS-9855[NMS-9855])
+* JasperStudio extension dependency error (Issue http://issues.opennms.org/browse/NMS-9915[NMS-9915])
+* EventUtils.eventsMatch() fails if nodeId is greater than 127 (Issue http://issues.opennms.org/browse/NMS-9941[NMS-9941])
+* compilation fails on windows due to checkstyle exceptions (Issue http://issues.opennms.org/browse/NMS-9943[NMS-9943])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+
+===== Enhancement
+
+* Subsume "Event Configuration How-To" from wiki into admin guide (Issue http://issues.opennms.org/browse/NMS-9926[NMS-9926])
+* Update docs section of devel guide with section on migrating info from wiki (Issue http://issues.opennms.org/browse/NMS-9934[NMS-9934])
+* Refactor UserGroupLdapAuthoritiesPopulator to provide a default role. (Issue http://issues.opennms.org/browse/NMS-9937[NMS-9937])
+
+[releasenotes-changelog-Meridian-2017.1.6]
+
+==== Release Meridian-2017.1.6
+
+Release 2017.1.6 is a small update to OpenNMS Meridian 2017.1.5.
+It contains a few bug fixes.
+
+The codename for 2017.1.6 is _Meridianus Posoniensis_.
+
+===== Bug
+
+* It is not possible to see Statsd results on the WebUI (Issue http://issues.opennms.org/browse/NMS-9861[NMS-9861])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+
+[releasenotes-changelog-Meridian-2017.1.5]
+
+==== Release Meridian-2017.1.5
+
+Release 2017.1.5 is a small update to OpenNMS Meridian 2017.1.4.
+It contains a few bug fixes and performance enhancements.
+
+The codename for 2017.1.5 is _Pulkovo meridian_.
+
+===== Bug
+
+* Change links to docs in help page using https (Issue http://issues.opennms.org/browse/NMS-9832[NMS-9832])
+* Copyright dates need a bump for 2018 (Issue http://issues.opennms.org/browse/NMS-9871[NMS-9871])
+
+===== Enhancement
+
+* ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
+* bsmd: avoid processing alarm lifecycle events when no rules are defined (Issue http://issues.opennms.org/browse/NMS-9835[NMS-9835])
+
+[releasenotes-changelog-Meridian-2017.1.4]
+
+==== Release Meridian-2017.1.4
+
+Release 2017.1.4 is an update to OpenNMS Meridian 2017.1.3.  It is primarily a bug fix release.
+
+The codename for 2017.1.4 is _Tenerife meridian_.
+
+===== Bug
+
+* Notification storm causes JVM crash with: Native memory allocation (mmap) failed (Issue http://issues.opennms.org/browse/NMS-9766[NMS-9766])
+* The typeahead widget for KSC Report Search on front page is not working (Issue http://issues.opennms.org/browse/NMS-9776[NMS-9776])
+* The geographical maps on large installations is unusable (Issue http://issues.opennms.org/browse/NMS-9777[NMS-9777])
+* Cannot create user groups through the WebUI (NPE) (Issue http://issues.opennms.org/browse/NMS-9785[NMS-9785])
+* Broken Link in Admin guide to Alarm Introduction (Issue http://issues.opennms.org/browse/NMS-9802[NMS-9802])
+* Wrong syntax for automatic rescanning in admin guide (Issue http://issues.opennms.org/browse/NMS-9803[NMS-9803])
+* Geocoordinates truncated to 5 decimal places (Issue http://issues.opennms.org/browse/HZN-1219[HZN-1219])
+
+[releasenotes-changelog-Meridian-2017.1.3]
+
+==== Release Meridian-2017.1.3
+
+Release 2017.1.3 is an update to OpenNMS Meridian 2017.1.2.  It is primarily a security and bug fix release.
+
+The codename for 2017.1.3 is _Ferro meridian_.
+
+===== Bug
+
+* Privilege Escalation Bug with Grafana Plugin  (Issue http://issues.opennms.org/browse/NMS-8093[NMS-8093])
+* IOActive: Cross-Site Scripting in createFavorite filter Parameter (Issue http://issues.opennms.org/browse/NMS-9670[NMS-9670])
+* IOActive: Reflected Cross-site Scripting in userGroupView/roles roleDescr and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9673[NMS-9673])
+* IOActive: Reflected Cross-site Scripting in admin/thresholds/index.htm filterField and Other Parameters (Issue http://issues.opennms.org/browse/NMS-9674[NMS-9674])
+* HEAD requests to static resources in the UI don't work (Issue http://issues.opennms.org/browse/NMS-9689[NMS-9689])
+* The EXE installer of the remote poller on Windows is not working (Issue http://issues.opennms.org/browse/NMS-9721[NMS-9721])
+* IllegalStateException in OnmsVaadinContainer (Issue http://issues.opennms.org/browse/NMS-9742[NMS-9742])
+* Karaf snmp:show-config command lists value of timeout for retries (Issue http://issues.opennms.org/browse/NMS-9745[NMS-9745])
+* The content of the clone foreign source definition dialog is misleading (Issue http://issues.opennms.org/browse/NMS-9749[NMS-9749])
+* Relative path reference to version.properties (Issue http://issues.opennms.org/browse/NMS-9767[NMS-9767])
+
+===== Enhancement
+
+* Authentication proxy support (Issue http://issues.opennms.org/browse/NMS-9739[NMS-9739])
+
+[releasenotes-changelog-Meridian-2017.1.2]
+
+==== Release Meridian-2017.1.2
+
+Release 2017.1.2 is the third release of OpenNMS Meridian 2017.  It is primarily a security and bug fix release.
+
+The codename for 2017.1.2 is _Kraków meridian_.
+
+===== Bug
+
+* JMX config GUI can't connect to JMX service with JNDI name not "jmxrmi" (Issue http://issues.opennms.org/browse/NMS-8596[NMS-8596])
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* INFO-level "unable to locate resource" log messages for interfaces not persisted by policy (Issue http://issues.opennms.org/browse/NMS-9388[NMS-9388])
+* rescan-exitsing attibute of requisition-def tag in provisiond-configuration.xml is not passed to scanNode() in CoreImportActivities (Issue http://issues.opennms.org/browse/NMS-9492[NMS-9492])
+* Northbounders implementation are not sending feedback events for reloadDaemonConfig (Issue http://issues.opennms.org/browse/NMS-9524[NMS-9524])
+* XSS: HTML attribute values with quotes not escaped properly (Issue http://issues.opennms.org/browse/NMS-9645[NMS-9645])
+* Incorrect logging of exceptions in Slack and Mattermost notifications (Issue http://issues.opennms.org/browse/NMS-9656[NMS-9656])
+* IOActive: Reflected Cross-site Scripting in instrumentationLogReader.jsp searchString Parameter (Issue http://issues.opennms.org/browse/NMS-9672[NMS-9672])
+* Typo prevents FIQL query values from being URI-encoded (Issue http://issues.opennms.org/browse/NMS-9694[NMS-9694])
+* Typo in regional status geo map: Unacknowledges (for unacknolwedged) (Issue http://issues.opennms.org/browse/NMS-9700[NMS-9700])
+* Typo: "not elegible" for SNMP primary N enumeration (Issue http://issues.opennms.org/browse/NMS-9701[NMS-9701])
+* Duty schedules with embedded newlines break startup (Issue http://issues.opennms.org/browse/NMS-9709[NMS-9709])
+* Unexpected errors while generating event definitions from TRAP-TYPE without a DESCRIPTION field (Issue http://issues.opennms.org/browse/NMS-9718[NMS-9718])
+* NPE in Enlinkd bridge topology broadcast domain calculation (Issue http://issues.opennms.org/browse/NMS-9720[NMS-9720])
+* Null pointer exception in SurvellianceViewConfigurationCategoryWindow.java (Issue http://issues.opennms.org/browse/NMS-9722[NMS-9722])
+* ReST v1 does not return errors for unparseable events (Issue http://issues.opennms.org/browse/NMS-9724[NMS-9724])
+* Sending bad XML to the Requisitions ReST end point makes the API unusable (Issue http://issues.opennms.org/browse/NMS-9725[NMS-9725])
+
+===== Enhancement
+
+* ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
+
+[releasenotes-changelog-Meridian-2017.1.1]
+
+==== Release Meridian-2017.1.1
+
+Release 2017.1.1 is the second release of OpenNMS Meridian 2017.  It contains a number of security and bug fixes and a few small enhancements.
+
+The codename for 2017.1.1 is _Meridian of Monte Mario_.
+
+===== Bug
+
+* An empty category is not shown when in focus (Issue http://issues.opennms.org/browse/NMS-9423[NMS-9423])
+* Multiple XSS vulnerabilities in OpenNMS webapp (Issue http://issues.opennms.org/browse/NMS-9457[NMS-9457])
+* The button to add a graph to a KSC report doesn't work (Issue http://issues.opennms.org/browse/NMS-9498[NMS-9498])
+* RadixTreeSyslogParser confuses timezone and hostname fields (Issue http://issues.opennms.org/browse/NMS-9522[NMS-9522])
+* Stale IP Address Cache (Issue http://issues.opennms.org/browse/NMS-9613[NMS-9613])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+* trapd may silently discard invalid traps (Issue http://issues.opennms.org/browse/NMS-9660[NMS-9660])
+* Trap event parenting lacks bias toward SNMP primary interfaces (Issue http://issues.opennms.org/browse/NMS-9666[NMS-9666])
+* IOActive: Stored Cross-site Scripting in SNMP Trap Message (Issue http://issues.opennms.org/browse/NMS-9668[NMS-9668])
+* IOActive: Reflected Cross-site Scripting in heatmap/outages heatmap Parameter (Issue http://issues.opennms.org/browse/NMS-9671[NMS-9671])
+
+===== Enhancement
+
+* Display AlarmId on Event page (Issue http://issues.opennms.org/browse/NMS-8445[NMS-8445])
+* Check/add support for PostgreSQL 10 (Issue http://issues.opennms.org/browse/NMS-9679[NMS-9679])
+
+[releasenotes-changelog-Meridian-2017.1.0]
+
+==== Release Meridian-2017.1.0
+
+Release 2017.1.0 is the first release of OpenNMS Meridian 2017.  It is based on OpenNMS Horizon 19, plus a number of other bug fixes and changes that went into Horizon 20.
+
+The codename for 2017.1.0 is _Bering Strait_.
+
+===== Bug
+
+* collectd does not unschedule deleted nodes (Issue http://issues.opennms.org/browse/NMS-5105[NMS-5105])
+* provisiond hangs  (Issue http://issues.opennms.org/browse/NMS-5593[NMS-5593])
+* vmware urls do not support username/passwords that require URL encoding (Issue http://issues.opennms.org/browse/NMS-6530[NMS-6530])
+* noSuchInstance causing problems during provision scan (Issue http://issues.opennms.org/browse/NMS-8046[NMS-8046])
+* Renaming a root business services does not work anymore (Issue http://issues.opennms.org/browse/NMS-8370[NMS-8370])
+* Simulation mode is ended when clicking on "Set as focal point" (Issue http://issues.opennms.org/browse/NMS-8542[NMS-8542])
+* Outage ReST service forNode use case calculates dates incorrectly (Issue http://issues.opennms.org/browse/NMS-8823[NMS-8823])
+* DB installer tries to class-load every file under OPENNMS_HOME as a JAR (Issue http://issues.opennms.org/browse/NMS-8860[NMS-8860])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* Statsd: erroneous reporting; aggregators not reset between worker's runs (Issue http://issues.opennms.org/browse/NMS-8944[NMS-8944])
+* Skip /var/lock/subsys actions when running as unprivileged user (Issue http://issues.opennms.org/browse/NMS-8962[NMS-8962])
+* Copyright bump 2017 (Issue http://issues.opennms.org/browse/NMS-9060[NMS-9060])
+* Collection timing enhancements (Issue http://issues.opennms.org/browse/NMS-9090[NMS-9090])
+* "Manually Add an Interface" seems broken (Issue http://issues.opennms.org/browse/NMS-9108[NMS-9108])
+* opennms stays running when during a rpm/yum/dnf update (Issue http://issues.opennms.org/browse/NMS-9127[NMS-9127])
+* Fix CORS section to include /api/* besides /rest  (Issue http://issues.opennms.org/browse/NMS-9133[NMS-9133])
+* Fix the execution of Drools rules when using streaming (CEP, Temporal Reasoning) (Issue http://issues.opennms.org/browse/NMS-9172[NMS-9172])
+* NPE in GeolocationProvisioningAdapter (Issue http://issues.opennms.org/browse/NMS-9187[NMS-9187])
+* OSPF Router Id not properly updated (Issue http://issues.opennms.org/browse/NMS-9218[NMS-9218])
+* DNS Adapter on Delete Node does not delete DNS record (Issue http://issues.opennms.org/browse/NMS-9219[NMS-9219])
+* Topology Map ip like search produces duplicates (Issue http://issues.opennms.org/browse/NMS-9265[NMS-9265])
+* Make TCP output queue parameters configurable (Issue http://issues.opennms.org/browse/NMS-9282[NMS-9282])
+* syslogd logs "No hideMessage configured" though it is really not needed (Issue http://issues.opennms.org/browse/NMS-9289[NMS-9289])
+* Logging for TCP output queue (Issue http://issues.opennms.org/browse/NMS-9291[NMS-9291])
+* The geolocation provisioning adapter is not updating coordinates correctly (Issue http://issues.opennms.org/browse/NMS-9316[NMS-9316])
+* Installation issues with OpenJDK JRE (Issue http://issues.opennms.org/browse/NMS-9327[NMS-9327])
+* geo-coder creates invalid latitude/longitude in assets table (Issue http://issues.opennms.org/browse/NMS-9338[NMS-9338])
+* XSS vulnerability on quick-add node page (Issue http://issues.opennms.org/browse/NMS-9353[NMS-9353])
+* XSS vulnerability on node error page (Issue http://issues.opennms.org/browse/NMS-9354[NMS-9354])
+* XSS vulnerability with application names (Issue http://issues.opennms.org/browse/NMS-9355[NMS-9355])
+* Thresholding on WSMan datasources appears broken (Issue http://issues.opennms.org/browse/NMS-9361[NMS-9361])
+* Business service states are not properly updated when alarms are deleted (Issue http://issues.opennms.org/browse/NMS-9369[NMS-9369])
+* Incorrect sysoid for the systemDef Juniper J-Routers (Issue http://issues.opennms.org/browse/NMS-9372[NMS-9372])
+* Breadcrumb for requisitions has extra "/app" in path (Issue http://issues.opennms.org/browse/NMS-9386[NMS-9386])
+* Increase default connection timeout for HikariCP (Issue http://issues.opennms.org/browse/NMS-9387[NMS-9387])
+* TCP persistence strategy should output time in milliseconds, not seconds (Issue http://issues.opennms.org/browse/NMS-9409[NMS-9409])
+* NullPointerException during nodeScan on devices with broken IP-MIB::ipAddressIfIndex (Issue http://issues.opennms.org/browse/NMS-9415[NMS-9415])
+* Quick search HTTP error (Issue http://issues.opennms.org/browse/NMS-9419[NMS-9419])
+* No bounds-checking in processing of DHCP Options (Issue http://issues.opennms.org/browse/NMS-9420[NMS-9420])
+* Possible XSS in Alarm Filter Favorites (Issue http://issues.opennms.org/browse/NMS-9421[NMS-9421])
+* Event Configuration Screen Requires Alarm Type (Issue http://issues.opennms.org/browse/NMS-9422[NMS-9422])
+* Grouped status circle on geomap is not a circle (Issue http://issues.opennms.org/browse/NMS-9424[NMS-9424])
+* ClassNotFoundException when running vmwarecimquery/vmwareconfigbuilder (Issue http://issues.opennms.org/browse/NMS-9456[NMS-9456])
+* Fix JSP issues related to JAXB update (Issue http://issues.opennms.org/browse/NMS-9460[NMS-9460])
+* SQL injection in DefaultSurveillanceViewService (Issue http://issues.opennms.org/browse/NMS-9476[NMS-9476])
+* Clone foreign source requisition overwrites config of other requisition without any hint or warning (Issue http://issues.opennms.org/browse/NMS-9481[NMS-9481])
+* Using maskelements based on nodeID (and maybe other fields) to match event definition doesn't work (Issue http://issues.opennms.org/browse/NMS-9496[NMS-9496])
+* The alarm-type for BSM event definitions is conceptually incorrect (Issue http://issues.opennms.org/browse/NMS-9497[NMS-9497])
+* Using varbind to match event definition doesn't work (when using the same UEI in many definitions) (Issue http://issues.opennms.org/browse/NMS-9507[NMS-9507])
+* ConcurrentModificationException thrown by Statsd (Issue http://issues.opennms.org/browse/NMS-9511[NMS-9511])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* Document supported products and versions for Remedy integration (Issue http://issues.opennms.org/browse/NMS-9538[NMS-9538])
+* Microsoft IE and Edge doesn't like relative path on Angular apps (Issue http://issues.opennms.org/browse/NMS-9542[NMS-9542])
+* initial-delay="null" when adding a new destination path (Issue http://issues.opennms.org/browse/NMS-9548[NMS-9548])
+* The reason parameter for a nodeLostService event is limited to 255 characters (Issue http://issues.opennms.org/browse/NMS-9550[NMS-9550])
+* Eventd does not respect event configuration order when reloading (Issue http://issues.opennms.org/browse/NMS-9551[NMS-9551])
+* reloadDaemonConfig doesn't work for Eventd, only eventsConfigChange works (Issue http://issues.opennms.org/browse/NMS-9555[NMS-9555])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+* Apache CXF is not decoding url parameters correctly. (Issue http://issues.opennms.org/browse/NMS-9578[NMS-9578])
+* Custom security roles files is not mentioned on the documentation (Issue http://issues.opennms.org/browse/NMS-9579[NMS-9579])
+* ExceptionMapper does not update the entity type accordingly (Issue http://issues.opennms.org/browse/NMS-9598[NMS-9598])
+* offset=0 is rendering as offset=null in ReSTv2 collections (Issue http://issues.opennms.org/browse/NMS-9599[NMS-9599])
+* Unable to modify poller packages through the Monitoring Locations UI (Issue http://issues.opennms.org/browse/NMS-9608[NMS-9608])
+* Remove any mention of using Atomikos as a valid DB Connection Pool to avoid unwanted side effects (Issue http://issues.opennms.org/browse/NMS-9609[NMS-9609])
+* vmware importer fails with NPE (Issue http://issues.opennms.org/browse/NMS-9611[NMS-9611])
+* Basic syslog messages with Informational severity turn into unknown events (Issue http://issues.opennms.org/browse/NMS-9615[NMS-9615])
+* quick add node is broken (Issue http://issues.opennms.org/browse/NMS-9618[NMS-9618])
+* Remote poller logs have place holders for their names (Issue http://issues.opennms.org/browse/NMS-9621[NMS-9621])
+* Missing visual aid on BSM Admin Page after hitting Reload Daemon (Issue http://issues.opennms.org/browse/NMS-9624[NMS-9624])
+* Remote Poller log path incorrect when using the NSIS installer (Issue http://issues.opennms.org/browse/NMS-9631[NMS-9631])
+* Pristine installation with an empty content for etc/drools-engine.d/ncs which is invalid  (Issue http://issues.opennms.org/browse/NMS-9636[NMS-9636])
+* MomentJS warning after running sample code (Issue http://issues.opennms.org/browse/NMS-9637[NMS-9637])
+* yum error when upgrading from Meridian 2016 to Meridian 2017 with XML protocol package (Issue http://issues.opennms.org/browse/NMS-9640[NMS-9640])
+* Changed thresholds file in Meridian 2017 (Issue http://issues.opennms.org/browse/NMS-9641[NMS-9641])
+* notifd-configuration file wrong in Meridian 2017 (Issue http://issues.opennms.org/browse/NMS-9642[NMS-9642])
+* Misordered collections in datacollection-config.xml (Issue http://issues.opennms.org/browse/NMS-9643[NMS-9643])
+* Meridian 2017.1.0 needs some packages from yum.opennms.org repo (Issue http://issues.opennms.org/browse/NMS-9644[NMS-9644])
+* re-fix BSM alarm types (Issue http://issues.opennms.org/browse/NMS-9653[NMS-9653])
+* The Surveillance View and the Dashboard are rendered with Horizon colors (Issue http://issues.opennms.org/browse/LTS-201[LTS-201])
+* "Manage Minions" is not supposed to appear on the Admin Pages. (Issue http://issues.opennms.org/browse/LTS-204[LTS-204])
+* Display the Meridian logo in the Jasper reports (Issue http://issues.opennms.org/browse/LTS-205[LTS-205])
+* Color scheme in "Help improve OpenNMS" is too horizon like (Issue http://issues.opennms.org/browse/LTS-210[LTS-210])
+* The favicon does not comply with the meridian color scheme. (Issue http://issues.opennms.org/browse/LTS-211[LTS-211])
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
+
+===== Enhancement
+
+* Simple usability improvement to the provisioning UI (Issue http://issues.opennms.org/browse/NMS-8601[NMS-8601])
+* Make an automation to clear pathOutage alarms (Issue http://issues.opennms.org/browse/NMS-8857[NMS-8857])
+* Add foreignSource and foreignId parameters when sending events as an alternative to nodeId (Issue http://issues.opennms.org/browse/NMS-8919[NMS-8919])
+* Save syslog hostname in an event parameter (Issue http://issues.opennms.org/browse/NMS-8928[NMS-8928])
+* Identify time-series strategy in support/about page (Issue http://issues.opennms.org/browse/NMS-8936[NMS-8936])
+* VMware collector support for units and value modifier (Issue http://issues.opennms.org/browse/NMS-9092[NMS-9092])
+* SNMP data collection definitions for Cisco ASA5585-SSP-60 devices (Issue http://issues.opennms.org/browse/NMS-9094[NMS-9094])
+* Migrate remaining XSDs from Castor to JAXB (Issue http://issues.opennms.org/browse/NMS-9134[NMS-9134])
+* Cleanup and remove Castor related dependencies (Issue http://issues.opennms.org/browse/NMS-9135[NMS-9135])
+* Persist Drools working memory to disk when stopping and starting OpenNMS (Issue http://issues.opennms.org/browse/NMS-9143[NMS-9143])
+* Expose task queue size for ExecutorService runners. (Issue http://issues.opennms.org/browse/NMS-9161[NMS-9161])
+* Add Checkstyle to the build (Issue http://issues.opennms.org/browse/NMS-9174[NMS-9174])
+* Upgrade Spring from 4.0 to 4.1 (Issue http://issues.opennms.org/browse/NMS-9259[NMS-9259])
+* Finishing the implementation of the missing endpoints for ReST v2 (Issue http://issues.opennms.org/browse/NMS-9278[NMS-9278])
+* Upgrade Drools to 6.5.0 (Issue http://issues.opennms.org/browse/NMS-9279[NMS-9279])
+* Redefine the start ordering of the OpenNMS daemons during bootstrap. (Issue http://issues.opennms.org/browse/NMS-9280[NMS-9280])
+* Reload Drools configuration without restart OpenNMS (Issue http://issues.opennms.org/browse/NMS-9290[NMS-9290])
+* Alarms Page Enhancements - Sound and Flashing (Issue http://issues.opennms.org/browse/NMS-9375[NMS-9375])
+* Improved visualization for large trees with the Hierarchy Layout (Issue http://issues.opennms.org/browse/NMS-9379[NMS-9379])
+* Add support for retrieving the SNMPv2 agent address from a specific varbind (Issue http://issues.opennms.org/browse/NMS-9449[NMS-9449])
+* Improve logging for EventIpcManagerDefaultImpl (Issue http://issues.opennms.org/browse/NMS-9452[NMS-9452])
+* Minion requires location-specific definitions in SNMP config (Issue http://issues.opennms.org/browse/NMS-9462[NMS-9462])
+* add HTTPS response time datacollection and graph defintions (Issue http://issues.opennms.org/browse/NMS-9465[NMS-9465])
+* Add parameterized SQL support to Criteria API (Issue http://issues.opennms.org/browse/NMS-9480[NMS-9480])
+* Programmable Northbounder Interfaces (Issue http://issues.opennms.org/browse/NMS-9513[NMS-9513])
+* Remove "delete" flag from default downtime model (Issue http://issues.opennms.org/browse/NMS-9257[NMS-9257])
+

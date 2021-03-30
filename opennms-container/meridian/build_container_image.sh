@@ -21,7 +21,7 @@ enabled=1
 gpgcheck=0
 END
 
-docker build -t horizon \
+docker build -t meridian \
   --network "${BUILD_NETWORK}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
@@ -37,7 +37,7 @@ if [ -n "${CIRCLE_BUILD_NUM}" ]; then
   IMAGE_VERSION+=("${BASE_IMAGE_VERSION}-b${CIRCLE_BUILD_NUM}")
 fi
 
-docker image save horizon -o images/container.oci
+docker image save meridian -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh

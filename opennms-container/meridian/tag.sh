@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# we should not tag meridian containers
+exit 1
+
 # Exit script if a statement returns a non-true return value.
 set -o errexit
 
@@ -10,6 +13,6 @@ set -o pipefail
 source ../set-build-environment.sh
 
 for TAG in ${OCI_TAGS[*]}; do
-  docker tag horizon "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/horizon:${TAG}"
+  docker tag meridian "${CONTAINER_REGISTRY}/${CONTAINER_REGISTRY_REPO}/meridian:${TAG}"
 done
 docker images

@@ -101,7 +101,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger",
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class JtiIT {
 
@@ -163,7 +164,7 @@ public class JtiIT {
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     @Test
@@ -189,7 +190,7 @@ public class JtiIT {
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.rrd")).toFile().canRead(), equalTo(true));
 
         // now change script file
         content = content.replaceAll("ifOutOctets", "FooBar");
@@ -204,7 +205,7 @@ public class JtiIT {
             }
 
             return rrdBaseDir.toPath()
-                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))
+                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.rrd"))
                     .toFile()
                     .canRead();
         }, equalTo(true));
