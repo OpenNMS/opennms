@@ -39,6 +39,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +114,11 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
     @Override
     public void didUpdateRelatedAlarms(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
         forEachListener(l -> l.onRelatedAlarmsUpdated(alarm, previousRelatedAlarms));
+    }
+
+    @Override
+    public void didChangeTicketStateForAlarm(OnmsAlarm alarm, TroubleTicketState previousState) {
+        forEachListener(l -> l.onTicketStateChanged(alarm, previousState));
     }
 
     private void forEachListener(Consumer<AlarmEntityListener> callback) {
