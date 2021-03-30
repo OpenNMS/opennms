@@ -57,13 +57,19 @@ import io.netty.buffer.ByteBuf;
 
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
+    private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, new IpFixMessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public IpFixMessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override
@@ -125,4 +131,19 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
 
     }
 
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
 }
