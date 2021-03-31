@@ -94,7 +94,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger",
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class OpenConfigIT {
 
@@ -153,7 +154,7 @@ public class OpenConfigIT {
         telemetryd.start();
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth0", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     @Test
@@ -165,7 +166,7 @@ public class OpenConfigIT {
         telemetryd.start();
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth1", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {
