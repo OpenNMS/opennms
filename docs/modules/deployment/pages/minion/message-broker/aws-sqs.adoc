@@ -1,0 +1,71 @@
+.Create a file to install AWS SQS features on Minion startup
+[source, console]
+----
+sudo vi etc/featuresBoot.d/aws-sqs.boot
+----
+
+.Add the following lines to disable ActiveMQ and load AWS SQS
+[source, aws-sqs.boot]
+----
+!minion-jms
+!opennms-core-ipc-rpc-jms
+!opennms-core-ipc-sink-camel
+opennms-core-ipc-rpc-aws-sqs
+opennms-core-ipc-sink-aws-sqs
+----
+
+.Configure the AWS SQS via the Karaf Shell
+[source, karaf]
+----
+ssh -p 8201 admin@localhost
+----
+
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.aws.sqs<1>
+config:property-set aws_region us-east-1<2>
+config:property-set aws_access_key_id my-access-key<3>
+config:property-set aws_secret_access_key my-secret-access-key<4>
+config:property-set sink.FifoQueue false<5>
+config:update<6>
+----
+
+<1> Configure the AWS SQS feature
+<2> Set AWS SQS region
+<3> The AWS SQS access key
+<4> The AWS SQS secret for the access key
+<5> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Core server setting
+<6> Save and update the configuration
+
+.Restart the Minion to apply the configuration
+[source,console]
+----
+sudo systemctl restart minion
+----
+
+.Verify the configuration using the health check in the Karaf Shell
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Run the health check command
+[source, karaf]
+----
+opennms:health-check
+----
+
+.Verify if all components are configured properly
+[source, output]
+----
+Verifying the health of the container
+
+Connecting to OpenNMS ReST API           [ Success  ]
+Verifying installed bundles              [ Success  ]
+Connecting to AWS-SQS from RPC           [ Success  ]
+Connecting to AWS-SQS from Sink Producer [ Success  ]
+
+=> Everything is awesome
+----
+
+TIP: You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queueing Services reference] section.

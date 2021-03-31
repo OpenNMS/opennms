@@ -1,0 +1,15 @@
+
+= HTTPS Detector
+
+Use this detector to find and assign services based on HTTPS.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.HttpsDetector`
+|===
+
+== Configuration and Use
+
+Parameters for the HTTPS detector are the same as parameters as the xref:HttpDetector.adoc#HTTP-Detector[HTTP detector].

@@ -1,0 +1,6 @@
+
+
+[[ga-elasticsearch-alarm-history]]
+= Alarm History
+
+See <<alarms/history.adoc#ga-alarm-history, Alarm History>>.
