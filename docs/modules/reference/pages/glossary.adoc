@@ -1,0 +1,11 @@
+[[glossary]]
+= Glossary
+
+[options="header,footer"]
+[cols="15h,~"]
+|===
+| Term           | Definition
+| Discovery      | A process to find network devices and services in your network and add them to monitoring automatically.
+                   To identify a device the protocol ICMP is used.
+| Provisioning   | The process of getting your devices, applications and services into monitoring.
+|===

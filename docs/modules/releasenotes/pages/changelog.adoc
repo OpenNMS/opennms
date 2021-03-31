@@ -1,0 +1,11 @@
+[[release-changelog]]
+= Detailed Changelog
+
+Release {page-component-version} contains just a couple of bug fixes, most importantly a
+fix to provisioning that could break update to existing nodes when scanning.
+
+The codename for {page-component-version} is link:$$https://wikipedia.org/wiki/Vogon$$[_Vogon_].
+
+== Bug
+
+== Enhancement

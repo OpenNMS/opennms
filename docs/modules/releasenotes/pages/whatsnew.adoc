@@ -1,0 +1,16 @@
+[[releasenotes-whatsnew]]
+= What's New
+
+== System Requirements
+
+* *Java 8 through 11*: OpenNMS Horizon {page-component-version} runs on JDK 8 through 11.
+  We recommend the most recent version of OpenJDK 11.
+* *PostgreSQL 10 or higher*: Horizon {page-component-version} requires any supported version of PostgreSQL from 10 up to (and including) 13.
+
+== Breaking Changes
+
+=== Kafka RPC Enables single topic configuration by default.
+
+Enables single topic by default for Kafka RPC which would reduce number of topics on Kafka.
+Both Minion and OpenNMS need to be updated to OpenNMS Horizon {page-component-version}.
+Make sure that Kafka Lag on Sink topics be minimal before upgrading otherwise there may be loss of those sink messages.

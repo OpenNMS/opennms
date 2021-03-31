@@ -1,0 +1,137 @@
+[[getting-started-core]]
+= Installation and Configuration
+
+[[objectives-setup-core]]
+== Objectives
+
+* Installing all required OpenNMS {page-component-title} components including PostgreSQL on a single node
+* {page-component-title} Core and PostgreSQL run with the default configuration which are not optimized for running in production and monitoring large networks
+ifeval::["{page-component-title}" == "Horizon"]
+* As a result you will have JRobin as time series storage which persists RRD files on the local file system and is the default
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+* As a result you will have RRDtool as time series storage which persists RRD files on the local file system and is the default
+endif::[]
+* Login to the web user interface and change the default admin password
+
+[[requirements-core]]
+== Requirements
+
+* Linux physical server or a virtual machine running a supported Linux operating system
+* Internet access to download the installation packages
+* Make sure DNS is working and localhost and your servers host name is resolved properly
+* System user with administrative permissions (sudo) to perform the installation tasks
+ifeval::["{page-component-title}" == "Horizon"]
+* When you are interested in running the services link:https://docs.docker.com/[Docker] you need additionally link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
+
+NOTE: If you run Debian, you have to install and configure `sudo` yourself.
+      A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+
+endif::[]
+
+== Setting up PostgreSQL
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/postgresql.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/postgresql.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/postgresql.adoc[]
+--
+
+Docker::
++
+--
+include::docker/postgresql.adoc[]
+--
+endif::[]
+====
+
+== Installing the Core Instance
+
+[{tabs}]
+====
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/install-core.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/install-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Ubuntu::
++
+--
+include::ubuntu/install-core.adoc[]
+--
+
+Debian::
++
+--
+include::debian/install-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/core.adoc[]
+--
+endif::[]
+====
+
+== Setting up the Core Instance
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/initialize-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/initialize-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/initialize.adoc[]
+--
+endif::[]
+====
+
+== First Login
+
+After starting the {page-component-title} Core services the web application can be accessed on +
+`\http://core-instance-ip:8980/opennms`.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+IMPORTANT: Please change immediately the default password to a secure password.
+
+. Open `\http://core-instance-ip:8980/opennms` in your web browser
+. Login with with admin/admin
+. Click in main navigation menu on btn:[admin] -> btn:[Change Password]
+. Use _admin_ as the current password and set a new password and confirm with btn:[Submit]
+. Logout and login with your new password
