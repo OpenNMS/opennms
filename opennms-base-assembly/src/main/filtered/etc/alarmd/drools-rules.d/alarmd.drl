@@ -172,7 +172,6 @@ rule "closeClearedAlarmTickets"
     $sessionClock : SessionClock()
     $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
     $alarm : OnmsAlarm(severity == OnmsSeverity.CLEARED &&
-                       alarmType == OnmsAlarm.PROBLEM_TYPE &&
                        TTicketState == TroubleTicketState.OPEN)
     not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
   then

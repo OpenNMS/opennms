@@ -39,8 +39,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class AbstractPage {
-    protected static final long SHORT_WAIT_SECONDS = 4;
-    protected static final long LONG_WAIT_SECONDS = 8;
+    protected static final long SHORT_WAIT_SECONDS = 5;
+    protected static final long LONG_WAIT_SECONDS = 10;
 
     protected final AbstractOpenNMSSeleniumHelper testCase;
 
