@@ -534,6 +534,59 @@ public class DroolsAlarmContextIT {
     }
 
     @Test
+    public void canCleanupAlarm() {
+
+        ticketer.setEnabled(true);
+
+        // Trigger some problem
+        OnmsAlarm trigger = new OnmsAlarm();
+        trigger.setId(1);
+        trigger.setAlarmType(1);
+        trigger.setSeverity(OnmsSeverity.WARNING);
+        trigger.setReductionKey("n1:oops");
+        trigger.setLastEventTime(new Date(100));
+        when(alarmDao.get(trigger.getId())).thenReturn(trigger);
+        dac.getClock().advanceTime( 100, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(trigger);
+        dac.tick();
+
+        // Create a ticket
+        ticketer.createTicket(trigger, new Date());
+        assertThat(ticketer.getCreates(), hasSize(1));
+
+        // Inject a clear
+        OnmsAlarm clear = new OnmsAlarm();
+        clear.setId(2);
+        clear.setAlarmType(2);
+        clear.setSeverity(OnmsSeverity.CLEARED);
+        clear.setReductionKey("clear:n1:oops");
+        clear.setClearKey("n1:oops");
+        clear.setLastEventTime(new Date(101));
+        dac.getClock().advanceTime( 1, TimeUnit.MILLISECONDS );
+        dac.handleNewOrUpdatedAlarm(clear);
+        dac.tick();
+
+        // The trigger should be cleared
+        assertThat(trigger, hasSeverity(OnmsSeverity.CLEARED));
+
+        final AtomicBoolean gotDelete = new AtomicBoolean();
+        doAnswer(invocation -> {
+            gotDelete.set(true);
+            return null;
+        }).when(alarmDao).delete(trigger);
+
+        // Close ticket.
+        ticketer.closeTicket(trigger, new Date());
+        assertThat(ticketer.didCloseTicketFor(trigger), equalTo(true));
+
+        // Advance clock by 5 minutes and tick
+        dac.getClock().advanceTime( 5, TimeUnit.MINUTES );
+        dac.tick();
+        assertThat(gotDelete.get(), equalTo(true));
+
+    }
+
+    @Test
     public void canDeleteRelatedAlarm() {
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setId(1);

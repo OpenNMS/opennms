@@ -42,8 +42,10 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.selenium.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -182,7 +184,20 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         public OpsBoardAdminPage removeAll() {
             List<WebElement> elements = findElements(By.xpath("//*[@class='v-button-caption' and contains(text(), 'Remove')]"));
             while(elements.size() > 0) {
-                elements.get(0).click();
+                final WebElement element = elements.get(0);
+                element.click();
+                this.testCase.waitUntil(new ExpectedCondition<Boolean>() {
+                    @Override
+                    public Boolean apply(final WebDriver driver) {
+                        try {
+                            element.isEnabled();
+                        } catch (final Exception e) {
+                            // if it throws an exception, the element is gone; move on to the next one
+                            return true;
+                        }
+                        return false;
+                    }
+                });
                 elements = findElements(By.xpath("//*[@class='v-button-caption' and contains(text(), 'Remove')]"));
             }
             return this;
