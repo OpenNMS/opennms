@@ -143,6 +143,10 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%primaryinterface%`::
 The primary interface IP address for the node given in `%nodeid%` if available.
 
+CAUTION: The use of multiple _Minions_ in one location can break the alarm life-cycle for a some _OpenNMS_ features.
+To avoid this problem, the `%dpname%` value can always be replaced by an empty string by setting
+`org.opennms.netmgt.eventd.cleardpname` to `true` in the file `opennms.properties`.
+
 .Asset tokens
 A node may have additional asset records stored for it.
 You can access these records using the `asset` replacement token, which takes the form:
