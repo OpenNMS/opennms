@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -145,7 +145,7 @@
     trademark, and Horizon&trade;, Meridian&trade;, and Compass&trade; are
     trademarks, of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
     Horizon&trade; software by OpenNMS&reg; and Meridian&trade; software by OpenNMS&reg;, as
-    distributed here, are copyright &copy; 2002-2020
+    distributed here, are copyright &copy; 2002-2021
     <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
   </p>
   <p>
