@@ -56,7 +56,7 @@ CAUTION: If you change the instance id setting when using the embedded broker, y
 
 The following system properties can be used to tune the thread pool used to issue RPCs:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                              | Default  | Description
 | `org.opennms.ipc.rpc.threads`     | `10`     | Number of threads which are always active.

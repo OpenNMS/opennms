@@ -3,7 +3,7 @@
 
 == Startup Arguments
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Argument | Description
 | `-h`     | Display help with available arguments.
@@ -22,7 +22,7 @@
 |===
 
 .PostgreSQL connection configuration in opennms-datasources.xml
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Environment variable                       | Description                                                                       | Required | Default value
 | `OPENNMS_DBNAME`                           | Database name used for {page-component-title} Core instance                       | required | -
@@ -41,7 +41,7 @@
 |===
 
 .Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Environment variable               | Description                                                             | Required | Default value
 | `OPENNMS_TIMESERIES_STRATEGY`      | Used Timeseries storage strategy                                        | optional | `rrd`
@@ -52,7 +52,7 @@
 |===
 
 .SNMP Trap receiver configuration in trapd-configuration.xml
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Environment variable              | Description                                                       | Required | Default value
 | `OPENNMS_TRAPD_ADDRESS`           | Listen interface for _SNMP Trapd_                                 | optional | `*`
@@ -66,7 +66,7 @@
 |===
 
 .Karaf Shell configuration in org.apache.karaf.shell.cfg
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Environment variable     | Description                        | Required | Default value
 | `OPENNMS_karaf_SSH_HOST` | Listen interface for _Karaf_ shell | optional | `0.0.0.0`
@@ -74,7 +74,7 @@
 |===
 
 .Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Environment variable          | Description                                                                       | Required | Default value
 | `REPLICATION_FACTOR`          | Set _Cassandra_ replication factor for the newts keyspace if _Newts_ is used      | optional | `1` 
@@ -87,7 +87,7 @@
 
 == Directory Conventions
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Mountpoint             | Description
 | `/opt/opennms-overlay` | Allows to overwrite files relative to `/opt/opennms`

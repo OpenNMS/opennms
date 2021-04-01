@@ -31,7 +31,7 @@ To get JSON-encoded responses one has to send the following header with the requ
 The following are standard parameters available on most resources (noted below):
 
 .REST standard parameter for resources
-[options="header", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | Parameter   | Description
 | `limit`     | integer, limiting the number of results. This is particularly handy on events and notifications, where an accidental call with no limit could result in many thousands of results being returned, killing either the client or the server. If set to 0, then no limit applied.
@@ -57,7 +57,7 @@ Default is ascending, unless the `order` parameter is set to `desc` (any other v
 
 Take `/events` as an example.
 
-[options="header", cols="5,10"]
+[options="header, %autowidth"]
 |===
 | Resource                                                                           | Description
 | `/events?eventUei=uei.opennms.org/internal/rtc/subscribe`                          | Returns the first 10 events with the rtc subscribe UEI, (10 being the default limit for events).
@@ -94,7 +94,7 @@ Some endpoints deal in resources, which are identified by resource IDs.
 Since every resource is ultimately parented under some node, identifying the node that contains a resource is the first step in constructing a resource ID.
 Two styles are available for identifying the node in a resource ID:
 
-[options="header", cols="5,10,10"]
+[options="header, %autowidth"]
 |===
 | Style            | Description                                                                           | Example
 | `node[ID]`       | Identifies a node by its database ID, which is always an integer                      | `node[42]`
@@ -105,7 +105,7 @@ The node identifier is followed by a period, then a resource-type name and insta
 The instance name's characteristics may vary from one resource-type to the next.
 A few examples:
 
-[options="header", cols="5,10"]
+[options="header, %autowidth"]
 |===
 | Value                              | Description
 | `nodeSnmp[]`                       | Node-level (scalar) performance data for the node in question.

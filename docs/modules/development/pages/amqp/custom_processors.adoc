@@ -44,7 +44,7 @@ To use the processor, package it as a bundle, and expose it to the OSGi service 
 </service>
 ----
 
-Once your bundle is in the Karaf container, #you can update the loaded and# refer to your processor with:
+Once your bundle is in the Karaf container, you can update the loaded bundle and refer to your processor with:
 
 [source]
 ----

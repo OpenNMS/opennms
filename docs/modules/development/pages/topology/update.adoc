@@ -97,7 +97,7 @@ It is also possible to set and get a default vertex.
 == OnmsTopologyEdge
 
 `OnmsTopologyEdge` implements `OnmsTopologyRef` and represents an edge.
-It is made by a #two `OnmsTopologyPort` the source and the target of the edge#.
+It is made by two `OnmsTopologyPort`: the source and the target of the edge.
 
 == OnmsTopologyPort
 

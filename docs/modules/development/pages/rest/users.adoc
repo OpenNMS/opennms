@@ -8,7 +8,7 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 == GETs (Reading Data)
 
-[options="header, autowidth", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | Parameter           | Description
 | `/users`            | Get a list of users.
@@ -17,7 +17,7 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 == POSTs (Adding Data)
 
-[options="header, autowidth", cols="5,10"]
+[options="header, %autowidth"]
 |===
 | Parameter | Description
 | `/users`  | Add a user. If supplying a password it is assumed to be hashed or encrypted already.
@@ -27,7 +27,7 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 == PUTs (Modifying Data)
 
-[options="header, autowidth", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | Parameter                                | Description
 | `/users/\{username\}`                    | Update an existing user's full-name, user-comments, password, passwordSalt, and duty-schedule values.
@@ -37,7 +37,7 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 == DELETEs (Removing Data)
 
-[options="header, autowidth", cols="5,10"]
+[options="header, %autowidth"]
 |===
 | Resource                                 | Description
 | `/users/\{username\}`                    | Delete a user.

@@ -5,7 +5,7 @@ Use the Graph API to read existing graph and graph containers in the system and 
 
 NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
 
-[options="header", cols="5,1,10"]
+[options="header, %autowidth"]
 |===
 | Resource
 | Method
@@ -38,7 +38,7 @@ NOTE: If not otherwise specified, the `Content-Type` of the request and response
 At the moment, the context of a search must always be a concrete namespace and can never be over all graphs or containers.
 
 
-[options="header", cols="5,1,10"]
+[options="header, %autowidth"]
 |===
 | Resource
 | Method

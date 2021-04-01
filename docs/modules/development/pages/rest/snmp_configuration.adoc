@@ -10,7 +10,7 @@ The following operations are supported:
 
 == GETs (Reading Data)
 
-[options="header, autowidth", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | Parameter                                         | Description
 | `/snmpConfig/\{ipaddress\}`                       | Get the SNMP configuration for a given IP address.
@@ -19,7 +19,7 @@ The following operations are supported:
 
 == PUTs (Modifying Data)
 
-[options="header, autowidth", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | Parameter                   | Description
 | `/snmpConfig/\{ipaddress\}` | Add or update the SNMP configuration for a given IP address.
@@ -153,7 +153,7 @@ The SnmpInfo schema is defined as follows:
 The following table shows all supported attributes, the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
 It also shows the version limitations, default values, and the restrictions - if any.
 
-[options="header, autowidth", cols="1,10"]
+[options="header, %autowidth"]
 |===
 | attribute snmp-info.xml | attribute snmp-config.xml | default      | restricted to version | restriction
 | version                 | version                   | v1           | -                     | "v1", "v2c", or "v3" are valid arguments.
