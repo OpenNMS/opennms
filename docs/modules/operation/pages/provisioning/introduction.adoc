@@ -13,8 +13,8 @@ It also includes an adapter API for interfacing with other management systems su
 
 Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via three basic mechanisms: 
 
-* link:#discovery-auto[automatic discovery] (typically via the Discovery daemon)
-* link:#discovery-directed[directed discovery] using an import requisition (typically via the Provisioning UI)
+* link:#auto-discovery.adoc[automatic discovery] (typically via the Discovery daemon)
+* link:#directed-discovery.adoc[directed discovery] using an import requisition (typically via the Provisioning UI)
 * link:development:rest/rest-api.adoc#rest-api[asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
 
 {page-component-title} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect. 
@@ -36,7 +36,7 @@ Automatically discovered entities are analyzed, persisted to the relational data
 * node merging
 
 NOTE: Merging occurs only when two automatically discovered nodes appear to be the same node.
-Nodes <<provisioning/directed-discover.adoc#discovery-directed, discovered directly>> are not included in the node merging process.
+Nodes <<provisioning/directed-discovery.adoc#discovery-directed, discovered directly>> are not included in the node merging process.
 
 [[discovery-directed]]
 == Directed Discovery

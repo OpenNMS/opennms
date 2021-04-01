@@ -12,4 +12,4 @@ Use this detector to find and assign services based on HTTPS.
 
 == Configuration and Use
 
-Parameters for the HTTPS detector are the same as parameters as the xref:HttpDetector.adoc#HTTP-Detector[HTTP detector].
+Parameters for the HTTPS detector are the same as parameters as the <<provisioning/detectors/HttpDetector.adoc#HttpDetector, HttpDetector>>.

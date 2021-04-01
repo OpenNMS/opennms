@@ -6,8 +6,8 @@
 
 {page-component-title} has three methods of provisioining:
 
-* xref:autodiscovery.adoc#discovery-auto[auto discovery]
-* xref:directed-discover.adoc#discovery-directed[directed discovery]
+* xref:provisioning/auto-discovery.adoc[]
+* xref:provisioning/directed-discovery.adoc[]
 * xref:development:rest/rest-api.adoc#rest-api[asset import] through the RestAPI
 
 Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source.

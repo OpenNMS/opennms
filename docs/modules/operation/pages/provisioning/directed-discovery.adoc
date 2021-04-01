@@ -1,5 +1,4 @@
 
-[[directed-discovery]]
 = Directed Discovery
 
 Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
