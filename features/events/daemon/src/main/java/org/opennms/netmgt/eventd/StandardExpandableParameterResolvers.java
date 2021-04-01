@@ -93,6 +93,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
     },
 
     DPNAME {
+        final boolean clearDpName = Boolean.getBoolean("org.opennms.netmgt.eventd.cleardpname");
 
         @Override
         public boolean matches(String parm) {
@@ -101,6 +102,9 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
 
         @Override
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
+            if (clearDpName) {
+                return "";
+            }
             return event.getDistPoller();
         }
     },
