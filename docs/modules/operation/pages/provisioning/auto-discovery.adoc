@@ -1,5 +1,4 @@
 
-[[auto-discovery]]
 = Auto Discovery
 
 Auto discovery is the process of automatically adding nodes to {page-component-title}.

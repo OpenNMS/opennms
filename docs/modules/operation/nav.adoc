@@ -11,8 +11,8 @@
 
 * xref:provisioning/introduction.adoc[]
 ** xref:provisioning/getting-started.adoc[]
-** xref:provisioning/directed-discover.adoc[]
-** xref:provisioning/auto-discover.adoc[]
+** xref:provisioning/directed-discovery.adoc[]
+** xref:provisioning/auto-discovery.adoc[]
 ** xref:provisioning/integration.adoc[]
 ** xref:provisioning/import-handler.adoc[]
 ** xref:provisioning/examples.adoc[]

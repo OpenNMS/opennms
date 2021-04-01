@@ -1,4 +1,3 @@
-[[HTTP-Detector]]
 = HTTP Detector
 
 Use this detector to find and assign services based on HTTP.
