@@ -774,13 +774,6 @@
       <classifier>log4j2</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.doc</groupId>
-      <artifactId>guide-all</artifactId>
-      <type>tar.gz</type>
-      <version>${project.version}</version>
-      <classifier>docs</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.xsds</artifactId>
       <version>${project.version}</version>
