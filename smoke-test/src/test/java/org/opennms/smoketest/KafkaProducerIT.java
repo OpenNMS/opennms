@@ -28,9 +28,9 @@
 
 package org.opennms.smoketest;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -64,13 +64,14 @@ import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.minion.DetectorsOnMinionIT;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
+import org.opennms.smoketest.utils.OnTimeOutLogger;
 import org.opennms.smoketest.utils.SshClient;
 
 public class KafkaProducerIT extends BaseKafkaPersisterIT {
@@ -105,7 +106,9 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
             PrintStream pipe = sshClient.openShell();
             pipe.println("opennms:kafka-list-alarms");
             pipe.println("logout");
-            await().atMost(60, SECONDS).until(sshClient.isShellClosedCallable());
+            await().atMost(60, SECONDS)
+                    .conditionEvaluationListener(new OnTimeOutLogger(() -> System.out.println("Shell output: " + sshClient.getStdoutOrNull())))
+                    .until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
             shellOutput = StringUtils.substringAfter(shellOutput, "opennms:kafka-list-alarms");
         }
@@ -145,7 +148,9 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
             //opennms:collect --node #nodeId --persist org.opennms.netmgt.collectd.SnmpCollector #host
             pipe.println("opennms:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
             pipe.println("logout");
-            await().atMost(60, SECONDS).until(sshClient.isShellClosedCallable());
+            await().atMost(60, SECONDS)
+                    .conditionEvaluationListener(new OnTimeOutLogger(() -> System.out.println("Shell output: " + sshClient.getStdoutOrNull())))
+                    .until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
         }
         return shellOutput;
