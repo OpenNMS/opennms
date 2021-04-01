@@ -1,5 +1,5 @@
 ##
-# Makefile to build PRIS
+# Makefile to build OpenNMS docs
 ##
 .PHONY: help docs docs-docker docs-deps docs-deps-docker docs-serve docs-serve-stop docs-clean docs-clean-cache clean-all
 
