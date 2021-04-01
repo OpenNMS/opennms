@@ -268,7 +268,7 @@ A table is constructed in the following manner:
 
 [source]
 ----
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter     | Description                | Required | Default value
 | `myFirstParm` | my first long description  | required | `myDefault`
@@ -278,7 +278,7 @@ A table is constructed in the following manner:
 
 This is rendered as:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter     | Description                | Required | Default value
 | `myFirstParm` | my first long description  | required | `myDefault`
@@ -293,7 +293,7 @@ image::docs/01_long-table-formatting.png[]
 
 this is rendered as:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter              | Description                                                                                 | Required | Default value
 | `basic-authentication` | Authentication credentials to perform basic authentication.
