@@ -313,6 +313,26 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.18]
+
+==== Release Meridian-2019.1.18
+
+Release 2019.1.18 contains a number of small bug fixes, as well as a fix for a Jetty DoS CVE.
+
+The codename for 2019.1.18 is link:$$https://wikipedia.org/wiki/50000_Quaoar$$[_Quaoar_].
+
+===== Bug
+
+* Generate Data collection throws error message "There is a group with same name, please pick another one" under MIB browser (Issue http://issues.opennms.org/browse/NMS-13143[NMS-13143])
+* 'Links on interface' table was missing for interface under node list (Issue http://issues.opennms.org/browse/NMS-13145[NMS-13145])
+* Regular Expression field textbox greyed out for other Events except 'REGEX_FIELD' under Event notifications (Issue http://issues.opennms.org/browse/NMS-13149[NMS-13149])
+* Query Regarding saving a filter URL with more than 255 characters in events ILP (Issue http://issues.opennms.org/browse/NMS-13152[NMS-13152])
+* Kafka producer uses resource name instead of ifIndex as the instance for InterfaceLevelResource (Issue http://issues.opennms.org/browse/NMS-13185[NMS-13185])
+* The behavior of the Ticketing API differs from older versions. (Issue http://issues.opennms.org/browse/NMS-13189[NMS-13189])
+* CVE-2020-27223: Jetty DoS vulnerability (Issue http://issues.opennms.org/browse/NMS-13201[NMS-13201])
+* Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
+* Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
+
 [releasenotes-changelog-Meridian-2019.1.17]
 
 ==== Release Meridian-2019.1.17
@@ -320,7 +340,7 @@ For a more complete list of changes included in this release, see the "What's Ne
 Release 2019.1.17 contains a number of small bug fixes and enhancements, including some
 UI cleanups, Newts fixes, and a security update to Apache POI.
 
-The codename for 2019.1.17 is link:$$https://en.wikipedia.org/wiki/10252_Heidigraf$$[Heidigraf].
+The codename for 2019.1.17 is link:$$https://wikipedia.org/wiki/10252_Heidigraf$$[Heidigraf].
 
 ===== Bug
 
@@ -342,7 +362,7 @@ The codename for 2019.1.17 is link:$$https://en.wikipedia.org/wiki/10252_Heidigr
 Release 2019.1.16 contains a cleanup to JEXL expression handling and a fix for
 SFlow hostname enrichment.
 
-The codename for 2019.1.16 is link:$$https://en.wikipedia.org/wiki/11020_Orwell$$[_Orwell_].
+The codename for 2019.1.16 is link:$$https://wikipedia.org/wiki/11020_Orwell$$[_Orwell_].
 
 ===== Bug
 
