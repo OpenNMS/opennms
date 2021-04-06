@@ -1,6 +1,6 @@
 {
   "name": "opennms-smoke-tests",
-  "version": "2018.1.26",
+  "version": "2018.1.27-SNAPSHOT",
   "main": "src/main/javascript/index.js",
   "devDependencies": {
     "casper-chai": "^0.2.1",
