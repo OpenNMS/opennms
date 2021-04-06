@@ -86,6 +86,14 @@
         <Item>TLS_RSA_WITH_DES_CBC_SHA</Item>
      </Array>
     </Set>
+    <Call name="addExcludeProtocols">
+      <Arg>
+        <Array type="java.lang.String">
+          <Item>TLSv1</Item>
+          <Item>TLSv1.1</Item>
+        </Array>
+      </Arg>
+    </Call>
   </New>
 
   <Call name="addConnector">
