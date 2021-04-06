@@ -31,8 +31,11 @@ package org.opennms.netmgt.eventd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -348,5 +351,32 @@ public class EventUtilIT {
         // Decode an invalid DateAndTime (wrong length) and verify null is returned
         Date dateInvalid = eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger("deadbeef", 16));
         assertNull("An invalid DateAndTime should return a null", dateInvalid);
+    }
+
+    private void setClearDpName(final boolean value) throws Exception {
+        final Field field = StandardExpandableParameterResolvers.DPNAME.getClass().getDeclaredField("clearDpName");
+        field.setAccessible(true);
+        final Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(StandardExpandableParameterResolvers.DPNAME, value);
+    }
+
+    @Test
+    public void testClearDpNameOn() throws Exception {
+        setClearDpName(true);
+        final String minionId = UUID.randomUUID().toString();
+        m_svcLostEvent.setDistPoller(minionId);
+        String testString = new ExpandableParameter(AbstractEventUtil.TAG_DPNAME, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
+        assertEquals("", testString);
+    }
+
+    @Test
+    public void testClearDpNameOff() throws Exception {
+        setClearDpName(false);
+        final String minionId = UUID.randomUUID().toString();
+        m_svcLostEvent.setDistPoller(minionId);
+        String testString = new ExpandableParameter(AbstractEventUtil.TAG_DPNAME, eventUtil).expand(m_svcLostEvent, Maps.newHashMap());
+        assertEquals(minionId, testString);
     }
 }
