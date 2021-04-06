@@ -219,6 +219,33 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.7]
+
+==== Release Meridian-2020.1.7
+
+Release 2020.1.7 contains an enhancement to event forwarding performance in the Kafka
+producer, plus a number of bug fixes including a Jetty DoS CVE.
+
+The codename for 2020.1.7 is link:$$https://wikipedia.org/wiki/Firth$$[_Firth_].
+
+===== Bug
+
+* Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
+* Wrong UEI is picked when threshold alarms are generated (Issue http://issues.opennms.org/browse/NMS-13120[NMS-13120])
+* Generate Data collection throws error message "There is a group with same name, please pick another one" under MIB browser (Issue http://issues.opennms.org/browse/NMS-13143[NMS-13143])
+* 'Links on interface' table was missing for interface under node list (Issue http://issues.opennms.org/browse/NMS-13145[NMS-13145])
+* Regular Expression field textbox greyed out for other Events except 'REGEX_FIELD' under Event notifications (Issue http://issues.opennms.org/browse/NMS-13149[NMS-13149])
+* Query Regarding saving a filter URL with more than 255 characters in events ILP (Issue http://issues.opennms.org/browse/NMS-13152[NMS-13152])
+* Kafka producer uses resource name instead of ifIndex as the instance for InterfaceLevelResource (Issue http://issues.opennms.org/browse/NMS-13185[NMS-13185])
+* The behavior of the Ticketing API differs from older versions. (Issue http://issues.opennms.org/browse/NMS-13189[NMS-13189])
+* CVE-2020-27223: Jetty DoS vulnerability (Issue http://issues.opennms.org/browse/NMS-13201[NMS-13201])
+* Minion: Kafka related WARN log messages (AdminClientConfig The configuration X isn't a known config) (Issue http://issues.opennms.org/browse/NMS-13208[NMS-13208])
+* Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
+
+===== Enhancement
+
+* Improve Event forwarding performance for Kafka producer (Issue http://issues.opennms.org/browse/NMS-13211[NMS-13211])
+
 [releasenotes-changelog-Meridian-2020.1.6]
 
 ==== Release Meridian-2020.1.6
