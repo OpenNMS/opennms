@@ -85,6 +85,21 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.27]
+
+==== Release Meridian-2018.1.27
+
+Release 2018.1.27 is a small update with a fix for a Jetty DoS CVE, and a
+few small default config changes.
+
+The codename for 2018.1.27 is https://wikipedia.org/wiki/Volcano[_Volcano_].
+
+===== Bug
+
+* CVE-2020-27223: Jetty DoS vulnerability (Issue http://issues.opennms.org/browse/NMS-13201[NMS-13201])
+* Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
+* Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
+
 [releasenotes-changelog-Meridian-2018.1.26]
 
 ==== Release Meridian-2018.1.26
