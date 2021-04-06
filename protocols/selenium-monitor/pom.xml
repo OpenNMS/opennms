@@ -90,6 +90,18 @@
     
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
+         <artifactId>selenium-api</artifactId>
+         <version>${seleniumVersion}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-support</artifactId>
       <version>${seleniumVersion}</version>
       <exclusions>
@@ -114,14 +126,38 @@
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
+         <artifactId>selenium-htmlunit-driver</artifactId>
+         <version>2.52.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+
+      <dependency>
+         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-firefox-driver</artifactId>
         <version>${seleniumVersion}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
     </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-chrome-driver</artifactId>
         <version>${seleniumVersion}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
     </dependency>
 
     <dependency>
@@ -129,12 +165,6 @@
         <artifactId>phantomjsdriver</artifactId>
     </dependency>
     
-    <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-api</artifactId>
-        <version>${seleniumVersion}</version>
-    </dependency>
-
     <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
