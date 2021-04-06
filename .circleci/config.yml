@@ -544,6 +544,25 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
+                - /^.*coverage.*/
+      - integration-test-with-coverage:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /.*coverage.*/
+              ignore:
+                - /^merge-foundation.*/
+      - code-coverage:
+          requires:
+            - integration-test-with-coverage
+          filters:
+            branches:
+              only:
+                - /.*coverage.*/
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-core:
           requires:
             - horizon-rpm-build
@@ -628,6 +647,7 @@ workflows:
       - horizon-deb-build:
           requires:
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only:
@@ -641,6 +661,7 @@ workflows:
       - minion-deb-build:
           requires:
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only:
@@ -654,6 +675,7 @@ workflows:
       - sentinel-deb-build:
           requires:
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only:
@@ -676,6 +698,7 @@ workflows:
             - smoke-test-sentinel
             - smoke-test-minimal
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only: << parameters.main_branch >>
@@ -697,6 +720,7 @@ workflows:
             - smoke-test-sentinel
             - smoke-test-minimal
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only: /^foundation.*/
@@ -710,6 +734,7 @@ workflows:
             - smoke-test-sentinel
             - smoke-test-minimal
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only:
@@ -726,6 +751,7 @@ workflows:
             - smoke-test-sentinel
             - smoke-test-minimal
             - integration-test
+            - integration-test-with-coverage
           filters:
             branches:
               only:
