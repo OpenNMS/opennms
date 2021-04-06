@@ -157,7 +157,7 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("id", m_id)
                 .add("businessService", m_businessService == null ? null : m_businessService.getId())
                 .add("enabled", m_enabled)

@@ -94,7 +94,7 @@ public class OnmsMetaData implements Serializable {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("context", context)
                 .add("key", key)
                 .add("value", value)

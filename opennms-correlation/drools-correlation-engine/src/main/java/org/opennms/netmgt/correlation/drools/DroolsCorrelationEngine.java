@@ -99,7 +99,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
     private static final ExecutorService s_sessionDisposeExecutor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
             .setNameFormat("DroolsCorrelationEngine-Dispose-Pool-%d").build());
-    private static TimeLimiter s_timeLimiter = new SimpleTimeLimiter(s_sessionDisposeExecutor);
+    private static TimeLimiter s_timeLimiter = SimpleTimeLimiter.create(s_sessionDisposeExecutor);
 
     private KieBase m_kieBase;
     private KieSession m_kieSession;
@@ -363,7 +363,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
                 m_kieSession.destroy();
                 LOG.debug("Successfully disposed KieSession for engine: {}", m_name);
                 return null;
-            },  10, TimeUnit.SECONDS, true);
+            },  10, TimeUnit.SECONDS);
         }  catch (UncheckedTimeoutException e) {
             LOG.info("KieSession for engine named '{}' was not disposed within the given timeout.", m_name);
             if (m_streamThread != null) {

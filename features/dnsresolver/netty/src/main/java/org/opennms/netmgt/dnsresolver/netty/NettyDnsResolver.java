@@ -364,7 +364,7 @@ public class NettyDnsResolver implements DnsResolver {
                     final HostAndPort hp = HostAndPort.fromString(s.trim())
                             .withDefaultPort(53)
                             .requireBracketsForIPv6();
-                    return SocketUtils.socketAddress(hp.getHostText(), hp.getPort());
+                    return SocketUtils.socketAddress(hp.getHost(), hp.getPort());
                 })
                 .collect(Collectors.toList());
     }

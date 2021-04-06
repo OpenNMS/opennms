@@ -103,7 +103,7 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("businessService", m_businessService)
                 .add("ipService", m_ipService)
                 .add("reductionKey", m_reductionKey)

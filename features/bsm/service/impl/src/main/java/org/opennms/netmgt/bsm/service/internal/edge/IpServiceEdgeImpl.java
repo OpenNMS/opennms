@@ -60,7 +60,7 @@ public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdgeEntity> impleme
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("parent", super.toString())
                 .add("ipService", getIpService())
                 .toString();

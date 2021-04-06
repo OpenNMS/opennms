@@ -201,7 +201,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
                             }
                         });
                         return null;
-                    }, execTimeoutMs, TimeUnit.MILLISECONDS, true);
+                    }, execTimeoutMs, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     try (MDCCloseable mdc = Logging.withContextMapCloseable(clientContextMap)) {
                         // Wrap ProducerTemplate exceptions with a RequestRejectedException
@@ -271,7 +271,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
 
     public void start() {
         executor = Executors.newCachedThreadPool(threadFactory);
-        timeLimiter = new SimpleTimeLimiter(executor);
+        timeLimiter = SimpleTimeLimiter.create(executor);
 
         tracerRegistry.init(SystemInfoUtils.getInstanceId());
         tracer = tracerRegistry.getTracer();

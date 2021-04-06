@@ -93,7 +93,7 @@ public abstract class GraphMLElement {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(getClass())
+        return com.google.common.base.MoreObjects.toStringHelper(getClass())
                 .add("id", getId()).toString();
     }
 }

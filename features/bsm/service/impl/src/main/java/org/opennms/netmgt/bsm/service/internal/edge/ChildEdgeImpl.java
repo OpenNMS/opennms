@@ -61,7 +61,7 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> 
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("parent", super.toString())
                 .add("child", getChild() == null ? null : getChild().getId())
                 .toString();

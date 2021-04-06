@@ -154,7 +154,7 @@ public class FilterParamMetaData {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Key", this.key)
                  .add("Type", this.type)
                  .add("Display Name", this.displayName)

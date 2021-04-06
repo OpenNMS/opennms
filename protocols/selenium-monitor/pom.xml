@@ -11,7 +11,9 @@
   <name>OpenNMS :: Protocols :: Selenium</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.53.1</seleniumVersion>
+      <!-- <seleniumVersion>3.141.59</seleniumVersion> --> <!-- latest version available but doesnt work with htmlunit -->
+      <seleniumVersion>3.14.0</seleniumVersion> <!-- latest version which works with selenium-htmlunit-driver 2.52.0 -->
+      <!-- <seleniumVersion>2.53.1</seleniumVersion> --> <!-- original opennms version -->
   </properties>
   <packaging>bundle</packaging>
   <build>

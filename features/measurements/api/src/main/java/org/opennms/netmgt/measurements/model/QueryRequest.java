@@ -215,7 +215,7 @@ public class QueryRequest {
 
     @Override
     public String toString() {
-       return com.google.common.base.Objects.toStringHelper(this)
+       return com.google.common.base.MoreObjects.toStringHelper(this)
                  .add("Step", this.step)
                  .add("Start", this.start)
                  .add("End", this.end)

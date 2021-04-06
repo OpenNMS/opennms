@@ -136,7 +136,7 @@ public class IpServiceResponseDTO {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .add("id", m_id)
                 .add("serviceName", m_serviceName)
                 .add("nodeLabel", m_nodeLabel)
