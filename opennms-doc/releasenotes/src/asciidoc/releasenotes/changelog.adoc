@@ -2,6 +2,50 @@
 
 === Changelog
 
+[releasenotes-changelog-27.1.1]
+
+==== Release 27.1.1
+
+Release 27.1.1 contains a few enhancements, as well as a number of
+bug fixes including some XSS and CSRF cleanups and a Jetty DoS CVE.
+
+The codename for 27.1.1 is link:$$https://hitchhikers.fandom.com/wiki/Infinite_Improbability_Drive$$[_Infinite Improbability Drive_].
+
+===== Bug
+
+* Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
+* Can't edit reductionKey in BSM (Issue http://issues.opennms.org/browse/NMS-12697[NMS-12697])
+* Topology Map: Application: Color of app wrong for aknowledged alarm (Issue http://issues.opennms.org/browse/NMS-12969[NMS-12969])
+* Topology Application Map: Outage Table: Clicking on a service should show the outages of the service (Issue http://issues.opennms.org/browse/NMS-12970[NMS-12970])
+* Wrong UEI is picked when threshold alarms are generated (Issue http://issues.opennms.org/browse/NMS-13120[NMS-13120])
+* Document the Event Translator (Issue http://issues.opennms.org/browse/NMS-13121[NMS-13121])
+* XSS in notification wizard (Issue http://issues.opennms.org/browse/NMS-13123[NMS-13123])
+* CSRF in user management (Issue http://issues.opennms.org/browse/NMS-13124[NMS-13124])
+* XSS in requisition UI (Issue http://issues.opennms.org/browse/NMS-13126[NMS-13126])
+* Data collection failure due to IllegalStateException when using Cortex (Issue http://issues.opennms.org/browse/NMS-13133[NMS-13133])
+* Generate Data collection throws error message "There is a group with same name, please pick another one" under MIB browser (Issue http://issues.opennms.org/browse/NMS-13143[NMS-13143])
+* 'Links on interface' table was missing for interface under node list (Issue http://issues.opennms.org/browse/NMS-13145[NMS-13145])
+* Regular Expression field textbox greyed out for other Events except 'REGEX_FIELD' under Event notifications (Issue http://issues.opennms.org/browse/NMS-13149[NMS-13149])
+* Query Regarding saving a filter URL with more than 255 characters in events ILP (Issue http://issues.opennms.org/browse/NMS-13152[NMS-13152])
+* Response time query with ICMP fails for IPv6 interface (Issue http://issues.opennms.org/browse/NMS-13157[NMS-13157])
+* Kafka Producer drops samples when the sending operation timeout. (Issue http://issues.opennms.org/browse/NMS-13167[NMS-13167])
+* vmwarereqtool does not retain metadata (Issue http://issues.opennms.org/browse/NMS-13171[NMS-13171])
+* Opennms Ui is not accessible when logged in from a read-only user (Issue http://issues.opennms.org/browse/NMS-13178[NMS-13178])
+* Password in collectd.log file (Issue http://issues.opennms.org/browse/NMS-13183[NMS-13183])
+* Kafka producer uses resource name instead of ifIndex as the instance for InterfaceLevelResource (Issue http://issues.opennms.org/browse/NMS-13185[NMS-13185])
+* CVE-2020-27223: Jetty DoS vulnerability (Issue http://issues.opennms.org/browse/NMS-13201[NMS-13201])
+* Poor PasswordEncryptor performance with large number of Minions (Issue http://issues.opennms.org/browse/NMS-13207[NMS-13207])
+* Minion: Kafka related WARN log messages (AdminClientConfig The configuration X isn't a known config) (Issue http://issues.opennms.org/browse/NMS-13208[NMS-13208])
+* Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
+
+===== Enhancement
+
+* Add enhancement infrastructure for BMP updates (Issue http://issues.opennms.org/browse/NMS-12962[NMS-12962])
+* Add WebDetector documentation (Issue http://issues.opennms.org/browse/NMS-13028[NMS-13028])
+* Enhancement to Topology ReST Endpoint (Issue http://issues.opennms.org/browse/NMS-13091[NMS-13091])
+* Improve Event forwarding performance for Kafka producer (Issue http://issues.opennms.org/browse/NMS-13211[NMS-13211])
+* Add InMemoryTicketPlugin that can be accessed from Karaf shell (Issue http://issues.opennms.org/browse/NMS-13218[NMS-13218])
+
 [releasenotes-changelog-27.1.0]
 
 ==== Release 27.1.0
@@ -11,7 +55,6 @@ enhancements including a refactor of our BGP Monitoring Protocol
 integration.
 
 The codename for 27.1.0 is link:$$https://hitchhikers.fandom.com/wiki/Ravenous_Bugblatter_Beast_of_Traal$$[_Ravenous Bugblatter Beast of Traal_].
-
 
 ===== Bug
 
