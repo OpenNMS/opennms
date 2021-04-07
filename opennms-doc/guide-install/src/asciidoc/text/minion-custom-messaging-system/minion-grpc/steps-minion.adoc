@@ -79,7 +79,7 @@ ssh admin@localhost -p 8201
 [source, shell]
 ----
 feature:list | grep opennms-core-ipc-grpc-client
-opennms-core-ipc-grpc-client                │ 2020.1.7  │ x        │ Started
+opennms-core-ipc-grpc-client                │ 2020.1.8.SNAPSHOT  │ x        │ Started
 ----
 
 .Test connectivity to Kafka
