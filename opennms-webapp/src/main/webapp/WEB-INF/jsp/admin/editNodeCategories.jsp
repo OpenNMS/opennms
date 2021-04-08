@@ -72,7 +72,7 @@ function toggleFormEnablement() {
             <label for="toAdd">Available categories</label>
             <select id="toAdd" class="form-control" name="toAdd" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
               <c:forEach items="${model.categories}" var="category">
-                <option value="${category.id}">${category.name}</option>
+                <option value="${category.id}">${fn:escapeXml(category.name)}</option>
               </c:forEach>
             </select>
           </div>
@@ -86,7 +86,7 @@ function toggleFormEnablement() {
             <label for="toDelete">Categories on node</label>
             <select id="toDelete" class="form-control" name="toDelete" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
               <c:forEach items="${model.sortedCategories}" var="category">
-                <option value="${category.id}">${category.name}</option>
+                <option value="${category.id}">${fn:escapeXml(category.name)}</option>
               </c:forEach>
             </select>
           </div>
