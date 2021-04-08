@@ -93,7 +93,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%shorttime%`::
     The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
 `%dpname%`::
-    The ID of the Minion (formerly distributed poller) that the event was received on.
+    Formerly used for the ID of the Minion that the event was received on. This placeholder is deprecated and will be resolved to an empty string.
 `%nodeid%`::
     The numeric node ID of the device that caused the event, if any.
 `%nodelabel%`::
@@ -142,10 +142,6 @@ Not all events will have values for all tokens, and some refer specifically to i
     The trouble ticket id associated with the event if available.
 `%primaryinterface%`::
 The primary interface IP address for the node given in `%nodeid%` if available.
-
-CAUTION: The use of multiple _Minions_ in one location can break the alarm life-cycle for a some _OpenNMS_ features.
-To avoid this problem, the `%dpname%` value can always be replaced by an empty string by setting
-`org.opennms.netmgt.eventd.cleardpname` to `true` in the file `opennms.properties`.
 
 .Asset tokens
 A node may have additional asset records stored for it.
