@@ -49,6 +49,9 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorith
 
 public class Netflow9MessageBuilder implements MessageBuilder {
 
+    private Long flowActiveTimeoutFallback;
+    private Long flowInactiveTimeoutFallback;
+
     public Netflow9MessageBuilder() {
     }
 
@@ -70,8 +73,8 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long ipv6SrcMask = null;
         Long srcVlan = null;
         Long dstVlan = null;
-        Long flowActiveTimeout = null;
-        Long flowInActiveTimeout = null;
+        Long flowActiveTimeout = this.flowActiveTimeoutFallback;
+        Long flowInActiveTimeout = this.flowInactiveTimeoutFallback;
         Long sysUpTime = null;
         Long unixSecs = null;
         Long firstSwitched = null;
@@ -292,5 +295,21 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
         builder.setNetflowVersion(NetflowVersion.V9);
         return builder;
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.flowActiveTimeoutFallback;
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.flowInactiveTimeoutFallback;
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
     }
 }

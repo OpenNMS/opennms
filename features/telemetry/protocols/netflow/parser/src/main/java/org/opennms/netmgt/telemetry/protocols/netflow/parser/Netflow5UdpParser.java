@@ -54,13 +54,19 @@ import io.netty.buffer.ByteBuf;
 
 public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
+    private final Netflow5MessageBuilder messageBuilder = new Netflow5MessageBuilder();
+
     public Netflow5UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
                              final EventForwarder eventForwarder,
                              final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW5, name, new Netflow5MessageBuilder(), dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW5, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public Netflow5MessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override

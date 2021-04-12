@@ -170,12 +170,17 @@ public class ClockSkewTest {
     private class ParserBaseExt extends ParserBase {
 
         public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, new MessageBuilder() {
+            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        }
+
+        @Override
+        protected MessageBuilder getMessageBuilder() {
+            return new MessageBuilder() {
                 @Override
                 public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
                     return FlowMessage.newBuilder();
                 }
-            }, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+            };
         }
     }
 }

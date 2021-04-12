@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.transport;
 
-import java.util.Optional;
-
 public class Timeout {
 
     private final Long flowActiveTimeout;
@@ -61,7 +59,6 @@ public class Timeout {
         this.lastSwitched = lastSwitched;
     }
 
-
     public Long getDeltaSwitched() {
         if (flowActiveTimeout != null && flowInActiveTimeout != null) {
             long active = flowActiveTimeout * 1000;
@@ -70,10 +67,11 @@ public class Timeout {
             long numPackets = this.numPackets != null ? this.numPackets : 0;
             long firstSwitched = this.firstSwitched != null ? this.firstSwitched: 0;
             long lastSwitched = this.lastSwitched != null ? this.lastSwitched : 0;
-            return Optional.of(this)
-                    .map(timeoutValue -> (numBytes > 0 || numPackets > 0) ? active : inActive)
-                    .map(timeoutValue -> lastSwitched - timeoutValue)
-                    .map(t -> Math.max(firstSwitched, t)).orElse(firstSwitched);
+
+            long timeout = (numBytes > 0 || numPackets > 0) ? active : inActive;
+            long delta = lastSwitched - timeout;
+
+            return Math.max(firstSwitched, delta);
         }
         return firstSwitched;
     }
