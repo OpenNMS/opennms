@@ -31,11 +31,15 @@ package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,10 +76,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class BmpMessagePersister implements BmpMessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpMessagePersister.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(1).every(Duration.ofSeconds(60))
+            .build();
 
     @Autowired
     private BmpCollectorDao bmpCollectorDao;
@@ -104,8 +114,10 @@ public class BmpMessagePersister implements BmpMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
+    private Map<String, Set<BmpPeer>> peersByHashId = new ConcurrentHashMap<>();
+
     @Override
-    public void handle(Message message, Context context) {
+    public synchronized void handle(Message message, Context context) {
         sessionUtils.withTransaction(() -> {
             switch (message.getType()) {
                 case COLLECTOR:
@@ -134,6 +146,11 @@ public class BmpMessagePersister implements BmpMessageHandler {
                             }
                             Integer count = state ? ++connections : --connections;
                             router.setConnectionCount(count);
+                            Set<BmpPeer> bmpPeerSet = peersByHashId.get(router.getHashId());
+                            if(bmpPeerSet != null) {
+                                router.setBmpPeers(bmpPeerSet);
+                                bmpPeerSet.forEach(peer -> peer.setBmpRouter(router));
+                            }
                             try {
                                 bmpRouterDao.saveOrUpdate(router);
                             } catch (Exception e) {
@@ -143,7 +160,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         });
                     break;
                 case PEER:
-                    List<BmpPeer> bmpPeers = buildBmpPeers(message);
+                    List<BmpPeer> bmpPeers =  buildBmpPeers(message);
                     // Only retain unicast prefixes that are updated after current peer UP/down message.
                     bmpPeers.forEach(peer -> {
                         Set<BmpUnicastPrefix> unicastPrefixes = peer.getBmpUnicastPrefixes().stream().filter(bmpUnicastPrefix ->
@@ -283,7 +300,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
         return bmpRouters;
     }
 
-
     private List<BmpPeer> buildBmpPeers(Message message) {
 
         List<BmpPeer> bmpPeers = new ArrayList<>();
@@ -328,7 +344,17 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     peerEntity.setLocRib(peer.locRib);
                     peerEntity.setLocRibFiltered(peer.locRibFiltered);
                     peerEntity.setTableName(peer.tableName);
-                    bmpPeers.add(peerEntity);
+                    // Cache peers that are coming before router initiation messages.
+                    if(bmpRouter == null) {
+                        Set<BmpPeer> peers = peersByHashId.get(peer.routerHash);
+                        if (peers == null) {
+                            peers = new HashSet<>();
+                        }
+                        peers.add(peerEntity);
+                        peersByHashId.put(peer.routerHash, peers);
+                    } else {
+                        bmpPeers.add(peerEntity);
+                    }
                 } catch (Exception e) {
                     LOG.error("Exception while mapping Peer with peer addr '{}' to Peer entity", InetAddressUtils.str(peer.remoteIp), e);
                 }
@@ -392,7 +418,8 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         bmpPeer = bmpUnicastPrefix.getBmpPeer();
                     }
                     if (bmpPeer == null) {
-                        LOG.warn("Peer entity with hashId '{}' doesn't exist yet", unicastPrefix.peerHash);
+                        RATE_LIMITED_LOGGER.warn("Peer entity with hashId '{}', IpAddress = {} doesn't exist yet",
+                                unicastPrefix.peerHash, unicastPrefix.peerIp);
                         return;
                     }
                     bmpUnicastPrefix.setBmpPeer(bmpPeer);
