@@ -35,11 +35,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,7 +72,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.SetMultimap;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class BmpMessagePersister implements BmpMessageHandler {
@@ -114,7 +113,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
-    private Map<String, Set<BmpPeer>> peersByHashId = new ConcurrentHashMap<>();
+    private SetMultimap<String, BmpPeer> peerMultimap = HashMultimap.create();
 
     @Override
     public synchronized void handle(Message message, Context context) {
@@ -146,8 +145,8 @@ public class BmpMessagePersister implements BmpMessageHandler {
                             }
                             Integer count = state ? ++connections : --connections;
                             router.setConnectionCount(count);
-                            Set<BmpPeer> bmpPeerSet = peersByHashId.get(router.getHashId());
-                            if(bmpPeerSet != null) {
+                            Set<BmpPeer> bmpPeerSet = peerMultimap.get(router.getHashId());
+                            if(!bmpPeerSet.isEmpty()) {
                                 router.setBmpPeers(bmpPeerSet);
                                 bmpPeerSet.forEach(peer -> peer.setBmpRouter(router));
                             }
@@ -160,7 +159,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         });
                     break;
                 case PEER:
-                    List<BmpPeer> bmpPeers =  buildBmpPeers(message);
+                    List<BmpPeer> bmpPeers = buildBmpPeers(message);
                     // Only retain unicast prefixes that are updated after current peer UP/down message.
                     bmpPeers.forEach(peer -> {
                         Set<BmpUnicastPrefix> unicastPrefixes = peer.getBmpUnicastPrefixes().stream().filter(bmpUnicastPrefix ->
@@ -346,12 +345,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     peerEntity.setTableName(peer.tableName);
                     // Cache peers that are coming before router initiation messages.
                     if(bmpRouter == null) {
-                        Set<BmpPeer> peers = peersByHashId.get(peer.routerHash);
-                        if (peers == null) {
-                            peers = new HashSet<>();
-                        }
-                        peers.add(peerEntity);
-                        peersByHashId.put(peer.routerHash, peers);
+                        peerMultimap.put(peer.routerHash, peerEntity);
                     } else {
                         bmpPeers.add(peerEntity);
                     }
