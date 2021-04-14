@@ -61,6 +61,7 @@ import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
@@ -83,7 +84,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
-public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer {
+public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener, AlarmFeedbackListener, OnmsTopologyConsumer, ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -135,6 +136,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
 
     private String encoding = "UTF8";
+    private int numEventListenerThreads = 4;
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
@@ -603,6 +605,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.kafkaSendQueueCapacity = kafkaSendQueueCapacity;
     }
 
+    @Override
+    public int getNumThreads() {
+        return numEventListenerThreads;
+    }
+
     private static final class KafkaRecord {
         private final ProducerRecord<byte[], byte[]> producerRecord;
         private final Consumer<RecordMetadata> consumer;
@@ -635,6 +642,14 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public int getNumEventListenerThreads() {
+        return numEventListenerThreads;
+    }
+
+    public void setNumEventListenerThreads(int numEventListenerThreads) {
+        this.numEventListenerThreads = numEventListenerThreads;
     }
 
     private class TopologyVisitorImpl implements TopologyVisitor {

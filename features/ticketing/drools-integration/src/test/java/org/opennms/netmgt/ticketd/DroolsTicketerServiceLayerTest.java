@@ -29,11 +29,13 @@
 package org.opennms.netmgt.ticketd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 
 import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.api.integration.ticketing.Plugin;
@@ -41,6 +43,7 @@ import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -66,6 +69,7 @@ public class DroolsTicketerServiceLayerTest {
     private DroolsTicketerConfigDao m_configDao;
     private AlarmDao m_alarmDao;
     private Plugin m_ticketerPlugin;
+    private AlarmEntityNotifier m_alarmEntityNotifier;
     private OnmsAlarm m_alarm;
     private Ticket m_ticket;
     private MockEventIpcManager m_eventIpcManager;
@@ -86,10 +90,12 @@ public class DroolsTicketerServiceLayerTest {
         
         m_alarmDao = m_easyMockUtils.createMock(AlarmDao.class);
         m_ticketerPlugin = m_easyMockUtils.createMock(Plugin.class);
+        m_alarmEntityNotifier = m_easyMockUtils.createMock(AlarmEntityNotifier.class);
         
         m_droolsTicketerServiceLayer = new DroolsTicketerServiceLayer(m_configDao);
         m_droolsTicketerServiceLayer.setAlarmDao(m_alarmDao);
         m_droolsTicketerServiceLayer.setTicketerPlugin(m_ticketerPlugin);
+        m_droolsTicketerServiceLayer.setAlarmEntityNotifier(m_alarmEntityNotifier);
         
         EasyMock.reset(m_configDao);
         
@@ -111,6 +117,8 @@ public class DroolsTicketerServiceLayerTest {
 
         expectNewAlarmState(TroubleTicketState.OPEN);
 
+        expectAnUpdateToAlarmNotifier(null, TroubleTicketState.OPEN);
+
         m_easyMockUtils.replayAll();
 
         m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), new HashMap<>());
@@ -131,6 +139,8 @@ public class DroolsTicketerServiceLayerTest {
         EasyMock.expectLastCall().andThrow(new PluginException("Failed Create"));
 
         expectNewAlarmState(TroubleTicketState.CREATE_FAILED);
+
+        expectAnUpdateToAlarmNotifier(null, TroubleTicketState.CREATE_FAILED);
         
         m_easyMockUtils.replayAll();
         
@@ -164,5 +174,25 @@ public class DroolsTicketerServiceLayerTest {
                     ticket.getAttributes());
             return null;
         });
+    }
+
+    private void expectAnUpdateToAlarmNotifier(TroubleTicketState prevState, TroubleTicketState newState) {
+
+        m_alarmEntityNotifier.didChangeTicketStateForAlarm(m_alarm, prevState);
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+
+            @Override
+            public Object answer() throws Throwable {
+                OnmsAlarm alarm = (OnmsAlarm) EasyMock.getCurrentArguments()[0];
+                TroubleTicketState ticketState = (TroubleTicketState) EasyMock.getCurrentArguments()[1];
+                TroubleTicketState expectedState = alarm.getTTicketState();
+                assertEquals(prevState, ticketState);
+                assertNotNull(expectedState);
+                assertEquals(newState, expectedState);
+                return null;
+            }
+
+        });
+
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class AbstractPage {
+    protected static final long SHORT_WAIT_SECONDS = 5;
+    protected static final long LONG_WAIT_SECONDS = 10;
+
     protected final AbstractOpenNMSSeleniumHelper testCase;
 
     public AbstractPage(AbstractOpenNMSSeleniumHelper testCase) {
@@ -56,7 +59,7 @@ public class AbstractPage {
 
     protected List<WebElement> findElements(By by) {
         try {
-            testCase.setImplicitWait(7, TimeUnit.SECONDS);
+            testCase.setImplicitWait(LONG_WAIT_SECONDS, TimeUnit.SECONDS);
             return getDriver().findElements(by);
         } finally {
             testCase.setImplicitWait();
@@ -65,17 +68,48 @@ public class AbstractPage {
 
     protected WebElement findElement(By by) {
         try {
-            testCase.setImplicitWait(2, TimeUnit.SECONDS);
+            testCase.setImplicitWait(SHORT_WAIT_SECONDS, TimeUnit.SECONDS);
             return getDriver().findElement(by);
         } finally {
             testCase.setImplicitWait();
         }
     }
 
+    protected WebElement findElementByName(final String name) {
+        try {
+            testCase.setImplicitWait(SHORT_WAIT_SECONDS, TimeUnit.SECONDS);
+            return testCase.findElementByName(name);
+        } finally {
+            testCase.setImplicitWait();
+        }
+    }
+
+    protected WebElement findElementByXpath(final String xpath) {
+        try {
+            testCase.setImplicitWait(SHORT_WAIT_SECONDS, TimeUnit.SECONDS);
+            return testCase.findElementByXpath(xpath);
+        } finally {
+            testCase.setImplicitWait();
+        }
+    }
+
+    protected WebElement clickElement(final By by) {
+        try {
+            testCase.setImplicitWait(SHORT_WAIT_SECONDS, TimeUnit.SECONDS);
+            return testCase.clickElement(by);
+        } finally {
+            testCase.setImplicitWait();
+        }
+    }
+
+    protected WebElement enterText(final By by, final String text) {
+        return testCase.enterText(by, text);
+    }
+
     protected void waitUntil(ExpectedCondition<Boolean> condition) {
         try {
-            testCase.setImplicitWait(7, TimeUnit.SECONDS);
-            new WebDriverWait(getDriver(), 7).until(condition);
+            testCase.setImplicitWait(LONG_WAIT_SECONDS, TimeUnit.SECONDS);
+            new WebDriverWait(getDriver(), LONG_WAIT_SECONDS).until(condition);
         } finally {
             testCase.setImplicitWait();
         }

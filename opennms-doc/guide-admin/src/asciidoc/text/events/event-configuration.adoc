@@ -93,7 +93,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%shorttime%`::
     The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
 `%dpname%`::
-    The ID of the Minion (formerly distributed poller) that the event was received on.
+    Formerly used for the ID of the Minion that the event was received on. This placeholder is deprecated and will be resolved to an empty string.
 `%nodeid%`::
     The numeric node ID of the device that caused the event, if any.
 `%nodelabel%`::

@@ -57,6 +57,8 @@ After logging in for the first time, make sure to change the default admin user 
 . In the *User Password* area, click *Reset Password*, update the password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes. 
 
+WARNING: Please note that angle brackets (<>), single (') and double quotation marks ("), and the ampersand symbol (&) are not allowed to be used in the user ID.
+
 We recommend not using the default `admin` user, but instead link:#ga-user-config[creating specific users] with the admin role and/or other permissions. 
 This helps to keep track of who has performed tasks such as clearing alarms or creating notifications. 
 

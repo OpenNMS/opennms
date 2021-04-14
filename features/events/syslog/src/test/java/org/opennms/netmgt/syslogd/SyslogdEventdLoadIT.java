@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
@@ -277,6 +278,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         assertEquals(1, m_eventCounter.getCount());
     }
 
+    @Ignore("can be used/disabled to perform adhoc load tests")
     @Test(timeout=120000)
     @Transactional
     public void testEventd() throws Exception {

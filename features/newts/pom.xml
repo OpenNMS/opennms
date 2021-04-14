@@ -139,5 +139,11 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.cassandraunit</groupId>
+      <artifactId>cassandra-unit</artifactId>
+      <version>${cassandraUnitVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

@@ -93,7 +93,6 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
     },
 
     DPNAME {
-
         @Override
         public boolean matches(String parm) {
             return AbstractEventUtil.TAG_DPNAME.equals(parm);
@@ -101,7 +100,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
 
         @Override
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
-            return event.getDistPoller();
+            return "";
         }
     },
 

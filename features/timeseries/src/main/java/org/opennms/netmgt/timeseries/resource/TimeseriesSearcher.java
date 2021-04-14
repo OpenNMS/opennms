@@ -120,7 +120,7 @@ public class TimeseriesSearcher {
         // in order not to call the TimeseriesStorage implementation for every resource, we query all resources below a certain
         // depth (defined as WILDCARD_INDEX_NO). We have a special index, the "wildcard" index for that.
         if (path.elements().length >= WILDCARD_INDEX_NO) {
-            String wildcardPath = String.join(":", Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO));
+            String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO)));
             Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
             for (Metric metric : metricsFromWildcard) {
                 metric.getMetaTags().stream()

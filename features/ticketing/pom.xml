@@ -22,5 +22,6 @@
     <module>rt-integration</module>
     <module>remedy-integration</module>
     <module>tsrm-integration</module>
+    <module>inmemory</module>
   </modules>
 </project>

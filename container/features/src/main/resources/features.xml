@@ -1488,6 +1488,10 @@
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
         <bundle>mvn:org.opennms.features/jira-client/${project.version}</bundle>
     </feature>
+    <feature name="opennms-inmemory-ticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: InMemory">
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.inmemory/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
+    </feature>
     <feature name="datachoices" version="${project.version}" description="OpenNMS :: Features :: Data Choices">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature>guava</feature>

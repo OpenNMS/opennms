@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -54,8 +55,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
@@ -98,14 +102,16 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     protected final ThresholdingSession thresholdingSession;
     
     static final String THRESHOLDING_KV_CONTEXT = "thresholding";
-    
-    private final int stateTTL;
+
+    private final int stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
+            (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
     
     private Long sequenceNumber;
 
     private boolean firstEvaluation = true;
     
     private String instance;
+
 
     private static final Map<Class<? extends AbstractThresholdEvaluatorState.AbstractState>,
             SerializingBlobStore<? extends AbstractThresholdEvaluatorState.AbstractState>> serdesMap
@@ -170,13 +176,40 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         this.thresholdingSession = thresholdingSession;
         kvStore = getKvStoreForType(stateType, thresholdingSession.getBlobStore());
-        key = String.format("%d-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
+        key = String.format("%d-%s-%s-%s-%s-%s-%s", thresholdingSession.getKey().getNodeId(),
                 thresholdingSession.getKey().getLocation(), threshold.getDsType(),
-                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType());
+                threshold.getDatasourceExpression(), thresholdingSession.getKey().getResource(), threshold.getType(),
+                generateHashForThresholdValues(threshold));
 
-        stateTTL = SystemProperties.getInteger("org.opennms.netmgt.threshd.state_ttl",
-                (int) TimeUnit.SECONDS.convert(24, TimeUnit.HOURS));
         initializeState();
+    }
+
+    // Multiple threshold levels for trigger/rearm may end up with the same key.
+    // Generate unique hashcode for threshold values.
+    private String generateHashForThresholdValues(BaseThresholdDefConfigWrapper threshold) {
+        Hasher hasher = Hashing.murmur3_128().newHasher();
+        if (threshold.getTriggeredUEI().isPresent()) {
+            hasher.putString(threshold.getTriggeredUEI().get(), StandardCharsets.UTF_8);
+        }
+        if (threshold.getRearmedUEI().isPresent()) {
+            hasher.putString(threshold.getRearmedUEI().get(), StandardCharsets.UTF_8);
+        }
+        if (threshold.getValue() != null) {
+            hasher.putDouble(threshold.getValue());
+        } else if (!Strings.isNullOrEmpty(threshold.getValueString())) {
+            hasher.putString(threshold.getValueString(), StandardCharsets.UTF_8);
+        }
+        if (threshold.getRearm() != null) {
+            hasher.putDouble(threshold.getRearm());
+        } else if (!Strings.isNullOrEmpty(threshold.getRearmString())) {
+            hasher.putString(threshold.getRearmString(), StandardCharsets.UTF_8);
+        }
+        if (threshold.getTrigger() != null) {
+            hasher.putInt(threshold.getTrigger());
+        } else if (!Strings.isNullOrEmpty(threshold.getTriggerString())) {
+            hasher.putString(threshold.getTriggerString(), StandardCharsets.UTF_8);
+        }
+        return hasher.hash().toString();
     }
 
     /**
