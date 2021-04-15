@@ -34,6 +34,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -62,7 +65,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO>, InitializingBean {
 
@@ -96,6 +101,12 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Qualifier("eventSubscriptionService")
     private EventSubscriptionService eventSubscriptionService;
 
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("minion-provision-handler")
+            .build();
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+
     @Override
     @Transactional
     public void handleMessage(MinionIdentityDTO minionHandle) {
@@ -117,11 +128,6 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         minion.setLocation(minionHandle.getLocation());
 
-        // Provision the minions node before we alter the location
-        this.provision(minion,
-                       prevLocation,
-                       nextLocation);
-
         if (minionHandle.getTimestamp() == null) {
             // The heartbeat does not contain a timestamp - use the current time
             minion.setLastUpdated(new Date());
@@ -142,31 +148,43 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         minionDao.saveOrUpdate(minion);
 
-        if (prevLocation == null) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
-                    "OpenNMS.Minion.Heartbeat");
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
-            try {
-                eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event", e);
-            }
-        } else if (!prevLocation.equals(nextLocation)) {
+        // Provision the minions node in a separate thread.
+        final OnmsMinion onmsMinion = minion;
 
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
-                    "OpenNMS.Minion.Heartbeat");
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
-            eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
-            try {
-                eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                throw new DataAccessResourceFailureException("Unable to send event", e);
+        executor.execute(() -> {
+
+            this.provision(onmsMinion,
+                    prevLocation,
+                    nextLocation);
+
+            if (prevLocation == null) {
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
+                        "OpenNMS.Minion.Heartbeat");
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+                try {
+                    eventProxy.send(eventBuilder.getEvent());
+                } catch (final EventProxyException e) {
+                    throw new DataAccessResourceFailureException("Unable to send event", e);
+                }
+            } else if (!prevLocation.equals(nextLocation)) {
+
+                final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
+                        "OpenNMS.Minion.Heartbeat");
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, prevLocation);
+                eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, nextLocation);
+                try {
+                    eventProxy.send(eventBuilder.getEvent());
+                } catch (final EventProxyException e) {
+                    throw new DataAccessResourceFailureException("Unable to send event", e);
+                }
             }
-        }
+        });
+
+
 
     }
 
@@ -308,8 +326,37 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         messageConsumerManager.registerConsumer(this);
     }
 
+    public void shutdown() {
+        executor.shutdown();
+    }
+
     @Override
     public SinkModule<MinionIdentityDTO, MinionIdentityDTO> getModule() {
         return heartbeatModule;
+    }
+
+    @VisibleForTesting
+    void setMinionDao(MinionDao minionDao) {
+        this.minionDao = minionDao;
+    }
+
+    @VisibleForTesting
+    void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
+    }
+
+    @VisibleForTesting
+    void setDeployedForeignSourceRepository(ForeignSourceRepository deployedForeignSourceRepository) {
+        this.deployedForeignSourceRepository = deployedForeignSourceRepository;
+    }
+
+    @VisibleForTesting
+    ForeignSourceRepository getDeployedForeignSourceRepository() {
+        return deployedForeignSourceRepository;
+    }
+
+    @VisibleForTesting
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        this.eventSubscriptionService = eventSubscriptionService;
     }
 }
