@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -45,8 +47,10 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.FusedForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -73,6 +77,8 @@ public class HeartbeatConsumerIT {
     @Autowired
     private MinionDao minionDao;
 
+    @Autowired
+    private NodeDao nodeDao;
 
     @Test
     public void testProvisioningOfMinions() throws IOException {
@@ -108,6 +114,7 @@ public class HeartbeatConsumerIT {
         heartbeatConsumer.setEventProxy(eventProxy);
         heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
         heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
+        heartbeatConsumer.setNodeDao(nodeDao);
 
         // Stream the messages in parallel.
         minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
@@ -120,6 +127,29 @@ public class HeartbeatConsumerIT {
                 heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
                         .mapToInt(Requisition::getNodeCount).sum() == 1000);
 
+
+        // Now Mock NodeDao to return true for minion existence.
+        NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
+        List<OnmsNode> onmsNodes = new ArrayList<>();
+        onmsNodes.add(new OnmsNode());
+        Mockito.when(mockNodeDao.findByForeignIdForLocation(Mockito.anyString(), Mockito.anyString())).thenReturn(onmsNodes);
+        heartbeatConsumer.setNodeDao(mockNodeDao);
+        // Spawn 1000 more minions.
+        for (int i = 0; i < 1000; i++) {
+            MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+            minionIdentityDTO.setId(UUID.randomUUID().toString());
+            minionIdentityDTO.setLocation(UUID.randomUUID().toString());
+            minionDTOs.add(minionIdentityDTO);
+        }
+        // Stream the messages in parallel.
+        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+
+        //Verify that heartbeat does get consumed within short time.
+        await().atMost(5, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 2000);
+
+        // Verify that no new requisition nodes get added and provisioning got short-circuited
+        Assert.assertThat(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
+                .mapToInt(Requisition::getNodeCount).sum(), Matchers.is(1000));
     }
 
 

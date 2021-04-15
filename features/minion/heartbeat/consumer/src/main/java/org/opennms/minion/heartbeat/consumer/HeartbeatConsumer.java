@@ -44,11 +44,13 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.minion.heartbeat.common.HeartbeatModule;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -100,6 +102,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @Autowired
     @Qualifier("eventSubscriptionService")
     private EventSubscriptionService eventSubscriptionService;
+
+    @Autowired
+    private NodeDao nodeDao;
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("minion-provision-handler")
@@ -201,6 +206,13 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             return;
         }
 
+        // Return if minion with this foreignId and location already exists.
+        String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
+        List<OnmsNode> nodes = nodeDao.findByForeignIdForLocation(foreignId, nextLocation);
+        if (!nodes.isEmpty()) {
+            return;
+        }
+
         final String prevForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, prevLocation);
         final String nextForeignSource = String.format(PROVISIONING_FOREIGN_SOURCE_PATTERN, nextLocation);
 
@@ -245,9 +257,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
             requisitionNode = new RequisitionNode();
             requisitionNode.setNodeLabel(minion.getId());
-            requisitionNode.setForeignId(minion.getLabel() != null
-                                         ? minion.getLabel()
-                                         : minion.getId());
+            requisitionNode.setForeignId(foreignId);
             requisitionNode.setLocation(minion.getLocation());
             requisitionNode.putInterface(requisitionInterface);
 
@@ -358,5 +368,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     @VisibleForTesting
     public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
         this.eventSubscriptionService = eventSubscriptionService;
+    }
+
+    @VisibleForTesting
+    void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
     }
 }
