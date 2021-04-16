@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Named;
@@ -112,18 +113,20 @@ public class TimeSeriesMetaDataDao {
     ) {
         this.dataSource = Objects.requireNonNull(dataSource, "dataSource cannot be null.");
         Objects.requireNonNull(registry, "registry cannot be null.");
-        CacheBuilder cacheBuilder = new CacheBuilder<String, Map<String, String>>()
-                .withConfig(cacheConfig);
-        if(!DISABLE_DB_WRITES) {
-            CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>(){
-                @Override
-                public Map<String, String> load(String resourceId) throws Exception {
+
+        CacheLoader<String, Map<String, String>> loader = new CacheLoader<>(){
+            @Override
+            public Map<String, String> load(String resourceId) throws Exception {
+                if(!DISABLE_DB_WRITES) {
                     return loadFromDataBase(resourceId);
                 }
-            };
-            cacheBuilder.withCacheLoader(loader);
-        }
-        this.cache = cacheBuilder.build();
+                return new ConcurrentHashMap<>();
+            }
+        };
+        this.cache = new CacheBuilder<>()
+                .withConfig(cacheConfig)
+                .withCacheLoader(loader)
+                .build();
         this.metadataWriteTimer = registry.timer("metadata.write.db");
         this.metadataReadTimer = registry.timer("metadata.read.db");
         this.metadataCardinality = registry.register("metadata.cardinality", metadataHll::cardinality);
