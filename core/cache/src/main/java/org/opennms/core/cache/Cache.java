@@ -64,6 +64,7 @@ public class Cache<K, V> {
             if (config.isRecordStats()) {
                 logger.debug("Recording of \"{}\" cache statistics is enabled.", config.getName());
                 final MetricRegistry registry = config.getMetricRegistry();
+                registry.register(MetricRegistry.name("cache." + config.getName() + ".size"), (Gauge) () -> delegate.size());
                 registry.register(MetricRegistry.name("cache." + config.getName() + ".evictionCount"), (Gauge) () -> delegate.stats().evictionCount());
                 registry.register(MetricRegistry.name("cache." + config.getName() + ".hitRate"), (Gauge) () -> delegate.stats().hitRate());
                 registry.register(MetricRegistry.name("cache." + config.getName() + ".loadExceptionCount"), (Gauge) () -> delegate.stats().loadExceptionCount());

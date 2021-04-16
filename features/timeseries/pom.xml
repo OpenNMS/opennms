@@ -93,6 +93,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.agkn</groupId>
+      <artifactId>hll</artifactId>
+      <version>1.6.0</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

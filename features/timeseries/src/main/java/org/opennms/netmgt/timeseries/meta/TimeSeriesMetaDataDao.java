@@ -30,6 +30,7 @@ package org.opennms.netmgt.timeseries.meta;
 
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,6 +47,7 @@ import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.integration.api.v1.timeseries.StorageException;
@@ -55,9 +57,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheLoader;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+
+import net.agkn.hll.HLL;
 
 /**
  * TimeSeriesMetaDataDao stores string values associated with resourceids in the database. It leverages a Guava cache.
@@ -78,6 +85,25 @@ public class TimeSeriesMetaDataDao {
 
     private final Timer metadataWriteTimer;
     private final Timer metadataReadTimer;
+    private final Gauge<Long> metadataCardinality;
+
+    /**
+     * A HyperLogLog used to track the cardinality of the meta-data
+     * log2m = 14
+     * regwidth = 5
+     * numberOfBits = 2 ^ log2m * regwidth.
+     *              = 2 ^ 14 * 5
+     *              = 81000
+     * should support tracking 100,000,000 unique elements with a tolerated loss of 1%
+     */
+    private final HLL metadataHll = new HLL(14, 5);
+    @SuppressWarnings("UnstableApiUsage")
+    private final HashFunction hllHashFunction = Hashing.murmur3_128();
+
+    /**
+     * Hack: Short circuit database writes for performance testing.
+     */
+    private final static boolean DISABLE_DB_WRITES = Boolean.getBoolean("org.opennms.timeseries.dont.write.metadata.to.db");
 
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
@@ -86,19 +112,21 @@ public class TimeSeriesMetaDataDao {
     ) {
         this.dataSource = Objects.requireNonNull(dataSource, "dataSource cannot be null.");
         Objects.requireNonNull(registry, "registry cannot be null.");
-
-        CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>(){
-            @Override
-            public Map<String, String> load(String resourceId) throws Exception {
-                return loadFromDataBase(resourceId);
-            }
-        };
-        this.cache = new org.opennms.core.cache.CacheBuilder<String, Map<String, String>>()
-                .withConfig(cacheConfig)
-                .withCacheLoader(loader)
-                .build();
+        CacheBuilder cacheBuilder = new CacheBuilder<String, Map<String, String>>()
+                .withConfig(cacheConfig);
+        if(!DISABLE_DB_WRITES) {
+            CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>(){
+                @Override
+                public Map<String, String> load(String resourceId) throws Exception {
+                    return loadFromDataBase(resourceId);
+                }
+            };
+            cacheBuilder.withCacheLoader(loader);
+        }
+        this.cache = cacheBuilder.build();
         this.metadataWriteTimer = registry.timer("metadata.write.db");
         this.metadataReadTimer = registry.timer("metadata.read.db");
+        this.metadataCardinality = registry.register("metadata.cardinality", metadataHll::cardinality);
     }
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
@@ -107,6 +135,8 @@ public class TimeSeriesMetaDataDao {
 
         // find all MetaData that is not present in the cache
         for(MetaData meta : metaDataCollection) {
+            trackMetaDataCardinality(meta);
+
             Map<String, String> attributesForResource = cache.get(meta.getResourceId(), HashMap::new);
             if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
@@ -114,7 +144,7 @@ public class TimeSeriesMetaDataDao {
             }
         }
         // store the uncached meta data
-        if(!writeToDb.isEmpty()) {
+        if(!DISABLE_DB_WRITES && !writeToDb.isEmpty()) {
             storeUncached(writeToDb);
         }
     }
@@ -180,5 +210,19 @@ public class TimeSeriesMetaDataDao {
         } finally {
             db.cleanUp();
         }
+    }
+
+    /**
+     * Used to keep track of the cardinality of the meta-data.
+     *
+     * @param meta
+     */
+    private void trackMetaDataCardinality(MetaData meta) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(meta.getResourceId());
+        sb.append(meta.getName());
+        sb.append(meta.getValue());
+        //noinspection UnstableApiUsage
+        metadataHll.addRaw(hllHashFunction.hashString(sb, StandardCharsets.UTF_8).asLong());
     }
 }
