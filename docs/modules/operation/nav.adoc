@@ -204,12 +204,14 @@
 ** xref:operation/ssl/ssl.adoc[]
 ** xref:operation/request-logging.adoc[]
 ** xref:operation/geocoder.adoc[]
-** xref:operation/newts-repository-converter.adoc[]
+
 ** xref:operation/config-tester.adoc[]
 ** xref:operation/newts/introduction.adoc[]
-** xref:operation/newts/configuration.adoc[]
-** xref:operation/newts/cassandra-jmx.adoc[]
-** xref:operation/newts/cassandra-newts-jmx.adoc[]
+*** xref:operation/newts/configuration.adoc[]
+*** xref:operation/newts/cassandra-jmx.adoc[]
+*** xref:operation/newts/cassandra-newts-jmx.adoc[]
+*** xref:operation/newts/newts-repository-converter.adoc[]
+
 ** xref:operation/timeseries/introduction.adoc[]
 ** xref:operation/timeseries/configuration.adoc[]
 ** xref:operation/daemon-config-files/introduction.adoc[]

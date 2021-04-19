@@ -2,4 +2,4 @@
 [[ga-operation-https-ssl]]
 = Operation
 
-This chapter ... #to be added#.
+This section describes additional configuration for a number of {page-component-title} features (Geocoder Service, Newts, Configuration Tester, etc.).  
