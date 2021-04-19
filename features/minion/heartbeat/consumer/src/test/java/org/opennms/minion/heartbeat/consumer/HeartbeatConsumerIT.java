@@ -29,6 +29,7 @@
 package org.opennms.minion.heartbeat.consumer;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,9 +49,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.minion.heartbeat.common.MinionIdentityDTO;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.FusedForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -79,6 +84,9 @@ public class HeartbeatConsumerIT {
 
     @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private MockEventIpcManager m_mockEventIpcManager;
 
     @Test
     public void testProvisioningOfMinions() throws IOException {
@@ -127,7 +135,6 @@ public class HeartbeatConsumerIT {
                 heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
                         .mapToInt(Requisition::getNodeCount).sum() == 1000);
 
-
         // Now Mock NodeDao to return true for minion existence.
         NodeDao mockNodeDao = Mockito.mock(NodeDao.class);
         List<OnmsNode> onmsNodes = new ArrayList<>();
@@ -150,6 +157,134 @@ public class HeartbeatConsumerIT {
         // Verify that no new requisition nodes get added and provisioning got short-circuited
         Assert.assertThat(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
                 .mapToInt(Requisition::getNodeCount).sum(), Matchers.is(1000));
+    }
+
+
+    @Test
+    public void testThatQueueCanBlockProcessingOfHeartbeats() throws IOException {
+        EventProxy eventProxy = Mockito.mock(EventProxy.class);
+        EventSubscriptionService eventSubscriptionService = Mockito.mock(EventSubscriptionService.class);
+        Mockito.when(eventSubscriptionService.hasEventListener(Mockito.anyString())).thenReturn(true);
+        FusedForeignSourceRepository foreignSourceRepository = new FusedForeignSourceRepository();
+        FasterFilesystemForeignSourceRepository deployed = new FasterFilesystemForeignSourceRepository();
+        String foreignSourcePath = tempFolder.newFolder("foreign-sources").getPath();
+        String importsPath = tempFolder.newFolder("imports").getPath();
+        String pendingForeignSourcePath = tempFolder.newFolder("foreign-sources", "pending").getPath();
+        String pendingImportsPath = tempFolder.newFolder("imports", "pending").getPath();
+        deployed.setForeignSourcePath(foreignSourcePath);
+        deployed.setRequisitionPath(importsPath);
+        FasterFilesystemForeignSourceRepository pending = new FasterFilesystemForeignSourceRepository();
+        pending.setRequisitionPath(pendingImportsPath);
+        pending.setForeignSourcePath(pendingForeignSourcePath);
+        foreignSourceRepository.setDeployedForeignSourceRepository(deployed);
+        foreignSourceRepository.setPendingForeignSourceRepository(pending);
+        System.setProperty("opennms.minion.heartbeat.consumer.queueSize", "10");
+        // Spawn 10 minions
+        List<MinionIdentityDTO> minionDTOs = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+            minionIdentityDTO.setId(UUID.randomUUID().toString());
+            minionIdentityDTO.setLocation(UUID.randomUUID().toString());
+            minionDTOs.add(minionIdentityDTO);
+        }
+
+        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer();
+        heartbeatConsumer.setMinionDao(minionDao);
+        heartbeatConsumer.setEventProxy(eventProxy);
+        heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
+        heartbeatConsumer.setEventSubscriptionService(eventSubscriptionService);
+        heartbeatConsumer.setNodeDao(nodeDao);
+
+        // Stream the messages in parallel.
+        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+
+        //Verify that heartbeat does get consumed within short time.
+        await().atMost(5, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 10);
+
+        // Now add 200 minions so that queue is almost full
+        for (int i = 0; i < 200; i++) {
+            MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+            minionIdentityDTO.setId(UUID.randomUUID().toString());
+            minionIdentityDTO.setLocation(UUID.randomUUID().toString());
+            minionDTOs.add(minionIdentityDTO);
+        }
+
+        minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
+        //Verify that the queue is mostly full and only one active thread is running.
+        Assert.assertThat(heartbeatConsumer.getExecutor().getQueue().remainingCapacity(), Matchers.lessThanOrEqualTo(1));
+        Assert.assertThat(heartbeatConsumer.getExecutor().getActiveCount(), Matchers.is(1));
+
+        //Verify that eventually all the minions get persisted in imports.
+        await().atMost(10, TimeUnit.SECONDS).until(() ->
+                heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
+                        .mapToInt(Requisition::getNodeCount).sum() == 210);
+
+        Assert.assertThat(minionDao.countAll(), Matchers.is(210));
+
+    }
+
+    @Test
+    public void testMonitoringSystemLocationChangedEventWhenMinionChangesLocation() throws IOException {
+
+        FusedForeignSourceRepository foreignSourceRepository = new FusedForeignSourceRepository();
+        FasterFilesystemForeignSourceRepository deployed = new FasterFilesystemForeignSourceRepository();
+        String foreignSourcePath = tempFolder.newFolder("foreign-sources").getPath();
+        String importsPath = tempFolder.newFolder("imports").getPath();
+        String pendingForeignSourcePath = tempFolder.newFolder("foreign-sources", "pending").getPath();
+        String pendingImportsPath = tempFolder.newFolder("imports", "pending").getPath();
+        deployed.setForeignSourcePath(foreignSourcePath);
+        deployed.setRequisitionPath(importsPath);
+        FasterFilesystemForeignSourceRepository pending = new FasterFilesystemForeignSourceRepository();
+        pending.setRequisitionPath(pendingImportsPath);
+        pending.setForeignSourcePath(pendingForeignSourcePath);
+        foreignSourceRepository.setDeployedForeignSourceRepository(deployed);
+        foreignSourceRepository.setPendingForeignSourceRepository(pending);
+
+        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer();
+        heartbeatConsumer.setMinionDao(minionDao);
+        heartbeatConsumer.setEventProxy(m_mockEventIpcManager);
+        heartbeatConsumer.setDeployedForeignSourceRepository(foreignSourceRepository);
+        heartbeatConsumer.setEventSubscriptionService(m_mockEventIpcManager);
+        heartbeatConsumer.setNodeDao(nodeDao);
+
+        MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO();
+        String minionId = UUID.randomUUID().toString();
+        String firstLocation = UUID.randomUUID().toString();
+        minionIdentityDTO.setId(minionId);
+        minionIdentityDTO.setLocation(firstLocation);
+
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
+                "OpenNMS.Minion.Heartbeat");
+
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionId);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, firstLocation);
+
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        // Wait until we receive monitoringSystemAdded event.
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(1));
+
+        // Change location and send heartbeat
+        String secondLocation = UUID.randomUUID().toString();
+        minionIdentityDTO.setLocation(secondLocation);
+        heartbeatConsumer.handleMessage(minionIdentityDTO);
+
+        eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_LOCATION_CHANGED_UEI,
+                "OpenNMS.Minion.Heartbeat");
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionId);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_PREV_LOCATION, firstLocation);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, secondLocation);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
+
+        // Wait until we receive monitoringSystemLocationChanged event.
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+
+
     }
 
 
