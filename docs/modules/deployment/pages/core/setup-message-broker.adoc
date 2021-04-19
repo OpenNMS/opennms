@@ -1,5 +1,5 @@
 [[setup-message-broker]]
-= Setting up Message Broker
+= Set up Message Broker
 
 Distributing {page-component-title} components like Minions and Sentinel requires a messaging infrastructure.
 This section describes how to setup your {page-component-title} Core instance to use an existing messaging infrasturce based on ActiveMQ or Apache Kafka.
@@ -24,9 +24,9 @@ Configuring a Minion requires the following information:
 * ActiveMQ or Apache Kafka server IP addresses or FQDNs to configure the broker URL endpoints
 * Credentials for message broker if you use your existing environment
 
-== Create a minion user
+== Create a Minion user
 
-The communication between {page-component-title} Core instance and the componetnsMinion is secured with credentials.
+The communication between {page-component-title} Core instance and the Minion component is secured with credentials.
 We use here as example the user _my-minion-user_ with password _my-minion-password_.
 
 . Log in to the web UI as an administrative user
