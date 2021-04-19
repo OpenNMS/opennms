@@ -290,7 +290,7 @@ public class NodeLinkRestService implements NodeLinkRestApi {
 
     private LldpLinkNodeDTO mapLldpLindNodeToDTO(LldpLinkNode lldpLinkNode) {
         return lldpLinkNode == null ? null : new LldpLinkNodeDTO()
-                .withLdpRemPort(lldpLinkNode.getLldpRemPort())
+                .withLldpLocalPort(lldpLinkNode.getLldpLocalPort())
                 .withLldpLocalPortUrl(lldpLinkNode.getLldpLocalPortUrl())
                 .withLldpRemChassisId(lldpLinkNode.getLldpRemChassisId())
                 .withLldpRemChassisIdUrl(lldpLinkNode.getLldpRemChassisIdUrl())
