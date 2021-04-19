@@ -1,5 +1,5 @@
 
-= Enabling the Kafka Producer
+= Enable the Kafka Producer
 
 The Kafka Producer is disabled by default and can be enabled as follows.
 

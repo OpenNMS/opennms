@@ -1,5 +1,5 @@
 
-= Configuring the Kafka Producer
+= Configure the Kafka Producer
 
 The Kafka Producer exposes the following options to help fine tune its behavior.
 
@@ -34,14 +34,14 @@ The Kafka Producer exposes the following options to help fine tune its behavior.
 | `startAlarmSyncWithCleanState` | `false`       | Set this to `true` to force the Kafka Streams client to start with a clean state on every boot.
 |===
 
-== Configuring Filtering
+== Configure Filtering
 
 Use filtering to selectively forward events and/or alarms to the Kafka topics.
 
 Filtering is performed using a link:https://docs.spring.io/spring/docs/4.2.9.RELEASE/spring-framework-reference/html/expressions.html[Spring SpEL expression], which is evaluated against each object to determine if it should be forwarded.
 The expression must return a boolean value i.e., `true` or `false`.
 
-=== Enabling Event Filtering
+=== Enable Event Filtering
 
 To enable event filtering, set the value of the `eventFilter` property to a valid SpEL expression.
 
@@ -57,7 +57,7 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only events with the given UEI are forwarded.
 Consult the source code of the `org.opennms.netmgt.xml.event.OnmsEvent` class in your distribution for a complete list of available properties.
 
-=== Enabling Alarm Filtering
+=== Enable Alarm Filtering
 
 To enable alarm filtering, set the value of the `alarmFilter` property to a valid SpEL expression.
 
@@ -73,9 +73,13 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only alarms that are associated with a ticket ID are forwarded.
 Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in your distribution for a complete list of available properties.
 
-== Enabling Metric Forwarding
+== Enable Metric Forwarding
 
 To enable metric forwarding, set the value of the `forward.metrics` property to `true`.
+
+WARNING: The producer's code sends a full CollectionSet per message to Kafka. 
+Large network equipment might have hundreds of thousands of metrics that could generate messages over the Kafka limit (1MB in size by default).
+You must increase `max.request.size` at the producer level and `message.max.bytes` and `replica.fetch.max.bytes` at the broker level to avoid problems with the consumers.
 
 [source]
 ----
@@ -86,7 +90,7 @@ admin@opennms()> config:property-set forward.metrics true
 admin@opennms()> config:update
 ----
 
-=== Enabling Exclusive Metric Forwarding
+=== Enable Exclusive Metric Forwarding
 
 Once metric forwarding is enabled, you can use this as the exclusive persistence strategy by setting the following system property:
 
@@ -95,7 +99,7 @@ Once metric forwarding is enabled, you can use this as the exclusive persistence
 echo 'org.opennms.timeseries.strategy=osgi' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/kafka-for-metrics.properties"
 ----
 
-== Configuring Topic Names
+== Configure Topic Names
 
 By default five topics are created i.e., `events`, `alarms`, `nodes`,`vertices`, and `edges` .
 To change these, you can use:
