@@ -11,10 +11,15 @@ sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.
 sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Installing the of {page-component-title} Minion
+.Install the {page-component-title} Minion package
 [source, console]
 ----
+ifeval::["{page-component-title}" == "Horizon"]
 sudo dnf -y install opennms-minion
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo dnf -y install meridian-minion
+endif::[]
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
