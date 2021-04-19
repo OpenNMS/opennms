@@ -55,7 +55,7 @@ org.opennms.newts.config.ttl=31540000<6>
 org.opennms.newts.config.resource_shard=604800<7>
 ----
 
-<1> Associate time series data by the foreign ID instead of the database generated Node-ID
+<1> Associate time series data by the foreign ID instead of the database generated Node-ID. 
 <2> Set time-series strategy to use `newts`
 <3> Host or IP addresses of the _Cassandra_ cluster nodes can be a comma-separated list
 <4> Name of the keyspace which is initialized and used
@@ -90,4 +90,6 @@ describe table samples;
 systemctl restart opennms
 ----
 
-Go to the Node detail page from a SNMP managed device and verify if you see response time graphs for ICMP and Node-level Performance data.
+With this infomration set, {page-component-title} will begin persisting metrics using the Newts engine when restarted.
+
+Go to the Node detail page from a SNMP-managed device and verify that you see response time graphs for ICMP and node-level performance data.

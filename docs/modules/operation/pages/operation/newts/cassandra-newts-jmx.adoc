@@ -3,25 +3,25 @@
 
 This section describes the metrics {page-component-title} collects for monitoring the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on an Cassandra node.
 
-TIP: JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} in order to collect these metrics.
-     See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication] for details.
+JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} to collect these metrics.
+See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication and authorization] for details.
 
 The data collection is bound to the agent IP interface with the service name JMX-Cassandra-Newts.
 The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 
 == All Memory Table Data Size
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                          | Description
-| `AllMemtablesLiveDataSize`    | Total amount of live data stored in the memtables (2i and pending flush memtables included) that resides off-heap, excluding any data structure overhead
+| `AllMemtablesLiveDataSize`    | Total amount of live data stored in the memtables (2i and pending flush memtables included) that reside off-heap, excluding any data structure overhead.
 | `AllMemtablesOffHeapDataSize` | Total amount of data stored in the memtables (2i and pending flush memtables included) that resides off-heap.
 | `AllMemtablesOnHeapDataSize`  | Total amount of data stored in the memtables (2i and pending flush memtables included) that resides on-heap.
 |===
 
 == Memtable Switch Count
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                  | Description
 | `MemtableSwitchCount` | Number of times flush has resulted in the memtable being switched out.
@@ -29,7 +29,7 @@ The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 
 == Memtable Columns Count
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                   | Description
 | `MemtableColumnsCount` | Total number of columns present in the memtable.
@@ -37,26 +37,26 @@ The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 
 == Memory Table Data Size
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                      | Description
-| `MemtableLiveDataSize`    | Total amount of live data stored in the memtable, excluding any data structure overhead
-| `MemtableOffHeapDataSize` | Total amount of data stored in the memtable that resides off-heap, including column related overhead and partitions overwritten.
+| `MemtableLiveDataSize`    | Total amount of live data stored in the memtable, excluding any data structure overhead.
+| `MemtableOffHeapDataSize` | Total amount of data stored in the memtable that resides off-heap, including column-related overhead and partitions overwritten.
 | `MemtableOnHeapDataSize`  | Total amount of data stored in the memtable that resides on-heap, including column related overhead and partitions overwritten.
 |===
 
 == Read and Write Latency
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                | Description
-| `ReadTotalLatency`  | Local read metrics.
-| `WriteTotalLatency` | Local write metrics.
+| `ReadTotalLatency`  | Local read metrics
+| `WriteTotalLatency` | Local write metrics
 |===
 
 == Range Latency
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                           | Description
 | `RangeLatency 99th Percentile` | Local range slice metrics 99th percentile.
@@ -64,53 +64,53 @@ The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 
 === Latency
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                     | Description
-| `CasCommitTotalLatency`  |
-| `CasPrepareTotalLatency` |
-| `CasProposeTotalLatency` |
+| `CasCommitTotalLatency`  | Time spent in Casandra commits since process start. 
+| `CasPrepareTotalLatency` | Time spent in Casandra prepare events since process start. 
+| `CasProposeTotalLatency` | Time spent in Casandra propose events since process start. 
 |===
 
 == Bloom Filter Disk Space
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                       | Description
-| `BloomFilterDiskSpaceUsed` | Disk space used by bloom filter
+| `BloomFilterDiskSpaceUsed` | Disk space bloom filter uses.
 |===
 
-== Bloom Filter Off Heap Memory
+== Bloom Filter Off-Heap Memory
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                           | Description
-| `BloomFilterOffHeapMemoryUsed` | Off heap memory used by bloom filter
+| `BloomFilterOffHeapMemoryUsed` | Off-heap memory bloom filter uses. 
 |===
 
 == Newts Memory Used
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                                   | Description
-| `CompressionMetadataOffHeapMemoryUsed` | Off heap memory used by compression meta data
-| `IndexSummaryOffHeapMemoryUsed`        | Off heap memory used by index summary
+| `CompressionMetadataOffHeapMemoryUsed` | Off-heap memory compression metadata uses.
+| `IndexSummaryOffHeapMemoryUsed`        | Off-heap memory index summary uses. 
 |===
 
 == Pending
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                 | Description
-| `PendingCompactions` | Estimate of number of pending compactions for this column family
+| `PendingCompactions` | Estimated number of pending compactions for this column family
 | `PendingFlushes`     | Estimated number of tasks pending for this column family
 |===
 
 == Disk Space
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                 | Description
 | `TotalDiskSpaceUsed` | Total disk space used by SSTables belonging to this column family including obsolete ones waiting to be garbage collected.
-| `LiveDiskSpaceUsed`  | Disk space used by SSTables belonging to this column family
+| `LiveDiskSpaceUsed`  | Disk space used by SSTables belonging to this column family.
 |===

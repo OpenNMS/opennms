@@ -2,4 +2,11 @@
 [[ga-opennms-operation-newts]]
 = Newts
 
-This section describes how to configure _{page-component-title}_ to use _Newts_ and how to use _{page-component-title}_ to monitor your Cassandra cluster.
+link:http://newts.io/[Newts] is a time-series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
+It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontally scale] capabilities for your time series storage and is an alternative to link:http://www.opennms.org/wiki/JRobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+
+This section provides reference documentation for Newts, including additional configuration options, and information about the metrics {page-component-title} collects from Cassandra and for monitoring Newts.  
+
+For information on how to configure {page-component-title} to use Newts, see xref:deployment:system-scalability/time-series-storage/newts.adoc#newts[Newts] in the Deployment section. 
+
+
