@@ -1161,7 +1161,8 @@ public abstract class UserManager implements UserConfig {
     }
 
     public boolean checkSaltedPassword(final String raw, final String encrypted) {
-        return s_passwordEncryptor.checkPassword(raw, encrypted);
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        return passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**
