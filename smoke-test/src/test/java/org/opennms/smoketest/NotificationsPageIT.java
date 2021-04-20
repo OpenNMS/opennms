@@ -38,6 +38,7 @@ import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotificationsPageIT extends OpenNMSSeleniumIT {
+
     @Before
     public void setUp() throws Exception {
         notificationsPage();
@@ -86,5 +87,4 @@ public class NotificationsPageIT extends OpenNMSSeleniumIT {
         findElementByLink("Respond Time");
         assertElementDoesNotHaveText(By.xpath("//span[@class='label label-default']"), "admin was notified [-]");
     }
-
 }

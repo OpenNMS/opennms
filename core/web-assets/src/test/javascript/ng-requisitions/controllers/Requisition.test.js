@@ -8,6 +8,7 @@
 'use strict';
 
 const angular = require('angular-js');
+const _ = require('underscore-js');
 require('angular-mocks');
 require('../../../../../src/main/assets/js/apps/onms-requisitions/requisitions');
 
