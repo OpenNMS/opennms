@@ -2,7 +2,7 @@
 
 === Changelog
 
-[releasenotes-changelog-27.1.1]
+[[releasenotes-changelog-27.1.1]]
 
 ==== Release 27.1.1
 
@@ -46,7 +46,7 @@ The codename for 27.1.1 is link:$$https://hitchhikers.fandom.com/wiki/Infinite_I
 * Improve Event forwarding performance for Kafka producer (Issue http://issues.opennms.org/browse/NMS-13211[NMS-13211])
 * Add InMemoryTicketPlugin that can be accessed from Karaf shell (Issue http://issues.opennms.org/browse/NMS-13218[NMS-13218])
 
-[releasenotes-changelog-27.1.0]
+[[releasenotes-changelog-27.1.0]]
 
 ==== Release 27.1.0
 
@@ -111,7 +111,7 @@ The codename for 27.1.0 is link:$$https://hitchhikers.fandom.com/wiki/Ravenous_B
 * Move some model objects from opennms-webapp  to opennms-web-api  (Issue http://issues.opennms.org/browse/NMS-13168[NMS-13168])
 * create a table to show related events in the alarm detail view (Issue http://issues.opennms.org/browse/NMS-13170[NMS-13170])
 
-[releasenotes-changelog-27.0.5]
+[[releasenotes-changelog-27.0.5]]
 
 ==== Release 27.0.5
 
@@ -125,7 +125,7 @@ The codename for 27.0.5 is link:$$https://wikipedia.org/wiki/Vogon$$[_Vogon_].
 * Flow Rest API: Name lookup is happening per bucket and not per interval (Aggregation Only) (Issue http://issues.opennms.org/browse/NMS-13065[NMS-13065])
 * Provisioning stopped working after upgrade to 27.0.4 (Issue http://issues.opennms.org/browse/NMS-13128[NMS-13128])
 
-[releasenotes-changelog-27.0.4]
+[[releasenotes-changelog-27.0.4]]
 
 ==== Release 27.0.4
 
@@ -155,7 +155,7 @@ The codename for 27.0.4 is link:$$https://hitchhikers.fandom.com/wiki/Towel$$[_T
 * Optionally silence file not found warnings for JICMP, JRRD when properties are not set (Issue http://issues.opennms.org/browse/NMS-13081[NMS-13081])
 * Update opennms.spec to take advantage of maven smart builder plugin (Issue http://issues.opennms.org/browse/NMS-13083[NMS-13083])
 
-[releasenotes-changelog-27.0.3]
+[[releasenotes-changelog-27.0.3]]
 
 ==== Release 27.0.3
 
@@ -181,7 +181,7 @@ The codename for 27.0.3 is link:$$https://hitchhikers.fandom.com/wiki/Dolphins$$
 * Inconsistent breadcrumbs on Locations/Minions (Issue http://issues.opennms.org/browse/NMS-13067[NMS-13067])
 
 
-[releasenotes-changelog-27.0.2]
+[[releasenotes-changelog-27.0.2]]
 
 ==== Release 27.0.2
 
@@ -205,7 +205,7 @@ The codename for 27.0.2 is _link:$$https://wikipedia.org/wiki/List_of_The_Hitchh
 
 * Add "geohash" support to the meta-data DSL (Issue http://issues.opennms.org/browse/NMS-13036[NMS-13036])
 
-[releasenotes-changelog-27.0.1]
+[[releasenotes-changelog-27.0.1]]
 
 ==== Release 27.0.1
 
@@ -246,7 +246,7 @@ The codename for 27.0.1 is _link:$$https://wikipedia.org/wiki/Zaphod_Beeblebrox#
 * Add clock skew correction mechanism (Issue http://issues.opennms.org/browse/NMS-13023[NMS-13023])
 
 
-[releasenotes-changelog-27.0.0]
+[[releasenotes-changelog-27.0.0]]
 
 ==== Release 27.0.0
 
