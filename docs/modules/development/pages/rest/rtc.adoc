@@ -20,7 +20,7 @@ Data provided from the RTC is available to the REST API.
 [source, bash]
 ----
 curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers
-curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/nodes
-curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/nodes/31
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers/nodes
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers/nodes/31
 curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/nodes/31
 ----
