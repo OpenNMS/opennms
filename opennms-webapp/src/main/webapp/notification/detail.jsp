@@ -114,7 +114,7 @@
       </c:choose>
     </td>
     <th class="col-md-1">Responder</th>
-    <td class="col-md-2"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
+    <td class="col-md-2"><%=notice.getResponder()!=null ? WebSecurityUtils.sanitizeString(notice.getResponder()) : "&nbsp;"%></td>
     <th class="col-md-1">Location</th>
     <td class="col-md-2">
       <c:choose>
@@ -237,7 +237,7 @@
   <%  for (NoticeSentTo sentTo : notice.getSentTo()) { %>
 
     <tr class="severity-<%=eventSeverity.toLowerCase()%>">
-      <td><%=sentTo.getUserId()%></td>
+      <td><%=WebSecurityUtils.sanitizeString(sentTo.getUserId())%></td>
 
       <td>
         <c:choose>
