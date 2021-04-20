@@ -35,9 +35,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -81,7 +83,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
     // Default queue size is chosen as tests indicated that provisioning can import 500 nodes in 30 secs.
     private static final Integer DEFAULT_QUEUE_SIZE = 500;
-    private static final Integer queueSize = SystemProperties.getInteger("opennms.minion.heartbeat.consumer.queueSize", DEFAULT_QUEUE_SIZE);
+    private static final Integer queueSize = SystemProperties.getInteger("opennms.minion.provisioning.queueSize", DEFAULT_QUEUE_SIZE);
 
     /**
      * Services on the Minion nodes must be associated to *some* interface, so we use the following constant:
@@ -89,6 +91,8 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private static final String MINION_INTERFACE = "127.0.0.1";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
+
+    private final AtomicInteger numofRejected = new AtomicInteger(0);
 
     @Autowired
     private MinionDao minionDao;
@@ -116,7 +120,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             .build();
 
     private final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L,
-            TimeUnit.MILLISECONDS, new OfferBlockingQueue<>(queueSize), threadFactory);
+            TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), threadFactory, new RejectedExecutionHandlerImpl());
 
     @Override
     @Transactional
@@ -386,38 +390,18 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     }
 
 
-    /**
-     * When used in a ThreadPoolExecutor, this queue will block calls to
-     * {@link ThreadPoolExecutor#execute(Runnable)} when the queue is full.
-     * This is done by overriding calls to {@link LinkedBlockingQueue#offer(Object)}
-     * with calls to {@link LinkedBlockingQueue#put(Object)}, but comes with the caveat
-     * that executor must be built with <code>corePoolSize == maxPoolSize</code>.
-     * In the context of the {@link HeartbeatConsumer}, this is an acceptable caveat,
-     * since we enforce the matching pool sizes.
-     *
-     * For further discussions on this topic see:
-     *   http://stackoverflow.com/a/3518588
-     *   http://stackoverflow.com/a/32123535
-     *
-     * If the implementation is changed, make sure that that executor is built accordingly.
-     */
-
-    private static class OfferBlockingQueue<E> extends LinkedBlockingQueue<E> {
-        private static final long serialVersionUID = 1L;
-
-        public OfferBlockingQueue(int capacity) {
-            super(capacity);
-        }
+    private class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
 
         @Override
-        public boolean offer(E e) {
-            try {
-                put(e);
-                return true;
-            } catch(InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-            return false;
+        public void rejectedExecution(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
+            // Ignore.
+            LOG.debug("Provisioning queue for Minions with size {} is full , dropping heartbeat message ", threadPoolExecutor.getQueue().size());
+            numofRejected.incrementAndGet();
         }
+    }
+
+    @VisibleForTesting
+    AtomicInteger getNumofRejected() {
+        return numofRejected;
     }
 }
