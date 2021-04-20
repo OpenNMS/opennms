@@ -106,11 +106,11 @@ function toggleReqNodes() {
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Edit Surveillance Category ${model.category.name}</h3>
+    <h3 class="panel-title">Edit Surveillance Category ${fn:escapeXml(model.category.name)}</h3>
   </div>
   <div class="panel-body">
     <p>
-    Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes
+    Category '${fn:escapeXml(model.category.name)}' has ${fn:length(model.sortedMemberNodes)} nodes
     </p>
     
     <form action="admin/categories.htm" method="get">
