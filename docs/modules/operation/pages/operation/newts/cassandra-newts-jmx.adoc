@@ -50,8 +50,8 @@ The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 [options="header, %autowidth"]
 |===
 | Name                | Description
-| `ReadTotalLatency`  | Local read metrics
-| `WriteTotalLatency` | Local write metrics
+| `ReadTotalLatency`  | Local read metrics.
+| `WriteTotalLatency` | Local write metrics.
 |===
 
 == Range Latency
@@ -102,8 +102,8 @@ The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 [options="header, %autowidth"]
 |===
 | Name                 | Description
-| `PendingCompactions` | Estimated number of pending compactions for this column family
-| `PendingFlushes`     | Estimated number of tasks pending for this column family
+| `PendingCompactions` | Estimated number of pending compactions for this column family.
+| `PendingFlushes`     | Estimated number of tasks pending for this column family.
 |===
 
 == Disk Space
