@@ -34,6 +34,7 @@
         session="true"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <div id="category-box" class="panel panel-default">
     <div class="panel-heading">
@@ -55,7 +56,7 @@
 
             <c:forEach items="${categories}" var="category">
                 <tr>
-                    <td>${category.name}</td>
+                    <td>${fn:escapeXml(category.name)}</td>
                 </tr>
             </c:forEach>
         </table>
