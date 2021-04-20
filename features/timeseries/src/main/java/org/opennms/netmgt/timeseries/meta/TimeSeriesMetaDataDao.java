@@ -87,6 +87,9 @@ public class TimeSeriesMetaDataDao {
     private final Timer metadataWriteTimer;
     private final Timer metadataReadTimer;
     private final Gauge<Long> metadataCardinality;
+    private final Gauge<Long> metadataResourceCardinality;
+    private final Gauge<Long> metadataKeyCardinality;
+    private final Gauge<Long> metadataValueCardinality;
 
     /**
      * A HyperLogLog used to track the cardinality of the meta-data
@@ -97,7 +100,11 @@ public class TimeSeriesMetaDataDao {
      *              = 81000
      * should support tracking 100,000,000 unique elements with a tolerated loss of 1%
      */
-    private final HLL metadataHll = new HLL(14, 5);
+    private final HLL numUniqueResourcesHll = new HLL(14, 5);
+    private final HLL numUniqueKeysHll = new HLL(14, 5);
+    private final HLL numUniqueValuesHll = new HLL(14, 5);
+    private final HLL numUniqueMetadataHll = new HLL(14, 5);
+
     @SuppressWarnings("UnstableApiUsage")
     private final HashFunction hllHashFunction = Hashing.murmur3_128();
 
@@ -129,7 +136,11 @@ public class TimeSeriesMetaDataDao {
                 .build();
         this.metadataWriteTimer = registry.timer("metadata.write.db");
         this.metadataReadTimer = registry.timer("metadata.read.db");
-        this.metadataCardinality = registry.register("metadata.cardinality", metadataHll::cardinality);
+        // meta-data cardinality tracked via HLL
+        this.metadataCardinality = registry.register("metadata.cardinality", numUniqueMetadataHll::cardinality);
+        this.metadataResourceCardinality = registry.register("metadata.cardinality.resources", numUniqueResourcesHll::cardinality);
+        this.metadataKeyCardinality = registry.register("metadata.cardinality.keys", numUniqueKeysHll::cardinality);
+        this.metadataValueCardinality = registry.register("metadata.cardinality.values", numUniqueValuesHll::cardinality);
     }
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
@@ -220,12 +231,16 @@ public class TimeSeriesMetaDataDao {
      *
      * @param meta
      */
+    @SuppressWarnings("UnstableApiUsage")
     private void trackMetaDataCardinality(MetaData meta) {
+        numUniqueResourcesHll.addRaw(hllHashFunction.hashString(meta.getResourceId(), StandardCharsets.UTF_8).asLong());
+        numUniqueKeysHll.addRaw(hllHashFunction.hashString(meta.getName(), StandardCharsets.UTF_8).asLong());
+        numUniqueValuesHll.addRaw(hllHashFunction.hashString(meta.getValue(), StandardCharsets.UTF_8).asLong());
+
         StringBuilder sb = new StringBuilder();
         sb.append(meta.getResourceId());
         sb.append(meta.getName());
         sb.append(meta.getValue());
-        //noinspection UnstableApiUsage
-        metadataHll.addRaw(hllHashFunction.hashString(sb, StandardCharsets.UTF_8).asLong());
+        numUniqueMetadataHll.addRaw(hllHashFunction.hashString(sb, StandardCharsets.UTF_8).asLong());
     }
 }
