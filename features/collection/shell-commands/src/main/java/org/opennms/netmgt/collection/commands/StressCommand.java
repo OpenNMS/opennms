@@ -114,7 +114,7 @@ public class StressCommand implements Action {
     @Option(name="-z", aliases="--string-variation-factor", description="When set, every n-th group will use unique string attribute values in each batch", required=false, multiValued=false)
     int stringVariationFactor = 0;
 
-    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the RRA values from a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
+    @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the same RRA values as a pristine datacollection-config.xml.\nExample: -x 'RRA:AVERAGE:0.5:1:2016' -x 'RRA:AVERAGE:0.5:12:1488'", required=false, multiValued=true)
     List<String> rras = null;
 
     private RateLimiter rateLimiter;
