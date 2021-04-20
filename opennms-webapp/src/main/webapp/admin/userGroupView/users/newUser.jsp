@@ -51,7 +51,12 @@
         alert("The user ID '" + document.newUserForm.userID.value + "' cannot be used. It may be confused with the administration user ID 'admin'.");
         return false;
     }
-    
+
+    if (/.*[&<>"`']+.*/.test(id)) {
+        alert("The user ID must not contain any HTML markup.");
+        return false;
+    }
+
     if (document.newUserForm.pass1.value == document.newUserForm.pass2.value) 
     {
       document.newUserForm.action="admin/userGroupView/users/addNewUser";

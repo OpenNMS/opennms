@@ -40,6 +40,7 @@
 <%@page import="org.opennms.netmgt.config.users.*"%>
 <%@page import="org.opennms.web.api.Util"%>
 <%@page import="org.opennms.web.api.Authentication"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%!
@@ -253,7 +254,7 @@
 </script>
 
 <form role="form" class="form-horizontal" id="modifyUser" method="post" name="modifyUser">
-<input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
+<input id="userID" type="hidden" name="userID" value="<%=WebSecurityUtils.sanitizeString(user.getUserId())%>"/>
 <input id="password" type="hidden" name="password"/>
 <input id="redirect" type="hidden" name="redirect"/>
 
@@ -261,7 +262,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <span>Modify User: <%=userid%></span>
+        <span>Modify User: <%=WebSecurityUtils.sanitizeString(userid)%></span>
       </div>
       <div class="card-body">
         <h3>User Password</h3>
