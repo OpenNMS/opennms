@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -40,9 +41,11 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -69,8 +72,14 @@ import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.UdpPacket;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multisets;
 import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultiset;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -80,22 +89,64 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
     // Inputs
-    private static final String PCAP_FILE = "/home/fooker/files/agg003.pcap";
-    private static final int INTERFACE_INDEX = 731;
-    private static final ReferencePoint START = new ReferencePoint("2020-12-16 15:24:56 -0000",
-            8052648991542524L, 2302027755041727L,
-            9870251681836L, 4013932391409L);
-    private static final ReferencePoint END = new ReferencePoint("2020-12-16 15:25:56 -0000",
-            8052658754853630L, 2302031573972514L,
-            9870264642638L, 4013938036235L);
-    private static final double EXPECTED_SAMPLE_INTERVAL = 10.0d;
+    private static final String PCAP_FILE = "/home/fooker/files/inmco.pcap";
+    private static final int INTERFACE_INDEX = 540;
+    private static final ReferencePoint START = new ReferencePoint("2021-03-30 15:19:46 +0000",
+                                                                   2027799084252L, 1882598179810L,
+                                                                   3903596492L, 3144961499L);
+    private static final ReferencePoint END = new ReferencePoint("2021-03-30 15:24:58 +0000",
+                                                                 2028043029769L, 1882717216426L,
+                                                                 3904013770L, 3145259617L);
+    private static final long EXPECTED_SAMPLE_INTERVAL = 10L;
 
     private List<FlowMessage> flowMessages = new CopyOnWriteArrayList<>();
 
+    private static List<UdpPacket> getUdpPackets(String pcapFileName, String filter) throws PcapNativeException, NotOpenException, InterruptedException {
+        final PcapHandle handle = Pcaps.openOffline(pcapFileName, PcapHandle.TimestampPrecision.NANO);
+        handle.setFilter(filter, BpfProgram.BpfCompileMode.OPTIMIZE);
+
+        List<UdpPacket> packets = new LinkedList<>();
+        PacketListener listener = packet -> {
+            final UdpPacket udpPacket = packet.get(UdpPacket.class);
+            packets.add(udpPacket);
+        };
+
+        handle.loop(0, listener);
+        handle.close();
+        return packets;
+    }
+
+    private static Map<String, String> flatout(final String path, final JsonElement el) {
+        final Map<String, String> result = new HashMap<>();
+
+        if (el.isJsonObject()) {
+            final JsonObject object = el.getAsJsonObject();
+            for (final Map.Entry<String, JsonElement> e : object.entrySet()) {
+                result.putAll(flatout(path + "." + e.getKey(), e.getValue()));
+            }
+        } else if (el.isJsonArray()) {
+            final JsonArray array = el.getAsJsonArray();
+            for (int i = 0; i < array.size(); i++) {
+                result.putAll(flatout(path + "." + i, array.get(i)));
+            }
+        } else if (el.isJsonNull()) {
+            result.put(path, "<null>");
+        } else if (el.isJsonPrimitive()) {
+            result.put(path, el.getAsJsonPrimitive().toString());
+        } else {
+            throw new RuntimeException("Not supported type: " + el);
+        }
+
+        return result;
+    }
+
     @Test
     public void runExperiment() throws PcapNativeException, InterruptedException, NotOpenException, IOException {
+        System.out.println("START = " + START.getTimestamp());
+        System.out.println("END = " + END.getTimestamp());
+
         String filter = "udp";
-        List<UdpPacket> packets = getUdpPackets(PCAP_FILE, filter);
+        List<UdpPacket> capture = getUdpPackets(PCAP_FILE, filter);
 
         EventForwarder eventForwarder = mock(EventForwarder.class);
         Identity identity = mock(Identity.class);
@@ -106,7 +157,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
         MetricRegistry metrics = new MetricRegistry();
         Netflow9UdpParser nf9UdpParser = new Netflow9UdpParser("parsers", this,
-                eventForwarder, identity, dnsResolver, metrics);
+                                                               eventForwarder, identity, dnsResolver, metrics);
         UdpListener udpListener = new UdpListener("listener", Arrays.asList(nf9UdpParser), metrics);
 
         int udpListenPort = 5555;
@@ -120,21 +171,25 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 //        final Process tshark = Runtime.getRuntime().exec("tshark -r " + PCAP_FILE + " -T json");
         final JsonArray shark = new Gson().fromJson(new FileReader("/home/fooker/files/dump.json"), JsonArray.class);
 
-        long captureBytesIn = 0;
-        long captureBytesOut = 0;
-        long captureBytesOther = 0;
+        final Stats captureBytesIn = new Stats();
+        final Stats captureBytesOut = new Stats();
+        final Stats captureBytesOther = new Stats();
+        final Stats captureBytesIgnored = new Stats();
 
-        long captureFlowsIn = 0;
-        long captureFlowsOut = 0;
-        long captureFlowsOther = 0;
+        final Stats capturePacketsIn = new Stats();
+        final Stats capturePacketsOut = new Stats();
+        final Stats capturePacketsOther = new Stats();
+        final Stats capturePacketsIgnored = new Stats();
 
         long captureDropDueToFlowSetId = 0;
         long captureDropDueToTimerange = 0;
         long captureTotal = 0;
 
-        final Set<String> capturedDroppedDueToTs = Sets.newTreeSet();
+        final Multiset<Long> capturedDroppedDueToTs = TreeMultiset.create();
 
-        final Set<String> expectedSequences = Sets.newTreeSet();
+        final Map<String, JsonObject> flowHashes = new HashMap<>();
+
+        final Multiset<Long> expectedSequences = TreeMultiset.create();
         for (final JsonElement pkg : shark) {
             final JsonObject cflow = pkg.getAsJsonObject().getAsJsonObject("_source").getAsJsonObject("layers").getAsJsonObject("cflow");
             if (cflow == null) {
@@ -157,7 +212,6 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                     continue;
                 }
 
-
                 for (final Map.Entry<String, JsonElement> flowEntry : flows) {
                     final JsonObject flow = flowEntry.getValue().getAsJsonObject();
 
@@ -170,34 +224,61 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                     if (tsEnd - tsStart < 0.0) {
                         tsEnd = timestamp;
                         tsStart = timestamp - 10_000.0;
+                        System.err.println(flow);
                     }
 
                     final double tsDelta = Math.max(tsStart, tsEnd - 10_000.0);
 
                     final long octets = flow.getAsJsonPrimitive("cflow.octets").getAsLong();
+                    final long packets = flow.getAsJsonPrimitive("cflow.packets").getAsLong();
 
-                    if (tsDelta <= END.getTimestamp() &&
-                        tsEnd >= START.getTimestamp()) {
-
-                        if (flow.getAsJsonPrimitive("cflow.direction").getAsInt() == 0 && flow.getAsJsonPrimitive("cflow.inputint").getAsInt() == INTERFACE_INDEX) {
-                            captureBytesIn += octets;
-                            captureFlowsIn ++;
-                            expectedSequences.add(String.format("%s:%s", seqnum, octets));
-                        }
-
-                        else if (flow.getAsJsonPrimitive("cflow.direction").getAsInt() == 1 && flow.getAsJsonPrimitive("cflow.outputint").getAsInt() == INTERFACE_INDEX) {
-                            captureBytesOut += octets;
-                            captureFlowsOut ++;
-                            expectedSequences.add(String.format("%s:%s", seqnum, octets));
-                        }
-
-                        else {
-                            captureBytesOther += octets;
-                            captureFlowsOther ++;
-                        }
-                    } else {
-                        capturedDroppedDueToTs.add(String.format("%s:%s", seqnum, octets));
+                    if (tsDelta > END.getTimestamp() &&
+                        tsEnd < START.getTimestamp()) {
+                        capturedDroppedDueToTs.add(seqnum);
                         captureDropDueToTimerange++;
+                        continue;
+                    }
+
+//                    if (tsStart == tsEnd) {
+//                        captureBytesIgnored.update(octets * EXPECTED_SAMPLE_INTERVAL);
+//                        capturePacketsIgnored.update(packets * EXPECTED_SAMPLE_INTERVAL);
+//                    } else
+                    if (!Objects.equals(flow.getAsJsonPrimitive("cflow.direction").getAsString(), "0")) {
+                        captureBytesIgnored.update(octets * EXPECTED_SAMPLE_INTERVAL);
+                        capturePacketsIgnored.update(packets * EXPECTED_SAMPLE_INTERVAL);
+                    } else
+                        {
+                        final String x = String.format("%s:%s@%s %s:%s@%s %s",
+                                                       flow.getAsJsonPrimitive("cflow.srcaddr").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.srcport").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.inputint").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.dstaddr").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.dstport").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.outputint").getAsString(),
+                                                       flow.getAsJsonPrimitive("cflow.octets").getAsString());
+
+                        final JsonObject ex = flowHashes.put(x, flow);
+                        if (ex != null) {
+                            final Map<String, String> m1 = flatout("flow", ex);
+                            final Map<String, String> m2 = flatout("flow", flow);
+
+                            final MapDifference<String, String> diff = Maps.difference(m1, m2);
+
+//                            System.out.println(String.format("%s: %s", seqnum, diff));
+                        }
+
+                        if (flow.getAsJsonPrimitive("cflow.inputint").getAsInt() == INTERFACE_INDEX) {
+                            captureBytesIn.update(octets * EXPECTED_SAMPLE_INTERVAL);
+                            capturePacketsIn.update(packets * EXPECTED_SAMPLE_INTERVAL);
+                            expectedSequences.add(seqnum);
+                        } else if (flow.getAsJsonPrimitive("cflow.outputint").getAsInt() == INTERFACE_INDEX) {
+                            captureBytesOut.update(octets * EXPECTED_SAMPLE_INTERVAL);
+                            capturePacketsOut.update(packets * EXPECTED_SAMPLE_INTERVAL);
+                            expectedSequences.add(seqnum);
+                        } else {
+                            captureBytesOther.update(octets * EXPECTED_SAMPLE_INTERVAL);
+                            capturePacketsOther.update(packets * EXPECTED_SAMPLE_INTERVAL);
+                        }
                     }
                 }
             }
@@ -209,7 +290,11 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
             System.out.println("Firing off packets...");
             DatagramSocket socket = new DatagramSocket();
             InetAddress localhost = InetAddress.getLocalHost();
-            for (UdpPacket udpPacket : packets) {
+            for (UdpPacket udpPacket : capture) {
+                if (udpPacket.getHeader().getDstPort().value() != 8877) {
+                    continue;
+                }
+
                 byte[] buf = udpPacket.getPayload().getRawData();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length, localhost, udpListenPort);
                 socket.send(packet);
@@ -224,80 +309,84 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
         List<Long> seqNumbersInFilter = new LinkedList<>();
 
-        long totalBytesIn = 0;
-        long totalBytesOut = 0;
-        long totalBytesOther = 0;
+        final Stats processingBytesIn = new Stats();
+        final Stats processingBytesOut = new Stats();
+        final Stats processingBytesOther = new Stats();
+        final Stats processingBytesIgnored = new Stats();
 
-        long totalFlowsIn = 0;
-        long totalFlowsOut = 0;
-        long totalFlowsOther = 0;
+        final Stats processingPacketsIn = new Stats();
+        final Stats processingPacketsOut = new Stats();
+        final Stats processingPacketsOther = new Stats();
+        final Stats processingPacketsIgnored = new Stats();
 
         long processingDropDueToTimerange = 0;
         long processingTotal = 0;
 
-        final Set<String> processedDroppedDueToTs = Sets.newTreeSet();
+        final Multiset<Long> processedDroppedDueToTs = TreeMultiset.create();
+        final Multiset<Long> processedSequences = TreeMultiset.create();
 
-        for (FlowMessage flowMessage : flowMessages) {
+        for (final FlowMessage flowMessage : flowMessages) {
             processingTotal++;
 
-            if (flowMessage.getFlowSeqNum().getValue() == 570258289) {
+            if (flowMessage.getFlowSeqNum().getValue() == 110020417) {
                 System.out.println("= " + flowMessage.getNumBytes().getValue() + " " + flowMessage.getDeltaSwitched().getValue() + " - " + flowMessage.getLastSwitched().getValue());
             }
 
             // the start of the flow must be before the end of the range
             if (flowMessage.getDeltaSwitched().getValue() <= END.getTimestamp()
-                    // the end of the flow must be after the start of the range
-                    && flowMessage.getLastSwitched().getValue() >= START.getTimestamp()) {
+                // the end of the flow must be after the start of the range
+                && flowMessage.getLastSwitched().getValue() >= START.getTimestamp()) {
                 // keep
             } else {
                 // skip
-                processedDroppedDueToTs.add(String.format("%s:%s", flowMessage.getFlowSeqNum().getValue(), flowMessage.getNumBytes().getValue()));
+                processedDroppedDueToTs.add(flowMessage.getFlowSeqNum().getValue());
                 processingDropDueToTimerange++;
                 continue;
             }
 
-            if (flowMessage.getFlowSeqNum().getValue() == 570258289) {
-                System.out.println(": " + flowMessage.getNumBytes().getValue());
-            }
+            final long samplingInterval = (long) flowMessage.getSamplingInterval().getValue();
 
             // the sample interval should be consistent for our experiment, log if this is not the case
-            if (Math.abs(flowMessage.getSamplingInterval().getValue() - EXPECTED_SAMPLE_INTERVAL) > 0.01d) {
-                System.out.println("sampling interval is: " + flowMessage.getSamplingInterval().getValue());
+            if (samplingInterval != EXPECTED_SAMPLE_INTERVAL) {
+                System.out.println("sampling interval is: " + samplingInterval);
             }
 
-            // tally the bytes if the flows meet the criteria
+//            if (flowMessage.getFirstSwitched().getValue() == flowMessage.getLastSwitched().getValue()) {
+//                processingBytesIgnored.update(flowMessage.getNumBytes().getValue() * samplingInterval);
+//                processingPacketsIgnored.update(flowMessage.getNumPackets().getValue() * samplingInterval);
+//            } else
             if ((flowMessage.getDirection() == Direction.INGRESS && flowMessage.getInputSnmpIfindex().getValue() == INTERFACE_INDEX)) {
-                totalBytesIn += flowMessage.getNumBytes().getValue() * flowMessage.getSamplingInterval().getValue();
-                totalFlowsIn ++;
-            } else if (flowMessage.getDirection() == Direction.EGRESS && flowMessage.getOutputSnmpIfindex().getValue() == INTERFACE_INDEX) {
-                totalBytesOut += flowMessage.getNumBytes().getValue() * flowMessage.getSamplingInterval().getValue();
-                totalFlowsOut ++;
+                processingBytesIn.update(flowMessage.getNumBytes().getValue() * samplingInterval);
+                processingPacketsIn.update(flowMessage.getNumPackets().getValue() * samplingInterval);
+            } else
+            if (flowMessage.getDirection() == Direction.EGRESS && flowMessage.getOutputSnmpIfindex().getValue() == INTERFACE_INDEX) {
+                processingBytesOut.update(flowMessage.getNumBytes().getValue() * samplingInterval);
+                processingPacketsOut.update(flowMessage.getNumPackets().getValue() * samplingInterval);
             } else {
                 // skip
-                totalBytesOther += flowMessage.getNumBytes().getValue() * flowMessage.getSamplingInterval().getValue();
-                totalFlowsOther ++;
+                processingBytesOther.update(flowMessage.getNumBytes().getValue() * samplingInterval);
+                processingPacketsOther.update(flowMessage.getNumPackets().getValue() * samplingInterval);
                 continue;
             }
 
             // track the sequence numbers for all of the flows that matches our filters and were included in the tally
             seqNumbersInFilter.add(flowMessage.getFlowSeqNum().getValue());
 
-
-            if (flowMessage.getFlowSeqNum().getValue() == 570258289) {
-                System.out.println("- " + flowMessage.getNumBytes().getValue() + " " + String.format("%s:%s", flowMessage.getFlowSeqNum().getValue(), flowMessage.getNumBytes().getValue()));
+            if (flowMessage.getFlowSeqNum().getValue() == 110020417) {
+                System.out.println("- " + flowMessage.getNumBytes().getValue() + " " + String.format("%s:%s:%s", flowMessage.getFlowSeqNum().getValue(), flowMessage.getSrcPort().getValue(), flowMessage.getDstPort().getValue()));
             }
 
-            expectedSequences.remove(String.format("%s:%s", flowMessage.getFlowSeqNum().getValue(), flowMessage.getNumBytes().getValue()));
+            processedSequences.add(flowMessage.getFlowSeqNum().getValue());
         }
 
-        List<Long> allSeqNumbers = flowMessages.stream()
-                .map(f -> f.getFlowSeqNum().getValue())
-                .collect(Collectors.toList());
+        final List<Long> allSeqNumbers = flowMessages.stream()
+                                                     .map(f -> f.getFlowSeqNum().getValue())
+                                                     .collect(Collectors.toList());
 
         // Find the min/max sequence numbers
-        List<Long> seqNumSorted = seqNumbersInFilter.stream().sorted().collect(Collectors.toList());
-        Long minSeqNum = seqNumSorted.get(0);
-        Long maxSeqNum = seqNumSorted.get(seqNumSorted.size() - 1);
+        final List<Long> seqNumSorted = seqNumbersInFilter.stream().sorted().collect(Collectors.toList());
+        final Long minSeqNum = seqNumSorted.get(0);
+        final Long maxSeqNum = seqNumSorted.get(seqNumSorted.size() - 1);
         System.out.println("Min seq: " + minSeqNum);
         System.out.println("Max seq: " + maxSeqNum);
 
@@ -323,63 +412,58 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
             }
         }
 
-        // bytes from flows
-        System.out.println("Total bytes in: " + totalBytesIn + " (" + totalFlowsIn + ")");
-        System.out.println("Total bytes out: " + totalBytesOut + " (" + totalFlowsOut + ")");
-        System.out.println("Total bytes other: " + totalBytesOther + " (" + totalFlowsOther + ")");
-
         // bytes from counters
         long mibBytesIn = (END.getBytesIn() - START.getBytesIn());
         long mibBytesOut = (END.getBytesOut() - START.getBytesOut());
-        System.out.println("Total bytes in (reference) : " + mibBytesIn);
-        System.out.println("Total bytes out (reference): " + mibBytesOut);
+        long mibPacketsIn = (END.getPacketsIn() - START.getPacketsIn());
+        long mibPacketsOut = (END.getPacketsOut() - START.getPacketsOut());
+        System.out.println("Total bytes in (reference) : " + mibBytesIn + " @ " + mibPacketsIn);
+        System.out.println("Total bytes out (reference): " + mibBytesOut + " @ " + mibPacketsOut);
 
+        // bytes from flows
+        System.out.println("Total bytes in (processing): " + processingBytesIn + " @ " + processingPacketsIn);
+        System.out.println("Total bytes out (processing): " + processingBytesOut + " @ " + processingPacketsOut);
+        System.out.println("Total bytes other (processing): " + processingBytesOther + " @ " + processingPacketsOther);
+        System.out.println("Total bytes ignored (processing): " + processingBytesIgnored + " @ " + processingPacketsIgnored);
 
-        System.out.println("Total bytes in (capture) : " + captureBytesIn + " (" + captureFlowsIn + ")");
-        System.out.println("Total bytes out (capture): " + captureBytesOut + " (" + captureFlowsOut + ")");
-        System.out.println("Total bytes other (capture): " + captureBytesOther + " (" + captureFlowsOther + ")");
+        System.out.println("Total bytes in (capture) : " + captureBytesIn + " @ " + capturePacketsIn);
+        System.out.println("Total bytes out (capture): " + captureBytesOut + " @ " + capturePacketsOut);
+        System.out.println("Total bytes other (capture): " + captureBytesOther + " @ " + capturePacketsOther);
+        System.out.println("Total bytes ignored (capture): " + captureBytesIgnored + " @ " + capturePacketsIgnored);
 
-        System.out.println("Drops (capture) due to FlowSetId: "+captureDropDueToFlowSetId);
-        System.out.println("Drops (capture) due to timerange: "+captureDropDueToTimerange);
+        System.out.println("Drops (capture) due to FlowSetId: " + captureDropDueToFlowSetId);
+        System.out.println("Drops (capture) due to timerange: " + captureDropDueToTimerange);
         System.out.println("Total (capture):" + captureTotal);
-        System.out.println("Drops (processing) due to timerange: "+processingDropDueToTimerange);
+        System.out.println("Drops (processing) due to timerange: " + processingDropDueToTimerange);
         System.out.println("Total (processing):" + processingTotal);
 
-        System.out.println("Missing sequences: " + expectedSequences.size());
-        for (final String expectedSequence : expectedSequences) {
-            System.out.println("  " + expectedSequence);
-        }
-
         // delta
-        long deltaBytesIn = (mibBytesIn - totalBytesIn);
-        long deltaBytesOut = (mibBytesOut - totalBytesOut);
+        final long deltaBytesIn = (mibBytesIn - processingBytesIn.getSum());
+        final long deltaBytesOut = (mibBytesOut - processingBytesOut.getSum());
         System.out.println("Delta in: " + deltaBytesIn);
-        System.out.println("Delta in (%): " + ((1 - (double)totalBytesIn / mibBytesIn)) * 100 );
+        System.out.println("Delta in byt (%): " + ((1 - (double) processingBytesIn.getSum() / mibBytesIn)) * 100);
+        System.out.println("Delta in pkt (%): " + ((1 - (double) processingPacketsIn.getSum() / mibPacketsIn)) * 100);
         System.out.println("Delta out: " + deltaBytesOut);
-        System.out.println("Delta out (%): " + ((1 - (double)totalBytesOut / mibBytesOut)) * 100 );
+        System.out.println("Delta out byt (%): " + ((1 - (double) processingBytesOut.getSum() / mibBytesOut)) * 100);
+        System.out.println("Delta out pkt (%): " + ((1 - (double) processingPacketsOut.getSum() / mibPacketsOut)) * 100);
 
-        Set<String> missingOnes = Sets.difference(capturedDroppedDueToTs, processedDroppedDueToTs);
-
-        for(String s : missingOnes) {
-            System.out.println(s);
+        final Multiset<Long> missingSequences = Multisets.difference(expectedSequences, processedSequences);
+        System.out.println("Missing sequences: " + missingSequences.size());
+        for (final Long missingSequence : missingSequences) {
+            System.out.println("  " + missingSequence);
         }
 
+        final Multiset<Long> unexpectedSequences = Multisets.difference(processedSequences, expectedSequences);
+        System.out.println("Unexpected sequences: " + unexpectedSequences.size());
+//        for(Long unexpectedSequence : unexpectedSequences) {
+//            System.out.println("  " + unexpectedSequence);
+//        }
 
-    }
-
-    private static List<UdpPacket> getUdpPackets(String pcapFileName, String filter) throws PcapNativeException, NotOpenException, InterruptedException {
-        final PcapHandle handle = Pcaps.openOffline(pcapFileName, PcapHandle.TimestampPrecision.NANO);
-        handle.setFilter(filter, BpfProgram.BpfCompileMode.OPTIMIZE);
-
-        List<UdpPacket> packets = new LinkedList<>();
-        PacketListener listener = packet -> {
-            final UdpPacket udpPacket = packet.get(UdpPacket.class);
-            packets.add(udpPacket);
-        };
-
-        handle.loop(0, listener);
-        handle.close();
-        return packets;
+//        final Multiset<Long> lostSequences = Multisets.difference(capturedDroppedDueToTs, processedDroppedDueToTs);
+//        System.out.println("Lost sequences: " + lostSequences.size());
+//        for(Long lostSequence : lostSequences) {
+//            System.out.println("  " + lostSequence);
+//        }
     }
 
     @Override
@@ -387,8 +471,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
         try {
             FlowMessage flowMessage = FlowMessage.parseFrom(message.getBuffer());
             if (flowMessage != null) {
-
-                if (flowMessage.getFlowSeqNum().getValue() == 570258289) {
+                if (flowMessage.getFlowSeqNum().getValue() == 110020417) {
                     System.out.println("? " + flowMessage.getNumBytes().getValue());
                 }
 
@@ -449,6 +532,59 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
         public long getPacketsOut() {
             return packets_out;
+        }
+    }
+
+    private static class Stats {
+        private long count = 0;
+
+        private long sum = 0;
+
+        private long min = Long.MAX_VALUE;
+        private long max = Long.MIN_VALUE;
+
+        public void update(final long value) {
+            this.count++;
+
+            this.sum += value;
+
+            this.min = Math.min(this.min, value);
+            this.max = Math.max(this.max, value);
+        }
+
+        public long getCount() {
+            return this.count;
+        }
+
+        public long getSum() {
+            return this.sum;
+        }
+
+        public long getMin() {
+            return this.min;
+        }
+
+        public long getMax() {
+            return this.max;
+        }
+
+        public long getAvg() {
+            if (this.count == 0) {
+                return 0L;
+            }
+
+            return this.sum / this.count;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                              .add("count", this.getCount())
+                              .add("sum", this.getSum())
+                              .add("min", this.getMin())
+                              .add("max", this.getMax())
+                              .add("avg", this.getAvg())
+                              .toString();
         }
     }
 }
