@@ -2,7 +2,7 @@
 = Newts
 
 link:http://newts.io/[Newts] is a time-series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
-It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontally scale] capabilities for your time series storage and is an alternative to link:http://www.opennms.org/wiki/JRobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontal scaling] capabilities for your time series storage and is an alternative to link:https://github.com/OpenNMS/jrobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
 
 The _Cassandra_ cluster design, setup, sizing, tuning and operation is out of scope for this section.
 To install and set up a _Cassandra_ cluster please follow the link:http://cassandra.apache.org/download[Cassandra installation instructions].
@@ -56,12 +56,12 @@ org.opennms.newts.config.resource_shard=604800<7>
 ----
 
 <1> Associate time series data by the foreign ID instead of the database generated Node-ID. 
-<2> Set time-series strategy to use `newts`
-<3> Host or IP addresses of the _Cassandra_ cluster nodes can be a comma-separated list
-<4> Name of the keyspace which is initialized and used
-<5> Port to connect to Cassandra
-<6> Retention rate for the time series data
-<7> Shard metrics every 7 days
+<2> Set time-series strategy to use `newts`.
+<3> Host or IP addresses of the Cassandra cluster nodes. Can be a comma-separated list.
+<4> Name of the keyspace which is initialized and used.
+<5> Port to connect to Cassandra.
+<6> Retention rate for the time series data.
+<7> Shard metrics every 7 days.
 
 .Initialize the Newts schema in Cassandra
 [source, console]

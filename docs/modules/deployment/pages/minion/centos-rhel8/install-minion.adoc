@@ -7,9 +7,15 @@ sudo dnf -y install java-11-openjdk-headless
 .Add repository and import GPG key
 [source, console]
 ----
+ifeval::["{page-component-title}" == "Horizon"]
 sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
 sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+endif::[]
 ----
+ifeval::["{page-component-title}" == "Meridian"]
+Configure the repository by copying the Meridian repository file you received from OpenNMS Sales to the Minion server.
+endif::[]
+
 
 .Install the {page-component-title} Minion package
 [source, console]
