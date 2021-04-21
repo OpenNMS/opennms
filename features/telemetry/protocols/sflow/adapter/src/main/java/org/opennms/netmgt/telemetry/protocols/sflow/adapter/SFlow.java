@@ -63,7 +63,8 @@ public class SFlow implements Flow {
         }
 
         public Long getSequenceNumber() {
-            return get(document, "sequence_number")
+            return first(get(document, "sequence_number", "source_id_index"),
+                         get(document, "sequence_number"))
                     .map(v -> v.asInt64().getValue())
                     .orElse(0L);
         }
@@ -191,14 +192,16 @@ public class SFlow implements Flow {
 
     @Override
     public Integer getInputSnmp() {
-        return get(document, "input")
+        return first(get(document, "input", "value"),
+                     get(document, "input"))
                 .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return get(document, "output")
+        return first(get(document, "output", "value"),
+                     get(document, "output"))
                 .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
