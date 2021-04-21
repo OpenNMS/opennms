@@ -46,7 +46,7 @@ require('./Requisitions');
           RequisitionsService.startTiming();
           RequisitionsService.synchronizeRequisition(requisition.foreignSource, rescanExisting).then(
             function() { // success
-              growl.success('The import operation has been started for ' + requisition.foreignSource + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
+              growl.success('The import operation has been started for ' + _.escape(requisition.foreignSource) + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
               requisition.setDeployed(true);
             },
             errorHandler
@@ -58,7 +58,7 @@ require('./Requisitions');
                    'Choose <b>no</b> to synchronize only the new and deleted nodes with the database executing the scan phase only for new nodes.<br/>' +
                    'Choose <b>dbonly</b> to synchronize all the nodes with the database skipping the scan phase.<br/>' +
                    'Choose <b>cancel</b> to abort the request.',
-          title: 'Synchronize Requisition ' + requisition.foreignSource,
+          title: 'Synchronize Requisition ' + _.escape(requisition.foreignSource),
           buttons: {
             fullSync: {
               label: 'Yes',
