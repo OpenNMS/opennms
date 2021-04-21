@@ -55,21 +55,21 @@
             <table class="table">
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-install/guide-install.html"
+                            href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/deployment/core/introduction.html"
                             target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Installation Guide</a></td>
                     <td style="border-top: none;">OpenNMS can be installed several operating systems and can be deployed for several scenarios with different technologies. Have a look in the Installation Guide to find instructions to deploy and maintain your OpenNMS instance.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-admin/guide-admin.html"
+                            href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/operation/overview/overview.html#overview"
                             target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Admin Guide</a></td>
                     <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-development/guide-development.html"
+                            href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/development/overview/overview.html#overview"
                             target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Developers Guide</a></td>
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
@@ -84,6 +84,18 @@
                             href="https://opennms.discourse.group/t/community-welcome-guide/560" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
                     <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
+                </tr>
+                <tr>
+                    <td style="border-top: none;"><a
+                            href="api/v2/openapi.json" target="_blank"
+                            class="btn btn-secondary" role="button" style="width: 100%">OpenAPI doc</a></td>
+                    <td style="border-top: none;">With OpenAPI doc, you can easily know how each OpenNMS RESTful API works. You can also test and generate client code from it.</td>
+                </tr>
+                <tr>
+                    <td style="border-top: none;"><a
+                            href="api/v2/api-docs/?url=/opennms/api/v2/openapi.json#/" target="_blank"
+                            class="btn btn-secondary" role="button" style="width: 100%">Swagger UI</a></td>
+                    <td style="border-top: none;">A graph interface of OpenNMS OpenAPI doc.</td>
                 </tr>
             </table>
         </span>
