@@ -232,7 +232,7 @@ public class TimeSeriesMetaDataDao {
      * @param meta
      */
     @SuppressWarnings("UnstableApiUsage")
-    private void trackMetaDataCardinality(MetaData meta) {
+    private synchronized void trackMetaDataCardinality(MetaData meta) {
         numUniqueResourcesHll.addRaw(hllHashFunction.hashString(meta.getResourceId(), StandardCharsets.UTF_8).asLong());
         numUniqueKeysHll.addRaw(hllHashFunction.hashString(meta.getName(), StandardCharsets.UTF_8).asLong());
         numUniqueValuesHll.addRaw(hllHashFunction.hashString(meta.getValue(), StandardCharsets.UTF_8).asLong());
