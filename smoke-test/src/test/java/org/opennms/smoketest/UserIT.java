@@ -242,7 +242,6 @@ public class UserIT extends OpenNMSSeleniumIT {
             wait.until(ExpectedConditions.elementToBeClickable(By.name("finish")));
         }
     }
-<<<<<<< HEAD
 
     /**
      * see NMS-13124
@@ -325,6 +324,4 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementById("users(user).doDelete").click();
         handleAlert("Are you sure you want to delete the user user?");
     }
-=======
->>>>>>> origin/foundation-2019
 }
