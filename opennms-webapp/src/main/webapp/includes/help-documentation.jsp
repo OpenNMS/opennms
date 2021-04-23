@@ -39,22 +39,22 @@
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/deployment/core/introduction.html"
                             target="_blank" class="btn btn-secondary" role="button"
-                            style="width: 100%">Installation Guide</a></td>
-                    <td style="border-top: none;">OpenNMS can be installed several operating systems and can be deployed for several scenarios with different technologies. Have a look in the Installation Guide to find instructions to deploy and maintain your OpenNMS instance.</td>
+                            style="width: 100%">Deployment Guide</a></td>
+                    <td style="border-top: none;">Learn how to deploy and configure the OpenNMS core, Minion, and Sentinel. The guide also covers how to set up a message broker, time series storage options,and setting up Jaeger tracing.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/operation/overview/overview.html#overview"
                             target="_blank" class="btn btn-secondary" role="button"
-                            style="width: 100%">Admin Guide</a></td>
-                    <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
+                            style="width: 100%">Operation Guide</a></td>
+                    <td style="border-top: none;">Learn how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="https://docs.opennms.com/horizon/<%=Vault.getProperty("version.display")%>/development/overview/overview.html#overview"
                             target="_blank" class="btn btn-secondary" role="button"
-                            style="width: 100%">Developers Guide</a></td>
-                    <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
+                            style="width: 100%">Development Guide</a></td>
+                    <td style="border-top: none;">For developers who want to extend and improve the OpenNMS platform and use the ReST APIs for integration. Learn how to set up a development environment and get started with writing features for OpenNMS.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
@@ -63,21 +63,15 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://opennms.discourse.group/t/community-welcome-guide/560" target="_blank"
-                            class="btn btn-secondary" role="button" style="width: 100%">Welcome Guide</a></td>
-                    <td style="border-top: none;">If you are new in the project, you can find useful information in your Welcome Guide to get anything you need to get started.</td>
-                </tr>
-                <tr>
-                    <td style="border-top: none;"><a
                             href="api/v2/openapi.json" target="_blank"
-                            class="btn btn-secondary" role="button" style="width: 100%">OpenAPI doc</a></td>
-                    <td style="border-top: none;">With OpenAPI doc, you can know how each OpenNMS RESTful API works. You can also test the APIs and generate client code from the doc.</td>
+                            class="btn btn-secondary" role="button" style="width: 100%">OpenAPI Docs</a></td>
+                    <td style="border-top: none;">The OpenAPI docs explains how each OpenNMS RESTful API works. You can also test and generate client code from them.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="api/v2/api-docs/?url=/opennms/api/v2/openapi.json#/" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Swagger UI</a></td>
-                    <td style="border-top: none;">This is a graph interface of OpenNMS OpenAPI doc.</td>
+                    <td style="border-top: none;">A graphical user interface of the OpenNMS OpenAPI docs.</td>
                 </tr>
             </table>
         </span>
