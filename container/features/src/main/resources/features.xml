@@ -1030,6 +1030,7 @@
     <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
