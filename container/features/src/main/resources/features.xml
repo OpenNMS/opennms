@@ -1756,4 +1756,35 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
+    <feature name="opennms-selenium-monitor" description="OpenNMS :: Features :: Selenium Monitor" version="${project.version}">
+        <feature>opennms-poller-api</feature>
+        <feature>selenium</feature>
+        <feature>dnsjava</feature>
+        <feature>guava</feature>
+        <feature>commons-lang3</feature>
+        <feature version="${netty4Version}">netty4</feature>
+        <bundle>wrap:mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+        <bundle dependency="true">mvn:org.ow2.asm/asm-all/${asmVersion}</bundle>
+        <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
+        <bundle>mvn:org.codehaus.groovy/groovy-all/${groovyVersion}</bundle>
+        <bundle>wrap:mvn:junit/junit/${junitVersion}</bundle>
+        <bundle>wrap:mvn:org.hamcrest/hamcrest-core/1.3</bundle>
+        <bundle>wrap:mvn:com.codeborne/phantomjsdriver/${phantomjsVersion}</bundle>
+        <bundle>wrap:mvn:xerces/xercesImpl/${xercesVersion}</bundle>
+        <bundle>wrap:mvn:xalan/xalan/${xalanVersion}</bundle>
+        <bundle>mvn:org.opennms.protocols/selenium-monitor/${project.version}</bundle>
+    </feature>
+    <feature name="selenium" description="OpenNMS:: Features:: Selenium Dependencies" version="${project.version}">
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-api/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-java/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-support/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-remote-driver/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-htmlunit-driver/2.52.0</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-firefox-driver/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:org.seleniumhq.selenium/selenium-chrome-driver/${seleniumVersion}</bundle>
+        <bundle>wrap:mvn:net.bytebuddy/byte-buddy/1.8.15</bundle>
+        <bundle>wrap:mvn:com.squareup.okhttp3/okhttp/3.10.0</bundle>
+        <bundle>wrap:mvn:com.squareup.okio/okio/1.14.0</bundle>
+        <bundle>mvn:org.apache.commons/commons-exec/1.3</bundle>
+    </feature>
 </features>

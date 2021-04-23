@@ -96,6 +96,7 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
       <feature>opennms-poller-monitors-core</feature>
+      <feature>opennms-selenium-monitor</feature>
     </feature>
     
     <feature name="minion-collection" description="Minion :: Collection" version="${project.version}">

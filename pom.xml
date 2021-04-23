@@ -1427,6 +1427,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
+    <junitVersion>4.12</junitVersion>
     <karafVersion>4.2.11</karafVersion>
     <kafkaBundleVersion>2.7.0_1</kafkaBundleVersion>
     <kafkaVersion>2.7.0</kafkaVersion>
@@ -1442,6 +1443,7 @@
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.19</paxWebVersion>
+    <phantomjsVersion>1.2.1</phantomjsVersion>
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
@@ -1468,6 +1470,7 @@
     <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.2</scalaLoggingVersion>
     <scalaVersion>2.12</scalaVersion>
+    <seleniumVersion>3.14.0</seleniumVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.30</slf4jVersion>
@@ -3700,7 +3703,7 @@
       <dependency>
         <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
-        <version>1.2.1</version>
+        <version>${phantomjsVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>

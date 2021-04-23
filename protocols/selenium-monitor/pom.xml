@@ -11,9 +11,9 @@
   <name>OpenNMS :: Protocols :: Selenium</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <!-- <seleniumVersion>3.141.59</seleniumVersion> --> <!-- latest version available but doesnt work with htmlunit -->
-      <seleniumVersion>3.14.0</seleniumVersion> <!-- latest version which works with selenium-htmlunit-driver 2.52.0 -->
-      <!-- <seleniumVersion>2.53.1</seleniumVersion> --> <!-- original opennms version -->
+    <!-- <seleniumVersion>3.141.59</seleniumVersion> --> <!-- latest version available but doesnt work with htmlunit -->
+    <seleniumVersion>3.14.0</seleniumVersion> <!-- latest version which works with selenium-htmlunit-driver 2.52.0 -->
+    <!-- <seleniumVersion>2.53.1</seleniumVersion> --> <!-- original opennms version -->
   </properties>
   <packaging>bundle</packaging>
   <build>
@@ -75,11 +75,11 @@
       <!-- Overrided scope from parent to compile -->
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
-    	<groupId>org.seleniumhq.selenium</groupId>
-    	<artifactId>selenium-java</artifactId>
-    	<version>${seleniumVersion}</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${seleniumVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -87,21 +87,21 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-         <artifactId>selenium-api</artifactId>
-         <version>${seleniumVersion}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>commons-logging</groupId>
-               <artifactId>commons-logging</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
+      <artifactId>selenium-api</artifactId>
+      <version>${seleniumVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
-      <dependency>
-         <groupId>org.seleniumhq.selenium</groupId>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-support</artifactId>
       <version>${seleniumVersion}</version>
       <exclusions>
@@ -111,11 +111,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
-    	<groupId>org.seleniumhq.selenium</groupId>
-    	<artifactId>selenium-remote-driver</artifactId>
-    	<version>${seleniumVersion}</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
+      <version>${seleniumVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -123,106 +123,112 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
-    <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-         <artifactId>selenium-htmlunit-driver</artifactId>
-         <version>2.52.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>commons-logging</groupId>
-               <artifactId>commons-logging</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
 
-      <dependency>
-         <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-firefox-driver</artifactId>
-        <version>${seleniumVersion}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>commons-logging</groupId>
-               <artifactId>commons-logging</artifactId>
-            </exclusion>
-         </exclusions>
-    </dependency>
-    
     <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-chrome-driver</artifactId>
-        <version>${seleniumVersion}</version>
-         <exclusions>
-            <exclusion>
-               <groupId>commons-logging</groupId>
-               <artifactId>commons-logging</artifactId>
-            </exclusion>
-         </exclusions>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-htmlunit-driver</artifactId>
+      <version>2.52.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
-        <groupId>com.codeborne</groupId>
-        <artifactId>phantomjsdriver</artifactId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+      <version>${seleniumVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    
+
     <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-chrome-driver</artifactId>
+      <version>${seleniumVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    
+
     <dependency>
-        <groupId>xalan</groupId>
-        <artifactId>xalan</artifactId>
+      <groupId>com.codeborne</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <version>${phantomjsVersion}</version>
     </dependency>
-    
+
     <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-analysis</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-commons</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-tree</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm-util</artifactId>
-          </exclusion>
-        </exclusions>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>${xercesVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>${xalanVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm-analysis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm-util</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-all</artifactId>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-all</artifactId>
+      <version>${asmVersion}</version>
     </dependency>
     <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guavaVersion}</version>
     </dependency>
     <dependency> <!-- PhantomJS requires this library -->
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${gsonVersion}</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gsonVersion}</version>
     </dependency>
-    
+
     <dependency>
-        <groupId>org.opennms.core.test-api</groupId>
-        <artifactId>org.opennms.core.test-api.http</artifactId>
-        <scope>test</scope>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
