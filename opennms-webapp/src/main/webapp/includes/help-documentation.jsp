@@ -65,13 +65,13 @@
                     <td style="border-top: none;"><a
                             href="api/v2/openapi.json" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">OpenAPI Docs</a></td>
-                    <td style="border-top: none;">The OpenAPI docs explains how each OpenNMS RESTful API works. You can also test and generate client code from them.</td>
+                    <td style="border-top: none;">The OpenAPI docs explain how each OpenNMS RESTful API works. You can also test and generate client code from them.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
                             href="api/v2/api-docs/?url=/opennms/api/v2/openapi.json#/" target="_blank"
                             class="btn btn-secondary" role="button" style="width: 100%">Swagger UI</a></td>
-                    <td style="border-top: none;">A graphical user interface of the OpenNMS OpenAPI docs.</td>
+                    <td style="border-top: none;">A graphical user interface for the OpenNMS OpenAPI docs.</td>
                 </tr>
             </table>
         </span>
