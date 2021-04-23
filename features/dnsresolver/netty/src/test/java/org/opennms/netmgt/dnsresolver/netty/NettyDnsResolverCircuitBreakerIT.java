@@ -59,7 +59,7 @@ public class NettyDnsResolverCircuitBreakerIT {
         dnsResolver.init();
 
         // Now trigger enough requests to open the circuit breaker
-        final int N = 2 * dnsResolver.getCircuitBreaker().getCircuitBreakerConfig().getRingBufferSizeInClosedState();
+        final int N = 2 * dnsResolver.getCircuitBreaker().getCircuitBreakerConfig().getMinimumNumberOfCalls();
         final CompletableFuture futures[] = new CompletableFuture[N];
         for (int i = 0; i < N; i++) {
             futures[i] = dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::"));
@@ -95,7 +95,7 @@ public class NettyDnsResolverCircuitBreakerIT {
         dnsResolver.init();
 
         // Now trigger enough requests to open the circuit breaker
-        final int N = 2 * dnsResolver.getCircuitBreaker().getCircuitBreakerConfig().getRingBufferSizeInClosedState();
+        final int N = 2 * dnsResolver.getCircuitBreaker().getCircuitBreakerConfig().getMinimumNumberOfCalls();
         final CompletableFuture futures[] = new CompletableFuture[N];
         for (int i = 0; i < N; i++) {
             futures[i] = dnsResolver.reverseLookup(InetAddressUtils.addr("fe80::"));

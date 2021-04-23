@@ -1595,8 +1595,8 @@
 
     <feature name="resilience4j" version="${resilience4jVersion}" description="resilience4j">
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
-        <bundle>mvn:io.vavr/vavr/0.10.0</bundle>
-        <bundle>mvn:io.vavr/vavr-match/0.10.0</bundle>
+        <bundle>mvn:io.vavr/vavr/0.10.2</bundle>
+        <bundle>mvn:io.vavr/vavr-match/0.10.2</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-core/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-circuitbreaker/${resilience4jVersion}</bundle>
         <bundle>mvn:io.github.resilience4j/resilience4j-bulkhead/${resilience4jVersion}</bundle>
