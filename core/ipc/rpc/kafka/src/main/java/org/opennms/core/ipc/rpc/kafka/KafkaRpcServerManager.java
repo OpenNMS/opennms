@@ -172,7 +172,9 @@ public class KafkaRpcServerManager {
         metrics.register(MAX_ALLOWED_CONCURRENT_CALLS, (Gauge<Integer>) () -> bulkhead.getMetrics().getMaxAllowedConcurrentCalls());
         metrics.register(ACTIVE_RPC_REQUESTS,  (Gauge<Integer>) () -> activeThreads.get());
 
-        kafkaRpcTopicProvider = new KafkaTopicProvider(Boolean.parseBoolean(kafkaConfig.getProperty(SINGLE_TOPIC_FOR_ALL_MODULES)));
+        String singleTopicConfig = kafkaConfig.getProperty(SINGLE_TOPIC_FOR_ALL_MODULES);
+        boolean notASingleTopic = singleTopicConfig != null && singleTopicConfig.equalsIgnoreCase("false");
+        kafkaRpcTopicProvider = new KafkaTopicProvider(!notASingleTopic);
         // Thread to expire RpcId from rpcIdQueue.
         delayQueueExecutor.execute(this::removeRpcIdFromDelayQueue);
         tracerRegistry.init(minionIdentity.getLocation() + "@" + minionIdentity.getId());
