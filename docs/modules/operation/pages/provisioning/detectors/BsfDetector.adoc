@@ -4,7 +4,7 @@ The BSF Detector lets you run arbitrary scripts using the Bean Scripting Framewo
 This can be a script written in any of the languages BSF supports.
 The only requirement is that the script returns the string `OK` if it passes.
 
-Unlike the BSF Monitor, the BSF Detector only passes in the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
+The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
 
 == Detector facts
 
