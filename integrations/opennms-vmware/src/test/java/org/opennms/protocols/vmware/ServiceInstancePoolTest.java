@@ -103,7 +103,7 @@ public class ServiceInstancePoolTest {
         System.getProperties().setProperty("org.opennms.protocols.vmware.housekeepingInterval", "500");
         this.serviceInstancePool = new ServiceInstancePool() {
             @Override
-            protected ServiceInstance create(String hostname, String username, String password) throws MalformedURLException, RemoteException {
+            protected ServiceInstance create(String hostname, String username, String password, int timeout) throws MalformedURLException, RemoteException {
                 return new DummyServiceInstance(hostname, username, password);
             }
         };
@@ -113,31 +113,31 @@ public class ServiceInstancePoolTest {
 
     @Test
     public void verifyOperation() throws Exception {
-        ServiceInstance s1 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s1 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/1/valid", s1.toString());
 
-        ServiceInstance s2 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s2 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/2/valid", s2.toString());
 
-        ServiceInstance s3 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s3 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/3/valid", s3.toString());
 
         serviceInstancePool.release(s2);
 
-        ServiceInstance s4 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s4 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/2/valid", s4.toString());
 
         serviceInstancePool.release(s4);
 
         ((DummyServiceInstance) s4).valid = false;
 
-        ServiceInstance s5 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s5 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/4/valid", s5.toString());
     }
 
     @Test
     public void verifyHousekeeping() throws Exception {
-        ServiceInstance s1 = serviceInstancePool.retain("host2.test.de", "username2", "password2");
+        ServiceInstance s1 = serviceInstancePool.retain("host2.test.de", "username2", "password2", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host2.test.de/username2/password2/1/valid", s1.toString());
 
         // L N N N <- s1 s2 s3 s4: (L)ocked, (U)nlocked, (N)ot existing, (I)nvalid
@@ -146,7 +146,7 @@ public class ServiceInstancePoolTest {
 
         // L/I N N N
 
-        ServiceInstance s2 = serviceInstancePool.retain("host2.test.de", "username2", "password2");
+        ServiceInstance s2 = serviceInstancePool.retain("host2.test.de", "username2", "password2", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host2.test.de/username2/password2/2/valid", s2.toString());
 
         // L/I L/I N N
@@ -159,7 +159,7 @@ public class ServiceInstancePoolTest {
 
         // U/I L/I N N
 
-        ServiceInstance s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
+        ServiceInstance s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
 
         // U/I L/I L N
@@ -174,14 +174,14 @@ public class ServiceInstancePoolTest {
         Assert.assertEquals(0, serviceInstancePool.unlockedEntryCount("host3.test.de/username3/password3"));
 
         serviceInstancePool.release(s3);
-        s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
+        s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
 
         // N N L N
 
         await().until(() -> serviceInstancePool.lockedEntryCount() == 1 && serviceInstancePool.unlockedEntryCount() == 0);
 
-        ServiceInstance s4 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
+        ServiceInstance s4 = serviceInstancePool.retain("host3.test.de", "username3", "password3", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host3.test.de/username3/password3/4/valid", s4.toString());
 
         // N N L L
@@ -195,18 +195,18 @@ public class ServiceInstancePoolTest {
 
     @Test
     public void verifyLogout() throws Exception {
-        ServiceInstance s1 = serviceInstancePool.retain("host1.test.de", "username1", "password1");
+        ServiceInstance s1 = serviceInstancePool.retain("host1.test.de", "username1", "password1", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host1.test.de/username1/password1/1/valid", s1.toString());
 
-        ServiceInstance s2 = serviceInstancePool.retain("host2.test.de", "username2", "password2");
+        ServiceInstance s2 = serviceInstancePool.retain("host2.test.de", "username2", "password2", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host2.test.de/username2/password2/2/valid", s2.toString());
         ((DummyServiceInstance) s2).valid = false;
 
-        ServiceInstance s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
+        ServiceInstance s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
         serviceInstancePool.release(s3);
 
-        ServiceInstance s4 = serviceInstancePool.retain("host4.test.de", "username4", "password4");
+        ServiceInstance s4 = serviceInstancePool.retain("host4.test.de", "username4", "password4", VmwareViJavaAccess.DEFAULT_TIMEOUT);
         Assert.assertEquals("host4.test.de/username4/password4/4/valid", s4.toString());
         serviceInstancePool.release(s4);
         ((DummyServiceInstance) s4).valid = false;
@@ -238,14 +238,14 @@ public class ServiceInstancePoolTest {
 
         long l1 = System.currentTimeMillis();
 
-        final ServiceInstance s1 = serviceInstancePoolEntry.retain();
+        final ServiceInstance s1 = serviceInstancePoolEntry.retain(VmwareViJavaAccess.DEFAULT_TIMEOUT);
 
         Assert.assertEquals(1, serviceInstancePoolEntry.getAccessTimestamp().size());
         Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s1) >= l1);
 
         long l2 = System.currentTimeMillis();
 
-        final ServiceInstance s2 = serviceInstancePoolEntry.retain();
+        final ServiceInstance s2 = serviceInstancePoolEntry.retain(VmwareViJavaAccess.DEFAULT_TIMEOUT);
 
         Assert.assertEquals(2, serviceInstancePoolEntry.getAccessTimestamp().size());
         Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s2) >= l2);
@@ -254,7 +254,7 @@ public class ServiceInstancePoolTest {
 
         long l3 = System.currentTimeMillis();
 
-        final ServiceInstance s3 = serviceInstancePoolEntry.retain();
+        final ServiceInstance s3 = serviceInstancePoolEntry.retain(VmwareViJavaAccess.DEFAULT_TIMEOUT);
 
         Assert.assertEquals(2, serviceInstancePoolEntry.getAccessTimestamp().size());
         Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s3) >= l3);
