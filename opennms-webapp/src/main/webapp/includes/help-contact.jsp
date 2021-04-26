@@ -30,7 +30,7 @@
 
 <div class="card">
     <div class="card-header">
-        <span>Get in Contact</span>
+        <span>Contact Us</span>
     </div>
     <div class="card-body">
         <table class="table">
@@ -40,11 +40,11 @@
             </tr>
             <tr>
                 <td style="border-top: none;"><a href="https://chat.opennms.org/opennms" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Web Chat</a></td>
-                <td style="border-top: none;">Use the &quot;web-based&quot; chat platform powered by Mattermost. The Discussion channel is a good starting point to reach users and developers. If you prefer IRC, you can join the "#opennms" channel on irc.freenode.net which is bridged to our Web Chat.</td>
+                <td style="border-top: none;">Chat with us on Mattermost. The Discussion channel is a good place to reach users and developers.</td>
             </tr>
             <tr>
                 <td style="border-top: none;"><a href="https://opennms.discourse.group" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Discourse</a></td>
-                <td style="border-top: none;">Community forum around using and developing OpenNMS powered by Discourse.</td>
+                <td style="border-top: none;">Community forum to get help, share ideas, and participate in OpenNMS development.</td>
             </tr>
         </table>
     </div>
