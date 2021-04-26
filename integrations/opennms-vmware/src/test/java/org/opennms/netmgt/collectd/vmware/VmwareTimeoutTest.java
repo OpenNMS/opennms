@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
 import org.opennms.netmgt.config.vmware.vijava.VmwareGroup;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.vmware.ServiceInstancePool;
+import org.opennms.protocols.vmware.ServiceInstancePoolEntry;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 
 import com.vmware.vim25.PerfEntityMetricBase;
@@ -210,7 +211,8 @@ public class VmwareTimeoutTest {
         dummyServiceInstance = new DummyServiceInstance("hostname", "username", "password");
         VmwareViJavaAccess.setServiceInstancePool(new ServiceInstancePool() {
             @Override
-            public ServiceInstance retain(String host, String username, String password) throws MalformedURLException, RemoteException {
+            public ServiceInstance retain(String host, String username, String password, int timeout) throws MalformedURLException, RemoteException {
+                ServiceInstancePoolEntry.setTimeout(dummyServiceInstance, timeout);
                 return dummyServiceInstance;
             }
         });
