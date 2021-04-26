@@ -61,7 +61,7 @@ The BSF detector supports many languages; the following table provides the requi
 | Language                            | lang-class  | bsf-engine                                    | required library
 | http://www.beanshell.org[BeanShell] | beanshell | `bsh.util.BeanShellBSFEngine`                 | supported by default
 | http://groovy.codehaus.org[Groovy]  | groovy  | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
-| http://www.jython.org[Jython]       |  jython   | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
+| http://www.jython.org[Jython]       | jython   | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
 |===
 
 
