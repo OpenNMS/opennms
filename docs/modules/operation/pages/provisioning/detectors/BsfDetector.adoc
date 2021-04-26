@@ -21,7 +21,7 @@ The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variable
 |===
 | Parameter        | Description                                                                                            | Required | Default value
 | `fileName`       | The path to the file on the OpenNMS server which contains the BSF-compatible script to run.            | optional |
-| `langClass`      | The short name of the language the script is written in. Choices: Jython, BeanShell, Groovy, etc.     | optional | 
+| `langClass`      | The short name of the language the script is written in. Choices: `jython`, `beanshell`, `groovy`, etc.     | optional | 
 | `bsfEngine`      | The BSF engine to use when running the script. Choices:
 
 * bsh.util.BeanShellBSFEngine
