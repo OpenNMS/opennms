@@ -207,10 +207,14 @@ public class VmwareViJavaAccess {
      * @throws MalformedURLException
      * @throws RemoteException
      */
-    public void connect() throws MalformedURLException, RemoteException {
+    public void connect(final int timeout) throws MalformedURLException, RemoteException {
         relax();
+        m_timeout = timeout;
+        m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password, m_timeout);
+    }
 
-        m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password);
+    public void connect() throws MalformedURLException, RemoteException {
+        connect(DEFAULT_TIMEOUT);
     }
 
     /**
