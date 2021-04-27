@@ -226,18 +226,13 @@ public class VmwareCollector extends AbstractRemoteServiceCollector {
         }
 
         try {
-            vmwareViJavaAccess.connect();
+            vmwareViJavaAccess.connect(ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT));
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
         } catch (RemoteException e) {
             logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
             return builder.build();
-        }
-
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", VmwareViJavaAccess.DEFAULT_TIMEOUT);
-        if (!vmwareViJavaAccess.setTimeout(timeout)) {
-            logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
         }
 
         ManagedEntity managedEntity = vmwareViJavaAccess.getManagedEntityByManagedObjectId(vmwareManagedObjectId);
