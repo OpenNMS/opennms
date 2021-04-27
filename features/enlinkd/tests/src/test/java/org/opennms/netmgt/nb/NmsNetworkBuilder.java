@@ -1497,7 +1497,8 @@ public abstract class NmsNetworkBuilder {
                 nb.addInterface(hostAddress, snmpBuilder.getSnmpInterface())
                     .setNetMask(mask)
                     .setIsSnmpPrimary(isSnmpPrimary)
-                    .setIsManaged("M");            }
+                    .setIsManaged("M");
+            }
         }
             
         return nb.getCurrentNode();
