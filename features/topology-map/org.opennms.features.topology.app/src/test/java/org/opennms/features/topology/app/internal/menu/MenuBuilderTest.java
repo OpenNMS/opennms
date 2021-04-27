@@ -132,13 +132,13 @@ public class MenuBuilderTest {
         MenuBar menubar = builder.build(Lists.newArrayList(), new TestOperationContext(null));
         TopologyContextMenu contextMenu = new TopologyContextMenu(EasyMock.niceMock(UI.class), menubar);
 
-        final List<com.vaadin.contextmenu.MenuItem> contextMenuItems = contextMenu.getItems();
+        final List<MenuBar.MenuItem> contextMenuItems = contextMenu.getItems();
         assertEquals(1, contextMenuItems.size());
         assertEquals("Layout", contextMenuItems.get(0).getText());
 
-        final List<com.vaadin.contextmenu.MenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
+        final List<MenuBar.MenuItem> subMenuItems = contextMenuItems.get(0).getChildren();
         assertEquals(1, subMenuItems.size());
-        final com.vaadin.contextmenu.MenuItem submenuItem = subMenuItems.get(0);
+        final MenuBar.MenuItem submenuItem = subMenuItems.get(0);
         assertEquals("Test", submenuItem.getText());
     }
 
