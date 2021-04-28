@@ -1498,10 +1498,10 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>8.5.2</vaadinVersion>
+    <vaadinVersion>8.12.4</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinAddonContextMenuVersion>2.0.0</vaadinAddonContextMenuVersion>
+    <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>
     <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
     <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
     <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>

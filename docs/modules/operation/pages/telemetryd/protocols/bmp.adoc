@@ -221,3 +221,6 @@ admin@opennms()> feature:install sentinel-telemetry-bmp-persist
 
 <1> needs datasource configuration. Refer to link:#ga-sentinel-persistence[Sentinel Persistence] for configuring datasource.
 <2> or `sentinel-kafka`. Refer to link:#ga-sentinel-kafka[Sentinel Kafka] for configuring Kafka on Sentinel.
+
+NOTE: When running kafka as broker, consumer config needs to have `auto.offset.reset=earliest`setting otherwise
+Bmp Adapter may miss some of the early messages like PeerUp notification which are essential for for proper BMP state.

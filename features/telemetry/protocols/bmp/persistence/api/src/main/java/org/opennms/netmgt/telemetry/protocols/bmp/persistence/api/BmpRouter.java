@@ -34,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -109,7 +110,7 @@ public class BmpRouter implements Serializable {
     @Column(name = "connection_count")
     private Integer connectionCount;
 
-    @OneToMany(mappedBy="bmpRouter")
+    @OneToMany(mappedBy="bmpRouter", cascade = CascadeType.ALL)
     private Set<BmpPeer> bmpPeers = new LinkedHashSet<>();
 
     @Transient
