@@ -186,7 +186,7 @@ public class VmwareViJavaAccessTest {
 
         Whitebox.setInternalState(VmwareViJavaAccess.class, "m_serviceInstancePool", new ServiceInstancePool(){
             @Override
-            public synchronized ServiceInstance retain(String host, String username, String password) throws MalformedURLException, RemoteException {
+            public synchronized ServiceInstance retain(String host, String username, String password, int timeout) throws MalformedURLException, RemoteException {
                 return mockServiceInstance;
             }
         });

@@ -45,18 +45,12 @@ public class HelpPageIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyAllButtonsPresent() throws Exception {
         final String[] links = new String[] {
-                // Online Links
-                "Installation Guide",
-                "Admin Guide",
-                "Developers Guide",
+                "Deployment Guide",
+                "Operation Guide",
+                "Development Guide",
                 "OpenNMS Wiki",
-                "Welcome Guide",
-                // Offline Links
-                "Installation Guide",
-                "Admin Guide",
-                "Developers Guide",
-                "OpenNMS Wiki",
-                "Welcome Guide",
+                "OpenAPI Docs",
+                "Swagger UI",
                 "Commercial Support",
                 "Web Chat",
                 "Discourse",

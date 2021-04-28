@@ -124,17 +124,13 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
 
             final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
             try {
-                vmwareViJavaAccess.connect();
+                vmwareViJavaAccess.connect(tracker.getConnectionTimeout());
             } catch (MalformedURLException e) {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             } catch (RemoteException e) {
                 logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
-            }
-
-            if (!vmwareViJavaAccess.setTimeout(tracker.getConnectionTimeout())) {
-                logger.warn("Error setting connection timeout for VMware management server '{}'", vmwareManagementServer);
             }
 
             HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
