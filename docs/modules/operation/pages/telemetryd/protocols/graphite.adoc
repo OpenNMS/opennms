@@ -7,6 +7,7 @@ To enable support for plaintext Graphite over UDP, edit `$\{OPENNMS_HOME}/etc/te
 
 .Enable Graphite protocol in telemetryd-configuration.xml
 [source, xml]
+[subs="verbatim,attributes"]
 ----
     <listener name="Graphite-UDP-2003" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
         <parameter key="port" value="2003"/>
@@ -15,7 +16,7 @@ To enable support for plaintext Graphite over UDP, edit `$\{OPENNMS_HOME}/etc/te
 
     <queue name="Graphite">
         <adapter name="Graphite" class-name="org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter" enabled="true">
-            <parameter key="script" value="/Users/ranger/git/opennms-work/target/opennms-28.0.0-SNAPSHOT/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
+            <parameter key="script" value="/Users/ranger/git/opennms-work/target/opennms-{page-component-version}/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
              <package name="Graphite-Default">
                 <rrd step="300">
                     <rra>RRA:AVERAGE:0.5:1:2016</rra>

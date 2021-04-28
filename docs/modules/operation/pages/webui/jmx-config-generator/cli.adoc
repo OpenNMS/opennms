@@ -43,8 +43,9 @@ Inside the newly created `target` folder a file named `jmxconfiggenerator-<VERSI
 This file can be invoked by:
 
 [source, shell]
+[subs="verbatim,attributes"]
 ----
-java -jar target/jmxconfiggenerator-28.0.0-SNAPSHOT-onejar.jar
+java -jar target/jmxconfiggenerator-{page-component-version}-onejar.jar
 ----
 
 == Use
