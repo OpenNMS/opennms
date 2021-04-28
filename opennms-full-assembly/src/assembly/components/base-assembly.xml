@@ -17,16 +17,6 @@
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useStrictFiltering>true</useStrictFiltering>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>docs</outputDirectory>
-      <includes>
-        <include>org.opennms.doc:guide-all:tar.gz:docs:${project.version}</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useStrictFiltering>true</useStrictFiltering>
