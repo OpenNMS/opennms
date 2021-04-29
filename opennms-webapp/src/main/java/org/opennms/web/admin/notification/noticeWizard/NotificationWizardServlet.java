@@ -58,6 +58,8 @@ import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.web.api.Util;
 
+import com.google.common.base.Strings;
+
 /**
  * A servlet that handles the data comming in from the notification wizard jsps.
  *
@@ -325,6 +327,22 @@ public class NotificationWizardServlet extends HttpServlet {
         } else {
             // Must do this to allow clearing out varbind definitions
             newNotice.setVarbind(null);
+        }
+
+        final String[] parameterName = request.getParameterValues("parameterName");
+        final String[] parameterValue = request.getParameterValues("parameterValue");
+
+        newNotice.getParameters().clear();
+
+        if (parameterName != null && parameterValue != null) {
+            for (int i = 0; i < parameterName.length; i++) {
+                if (!Strings.isNullOrEmpty(parameterName[i])) {
+                    final Parameter parameter = new Parameter();
+                    parameter.setName(parameterName[i]);
+                    parameter.setValue(parameterValue[i]);
+                    newNotice.addParameter(parameter);
+                }
+            }
         }
 
         try {
