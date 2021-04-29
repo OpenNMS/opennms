@@ -214,6 +214,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
 
         if (forceReload || providers.stream().anyMatch(ConfigurationProviderState::shouldReload)) {
             reload();
+            forceReload = false;
         }
     }
 
