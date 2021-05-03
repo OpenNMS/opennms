@@ -12,15 +12,15 @@ Example payloads are used to give some idea of what the contents of the configur
 > What should be call these? Endpoints, config ids, components, ...? We need consistent terminology when referring to these.
 
 Endpoints include:
-1. [/system-properties](#/system-properties)
-1. [/vacuumd](#/vacuumd)
-1. [/provisiond](#/provisiond)
-1. [/eventd](#/eventd)
-1. [/events](#/events)
-1. [/graphs](#/graphs)
-1. [/dnsresolver](#/dnsresolver)
-1. [/topology-icons](#/topology-icons)
-1. [/poller](#/poller)
+1. [/system-properties](#system-properties)
+1. [/vacuumd](#vacuumd)
+1. [/provisiond](#provisiond)
+1. [/eventd](#eventd)
+1. [/events](#events)
+1. [/graphs](#graphs)
+1. [/dnsresolver](#dnsresolver)
+1. [/topology-icons](#topology-icons)
+1. [/poller](#poller)
 
 ## /system-properties
 
