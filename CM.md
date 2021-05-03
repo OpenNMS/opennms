@@ -284,6 +284,16 @@ Configuration for pollerd
 
 Security: Remote code execution possible by configuring the SystemExecuteMonitor?
 
+Validation lines in PollerConfigFactory, for example:
+```
+Caused by: java.lang.IllegalStateException: ds-name 'selenium-${requisition:web-label}' in service 'Selenium:meta' (poller package 'example1') is greater than 19 characters
+        at org.opennms.netmgt.config.PollerConfigFactory.validate(PollerConfigFactory.java:149) ~[opennms-config-28.0.0-SNAPSHOT.jar:?]
+        at org.opennms.netmgt.config.PollerConfigFactory.init(PollerConfigFactory.java:137) ~[opennms-config-28.0.0-SNAPSHOT.jar:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+        at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:?]
+        at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+```
+
 ### Schema reference
 
 * [poller-configuration.xsd](https://github.com/OpenNMS/opennms/blob/opennms-27.1.1-1/opennms-config-jaxb/src/main/resources/xsds/poller-configuration.xsd)
