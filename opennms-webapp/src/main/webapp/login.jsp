@@ -46,6 +46,10 @@
     background-size: cover;
   }
 
+  .form-group{
+    margin-bottom: 1.25rem;
+  }
+
   .login-form {
     max-width: 360px;
   }
@@ -75,7 +79,7 @@
     padding: 7px;
     padding-left: 28px;
     padding-right: 28px;
-    font-size: 12px;
+    font-size: 11px;
     border-radius: 30px;
     background-image: linear-gradient(to right, rgb(67, 194, 233), rgb(137, 230, 194));
     border: none;
@@ -107,9 +111,9 @@
 
   .alert {
     position: relative;
-    padding: 0.75rem 0.75rem;
+    padding: 0.5rem 0.5rem;
     border: 1px solid transparent;
-    border-radius: 0.25rem;
+    border-radius: 0.4rem;
   }
 
   .alert-warning {
@@ -142,7 +146,7 @@
 
 <div class="login-page">
     <div class="card login-form rounded">
-      <div style="padding-bottom: 25px; padding-top: 60px">
+      <div style="padding-bottom: 36px; padding-top: 60px">
         <img src="images/opennms_horizon_title.svg" class="horizon" width="185px" />
       </div>
 
