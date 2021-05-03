@@ -52,6 +52,7 @@
 
   .card {
     background-color: transparent;
+    border-color: transparent;
     margin-left: 10%;
     margin-top: 15%;
   }
@@ -94,20 +95,36 @@
     margin-top: 10px;
     margin-left: 21%;
     width: 225px;
+    font-size: 9.5pt;
+  }
+
+  #login-expired {
+    margin-top: 10px;
+    margin-left: 21%;
+    width: 225px;
+    font-size: 9.5pt;
   }
 
   .alert {
     position: relative;
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 0.75rem;
     border: 1px solid transparent;
     border-radius: 0.25rem;
+  }
+
+  .alert-warning {
+    color: #495057;
+    background-color: #d8c999;
+    border-color: #e7b51e;
   }
 
   .alert-danger {
     color: #495057;
     background-color: #ffe5e7;
     border-color: #f15b65;
-    font-size: 9.5pt;
+  }
+  p {
+    margin-bottom:0px;
   }
 
 </style>
@@ -143,8 +160,8 @@
           </div>
 
           <c:if test="${not empty param.session_expired}">
-            <div class="alert alert-warning">
-              <strong>Session expired</strong> Please log back in.
+            <div id="login-expired" class="alert alert-warning">
+              <strong>Session expired</strong> <br> Please log back in.
             </div>
           </c:if>
 
