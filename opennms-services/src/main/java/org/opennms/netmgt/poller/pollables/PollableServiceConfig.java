@@ -118,6 +118,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     @Override
     public PollStatus poll() {
         try {
+            final long beforePollTimestampMs = System.currentTimeMillis();
+
             final String packageName = getPackageName();
             // Use the service's configured interval as the TTL for this request
             final Long ttlInMs = m_configService.getInterval();
@@ -139,7 +141,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
 
             // Track the results of the poll
-            m_service.getContext().trackPoll(m_service, result);
+            m_service.getContext().trackPoll(m_service, result, beforePollTimestampMs);
 
             return result;
         } catch (Throwable e) {

@@ -19,6 +19,34 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:annotation-config />
 
+    <!-- Poller Metrics -->
+    <bean id="pollerMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <!-- Expose metrics to OSGi for easy access through the Karaf shell -->
+    <onmsgi:service ref="pollerMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <onmsgi:service-properties>
+            <entry>
+                <key><value>name</value></key>
+                <value>pollerd</value>
+            </entry>
+            <entry>
+                <key><value>description</value></key>
+                <value>Poller daemon</value>
+            </entry>
+        </onmsgi:service-properties>
+    </onmsgi:service>
+    <!-- Expose metrics via JMX -->
+    <bean id="pollerdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <constructor-arg ref="pollerMetricRegistry"/>
+    </bean>
+    <bean id="pollerdMetricRegistryDomainedJmxReporterBuilder" factory-bean="pollerdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <constructor-arg value="org.opennms.netmgt.poller"/>
+    </bean>
+    <bean id="pollerdMetricRegistryJmxReporter"
+          factory-bean="pollerdMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
     <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
 
     <bean name="pollContext" class="org.opennms.netmgt.poller.DefaultPollContext">
@@ -28,7 +56,8 @@
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="queryManager" ref="pollerQueryManager" />
       <property name="locationAwarePingClient" ref="locationAwarePingClient" />
-    </bean> 
+      <property name="metricRegistry" ref="pollerMetricRegistry" />
+    </bean>
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.poller.pollables.PollableNetwork">
         <constructor-arg ref="pollContext" />

@@ -173,7 +173,7 @@ public class MockPollContext implements PollContext, EventListener {
     }
 
     @Override
-    public void trackPoll(PollableService service, PollStatus result) {
+    public void trackPoll(PollableService service, PollStatus result, long beforePollTimestampMs) {
         // pass, nothing to track
     }
 

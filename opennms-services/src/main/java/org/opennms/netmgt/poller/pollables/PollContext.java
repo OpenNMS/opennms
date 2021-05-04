@@ -106,5 +106,5 @@ public interface PollContext {
      */
     public boolean isServiceUnresponsiveEnabled();
 
-    void trackPoll(PollableService service, PollStatus result);
+    void trackPoll(PollableService service, PollStatus result, long beforePollTimestampMs);
 }

@@ -212,6 +212,7 @@
                 <phase>test</phase>
                 <goals><goal>exec</goal></goals>
                 <configuration>
+                  <skip>${skipTests}</skip>
                   <executable>${project.build.directory}/shunit/run-tests.sh</executable>
                   <arguments>
                     <argument>${project.basedir}/src/test/shell</argument>

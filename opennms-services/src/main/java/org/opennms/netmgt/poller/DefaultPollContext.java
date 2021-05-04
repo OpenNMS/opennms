@@ -60,6 +60,10 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * Represents a DefaultPollContext
@@ -67,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author brozow
  * @version $Id: $
  */
-public class DefaultPollContext implements PollContext, EventListener {
+public class DefaultPollContext implements PollContext, EventListener, InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
     private static final String[] UEIS = {
@@ -98,10 +102,28 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
     private volatile LocationAwarePingClient m_locationAwarePingClient;
+    private volatile MetricRegistry m_metricRegistry;
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
     private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<>();
+
+    private Timer m_servicesPolledTimer;
+    private Timer m_servicesAvailableTimer;
+    private Timer m_servicesUnavailableTimer;
+    private Timer m_servicesUnresponsiveTimer;
+    private Timer m_servicesUnknownTimer;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (m_metricRegistry != null) {
+            m_servicesPolledTimer = m_metricRegistry.timer("servicesPolled");
+            m_servicesAvailableTimer = m_metricRegistry.timer("servicesAvailable");
+            m_servicesUnavailableTimer = m_metricRegistry.timer("servicesUnavailable");
+            m_servicesUnresponsiveTimer = m_metricRegistry.timer("servicesUnresponsive");
+            m_servicesUnknownTimer = m_metricRegistry.timer("servicesUnknown");
+        }
+    }
 
     /**
      * <p>getEventManager</p>
@@ -200,6 +222,14 @@ public class DefaultPollContext implements PollContext, EventListener {
 
     public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
         m_locationAwarePingClient = locationAwarePingClient;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return m_metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        m_metricRegistry = metricRegistry;
     }
 
     /* (non-Javadoc)
@@ -439,7 +469,24 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     @Override
-    public void trackPoll(PollableService service, PollStatus result) {
+    public void trackPoll(PollableService service, PollStatus result, long beforePollTimestampMs) {
+        // Track the duration of the poll. Track these both globally, across all services polled, and individually
+        // based on the poll results.
+        final long timeSpentPollingMs = Math.max(System.currentTimeMillis() - beforePollTimestampMs, 0);
+        if (m_servicesPolledTimer != null) {
+            m_servicesPolledTimer.update(timeSpentPollingMs, TimeUnit.MILLISECONDS);
+        }
+        if (result.isAvailable() && m_servicesAvailableTimer != null) {
+            m_servicesAvailableTimer.update(timeSpentPollingMs, TimeUnit.MILLISECONDS);
+        } else if (result.isUnavailable() && m_servicesUnavailableTimer != null) {
+            m_servicesUnavailableTimer.update(timeSpentPollingMs, TimeUnit.MILLISECONDS);
+        } else if (result.isUnresponsive() && m_servicesUnresponsiveTimer != null) {
+            m_servicesUnresponsiveTimer.update(timeSpentPollingMs, TimeUnit.MILLISECONDS);
+        } else if (result.isUnknown() && m_servicesUnknownTimer != null) {
+            m_servicesUnknownTimer.update(timeSpentPollingMs, TimeUnit.MILLISECONDS);
+        }
+
+        // Track the timestamps of the last succesful/last failed poll on the service
         try {
             if (!result.isUnknown() && !DISABLE_POLL_TIMESTAMP_TRACKING) {
                 getQueryManager().updateLastGoodOrFail(service.getNodeId(), service.getAddress(), service.getSvcName(), result);
