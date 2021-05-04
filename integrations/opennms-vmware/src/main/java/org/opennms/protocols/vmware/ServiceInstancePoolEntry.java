@@ -35,7 +35,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.ServerConnection;
 import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.ws.Client;
 
 public class ServiceInstancePoolEntry {
     private final String hostname;
@@ -54,13 +57,15 @@ public class ServiceInstancePoolEntry {
         this.password = password;
     }
 
-    public synchronized ServiceInstance retain() throws MalformedURLException, RemoteException {
+    public synchronized ServiceInstance retain(final int timeout) throws MalformedURLException, RemoteException {
         if (this.unlocked.size() > 0) {
             final ServiceInstance serviceInstance = this.unlocked.iterator().next();
 
             if (this.serviceInstancePool.validate(serviceInstance)) {
                 this.unlocked.remove(serviceInstance);
                 this.locked.add(serviceInstance);
+                setTimeout(serviceInstance, timeout);
+
                 this.accessTimestamp.put(serviceInstance, System.currentTimeMillis());
 
                 return serviceInstance;
@@ -70,10 +75,26 @@ public class ServiceInstancePoolEntry {
             }
         }
 
-        final ServiceInstance serviceInstance = this.serviceInstancePool.create(hostname, username, password);
+        final ServiceInstance serviceInstance = this.serviceInstancePool.create(hostname, username, password, timeout);
         this.locked.add(serviceInstance);
         this.accessTimestamp.put(serviceInstance, System.currentTimeMillis());
         return serviceInstance;
+    }
+
+    public static void setTimeout(final ServiceInstance serviceInstance, final int timeout) {
+        if (serviceInstance != null) {
+            ServerConnection serverConnection = serviceInstance.getServerConnection();
+            if (serverConnection != null) {
+                VimPortType vimService = serverConnection.getVimService();
+                if (vimService != null) {
+                    Client client = vimService.getWsc();
+                    if (client != null) {
+                        client.setConnectTimeout(timeout);
+                        client.setReadTimeout(timeout);
+                    }
+                }
+            }
+        }
     }
 
     public synchronized void expire(final long ageInMilliseconds) {

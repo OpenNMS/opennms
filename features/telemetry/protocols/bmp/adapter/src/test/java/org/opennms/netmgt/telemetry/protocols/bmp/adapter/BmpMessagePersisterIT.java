@@ -36,6 +36,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,7 +153,8 @@ public class BmpMessagePersisterIT {
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
         bmpMessageHandler.handle(msg, context);
         List<BmpPeer> peers = bmpPeerDao.findAll();
-        Assert.assertFalse(peers.isEmpty());
+        Assert.assertThat(peers, Matchers.hasSize(1));
+
 
         //Set Router state to TERM and then again INIT which should update Peers state to Down.
         router1.action = Router.Action.TERM;
@@ -190,6 +192,36 @@ public class BmpMessagePersisterIT {
         bmpMessageHandler.handle(msg, context);
         List<BmpBaseAttribute> bmpBaseAttributes = bmpBaseAttributeDao.findAll();
         Assert.assertFalse(bmpBaseAttributes.isEmpty());
+
+    }
+
+    @Test
+    public void testPersistingOfPeersSentBeforeRouters() {
+
+        Context context = mock(Context.class);
+        when(context.getLocation()).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+        // Persist collector
+        final Collector collector = getCollector();
+        Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
+        bmpMessageHandler.handle(msg, context);
+        List<BmpCollector> collectors = bmpCollectorDao.findAll();
+        Assert.assertFalse(collectors.isEmpty());
+        BmpCollector bmpCollector = collectors.get(0);
+        Assert.assertEquals(State.UP, bmpCollector.getState());
+        // Send peer-up message before sending router initiation message.
+        Peer peer = getPeer();
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
+        bmpMessageHandler.handle(msg, context);
+        // Persist router.
+        final Router router1 = getRouter1();
+        final Router router2 = getRouter2();
+        msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1, router2));
+        bmpMessageHandler.handle(msg, context);
+        List<BmpRouter> routers = bmpRouterDao.findAll();
+        Assert.assertEquals(2, routers.size());
+        // Verify that cached peer gets persisted
+        List<BmpPeer> retrieved = bmpPeerDao.findAll();
+        Assert.assertThat(retrieved, Matchers.hasSize(1));
 
     }
 
