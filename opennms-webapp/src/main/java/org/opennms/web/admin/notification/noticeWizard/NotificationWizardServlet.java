@@ -339,7 +339,11 @@ public class NotificationWizardServlet extends HttpServlet {
                 if (!Strings.isNullOrEmpty(parameterName[i])) {
                     final Parameter parameter = new Parameter();
                     parameter.setName(parameterName[i]);
-                    parameter.setValue(parameterValue[i]);
+                    if (i < parameterValue.length && parameterValue[i] != null) {
+                        parameter.setValue(parameterValue[i]);
+                    } else {
+                        parameter.setValue("");
+                    }
                     newNotice.addParameter(parameter);
                 }
             }

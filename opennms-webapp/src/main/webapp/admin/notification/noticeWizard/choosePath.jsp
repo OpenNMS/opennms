@@ -136,10 +136,10 @@
             var html = '';
             html+='<div class="row" id="inputFormRow">';
             html+='  <div class="col-md-5">';
-            html+='    <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value=\'<%=WebSecurityUtils.sanitizeString("")%>\'/>';
+            html+='    <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value=""/>';
             html+='  </div>';
             html+='  <div class="col-md-5">';
-            html+='    <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value=\'<%=WebSecurityUtils.sanitizeString("")%>\'/>';
+            html+='    <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value=""/>';
             html+='  </div>';
             html+='  <div class="col-md-2">';
             html+='    <label>&nbsp;&nbsp;&nbsp;</label><button class="form-control" id="removeRow" type="button" class="btn btn-danger">Remove</button>';
