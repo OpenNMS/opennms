@@ -26,7 +26,7 @@ echo "#### Making sure git is up-to-date"
 git fetch --all
 
 echo "#### Generate project structure .json"
-mvn -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end --legacy-local-repository -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -59,7 +59,7 @@ sudo killall -9 apt-get || true && \
             sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool || exit 1
 
 echo "#### Building Assembly Dependencies"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -68,13 +68,13 @@ mvn install -P'!checkstyle' \
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dnsis.makensis.bin="$(which makensis)" \
-           -B \
+           --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
-           -am \
-           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+           --also-make \
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -84,12 +84,12 @@ mvn install -P'!checkstyle' \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -Dnsis.makensis.bin="$(which makensis)" \
-           -B \
+           --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
