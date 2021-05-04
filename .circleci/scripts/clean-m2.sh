@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
-# keep anything downloaded in the last 14 days
-KEEP="+14"
+# keep anything downloaded in the last 7 days
+KEEP="+7"
 
 if [ -d "$HOME/.m2/repository" ]; then
   # delete anything older than $KEEP days
