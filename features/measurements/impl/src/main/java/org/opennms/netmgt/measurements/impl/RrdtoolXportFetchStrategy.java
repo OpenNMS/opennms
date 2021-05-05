@@ -123,6 +123,11 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             final String tempLabel = Integer.toString(++k);
             labelMap.put(tempLabel, source.getLabel());
 
+            // Limit datasource names to 19 chars
+            if (source.getEffectiveDataSource().length() > 19) {
+                source.setDataSource(source.getEffectiveDataSource().substring(0, 19));
+            }
+
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
                     tempLabel, Utils.escapeColons(rrdFile), Utils.escapeColons(source.getEffectiveDataSource()),
                     source.getAggregation()));
