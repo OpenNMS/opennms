@@ -1,9 +1,8 @@
 #!/bin/sh -e
 
-# If ran with 'true' then run a small subset of the tests
-MINIMAL=0
-if [ "$1" = "true" ]; then
-  MINIMAL=1
+SUITE="$1"; shift
+if [ -z "$SUITE" ]; then
+  SUITE="core"
 fi
 
 find_tests()
@@ -52,13 +51,13 @@ done
 export MAVEN_OPTS="-Xmx1g -Xms1g"
 
 cd ~/project/smoke-test
-if [ $MINIMAL -eq 1 ]; then
+if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"
   # Run a set of known tests
   for TEST_CLASS in "MenuHeaderIT" "SinglePortFlowsIT"
   do
     echo "###### Testing: ${TEST_CLASS}"
-    mvn -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
+    ../compile.pl -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
   done
 else
   echo "#### Executing complete suite of smoke/system tests"
@@ -67,7 +66,7 @@ else
   while read -r TEST_CLASS
   do
     echo "###### Testing: ${TEST_CLASS}"
-    mvn -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dit.test="$TEST_CLASS" install verify
+    ../compile.pl -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dit.test="$TEST_CLASS" "-Psmoke.$SUITE" install verify
   done < /tmp/this_node_it_tests
 fi
 

@@ -51,7 +51,12 @@
         alert("The user ID '" + document.newUserForm.userID.value + "' cannot be used. It may be confused with the administration user ID 'admin'.");
         return false;
     }
-    
+
+    if (/.*[&<>"`']+.*/.test(id)) {
+        alert("The user ID must not contain any HTML markup.");
+        return false;
+    }
+
     if (document.newUserForm.pass1.value == document.newUserForm.pass2.value) 
     {
       document.newUserForm.action="admin/userGroupView/users/addNewUser";
@@ -82,6 +87,7 @@
   </div>
   <div class="card-body">
     <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
       <div class="form-group">
         <label for="userID" class="">User ID</label>
         <input id="userID" type="text" name="userID" class="form-control">

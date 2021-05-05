@@ -30,6 +30,7 @@
 --%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Group Configuration" />
@@ -77,8 +78,11 @@
     {
         var newName = prompt("Enter new name for group.", groupName);
 
-        if (newName != null && newName != "")
-        {
+        if (newName != null && newName != "") {
+          if (/.*[&<>"`']+.*/.test(newName)) {
+            alert("The group ID must not contain any HTML markup.");
+            return;
+          }
           document.allGroups.newName.value = newName;
           document.allGroups.groupName.value=groupName;
           document.allGroups.operation.value="rename";
@@ -102,6 +106,7 @@
   <input type="hidden" name="operation"/>
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
   <div class="card">
     <table class="table table-sm table-bordered">
@@ -113,37 +118,37 @@
           <th>Comments</th>
         </tr>
          <c:forEach var="group" varStatus="groupStatus" items="${groups}">
-         <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" id="group-${group.name}">
+         <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" id="group-${fn:escapeXml(group.name)}">
           <td width="5%" class="text-center">
             <c:choose>
-              <c:when test='${group.name != "Admin"}'>
-                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><i class="fa fa-trash-o fa-2x"></i></a>              
+              <c:when test='${fn:escapeXml(group.name) != "Admin"}'>
+                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fa fa-trash-o fa-2x"></i></a>
               </c:when>
               <c:otherwise>
-                <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${group.name} group cannot be deleted.')"></i>
+                <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>
           <td width="5%" class="text-center">
-            <a id="${group.name}.doModify" href="javascript:modifyGroup('${group.name}')"><i class="fa fa-edit fa-2x"></i></a>
+            <a id="${fn:escapeXml(group.name)}.doModify" href="javascript:modifyGroup('${fn:escapeXml(group.name)}')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
+                <button id="${fn:escapeXml(group.name)}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${fn:escapeXml(group.name)}')">Rename</button>
               </c:when>
               <c:otherwise>
-                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
+                <button id="${fn:escapeXml(group.name)}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
               </c:otherwise>
             </c:choose>
           </td>
           <td>
-            <a href="javascript:detailGroup('${group.name}')">${group.name}</a>
+            <a href="javascript:detailGroup('${fn:escapeXml(group.name)}')">${fn:escapeXml(group.name)}</a>
           </td>
             <td>
               <c:choose>
                 <c:when test="${group.comments.isPresent()}">
-                  ${group.comments.get()}
+                  ${fn:escapeXml(group.comments.get())}
                 </c:when>
                 
                 <c:otherwise>

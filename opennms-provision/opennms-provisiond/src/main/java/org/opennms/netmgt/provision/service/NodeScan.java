@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -932,7 +932,7 @@ public class NodeScan implements Scan {
         .append("foreign source", m_foreignSource)
         .append("foreign id", m_foreignId)
         .append("node id", m_nodeId)
-        .append("location", m_location.getLocationName())
+        .append("location", m_location == null ? null : m_location.getLocationName())
         .append("aborted", m_aborted)
         .append("provision service", m_provisionService)
         .toString();

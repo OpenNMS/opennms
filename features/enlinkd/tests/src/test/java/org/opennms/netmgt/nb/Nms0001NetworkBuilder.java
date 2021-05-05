@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,10 +52,10 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.1.2"), 606);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.9.1"), 613);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.246.16.245"), 608);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66-3-123-1.la-04.cvx.algx.net"), 668);
+    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.123.1"), 668);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.17"), 698);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("ip66-3-6-1.z6-3-66.customer.algx.net"), 614);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("ip66-3-5-1.z5-3-66.customer.algx.net"), 610);
+    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.6.1"), 614);
+    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.5.1"), 610);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("128.0.0.4"), 18);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.10.10.10"), 639);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.77.17"), 687);
@@ -64,8 +64,8 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.255.3.51"), 16);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.2.2"), 607);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("192.168.239.51"), 13);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("ip66-3-7-1.z7-3-66.customer.algx.net"), 611);
-    FROH_IP_IF_MAP.put(InetAddressUtils.addr("ip66-3-3-1.z3-3-66.customer.algx.net"), 609);
+    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.7.1"), 611);
+    FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.3.1"), 609);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("66.3.12.1"), 617);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.0.88.9"), 693);
     FROH_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.2"), 600);
@@ -921,7 +921,8 @@ public class Nms0001NetworkBuilder extends NmsNetworkBuilder {
     SIEGFRIE_IF_MAC_MAP.put(532, "001f12acc3f0");
     SIEGFRIE_IF_MAC_MAP.put(509, "001f12acc040");
     } catch (Exception e) {
-        
+        e.printStackTrace();
+        throw e;
     }
     }
     

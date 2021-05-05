@@ -39,6 +39,7 @@
 	"
 %>
 <%@page import="org.opennms.web.group.WebGroup"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
@@ -292,6 +293,7 @@
 <form role="form" class="form" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
     <div class="card">
         <div class="card-header">
@@ -463,7 +465,7 @@
     private String createSelectList(String name, String[] categories) {
         StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String category : categories){
-            buffer.append("<option>" + category + "</option>");
+            buffer.append("<option>" + WebSecurityUtils.sanitizeString(category) + "</option>");
         }
         buffer.append("</select>");
         
