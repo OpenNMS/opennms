@@ -31,7 +31,7 @@ if [ $MINIMAL -eq 1 ]; then
   for TEST_CLASS in "MenuHeaderIT"
   do
     echo "###### Testing: ${TEST_CLASS}"
-    mvn -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
+    ../compile.pl -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
   done
 else
   echo "#### Executing complete suite of smoke/system tests"
