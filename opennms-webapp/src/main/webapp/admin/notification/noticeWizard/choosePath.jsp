@@ -70,6 +70,15 @@
          	varbindValue=varbind.getVbvalue();
         }
     }
+    final int paramSize = newNotice.getParameters().size();
+    String parameterName[] = new String[paramSize];
+    String parameterValue[] = new String[paramSize];
+    int p=0;
+    for(final Parameter parameter : newNotice.getParameters()) {
+        parameterName[p] = parameter.getName();
+        parameterValue[p] = parameter.getValue();
+        p++;
+    }
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -120,6 +129,32 @@
   
 </script>
 
+<script type="text/javascript">
+    // add row
+    $(document).ready(function() {
+        $("#addRow").click(function () {
+            var html = '';
+            html+='<div class="row" id="inputFormRow">';
+            html+='  <div class="col-md-5">';
+            html+='    <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value=""/>';
+            html+='  </div>';
+            html+='  <div class="col-md-5">';
+            html+='    <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value=""/>';
+            html+='  </div>';
+            html+='  <div class="col-md-2">';
+            html+='    <label>&nbsp;&nbsp;&nbsp;</label><button class="form-control" id="removeRow" type="button" class="btn btn-danger">Remove</button>';
+            html+='  </div>';
+            html+='</div>';
+            $('#newRow').append(html);
+        });
+    });
+
+    // remove row
+    $(document).on('click', '#removeRow', function () {
+        $(this).closest('#inputFormRow').remove();
+    });
+</script>
+
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="info"
@@ -152,7 +187,7 @@
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            <label>Parameter:</label>
+            <label>Var-Bind:</label>
           </td>
           <td valign="top" align="left">
             <div class="row">
@@ -165,7 +200,37 @@
             </div>
           </td>
         </tr>
-        <tr>
+
+          <tr>
+              <td width="10%" valign="top" align="left">
+                  <label>Parameter:</label>
+              </td>
+              <td valign="top" align="left">
+                  <div id="newRow">
+                      <%
+                          for(int i=0;i<parameterName.length;i++) {
+                            %>
+                              <div class="row" id="inputFormRow">
+                                <div class="col-md-5">
+                                  <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value='<%=WebSecurityUtils.sanitizeString(parameterName[i])%>'/>
+                                </div>
+                                <div class="col-md-5">
+                                  <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value='<%=WebSecurityUtils.sanitizeString(parameterValue[i])%>'/>
+                                </div>
+                                <div class="col-md-2">
+                                  <label>&nbsp;&nbsp;&nbsp;</label><button class="form-control" id="removeRow" type="button" class="btn btn-danger">Remove</button>
+                                </div>
+                              </div>
+                            <%
+                          }
+                      %>
+                  </div>
+                  <br/>
+                  <button id="addRow" type="button" class="btn btn-secondary">Add Parameter</button>
+              </td>
+          </tr>
+
+          <tr>
           <td width="10%" valign="top" align="left">
             <label>Choose A Path:</label>
           </td>
