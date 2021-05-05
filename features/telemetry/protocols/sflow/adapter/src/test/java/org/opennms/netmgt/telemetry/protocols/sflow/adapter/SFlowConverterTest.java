@@ -89,6 +89,7 @@ public class SFlowConverterTest {
         final List<Flow> flows = new SFlowConverter().convert(bsonDocument, Instant.now());
 
         assertThat(compareValues(flows, 4, 17), is(true));
+        assertThat(compareValues(flows, 4, 42), is(true));
         assertThat(compareValues(flows, 17, 4), is(true));
         assertThat(compareValues(flows, 5, null), is(true));
         assertThat(compareValues(flows, null, 18), is(true));
