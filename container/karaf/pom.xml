@@ -42,8 +42,6 @@
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-                        <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                         <!-- OPENNMS: Add the OpenNMS Minion feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</repository>
                     </bootRepositories>
