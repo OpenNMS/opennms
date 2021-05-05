@@ -1041,7 +1041,7 @@
         </config>
         <bundle>mvn:org.apache.karaf.profile/org.apache.karaf.profile.core/4.1.5</bundle>
         <bundle>mvn:org.apache.karaf.tooling/org.apache.karaf.tools.utils/4.1.5</bundle>
-        <bundle>mvn:commons-io/commons-io/2.6</bundle>
+        <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
     </feature>
 
     <feature name="jolokia" description="Jolokia monitoring support" version="1.3.5">
