@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.event.*, org.opennms.web.utils.ExceptionUtils"
+	import="org.opennms.web.event.*, org.opennms.web.utils.ExceptionUtils, org.opennms.core.utils.WebSecurityUtils"
 %>
 
 <%
@@ -51,7 +51,7 @@
 <h1>Event ID Not Found</h1>
 
 <p>
-  The event ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%>
+  The event ID <%=WebSecurityUtils.sanitizeString(einfe.getBadID())%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
   <br/>
   You can re-enter it here or <a href="event/list.htm?acktyp=unack">browse all
   of the events</a> to find the event you are looking for.
