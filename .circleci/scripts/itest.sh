@@ -62,7 +62,7 @@ sudo killall -9 apt-get || true && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             sudo apt-get -y install debconf-utils && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f R-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6 || exit 1
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6 || exit 1
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \
