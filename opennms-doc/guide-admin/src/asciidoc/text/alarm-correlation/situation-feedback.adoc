@@ -29,12 +29,12 @@ From a Karaf shell on your _{opennms-product-name}_ instance, start by configuri
 ----
 $ ssh -p 8101 admin@localhost
 ...
-admin@opennms()> config:edit org.opennms.features.situation-feedback.persistence.elastic
+admin@opennms()> config:edit org.opennms.features.situationfeedback.persistence.elastic
 admin@opennms()> config:property-set elasticUrl http://elastic:9200
 admin@opennms()> config:update
 ----
 
-NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.situation-feedback.persistence.elastic.cfg`.
+NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`.
       See <<ga-elasticsearch-integration, Elasticsearch Integration>> for more information.
 
 Installing the feature exposes a ReST endpoint that _OpenNMS Helm_ uses to display and submit feedback. 
