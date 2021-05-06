@@ -32,6 +32,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
+import java.lang.NullPointerException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +83,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         testBoard.preview();
 
         try {
-            setImplicitWait(1, TimeUnit.SECONDS);
+            setImplicitWait(5, TimeUnit.SECONDS);
             new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
             new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
 
@@ -90,6 +91,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             // This method can throw StateElementReference exceptions, so we try multiple times
             await().atMost(1, TimeUnit.MINUTES)
                     .ignoreExceptionsInstanceOf(WebDriverException.class)
+                    .ignoreExceptionsInstanceOf(NullPointerException.class)
                     .until(() -> driver.switchTo().parentFrame()
                             .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe"))
                             .findElement(By.id("header")).isDisplayed(), equalTo(false));
