@@ -60,7 +60,7 @@ assertArrayLengthEquals() {
 }
 
 setUp() {
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1090,SC1091
   . "$PROJECTDIR/target/classes/bin/_lib.sh"
 
   unset TEST_FOO
