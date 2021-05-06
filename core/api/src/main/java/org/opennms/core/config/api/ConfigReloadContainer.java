@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A container for managing configuation that sources the configuration from one or more {@link ConfigurationProvider}.
+ * A container for managing configuration that sources the configuration from one or more {@link ConfigurationProvider}.
  *
  * @param <V> type of configuration bean
  */
@@ -181,6 +181,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
                     .reduce(folder)
                     .orElse(null);
         }
+        LOG.debug("reloaded - conf object: {}", object);
     }
 
     @Override
@@ -202,17 +203,13 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
     private synchronized void checkForUpdates() {
         if (!forceReload && (reloadCheckIntervalInMs < 0 || System.currentTimeMillis() < (lastReloadCheck + reloadCheckIntervalInMs))) {
             // Reload checking is disabled, or the time hasn't elapsed since the last check
+            LOG.debug("reload not forced and reload check disabled or check interval not yet elapsed");
             return;
         }
         // Reset the timer
         lastReloadCheck = System.currentTimeMillis();
 
-        if (providers.size() < 1) {
-            // No resource to load
-            return;
-        }
-
-        if (forceReload || providers.stream().anyMatch(ConfigurationProviderState::shouldReload)) {
+        if (forceReload || providers.isEmpty() || providers.stream().anyMatch(ConfigurationProviderState::shouldReload)) {
             reload();
             forceReload = false;
         }
@@ -220,20 +217,42 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
 
     @Override
     public void providerRegistered(Registration registration, ConfigurationProvider provider) {
-        if (clazz.equals(registration.getProvider(ConfigurationProvider.class).getType())
-            && providers.add(new ConfigurationProviderState<>(provider))) {
-            LOG.debug("Registered configuration provider {} for {}.", provider, clazz.getCanonicalName());
-            // Force a check on the next get
-            forceReload = true;
+        boolean added;
+        // must be synchronized for two reasons:
+        // 1. the providers collection must not be modified concurrently
+        // 2. forceReload changes must made visible to other threads
+        synchronized (this) {
+            if (clazz.equals(registration.getProvider(ConfigurationProvider.class).getType())
+                && providers.add(new ConfigurationProviderState<>(provider))) {
+                LOG.debug("Registered configuration provider {} for {}.", provider, clazz.getCanonicalName());
+                // Force a check on the next get
+                forceReload = true;
+                added = true;
+            } else {
+                added = false;
+            }
+        }
+        if (added) {
+            provider.registeredToConfigReloadContainer();
         }
     }
 
     @Override
     public void providerUnregistered(Registration registration, ConfigurationProvider provider) {
-        if (providers.remove(new ConfigurationProviderState(provider))) {
-            LOG.debug("Unregistered configuration provider {} for {}.", provider, clazz.getCanonicalName());
-            // Force a check on the next get
-            forceReload = true;
+        boolean removed;
+        // must be synchronized for two reasons (see above)
+        synchronized (this) {
+            if (providers.remove(new ConfigurationProviderState(provider))) {
+                LOG.debug("Unregistered configuration provider {} for {}.", provider, clazz.getCanonicalName());
+                // Force a check on the next get
+                forceReload = true;
+                removed = true;
+            } else {
+                removed = false;
+            }
+        }
+        if (removed) {
+            provider.deregisteredFromConfigReloadContainer();
         }
     }
 
