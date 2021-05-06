@@ -1371,7 +1371,7 @@
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.5</commonsIoVersion>
+    <commonsIoVersion>2.8.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.4</commonsLang3Version>
     <commonsNetVersion>3.6</commonsNetVersion>
