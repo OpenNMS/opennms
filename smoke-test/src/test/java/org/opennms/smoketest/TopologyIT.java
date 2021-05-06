@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -106,14 +106,14 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void centerOnMap() {
             getElement().findElement(By.xpath("//a[@class='icon-location-arrow']")).click();
-            waitForTransition();
+            waitForTransition(ui.testCase);
         }
 
         public void removeFromFocus() {
             try {
                 ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
-                waitForTransition();
+                waitForTransition(ui.testCase);
             } finally {
                 ui.testCase.setImplicitWait();
             }
@@ -123,7 +123,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             try {
                 ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
-                waitForTransition();
+                waitForTransition(ui.testCase);
             } finally {
                 ui.testCase.setImplicitWait();
             }
@@ -133,7 +133,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             try {
                 ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
-                waitForTransition();
+                waitForTransition(ui.testCase);
             } finally {
                 ui.testCase.setImplicitWait();
             }
@@ -256,7 +256,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                         return elementByXpath.getAttribute("class").contains("selected");
                     });
                     testCase.findElementById("iconSelectionDialog.button.ok").click();
-                    waitForTransition();
+                    waitForTransition(testCase);
                 } finally {
                     testCase.setImplicitWait();
                 }
@@ -320,7 +320,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                             menuElement.click();
                         }
                     }
-                    waitForTransition();
+                    waitForTransition(testCase);
                 } finally {
                     testCase.setImplicitWait();
                 }
@@ -366,7 +366,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 WebElement element = testCase.findElementByXpath("//*[@id='breadcrumbs']//*[contains(text(), '" + label + "')]");
                 element.click();
-                waitForTransition();
+                waitForTransition(testCase);
             } finally {
                 testCase.setImplicitWait();
             }
@@ -433,7 +433,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             for (String label : labels) {
                 try {
                     // we should wait, otherwise the menu has not yet updated
-                    waitForTransition();
+                    waitForTransition(testCase);
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
@@ -451,13 +451,13 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 }
             }
             // Wait to give the menu a chance to update
-            waitForTransition();
+            waitForTransition(testCase);
             return this;
         }
 
         public TopologyUIPage selectLayout(Layout layout) {
             clickOnMenuItemsWithLabels("View", layout.getLabel());
-            waitForTransition();
+            waitForTransition(testCase);
             return this;
         }
 
@@ -466,7 +466,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             try {
                 testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
-                waitForTransition(); // we have to wait for the UI to re-settle
+                waitForTransition(testCase); // we have to wait for the UI to re-settle
                 return this;
             } finally {
                 testCase.setImplicitWait();
@@ -488,19 +488,19 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public TopologyUIPage refreshNow() {
             testCase.findElementById("refreshNow").click();
-            waitForTransition();
+            waitForTransition(testCase);
             return this;
         }
 
         public TopologyUIPage showEntireMap() {
             getShowEntireMapElement().click();
-            waitForTransition();
+            waitForTransition(testCase);
             return this;
         }
 
         public TopologyUISearchResults search(String query) {
             testCase.enterText(By.xpath("//*[@id='info-panel-component']//input[@type='text']"), query);
-            waitForTransition();
+            waitForTransition(testCase);
             return new TopologyUISearchResults(this);
         }
 
@@ -561,7 +561,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 for (int i=0; i < Math.abs(szl - currentSzl); i++) {
                     button.click();
                 }
-                waitForTransition();
+                waitForTransition(testCase);
             }
             return this;
         }
@@ -573,6 +573,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             for (TopologyIT.FocusedVertex focusedVerted : getFocusedVertices()) {
                 focusedVerted.removeFromFocus();
             }
+	    testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             assertEquals(0, getFocusedVertices().size());
         }
 
@@ -601,7 +602,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
-                waitForTransition();
+                waitForTransition(testCase);
             } finally {
                 testCase.setImplicitWait();
             }
@@ -664,7 +665,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             Actions actions = new Actions(testCase.getDriver());
             actions.moveToElement(showEntireMap);
             actions.clickAndHold();
-            waitForTransition();
+            waitForTransition(testCase);
             actions.release();
             showEntireMap.click();
         }
@@ -709,8 +710,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             try {
                 testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 testCase.findElementById("defaultFocusBtn").click();
-                waitForTransition();
-                testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
+                waitForTransition(testCase);
             } finally {
                 testCase.setImplicitWait();
             }
@@ -857,7 +857,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void click() {
             getButton().click();
-            waitForTransition();
+            waitForTransition(testCase);
         }
 
         private WebElement getButton() {
@@ -878,7 +878,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public TopologyUIPage selectItemThatContains(String substring) {
             ui.testCase.findElementByXpath(String.format(XPATH, substring)).click();
-            waitForTransition();
+            waitForTransition(ui.testCase);
             return ui;
         }
 
@@ -1084,10 +1084,11 @@ public class TopologyIT extends OpenNMSSeleniumIT {
      * This should be used after adding or removing vertices from focus and/or
      * changing the SZL.
      */
-    public static void waitForTransition() {
+    public static void waitForTransition(final AbstractOpenNMSSeleniumHelper testCase) {
         try {
             // TODO: Find a better way that does not require an explicit sleep
             Thread.sleep(4000);
+	    testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
         } catch (final InterruptedException e) {
             throw new IllegalStateException(e);
         }
