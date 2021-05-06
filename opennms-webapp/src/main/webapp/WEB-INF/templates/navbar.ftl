@@ -1,11 +1,5 @@
 <#assign currentDate = .now>
 
-<style type="text/css">
-  .opennms-bg-chromatic-black {
-     background-color: #0A0C1B;
-  }
-</style>
-
 <nav class="navbar navbar-expand-md navbar-dark opennms-bg-chromatic-black" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
