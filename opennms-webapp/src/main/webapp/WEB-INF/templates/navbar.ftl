@@ -1,9 +1,15 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
+
+<style type="text/css">
+  .opennms-bg-chromatic-black {
+     background-color: #0A0C1B;
+  }
+</style>
+
+<nav class="navbar navbar-expand-md navbar-dark opennms-bg-chromatic-black" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS Horizon Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-green-trans.png'" />
-        <span style="vertical-align: middle" class="text-horizon ml-2">Horizon</span>
+        <img id="logo" src="${baseHref}images/opennms-horizon-logo.svg" alt="OpenNMS Horizon Logo" width="auto" height="22px" onerror="this.src='${baseHref}images/opennms-horizon-logo.png'" />
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>
