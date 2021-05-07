@@ -188,7 +188,7 @@
 
   <div class="" style="position: absolute; bottom: 0px; right: 10px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
        <div style="padding-bottom: 20px; padding-top: 20px">
-          <img src="images/opennms_horizon_logo.svg" class="" width="180px" />
+          <img src="images/opennms-logo-light.svg" class="" width="180px" />
        </div>
   </div>
 
