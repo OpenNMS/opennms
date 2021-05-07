@@ -20,16 +20,6 @@
     </moduleSet>
     <moduleSet>
       <includes>
-        <include>org.opennms.doc:guide-all</include>
-      </includes>
-      <binaries>
-        <!-- Output to the root directory -->
-        <outputDirectory></outputDirectory>
-        <unpack>true</unpack>
-      </binaries>      
-    </moduleSet>
-    <moduleSet>
-      <includes>
         <include>org.opennms:opennms-base-assembly</include>
       </includes>
       <binaries>
