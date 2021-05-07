@@ -128,10 +128,10 @@ public class HeartbeatConsumerIT {
         minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
 
         //Verify that heartbeat does get consumed within short time.
-        await().atMost(5, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 500);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 500);
 
         //Verify that eventually all the minions get persisted in imports.
-        await().atMost(30, TimeUnit.SECONDS).until(() ->
+        await().atMost(45, TimeUnit.SECONDS).until(() ->
                 heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()
                         .mapToInt(Requisition::getNodeCount).sum() == 500);
 
@@ -152,7 +152,7 @@ public class HeartbeatConsumerIT {
         minionDTOs.parallelStream().forEach(heartbeatConsumer::handleMessage);
 
         //Verify that heartbeat does get consumed within short time.
-        await().atMost(5, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 1000);
+        await().atMost(10, TimeUnit.SECONDS).until(() -> minionDao.countAll() == 1000);
 
         // Verify that no new requisition nodes get added and provisioning got short-circuited
         Assert.assertThat(heartbeatConsumer.getDeployedForeignSourceRepository().getRequisitions().stream()

@@ -9,3 +9,6 @@ Enables single topic by default for Kafka RPC which would reduce number of topic
 Both Minion and OpenNMS need to be updated to OpenNMS Meridian 2021.
 Make sure that Kafka Lag on Sink topics be minimal before upgrading otherwise there may be loss of those sink messages.
 
+=== Situation Feedback Persistence Configuration
+
+The configuration file `etc/org.opennms.features.situation-feedback.persistence.elastic.cfg` is renamed into `etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`, i.e. the minus sign is removed from the filename.
