@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -304,7 +304,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         // verify that the page loaded properly
         // DO NOT invoke .open()
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
-        waitForTransition();
+        waitForTransition(this);
         Assert.assertThat(topologyUIPage.getSzl(), is(0));
         Assert.assertThat(topologyUIPage.getFocusedVertices(), hasItems(
                 focusVertex(topologyUIPage, searchTokenNamespace, "North 2"),

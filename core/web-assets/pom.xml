@@ -71,7 +71,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --no-progress install</arguments>
+              <arguments>--prefer-offline --no-progress ci</arguments>
             </configuration>
           </execution>
           <execution>
