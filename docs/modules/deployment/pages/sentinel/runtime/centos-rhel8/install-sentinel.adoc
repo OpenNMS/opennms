@@ -1,0 +1,53 @@
+.Install OpenJDK 11 JRE runtime
+[source, console]
+----
+sudo dnf -y install java-11-openjdk-headless
+----
+
+.Add repository and import GPG key
+[source, console]
+----
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Installing the of {page-component-title} Sentinel
+[source, console]
+----
+sudo dnf -y install opennms-sentinel
+----
+
+TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
+     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+.Disable auto updates for {page-component-title} Sentinel
+[source, console]
+----
+sudo dnf config-manager --disable opennms-repo-stable-*
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo dnf -y install tree
+tree /opt/sentinel -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/opt/sentinel
+├── bin
+├── COPYING
+├── deploy
+├── etc
+├── lib
+└── system
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----
