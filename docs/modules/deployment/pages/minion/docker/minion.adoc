@@ -1,0 +1,124 @@
+:docker-version-tag: bleeding
+ifeval::["{prerelease}" == "false"]
+:docker-version-tag: {page-component-version}
+endif::[]
+
+.Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
+[source, console]
+----
+mkdir minion
+cd minion
+vi docker-compose.yml
+----
+
+[source, docker-compose.yml]
+[subs="verbatim,attributes"]
+----
+---
+version: '3'
+
+services:  
+  minion:
+    image: opennms/minion:{docker-version-tag}
+    container_name: minion<1>
+    environment:
+      TZ: 'America/New_York'<2>
+      JAVA_MIN_MEM: 512M<3>
+      JAVA_MAX_MEM: 2048M<4>
+    command: ["-c"]
+    volumes:
+      - ./minion-config.yaml:/opt/minion/minion-config.yaml<5>
+      - ./scv.jce:/opt/minion/scv.jce<6>
+    healthcheck:
+      test: "/health.sh"<7>
+      interval: 30s
+      timeout: 6s
+      retries: 3
+    ports:<8>
+      - '514:1514/udp'
+      - '162:1162/udp'
+      - '8201:8201/tcp'
+----
+<1> Friendly container name
+<2> Set the time zone and the Minion configuration via environment variables. To list all available time zones you can use `timedatectl list-timezones`
+<3> This is optional and can be used to control the minimal Java heap size
+<4> This is optional and can be used to control the maximum Java heap size
+<5> Configuration file for connectivity and features
+<6> Keystore file with enrypted credentials for authenticating REST and Broker endpoints
+<7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf
+<8> Publish ports for Syslog, SNMP trap listener and the SSH access to the Karaf Shell
+
+NOTE: The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
+      We open the listener for privileged (514/udp, 162/udp) and don't have to give the Minion process in the container additional permissions.
+
+CAUTION: In some environments it is not allowed to use ICMP (ping) for non-root users.
+         {page-component-title} Minion runs as a non-privileged user in the container with `userid=10001, groupid=10001`.
+         You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in the allowed group range.
+         If not you can add the following lines in your service definition in the `docker-compose.yml` file.
+
+[source, docker-compose.yml]
+----
+sysctls:
+  net.ipv4.ping_group_range: "10001 10001"
+----
+
+.Create a file with the configuration for connectivity and features
+[source, minion-config.yaml]
+----
+---
+http-url: 'http://core-instance-ip:8980/opennms'<1>
+broker-url: 'failover:tcp://core-instance-ip:61616'<2>
+id: 'my-minion'<3>
+location: 'my-location'<4>
+
+netmgt:
+  syslog:<5>
+    syslog.listen.interface: "0.0.0.0"
+    syslog.listen.port: 1514
+
+  traps:<6>
+    trapd.listen.interface: "0.0.0.0"
+    trapd.listen.port: 1162
+----
+
+<1> Replace the REST endpoint URL which goes to your {page-component-title} Core instance
+<2> Replace the Broker endpoint URL which goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running replace `tcp` with `ssl`.
+<3> Replace `my-location` with a location name representing your remote location the Minion is running
+<4> This optional, you can set a unique human readable Minion identifier, if not set a unique identifier is generated
+<5> Enable the Syslog listener on the Minion on port 1514/udp
+<6> Enable the SNMP trap listener on the Minion on port 1162/udp
+
+TIP: If want to run with Apache Kafka or configure flow listeners you can find the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
+
+.Initialize the keystore with credentials
+[source, console]
+----
+docker-compose run -v $(pwd):/keystore minion -s
+----
+
+.Validate your Docker Compose file
+[source, console]
+----
+docker-compose config -q
+----
+
+.Start the service in background
+[source, console]
+----
+docker-compose up -d
+----
+
+.Verify the connectivity and the configuration with the health check
+[source, console]
+----
+docker-compose exec minion bin/client opennms:health-check
+----
+
+.The endpoints should be reachable and the bundles should be installed successful
+[source, output]
+----
+Connecting to OpenNMS ReST API   [ Success  ]
+Verifying installed bundles      [ Success  ]
+Connecting to JMS Broker         [ Success  ]
+=> Everything is awesome
+----

@@ -1,0 +1,31 @@
+.Create a configuration file for Kafka settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/kafka.properties
+----
+
+.Configure Kafka
+[source, kafka.properties]
+----
+org.opennms.core.ipc.rpc.strategy=kafka<1>
+org.opennms.core.ipc.rpc.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>
+org.opennms.core.ipc.sink.strategy=kafka<3>
+org.opennms.core.ipc.sink.initialSleepTime=60000<4>
+org.opennms.core.ipc.sink.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:9092<5>
+----
+
+<1> Use Kafka for Remote Producer Calls (RPC)
+<2> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+<3> Use Kafka as message sink
+<4> Ensure that messages are not consumed from Kafka until the system has fully initialized. 60 seconds is here used a default
+<5> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+NOTE: If you set more than one Kafka node as `bootstrap.servers` the driver will attempt to connect to the first entry.
+      If that is successful the whole broker topology will be discovered and will be known by the client.
+      The other entries are only used if the connection to the first entry fails.
+
+.Apply the changes with restarting {page-component-title} Core instance
+[source, console]
+----
+sudo systemctl restart opennms
+----

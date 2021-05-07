@@ -1,0 +1,47 @@
+= HTTP Detector
+
+Use this detector to find and assign services based on HTTP.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.HttpDetector`
+|===
+
+== Configuration and Use
+
+.Parameters for the HTTP detector
+[options="header, %autowidth"]
+|===
+| Parameter      | Description                                                                               | Required | Default value
+| `checkRetCode` | If set to true only HTTP status codes that are the same or lower than the value of
+                   _maxRetCode_ pass.                                                                        | optional | false
+| `maxRetCode`   | Highest HTTP response code that passes. _maxRetCode_ is only evaluated if checkRetCode is
+                   set to true.                                                                              | optional | 399
+| `port`         | Port to query                          .                                                  | optional | 80
+| `url`          | URL to query                                                                              | optional | /
+| `timeout`      | Timeout in milliseconds to wait for a response.                                           | optional | 2000
+|===
+
+NOTE: The HTTP Detector makes only one HTTP request and doesn't follow redirects.
+
+== Example Configuration
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2010-06-29T13:15:30.494+02:00" name="test" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+  <scan-interval>1d</scan-interval>
+  <detectors>
+    <detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="http8080">
+      <parameter key="port" value="8080"/>
+      <parameter key="url" value="index2.html" />
+      <parameter key="maxRetCode" value="200"/>
+      <parameter key="checkRetCode" value="true"/>
+    </detector>
+  </detectors>
+  <policies/>
+</foreign-source>
+----
+
