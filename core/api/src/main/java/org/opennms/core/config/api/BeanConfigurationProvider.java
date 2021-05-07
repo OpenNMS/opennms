@@ -58,4 +58,12 @@ public class BeanConfigurationProvider<T> implements ConfigurationProvider {
     public long getLastUpdate() {
         return createdAt;
     }
+
+    @Override
+    public void registeredToConfigReloadContainer() {
+    }
+
+    @Override
+    public void deregisteredFromConfigReloadContainer() {
+    }
 }
