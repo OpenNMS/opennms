@@ -58,4 +58,14 @@ public interface ConfigurationProvider {
      */
     long getLastUpdate();
 
+    /**
+     * Notifies this configuration provider that it was registered with the {@link ConfigReloadContainer}.
+     */
+    void registeredToConfigReloadContainer();
+
+    /**
+     * Notifies this configuration provider that it was unregistered from the {@link ConfigReloadContainer}.
+     */
+    void deregisteredFromConfigReloadContainer();
+
 }
