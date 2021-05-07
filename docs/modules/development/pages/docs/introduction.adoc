@@ -16,7 +16,7 @@ Document files use the `.adoc` file extension.
 
 Note that there are different ways to contribute documentation, each suitable for the different use cases:
 
-* Tutorials and How To's should be published on the http://wiki.opennms.org[OpenNMS Wiki].
+* Tutorials and How To's should be published in our https://opennms.discourse.group/c/knowledgebase[knowledge base].
 For example:
 you want to describe how to use the Net-SNMP agent and the SNMP monitor from OpenNMS to solve a special use case with OpenNMS.
 
