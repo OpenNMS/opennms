@@ -5,6 +5,7 @@ FINDJAVADIR="$(cd "$FINDJAVADIR" || exit 1; pwd)"
 
 # shellcheck disable=SC1090
 if [ -e "${FINDJAVADIR}/_lib.sh" ]; then
+	# shellcheck disable=SC1091
 	. "${FINDJAVADIR}/_lib.sh"
 
 	# if $JAVA_SEARCH_DIRS is already set, make sure it is treated as an array

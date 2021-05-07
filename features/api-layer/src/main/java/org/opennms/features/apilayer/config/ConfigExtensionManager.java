@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @param <C> configuration bean type
  */
 public abstract class ConfigExtensionManager<E,C> implements ConfigurationProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigExtensionManager.class);
 
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
     private final Set<E> extensions = new LinkedHashSet<>();
@@ -100,6 +100,18 @@ public abstract class ConfigExtensionManager<E,C> implements ConfigurationProvid
         if (didUpdate) {
             triggerReload();
         }
+    }
+
+    @Override
+    public void registeredToConfigReloadContainer() {
+        LOG.debug("registeredToConfigReloadContainer - class: {}; clazz: {}", getClass().getCanonicalName(), clazz.getCanonicalName());
+        triggerReload();
+    }
+
+    @Override
+    public void deregisteredFromConfigReloadContainer() {
+        LOG.debug("registeredToConfigReloadContainer - class: {}; clazz: {}", getClass().getCanonicalName(), clazz.getCanonicalName());
+        triggerReload();
     }
 
     protected abstract C getConfigForExtensions(Set<E> extensions);
