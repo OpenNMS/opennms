@@ -53,9 +53,10 @@ sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
             sudo apt update && \
+            RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             sudo apt -y install debconf-utils && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt install -f r-base rrdtool
+            sudo env DEBIAN_FRONTEND=noninteractive apt install -f r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6 || exit 1
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 echo "#### Building Assembly Dependencies"
