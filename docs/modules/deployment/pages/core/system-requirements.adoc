@@ -1,0 +1,51 @@
+[[system-requirements-core]]
+= Minimum System Requirements
+
+[options="header, autowidth"]
+|===
+|                        | Just testing*           | Minimum server specification**
+| *CPU*                  | 2 GHz dual core x86_64  | 3 GHz quad core x86_64 and above
+| *RAM*                  | 4 GB (physical)         | 16 GB (physical) and above
+| *Storage (disk space)* | 50 GB HDD, SSD          | 1 TB with SSD and above
+|===
+
+*_You can install the packages and the services will start up_ +
+**_Does not take into account your intended workload, e.g., network size, number of monitored metrics, flows, events, and data retention requirements._
+
+[[operating-systems-core]]
+== Operating Systems
+
+Make sure that your chosen operating system is listed in one of the following tables before you install OpenNMS {page-component-title}.
+See the release notes for information about platform support changes, including deprecated platforms.
+
+[options="header, autowidth"]
+|===
+| Operating System        | Compatible Versions (64-bit)
+| RHEL                    | {compatible-rhel7} +
+                            {compatible-rhel8}
+| CentOS                  | {compatible-centos7} +
+                            {compatible-centos8}
+ifeval::["{page-component-title}" == "Horizon"]
+| Debian                  | {compatible-debian}
+| Ubuntu                  | {compatible-ubuntu}
+endif::[]
+|===
+
+[[system-components-core]]
+== Compatibility
+
+{page-component-title} {page-component-version} is compatible with the following components:
+
+[options="header, autowidth"]
+|===
+| Component               | Version Compatibility
+| OpenNMS Helm            | {compatible-opennms-helm}
+| OpenNMS Integration API | {compatible-oia}
+| Cassandra               | {compatible-cassandra}
+| Elasticsearch           | {compatible-elasticsearch}
+| Java Development Kit    | {compatible-javajdk}
+| Kafka                   | {compatible-kafka}
+| PostgreSQL              | {compatible-postgresql}
+| RRDTool                 | {compatible-rrdtool}
+| Browser                 | Latest link:https://www.mozilla.org[Mozilla Firefox] or link:https://www.google.com/intl/en_us/chrome/[Google Chrome]
+|===

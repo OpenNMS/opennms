@@ -1,0 +1,24 @@
+
+= Alarm Details
+
+This Alarm-Details Dashlet shows a table with alarms and some detailed information.
+
+.Information of the alarms
+[options="header, autowidth"]
+|===
+| Field             | Description
+| Alarm ID        | {page-component-title} ID for the alarm
+| Severity        | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
+| Node label      | Node label of the node where the alarm occurred
+| Alarm count     | Alarm count based on reduction key for deduplication
+| Last Event Time | Last time the alarm occurred
+| Log Message     | Reason and detailed log message of the alarm
+|===
+
+Configure the Alarm Details Dashlet with the following parameters.
+
+[options="autowidth"]
+|===
+| Boost support | <<webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+| Configuration | <<webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
+|===
