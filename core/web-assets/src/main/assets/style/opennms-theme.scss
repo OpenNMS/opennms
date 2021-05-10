@@ -328,6 +328,9 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
   font-size: 110%;
 }
 
+.jumbotron {
+}
+
 // requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
 // (bootbox v5 will be, release is imminent), see https://github.com/makeusabrew/bootbox/issues/566
 // Until then use this hack
@@ -368,8 +371,22 @@ iframe.vaadin-fullscreen {
   margin-bottom: 0px;
 }
 
-.opennms-bg-cool-gray-2 {
-     background-color: $opennms-cool-gray-2;
+// theme overrides
+.card-header, .card-footer, .custom-select:disabled, .dropdown-divider, form-control:disabled, .form-control[readonly], .input-group-text, .jumbotron, .list-group-item-action:active, .page-link:hover, .progress, .table .thead-light th {
+  background-color: $opennms-cool-gray-1;
+}
+
+.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+  border-color:$opennms-cool-gray-1 $opennms-cool-gray-1 #dee2e6
+}
+
+
+.dropdown-divider {
+  border-top: 1px solid $opennms-cool-gray-1;
+}
+
+.opennms-bg-cool-gray {
+     background-color: $opennms-cool-gray-1;
 }
 
 .opennms-bg-chromatic-black {

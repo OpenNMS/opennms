@@ -74,5 +74,5 @@ $breadcrumb-padding-y:              .5rem !default;
 $breadcrumb-padding-x:              .5rem !default;
 
 // Default Card-Header is too bright, we make it a bit darker by just using the breadcrumb color
-$breadcrumb-bg:                     #e9ecef !default; // Same as bootstrap $grey200 default
+$breadcrumb-bg:                     $opennms-cool-gray-1 !default; // Same as bootstrap $grey200 default
 $card-cap-bg:                       $breadcrumb-bg;
