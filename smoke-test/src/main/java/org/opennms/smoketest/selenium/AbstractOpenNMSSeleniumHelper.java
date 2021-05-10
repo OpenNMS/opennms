@@ -278,7 +278,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
         enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-        findElementByName("LOGIN").click();
+        findElementByName("Login").click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
         invokeWithImplicitWait(0, () -> {
@@ -323,7 +323,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         // Wait until the login form is complete
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
-        wait.until(ExpectedConditions.elementToBeClickable(By.name("LOGIN")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
     }
 
     protected ExpectedCondition<Boolean> pageContainsText(final String text) {
