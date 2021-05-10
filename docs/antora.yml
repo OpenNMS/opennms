@@ -1,11 +1,11 @@
-name: horizon
+name: meridian
 version: '2021.1.0-SNAPSHOT'
-title: Horizon
-prerelease: true
+title: Meridian
+prerelease: false
 asciidoc:
   attributes:
     experimental: true
-    prerelease: true
+    prerelease: false
     source-language: asciidoc@
     xrefstyle: short@
     compatible-centos7: '7.x'
