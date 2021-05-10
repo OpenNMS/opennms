@@ -49,6 +49,8 @@ cd ~/project
 echo "#### Installing other dependencies"
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
+sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
