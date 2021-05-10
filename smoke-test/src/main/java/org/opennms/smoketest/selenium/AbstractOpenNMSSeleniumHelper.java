@@ -347,6 +347,16 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         LOG.debug("login page is available");
     }
 
+    public void waitForTransitions() {
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("fade")));
+    }
+
+    public void waitForModalClose() {
+        this.waitForTransitions();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("modal-backdrop")));
+    }
+
     protected ExpectedCondition<Boolean> pageContainsText(final String text) {
         return org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText(text);
     }
