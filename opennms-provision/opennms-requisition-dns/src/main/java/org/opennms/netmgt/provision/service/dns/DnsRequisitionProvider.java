@@ -52,6 +52,8 @@ import org.xbill.DNS.Type;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
+import com.google.common.base.Strings;
+
 public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequisitionRequest> {
     private static final Logger LOG = LoggerFactory.getLogger(DnsRequisitionProvider.class);
 
@@ -182,6 +184,27 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
         final String nodeLabel = StringUtils.stripEnd(StringUtils.stripStart(host, "."), ".");
 
         n.setBuilding(request.getForeignSource());
+
+        if (!Strings.isNullOrEmpty(request.getLocation())) {
+            if (request.getLocation().startsWith("~")) {
+                final Pattern pattern = Pattern.compile(request.getLocation().substring(1));
+                final Matcher matcher = pattern.matcher(host);
+                if (matcher.groupCount() != 1) {
+                    LOG.error("The pattern '{}' may contain only one capturing group.", pattern);
+                } else {
+                    if (matcher.find()) {
+                        final String match = matcher.group(1);
+                        if (!Strings.isNullOrEmpty(match)) {
+                            n.setLocation(match);
+                            LOG.debug("Node '{}' location set to {}", n.getNodeLabel(), n.getLocation());
+                        }
+                    }
+                }
+            } else {
+                n.setLocation(request.getLocation());
+                LOG.debug("Node '{}' location set to {}", n.getNodeLabel(), n.getLocation());
+            }
+        }
 
         switch (request.getForeignIdHashSource()) {
         case NODE_LABEL:

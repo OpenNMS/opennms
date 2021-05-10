@@ -91,6 +91,18 @@ If your expression requires URL encoding (for example you need to use a `?` in t
 
  dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
 
+You can use the `location` parameter to assign a single location to all nodes in this requisition:
+
+  dns://my-dns-server/myzone.com/portland/?location=Raleigh
+
+By preceding a `~` you can specify a properly encoded regular expression to determine the location based on the host entries.
+In the following, for example, we want to derive the location based on the subdomain.
+We use the regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly one capturing group:
+
+  dns://my-dns-server/hs-fulda.de/?location=~%5E%28%3F%3A.%2A%5C.%7C%29%28.%2A%3F%29%5C.hs-fulda%5C.de%5C.%24
+
+This will associate nodes for the host entries `foo.e46.hs-fulda.de.` and `bar.e46.hs-fulda.de.` to the location `e46` while hosts like `aaa.g51.hs-fulda.de` and `bbb.g51.hs-fulda.de` will be assigned location `g51`.
+
 .DNS Setup
 
 Currently, the DNS server requires to be setup to allow a zone transfer from the {opennms-product-name} server.
