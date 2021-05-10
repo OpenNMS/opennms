@@ -1,6 +1,6 @@
 site:
-  title: Horizon
-  start_page: horizon::index.adoc
+  title: Meridian
+  start_page: meridian::index.adoc
 content:
   sources:
   - url: .
@@ -17,7 +17,7 @@ asciidoc:
     idseparator: '-'
     page-pagination: ''
     source-language: asciidoc@
-    distribution: 'Horizon'
+    distribution: 'Meridian'
     tabs: tabs
   extensions:
     - ./docs/lib/tabs-block.js
