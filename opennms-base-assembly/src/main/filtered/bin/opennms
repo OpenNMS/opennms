@@ -112,7 +112,7 @@ APP_PARMS_AFTER=""
 
 OVERRIDEABLE_ARRAYS=(RUNJAVA_OPTIONS ADDITIONAL_CONTROLLER_OPTIONS ADDITIONAL_MANAGER_OPTIONS APP_PARMS_CONTROLLER APP_PARMS_AFTER)
 
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "${OPENNMS_HOME}/bin/_lib.sh"
 
 # Load opennms.conf, if it exists, to override above configuration options.
@@ -658,7 +658,7 @@ else
 	# Source function library.
 	for dir in "$INITDIR" /etc /etc/rc.d; do
 		if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" -eq 0 ]; then
-			# shellcheck disable=SC1090
+			# shellcheck disable=SC1090,SC1091
 			. "$dir/init.d/functions"
 			FUNCTIONS_LOADED=1
 		fi
@@ -680,7 +680,7 @@ fi
 
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
-if [ x"$(uname)" = x"Darwin" ]; then
+if [ "$(uname)" = "Darwin" ]; then
 	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
 		ulimit $flag unlimited >/dev/null 2>&1
 	done
@@ -885,16 +885,16 @@ if [ "$#" -gt 0 ]; then
 	exit 1
 fi
 
-if [ x"$SERVICE" = x"all" ]; then
+if [ "$SERVICE" = "all" ]; then
 	SERVICE=""
 fi
 
-if [ x"$VERBOSE_GC" != x"" ]; then
+if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
 myuser="$(id -u -n)"
-if [ x"$myuser" = x"$RUNAS" ]; then
+if [ "$myuser" = "$RUNAS" ]; then
 	true # all is well
 else
 	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
