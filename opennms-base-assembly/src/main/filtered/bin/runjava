@@ -248,7 +248,7 @@ javaPaths() {
 #
 checkJavaHome() {
     tell "Checking for an appropriate JVM in JAVA_HOME..."
-    if [ x"$JAVA_HOME" = x"" ]; then
+    if [ "$JAVA_HOME" = "" ]; then
         tell "Skipping... JAVA_HOME not set."
         return 1
     fi
