@@ -298,6 +298,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             AbstractOpenNMSSeleniumHelper.takeScreenshot(getDriver(), "login");
 
             invokeWithImplicitWait(0, () -> {
+                LOG.debug("checking for failed login");
                 try {
                     // Make sure that the 'login-attempt-failed' element is not present
                     findElementById("login-attempt-failed");
@@ -311,6 +312,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
 
         invokeWithImplicitWait(0, () -> {
+            LOG.debug("checking for datachoices popup");
             try {
                 WebElement element = findElementById("datachoices-modal");
                 if (element.isDisplayed()) { // datachoice modal is visible
@@ -321,6 +323,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 // No further action required
             }
         });
+
+        LOG.debug("finished login");
     }
 
     private void invokeWithImplicitWait(int implicitWait, Runnable runnable) {
