@@ -1,6 +1,6 @@
 <#assign currentDate = .now>
 
-<nav class="navbar navbar-expand-md navbar-dark opennms-bg-chromatic-black" id="header" role="navigation">
+<nav class="navbar navbar-expand-md navbar-light opennms-bg-cool-gray-2" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
         <img id="logo" src="${baseHref}images/opennms-meridian-logo.svg" alt="OpenNMS Meridian Logo" width="auto" height="22px" onerror="this.src='${baseHref}images/opennms-meridian-logo.png'" />

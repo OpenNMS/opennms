@@ -42,7 +42,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('images/wallpapers/background_dark.png');
+    background-image: url('images/wallpapers/background_light.png');
     background-size: cover;
   }
 
@@ -91,7 +91,7 @@
     background-image: linear-gradient(to right, rgb(61, 168, 200), rgb(116, 187, 160));
   }
 
-  .horizon {
+  .meridian {
       margin-left: 30%;
     }
 
@@ -147,7 +147,7 @@
 <div class="login-page">
     <div class="card login-form rounded">
       <div style="padding-bottom: 36px; padding-top: 60px">
-        <img src="images/opennms_horizon_title.svg" class="horizon" width="185px" />
+        <img src="images/opennms_meridian_title.svg" class="meridian" width="185px" />
       </div>
 
       <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">

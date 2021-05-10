@@ -167,26 +167,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
             // Reset the implicit wait since we can't trust the last value
             driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-
-            if (driver instanceof TakesScreenshot) {
-                final TakesScreenshot shot = (TakesScreenshot)driver;
-                try {
-                    final Path from = shot.getScreenshotAs(OutputType.FILE).toPath();
-                    final Path to = Paths.get("target", "screenshots", description.getClassName() + "." + testName + ".png");
-                    LOG.debug("Screenshot saved to: {}", from);
-                    try {
-                        Files.createDirectories(to.getParent());
-                        Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
-                        LOG.debug("Screenshot moved to: {}", to);
-                    } catch (final IOException ioe) {
-                        LOG.debug("Failed to move screenshot from {} to {}", from, to, ioe);
-                    }
-                } catch (final Exception sse) {
-                    LOG.debug("Failed to take screenshot.", sse);
-                }
-            } else {
-                LOG.debug("Driver can't take screenshots.");
-            }
+            AbstractOpenNMSSeleniumHelper.takeScreenshot(driver, description.getClassName() + "." + testName);
             try {
                 LOG.debug("Attempting to dump DOM.");
                 final String domText = driver.findElement(By.tagName("html")).getAttribute("innerHTML");
@@ -219,6 +200,28 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             }
         }
     };
+
+    public static void takeScreenshot(final WebDriver driver, final String filename) {
+        if (driver instanceof TakesScreenshot) {
+            final TakesScreenshot shot = (TakesScreenshot)driver;
+            try {
+                final Path from = shot.getScreenshotAs(OutputType.FILE).toPath();
+                final Path to = Paths.get("target", "screenshots", filename + ".png");
+                LOG.debug("Screenshot saved to: {}", from);
+                try {
+                    Files.createDirectories(to.getParent());
+                    Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+                    LOG.debug("Screenshot moved to: {}", to);
+                } catch (final IOException ioe) {
+                    LOG.debug("Failed to move screenshot from {} to {}", from, to, ioe);
+                }
+            } catch (final Exception sse) {
+                LOG.debug("Failed to take screenshot.", sse);
+            }
+        } else {
+            LOG.debug("Driver can't take screenshots.");
+        }
+    }
 
     public WebDriver.Timeouts setImplicitWait() {
         return setImplicitWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -274,22 +277,39 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public void login() {
         getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
 
-        waitForLogin();
+        try {
+            setImplicitWait(10, TimeUnit.SECONDS);
 
-        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
-        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
-        findElementByName("Login").click();
+            waitForLogin();
+            LOG.debug("waitForLogin is done");
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
-        invokeWithImplicitWait(0, () -> {
-            try {
-                // Make sure that the 'login-attempt-failed' element is not present
-                findElementById("login-attempt-failed");
-                fail("Login failed: " + findElementById("login-attempt-failed-reason").getText());
-            } catch (NoSuchElementException e) {
-                // This is expected
-            }
-        });
+            enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
+            final WebElement passwordInput = enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+            AbstractOpenNMSSeleniumHelper.takeScreenshot(getDriver(), "j_password");
+
+            passwordInput.sendKeys(Keys.ENTER);
+            LOG.debug("enter sent");
+            // findElementByName("Login").click();
+            // LOG.debug("Login clicked");
+
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("login-page")));
+            LOG.debug("content found");
+
+            AbstractOpenNMSSeleniumHelper.takeScreenshot(getDriver(), "login");
+
+            invokeWithImplicitWait(0, () -> {
+                try {
+                    // Make sure that the 'login-attempt-failed' element is not present
+                    findElementById("login-attempt-failed");
+                    fail("Login failed: " + findElementById("login-attempt-failed-reason").getText());
+                } catch (NoSuchElementException e) {
+                    // This is expected
+                }
+            });
+        } finally {
+            setImplicitWait();
+        }
+
         invokeWithImplicitWait(0, () -> {
             try {
                 WebElement element = findElementById("datachoices-modal");
@@ -324,6 +344,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
         wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
+        LOG.debug("login page is available");
     }
 
     protected ExpectedCondition<Boolean> pageContainsText(final String text) {
@@ -547,6 +568,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public WebElement clickElement(final By by) {
+        LOG.debug("clicking element {}", by);
         return waitUntil(new Callable<WebElement>() {
             @Override public WebElement call() throws Exception {
                 final WebElement el = getElementImmediately(by);
