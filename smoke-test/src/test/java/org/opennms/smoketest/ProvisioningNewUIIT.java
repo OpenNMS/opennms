@@ -181,8 +181,9 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
 
         // Save the IP interface
         clickId("save-interface", false);
+
+        this.waitForModalClose();
         wait.until(visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
-        wait.until(invisibilityOfElementLocated(By.xpath("//div[contains(@class,'modal-backdrop')]")));
 
         // Add an asset to the node
         clickId("tab-assets", false);
@@ -303,11 +304,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
 
     protected void waitForDropdownClose() {
         waitForClose(By.cssSelector(".modal-dialog ul.dropdown-menu"));
-    }
-
-    protected void waitForModalClose() {
-        System.err.println("waitForModalClose()");
-        waitForClose(By.cssSelector(".modal-dialog"));
     }
 
     protected WebElement findModal() {
