@@ -56,11 +56,6 @@
                             style="width: 100%">Development Guide</a></td>
                     <td style="border-top: none;">For developers who want to extend and improve the OpenNMS platform and use the ReST APIs for integration. Learn how to set up a development environment and get started with writing features for OpenNMS.</td>
                 </tr>
-                <tr>
-                    <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
-                                                     class="btn btn-secondary" role="button" style="width: 100%">OpenNMS Wiki</a></td>
-                    <td style="border-top: none;">With the large variety of devices and applications you can monitor with OpenNMS, the Wiki provides space to share experience with How Tos and Tutorials to address specific use cases.</td>
-                </tr>
             </table>
         </span>
     </div>

@@ -1,0 +1,45 @@
+= Minion
+
+A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach. 
+Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
+
+Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via an ActiveMQ or Apache Kafka message broker. 
+
+Using Minions to monitor devices and services in hard-to-reach, remote network locations:
+
+* means you do not have to set up and maintain a large set of firewall rules for multiple mangement protocols
+* avoids the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols
+* simplifies the network communication to the message broker and REST endpoint
+
+== How it Works
+
+A Minion monitors all the managed nodes and IP services in the same location (e.g., Pittsboro office, building_3). 
+The Minion communicates with the message broker, which in turn communicates with the OpenNMS instance. 
+
+._Nodes_ with _Minions_ in _locations_
+image::deployment/minion/location.png[]
+
+By default, every node provisioned in {page-component-title} is created in the "Default" location.
+The central {page-component-title} instance itself handles all nodes and services in the "Default" location.
+To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
+The Minion will register itself to the {page-component-title} instance on startup.
+
+{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] allows you to associate nodes with any location.
+{page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
+
+Figure <<gi-install-minion-communication, Minion communication>> provides  a more detailed overview about the communication between a {page-component-title} instance and a _Minion_.
+
+.Minion communication
+image::deployment/minion/communication.png[]
+
+By default the Minion will be automatically provisioned as a node in the {page-component-title} instance and automatically monitored with the Minion-Heartbeat service.
+The Minion sends heartbeat messages to ensure it is running and functioning properly in this location.
+
+The specific management protocol messages (e.g., SNMP, ICMP), are piped through a message broker communication channel and are executed by a Minion.
+The broker forwards responses to the central {page-component-title} instance, which processes them accordingly.
+
+The following management protocols are currently supported in a Minion proxy scenario:
+
+* Receive Syslog messages and SNMP traps and forward them through the message broker to a central {page-component-title} instance
+* Act as a proxy for SNMP performance data collection
+* Act as a proxy for service monitors to test availability and measure response times from applications

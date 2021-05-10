@@ -10,6 +10,9 @@ executors:
   docker-executor:
     docker:
       - image: docker:20.10.1-git
+  docs-executor:
+    docker:
+      - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine: true
   smoke-test-executor:
@@ -286,16 +289,6 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Psmoke \
               install --batch-mode
-            pushd opennms-doc
-              ../compile.pl \
-                -DupdatePolicy=never \
-                -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=1 \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -DskipPdfGeneration=false \
-                -P'!jdk7+' \
-                install --batch-mode
-            popd
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -519,6 +512,11 @@ workflows:
       equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
+      - build-docs:
           filters:
             branches:
               ignore:
@@ -762,7 +760,21 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-
+  build-docs:
+    executor: docs-executor
+    steps:
+      - cached-checkout
+      - run:
+          name: Validate Xrefs in docs
+          command: |
+            NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
+      - run:
+          name: Build docs with Antora
+          command: |
+             DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+      - store_artifacts:
+          path: ~/project/build/site.zip
+          destination: site.zip
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
@@ -829,7 +841,6 @@ jobs:
               tar -czf "../../artifacts/meridian-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-source.tar.gz"
       - run:
           name: Build Minion OCI

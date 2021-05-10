@@ -1,0 +1,24 @@
+
+= WmiCollector
+
+The WmiCollector collects peformance metrics from Windows systems using Windows Management Instrumentation (WMI).
+
+== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.WmiCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+== Collector Parameters
+
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the WmiCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the WMI Collection to use.  | required |
+|===

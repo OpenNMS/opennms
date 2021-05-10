@@ -1,9 +1,9 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-expand-md navbar-light" style="background-color: #e9ecef" id="header" role="navigation">
+
+<nav class="navbar navbar-expand-md navbar-dark opennms-bg-chromatic-black" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/o-blue-trans.svg" alt="OpenNMS Meridian Logo" width="20px" height="20px" onerror="this.src='${baseHref}images/o-blue-trans.png'" />
-        <span style="vertical-align: middle" class="text-meridian ml-2">Meridian</span>
+        <img id="logo" src="${baseHref}images/opennms-meridian-logo.svg" alt="OpenNMS Meridian Logo" width="auto" height="22px" onerror="this.src='${baseHref}images/opennms-meridian-logo.png'" />
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>

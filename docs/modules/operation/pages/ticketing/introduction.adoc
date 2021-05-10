@@ -1,0 +1,18 @@
+
+= Ticketing
+
+The ticketing integration allows {page-component-title} to create trouble tickets in external systems.
+Create and update tickets in response to new and/or resolved alarms.
+
+To activate the ticketing integration, set the following properties in `$\{OPENNMS_HOME}/etc/opennms.properties`:
+
+[options="header, %autowidth"]
+|===
+| Property                               | Default                   | Description
+| `opennms.ticketer.plugin`              | `NullTicketerPlugin`      | The plugin implementation to use.
+                                                                       Each ticketer integration should define which value to set.
+                                                                       The `NullTicketerPlugin` does nothing when attempting to create/update/delete tickets.
+| `opennms.alarmTroubleTicketEnabled`    | `false`                   | Defines if the integration is enabled.
+                                                                       If enabled, various links to control the issue state appear on the alarm details page.
+| opennms.alarmTroubleTicketLinkTemplate | `${\id}`                   | A template to generate a link to the issue, e.g., `\http://issues.opennms.org/browse/${\id}`
+|===
