@@ -7,7 +7,7 @@
 
 Release 2021.1.0 is the first in the Meridian 2021 series, based on Horizon 27.
 
-The codename for 27.1.1 is link:$$https://hitchhikers.fandom.com/wiki/Infinite_Improbability_Drive$$[_Infinite Improbability Drive_].
+The codename for 2021.1.0 is link:$$https://wikipedia.org/wiki/Mars_2020$$[_Perseverance_].
 
 === Bug
 
