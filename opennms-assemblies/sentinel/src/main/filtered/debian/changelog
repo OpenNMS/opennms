@@ -1,3 +1,13 @@
+opennms-sentinel (27.2.0-1) stable; urgency=high
+
+  * New minor release.  It contains mostly bug fixes including a number of
+    security updates.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.2.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 May 2021 10:50:00 -0400
+ 
 opennms-sentinel (27.1.1-1) stable; urgency=high
 
   * New minor release.  It contains a few enhancements, as well as a number of

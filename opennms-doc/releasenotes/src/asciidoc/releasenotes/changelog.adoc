@@ -2,6 +2,31 @@
 
 === Changelog
 
+[[releasenotes-changelog-27.2.0]]
+
+==== Release 27.2.0
+
+  Release 27.2.0 contains a bunch of bug fixes and security updates, alongside a branding refresh.
+
+  The codename for 27.2.0 is link:$$https://hitchhikers.fandom.com/wiki/Magrathea$$[_Magrathea_].
+
+===== Bug
+
+* Not possible to define notification parameters via "Configure notifications" UI (Issue http://issues.opennms.org/browse/NMS-8581[NMS-8581])
+* Measurement API: Trim DS name to 19 chars when using RRD (Issue http://issues.opennms.org/browse/NMS-12728[NMS-12728])
+* Bmp Peer Up/Down Notification Message may be missed on OpenNMS/Sentinel (Issue http://issues.opennms.org/browse/NMS-13224[NMS-13224])
+* Reflected XSS reported 2021-03-31 (update summary after disclosure) (Issue http://issues.opennms.org/browse/NMS-13229[NMS-13229])
+* Backport Security Issues from Last Month (Issue http://issues.opennms.org/browse/NMS-13231[NMS-13231])
+* Heartbeat topic lag with a large number of minions (Issue http://issues.opennms.org/browse/NMS-13232[NMS-13232])
+* vmware integration connection pool not expiring connections (Issue http://issues.opennms.org/browse/NMS-13234[NMS-13234])
+* Issue with parsing sFlow (Issue http://issues.opennms.org/browse/NMS-13235[NMS-13235])
+* Cleared alarms with closed ticket state not removed when using a hybrid approach (Issue http://issues.opennms.org/browse/NMS-13237[NMS-13237])
+* LLDP REST api miss local port info (Issue http://issues.opennms.org/browse/NMS-13258[NMS-13258])
+* Update Vaadin dependencies (Issue http://issues.opennms.org/browse/NMS-13261[NMS-13261])
+* Time zone is handled different on Minion container image based on Ubuntu (Issue http://issues.opennms.org/browse/NMS-13276[NMS-13276])
+* Apache Commons IO Security Update: CVE-2021-29425 (Issue http://issues.opennms.org/browse/NMS-13279[NMS-13279])
+
+
 [[releasenotes-changelog-27.1.1]]
 
 ==== Release 27.1.1
