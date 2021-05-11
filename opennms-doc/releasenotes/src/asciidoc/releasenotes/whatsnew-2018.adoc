@@ -9,6 +9,7 @@
 * *PostgreSQL 9*: Meridian 2018 requires PostgreSQL 9.x, version 9.2 or higher.
 
 [releasenotes-whatsnew-2018]
+
 ==== What's New in Meridian 2018
 
 The biggest addition in Meridian 2018 is official support for link:https://meridian.opennms.com/docs/2018/latest/guide-install/guide-install.html#gi-minion[the Minion].
@@ -84,6 +85,18 @@ New or updated trap definitions have been added for the following classes of dev
 * Drools has been updated to 7.x.
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
+
+[releasenotes-changelog-Meridian-2018.1.28]
+
+==== Release Meridian-2018.1.28
+
+Release 2018.1.28 is a small update with a fix for an Apache Commons IO CVE.
+
+The codename for 2018.1.28 is https://wikipedia.org/wiki/Solar_storm[_Solar Storm_].
+
+===== Bug
+
+* Apache Commons IO Security Update: CVE-2021-29425 (Issue http://issues.opennms.org/browse/NMS-13279[NMS-13279])
 
 [releasenotes-changelog-Meridian-2018.1.27]
 
