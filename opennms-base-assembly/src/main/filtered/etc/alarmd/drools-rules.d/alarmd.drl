@@ -153,6 +153,12 @@ rule "createCriticalTicket"
     $ticketer.createTicket($alarm, new Date($sessionClock.getCurrentTime()));
 end
 
+/*
+  When changing window times, ensure that they are compatible with other rules.
+  For example: when window time for updateTickets is less than cleanUp rule,
+  it may not cleanUp all the alarms that are getting updated with UpdateTickets rule.
+*/
+  
 rule "updateTickets"
   enabled false
   when
