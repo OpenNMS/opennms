@@ -29,9 +29,13 @@ case "$OPENNMS_FULL_VERSION" in
 esac
 
 echo "* validating documentation"
-DOC_VERSION_COUNT="$(find opennms-doc/releasenotes/src/asciidoc -type f -print0 | xargs -0 cat | grep -c "${OPENNMS_VERSION}" || :)"
+export DOCDIR="opennms-doc/releasenotes/src/asciidoc"
+if [ -d docs ] && [ -e "docs/antora.yml" ]; then
+  DOCDIR="docs/modules/releasenotes/pages"
+fi
+DOC_VERSION_COUNT="$(find "${DOCDIR}" -type f -print0 | xargs -0 cat | grep -c "${OPENNMS_VERSION}" || :)"
 if [ "${DOC_VERSION_COUNT}" -eq 0 ]; then
-  echo "  WARNING: Release notes in opennms-doc/releasenotes/src/asciidoc are missing an entry for ${OPENNMS_VERSION} -- this is required for release."
+  echo "  WARNING: Release notes in ${DOCDIR} are missing an entry for ${OPENNMS_VERSION} -- this is required for release."
   FAILED=1
 fi
 
