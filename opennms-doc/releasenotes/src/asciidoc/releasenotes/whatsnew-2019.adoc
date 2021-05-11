@@ -313,6 +313,25 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.19]
+
+==== Release Meridian-2019.1.19
+
+Release 2019.1.19 a number of security fixes, as well as fixes for a few other bugs.
+
+The codename for 2019.1.19 is link:$$https://wikipedia.org/wiki/WASP-17b$$[_Ditsö̀_].
+
+===== Bug
+
+* Not possible to define notification parameters via "Configure notifications" UI (Issue http://issues.opennms.org/browse/NMS-8581[NMS-8581])
+* Race condition on ALEC's config bundle after installation (Issue http://issues.opennms.org/browse/NMS-12766[NMS-12766])
+* Reflected XSS reported 2021-03-31 (update summary after disclosure) (Issue http://issues.opennms.org/browse/NMS-13229[NMS-13229])
+* Backport Security Issues from Last Month (Issue http://issues.opennms.org/browse/NMS-13231[NMS-13231])
+* vmware integration connection pool not expiring connections (Issue http://issues.opennms.org/browse/NMS-13234[NMS-13234])
+* Cleared alarms with closed ticket state not removed when using a hybrid approach (Issue http://issues.opennms.org/browse/NMS-13237[NMS-13237])
+* Fix Foundation 2019 branch building (Issue http://issues.opennms.org/browse/NMS-13275[NMS-13275])
+* Apache Commons IO Security Update: CVE-2021-29425 (Issue http://issues.opennms.org/browse/NMS-13279[NMS-13279])
+
 [releasenotes-changelog-Meridian-2019.1.18]
 
 ==== Release Meridian-2019.1.18
