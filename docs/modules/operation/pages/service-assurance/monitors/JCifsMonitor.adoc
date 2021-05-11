@@ -1,15 +1,15 @@
 
 = JCifsMonitor
 
-This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
+This monitor lets you to test a file-sharing service based on the CIFS/SMB protocol.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 WARNING: This monitor is not installed by default.
 You have to install `opennmms-plugin-protocol-cifs` from your {page-component-title} installation repository.
 
-With the _JCIFS_ monitor you have different possibilities to test the availability of the _JCIFS_ service:
+With the JCIFS monitor, you have different possibilities to test the availability of the JCIFS service:
 
-With the _JCifsMonitor_ it is possible to run tests for the following use cases:
+With the JCifsMonitor it is possible to run tests for the following use cases:
 
 * share is available in the network
 * a given file exists in the share

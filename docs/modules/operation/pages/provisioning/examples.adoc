@@ -303,7 +303,7 @@ image:provisioning/00020.jpeg[]
 
 ==== Script Policy
 
-This policy allows to use _Groovy_ scripts to modify provisioned node data.
+This policy lets you use Groovy scripts to modify provisioned node data.
 These scripts have to be placed in the {page-component-title} `etc/script-policies` directory.
 An example would be the change of the node's primary interface or location.
 The script will be invoked for each matching node.
@@ -333,12 +333,12 @@ return node;
 
 ==== Node Metadata Policy
 
-The Metadata Policy allows you to set node-level metadata in the context `requisition` for provisioned nodes.
+The Metadata Policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
 It uses the same matching mechanism as the Node Categorization Policy.
 
 ==== Interface Metadata Policy
 
-The Metadata Policy allows you to set interface-level metadata in the context `requisition` for provisioned nodes.
+The Metadata Policy lets you set interface-level metadata in the context `requisition` for provisioned nodes.
 It uses the same matching mechanism as the Matching IP Interface Policy.
 
 === New Import Capabilities

@@ -2,7 +2,7 @@
 = BGP Monitoring Protocol
 
 The BGP Monitoring Protocol (BMP) provides a convenient interface for obtaining route views.
-The integration in {page-component-title} allows you to use these route views, status updates, and statistics for monitoring and management.
+The integration in {page-component-title} lets you use these route views, status updates, and statistics for monitoring and management.
 
 .BMP integration overview
 image:bmp/bmp_integration_overview.png[BMP integration]    
@@ -129,7 +129,7 @@ This setup replaces the collector component of OpenBMP.
 [options="header, %autowidth"]
 |===
 | Parameter            | Description                                                                    | Required | Default value
-| `kafka.*`            | Uses options to create OpenBMP Kafka producer. Allows all known Kafka settings, but prefixed with `kafka.`. | no       |
+| `kafka.*`            | Uses options to create OpenBMP Kafka producer. Enables all known Kafka settings, but prefixed with `kafka.`. | no       |
 | `topicPrefix`        | Prefix used before each Kafka topic.                                            | no       |
 |===
 

@@ -34,7 +34,7 @@ image::operation/jmx-config-generator/01-webui-connection.png[]
 * JMXMP: Enable/disable JMX Messaging Protocol instead of using JMX over RMI
 
 By clicking the arrow ( > ) the MBeans and composite data will be retrieved with the given connection settings.
-The data is loaded into the MBeans Configuration screen which allows to select metrics for the data collection configuration.
+The data is loaded into the MBeans Configuration screen that lets you select metrics for the data collection configuration.
 
 == Select MBeans and Composite
 
@@ -46,7 +46,7 @@ image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
 The left sidebar shows the tree with the JMX Domain, MBeans, and composite data hierarchy retrieved from the MBean Server.
 To select or deselect all attributes use *Mouse right click -> select/deselect*.
 
-The right panel shows the MBean Attributes with the RRD-specific mapping and allows to select or deselect specific MBean Attriubtes or composite data attributes for the data collection configuration.
+The right panel shows the MBean Attributes with the RRD-specific mapping and lets you select or deselect specific MBean Attriubtes or composite data attributes for the data collection configuration.
 
 .Configure MBean attributes for data collection configuration
 image::operation/jmx-config-generator/03-webui-mbean-details.png[]

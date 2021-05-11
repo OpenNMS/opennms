@@ -1,7 +1,7 @@
 
 = Ticketing
 
-The ticketing integration allows {page-component-title} to create trouble tickets in external systems.
+The ticketing integration lets {page-component-title} to create trouble tickets in external systems.
 Create and update tickets in response to new and/or resolved alarms.
 
 To activate the ticketing integration, set the following properties in `$\{OPENNMS_HOME}/etc/opennms.properties`:

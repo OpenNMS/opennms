@@ -1,5 +1,5 @@
 [[system-requirements-core]]
-= Minimum System Requirements
+= Minimum system requirements
 
 [options="header, autowidth"]
 |===
@@ -9,11 +9,11 @@
 | *Storage (disk space)* | 50 GB HDD, SSD          | 1 TB with SSD and above
 |===
 
-*_You can install the packages and the services will start up_ +
-**_Does not take into account your intended workload, e.g., network size, number of monitored metrics, flows, events, and data retention requirements._
+*_You can install the packages and the services will start up_. +
+**_Does not take into account your intended workload, for example, network size, number of monitored metrics, flows, events, and data retention requirements._
 
 [[operating-systems-core]]
-== Operating Systems
+== Operating systems
 
 Make sure that your chosen operating system is listed in one of the following tables before you install OpenNMS {page-component-title}.
 See the release notes for information about platform support changes, including deprecated platforms.

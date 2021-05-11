@@ -65,12 +65,12 @@ You can set the following properties:
 | -
 
 | proxy
-| Allows defining an HTTP proxy. Only accepts valid URLs.
+| Lets you define an HTTP proxy. Only accepts valid URLs.
 | optional
 | -
 
 | httpCompression
-| Allows the use of HTTP compression.
+| Lets you use HTTP compression.
 | optional
 | -
 

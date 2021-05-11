@@ -3,7 +3,7 @@
 = Business Service Monitoring
 
 While {page-component-title} detects issues in your network by device, interface or service, the Business Service Monitoring (BSM) takes it one step further.
-The BSM components allows you to monitor and model high level Business Services (BS) and helps quickly identify the most critical problems affecting these.
+The BSM components let you monitor and model high-level Business Services (BS) and help you quickly identify the most critical problems affecting them.
 With the BSM feature it is possible to model a high level BS context around the technical Service Monitors provided in {page-component-title}.
 To indicate which BS is affected by events at the technical Service Monitors level, a BS Operational Status is calculated.
 
@@ -23,6 +23,6 @@ To be able to model this scenarios the BSM functions can be used.
 The Business Service Monitoring (BSM) feature includes the following components:
 
 * Business Service Monitoring Daemon (BSMD): Maintains and drives the state of all BS
-* Business Service Editor: Web application which allows you to create, update or delete BS
+* Business Service Editor: Web application that lets you create, update, or delete BS
 * Topology View for Business Services: Visual representation of the Business Service Hierarchy as a component of the Topology User Interface.
 * BSM ReST API: ReST based API to create, read, update or delete BS

@@ -9,7 +9,7 @@ These implementations require a deep knowledge of OpenNMS. It is hard to add ano
 With the rise of many new time series databases, we want to provide an easy way to support other time series databases with minimal effort.
 This lead to the development of the Time Series Integration Layer.
 
-The  Time Series Integration Layer allows users to integrate a new time series database via OSGi plugin.
+The  Time Series Integration Layer lets users integrate a new time series database via OSGi plugin.
 
 Examples of time series plugins:
 

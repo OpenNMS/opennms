@@ -1,7 +1,7 @@
 
 = Junos Telemetry Interface
 
-The Junos Telemetry Interface (JTI) allows users to push operational statistics asynchronously to {page-component-title}.
+The Junos Telemetry Interface (JTI) lets users push operational statistics asynchronously to {page-component-title}.
 {page-component-title} sends a request to stream periodic updates once to the device.
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 For detailed information about JTI, see the https://www.juniper.net/documentation/en_US/junos/topics/concept/junos-telemetry-interface-oveview.html[Juniper Documentation].

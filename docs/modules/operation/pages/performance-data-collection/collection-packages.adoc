@@ -2,8 +2,8 @@
 [[ga-collectd-packages]]
 = Collection Packages
 
-To define more complex collection configuration it is possible to group Service_ configurations that provide performance metrics into _Collection Packages_.
-This allows you to assign different _Service Configurations_ to _Nodes_ to differentiate performance metric collection and connection settings.
+To define more complex collection configuration it is possible to group Service_ configurations that provide performance metrics into collection packages.
+This lets you assign different service configurations to nodes to differentiate performance metric collection and connection settings.
 To assign a _Collection Package_ to nodes, use the https://wiki.opennms.org/wiki/Filters[Rules/Filters] syntax.
 
 You can configure multiple packages, and an interface can exist in more than one package.
@@ -59,9 +59,9 @@ image::performance-management/02_collectd-configuration-xml.png[]
 
 [[ga-collectd-packages-services-meta-data]]
 === Metadata DSL
-The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>>(domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>>(domain specific language) lets you use dynamic configuration in parameter values to interpolate metadata into the parameter. 
 
-The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 
 During evaluation of an expression, the following scopes are available:
 

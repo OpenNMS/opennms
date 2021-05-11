@@ -24,7 +24,7 @@ The central {page-component-title} instance itself handles all nodes and service
 To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
 The Minion will register itself to the {page-component-title} instance on startup.
 
-{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] allows you to associate nodes with any location.
+{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
 {page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
 
 Figure <<gi-install-minion-communication, Minion communication>> provides  a more detailed overview about the communication between a {page-component-title} instance and a _Minion_.

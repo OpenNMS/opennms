@@ -3,7 +3,7 @@
 = Classification Engine
 
 The Classification Engine applies a set of user- and/or system-defined rules to each flow to classify it.
-This allows users to group flows by applications, e.g., if all flows to port 80 are marked as `http`.
+This lets users group flows by applications, for example, if all flows to port 80 are marked as `http`.
 
 To classify a flow, you must define a rule.
 A rule defines at least a name, which the flow is classified with, and additional parameters that must match for a successful classification.
@@ -99,7 +99,7 @@ Change the positions of rules and groups by drag and drop or by editing the posi
 == Verification
 
 With a more complex set of rules, it is not always easy to verify if everything is configured correctly.
-To make things a bit easier, the Classification UI allows you to test/verify a classification.
+To make things a bit easier, the Classification UI let you test/verify a classification.
 To do so, navigate to the Classification UI:
 *Gear icon-> Flow Management -> Manage Flow Classification* and select the Test classification icon in the top right.
 This simulates sending a flow to the Classification Engine with certain fields.

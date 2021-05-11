@@ -4,7 +4,7 @@ If a Minion loses connectivity with the broker (i.e. Kafka or ActiveMQ), then an
 This queue is limited by a fixed (and configurable) number of messages queued in the JVM heap and can optionally queue additional messages by persisting directly to the filesystem avoiding heap memory usage. 
 Once the queue is full, additional messages will be dropped.
 
-The off-heap storage feature allows us to extend the storage capacity by queuing messages outside of the JVM heap.
+The off-heap storage feature lets you extend the storage capacity by queuing messages outside of the JVM heap.
 
 .Connect to the Karaf shell with user `admin` and password `admin`
 [source, console]

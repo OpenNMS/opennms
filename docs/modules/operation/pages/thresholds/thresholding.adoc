@@ -1,6 +1,6 @@
 = Thresholding
 
-Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
+Thresholding lets you define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
 * High
 * Low
@@ -162,7 +162,7 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 === Using Metadata in a Threshold
 
 Metadata in expression-based thresholds can streamline threshold creation. 
-The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 A single expression can behave differently based on the node being tested against.
 
 During evaluation of an expression, the following scopes are available:

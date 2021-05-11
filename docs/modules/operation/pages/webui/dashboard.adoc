@@ -5,14 +5,14 @@ In Network Operation Centers NOC an overview about issues in the network is impo
 Large networks have people (Operator) with different responsibilities and the dashboard should show only information for a given monitoring context.
 Network or Server operator have a need to customize or filter information on the dashboard.
 A dashboard as an At-a-glance overview is also often used to give an entry point for more detailed diagnosis through the information provided by the monitoring system.
-The Surveillance View allows to reduce the visible information by selecting rows, columns and cells to quickly limit the amount of information to navigate through.
+The Surveillance View lets you reduce the visible information by selecting rows, columns, and cells to quickly limit the amount of information to navigate through.
 
 [[ga-dashboard-components]]
 == Components
 
 The dashboard is built with five components:
 
-* Surveillance View: Allows to model a monitoring context for the dashboard.
+* Surveillance View: Lets you model a monitoring context for the dashboard.
 * Alarms: Shows unacknowledged alarms which should be escalated by an operator.
 * Notifications: Shows outstanding and unacknowledged notifications sent to engineers.
 * Node Status: Shows all ongoing network outages.
@@ -31,8 +31,8 @@ All other components display information based on the Surveillance View.
 
 The Surveillance View has multiple functions.
 
-* Allows to model the monitoring context and shows service and node outages in compact matrix view.
-* Allows to limit the number of information in the dashboard by selecting rows, columns and cells.
+* Lets you model the monitoring context and shows service and node outages in compact matrix view.
+* Lets you limit the number of information in the dashboard by selecting rows, columns and cells.
 
 You can select columns, rows, single cells and of course all entries in a Surveillance View.
 Please refer to the <<webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View Section>> for details on how to configure Surveillance Views.
@@ -57,7 +57,7 @@ image::dashboard/03_dashboard-alarms.png[]
 5. Last Time: Time for the last occurrence of the alarm
 6. Log Msg: The log message from the event which is the source for this alarm. It is specified in the event configuration file in `<logmsg />`
 
-The Alarms component shows the most recent alarms and allows the user to scroll through the last 100 alarms.
+The Alarms component shows the most recent alarms and lets the user scroll through the last 100 alarms.
 
 [[ga-dashboard-notifications]]
 === Notifications
@@ -76,7 +76,7 @@ image::dashboard/04_dashboard-notifications.png[]
 5. Responder: User name who acknowledged the notification
 6. Response Time: Time when the user acknowledged the notification
 
-The Notifications component shows the most recent unacknowledged notifications and allows the user to scroll through the last 100 Notifications.
+The Notifications component shows the most recent unacknowledged notifications and lets the user scroll through the last 100 Notifications.
 
 [[ga-dashboard-node-status]]
 === Node Status
@@ -94,17 +94,17 @@ image::dashboard/05_dashboard-outages.png[]
 [[ga-dashboard-resource-graph-viewer]]
 === Resource Graph Viewer
 
-To give a quick entry point diagnose performance issues a Resource Graph Viewer allows to navigate to time series data reports which are filtered in the context of the Surveillance View.
+To give a quick entry point diagnose performance issues a Resource Graph Viewer lets you navigate to time series data reports which are filtered in the context of the Surveillance View.
 
 .Show time series based performance with the Resource Graph Viewer
 image::dashboard/06_dashboard-resource-graphs.png[]
 
-It allows to navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
+It lets you navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
 
 [[ga-dashboard-advanced-configuration]]
 == Advanced configuration
 
-The Surveillance View component allows to model multiple views for different monitoring contexts.
+The Surveillance View component lets you to model multiple views for different monitoring contexts.
 It gives the possibility to create special view as example for network operators or server operators.
 The dashboard shows only *one* configured <<webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
 To give different users the possibility using their Surveillance View fitting there requirements it is possible to map a logged in user to a given Surveillance View used in the dashboard.

@@ -25,7 +25,7 @@ This configuration file change happens immediately with no need to restart or se
 A destination path specifies the "who" (recipient), "when" (interval), and "how" (method) of the notification.
 It also specifies targets for escalation.
 
-Configuring destination paths separately from individual events allows you to use the same information for multiple notificationc, minimizing duplication and encouraging reuse.
+Configuring destination paths separately from individual events lets you use the same information for multiple notificationc, minimizing duplication and encouraging reuse.
 
 . Log in to the web UI as a user with administrator privileges.
 . Click the gear icon in the top right, and under *Event Mangement* choose *Configure Notifications>Configure Destination Paths*.
@@ -65,7 +65,7 @@ This configuration file change happens immediately with no need to restart or se
 
 == Configuring Path Outages
 
-Configuring a path outage allows you to suppress notifications for nodes that appear to be down due to a failure in the network path between the nodes and OpenNMS.
+Configuring a path outage lets you suppress notifications for nodes that appear to be down due to a failure in the network path between the nodes and OpenNMS.
 For example, if a WAN link fails, all nodes at the remote site served by the WAN link will appear to be down.
 Since we will get a notification that the router on the far end of the WAN link is not responding, we don't need notifications for all the devices that sit behind that router.
 

@@ -2,12 +2,12 @@
 = JolokiaBeanMonitor
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
-If it is required to execute a method via _JMX_ or poll an attribute via _JMX_, the _JolokiaBeanMonitor_ can be used.
-It requires a fully installed and configured _Jolokia agent_ to be deployed in the JVM container.
-If required it allows attribute names, paths, and method parameters to be provided additional arguments to the call.
-To determine the status of the service the _JolokiaBeanMonitor_ relies on the output to be matched against a banner.
+If it is required to run a method via JMX or poll an attribute via JMX, the JolokiaBeanMonitor can be used.
+It requires a fully installed and configured Jolokia agent to be deployed in the JVM container.
+If required it lets you provide attribute names, paths, and method parameters as additional arguments to the call.
+To determine the status of the service the JolokiaBeanMonitor relies on the output to be matched against a banner.
 If the banner is part of the output the status is interpreted as up.
-If the banner is not available in the output the status is determined as _down_.
+If the banner is not available in the output the status is determined as down.
 Banner matching supports regular expression and substring match.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
