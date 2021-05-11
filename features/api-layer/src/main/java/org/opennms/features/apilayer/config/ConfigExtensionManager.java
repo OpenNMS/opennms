@@ -102,6 +102,18 @@ public abstract class ConfigExtensionManager<E,C> implements ConfigurationProvid
         }
     }
 
+    @Override
+    public void registeredToConfigReloadContainer() {
+        LOG.debug("registeredToConfigReloadContainer - class: {}; clazz: {}", getClass().getCanonicalName(), clazz.getCanonicalName());
+        triggerReload();
+    }
+
+    @Override
+    public void deregisteredFromConfigReloadContainer() {
+        LOG.debug("registeredToConfigReloadContainer - class: {}; clazz: {}", getClass().getCanonicalName(), clazz.getCanonicalName());
+        triggerReload();
+    }
+
     protected abstract C getConfigForExtensions(Set<E> extensions);
 
     protected abstract void triggerReload();
