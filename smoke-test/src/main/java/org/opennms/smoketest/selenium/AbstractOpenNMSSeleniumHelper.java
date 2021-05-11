@@ -292,7 +292,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             // findElementByName("Login").click();
             // LOG.debug("Login clicked");
 
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("login-page")));
+            waitUntilElementDoesNotExist(By.className("login-page"));
             LOG.debug("content found");
 
             AbstractOpenNMSSeleniumHelper.takeScreenshot(getDriver(), "login");
@@ -325,6 +325,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         });
 
         LOG.debug("finished login");
+    }
+
+    private void waitUntilElementDoesNotExist(final By by) {
+        waitUntil(new Callable<Boolean>() {
+            @Override public Boolean call() throws Exception {
+                final WebElement element = getElementWithoutWaiting(by);
+                return element == null;
+            }
+        });
     }
 
     private void invokeWithImplicitWait(int implicitWait, Runnable runnable) {
