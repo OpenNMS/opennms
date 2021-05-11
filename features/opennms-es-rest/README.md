@@ -4,7 +4,7 @@
 ~~~~
 project groupId: org.opennms.plugins
 project name:    opennms-es-rest
-version:         2018.1.28-SNAPSHOT
+version:         2018.1.28
 ~~~~
 
 ### Description
@@ -30,10 +30,10 @@ To install the feature in karaf use
 
 ~~~~
 
-karaf@root> feature:addurl mvn:org.opennms.plugins/opennms-es-rest/2018.1.28-SNAPSHOT/xml/features
+karaf@root> feature:addurl mvn:org.opennms.plugins/opennms-es-rest/2018.1.28/xml/features
 karaf@root> feature:install opennms-es-rest
 
-(or feature:install opennms-es-rest/2018.1.28-SNAPSHOT for a specific version of the feature)
+(or feature:install opennms-es-rest/2018.1.28 for a specific version of the feature)
 ~~~~
 
 Example searches to use in Kibana Sense
