@@ -6,9 +6,9 @@
 
 ==== Release 27.2.0
 
-  Release 27.2.0 contains a bunch of bug fixes and security updates, alongside a branding refresh.
+Release 27.2.0 contains a bunch of bug fixes and security updates, alongside a branding refresh.
 
-  The codename for 27.2.0 is link:$$https://hitchhikers.fandom.com/wiki/Magrathea$$[_Magrathea_].
+The codename for 27.2.0 is link:$$https://hitchhikers.fandom.com/wiki/Magrathea$$[_Magrathea_].
 
 ===== Bug
 
