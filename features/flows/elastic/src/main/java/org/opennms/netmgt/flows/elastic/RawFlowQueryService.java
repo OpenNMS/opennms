@@ -649,12 +649,12 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
             // No results
-            return null;
+            return builder;
         }
         final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
         if (directionAgg == null) {
             // No results
-            return null;
+            return builder;
         }
         for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
             final boolean isIngress = isIngress(directionBucket);

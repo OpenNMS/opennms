@@ -41,12 +41,12 @@
             // netflow.ecn is a keyword -> max aggregation not possible; string comparison required
             "congestion_encountered": {
               "max": {
-                "script": "doc['netflow.ecn'].size() == 0 ? false : doc['netflow.ecn'].value == '3' ? true : false"
+                "script": "doc.containsKey('netflow.ecn') ? (doc['netflow.ecn'].value == '3' ? true : false) : false"
               }
             },
             "non_ect": {
               "max": {
-                "script": "doc['netflow.ecn'].size() == 0 ? false : doc['netflow.ecn'].value == '0' ? true : false"
+                "script": "doc.containsKey('netflow.ecn') ? (doc['netflow.ecn'].value == '0' ? true : false) : false"
               }
             }
           }
