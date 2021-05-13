@@ -47,8 +47,8 @@ opennms-container/*/tarball/*.tar.gz
 __pycache__
 
 # Antora artifacts
-build/
-public/
+/build/
+/public/
 
 # Ignore jenv local version files
 .java-version
