@@ -57,6 +57,6 @@ To add a duty schedule for a user (or group), follow these steps:
 . Click the gear icon in the top-right. 
 . Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
 . Choose the user (or group) you want to modify. 
-. In the *Duty Schedule* area, select the number of schedules you want to add from the drop-down and click *Add Schedule*. 
+. In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*. 
 . Specify the days and times during which you want the user (or group) to receive notifications. 
 . Click *Finish*.

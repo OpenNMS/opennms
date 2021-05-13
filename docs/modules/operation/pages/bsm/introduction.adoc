@@ -8,7 +8,7 @@ With the BSM feature it is possible to model a high level BS context around the 
 To indicate which BS is affected by events at the technical Service Monitors level, a BS Operational Status is calculated.
 
 As an example, let's assume a company runs an online store.
-Customers enter through a login system, select items, place them in the shopping cart and checkout using a payment system.
+Customers log in, select items, place them in the shopping cart and checkout using a payment system.
 The whole service is provided by a few web servers and access data from databases.
 To monitor the status of the databases, a SQL service monitor on each database server is configured.
 For testing the web servers a HTTP service monitor is used for each of them.

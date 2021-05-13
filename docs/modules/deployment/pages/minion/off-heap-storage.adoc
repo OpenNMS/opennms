@@ -1,8 +1,8 @@
 = Off-heap Storage
 
-If a Minion loses connectivity with the broker (i.e. Kafka or ActiveMQ), then any received messages (i.e. syslog, flows, SNMP traps) are queued until connectivity is restored.
+If a Minion loses connectivity with the broker (Kafka or ActiveMQ), then any received messages (syslog, flows, SNMP traps) are queued until connectivity is restored.
 This queue is limited by a fixed (and configurable) number of messages queued in the JVM heap and can optionally queue additional messages by persisting directly to the filesystem avoiding heap memory usage. 
-Once the queue is full, additional messages will be dropped.
+Once the queue is full, additional messages are dropped.
 
 The off-heap storage feature lets you extend the storage capacity by queuing messages outside of the JVM heap.
 
@@ -28,4 +28,4 @@ config:update<5>
 <5> Save and update the configuration
 
 NOTE: The `offHeapSize` can also be left empty or set to 0 to disable queueing off heap.
-      In this case only heap memory will be used for queueing.
+      In this case only heap memory is used for queueing.

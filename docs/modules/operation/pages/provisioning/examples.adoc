@@ -34,7 +34,7 @@ Click the _Add Interface_ link to add an interface entity to the node.
 .Adding an Interface to the node definition
 image:provisioning/00009.jpeg[]
 
-Enter the IP address for this interface entity, a description, and specify the Primary attribute as `P` (Primary), `S` (Secondary), `N` (Not collected), or `C` (Collected) and click the save button.
+Type the IP address for this interface entity, a description, and specify the Primary attribute as `P` (Primary), `S` (Secondary), `N` (Not collected), or `C` (Collected) and click the save button.
 Now the node entity has an interface for which services can be defined for which the Web-UI now presents the _Add Service_ link.
 Add two services (ICMP, SNMP) via this link.
 

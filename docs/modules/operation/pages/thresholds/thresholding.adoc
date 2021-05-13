@@ -222,7 +222,7 @@ image:thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
-. Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
+. Note the name of the datasource, and type it in the *Datasource* field when you <<threshold-create, create your threshold>>.  
 
 [[threshold-group]]
 === Create a Threshold Group

@@ -329,7 +329,7 @@ You can now use {page-component-title} to create PDF reports of Grafana dashboar
 . In the {page-component-title} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display.
 . In the `Report Parameters` area, specify the appropriate information.
-.. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the drop-down list.
+.. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the list.
 .. You can also specify CSV for report type.
 . Click `Create Report`.
 .. You are prompted to save the report locally or open it.

@@ -6,7 +6,7 @@ A basic {page-component-title} deployment installs and configures the core softw
 image::deployment/core/opennms-arch.png[]
 
 {page-component-title} is a modular and event-driven architecture.
-Development and design of OpenNMS follows the https://en.wikipedia.org/wiki/FCAPS[FCAPS principle]. 
+OpenNMS development and design follows the https://en.wikipedia.org/wiki/FCAPS[FCAPS principle]. 
 It defines the standard functionalities of network management applications and covers several administrative entities:
 
 * Fault management 
