@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -487,8 +488,10 @@ public class AggregatedFlowQueryIT {
         // Top 1
         hostTraffic = smartQueryService.getTopNHostSeries(1, step, false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
-        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>(new Host("10.1.1.12", "la.le.lu"), true),
-                new Directional<>(new Host("10.1.1.12", "la.le.lu"), false)));
+        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(
+                new Directional<>(new Host("10.1.1.12", "la.le.lu"), true),
+                new Directional<>(new Host("10.1.1.12", "la.le.lu"), false))
+        );
         verifyHttpsSeriesAggregated(hostTraffic, new Host("10.1.1.12", "la.le.lu"));
     }
 
@@ -683,8 +686,14 @@ public class AggregatedFlowQueryIT {
         //
         final double error = 1E-8;
         assertThat(timestamps, contains(0L, 60000L));
-        assertThat(httpsIngressValues, containsDoubles(error, 210.0, 0.0));
-        assertThat(httpsEgressValues, containsDoubles(error, 2100.0, 0.0));
+        // because of unaligned windows the flows are falling into two buckets
+        // -> when aggregations have a stretch of their window start to their window end
+        //    (i.e. they always span a complete window length)
+        // -> because of the shift the complete window length falls into 2 buckets
+        double httpsIngressSum = httpsIngressValues.stream().collect(Collectors.summingDouble(f -> f));
+        assertThat(httpsIngressSum, closeTo(210.0, error));
+        double httpsEgressSum = httpsEgressValues.stream().collect(Collectors.summingDouble(f -> f));
+        assertThat(httpsEgressSum, closeTo(2100.0, error));
     }
 
     private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
@@ -706,7 +715,7 @@ public class AggregatedFlowQueryIT {
         //
         //   53.8461 + 21.2904 = 75.1365
         final double error = 1E-8;
-        assertThat(timestamps, contains(10L, 20L, 30L, 40L));
+        assertThat(timestamps, contains(OFFSET + 10L, OFFSET + 20L, OFFSET + 30L, OFFSET + 40L));
         assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936,
                 17.741935483870968));
         assertThat(httpsEgressValues, containsDoubles(error, 751.36476426799, 816.3771712158809, 354.83870967741933,
@@ -725,7 +734,7 @@ public class AggregatedFlowQueryIT {
         //      = 7.6923 b/ms
         //   7 ms was spent in the range, so 7 * 7.6923 = 53.8461 bytes
         final double error = 1E-8;
-        assertThat(timestamps, contains(10L, 20L));
+        assertThat(timestamps, contains(OFFSET + 10L, OFFSET + 20L));
         assertThat(httpsIngressValues, containsDoubles(error, 53.84615384615385, 46.15384615384615));
         assertThat(httpsEgressValues, containsDoubles(error, 538.4615384615385, 461.53846153846155));
     }
@@ -757,34 +766,44 @@ public class AggregatedFlowQueryIT {
         return column;
     }
 
+    // Nephron uses unaligned windows
+    // -> windows are shifted by the hash of their exporter node modulo the window size
+    // -> use dates that are sufficiently "large" in order not to be smaller than the maximum shift
+
+    private static long OFFSET = 60000;
+
+    private Date date(long millis) {
+        return new Date(OFFSET + millis);
+    }
+
     private void loadDefaultFlows() throws FlowException {
         final List<FlowDocument> flows = new FlowBuilder()
                 .withExporter("SomeFs", "SomeFid", 99)
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
-                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
                 .withDirection(Direction.EGRESS)
-                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 .withDirection(Direction.INGRESS)
                 .withHostnames(null, "la.le.lu")
-                .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
+                .withFlow(date(13), date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+                .withFlow(date(13), date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
                 .withDirection(Direction.INGRESS)
                 .withHostnames("ingress.only", "la.le.lu")
-                .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+                .withFlow(date(14), date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
-                .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+                .withFlow(date(14), date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
                 // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
                 .withDirection(Direction.INGRESS)
-                .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
+                .withFlow(date(50), date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
                 .withDirection(Direction.EGRESS)
-                .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
+                .withFlow(date(50), date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
                 .build();
 
         // expect 28 flow summary documents
