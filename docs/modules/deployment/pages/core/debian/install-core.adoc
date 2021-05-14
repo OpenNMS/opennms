@@ -13,7 +13,7 @@ sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 sudo apt update
 ----
 
-NOTE: You can safely ignore the message with conflicting distributions stable but got opennms-xx.
+NOTE: You can safely ignore the message regarding conflicting distributions (expected stable but got opennms-xx).
 
 .Install OpenNMS {page-component-title} with built-in dependencies (optional)
 [source, console]
@@ -30,9 +30,9 @@ TIP: This is optional. If you want time series trending and forecast functions y
 sudo apt -y install r-recommended
 ----
 
-TIP: We recommend that you disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
-     {page-component-title} requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
-     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan perform an upgrade.
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it runs.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     We recommend that you exclude the {page-component-title} packages from update except when you plan perform an upgrade.
 
 [source, console]
 ----

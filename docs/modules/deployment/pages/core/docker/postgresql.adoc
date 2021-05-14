@@ -1,4 +1,4 @@
-.Create a project directory for PostgreSQL and create a `docker-compose.yml` file.
+.Create a project directory for PostgreSQL and create a `docker-compose.yml` file
 [source, console]
 ----
 mkdir postgres
@@ -35,10 +35,10 @@ services:
       - '5432:5432/tcp'
 ----
 
-<1> Persist the PostgreSQL database in a local volume
-<2> PostgreSQL service is named `database` with a friendly `container_name`
-<3> Image reference using the official PostgreSQL image
-<4> Set the time zone and set a postgres user with password for administrative tasks, e.g. creating and changing database schemas for upgrades
+<1> Persist the PostgreSQL database in a local volume.
+<2> PostgreSQL service is named `database` with a friendly `container_name`.
+<3> Image reference using the official PostgreSQL image.
+<4> Set the time zone and the postgres credentials for administrative tasks (for example, creating and changing database schemas for upgrades).
 <5> Mount the volume for to persist the PostgreSQL database files
 <6> Run an internal health check to see if the PostgreSQL instance is ready
 

@@ -31,14 +31,14 @@ IMPORTANT: You must provide a password for the `opennms` database user.
 sudo -i -u postgres createdb -O opennms opennms
 ----
 
-.Set a password for PostgrSQL super user
+.Set a password for PostgrSQL superuser
 [source, console]
 ----
 sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
 ----
 
 IMPORTANT: Change `YOUR-POSTGRES-PASSWORD` to a secure one.
-         The super user is required to be able to initialize and change the database schema for installation and updates.
+         The superuser is required to be able to initialize and change the database schema for installation and updates.
 
 .Change the access policy for PostgreSQL
 [source, console]

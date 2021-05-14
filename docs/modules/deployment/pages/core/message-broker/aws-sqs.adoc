@@ -17,31 +17,31 @@ org.opennms.core.ipc.aws.sqs.aws_access_key_id=my-access-key<6>
 org.opennms.core.ipc.aws.sqs.aws_secret_access_key=my-secret-access-key<7>
 ----
 
-<1> Use AWS SQS for Remote Producer Calls (RPC)
-<2> Use AWS SQS as message sink
-<3> Ensure that messages are not consumed from Kafka until the system has fully initialized. 60 seconds is here used a default
-<4> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Minion setting
-<5> Set AWS SQS region
-<6> The AWS SQS access key
-<7> The AWS SQS secret for the access key
+<1> Use AWS SQS for remote procedure calls (RPC).
+<2> Use AWS SQS as message sink.
+<3> Ensure that messages are not consumed from Kafka until the system has fully initialized. Default is 60 seconds.
+<4> If you require consistent ordering of incoming messages, you can use FIFO queues. Default is false and **must** match the Minion setting.
+<5> Set AWS SQS region.
+<6> The AWS SQS access key.
+<7> The AWS SQS secret for the access key.
 
-TIP: The default credential provider chain looks for credentials in the following order:
+The default credential provider chain looks for credentials in the following order:
 
-1. Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
-2. Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$\{OPENNMS_HOME}/etc/opennms.conf`)
-3. Default credential profiles file (i.e. `~/.aws/credentials`)
-4. Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
-5. Instance profile credentials (i.e. through the metadata service when running on EC2)
+1. Environment Variables (such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
+2. Java system properties (such as `aws.accessKeyId` and `aws.secretKey`). Add these keys to `$\{OPENNMS_HOME}/etc/opennms.conf`).
+3. Default credential profiles file (for example, `~/.aws/credentials`).
+4. Amazon ECS container credentials (for example, `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`).
+5. Instance profile credentials (such as through the metadata service when running on EC2).
 
-.Apply the changes with restarting {page-component-title} Core instance
+.Apply the changes with {page-component-title} Core instance restart
 [source, console]
 ----
 sudo systemctl restart opennms
 ----
 
-TIP: When running OpenNMS {page-component-title} inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file.
-     The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run.
+TIP: When OpenNMS {page-component-title} runs inside AWS, you can use the default provider chain with an IAM role to avoid hard coding the AWS credentials on a configuration file.
+     The following shows an example of the role to associate with the EC2 instance on which OpenNMS is going to run.
 
 image::deployment/core/message-broker/aws-iam-role.png[]
 
-TIP: You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queueing Services reference] section.
+You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queueing Services reference] section.

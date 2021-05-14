@@ -23,19 +23,19 @@ sudo vi etc/featuresBoot.d/grpc.boot
 opennms-core-ipc-grpc-server
 ----
 
-.Apply the changes with restarting {page-component-title} Core instance
+.Apply the changes with {page-component-title} Core instance restart
 [source, console]
 ----
 sudo systemctl restart opennms
 ----
 
-NOTE: The gRPC server is listening on port `8990/tcp` by default.
-      You can verify if the port is listening with `ss -lnpt = :8990`
+NOTE: The gRPC server listens on port `8990/tcp` by default.
+      Use `ss -lnpt = :8990` to verify the port is listening. 
 
-TIP: This optional, if you want to enable TLS for gRPC you have to provide certificate files and enable it.
+TIP: Optional: if you want to enable TLS for gRPC you have to provide certificate files and enable it.
      The commands for TLS are described below.
 
-.Connect to the Karaf Shell
+.Connect to the Karaf shell
 [source, karaf]
 ----
 ssh -p 8101 admin@localhost
@@ -52,15 +52,15 @@ config:property-set trust.cert.filepath /custom-path/ca.crt<4>
 config:update<5>
 ----
 
-<1> Enable TLS for the gRPC server 
-<2> Set the path to your CA certificate file
-<3> Set the path server certificate private key file
+<1> Enable TLS for the gRPC server. 
+<2> Set the path to your CA certificate file.
+<3> Set the path to the server certificate private key file.
 <4> Set the path to your server certificate file
-<5> Save and update the configuration
+<5> Save and update the configuration.
 
 TIP: This is optional and you can set a maximum message size for gRPC.
-     The maxium size has to be the same on the Minion as well.
-     If you don't set a maximum message size the default is 10 MiB.
+     The maximum size must be the same on the Minion.
+     Default maximum message size is 10 MiB.
 
 .Configure maximum message size for gRPC in the Karaf Shell
 [source, karaf]
@@ -70,7 +70,7 @@ config:property-set max.message.size 10485760
 config:update
 ----
 
-.Apply the changes with restarting {page-component-title} Core instance
+.Apply the changes with {page-component-title} Core instance restart
 [source, console]
 ----
 sudo systemctl restart opennms

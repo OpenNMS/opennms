@@ -21,9 +21,9 @@ sudo yum -y install epel-release
 sudo yum -y install R-core
 ----
 
-TIP: We recommend that you disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
-     {page-component-title} requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
-     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it runs.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
