@@ -1,6 +1,6 @@
 name: horizon
 version: '27.1.1-SNAPSHOT'
-title: Horizon
+title: Meridian
 prerelease: true
 asciidoc:
   attributes:

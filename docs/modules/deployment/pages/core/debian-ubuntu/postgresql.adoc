@@ -10,8 +10,8 @@ sudo apt -y install postgresql
 sudo -u postgres createuser -P opennms
 ----
 
-CAUTION: You get asked for a password for the database user `opennms`.
-         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder and please set a secure password.
+IMPORTANT: You must provide a password for the database user `opennms`.
+         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder. Please set a secure password.
 
 .Create an empty database and set the owner to the opennms user
 [source, console]

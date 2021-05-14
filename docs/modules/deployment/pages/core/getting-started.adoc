@@ -124,7 +124,7 @@ endif::[]
 
 == First login
 
-After starting the {page-component-title} Core services, access the web application at +
+After you start the {page-component-title} Core services, access the web application at +
 `\http://core-instance-ip:8980/opennms`.
 The default login and password is *admin*.
 
@@ -133,6 +133,6 @@ IMPORTANT: Immediately change the password to a secure one.
 . Open `\http://core-instance-ip:8980/opennms` in your web browser.
 . Log in with with admin/admin.
 . Click  btn:[admin] -> btn:[Change Password] in the navigation bar.
-. Use *admin* as the current password, type and confirm a new password in the appropriate boxes.
+. Use *admin* as the current password then type and confirm a new password in the appropriate boxes.
 . Click btn:[Submit].
-. Log out and log in with your new password.
+. Log out, then log in with your new password.

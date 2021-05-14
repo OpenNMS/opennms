@@ -22,13 +22,13 @@ sudo vi /opt/opennms/etc/opennms-datasources.xml
                     password="** YOUR-POSTGRES-PASSWORD **" /><5>
 ----
 
-<1> Set the database name _{page-component-title}_ should use
-<2> Set the user name to access the _opennms_ database table
-<3> Set the password to access the _opennms_ database table
-<4> Set the _postgres_ user for administrative access to PostgreSQL
-<5> Set the password for administrative access to PostgreSQL
+<1> Set the database name {page-component-title} should use.
+<2> Set the user name to access the opennms database table.
+<3> Set the password to access the opennms database table.
+<4> Set the postgres user for administrative access to PostgreSQL.
+<5> Set the password for administrative access to PostgreSQL.
 
-.Detect and assign _Java_ environment and persist in /opt/opennms/etc/java.conf
+.Detect and assign Java environment and persist in /opt/opennms/etc/java.conf
 [source, console]
 ----
 sudo /opt/opennms/bin/runjava -s
@@ -46,13 +46,13 @@ sudo /opt/opennms/bin/install -dis
 sudo systemctl enable --now opennms
 ----
 
-.Allow connection to the Web UI from your network
+.Allow connection to the web UI from your network
 [source, console]
 ----
 sudo firewall-cmd --permanent --add-port=8980/tcp
 sudo systemctl reload firewalld
 ----
 
-TIP: If you want to receive SNMP Traps or Syslog messages you have to allow incoming traffic on your host firewall as well.
-     By default OpenNMS {page-component-title} SNMP trap daemon is listening on 162/udp and Syslog daemon is listening on 10514/udp.
-     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.
+TIP: If you want to receive SNMP traps or Syslog messages you must allow incoming traffic on your host firewall as well.
+     By default, the OpenNMS {page-component-title} SNMP trap daemon listens on 162/udp and the Syslog daemon listens on 10514/udp.
+     The SNMP trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.
