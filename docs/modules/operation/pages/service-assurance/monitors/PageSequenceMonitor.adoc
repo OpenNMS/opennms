@@ -53,42 +53,42 @@ Additionally, it is possible to configure a page sequence containing a path thro
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-.Page Sequence Parameter
+.Page Parameter
 [options="header, autowidth"]
 |===
 | Parameter                  | Description                                                                                | Required | Default
-| `name`                     | The name of the page-sequence. *(Is this relevant/used?)*                                  | optional | `-`
-| `method`                   | _HTTP_ method for example _GET_ or _POST_                                                  | `-`      | `-`
+| `name`                     | The name of the page-sequence.                                   | optional | `-`
+| `method`                   | _HTTP_ method for example _GET_ or _POST_                                                  | optional      | `GET`
 | `http-version`             | _HTTP_ protocol version number, 0.9, 1.0 or 1.1                                            | optional | `HTTP/1.1`
 | `user-agent`               | Set the _user agent_ field in _HTTP_ header to identify the OpenNMS monitor                | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
 | `virtual-host`             | Set the _virtual host_ field in _HTTP_ header.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the _TLS_
                                negotiation, known as server name indication (_SNI_)
-                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)                      | `-`      | `-`
-| `path`                     | The relative URL to call in the request.                                                   | required | `-`
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)                      | optional      | `-`
+| `path`                     | The relative URL to call in the request. Any query string content after a `?` should be part of the `query` parameter.                                      | required | `-`
 | `scheme`                   | Define the _URL_ scheme as `http` or `https`                                               | optional | `http`
-| `user-info`                | Set _user info_ field in the _HTTP_ header                                                 | `-`      | `-`
+| `user-info`                | Set _user info_ field in the _HTTP_ header.  Colon separated credentials such as `USERNAME:PASSWORD`                                                 | optional      | `-`
 | `host`                     | Set _host_ field in _HTTP_ header                                                          | optional | `IP interface address of the service`
-| `requireIPv6`              | Communication requires a connection to an _IPv6_ address. (`true` or `false`)              | `-`      | `-`
-| `requireIPv4`              | Communication requires a connection to an _IPv4_ address. (`true` or `false`)              | `-`      | `-`
+| `requireIPv6`              | Communication requires a connection to an _IPv6_ address. (`true` or `false`)              | optional      | `-`
+| `requireIPv4`              | Communication requires a connection to an _IPv4_ address. (`true` or `false`)              | optional      | `-`
 | `disable-ssl-verification` | Enable or disable _SSL_ certificate verification for _HTTPS_ tests.
                                Please use this option carefully, for self-signed certificates import the CA certificate
                                in the JVM and don't just disable it.                                                      | optional | `false`
-| `port`                     | Port of the web server connecting to                                                       | optional | `80`
-| `query`                    | ??                                                                                         | `-`      | `-`
+| `port`                     | Host port number to use when connecting                                                       | optional | `80`
+| `query`                    | Value to concatenate with a `?` after the _path_ parameter                                                                                         | optional      | `-`
 | `failureMatch`             | Text to look for in the response body.
                                This is a _Regular Expression_ matched against every line, and it will be considered a
-                               failure at the first match and sets the service with this monitor _Down_.                  | `-`      | `-`
+                               failure at the first match and sets the service with this monitor _Down_.                  | optional      | `-`
 | `failureMessage`           | The failure message is used to construct the reason code.
                                `${\n}` values may be used to pull information from matching groups in the `failureMatch`
-                               regular expression.                                                                        | `-`      | `-`
+                               regular expression.                                                                        | optional      | `-`
 | `successMatch`             | Text to look for in the response body.
                                This is a _Regular Expression_ matched against every line, and it will be considered a
                                success at the first match and sets the service with this monitor _Up_.                    | optional | `-`
 | `locationMatch`            | The relative URL which must be loaded for the request to be considered successful.         | optional | `-`
-| `response-range`           | Range for allowed HTTP error codes from the response.                                      | `-`      | `-`
+| `response-range`           | Range for allowed HTTP error codes from the response.                                      | optional      | `-`
 | `session-variable`         | Assign the value of a regex match group to a session variable with a user-defined name.
-                               The match group is identified by number and must be zero or greater.                       | `-`      | `-`
+                               The match group is identified by number and must be zero or greater.                       | optional      | `-`
 | `response-range`           | A comma-separated list of acceptable _HTTP_ response code ranges (`200-202,299`).          | optional | `100-399`
 |===
 
