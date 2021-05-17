@@ -103,6 +103,8 @@ We use the regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly on
 
 This will associate nodes for the host entries `foo.e46.hs-fulda.de.` and `bar.e46.hs-fulda.de.` to the location `e46` while hosts like `aaa.g51.hs-fulda.de` and `bbb.g51.hs-fulda.de` will be assigned location `g51`.
 
+TIP: You can use online tools like `https://www.urlencoder.org` to en- and decode your parameters.
+
 .DNS Setup
 
 Currently, the DNS server requires to be setup to allow a zone transfer from the {opennms-product-name} server.
