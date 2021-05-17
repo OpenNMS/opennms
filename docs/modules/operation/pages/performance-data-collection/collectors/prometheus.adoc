@@ -23,10 +23,10 @@ This collector provides tools for parsing and mapping the metrics to the collect
 |===
 | Parameter       | Description                                    | Required | Default value
 | `collection`    | The name of the _Prometheus Collection_ to use | required |
-| `url`           | HTTP URL to query for the metrics              | required |
+| `url`           | HTTP URL to query for the metrics (most likely will be `http://INTERFACE_ADDRESS:9100/metrics`)  | required |
 | `timeout`       | HTTP socket and read timeout in milliseconds   | optional | 10000 (10 seconds)
 | `retry`         | Number of retries before failing               | optional | 2
-| `header-*       | Optional headers to pass in the HTTP request   | optional | (none)
+| `header-*`      | Optional headers to pass in the HTTP request   | optional | (none)
 |===
 
 
