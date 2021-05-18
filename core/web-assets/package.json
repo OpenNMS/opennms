@@ -118,7 +118,7 @@
         "tempusdominus-core": "^5.0.3",
         "ui-bootstrap4": "^3.0.6",
         "ui-select-bs4": "https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae",
-        "underscore": "^1.9.1"
+        "underscore": "^1.12.1"
     },
     "resolutions": {
         "atob": "^2.1.0",
