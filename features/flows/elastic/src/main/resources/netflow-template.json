@@ -846,8 +846,13 @@
                         "type": "date"
                     },
                     "tos": {
-                        "type": "keyword",
-                        "norms": false
+                        "type": "keyword"
+                    },
+                    "dscp": {
+                        "type": "keyword"
+                    },
+                    "ecn": {
+                        "type": "keyword"
                     },
                     "version": {
                         "type": "keyword",

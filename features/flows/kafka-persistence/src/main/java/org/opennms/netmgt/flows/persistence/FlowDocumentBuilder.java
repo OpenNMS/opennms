@@ -84,6 +84,8 @@ public class FlowDocumentBuilder {
         getUInt32Value(enrichedFlow.getFlow().getProtocol()).ifPresent(builder::setProtocol);
         getUInt32Value(enrichedFlow.getFlow().getTcpFlags()).ifPresent(builder::setTcpFlags);
         getUInt32Value(enrichedFlow.getFlow().getTos()).ifPresent(builder::setTos);
+        getUInt32Value(enrichedFlow.getFlow().getDscp()).ifPresent(dscp -> builder.setDscp(dscp));
+        getUInt32Value(enrichedFlow.getFlow().getEcn()).ifPresent(ecn -> builder.setEcn(ecn));
         getUInt32Value(enrichedFlow.getFlow().getFlowRecords()).ifPresent(builder::setNumFlowRecords);
         getUInt64Value(enrichedFlow.getFlow().getFlowSeqNum()).ifPresent(builder::setFlowSeqNum);
         String vlan = enrichedFlow.getFlow().getVlan() != null ? Integer.toUnsignedString(enrichedFlow.getFlow().getVlan()) : null;

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -79,11 +80,12 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getTopNQuery(int N, GroupedBy groupedBy, String key, List<Filter> filters) {
+    public String getTopNQuery(int N, GroupedBy groupedBy, String aggregationType, String key, List<Filter> filters) {
         return render("agg_top_n.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("N", N)
                 .put("groupedBy", groupedBy)
+                .put("aggregationType", aggregationType)
                 .put("key", key)
                 .build());
     }
@@ -98,15 +100,24 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getSeriesFromTopNQuery(int N, GroupedBy groupedBy, String key, long step, long start, long end, List<Filter> filters) {
+    public String getSeriesFromTopNQuery(int N, GroupedBy groupedBy, String aggregationType, String key, long step, long start, long end, List<Filter> filters) {
         return render("series_top_n.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("N", N)
                 .put("groupedBy", groupedBy)
+                .put("aggregationType", aggregationType)
                 .put("key", key)
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
+                .build());
+    }
+
+    public String getAllTerms(GroupedBy groupedBy, String groupedByField, List<Filter> filters) {
+        return render("all_terms.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("groupedBy", groupedBy)
+                .put("groupedByField", groupedByField)
                 .build());
     }
 
@@ -155,4 +166,13 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                                                   .put("host", host)
                                                   .build());
     }
+
+    @Override
+    public String visit(DscpFilter dscpFilter) {
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "dscp")
+                .put("values", dscpFilter.getDscp())
+                .build());
+    }
+
 }
