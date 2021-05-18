@@ -3,15 +3,19 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
+      - image: opennms/build-env:11.0.9.11-3.6.3-b5958
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5875
+      - image: opennms/build-env:debian-jdk11-b6222
   docker-executor:
     docker:
       - image: docker:20.10.1-git
+  docs-executor:
+    docker:
+      - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
-    machine: true
+    machine:
+     image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -27,11 +31,11 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: release-27.x
+      default: release-28.x
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: release-27.x
+      default: release-28.x
     main_branch:
       description: the auto-merge main branch
       type: string
@@ -178,9 +182,9 @@ commands:
   run-smoke-tests:
     description: "Run the smoke tests"
     parameters:
-      minimal:
-        default: false
-        type: boolean
+      suite:
+        default: core
+        type: string
     steps:
       - run:
           name: Enable swap
@@ -211,7 +215,7 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
-            .circleci/scripts/smoke.sh << parameters.minimal >>
+            .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
           when: always
@@ -281,16 +285,6 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Psmoke \
               install --batch-mode
-            pushd opennms-doc
-              ../compile.pl \
-                -DupdatePolicy=never \
-                -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=1 \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -DskipPdfGeneration=false \
-                -P'!jdk7+' \
-                install --batch-mode
-            popd
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -328,8 +322,18 @@ commands:
     steps:
       - update-maven-cache
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Integration Tests
-          no_output_timeout: 1.0h
+          no_output_timeout: 15m
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
@@ -341,8 +345,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
           name: Gather tests
           when: always
@@ -363,12 +367,26 @@ commands:
                 root: ~/
                 paths:
                   - code-coverage
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           when: always
           path: ~/test-results
           destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           when: always
           path: ~/generated-tests
@@ -513,6 +531,11 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+      - build-docs:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
@@ -544,7 +567,37 @@ workflows:
             branches:
               ignore:
                 - /^merge-foundation.*/
-      - smoke-test-full:
+      - smoke-test-core:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-minion:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-sentinel:
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -641,8 +694,10 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -660,8 +715,10 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -671,8 +728,10 @@ workflows:
           # if everything passes
           requires:
             - horizon-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -685,8 +744,10 @@ workflows:
             - horizon-deb-build
             - minion-deb-build
             - sentinel-deb-build
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
             - smoke-test-minimal
-            - smoke-test-full
             - integration-test
           filters:
             branches:
@@ -705,16 +766,31 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-
+  build-docs:
+    executor: docs-executor
+    steps:
+      - cached-checkout
+      - run:
+          name: Validate Xrefs in docs
+          command: |
+            NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
+      - run:
+          name: Build docs with Antora
+          command: |
+             DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+      - store_artifacts:
+          path: ~/project/build/site.zip
+          destination: site.zip
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 2
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -737,6 +813,7 @@ jobs:
           command: |
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -749,6 +826,7 @@ jobs:
               -Dopennms.home=/opt/opennms \
               install --batch-mode
             # javadoc
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -760,6 +838,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               javadoc:aggregate --batch-mode
+            date
       - run:
           name: Collect Artifacts
           command: |
@@ -772,7 +851,6 @@ jobs:
               tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
       - run:
           name: Build Minion OCI
@@ -1088,7 +1166,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 12
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1117,7 +1195,29 @@ jobs:
             export MAVEN_OPTS="-Xms3G -Xmx3G"
             .circleci/scripts/sonar.sh
       - save-sonar-cache
-  smoke-test-full:
+  smoke-test-core:
+    executor: smoke-test-executor
+    parallelism: 6
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: core
+  smoke-test-minion:
+    executor: smoke-test-executor
+    parallelism: 6
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minion
+  smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
@@ -1126,14 +1226,15 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run-smoke-tests
+      - run-smoke-tests:
+          suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     steps:
       - attach_workspace:
           at: ~/
       - run-smoke-tests:
-          minimal: true
+          suite: minimal
   create-merge-foundation-branch:
     <<: *defaults
     <<: *docker_container_config

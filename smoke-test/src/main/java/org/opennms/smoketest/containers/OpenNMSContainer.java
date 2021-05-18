@@ -411,7 +411,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
             // have been given a chance to bind
             LOG.info("Waiting for startup to complete.");
-            await().atMost(3, MINUTES).until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
+            await().atMost(5, MINUTES).until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 

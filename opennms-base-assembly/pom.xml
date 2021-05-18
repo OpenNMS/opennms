@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -216,6 +216,7 @@
                   <arguments>
                     <argument>${project.basedir}/src/test/shell</argument>
                   </arguments>
+                  <skip>${skipTests}</skip>
                 </configuration>
               </execution>
             </executions>

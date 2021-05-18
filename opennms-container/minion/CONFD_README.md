@@ -9,7 +9,7 @@ specific configuration files will overwrite the corresponding config provided by
 ## Contents
 The following describes the keys that can be specified in `minion-config.yaml` to configure the Minion via confd.
 ### Minion Controller Config
-```
+```yaml
 --- 
 broker-url: "<broker url>"
 http-url: "<http url>"
@@ -22,14 +22,14 @@ Config specified will be written to `etc/org.opennms.minion.controller.cfg`.
 Supplying the http or broker username/password via yaml file for configuration via confd is not supported.
 
 ### Instance Id
-```
+```yaml
 ---
 org.opennms.instance.id: "<instance id>"
 ```
 Config specified will be written to `etc/instance-id.properties`.
 
 ### AWS SQS
-```
+```yaml
 ---
 aws:
     aws_region: "us-east-1"
@@ -48,7 +48,7 @@ ipc:
 Config specified will be written to `etc/org.opennms.core.ipc.aws.sqs.cfg`.
 
 ### Kafka RPC
-```
+```yaml
 --- 
 ipc:
     rpc:
@@ -62,7 +62,7 @@ Config specified will be written to `etc/org.opennms.core.ipc.rpc.kafka.cfg`. Ad
 `bootstrap.servers` key is specified, `etc/featuresBoot.d/kafka-rpc.boot` will also be updated.
 
 ### Kafka SINK
-```
+```yaml
 --- 
 ipc:
     sink:
@@ -79,7 +79,7 @@ Config specified will be written to `etc/org.opennms.core.ipc.sink.kafka.cfg`. A
 `bootstrap.servers` key is specified, `etc/featuresBoot.d/kafka-sink.boot` will also be updated.
 
 ### Sink Off Heap
-```
+```yaml
 --- 
 ipc:
     sink:
@@ -93,7 +93,7 @@ Config specified will be written to `etc/org.opennms.core.ipc.sink.offheap.cfg`.
 ### Single Port Flows
 To configure flows on a single port, set the following `enabled` key to `true`. Optionally parameters can be provided
 that will be included in the generated config.
-```
+```yaml
 --- 
 telemetry:
     flows:
@@ -110,7 +110,7 @@ Config specified will be written to `etc/org.opennms.features.telemtry.listeners
 ### Telemetry Flow Listeners
 Individual flow listeners can be configured. See the example below for how to specify parameters and parsers. Any number
 of uniquely named listeners can be defined.
-```
+```yaml
 --- 
 telemetry:
     flows:
@@ -130,7 +130,7 @@ telemetry:
 Config specified will be written to `etc/org.opennms.features.telemtry.listeners-<Listener-Name>.cfg`.
 
 ### Syslog
-```
+```yaml
 --- 
 netmgt:
     syslog:
@@ -141,7 +141,7 @@ netmgt:
 Config specified will be written to `etc/org.opennms.netmgt.syslog.cfg`.
 
 ### Traps
-```
+```yaml
 --- 
 netmgt:
     traps:
@@ -152,7 +152,7 @@ netmgt:
 Config specified will be written to `etc/org.opennms.netmgt.trapd.cfg`.
 
 ### System Properties
-```
+```yaml
 --- 
 system:
     properties:
@@ -164,7 +164,7 @@ Config specified will be written to `etc/confd.system.properties` which gets aut
 `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.
 
 ### Karaf Properties
-```
+```yaml
 ---
 karaf:
     shell:
@@ -185,7 +185,7 @@ Config specified will be written to:
 - `etc/org.apache.karaf.management.cfg` for content under `management`.
 
 ### Jetty Properties
-```
+```yaml
 ---
 jetty:
     web:
@@ -195,7 +195,7 @@ jetty:
 Config specified will be written to `etc/org.ops4j.pax.web.cfg`
 
 ### Secure Credentials Vault Provider
-```
+```yaml
 --- 
 scv:
     provider: "dominion"
@@ -204,7 +204,7 @@ Can be used to override the default SCV provider from the JCEKS implementation (
 based implementation which requests credentials from Dominion. If not specified the default JCEKS will be used.
 
 ### Java Options
-```
+```yaml
 ---
 process-env:
     java-opts:
@@ -214,6 +214,36 @@ process-env:
 ```
 
 Can be used to specify an arbitrary list of Java options. Config specified is written to file `/opt/minion/etc/minion-process.env` that contains `key=value` pairs that are set in the environment of the Minion process..
+
+## Prometheus JMX Exporter
+
+To provide an out of band management of the JVM with the Minion process, the Prometheus JMX exporter is shipped with this container image.
+The default configuration is set to the following values and can be set in the `minion-config.yaml` file:
+
+```yaml
+---
+java:
+  agent:
+    prom-jmx-exporter:
+      jmxUrl: "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"
+      username: "admin"
+      password: "admin"
+      lowerCaseOutputName: "true"
+      lowercaseOutputLabelNames: "true"
+      whitelistObjectNames:
+      - "org.opennms.core.ipc.sink.producer:*"
+      - "org.opennms.netmgt.dnsresolver.netty:*"
+      - "org.opennms.netmgt.telemetry:*"
+```
+
+The Minion container images comes with the Prometheus JMX exporter and can be enabled with:
+
+```yaml
+---
+process-env:
+  java-opts:
+    - -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
+```
 
 ## Test/Develop confd templates
 `confd` template changes can locally be tested by running a Minion container and mapping the corresponding files into the container. The following procedure might be useful:
@@ -226,7 +256,7 @@ Can be used to specify an arbitrary list of Java options. Config specified is wr
 1. If the result is not yet satisfactory then remove the container by `docker rm -f minion`, edit the files in your IDE, and start the image again
 
 
-```
+```yaml
 version: '3'
 services:
   minion:

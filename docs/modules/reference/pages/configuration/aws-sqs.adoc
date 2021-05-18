@@ -1,0 +1,90 @@
+= Amazon Simple Queue Service
+
+From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following tables list parameters which can be added to either Minion (via `$\{MINION_HOME}/etc/org.opennms.core.ipc.aws.sqs.cfg`) or _{page-component-title}_ (via `$\{OPENNMS_HOME}/etc/opennms.properties.d/aws-sqs.properties`), along with the correct syntax for each environment.
+
+== Sink Settings
+
+Queues used for reception of unsolicited messages (e.g. SNMP traps, syslog messages) are configured by setting properties with `sink` prepended to the SQS parameter name:
+
+[options="header"]
+|====
+| Parameter                      | Notes                                         | _{page-component-title}_                                          | Minion
+| `DelaySeconds`                 | Default: 0 seconds                            | `org.opennms.core.ipc.aws.sqs.sink.DelaySeconds`                  | `sink.DelaySeconds`
+| `MaximumMessageSize`           | Default: 262144 bytes                         | `org.opennms.core.ipc.aws.sqs.sink.MaximumMessageSize`            | `sink.MaximumMessageSize`
+| `MessageRetentionPeriod`       | Default: 1209600 seconds                      | `org.opennms.core.ipc.aws.sqs.sink.MessageRetentionPeriod`        | `sink.MessageRetentionPeriod`
+| `ReceiveMessageWaitTimeSeconds`| Default: 10 seconds (for OpenNMS)             | `org.opennms.core.ipc.aws.sqs.sink.ReceiveMessageWaitTimeSeconds` | `sink.ReceiveMessageWaitTimeSeconds`
+| `VisibilityTimeout`            | Default: 30 seconds                           | `org.opennms.core.ipc.aws.sqs.sink.VisibilityTimeout`             | `sink.VisibilityTimeout`
+| `Policy`                       | -                                             | `org.opennms.core.ipc.aws.sqs.sink.Policy`                        | `sink.Policy`
+| `RedrivePolicy`                | -                                             | `org.opennms.core.ipc.aws.sqs.sink.RedrivePolicy`                 | `sink.RedrivePolicy`
+| `KmsMasterKeyId`               | -                                             | `org.opennms.core.ipc.aws.sqs.sink.KmsMasterKeyId`                | `sink.KmsMasterKeyId`
+| `KmsDataKeyReusePeriodSeconds` | -                                             | `org.opennms.core.ipc.aws.sqs.sink.KmsDataKeyReusePeriodSeconds`  | `sink.KmsDataKeyReusePeriodSeconds`
+| `FifoQueue`                    | Default: false                                | `org.opennms.core.ipc.aws.sqs.sink.FifoQueue`                     | `sink.FifoQueue`
+| `ContentBasedDeduplication`    | Valid only when `sink.FifoQueue` is `true`    | `org.opennms.core.ipc.aws.sqs.sink.ContentBasedDeduplication`     |`sink.ContentBasedDeduplication`
+|====
+
+== RPC Settings
+
+Queues used for provisioning, service polling, data collection, and other concerns apart from unsolicited message reception are configured by setting properties with `rpc` prepended to the SQS parameter name:
+
+[options="header"]
+|====
+| Parameter                       | Notes                                     | _{page-component-title}_                                         | Minion
+| `DelaySeconds`                  | Default: 0 seconds                        | `org.opennms.core.ipc.aws.sqs.rpc.DelaySeconds`                  | `rpc.DelaySeconds`
+| `MaximumMessageSize`            | Default: 262144 bytes                     | `org.opennms.core.ipc.aws.sqs.rpc.MaximumMessageSize`            | `rpc.MaximumMessageSize`
+| `MessageRetentionPeriod`        | Default: 1209600 seconds                  | `org.opennms.core.ipc.aws.sqs.rpc.MessageRetentionPeriod`        | `rpc.MessageRetentionPeriod`
+| `ReceiveMessageWaitTimeSeconds` | Default: 10 seconds (for OpenNMS)         | `org.opennms.core.ipc.aws.sqs.rpc.ReceiveMessageWaitTimeSeconds` | `rpc.ReceiveMessageWaitTimeSeconds`
+| `VisibilityTimeout`             | Default: 30 seconds                       | `org.opennms.core.ipc.aws.sqs.rpc.VisibilityTimeout`             | `rpc.VisibilityTimeout`
+| `Policy`                        | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.Policy`                        | `rpc.Policy`
+| `RedrivePolicy`                 | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.RedrivePolicy`                 | `rpc.RedrivePolicy`
+| `KmsMasterKeyId`                | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.KmsMasterKeyId`                | `rpc.KmsMasterKeyId`
+| `KmsDataKeyReusePeriodSeconds`  | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.KmsDataKeyReusePeriodSeconds`  | `rpc.KmsDataKeyReusePeriodSeconds`
+| `FifoQueue`                     | Default: false                            | `org.opennms.core.ipc.aws.sqs.rpc.FifoQueue`                     | `rpc.FifoQueue`
+| `ContentBasedDeduplication`     | Valid only when `rpc.FifoQueue` is `true` | `org.opennms.core.ipc.aws.sqs.rpc.ContentBasedDeduplication`     |`rpc.ContentBasedDeduplication`
+|====
+
+NOTE: When FIFO queues are not required, there is no need to add `FifoQueue=false` to the configuration files, as this is the default behavior.
+
+== Managing Multiple Environments
+
+In order to support multiple _{page-component-title}_ environments in a single AWS region, the `aws_queue_name_prefix` property can be used to prefix the queue names.
+
+For example, if we set this property to be "PROD", the queue names will resemble `PROD-OpenNMS-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
+
+WARNING: This property must be properly configured at  _{page-component-title}_  and Minion side.
+
+== AWS Credentials
+
+The credentials (a.k.a. the Access Key ID and the Secret Access Key) are required in both sides, OpenNMS and Minion.
+
+In order to create credentials just for accessing SQS resources, follow this procedure:
+
+* From the AWS Console, choose the appropriate region.
+* Open the IAM Dashboard and click on "Add user".
+* Choose a name for the user, for example `opennms-minion`.
+* Check only `Programmatic access` for the Access type.
+* On the permissions, click on `Attach existing policies directly`.
+* On the search bar, write SQS, and then check on `AmazonSQSFullAccess`.
+* Click on Create User
+
+image::configuration/aws-minion-user.png[]
+
+Finally, either click on Download .csv or click on "Show" to grab a copy of the Access key ID, and the Secret access key.
+
+== Limitations
+
+There are a number of limitations when using _AWS SQS_, in particular:
+
+* A message can include only XML, JSON, and unformatted text. The following Unicode characters are allowed: `#x9` | `#xA` | `#xD` | `#x20` to `#xD7FF` | `#xE000` to `#xFFFD` | `#x10000` to `#x10FFFF`. Any characters not included in this list are rejected.
+* The minimum message size is 1 byte (1 character). The maximum is 262,144 bytes (256 KB).
+* Without batching, FIFO queues can support up to 300 messages per second (300 send, receive, or delete operations per second).
+
+See link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html[Amazon SQS Limits] for further details.
+
+== Location names
+
+Queue names in _AWS SQS_ are limited to 80 characters.
+When issuing remote procedure calls, the target location is used a part of the queue name.
+For this reason, it is important that:
+
+* The length of the location name and queue name prefix (if used) must not exceed 32 characters in aggregate.
+* Both the location name and queue name prefix (if used) may only contain alphanumeric characters, hyphens (-), and underscores (_).

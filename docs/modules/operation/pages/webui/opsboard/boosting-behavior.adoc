@@ -1,0 +1,11 @@
+
+[[webui-opsboard-dashlet-boosting]]
+= Boosting Dashlet
+
+The behavior to boost a dashlet describes the behavior of a dashlet showing critical monitoring information.
+It can raise the priority in the ops board rotation to indicate a problem.
+This behavior can be configured with the configuration parameter boost priority and boost duration.
+These to configuration parameter effect the behavior on the ops board in rotation.
+
+* Boost Priority: Absolute priority of the dashlet with critical monitoring information.
+* Boost Duration: Absolute duration in seconds of the dashlet with critical monitoring information.

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>org.opennms.checkstyle</artifactId>
-  <version>28.0.0-SNAPSHOT</version>
+  <version>29.0.0-SNAPSHOT</version>
   <name>OpenNMS :: Checkstyle</name>
   <build>
     <plugins>
@@ -31,7 +31,7 @@
                   <version>[3.5,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>[1.8,9)</version>
+                  <version>[11,12)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>

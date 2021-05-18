@@ -1,3 +1,13 @@
+opennms-sentinel (27.1.1-1) stable; urgency=high
+
+  * New minor release.  It contains a few enhancements, as well as a number of
+    bug fixes including some XSS and CSRF cleanups and a Jetty DoS CVE.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.1.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 06 Apr 2021 12:09:00 -0400
+ 
 opennms-sentinel (27.1.0-1) stable; urgency=medium
 
   * New minor release.  It contains a bunch of bug fixes, as well as a number of

@@ -18,7 +18,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-1.8.0-openjdk-devel}
+%{!?_java:%define _java java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}

@@ -1,0 +1,13 @@
+
+= Topology
+
+This dashlet shows a https://wiki.opennms.org/wiki/Topology_Maps[Topology Map].
+Configure the topology map with the following parameters.
+
+[options="autowidth"]
+|===
+| Boost support | false
+| `focusNodes`  | Which node(s) is in focus for the topology
+| `provider`    | Which topology should be displayed, e.g., Linkd, VMware
+| `szl`         | Set the zoom level for the topology
+|===

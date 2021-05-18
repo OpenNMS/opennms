@@ -4,14 +4,24 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b54"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b58"
 
 FROM ${BASE_IMAGE} as minion-base
+
+ARG PROM_JMX_EXPORTER_VERSION="0.15.0"
+ARG PROM_JMX_EXPORTER_URL="https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${PROM_JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${PROM_JMX_EXPORTER_VERSION}.jar"
 
 ADD ./tarball/minion.tar.gz /opt/
 
 # Organize files based on the build home dir /opt/minion
 RUN mv /opt/minion-* /opt/minion
+
+# Install wget and update certificates for arm/v7 otherwise SSL
+# ERROR: cannot verify repo1.maven.org's certificate, issued by 'CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US':
+# To connect to repo1.maven.org insecurely, use `--no-check-certificate'.
+RUN apt-get update && apt-get -y install wget && update-ca-certificates -f
+RUN mkdir -p /opt/prom-jmx-exporter && \
+    wget "${PROM_JMX_EXPORTER_URL}" --output-document=/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
 
 # We set the correct permissions in this stage, so we don't have this as an addtional
 # layer in our deploy image.
@@ -43,6 +53,9 @@ COPY container-fs/health.sh /
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
+
+# Copy Prometheus JMX Exporter
+COPY --chown=10001:0 --from=minion-base /opt/prom-jmx-exporter /opt/prom-jmx-exporter
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/

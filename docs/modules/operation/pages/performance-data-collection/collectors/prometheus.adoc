@@ -1,0 +1,129 @@
+
+[[ga-performance-mgmt-collectors-prometheus-collector]]
+= PrometheusCollector
+
+The _PrometheusCollector_ collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
+This has been adopted by many applications and is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
+
+This collector provides tools for parsing and mapping the metrics to the collection model used by {page-component-title}.
+
+== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.prometheus.PrometheusCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+== Collector Parameters
+
+.Collector-specific parameters for the PrometheusCollector
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                    | Required | Default value
+| `collection`    | The name of the _Prometheus Collection_ to use | required |
+| `url`           | HTTP URL to query for the metrics              | required |
+| `timeout`       | HTTP socket and read timeout in milliseconds   | optional | 10000 (10 seconds)
+| `retry`         | Number of retries before failing               | optional | 2
+| `header-*       | Optional headers to pass in the HTTP request   | optional | (none)
+|===
+
+
+[[ga-performance-mgmt-collectors-prometheus-collector-usage]]
+== Prometheus Collector Usage
+
+Let's demonstrate the usage of the collector with an example running against https://github.com/prometheus/node_exporter[node_exporter].
+
+Obtain a copy of the appropriate release binary from the https://github.com/prometheus/node_exporter/releases[node_exporter release page].
+
+Extract and start the service:
+[source]
+----
+$ tar xvf node_exporter-0.18.1.linux-amd64.tar.gz
+$ ./node_exporter-0.18.1.linux-amd64/node_exporter
+INFO[0000] Starting node_exporter (version=0.18.1, branch=HEAD, revision=3db77732e925c08f675d7404a8c46466b2ece83e)  source="node_exporter.go:156"
+INFO[0000] Build context (go=go1.12.5, user=root@b50852a1acba, date=20190604-16:41:18)  source="node_exporter.go:157"
+INFO[0000] Enabled collectors:                           source="node_exporter.go:97"
+INFO[0000]  - arp                                        source="node_exporter.go:104"
+INFO[0000]  - bcache                                     source="node_exporter.go:104"
+INFO[0000]  - bonding                                    source="node_exporter.go:104"
+INFO[0000]  - conntrack                                  source="node_exporter.go:104"
+INFO[0000]  - cpu                                        source="node_exporter.go:104"
+INFO[0000]  - cpufreq                                    source="node_exporter.go:104"
+...
+INFO[0000]  - uname                                      source="node_exporter.go:104"
+INFO[0000]  - vmstat                                     source="node_exporter.go:104"
+INFO[0000]  - xfs                                        source="node_exporter.go:104"
+INFO[0000]  - zfs                                        source="node_exporter.go:104"
+INFO[0000] Listening on :9100                            source="node_exporter.go:170"
+----
+
+From the Karaf Shell, you can now issue an ad hoc collection request against the `node_exporter` process
+[source]
+----
+admin@opennms> opennms:collect org.opennms.netmgt.collectd.prometheus.PrometheusCollector 127.0.0.1 collection=node_exporter url='http://127.0.0.1:9100/metrics'
+NOTE: Some collectors require a database node and IP interface.
+    NodeLevelResource[nodeId=0,path=null]
+        Group: node_exporter_loadavg
+                Attribute[load1:1.26]
+                Attribute[load15:1.0]
+                Attribute[load5:0.59]
+        Group: node_exporter_memory
+                Attribute[Active_anon_bytes:1.1776770048E10]
+                Attribute[Active_bytes:2.4471535616E10]
+                Attribute[Active_file_bytes:1.2694765568E10]
+----
+
+> Update the IP addresses in the command as necessary.
+
+[[ga-performance-mgmt-collectors-prometheus-collector-configuration]]
+== Prometheus Collector Configuration
+
+Prometheus collection definitions are maintained in `etc/prometheus-datacollection.d/`.
+
+Let's look at an excerpt of the `node_exporter` collection:
+[source]
+----
+<!--
+    node_memory_Active 1.3626548224e+10
+    node_memory_Active_anon 6.314020864e+09
+    node_memory_Active_file 7.31252736e+09
+    ...
+    node_memory_HugePages_Free 0
+    ...
+-->
+<group name="node_exporter_memory"
+    resource-type="node"
+    filter-exp="name matches 'node_memory_.*'">
+
+    <numeric-attribute alias-exp="name.substring('node_memory_'.length())"/>
+</group>
+----
+
+This group definition matches metrics that start the `node_memory_` prefix, extracts the suffix as the metric name and associates these metrics with the `node_exporter_memory` group in the node-level resource.
+
+Expression are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
+The metric instances are used as the expression context, which means you have access to the `name` and `label` properties.
+
+
+Here's another excerpt where we extract metrics grouped by CPU:
+[source]
+----
+<!--
+    node_cpu{cpu="cpu0",mode="guest"} 0
+    node_cpu{cpu="cpu0",mode="idle"} 16594.88
+    ...
+    node_cpu{cpu="cpu1",mode="guest"} 0
+    node_cpu{cpu="cpu1",mode="idle"} 17790.51
+-->
+<group name="node_exporter_cpus"
+    resource-type="nodeExporterCPU"
+    filter-exp="name matches 'node_cpu'"
+    group-by-exp="labels[cpu]">
+
+    <numeric-attribute alias-exp="labels[mode]"/>
+</group>
+----
+
+This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.

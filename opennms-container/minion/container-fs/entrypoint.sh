@@ -163,6 +163,14 @@ applyConfd() {
   fi
 }
 
+applyOpennmsPropertiesD() {
+  for filename in ${MINION_HOME}/etc/opennms.properties.d/*.properties; do
+    echo "appending to custom.system.properties: $filename"
+    echo "" >> ${MINION_HOME}/etc/custom.system.properties
+    cat "$filename" >> ${MINION_HOME}/etc/custom.system.properties
+  done
+}
+
 start() {
     export KARAF_EXEC="exec"
     cd ${MINION_HOME}/bin
@@ -187,6 +195,7 @@ runConfd() {
 configure() {
   initConfig
   applyConfd
+  applyOpennmsPropertiesD
   applyOverlayConfig
   if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
     while read assignment; do

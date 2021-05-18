@@ -242,4 +242,86 @@ public class UserIT extends OpenNMSSeleniumIT {
             wait.until(ExpectedConditions.elementToBeClickable(By.name("finish")));
         }
     }
+
+    /**
+     * see NMS-13124
+     */
+    @Test
+    public void testCsrfPrivilegeEscalation() {
+        // visit the admin's user page
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+        findElementByLink("Add new user").click();
+
+        // add a new user 'user'
+        enterText(By.id("userID"), "user");
+        enterText(By.id("pass1"), "pass");
+        enterText(By.id("pass2"), "pass");
+        findElementByXpath("//button[@type='submit' and text()='OK']").click();
+
+        // assign just the ROLE_USER
+        final Select select = new Select(driver.findElement(By.name("availableRoles")));
+        select.selectByVisibleText("ROLE_USER");
+        findElementById("roles.doAdd").click();
+        findElementById("saveUserButton").click();
+
+        // assert that this is correctly set
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+        findElementById("users(user).doDetails").click();
+
+        assertTrue(wait.until(pageContainsText("ROLE_USER")));
+
+        // now construct an exploit to set ROLE_ADMIN for user 'user'
+        final String html = "<form action='" + stack.opennms().getBaseUrlInternal() + "opennms/admin/userGroupView/users/updateUser' method='POST' enctype='application/x-www-form-urlencoded'>" +
+                "<input type='hidden' name='userID' value='user' />" +
+                "<input type='hidden' name='password' value=' ' />" +
+                "<input type='hidden' name='redirect' value='/admin/userGroupView/users/saveUser' /> <input type='hidden' name='fullName' value=' ' />" +
+                "<input type='hidden' name='userComments' value=' ' />" +
+                "<input type='hidden' name='configuredRoles' value='ROLE_ADMIN' />" +
+                "<input type='hidden' name='email' value=' ' />" +
+                "<input type='hidden' name='pemail' value=' ' />" +
+                "<input type='hidden' name='xmppAddress' value=' ' />" +
+                "<input type='hidden' name='microblog' value=' ' />" +
+                "<input type='hidden' name='numericalService' value=' ' />" +
+                "<input type='hidden' name='numericalPin' value=' ' />" +
+                "<input type='hidden' name='textService' value=' ' />" +
+                "<input type='hidden' name='textPin' value=' ' />" +
+                "<input type='hidden' name='workPhone' value=' ' />" +
+                "<input type='hidden' name='mobilePhone' value=' ' />" +
+                "<input type='hidden' name='homePhone' value=' ' />" +
+                "<input type='hidden' name='tuiPin' value=' ' />" +
+                "<input type='hidden' name='timeZoneId' value=' ' />" +
+                "<input type='hidden' name='dutySchedules' value='0' />" +
+                "<input type='hidden' name='numSchedules' value='1' />" +
+                "<input type='submit' id='submitIt' />" +
+                "</form>";
+        String script = "var foo = document.createElement('div'); " +
+                "foo.innerHTML=\"" + html + "\"; " +
+                "document.body.appendChild(foo)";
+
+        // ...and execute it
+        driver.executeScript(script);
+        findElementById("submitIt").click();
+
+        // this should be denied due to CSRF protection
+        assertTrue(wait.until(pageContainsText("Access denied")));
+
+        // assure that the user's role is still ROLE_USER
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+        findElementById("users(user).doDetails").click();
+        assertTrue(wait.until(pageContainsText("ROLE_USER")));
+
+        // delete the user
+        adminPage();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+
+        findElementById("users(user).doDelete").click();
+        handleAlert("Are you sure you want to delete the user user?");
+    }
 }

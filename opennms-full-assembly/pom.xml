@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -604,6 +604,7 @@
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
                 <feature>opennms-core-ipc-grpc-server</feature>
+                <feature>opennms-inmemory-ticketer</feature>
                 <feature>scv-api</feature>
                 <feature>scv-jceks-impl</feature>
                 <feature>scv-shell</feature>
@@ -724,7 +725,6 @@
   <modules>
     <module>../opennms-install</module>
     <module>../opennms-assemblies</module>
-    <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
   </modules>
 
@@ -772,13 +772,6 @@
       <type>tar.gz</type>
       <version>${project.version}</version>
       <classifier>log4j2</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.doc</groupId>
-      <artifactId>guide-all</artifactId>
-      <type>tar.gz</type>
-      <version>${project.version}</version>
-      <classifier>docs</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
@@ -1063,6 +1056,11 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.bmp.stats</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ticketing</groupId>
+      <artifactId>org.opennms.features.ticketing.inmemory</artifactId>
       <version>${project.version}</version>
     </dependency>
 

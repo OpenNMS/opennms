@@ -1,0 +1,13 @@
+
+[[ga-enlinkd-layer-2-link-discovery]]
+= Layer 2 Link Discovery
+
+Enlinkd is able to discover Layer 2 network links based on the following protocols:
+
+* link:https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol] (LLDP)
+* link:https://en.wikipedia.org/wiki/Cisco_Discovery_Protocol[Cisco Discovery Protocol] (CDP)
+* link:https://en.wikipedia.org/wiki/Bridging_(networking)[Bridge Discovery] (Bridge)
+
+This information is provided by SNMP Agents with appropriate MIB support.
+For this reason it is required to have a working SNMP configuration running.
+The following section describes the required SNMP MIB provided by the SNMP agent to allow the link discovery.

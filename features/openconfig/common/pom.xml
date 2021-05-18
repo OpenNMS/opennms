@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.openconfig</artifactId>
     <groupId>org.opennms.features</groupId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -73,6 +73,10 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
       <version>${grpcVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
     </dependency>
   </dependencies>
 

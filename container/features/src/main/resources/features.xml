@@ -1021,6 +1021,7 @@
     <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
+        <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
@@ -1487,6 +1488,10 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
         <bundle>mvn:org.opennms.features/jira-client/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-inmemory-ticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: InMemory">
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.inmemory/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
     </feature>
     <feature name="datachoices" version="${project.version}" description="OpenNMS :: Features :: Data Choices">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>

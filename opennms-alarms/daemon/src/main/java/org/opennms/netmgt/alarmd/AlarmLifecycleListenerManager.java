@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -197,6 +198,11 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     @Override
     public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+        onNewOrUpdatedAlarm(alarm);
+    }
+
+    @Override
+    public void onTicketStateChanged(OnmsAlarm alarm, TroubleTicketState previousState) {
         onNewOrUpdatedAlarm(alarm);
     }
 
