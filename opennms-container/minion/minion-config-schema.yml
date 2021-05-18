@@ -4,7 +4,7 @@
 # See the readme MINION_CONFIG_SCHEMA_README.md for more information.
 
 # Version of Minion this schema configuration is applicable to
-version: "27.0.0"
+version: "28.0.0"
 
 # The root set of categories configurable on a Minion container. Ordering here is used only to determine order for
 # display purposes.
@@ -189,7 +189,7 @@ categories:
                 label: "Whitelist Object Names"
                 description: "A list of ObjectNames to query."
                 key: "/java/agent/prom-jmx-exporter/whitelistObjectNames"
-                example: "org.opennms.core.ipc.sink.producer:*", "org.opennms.netmgt.dnsresolver.netty:*", "org.opennms.netmgt.telemetry:*"
+                example: "\"org.opennms.core.ipc.sink.producer:*\", \"org.opennms.netmgt.dnsresolver.netty:*\", or \"org.opennms.netmgt.telemetry:*\""
               - name: "blacklistObjectNames"
                 type:
                   name: "collection"

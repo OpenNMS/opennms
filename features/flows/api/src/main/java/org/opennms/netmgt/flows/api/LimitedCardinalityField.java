@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,16 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.filter.api;
+package org.opennms.netmgt.flows.api;
 
-public interface FilterVisitor<T> {
-
-    T visit(ExporterNodeFilter exporterNodeFilter);
-
-    T visit(TimeRangeFilter timeRangeFilter);
-
-    T visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter);
-
-    T visit(DscpFilter dscpFilter);
-
+/**
+ * Describes fields that have only a limited number of possible values.
+ *
+ * Aggregations over these fields can contain results for all values.
+ */
+public enum LimitedCardinalityField {
+    DSCP(64,"netflow.dscp");
+    public final int size;
+    public final String fieldName;
+    LimitedCardinalityField(int size, String fieldName) {
+        this.size = size;
+        this.fieldName = fieldName;
+    }
 }
