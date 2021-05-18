@@ -664,10 +664,11 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             WebElement showEntireMap = getShowEntireMapElement();
             Actions actions = new Actions(testCase.getDriver());
             actions.moveToElement(showEntireMap);
-            actions.clickAndHold();
+            actions.click();
             waitForTransition(testCase);
             actions.release();
             showEntireMap.click();
+            waitForTransition(testCase);
         }
 
         private boolean isMenuItemChecked(String itemName, String... path) {
@@ -1085,13 +1086,9 @@ public class TopologyIT extends OpenNMSSeleniumIT {
      * changing the SZL.
      */
     public static void waitForTransition(final AbstractOpenNMSSeleniumHelper testCase) {
-        try {
-            // TODO: Find a better way that does not require an explicit sleep
-            Thread.sleep(4000);
-	    testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
-        } catch (final InterruptedException e) {
-            throw new IllegalStateException(e);
-        }
+        // TODO: Find a better way that does not require an explicit sleep
+        testCase.sleepQuietly(1250);
+        testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
     }
 
     private void createDummyNode() throws InterruptedException, IOException {
