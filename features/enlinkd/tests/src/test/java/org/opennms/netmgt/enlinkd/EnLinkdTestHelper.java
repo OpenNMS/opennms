@@ -184,6 +184,57 @@ public abstract class EnLinkdTestHelper {
     }
     
     /*
+     * 
+     */
+    class TwoUnresolvableTopology {
+        final int nodeIdA = 7788;
+        final int nodeIdB = 8877;
+        
+        String basebridgeaddrA="00e0b1bb39aa";
+        String basebridgeaddrB="00e0b1bb39bb";
+
+        String maca="00e0b1bb39ba";
+        String macb="00e0b1bba38b";
+        String macc="0012cf5d318c";
+        String macd="00e0b1bbac4d";
+        
+        OnmsNode nodeA = new OnmsNode();
+        OnmsNode nodeB = new OnmsNode();
+        
+        BridgeElement bridgeElementA=new BridgeElement();
+        BridgeElement bridgeElementB=new BridgeElement();
+
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
+        public TwoUnresolvableTopology() {
+            nodeA.setId(nodeIdA);
+            bridgeElementA.setNode(nodeA);
+            bridgeElementA.setBaseBridgeAddress(basebridgeaddrA);
+            elemlist.add(bridgeElementA);
+            nodeB.setId(nodeIdB);
+            bridgeElementB.setNode(nodeB);
+            bridgeElementB.setBaseBridgeAddress(basebridgeaddrB);
+            elemlist.add(bridgeElementB);
+            
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 10, 11010, maca, 1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 10, 11010, macb, 1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 90, 11090, macc, 1));
+            bftA.add(addBridgeForwardingTableEntry(nodeA, 90, 11090, macd, 1));
+            
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 20, 11020, maca, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 20, 11020, macb, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 80, 11080, macc, 1));
+            bftB.add(addBridgeForwardingTableEntry(nodeB, 80, 11080, macd, 1));
+
+        
+        }
+         
+        
+
+    }
+    /*
      *       spiazzomepe01:24<->24:spiazzofasw01:1<->1:comunespiazzowl1:6 
      *                                                                  |
      *                              spiasvig.asw0:1<->1:rsaspiazzowl1Id:4 
