@@ -1088,7 +1088,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
      */
     public static void waitForTransition(final AbstractOpenNMSSeleniumHelper testCase) {
         // TODO: Find a better way that does not require an explicit sleep
-        testCase.sleepQuietly(1250);
+        testCase.sleepQuietly(3000);
         testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
     }
 
