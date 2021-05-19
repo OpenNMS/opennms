@@ -1076,6 +1076,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyNoVerticesFoundTextIsShown() {
         topologyUiPage.defaultFocus();
+        waitForTransition(this);
         Assert.assertEquals(Boolean.TRUE, topologyUiPage.getNoFocusDefinedWindow().isVisible());
         Assert.assertEquals(Boolean.TRUE, topologyUiPage.getNoFocusDefinedWindow().isNoVerticesFoundTextVisible());
     }
