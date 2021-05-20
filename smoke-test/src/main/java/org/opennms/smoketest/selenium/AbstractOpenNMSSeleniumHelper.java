@@ -853,7 +853,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected void sleepQuietly(final int millis) {
+    public void sleepQuietly(final int millis) {
         try {
             Thread.sleep(millis);
         } catch (final InterruptedException e) {
@@ -1145,12 +1145,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public boolean requisitionExists(final String foreignSource) {
-        LOG.debug("requisitionExists: foreignSource={}", foreignSource);
         try {
             final String foreignSourceUrlFragment = URLEncoder.encode(foreignSource, "UTF-8");
             final Integer status = doRequest(new HttpGet(getBaseUrlExternal() + "opennms/rest/requisitions/" + foreignSourceUrlFragment));
+            LOG.debug("requisitionExists: foreignSource={}, status={}", foreignSource, status);
             return status == 200;
         } catch (final IOException | InterruptedException e) {
+            LOG.debug("requisitionExists: failed:", e);
             throw new OpenNMSTestException(e);
         }
     }
