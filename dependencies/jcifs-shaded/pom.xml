@@ -11,10 +11,10 @@
 
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>org.opennms.dependencies.jcifs-shaded</artifactId>
-  <name>OpenNMS :: Dependencies :: JCIFs :: Extended</name>
+  <name>OpenNMS :: Dependencies :: JCIFs :: Shaded</name>
   <description>
     This module is used to provide a single artifact that the OpenNMS project
-    can depend on to use the jcifs library.
+    can depend on to use the jcifs-ng and bountycastle
   </description>
   <licenses>
     <license>
@@ -58,6 +58,7 @@
                     <exclude>META-INF/BC1024KE.SF</exclude>
                     <exclude>META-INF/BC2048KE.DSA</exclude>
                     <exclude>META-INF/BC2048KE.SF</exclude>
+                    <exclude>META-INF/services/java.security.Provider</exclude>
                   </excludes>
                 </filter>
               </filters>
