@@ -143,7 +143,7 @@ public class TimeSeriesMetaDataDao {
         }
         // store the uncached meta data
         if(!writeToDb.isEmpty()) {
-            // TODO: Patrick storeUncached(writeToDb);
+            storeUncached(writeToDb);
         }
     }
 
