@@ -632,21 +632,10 @@ public final class BroadcastEventProcessor implements EventListener {
                         String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
                         if (scheduledOutageName != null) {
                             // This event occurred during a scheduled outage.
-                            // Must decide what to do
-                            if (autoAckExistsForEvent(event.getUei())) {
-                                // Defer starttime till the given outage ends -
-                                // if the auto ack catches the other event
-                                // before then,
-                                // then the page will not be sent
-                                Calendar endOfOutage = m_pollOutagesDao.getEndOfOutage(scheduledOutageName);
-                                startTime = endOfOutage.getTime().getTime();
-                            } else {
-                                // No auto-ack exists - there's no point
-                                // delaying the page, so just drop it (but leave
-                                // the database entry)
+                                // drop it (but leave the database entry)
                                 continue; // with the next notification (for
                                             // loop)
-                            }
+                            
                         }
 
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();

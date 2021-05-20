@@ -17,7 +17,7 @@
     <karafVersion>4.2.11</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.15.2</testcontainers.version>
-    <test.fork.count>1</test.fork.count>
+    <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
   </properties>
