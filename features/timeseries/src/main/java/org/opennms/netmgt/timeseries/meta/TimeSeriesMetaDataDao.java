@@ -104,7 +104,7 @@ public class TimeSeriesMetaDataDao {
         };
         this.cache = new org.opennms.core.cache.CacheBuilder<String, Map<String, String>>()
                 .withConfig(cacheConfig)
-                // .withCacheLoader(loader)
+                .withCacheLoader(loader)
                 .build();
 
         this.nameCache = new MapMaker()
@@ -131,7 +131,11 @@ public class TimeSeriesMetaDataDao {
 
         // find all MetaData that is not present in the cache
         for(MetaData meta : metaDataCollection) {
-            Map<String, String> attributesForResource = cache.get(meta.getResourceId(), HashMap::new);
+            Map<String, String> attributesForResource = cache.getIfCached(meta.getResourceId()); // do not load from database if not in cache
+            if(attributesForResource == null) {
+                attributesForResource = new HashMap<>();
+                cache.put(deduplicateName(meta.getName()), attributesForResource);
+            }
             if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
                 attributesForResource.put(deduplicateName(meta.getName()), deduplicateValue(meta.getValue())); // add to cache
@@ -139,7 +143,7 @@ public class TimeSeriesMetaDataDao {
         }
         // store the uncached meta data
         if(!writeToDb.isEmpty()) {
-            // storeUncached(writeToDb);
+            // TODO: Patrick storeUncached(writeToDb);
         }
     }
 
