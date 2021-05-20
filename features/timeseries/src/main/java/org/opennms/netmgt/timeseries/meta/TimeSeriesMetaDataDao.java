@@ -55,9 +55,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.MapMaker;
 
 /**
  * TimeSeriesMetaDataDao stores string values associated with resourceids in the database. It leverages a Guava cache.
@@ -79,26 +81,48 @@ public class TimeSeriesMetaDataDao {
     private final Timer metadataWriteTimer;
     private final Timer metadataReadTimer;
 
+    // We use 2 sets to be able to better analyze the data. Theoretically it could be one.
+    private final Map<String, String> nameCache;
+    private final Map<String, String> valueCache;
+
+    private final boolean useStringCache = false; // TODO: Patrick
+
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
                                  @Named("timeseriesMetaDataCache") CacheConfig cacheConfig,
-                                 @Named("timeseriesMetricRegistry") MetricRegistry registry
+                                 @Named("timeseriesMetricRegistry") MetricRegistry registry,
+                                 @Named("timeseries.writer_threads") Integer numWriterThreads
     ) {
         this.dataSource = Objects.requireNonNull(dataSource, "dataSource cannot be null.");
         Objects.requireNonNull(registry, "registry cannot be null.");
 
-        CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>(){
+        CacheLoader<String, Map<String, String>> loader = new CacheLoader<>() {
             @Override
-            public Map<String, String> load(String resourceId) throws Exception {
+            public Map<String, String> load(final String resourceId) throws Exception {
                 return loadFromDataBase(resourceId);
             }
         };
         this.cache = new org.opennms.core.cache.CacheBuilder<String, Map<String, String>>()
                 .withConfig(cacheConfig)
-                .withCacheLoader(loader)
+                // .withCacheLoader(loader)
                 .build();
+
+        this.nameCache = new MapMaker()
+                .concurrencyLevel(numWriterThreads)
+                .weakKeys()
+                .weakValues()
+                .makeMap();
+
+        this.valueCache = new MapMaker()
+                .concurrencyLevel(numWriterThreads)
+                .weakKeys()
+                .weakValues()
+                .makeMap();
+
         this.metadataWriteTimer = registry.timer("metadata.write.db");
         this.metadataReadTimer = registry.timer("metadata.read.db");
+        registry.register(MetricRegistry.name("metadata.nameCache"), (Gauge) this.nameCache::size);
+        registry.register(MetricRegistry.name("metadata.valueCache"), (Gauge) this.valueCache::size);
     }
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
@@ -110,12 +134,28 @@ public class TimeSeriesMetaDataDao {
             Map<String, String> attributesForResource = cache.get(meta.getResourceId(), HashMap::new);
             if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
-                attributesForResource.put(meta.getName(), meta.getValue()); // add to cache
+                attributesForResource.put(deduplicateName(meta.getName()), deduplicateValue(meta.getValue())); // add to cache
             }
         }
         // store the uncached meta data
         if(!writeToDb.isEmpty()) {
-            storeUncached(writeToDb);
+            // storeUncached(writeToDb);
+        }
+    }
+
+    private String deduplicateName(final String name) {
+        if(this.useStringCache) {
+            return this.nameCache.getOrDefault(name, name);
+        } else {
+            return name;
+        }
+    }
+
+    private String deduplicateValue(final String value) {
+        if(this.useStringCache) {
+            return this.valueCache.getOrDefault(value, value);
+        } else {
+            return value;
         }
     }
 
@@ -136,7 +176,6 @@ public class TimeSeriesMetaDataDao {
                 ps.setString(1, metaData.getResourceId());
                 ps.setString(2, metaData.getName());
                 ps.setString(3, metaData.getValue());
-                ps.setString(4, metaData.getValue());
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -171,7 +210,7 @@ public class TimeSeriesMetaDataDao {
             while (rs.next()) {
                 String name = rs.getString("name");
                 String value = rs.getString("value");
-                metaData.put(name, value);
+                metaData.put(deduplicateName(name), deduplicateValue(value));
             }
             return metaData;
         } catch (SQLException e) {

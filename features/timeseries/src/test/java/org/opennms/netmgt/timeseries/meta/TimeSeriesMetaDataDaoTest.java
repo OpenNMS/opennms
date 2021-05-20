@@ -55,7 +55,7 @@ public class TimeSeriesMetaDataDaoTest {
     @Test
     public void cachingShouldWork() throws SQLException, StorageException, ExecutionException {
         CacheConfig config = new CacheConfigBuilder().withName(TimeSeriesMetaDataDaoTest.class.getSimpleName()).build();
-        TimeSeriesMetaDataDao dao = Mockito.spy(new TimeSeriesMetaDataDao(mock(DataSource.class), config, new MetricRegistry()));
+        TimeSeriesMetaDataDao dao = Mockito.spy(new TimeSeriesMetaDataDao(mock(DataSource.class), config, new MetricRegistry(), 1));
         Mockito.doNothing().when(dao).storeUncached(anyCollection());
         ResourcePath resourcePathA = new ResourcePath("a", "b", "c");
         MetaData meta = new MetaData(toResourceId(resourcePathA).toString(), "key", "value");
