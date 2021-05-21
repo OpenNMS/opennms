@@ -6,4 +6,6 @@
       <end>192.168.0.254</end>
    </include-range>
    -->
+   <!-- This creates a requisition "selfmonitor" that only contains "localhost", for JMX monitoring of the OpenNMS JVM -->
+   <specific retries="1" timeout="2000" foreign-source="selfmonitor">127.0.0.1</specific>
 </discovery-configuration>
