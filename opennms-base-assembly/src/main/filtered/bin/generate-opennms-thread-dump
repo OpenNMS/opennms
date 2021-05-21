@@ -1,8 +1,7 @@
 #!/bin/sh
 
 # Wrapper script for making a thread dump from a running OpenNMS
-# Copyright (c) 2018 The OpenNMS Group
-# 14 February 2018
+# Copyright (c) 2018-2021 The OpenNMS Group
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -25,9 +24,11 @@
 #
 # put an '@' here so we don't break maven substition
 
+# shellcheck disable=SC2016
 opennms_home='${install.dir}'
 if [ ! -d "${opennms_home}" ]; then
-    opennms_home="$OPENNMS_HOME"
+    # shellcheck disable=SC2153
+    opennms_home="${OPENNMS_HOME}"
 fi
 
 default_date_pattern="%Y%m%d_%H%M%S"
@@ -35,8 +36,7 @@ default_oldest_survivor="120"
 default_output_dir="${opennms_home}/logs"
 default_base_filename="opennms-thread-dump"
 
-java_conf="$opennms_home/etc/java.conf"
-basename="`basename $0`"
+basename="$(basename "$0")"
 
 die(){
     echo "${basename}: $*" >&2
@@ -77,27 +77,28 @@ printHelp() {
 
 
 find_jstack_bin() {
-    if [ ! -e ${opennms_home}/etc/java.conf ]; then
-        die "FATAL: File ${opennms_home} does not exist."
+    if [ ! -e "${opennms_home}/etc/java.conf" ]; then
+        die "FATAL: File ${opennms_home}/etc/java.conf does not exist."
     fi
-    java_bin=`head -n 1 ${opennms_home}/etc/java.conf`
-    java_bin_actual=`readlink -f ${java_bin}`
-    echo ${java_bin_actual} | egrep -q 'jre/bin/java'
-    if [ $? -eq 0 ]; then
-        java_home_actual=`readlink -f ${java_bin_actual}/../..`
+    java_bin="$(head -n 1 "${opennms_home}/etc/java.conf")"
+    java_bin_actual="$(readlink -f "${java_bin}")"
+    echo "${java_bin_actual}" | grep -q 'jre/bin/java'
+    # shellcheck disable=SC2181
+    if [ "$?" -eq 0 ]; then
+        java_home_actual="$(readlink -f "${java_bin_actual}/../..")"
     else
-        java_home_actual=`readlink -f ${java_bin_actual}/..`
+        java_home_actual="$(readlink -f "${java_bin_actual}/..")"
     fi
-    if [ ! -x ${java_home_actual}/bin/jstack ]; then
+    if [ ! -x "${java_home_actual}/bin/jstack" ]; then
         die "FATAL: ${java_home_actual}/bin/jstack does not exist or is not executable."
     fi
 }
 
 find_opennms_pid() {
-    if [ -r ${opennms_home}/logs/opennms.pid ]; then
-        opennms_pid=`head -n 1 ${opennms_home}/logs/opennms.pid`
-    elif [ -r ${opennms_home}/logs/karaf.pid ]; then
-        opennms_pid=`head -n 1 ${opennms_home}/logs/karaf.pid`
+    if [ -r "${opennms_home}/logs/opennms.pid" ]; then
+        opennms_pid="$(head -n 1 "${opennms_home}/logs/opennms.pid")"
+    elif [ -r "${opennms_home}/logs/karaf.pid" ]; then
+        opennms_pid="$(head -n 1 "${opennms_home}/logs/karaf.pid")"
     else
         die "FATAL: Unable to determine OpenNMS PID. Tried opennms.pid and karaf.pid."
     fi
@@ -111,7 +112,7 @@ parseArgs() {
 
     while getopts hd:b:p:o: c
     do
-      case $c in
+      case "$c" in
           d)
               output_dir="$OPTARG"
               ;;
@@ -132,36 +133,42 @@ parseArgs() {
               printHelp
               exit 0
               ;;
+          *)
+              echo "FATAL: unknown option: $c"
+              exit 1
+              ;;
       esac
     done
-    shift `expr $OPTIND - 1`
+    shift "$((OPTIND - 1))"
 }
 
 deleteOldThreadDumps() {
-    find ${output_dir}/ -name ${base_filename}.'*' -a -mmin +${oldest_survivor} -delete
+    find "${output_dir}/" -name "${base_filename}".'*' -a -mmin "+${oldest_survivor}" -delete
 }
 
 writeThreadDump() {
-    dump_file="${output_dir}/${base_filename}.`date +${date_pattern}`"
-    "${java_home_actual}/bin/jstack" -l ${opennms_pid} > "${dump_file}" || die "FATAL: Failed to write thread dump. Exiting with no cleanup."
-    chmod 0666 ${dump_file}
+    dump_file="${output_dir}/${base_filename}.$(date "+${date_pattern}")"
+    "${java_home_actual}/bin/jstack" -l "${opennms_pid}" > "${dump_file}" || die "FATAL: Failed to write thread dump. Exiting with no cleanup."
+    chmod 0666 "${dump_file}"
 }
 
 RUNAS=root
 # Load opennms.conf, if it exists, to override configuration options.
 if [ -f "${opennms_home}/etc/opennms.conf" ]; then
-	. "${opennms_home}/etc/opennms.conf"
+    # shellcheck disable=SC1090,SC1091
+    . "${opennms_home}/etc/opennms.conf"
 fi
 
 # Load ~/.opennms-dev/opennms.conf if it exists, to override configuration options.
 if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
-	. "${HOME}/.opennms-dev/opennms.conf"
+    # shellcheck disable=SC1090,SC1091
+    . "${HOME}/.opennms-dev/opennms.conf"
 fi
 
 parseArgs "$@"
 
-myuser="`id -u -n`"
-if [ x"$myuser" = x"$RUNAS" ]; then
+myuser="$(id -u -n)"
+if [ "$myuser" = "$RUNAS" ]; then
 	true # all is well
 else
 	warn "FATAL: you must run this script as $RUNAS, not '$myuser'" >&2

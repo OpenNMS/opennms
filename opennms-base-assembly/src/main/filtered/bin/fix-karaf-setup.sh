@@ -1,17 +1,23 @@
 #!/bin/sh -
 set -e # exit when a command fails
 
+# shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
 # The user that OpenNMS needs to run as.
 RUNAS="root"
 DATA_DIR="$OPENNMS_HOME/data"
 
+if [ -r "${OPENNMS_HOME}/etc/opennms.conf" ]; then
+  # shellcheck disable=SC1090,SC1091
+  . "${OPENNMS_HOME}/etc/opennms.conf"
+fi
+
 myuser="$(id -u -n)"
-if [ x"$myuser" = x"$RUNAS" ]; then
-	true # all is well
+if [ "$myuser" = "$RUNAS" ]; then
+  true # all is well
 else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4	# According to LSB: 4 - user had insufficient privileges
+  echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+  exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 echo "This script will try to fix karaf configuration problems by:"
@@ -25,8 +31,8 @@ read -r answer
 echo
 if [ "$answer" != "y" ]
 then
-   echo "Ok, goodbye!"
-   exit 0
+  echo "Ok, goodbye!"
+  exit 0
 fi
 
 # Prune data directory, except for history.txt
@@ -37,14 +43,14 @@ find "$DATA_DIR" -mindepth 1 -maxdepth 1 -not -name 'history.txt' -exec rm -r {}
 PRISTINE_DIR="$OPENNMS_HOME/share/etc-pristine"
 if [ -d "$PRISTINE_DIR" ]
 then
-    ETC_DIR="$OPENNMS_HOME/etc"
-    echo "Copying pristine config files to $ETC_DIR"
-    cp -p "$PRISTINE_DIR/jmx."*".cfg" "$ETC_DIR"
-    cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
-    cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
-    cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
+  ETC_DIR="$OPENNMS_HOME/etc"
+  echo "Copying pristine config files to $ETC_DIR"
+  cp -p "$PRISTINE_DIR/jmx."*".cfg" "$ETC_DIR"
+  cp -p "$PRISTINE_DIR/org.apache."*".cfg" "$ETC_DIR/"
+  cp -p "$PRISTINE_DIR/org.ops4j.pax."*".cfg" "$ETC_DIR/"
+  cp -p "$PRISTINE_DIR/profile.cfg" "$ETC_DIR/"
 else
-    echo "Directory $PRISTINE_DIR does not exist. Cannot restore config files."
+  echo "Directory $PRISTINE_DIR does not exist. Cannot restore config files."
 fi
 
 echo "Done. Please try restarting OpenNMS."
