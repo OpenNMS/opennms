@@ -1151,7 +1151,7 @@ jobs:
           suite: core
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1162,7 +1162,7 @@ jobs:
           suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 5
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
