@@ -85,7 +85,7 @@ public class TimeSeriesMetaDataDao {
     private final Map<String, String> nameCache;
     private final Map<String, String> valueCache;
 
-    private final boolean useStringCache = false; // TODO: Patrick
+    private final boolean useStringCache = true; // TODO: Patrick
 
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
