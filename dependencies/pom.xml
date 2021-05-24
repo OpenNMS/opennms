@@ -60,5 +60,6 @@
     <module>spring-web</module>
     <module>tracker</module>
     <module>twitter4j</module>
+    <module>jcifs-shaded</module>
   </modules>
 </project>
