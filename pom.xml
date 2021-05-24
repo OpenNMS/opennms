@@ -1410,7 +1410,7 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
-    <jcifsVersion>2.1.6-SNAPSHOT</jcifsVersion>
+    <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.38.v20210224</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
