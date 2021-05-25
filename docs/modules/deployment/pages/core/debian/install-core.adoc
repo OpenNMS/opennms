@@ -1,11 +1,11 @@
-.Install gnupg and add OpenNMS repository GPG key
+.Install GnuPG and add OpenNMS repository GPG key
 [source, console]
 ----
 sudo apt -y install gnupg
 sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Add apt repository
+.Add Apt repository
 [source, console]
 ----
 sudo apt -y install software-properties-common
@@ -24,7 +24,7 @@ sudo apt -y install opennms
 TIP: This is optional. If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
      The additional download size for packages is ~134 MB.
 
-.Install R package for trending and forcasting
+.Install R packages for trending and forcasting
 [source, console]
 ----
 sudo apt -y install r-recommended

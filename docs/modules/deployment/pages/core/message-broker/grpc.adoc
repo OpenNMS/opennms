@@ -1,4 +1,4 @@
-.Create a configuration file gRPC settings
+.Create a configuration file for gRPC settings
 
 [source, console]
 ----
@@ -29,11 +29,11 @@ opennms-core-ipc-grpc-server
 sudo systemctl restart opennms
 ----
 
-NOTE: The gRPC server listens on port `8990/tcp` by default.
+The gRPC server listens on port `8990/tcp` by default.
       Use `ss -lnpt = :8990` to verify the port is listening. 
 
-TIP: Optional: if you want to enable TLS for gRPC you have to provide certificate files and enable it.
-     The commands for TLS are described below.
+Optional: to enable TLS for gRPC, you must provide certificate files and enable it.
+     See below for TLS commands.
 
 .Connect to the Karaf shell
 [source, karaf]
@@ -58,11 +58,11 @@ config:update<5>
 <4> Set the path to your server certificate file
 <5> Save and update the configuration.
 
-TIP: This is optional and you can set a maximum message size for gRPC.
+This is optional and you can set a maximum message size for gRPC.
      The maximum size must be the same on the Minion.
-     Default maximum message size is 10 MiB.
+     Default maximum message size is 10 MB.
 
-.Configure maximum message size for gRPC in the Karaf Shell
+.Configure maximum message size for gRPC in the Karaf shell
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.grpc.client

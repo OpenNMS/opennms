@@ -44,7 +44,7 @@ sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PA
 ----
 
 IMPORTANT: Change `YOUR-POSTGRES-PASSWORD` to a secure one.
-         The superuser is required to be able to initialize and change the database schema for installation and updates.
+         The superuser is required to initialize and change the database schema for installation and updates.
 
 .Change the access policy for PostgreSQL
 [source, console]

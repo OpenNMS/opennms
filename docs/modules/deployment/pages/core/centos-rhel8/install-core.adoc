@@ -14,7 +14,7 @@ sudo dnf -y install opennms
 TIP: This is optional. If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
      The additional download size for packages is ~390 MB.
 
-.Install R package for trending and forcasting
+.Install R packages for trending and forcasting
 [source, console]
 ----
 sudo dnf -y install epel-release

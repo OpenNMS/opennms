@@ -5,12 +5,12 @@
 == Objectives
 
 * Install all required OpenNMS {page-component-title} components including PostgreSQL on a single node
-* {page-component-title} Run Core and PostgreSQL with the default configuration, which is not optimized to run in production and monitor large networks
+* Run {page-component-title} Core and PostgreSQL with the default configuration (which is not optimized to run in production and monitor large networks)
 ifeval::["{page-component-title}" == "Horizon"]
-* By default your time series storage is JRobin, which persists RRD files on the local file system
+** By default your time series storage is JRobin, which persists RRD files on the local file system
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
-* By default your time series storage is RRDtool, which persists RRD files on the local file system and is the default
+** By default your time series storage is RRDtool, which persists RRD files on the local file system
 endif::[]
 * Log in to the web UI and change the default admin password
 

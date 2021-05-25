@@ -20,10 +20,12 @@ docker-compose up -d
 TIP: You can also use this command when you run upgrades.
      You must delete the file `etc/configured` file first.
      It works as a guard to prevent unnecessary database migration runs on startup.
-
-TIP: Show configuration changes from a pristine system with  +
+     +
+     +
+     Show configuration changes from a pristine system with  +
      `docker-compose exec -w /opt/opennms/bin horizon ./config-diff.sh -d`.
-
-TIP: If you have changed your configuration files manually you can run the configuration tester with +
+     +
+     +
+     If you changed your configuration files manually you can run the configuration tester with +
      `docker-compose exec horizon bin/config-tester -a`
 

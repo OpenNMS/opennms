@@ -47,7 +47,7 @@ services:
       retries: 3
 ----
 
-<1> Volume definitions to persist the {page-component-title} Core data, for example, RRD files and PDF reports.
+<1> Volume definitions to persist the {page-component-title} Core data; for example, RRD files and PDF reports.
 <2> The {page-component-title} Core instance service is named `horizon` with a friendly `container_name`.
 <3> Image reference using the {page-component-title} container image with the Core services.
 <4> Set the time zone and the postgres credentials to initialize the database that the {page-component-title} Core instance uses. To list all available time zones, use `timedatectl list-timezones`.
