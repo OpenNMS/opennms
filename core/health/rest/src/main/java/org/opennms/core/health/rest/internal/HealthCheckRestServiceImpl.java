@@ -48,6 +48,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
     private static final String SUCCESS_MESSAGE = "Everything is awesome";
     private static final String ERROR_MESSAGE = "Oh no, something is wrong";
+    private static final String CONTAINER_INTEGRITY_HEALTH_CHECK_CLASS_NAME = "ContainerIntegrityHealthCheck";
 
     private final HealthCheckService healthCheckService;
 
@@ -73,7 +74,11 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
     @Override
     public Response getHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+        return getHealth(timeoutInMs, null);
+    }
+
+    private Response getHealth(int timeoutInMs, String filter){
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, filter);
         final Health health = healthWrapper.health;
 
         // Create response object
@@ -97,7 +102,12 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs) {
+    @Override
+    public Response getBundleHealth(int timeoutInMs) {
+        return getHealth(timeoutInMs, CONTAINER_INTEGRITY_HEALTH_CHECK_CLASS_NAME);
+    }
+
+    private HealthWrapper getHealthInternally(int timeoutInMs, String filter){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
@@ -107,12 +117,18 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get())); // apply description
+                    response -> healthWrapper.descriptionMap.put(response, reference.get()),
+                    filter); // apply description
             healthWrapper.health = future.get();
             return healthWrapper;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    private HealthWrapper getHealthInternally(int timeoutInMs) {
+        return getHealthInternally(timeoutInMs, null);
     }
 
     private static class HealthWrapper {

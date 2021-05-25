@@ -47,4 +47,9 @@ public interface HealthCheckRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+
+    @GET
+    @Path("/bundle")
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getBundleHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 }

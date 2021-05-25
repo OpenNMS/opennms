@@ -102,7 +102,8 @@ public class DefaultHealthCheckServiceTest {
             final CompletableFuture<Health> future = healthCheckService
                     .performAsyncHealthCheck(context,
                             healthCheck -> LOG.info("Executing: {}", healthCheck.getDescription()),
-                            response -> LOG.info("=> {} : {}", response.getStatus().name(), response.getMessage()));
+                            response -> LOG.info("=> {} : {}", response.getStatus().name(), response.getMessage()),
+                            null);
             final Health health = future.get();
             final List<Response> timedOutResponsed = health.getResponses().stream().filter(r -> r.getStatus() == Status.Timeout).collect(Collectors.toList());
             Assert.assertThat(timedOutResponsed.size(), is(1));

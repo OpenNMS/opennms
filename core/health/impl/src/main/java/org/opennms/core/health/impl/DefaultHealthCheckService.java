@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheck;
@@ -85,7 +86,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer,String filter) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -94,10 +95,13 @@ public class DefaultHealthCheckService implements HealthCheckService {
         };
         try {
             // Fail if no checks are available
-            final List<HealthCheck> checks = getHealthChecks();
+            List<HealthCheck> checks = getHealthChecks();
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
             } else {
+                if (!Strings.isNullOrEmpty(filter)){
+                    checks = checks.stream().filter(check -> check.getClass().getName().contains(filter)).collect(Collectors.toList());
+                }
                 runChecks(context, checks, onStartConsumer, consumer);
             }
         } catch (InvalidSyntaxException ex) {
