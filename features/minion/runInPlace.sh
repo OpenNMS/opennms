@@ -62,7 +62,7 @@ set_instance_specific_configuration() {
   #tcp6       0      0 127.0.0.1:45444         :::*                    LISTEN      23306/java
   #### Trap listener - Set in 'etc/org.opennms.netmgt.trapd.cfg' via trapd.listen.port=1162
   #udp6       0      0 127.0.0.1:1162          :::*                                23306/java
-  #### Syslog listener - Set in 'etc/org.opennms.netmgt.syslogd.cfg' via syslog.listen.port=1514
+  #### Syslog listener - Set in 'etc/org.opennms.netmgt.syslog.cfg' via syslog.listen.port=1514
   #udp6       0      0 :::1514                 :::*                                23306/java
 
   JAVA_DEBUG_PORT=$((5005 + offset))
@@ -92,7 +92,7 @@ set_instance_specific_configuration() {
   perl -pi -e "s|sshPort.*|sshPort = $SSH_PORT|g" "$MINION_HOME/etc/org.apache.karaf.shell.cfg"
 
   # Syslog
-  echo "syslog.listen.port = $SYSLOG_PORT" > "$MINION_HOME/etc/org.opennms.netmgt.syslogd.cfg"
+  echo "syslog.listen.port = $SYSLOG_PORT" > "$MINION_HOME/etc/org.opennms.netmgt.syslog.cfg"
 
   # Use some fixed ids when the idx <= 3
   MINION_ID="00000000-0000-0000-0000-000000000000"
