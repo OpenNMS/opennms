@@ -25,4 +25,4 @@ opennms-core-ipc-sink-offheap
 # Default SCV implementation
 scv-jceks-impl
 scv-shell
-opennms-health-rest
+minion-rest-service

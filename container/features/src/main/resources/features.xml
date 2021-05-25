@@ -1075,8 +1075,6 @@
     </feature>
     <feature name="opennms-health-rest" version="${project.version}" description="OpenNMS :: Health :: Rest">
         <feature>opennms-health</feature>
-        <feature>cxf-core</feature>
-        <feature version="${cxfVersion}">cxf-jaxrs</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.rest/${project.version}</bundle>
     </feature>
     <feature name="opennms-persistence" version="${project.version}" description="OpenNMS :: Persistence">

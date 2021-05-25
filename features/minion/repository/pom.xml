@@ -73,7 +73,7 @@
                                 <feature>scv-jceks-impl</feature>
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
-                                <featue>opennms-health-rest</featue>
+                                <featue>minion-rest-service</featue>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -418,8 +418,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.health</groupId>
-            <artifactId>org.opennms.core.health.rest</artifactId>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>minion-rest-service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

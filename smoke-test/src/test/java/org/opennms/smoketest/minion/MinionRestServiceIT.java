@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -33,7 +33,6 @@ import static io.restassured.RestAssured.preemptive;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -46,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import io.restassured.RestAssured;
 
 @Category(MinionTests.class)
-public class JolokiaRestIT {
+public class MinionRestServiceIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(JolokiaRestIT.class);
 
@@ -57,7 +56,7 @@ public class JolokiaRestIT {
     public void setUp() {
         RestAssured.baseURI = stack.minion().getWebUrl().toString();
         RestAssured.port = stack.minion().getWebPort();
-        RestAssured.basePath = "/jolokia";
+        RestAssured.basePath = "/minion/rest/health";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
@@ -67,14 +66,6 @@ public class JolokiaRestIT {
         given().get()
                 .then().assertThat()
                 .statusCode(200);
-
-        given().get("/read/java.lang:type=Memory/HeapMemoryUsage")
-                .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
-
-        given().get("/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
-                .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
-
-
 
 }
