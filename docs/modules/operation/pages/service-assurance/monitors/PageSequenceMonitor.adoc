@@ -64,7 +64,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | `virtual-host`             | Set the _virtual host_ field in _HTTP_ header.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the _TLS_
                                negotiation, known as server name indication (_SNI_).
-                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)                      | optional | `-`
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1.)                      | optional | `-`
 | `path`                     | The relative URL to call in the request. Any query string content after a `?` should be part of the `query` parameter.   | required | `-`
 | `scheme`                   | Define the _URL_ scheme as `http` or `https`.                                              | optional | `http`
 | `user-info`                | Set _user info_ field in the _HTTP_ header. Colon-separated credentials such as `USERNAME:PASSWORD`.                     | optional | `-`
