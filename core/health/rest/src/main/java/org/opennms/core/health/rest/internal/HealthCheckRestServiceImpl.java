@@ -117,8 +117,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get()),
-                    filter); // apply description
+                    response -> healthWrapper.descriptionMap.put(response, reference.get()), filter); // apply description
             healthWrapper.health = future.get();
             return healthWrapper;
         } catch (InterruptedException | ExecutionException e) {
