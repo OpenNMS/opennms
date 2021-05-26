@@ -213,7 +213,7 @@
 *** xref:operation/newts/newts-repository-converter.adoc[]
 
 ** xref:operation/timeseries/introduction.adoc[]
-** xref:operation/timeseries/configuration.adoc[]
+*** xref:operation/timeseries/configuration.adoc[]
 ** xref:operation/daemon-config-files/introduction.adoc[]
 ** xref:operation/daemon-config-files/eventd.adoc[]
 ** xref:operation/daemon-config-files/notifd.adoc[]
