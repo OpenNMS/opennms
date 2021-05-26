@@ -40,7 +40,7 @@ sudo /usr/share/opennms/bin/runjava -s
 sudo /usr/share/opennms/bin/install -dis
 ----
 
-.Enable {page-component-title} core server on system boot and start immediately
+.Enable {page-component-title} core instance on system boot and start immediately
 [source, console]
 ----
 sudo systemctl enable --now opennms

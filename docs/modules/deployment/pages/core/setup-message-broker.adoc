@@ -16,20 +16,11 @@ CAUTION: We recommend using Apache Kafka in production, as it is scalable to pro
 * Configure {page-component-title} Core instance to use a message broker for communication
 * Create a Minion user to authenticate the communication channels
 
-== Requirements
-
-Configuring a Minion requires the following information:
-
-* Web UI URL for your OpenNMS {page-component-title} Core instance
-* SSH access to the Karaf Shell
-* ActiveMQ or Apache Kafka server IP addresses or FQDNs to configure the broker URL endpoints
-* Credentials for message broker if you use your existing environment
-
 == Create a Minion user
 
 Credentials secure the communication between {page-component-title} Core instance and the Minion component.
 The example uses the name _my-minion-user_ with password _my-minion-password_. 
-We recommend that you substitute at least an alternate, more secure password. 
+Make sure to use an alternate, more secure password. 
 
 . Log in to the web UI as an administrative user.
 . Click the gears icon and click btn:[Configure Users, Groups and On-Call Roles] -> btn:[Configure Users].
@@ -43,7 +34,7 @@ The new Minion user appears in the user list.
 .. Optional: fill in a comment for the Minion user's location and purpose.
 . Click btn:[Finish].
 
-== Configure Message Broker
+== Configure message broker
 
 Configuration occurs in the {page-component-title} etc directory.
       We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
@@ -63,7 +54,7 @@ ActiveMQ::
 include::message-broker/activemq.adoc[]
 --
 
-embedded ActiveMQ::
+Embedded ActiveMQ::
 +
 --
 include::message-broker/embedded-activemq.adoc[]
