@@ -73,7 +73,7 @@ public class TimeSeriesMetaDataDao {
 
     final static String SQL_WRITE = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
     final static String SQL_READ = "SELECT name, value FROM timeseries_meta where resourceid = ?";
-    final static String SQL_READ_BATCH = "SELECT ctid, * from timeseries_meta  WHERE ctid > ? limit ?;";
+    final static String SQL_READ_BATCH = "SELECT ctid, * from timeseries_meta  WHERE ctid > '%s' limit ?";
 
     private final DataSource dataSource;
 
@@ -181,6 +181,7 @@ public class TimeSeriesMetaDataDao {
                 ps.setString(1, metaData.getResourceId());
                 ps.setString(2, metaData.getName());
                 ps.setString(3, metaData.getValue());
+                ps.setString(4, metaData.getValue());
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -233,13 +234,12 @@ public class TimeSeriesMetaDataDao {
         try {
             final Connection connection = this.dataSource.getConnection();
             db.watch(connection);
-            PreparedStatement statement = connection.prepareStatement(SQL_READ_BATCH);
-            db.watch(statement);
             boolean hasMoreResults = true;
 
             while(hasMoreResults) {
-                statement.setString(1, lastCtid);
-                statement.setLong(2, size);
+                PreparedStatement statement = connection.prepareStatement(String.format(SQL_READ_BATCH, lastCtid)); // ctid doesn't work as parameter?
+                db.watch(statement);
+                statement.setLong(1, size);
                 ResultSet rs = statement.executeQuery();
                 db.watch(rs);
 
@@ -253,10 +253,9 @@ public class TimeSeriesMetaDataDao {
                     metaData.put(deduplicateName(name), deduplicateValue(value));
                     count++;
                 }
-                LOG.info("Loaded %s entries from db into cache.");
-                hasMoreResults = rs.getRow() == 0; // we are empty => no more results
+                hasMoreResults = (rs.getRow() != 0);
             }
-
+            LOG.info("Loaded {} entries from db into cache.", count);
         } catch (SQLException | ExecutionException e) {
             LOG.error("An exception happened during cache bulk loading for lastCtid={}, size={}", lastCtid, size, e);
             throw new StorageException(e);
