@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.flows.elastic.agg;
 
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_APPLICATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_CONVERSATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_HOST;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_APPLICATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_CONVERSATION;
+import static org.opennms.netmgt.flows.elastic.agg.GroupedBy.EXPORTER_INTERFACE_TOS_HOST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,9 +54,12 @@ import org.opennms.netmgt.flows.api.BytesInOut;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.ElasticFlowQueryService;
+import org.opennms.netmgt.flows.elastic.GPath;
 import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
@@ -81,40 +91,118 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         super(client, indexSelector);
     }
 
+    private boolean hasTosFilter(List<Filter> filters) {
+        return filters.stream().anyMatch(f -> f instanceof DscpFilter);
+    }
+
+    private GroupedBy selectGroupedBy(List<Filter> filters, GroupedBy withTos, GroupedBy withoutTos) {
+        return hasTosFilter(filters) ? withTos : withoutTos;
+    }
+
+    private GroupedBy selectAppGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_APPLICATION, EXPORTER_INTERFACE_APPLICATION);
+    }
+
+    private GroupedBy selectHostGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_HOST, EXPORTER_INTERFACE_HOST);
+    }
+
+    private GroupedBy selectConvGroupedBy(List<Filter> filters) {
+        return selectGroupedBy(filters, EXPORTER_INTERFACE_TOS_CONVERSATION, EXPORTER_INTERFACE_CONVERSATION);
+    }
+
     @Override
     public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_APPLICATION, Types.APPLICATION,
+        return getTopNSummary(N, includeOther, filters, selectAppGroupedBy(filters), Types.APPLICATION,
                               CompletableFuture::completedFuture);
     }
 
     @Override
     public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_APPLICATION, Types.APPLICATION,
+        return getTopNSeries(N, step, includeOther, filters, selectAppGroupedBy(filters), Types.APPLICATION,
                              CompletableFuture::completedFuture);
     }
 
     @Override
     public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_CONVERSATION, Types.CONVERSATION,
+        return getTopNSummary(N, includeOther, filters, selectConvGroupedBy(filters), Types.CONVERSATION,
                               conversation -> this.resolveHostnameForConversation(conversation, filters));
     }
 
     @Override
     public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_CONVERSATION, Types.CONVERSATION,
+        return getTopNSeries(N, step, includeOther, filters, selectConvGroupedBy(filters), Types.CONVERSATION,
                              conversation -> this.resolveHostnameForConversation(conversation, filters));
     }
 
     @Override
     public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther, List<Filter> filters) {
-        return getTopNSummary(N, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_HOST, Types.HOST,
+        return getTopNSummary(N, includeOther, filters, selectHostGroupedBy(filters), Types.HOST,
                               host -> this.resolveHostnameForHost(host, filters));
     }
 
     @Override
     public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
-        return getTopNSeries(N, step, includeOther, filters, GroupedBy.EXPORTER_INTERFACE_HOST, Types.HOST,
+        return getTopNSeries(N, step, includeOther, filters, selectHostGroupedBy(filters), Types.HOST,
                              host -> this.resolveHostnameForHost(host, filters));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
+        switch (field) {
+            case DSCP: return getAllTerms(GroupedBy.EXPORTER_INTERFACE_TOS, "dscp", filters);
+            default: throw new UnsupportedOperationException("Enumerating aggregated field values is not supported for field: " + field);
+        }
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters) {
+        switch (field) {
+            case DSCP: return getTopNSummary(field.size, false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.DSCP, CompletableFuture::completedFuture);
+            default: throw new UnsupportedOperationException("Summaries for aggregated values are not supported for field: " + field);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters) {
+        switch (field) {
+            case DSCP: return getTopNSeries(field.size, step,false, filters, GroupedBy.EXPORTER_INTERFACE_TOS, Types.DSCP, CompletableFuture::completedFuture);
+            default: throw new UnsupportedOperationException("Series for aggregated values are not supported for field: " + field);
+        }
+    }
+
+    /**
+     * the composite aggregation for all terms returns a response with the following structure:
+     * {
+     *   "aggregations": {
+     *     "my_buckets": {
+     *       "buckets": [
+     *         {
+     *           "key": {
+     *             "term": 0
+     *           }
+     *         }
+     *       ]
+     *     }
+     *   }
+     * }
+     *
+     * The following GPath accesses the list of term values in responses.
+     */
+    private static GPath<List<String>> ALL_TERMS_AS_INT_GPATH = GPath
+            .integer()
+            .map(String::valueOf)
+            .field("term")
+            .field("key")
+            .array("buckets")
+            .field("my_buckets")
+            .field("aggregations", "aggs");
+
+    private CompletableFuture<List<String>> getAllTerms(GroupedBy groupedBy, String groupedByField, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = Filter.find(filters, TimeRangeFilter.class).orElse(null);
+        String query = searchQueryProvider.getAllTerms(groupedBy, groupedByField, filters);
+        return searchAsync(query, timeRangeFilter)
+                .thenApply(searchResult -> ALL_TERMS_AS_INT_GPATH.eval(searchResult.getJsonObject()));
     }
 
     /**
@@ -140,7 +228,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final ImmutableTable.Builder<Directional<T>, Long, Double> builder = ImmutableTable.builder();
         CompletableFuture<Void> seriesFuture;
         if (N > 0) {
-            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(N, groupedBy,
+            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(N, groupedBy, type.getAggregationType(),
                     type.getKey(), step, timeRangeFilter.getStart(),
                     timeRangeFilter.getEnd(), filters);
             seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
@@ -273,7 +361,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                                                                           final Function<T, CompletableFuture<T>> transform) {
         CompletableFuture<List<TrafficSummary<T>>> summaryFutures;
         if (N > 0) {
-            final String query = searchQueryProvider.getTopNQuery(N, groupedBy, type.getKey(), filters);
+            final String query = searchQueryProvider.getTopNQuery(N, groupedBy, type.getAggregationType(), type.getKey(), filters);
             summaryFutures = searchAsync(query, Filter.find(filters, TimeRangeFilter.class).orElse(null))
                     .thenCompose(searchResult -> {
                         final MetricAggregation aggs = searchResult.getAggregations();
@@ -297,6 +385,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                                                                   .withEntity(entity)
                                                                   .withBytesIn(ingress.getSum().longValue())
                                                                   .withBytesOut(egress.getSum().longValue())
+                                                                  .withEcnInfo(bucket)
                                                                   .build()));
                         }
 
@@ -323,6 +412,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                     .withEntity(type.getOtherEntity())
                     .withBytesIn(otherBytes.getBytesIn())
                     .withBytesOut(otherBytes.getBytesOut())
+                    .withEcnInfo(total)
                     .build());
             return newTopK;
         });
@@ -339,6 +429,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                             .withEntity(OTHER_NAME)
                             .withBytesIn(ingress != null ? ingress.getSum().longValue() : 0L)
                             .withBytesOut(egress != null ? egress.getSum().longValue() : 0L)
+                            .withEcnInfo(aggs)
                             .build();
                 });
     }

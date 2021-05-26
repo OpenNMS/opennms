@@ -10,6 +10,9 @@ executors:
   docker-executor:
     docker:
       - image: docker:20.10.1-git
+  docs-executor:
+    docker:
+      - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine:
      image: ubuntu-2004:202010-01
@@ -36,19 +39,19 @@ defaults: &defaults
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: develop
+      default: release-28.x
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: develop
+      default: release-28.x
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: ""
+      default: develop
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: ""
+      default: develop
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -282,16 +285,6 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Psmoke \
               install --batch-mode
-            pushd opennms-doc
-              ../compile.pl \
-                -DupdatePolicy=never \
-                -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=1 \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -DskipPdfGeneration=false \
-                -P'!jdk7+' \
-                install --batch-mode
-            popd
       - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
@@ -538,6 +531,11 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+      - build-docs:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
@@ -768,7 +766,21 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
-
+  build-docs:
+    executor: docs-executor
+    steps:
+      - cached-checkout
+      - run:
+          name: Validate Xrefs in docs
+          command: |
+            NODE_PATH="$(npm -g root)" antora --generator @antora/xref-validator antora-playbook-local.yml
+      - run:
+          name: Build docs with Antora
+          command: |
+             DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr NODE_PATH="$(npm -g root)" antora --generator antora-site-generator-lunr --stacktrace generate antora-playbook-local.yml
+      - store_artifacts:
+          path: ~/project/build/site.zip
+          destination: site.zip
   tarball-assembly:
     machine:
       image: ubuntu-2004:202010-01
@@ -839,7 +851,6 @@ jobs:
               tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
       - run:
           name: Build Minion OCI
@@ -1197,7 +1208,7 @@ jobs:
           suite: core
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1208,7 +1219,7 @@ jobs:
           suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 5
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large

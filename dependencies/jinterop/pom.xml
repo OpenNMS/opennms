@@ -24,6 +24,17 @@
       <groupId>com.github.skyghis</groupId>
       <artifactId>j-interop-ng-deps</artifactId>
       <version>${jinteropVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>eu.agno3.jcifs</groupId>
+          <artifactId>jcifs-ng</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.jcifs-shaded</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <repositories>

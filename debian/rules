@@ -291,12 +291,6 @@ install: build
 	find debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio* -type f -execdir chmod 644 {} \;
 
 	##
-	## Setup the opennms-doc package
-	##
-	mv debian/temp/docs/* debian/opennms-doc/usr/share/doc/opennms/
-	find debian/opennms-doc/usr/share/doc/opennms -type f -execdir chmod 644 {} \;
-
-	##
 	## Setup the opennms-contrib package
 	##
 	mv debian/temp/contrib/* debian/opennms-contrib/usr/share/opennms/contrib/
@@ -319,7 +313,6 @@ install: build
 binary-indep: build install
 	dh_testdir
 	dh_testroot
-	dh_installdocs
 	dh_systemd_enable --name=opennms --no-enable
 	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
 	dh_systemd_start --name=opennms --no-restart-after-upgrade

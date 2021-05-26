@@ -48,7 +48,6 @@ public class HelpPageIT extends OpenNMSSeleniumIT {
                 "Deployment Guide",
                 "Operation Guide",
                 "Development Guide",
-                "OpenNMS Wiki",
                 "OpenAPI Docs",
                 "Swagger UI",
                 "Commercial Support",
