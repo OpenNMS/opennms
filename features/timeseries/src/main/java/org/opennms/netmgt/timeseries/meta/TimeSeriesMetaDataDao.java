@@ -73,6 +73,7 @@ public class TimeSeriesMetaDataDao {
 
     final static String SQL_WRITE = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
     final static String SQL_READ = "SELECT name, value FROM timeseries_meta where resourceid = ?";
+    final static String SQL_READ_BATCH = "SELECT ctid, * from timeseries_meta  WHERE ctid > ? limit ?;";
 
     private final DataSource dataSource;
 
@@ -134,7 +135,7 @@ public class TimeSeriesMetaDataDao {
             Map<String, String> attributesForResource = cache.getIfCached(meta.getResourceId()); // do not load from database if not in cache
             if(attributesForResource == null) {
                 attributesForResource = new HashMap<>();
-                cache.put(deduplicateName(meta.getName()), attributesForResource);
+                cache.put(meta.getResourceId(), attributesForResource);
             }
             if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
@@ -198,7 +199,7 @@ public class TimeSeriesMetaDataDao {
         }
     }
 
-    private Map<String, String> loadFromDataBase(final String resourceId) throws StorageException {
+    Map<String, String> loadFromDataBase(final String resourceId) throws StorageException {
         Objects.requireNonNull(resourceId);
 
         final DBUtils db = new DBUtils(this.getClass());
@@ -219,6 +220,45 @@ public class TimeSeriesMetaDataDao {
             return metaData;
         } catch (SQLException e) {
             LOG.error("Could not retrieve meta data for resourceId={}", resourceId, e);
+            throw new StorageException(e);
+        } finally {
+            db.cleanUp();
+        }
+    }
+
+    void loadBatchInCache(long size) throws StorageException {
+        final DBUtils db = new DBUtils(this.getClass());
+        String lastCtid = "(0,0)"; // we use the CTID as an id since our table has no natural id.
+        long count = 0;
+        try {
+            final Connection connection = this.dataSource.getConnection();
+            db.watch(connection);
+            PreparedStatement statement = connection.prepareStatement(SQL_READ_BATCH);
+            db.watch(statement);
+            boolean hasMoreResults = true;
+
+            while(hasMoreResults) {
+                statement.setString(1, lastCtid);
+                statement.setLong(2, size);
+                ResultSet rs = statement.executeQuery();
+                db.watch(rs);
+
+                while (rs.next()) {
+                    lastCtid = rs.getString("ctid");
+                    String resourceId = rs.getString("resourceId");
+                    String name = rs.getString("name");
+                    String value = rs.getString("value");
+
+                    Map<String, String> metaData = cache.get(resourceId, HashMap::new);
+                    metaData.put(deduplicateName(name), deduplicateValue(value));
+                    count++;
+                }
+                LOG.info("Loaded %s entries from db into cache.");
+                hasMoreResults = rs.getRow() == 0; // we are empty => no more results
+            }
+
+        } catch (SQLException | ExecutionException e) {
+            LOG.error("An exception happened during cache bulk loading for lastCtid={}, size={}", lastCtid, size, e);
             throw new StorageException(e);
         } finally {
             db.cleanUp();

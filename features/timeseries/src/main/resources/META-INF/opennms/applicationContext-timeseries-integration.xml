@@ -54,6 +54,22 @@
     <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
   </onmsgi:list>
 
+  <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.ttl:31540000}" />
+  </bean>
+
+  <bean id="cache.priming.disable" class="java.lang.Boolean">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.priming.disable:false}"/>
+  </bean>
+
+  <bean id="cache.priming.block_ms" class="java.lang.Long">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.priming.block_ms:120000}"/>
+  </bean>
+
+  <bean id="cache.priming.fetch_size" class="java.lang.Integer">
+    <constructor-arg type="java.lang.String" value="${org.opennms.timeseries.config.cache.priming.fetch_size:10000}" />
+  </bean>
+
   <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />

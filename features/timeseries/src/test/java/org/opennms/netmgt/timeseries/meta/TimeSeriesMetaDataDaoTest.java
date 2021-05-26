@@ -58,7 +58,7 @@ public class TimeSeriesMetaDataDaoTest {
         TimeSeriesMetaDataDao dao = Mockito.spy(new TimeSeriesMetaDataDao(mock(DataSource.class), config, new MetricRegistry(), 1));
         Mockito.doNothing().when(dao).storeUncached(anyCollection());
         ResourcePath resourcePathA = new ResourcePath("a", "b", "c");
-        MetaData meta = new MetaData(toResourceId(resourcePathA).toString(), "key", "value");
+        MetaData meta = new MetaData(toResourceId(resourcePathA), "key", "value");
         dao.store(Arrays.asList(meta, meta));
         dao.store(Collections.singletonList(meta));
         dao.store(Collections.singletonList(meta));
