@@ -30,7 +30,7 @@ The following shows a sample full stack {page-component-title} implementation:
 
 image::opennms-full-stack.png[]
 
-. OpenNMS platform
+. OpenNMS core
 . Kafka message broker
 . PostgreSQL database
 . Elasticsearch
@@ -42,7 +42,12 @@ image::opennms-full-stack.png[]
 
 See the xref:deployment:core/introduction.adoc#basic-deployment[Deployment] and xref:operation:overview/overview.adoc#overview[Operation] sections for more detail about these components.
 
-The OpenNMS Group also offers https://www.opennms.com/meridian/[Meridian], a subscription-based, more stable version of {page-component-title} with long-term support.
+ifeval::["{page-component-title}" == "Horizon"]
+The OpenNMS Group also offers https://www.opennms.com/meridian/[Meridian], a subscription-based, more stable version of the platform with long-term support.
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+The OpenNMS Group also offers https://www.opennms.com/horizon/[Horizon], a fast-moving, features-first version of the platform with community support.
+endif::[]
 
 == Navigating the {page-component-title} Documentation
 
