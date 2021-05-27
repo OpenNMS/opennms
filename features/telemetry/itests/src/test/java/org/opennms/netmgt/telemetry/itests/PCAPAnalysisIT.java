@@ -214,6 +214,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
 
                 for (final Map.Entry<String, JsonElement> flowEntry : flows) {
                     final JsonObject flow = flowEntry.getValue().getAsJsonObject();
+		    flow.add("__seqnum", pkg.getAsJsonObject().getAsJsonObject("_source").getAsJsonObject("layers").getAsJsonObject("frame").get("frame.number"));
 
                     final double start = flow.getAsJsonObject("cflow.timedelta_tree").getAsJsonPrimitive("cflow.timestart").getAsDouble() * 1000.0;
                     final double end = flow.getAsJsonObject("cflow.timedelta_tree").getAsJsonPrimitive("cflow.timeend").getAsDouble() * 1000.0;
@@ -265,6 +266,7 @@ public class PCAPAnalysisIT implements AsyncDispatcher<TelemetryMessage> {
                             final MapDifference<String, String> diff = Maps.difference(m1, m2);
 
 //                            System.out.println(String.format("%s: %s", seqnum, diff));
+                            System.out.println(String.format("Duplicate: %s == %s", ex.get("__seqnum"), flow.get("__seqnum")));
                         }
 
                         if (flow.getAsJsonPrimitive("cflow.inputint").getAsInt() == INTERFACE_INDEX) {
