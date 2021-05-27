@@ -124,12 +124,12 @@
         <repository>
             <id>atlassian-public</id>
             <name>Atlassian public repo</name>
-            <url>http://maven.atlassian.com/content/repositories/atlassian-public/</url>
+            <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
         </repository>
         <repository>
             <id>atlassian-public-mirror</id>
             <name>Atlassian public repo</name>
-            <url>http://maven.opennms.org/content/repositories/atlassian-public/</url>
+            <url>https://maven.opennms.org/content/repositories/atlassian-public/</url>
         </repository>
     </repositories>
 </project>
