@@ -129,7 +129,7 @@ This setup replaces the collector component of OpenBMP.
 [options="header, %autowidth"]
 |===
 | Parameter            | Description                                                                    | Required | Default value
-| `kafka.*`            | Uses options to create OpenBMP Kafka producer. Enables all known Kafka settings, but prefixed with `kafka.`. | no       |
+| `kafka.*`            | Uses options to create OpenBMP Kafka producer. Enables all known Kafka settings, but with `kafka.` prefixed. | no       |
 | `topicPrefix`        | Prefix used before each Kafka topic.                                            | no       |
 |===
 

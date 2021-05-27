@@ -94,17 +94,17 @@ image::dashboard/05_dashboard-outages.png[]
 [[ga-dashboard-resource-graph-viewer]]
 === Resource Graph Viewer
 
-To give a quick entry point diagnose performance issues a Resource Graph Viewer lets you navigate to time series data reports which are filtered in the context of the Surveillance View.
+The Resource Graph Viewer lets you navigate to time series data reports to give a quick entry point to diagnose performance issues. 
+This viewer filters nodes based on the Surveillance View context and shows one graph report at a time.
+It lets you navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
 
 .Show time series based performance with the Resource Graph Viewer
 image::dashboard/06_dashboard-resource-graphs.png[]
 
-It lets you navigate sequentially through resource graphs provided by nodes filtered by the Surveillance View context and selection and shows one graph report at a time.
-
 [[ga-dashboard-advanced-configuration]]
 == Advanced configuration
 
-The Surveillance View component lets you to model multiple views for different monitoring contexts.
+The Surveillance View component lets you model multiple views for different monitoring contexts.
 It gives the possibility to create special view as example for network operators or server operators.
 The dashboard shows only *one* configured <<webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
 To give different users the possibility using their Surveillance View fitting there requirements it is possible to map a logged in user to a given Surveillance View used in the dashboard.

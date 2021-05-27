@@ -43,7 +43,7 @@ It is also possible to exclude IP interfaces:
 [[ga-pollerd-packages-response-time-config]]
 == Response Time Configuration
 
-The definition of polling packages let you configure similar services with different polling intervals.
+The definition of polling packages lets you configure similar services with different polling intervals.
 All the response time measurements are persisted in RRD files and require a definition.
 Each polling package contains an RRD definition.
 

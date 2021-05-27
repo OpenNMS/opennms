@@ -5,23 +5,24 @@ sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.
 sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Install {page-component-title} with all built-in dependencies (optional)
+.Install {page-component-title} with all built-in dependencies
 [source, console]
 ----
 sudo dnf -y install opennms
 ----
 
-TIP: This is optional. If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
-     The additional download size for packages is ~390 MB.
 
-.Install R packages for trending and forcasting
+.Install R packages for trending and forcasting (optional)
+If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
+The additional download size for packages is ~390 MB.
+
 [source, console]
 ----
 sudo dnf -y install epel-release
 sudo dnf -y install R-core
 ----
 
-TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it runs.
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 

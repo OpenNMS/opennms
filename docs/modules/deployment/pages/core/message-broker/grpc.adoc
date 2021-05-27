@@ -60,7 +60,7 @@ config:update<5>
 
 This is optional and you can set a maximum message size for gRPC.
      The maximum size must be the same on the Minion.
-     Default maximum message size is 10 MB.
+     Default maximum message size is 10 MiB.
 
 .Configure maximum message size for gRPC in the Karaf shell
 [source, karaf]

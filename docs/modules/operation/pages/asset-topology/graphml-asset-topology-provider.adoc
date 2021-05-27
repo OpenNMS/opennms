@@ -71,7 +71,7 @@ Keys beginning with `asset-`  come from the corresponding asset table entry for 
 | asset-vendor | asset-modelnumber | asset-description | asset-operatingsystem | asset-country
 |===
 
-This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields such as asset node categories.
+This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields (asset node categories).
 Please note you should not put any spaces in the comma-separated `assetLayers` list.
 If the `assetLayers` property is defined as empty, then a single graph layer will be generated containing all OpenNMS nodes.
 
@@ -95,8 +95,8 @@ Thus the following configuration means include only nodes with region `north` or
 ----
 filter=asset-region=north,south;asset-building=!23
 ----
-The filters are designed to treat all selected text key entries as comma-separated values (csv).
-This lets OpenNMS node-categories that are many-to-many entries be dealt with as a comma-separated list of values: routers, servers, web.
+The filters are designed to treat comma-separated key values as an OR search. 
+This lets OpenNMS node-categories that have many-to-many relationships search on multiple values.
 Thus we can select based on multiple separate node categories.
 The following configuration means show routers and servers on all buildings except building 23.
 

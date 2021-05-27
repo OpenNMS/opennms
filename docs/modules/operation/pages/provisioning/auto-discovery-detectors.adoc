@@ -19,7 +19,7 @@ You can define IP ranges and specifics in `discovery-configuration.xml`:
 </discovery-configuration>
 ----
 
-Auto discovery with detectors lets users specify the services to detect apart from ICMP ping for the specified IP addresses to be discovered.
+Auto discovery with detectors lets users specify the services to detect, apart from ICMP ping, for the specified IP addresses to be discovered.
 Auto discovery sends a new suspect event only when the specified detectors succeeds.
 
 [source, xml]

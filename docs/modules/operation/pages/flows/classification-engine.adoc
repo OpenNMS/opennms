@@ -99,7 +99,7 @@ Change the positions of rules and groups by drag and drop or by editing the posi
 == Verification
 
 With a more complex set of rules, it is not always easy to verify if everything is configured correctly.
-To make things a bit easier, the Classification UI let you test/verify a classification.
+To make things easier, the Classification UI lets you test/verify a classification.
 To do so, navigate to the Classification UI:
 *Gear icon-> Flow Management -> Manage Flow Classification* and select the Test classification icon in the top right.
 This simulates sending a flow to the Classification Engine with certain fields.

@@ -62,8 +62,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | `user`                 | This parameter is meant to be used together with the `password` parameter to perform
                            basic authentication. This parameter specifies the user ID to be used. The `user` and
                            `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-` | Yes
-| `user-agent`           | Lets you set the User-Agent HTTP header (see also
-                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616] section 14.43).                          | optional | `OpenNMS HttpMonitor` | Yes
+| `user-agent`           | Specifies the User-Agent HTTP header. (Also see
+                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616] section 14.43.)                          | optional | `OpenNMS HttpMonitor` | Yes
 | `verbose`              | When set to _true_, full communication between client and the webserver will be logged
                            (with a log level of `DEBUG`).                                                              | optional | `-` | No
 |===

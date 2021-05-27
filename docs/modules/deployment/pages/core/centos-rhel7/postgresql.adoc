@@ -29,7 +29,8 @@ sudo -i -u postgres createuser -P opennms
 ----
 
 IMPORTANT: You must provide a password for the `opennms` database user.
-         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder. Please set a secure password.
+         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder. 
+         Please set a secure password.
 
 .Create an empty database and set the owner to the opennms user
 [source, console]

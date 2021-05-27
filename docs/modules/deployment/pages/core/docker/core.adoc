@@ -55,7 +55,7 @@ services:
 <6> Persist performance data PDF reports in a volume.
 <7> Mount the volumes for data persistence and bind mount the configuration in a local directory.
 <8> Publish ports to access the web UI and the Karaf shell.
-<9> Run an internal health check against the web UI to verify its health status.
+<9> Run an internal health check against the web UI to verify service health status.
 
 .Validate your Docker Compose file
 [source, console]

@@ -31,7 +31,7 @@ In addition, you may want to xref:foreign-source-definition[edit the default for
 [[provision-snmp-configuration]]
 == Configuring SNMP for Provisioning
 
-Proper SNMP configuration lets {page-component-title} understand network and node topology as well as to automatically enable performance data collection.
+Proper SNMP configuration lets {page-component-title} understand network/node topology and automatically enables performance data collection.
 {page-component-title} updates network topology as it provisions nodes.
 
 . In the web UI, click the gear icon in the top right.

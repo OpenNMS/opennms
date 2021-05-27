@@ -34,4 +34,4 @@ LISTEN  0       128     *:61616             *:*   users:(("java",pid=1,fd=706))
 
 TIP: If you run a host firewall, allow port 61616/tcp, as in the following example with firewalld: +
      `sudo firewall-cmd --permanent --add-port=61616/tcp` +
-     `sudo systemctl reload firewalld`
+     `sudo firewall-cmd --reload`

@@ -1,7 +1,7 @@
 = Setting up Jaeger Tracing
 
 OpenTracing enables distributed tracing which makes it possible to monitor RPCs or transactions across process boundaries.
-This functionality can be leveraged to help track and diagnose communication problems that may arise in distributed deployments of _{page-component-title}_ components; for example, Core instance, Minion and/or Sentinel.
+You can leverage this functionality to help track and diagnose communication problems that may arise in distributed deployments of _{page-component-title}_ components; for example, Core instance, Minion, and/or Sentinel.
 OpenTracing is supported on RPC calls between {page-component-title} Core instance for Sink API calls (including flows) between Minion and Sentinel.
 By default the tracing instrumentation {page-component-title} is disabled (a no-op tracer is used.)
 

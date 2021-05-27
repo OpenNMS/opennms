@@ -116,7 +116,7 @@ The `-s` option shows all fields.
 This may be necessary you need to set if Jira default values as well, e.g., the Component, the Reporter, the Asignee, etc.
 Even the project key or issue type can be defined differently than originally in the `jira.properties`.
 
-The OpenNMS ticketer attribute model lets you set only a string value.
+The OpenNMS ticketer attribute model only lets you set a string value.
 However the Jira model is slightly different.
 Therefore, each string value must be converted to a Jira field type.
 The following table describes valid values for an OpenNMS attribute.

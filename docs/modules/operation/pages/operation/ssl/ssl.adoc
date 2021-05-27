@@ -45,7 +45,7 @@ keytool \
 <6> The location of the Java Truststore
 
 If you create a new Java Truststore you are asked for a password to protect the Java Truststore.
-If you update an already existing Java Truststore please type the password you chose when creating the Java Truststore initially.
+If you updated an existing Java Truststore please type the password you chose when you first created the Java Truststore.
 
 [[ga-operation-download-certificate]]
 === Download existing public certificate
