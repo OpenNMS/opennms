@@ -107,17 +107,17 @@
             <releases><enabled>false</enabled></releases>
             <id>opennms-snapshots</id>
             <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+            <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
         <repository>
             <id>vaadin-snapshots</id>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
+            <url>https://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
         </repository>
         <repository>
             <id>vaadin-addons</id>
-            <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
+            <url>https://maven.opennms.org/content/repositories/vaadin-addons/</url>
         </repository>
     </repositories>
 
@@ -126,7 +126,7 @@
             <id>vaadin-snapshots</id>
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>false</enabled></releases>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
+            <url>https://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
         </pluginRepository>
     </pluginRepositories>
 

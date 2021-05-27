@@ -26,7 +26,7 @@
     <repository>
       <id>smslib-repo</id>
       <name>SMSLib Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/smslib-repo/</url>
+      <url>https://maven.opennms.org/content/repositories/smslib-repo/</url>
     </repository>
   </repositories>
 </project>
