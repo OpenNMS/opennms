@@ -1459,7 +1459,7 @@
     <rocksdbjniVersion>5.18.4</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
     <scalaLoggingVersion>3.9.2</scalaLoggingVersion>
-    <scalaVersion>2.13</scalaVersion>
+    <scalaVersion>2.12</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.30</slf4jVersion>
