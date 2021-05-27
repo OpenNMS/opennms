@@ -75,6 +75,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
     private final LocationAwarePollerClient m_locationAwarePollerClient;
     private final LatencyStoringServiceMonitorAdaptor m_latencyStoringServiceMonitorAdaptor;
+    private final StatusStoringServiceMonitorAdaptor m_statusStoringServiceMonitorAdaptor;
     private final InvertedStatusServiceMonitorAdaptor m_invertedStatusServiceMonitorAdaptor = new InvertedStatusServiceMonitorAdaptor();
 
     private final ReadablePollOutagesDao m_pollOutagesDao;
@@ -95,6 +96,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_timer = timer;
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
+        m_statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
 
         this.findService();
@@ -130,6 +132,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withTimeToLive(ttlInMs)
                 .withAttributes(getParameters())
                 .withAdaptor(m_latencyStoringServiceMonitorAdaptor)
+                .withAdaptor(m_statusStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
                 .withPatternVariables(m_patternVariables)
                 .execute();
