@@ -96,12 +96,12 @@ public class DefaultHealthCheckService implements HealthCheckService {
         try {
             // Fail if no checks are available
             List<HealthCheck> checks = getHealthChecks();
+            if (!Strings.isNullOrEmpty(filter)){
+                checks = checks.stream().filter(check -> check.getClass().getName().contains(filter)).collect(Collectors.toList());
+            }
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
             } else {
-                if (!Strings.isNullOrEmpty(filter)){
-                    checks = checks.stream().filter(check -> check.getClass().getName().contains(filter)).collect(Collectors.toList());
-                }
                 runChecks(context, checks, onStartConsumer, consumer);
             }
         } catch (InvalidSyntaxException ex) {
