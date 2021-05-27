@@ -113,11 +113,12 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getAllTerms(GroupedBy groupedBy, String groupedByField, List<Filter> filters) {
+    public String getAllTerms(GroupedBy groupedBy, String groupedByField, int fieldSize, List<Filter> filters) {
         return render("all_terms.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("groupedBy", groupedBy)
                 .put("groupedByField", groupedByField)
+                .put("fieldSize", fieldSize)
                 .build());
     }
 

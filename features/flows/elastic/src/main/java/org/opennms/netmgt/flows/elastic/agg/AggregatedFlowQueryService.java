@@ -150,7 +150,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     @Override
     public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         switch (field) {
-            case DSCP: return getAllTerms(GroupedBy.EXPORTER_INTERFACE_TOS, "dscp", filters);
+            case DSCP: return getAllTerms(GroupedBy.EXPORTER_INTERFACE_TOS, "dscp", field.size, filters);
             default: throw new UnsupportedOperationException("Enumerating aggregated field values is not supported for field: " + field);
         }
     }
@@ -198,9 +198,9 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
             .field("my_buckets")
             .field("aggregations", "aggs");
 
-    private CompletableFuture<List<String>> getAllTerms(GroupedBy groupedBy, String groupedByField, List<Filter> filters) {
+    private CompletableFuture<List<String>> getAllTerms(GroupedBy groupedBy, String groupedByField, int fieldSize, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = Filter.find(filters, TimeRangeFilter.class).orElse(null);
-        String query = searchQueryProvider.getAllTerms(groupedBy, groupedByField, filters);
+        String query = searchQueryProvider.getAllTerms(groupedBy, groupedByField, fieldSize, filters);
         return searchAsync(query, timeRangeFilter)
                 .thenApply(searchResult -> ALL_TERMS_AS_INT_GPATH.eval(searchResult.getJsonObject()));
     }
