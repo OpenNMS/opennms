@@ -48,9 +48,22 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
     private static final String SUCCESS_MESSAGE = "Everything is awesome";
     private static final String ERROR_MESSAGE = "Oh no, something is wrong";
-    private static final String CONTAINER_INTEGRITY_HEALTH_CHECK_CLASS_NAME = "ContainerIntegrityHealthCheck";
 
     private final HealthCheckService healthCheckService;
+
+    public enum HealthCheckElements {
+        CONTAINER_INTEGRITY_HEALTH_CHECK("ContainerIntegrityHealthCheck");
+
+        private final String className;
+
+        private HealthCheckElements(String className){
+            this.className = className;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+    }
 
     public HealthCheckRestServiceImpl(final HealthCheckService healthCheckService) {
         this.healthCheckService = Objects.requireNonNull(healthCheckService);
@@ -104,7 +117,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
     @Override
     public Response getBundleHealth(int timeoutInMs) {
-        return getHealth(timeoutInMs, CONTAINER_INTEGRITY_HEALTH_CHECK_CLASS_NAME);
+        return getHealth(timeoutInMs, HealthCheckElements.CONTAINER_INTEGRITY_HEALTH_CHECK.getClassName());
     }
 
     private HealthWrapper getHealthInternally(int timeoutInMs, String filter){
