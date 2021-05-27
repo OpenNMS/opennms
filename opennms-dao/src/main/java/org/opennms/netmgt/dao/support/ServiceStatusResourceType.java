@@ -33,29 +33,28 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 
 /**
- * Response time resources are stored in paths like:
- *   response/${ipaddr}/ds.rrd
+ * Poller status time resources are stored in paths like:
+ *   status/${ipaddr}/ds.rrd
  *
  */
-public final class ResponseTimeResourceType extends ServiceResourceType {
+public final class ServiceStatusResourceType extends ServiceResourceType {
 
-    public ResponseTimeResourceType(final ResourceStorageDao resourceStorageDao, final IpInterfaceDao ipInterfaceDao) {
+    public ServiceStatusResourceType(final ResourceStorageDao resourceStorageDao, final IpInterfaceDao ipInterfaceDao) {
         super(resourceStorageDao, ipInterfaceDao);
     }
 
     @Override
     protected String getDirectory() {
-        return ResourceTypeUtils.RESPONSE_DIRECTORY;
-    }
-
-    @Override
-    public String getLabel() {
-        return "Response Time";
+        return ResourceTypeUtils.STATUS_DIRECTORY;
     }
 
     @Override
     public String getName() {
-        return "responseTime";
+        return "status";
     }
 
+    @Override
+    public String getLabel() {
+        return "Service Status";
+    }
 }

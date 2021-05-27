@@ -198,6 +198,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private void initResourceTypes() {
         final Map<String, OnmsResourceType> resourceTypes = Maps.newLinkedHashMap();
         OnmsResourceType resourceType;
+        ServiceResourceType serviceResourceType;
 
         resourceType = new NodeSnmpResourceType(m_resourceStorageDao);
         resourceTypes.put(resourceType.getName(), resourceType);
@@ -208,10 +209,16 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new InterfaceSnmpByIfIndexResourceType(intfResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
+        resourceType = serviceResourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new PerspectiveResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
+        resourceType = new PerspectiveResponseTimeResourceType(m_resourceStorageDao, serviceResourceType);
+        resourceTypes.put(resourceType.getName(), resourceType);
+
+        resourceType = serviceResourceType = new ServiceStatusResourceType(m_resourceStorageDao, m_ipInterfaceDao);
+        resourceTypes.put(resourceType.getName(), resourceType);
+
+        resourceType = new PerspectiveStatusResourceType(m_resourceStorageDao, serviceResourceType);
         resourceTypes.put(resourceType.getName(), resourceType);
 
         resourceTypes.putAll(GenericIndexResourceType.createTypes(m_resourceTypesDao.getResourceTypes(), m_resourceStorageDao));

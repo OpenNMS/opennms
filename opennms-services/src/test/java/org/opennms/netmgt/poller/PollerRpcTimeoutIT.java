@@ -69,6 +69,7 @@ import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -235,6 +236,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         m_poller.setPollerConfig(factory);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
         m_poller.setPollOutagesDao(m_pollOutagesDao);
+        m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 
     @After

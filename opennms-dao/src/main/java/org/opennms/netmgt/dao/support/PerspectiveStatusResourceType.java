@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,34 +28,25 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 
 /**
- * Response time resources are stored in paths like:
- *   response/${ipaddr}/ds.rrd
- *
+ * Perspective response time resources are stored in paths like:
+ *   status/${ipaddr}/perspective/${perspectiveLocation}/ds.rrd
  */
-public final class ResponseTimeResourceType extends ServiceResourceType {
+public final class PerspectiveStatusResourceType extends PerspectiveServiceResourceType {
 
-    public ResponseTimeResourceType(final ResourceStorageDao resourceStorageDao, final IpInterfaceDao ipInterfaceDao) {
-        super(resourceStorageDao, ipInterfaceDao);
-    }
-
-    @Override
-    protected String getDirectory() {
-        return ResourceTypeUtils.RESPONSE_DIRECTORY;
+    public PerspectiveStatusResourceType(final ResourceStorageDao resourceStorageDao, final ServiceResourceType serviceType) {
+        super(resourceStorageDao, serviceType);
     }
 
     @Override
     public String getLabel() {
-        return "Response Time";
+        return "Perspective Service Status";
     }
 
     @Override
     public String getName() {
-        return "responseTime";
+        return "perspectiveStatus";
     }
-
 }
