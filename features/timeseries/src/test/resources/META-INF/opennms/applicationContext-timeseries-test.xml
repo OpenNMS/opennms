@@ -66,6 +66,8 @@
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
 
+  <bean id="timeseriesResourceStorageDao" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
+
   <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
     <constructor-arg index="0" ref="timeseriesPersisterFactory"/>
     <constructor-arg index="1" ref="osgiPersisterFactory"/>

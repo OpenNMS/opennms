@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.PREFIX_RESOURCE_LEVEL_ATTRIBUTE;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.USE_TS_FOR_STRING_ATTRIBUTES;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -123,13 +126,33 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     public void commit() {
         try(final Timer.Context context = commitTimer.time()) {
             writer.insert(getSamplesToInsert());
-            writer.index(getSamplesToIndex());
+            if(!USE_TS_FOR_STRING_ATTRIBUTES) {
+                writer.index(getSamplesToIndex());
+            }
         }
     }
 
     public List<Sample> getSamplesToInsert() {
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), name));
+
+        // Add resource and group level attributes
+        if (USE_TS_FOR_STRING_ATTRIBUTES) {
+            Map<String, String> stringAttributes = new HashMap<>();
+            ResourcePath p = path;
+            do { // get all attributes we inherited from up the path
+                Map<String, String> attributes = stringAttributesByPath.get(p);
+                if (attributes != null) {
+                    stringAttributes.putAll(attributes);
+                }
+                p = p.getParent();
+            } while (p.hasParent());
+
+            for (Entry<String, String> entry : stringAttributes.entrySet()) {
+                metaData.put(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue());
+            }
+        }
+
         String resourceId = TimeseriesUtils.toResourceId(path);
 
         // Convert numeric attributes to samples

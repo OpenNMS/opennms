@@ -35,6 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.timeseries.samplewrite.MetaTagConfiguration.CONFIG_KEY_FOR_CATEGORIES;
 import static org.opennms.netmgt.timeseries.samplewrite.MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.USE_TS_FOR_STRING_ATTRIBUTES;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -49,6 +50,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -90,9 +92,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
+import org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -139,6 +143,9 @@ public class TimeseriesRoundtripIT {
 
     @Autowired
     private MetaTagDataLoader metaTagDataLoader;
+
+    @Autowired
+    private TimeseriesResourceStorageDao resourceStorageDao;
 
     @Before
     public void setUp() {
@@ -262,9 +269,19 @@ public class TimeseriesRoundtripIT {
         return timeseriesStorageManager.get().getTimeseries(request);
     }
 
-    private void testForStringAttribute(String resourcePath, String name, String expectedValue) throws StorageException {
-        Map<String, String> stringAttributes = metaDataDao.getForResourcePath(ResourcePath.fromString(resourcePath));
-        assertEquals(expectedValue, stringAttributes.get(name));
+    private void testForStringAttribute(String resourcePath, String attributeName, String expectedValue) throws StorageException {
+        Map<String, String> stringAttributes;
+        if(USE_TS_FOR_STRING_ATTRIBUTES) {
+            ResourcePath path = ResourcePath.fromString(resourcePath);
+            stringAttributes = resourceStorageDao.getAttributes(path)
+                    .stream()
+                    .filter(a -> a instanceof StringPropertyAttribute)
+                    .map(a -> (StringPropertyAttribute) a)
+                    .collect(Collectors.toMap(StringPropertyAttribute::getName, StringPropertyAttribute::getValue));
+        } else {
+            stringAttributes = metaDataDao.getForResourcePath(ResourcePath.fromString(resourcePath));
+        }
+        assertEquals(expectedValue, stringAttributes.get(attributeName));
     }
 
     private void createAndSaveNode() throws UnknownHostException {
