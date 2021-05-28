@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+PACKAGE="$1"
+
+if [ -z "$PACKAGE" ]; then
+  echo "usage: $0 <package>"
+  echo ""
+  exit 1
+fi
+
+if [ -z "${OPENNMS_HOME}" ]; then
+  # shellcheck disable=SC2016,SC2154
+  OPENNMS_HOME='${install.dir}'
+fi
+
+if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
+  # shellcheck disable=SC1090,SC1091
+  . "${OPENNMS_HOME}/etc/opennms.conf"
+else
+  RUNAS=opennms
+fi
+
+if [ -z "${RUNAS}" ]; then
+  echo "Something is very wrong, \$RUNAS is not set. Bailing."
+  exit 1
+fi
+
+if [ "${RUNAS}" != "opennms" ]; then
+  echo "\$RUNAS has been changed from the default 'opennms' user. Assuming you know what you're doing and _not_ changing ownership of any files."
+  echo ""
+  exit 0
+fi
+
+RUNAS_UID="$(id -u "${RUNAS}" 2>/dev/null || :)"
+RUNAS_GID="$(id -g "${RUNAS}" 2>/dev/null || :)"
+
+if [ -z "${RUNAS_UID}" ] || [ -z "${RUNAS_GID}" ]; then
+  echo "ERROR: unable to determine UID and GID from \$RUNAS=${RUNAS}. Bailing."
+  exit 1
+fi
+
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
+CHOWN="chown ${RUNAS_UID}:${RUNAS_GID}"
+if [ -x "$SUDO" ]; then
+  CHOWN="$SUDO $CHOWN"
+fi
+
+# shellcheck disable=SC2086
+(if [ -e /etc/debian_version ]; then
+  dpkg --listfiles "$PACKAGE";
+elif [ -e /etc/redhat-release ]; then
+  rpm -ql "$PACKAGE";
+fi) | grep /opennms | while read -r FILE; do
+  $CHOWN "$FILE"
+done
+
+if [ ! -e /etc/debian_version ] && [ ! -e /etc/redhat-release ]; then
+  echo "WARNING: not a Debian/Ubuntu or RedHat system -- check the contents of $OPENNMS_HOME is owned by $RUNAS."
+fi
