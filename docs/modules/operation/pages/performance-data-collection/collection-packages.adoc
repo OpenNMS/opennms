@@ -2,7 +2,7 @@
 [[ga-collectd-packages]]
 = Collection Packages
 
-To define more complex collection configuration it is possible to group Service_ configurations that provide performance metrics into collection packages.
+To define more complex collection configuration it is possible to group Service configurations that provide performance metrics into collection packages.
 This lets you assign different service configurations to nodes to differentiate performance metric collection and connection settings.
 To assign a _Collection Package_ to nodes, use the https://wiki.opennms.org/wiki/Filters[Rules/Filters] syntax.
 

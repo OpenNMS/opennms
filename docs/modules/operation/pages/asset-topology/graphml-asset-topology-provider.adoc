@@ -96,8 +96,8 @@ Thus the following configuration means include only nodes with region `north` or
 filter=asset-region=north,south;asset-building=!23
 ----
 The filters are designed to treat comma-separated key values as an OR search. 
-This lets OpenNMS node-categories that have many-to-many relationships search on multiple values.
 Thus we can select based on multiple separate node categories.
+
 The following configuration means show routers and servers on all buildings except building 23.
 
 [source]
