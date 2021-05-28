@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -58,6 +59,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.opennms.bootstrap.Bootstrap;
+import org.opennms.bootstrap.FilesystemPermissionException;
+import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.logging.Logging;
@@ -84,8 +87,11 @@ import org.springframework.util.StringUtils;
  * <p>Installer class.</p>
  */
 public class Installer {
-
     private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
+
+    private static final Pattern SHELL_VAR_PATTERN = Pattern.compile("^(?:\\s*export\\s+)?\\s*(\\p{Alnum}+)\\s*=\\s*(.*?)\\s*$", Pattern.MULTILINE);
+    private static final Pattern QUOTE_PATTERN = Pattern.compile("^\"(.*)\"");
+
 
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
@@ -96,6 +102,7 @@ public class Installer {
     boolean m_do_vacuum = false;
     boolean m_install_webapp = false;
     boolean m_fix_constraint = false;
+    boolean m_validate_ownership = true;
     boolean m_ignore_database_version = false;
     boolean m_remove_database = false;
     boolean m_skip_upgrade_tools = false;
@@ -121,6 +128,8 @@ public class Installer {
     private static final String OPENNMS_DATA_SOURCE_NAME = "opennms";
 
     private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
+
+    private static String RUNAS_USER = null;
 
     /**
      * <p>Constructor for Installer.</p>
@@ -464,6 +473,8 @@ public class Installer {
                                   + File.pathSeparator + "')");
         options.addOption("r", "rpm-install", false,
                           "RPM install (deprecated)");
+        options.addOption("o", "skip-ownership-validation", false,
+                          "whether to skip validating file ownership in OpenNMS home");
 
         // upgrade tools options
         options.addOption("S", "skip-upgrade-tools", false,
@@ -526,6 +537,8 @@ public class Installer {
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_timescaleDB = m_commandLine.hasOption("t");
 
+        m_validate_ownership = !m_commandLine.hasOption("o");
+
         Configurator.setRootLevel(Level.INFO);
         if (m_commandLine.hasOption("x")) {
             Configurator.setRootLevel(Level.DEBUG);
@@ -553,15 +566,7 @@ public class Installer {
      *
      * @throws java.io.FileNotFoundException if any.
      */
-    public void verifyFilesAndDirectories() throws FileNotFoundException {
-//        if (m_update_database) {
-//            verifyFileExists(true,  m_installerDb.getStoredProcedureDirectory(),
-//                             "SQL directory", "install.etc.dir property");
-//
-//            verifyFileExists(false, m_installerDb.getCreateSqlLocation(),
-//                             "create.sql", "install.etc.dir property");
-//        }
-
+    public void verifyFilesAndDirectories() throws IOException, FileNotFoundException, FilesystemPermissionException {
         if (m_tomcat_conf != null) {
             verifyFileExists(false, m_tomcat_conf, "Tomcat startup configuration file tomcat4.conf", "-T option");
         }
@@ -572,6 +577,56 @@ public class Installer {
             verifyFileExists(true, m_install_servletdir, "OpenNMS servlet directory",
                              "install.servlet.dir property");
         }
+
+        final var validator = new FilesystemPermissionValidator();
+        final var user = getRunas();
+
+        final Path opennmsHome = Paths.get(m_opennms_home);
+        try {
+            validator.validate(user, opennmsHome);
+        } catch (final FilesystemPermissionException e) {
+            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not owned by that account.", user, e.path);
+            LOG.error("To fix permissions, run '{}/bin/fix-permissions' as root", m_opennms_home);
+            System.out.println();
+
+            if (m_validate_ownership) {
+                System.exit(1);
+            }
+        }
+    }
+
+    private String getRunas() throws IOException {
+        if (RUNAS_USER == null) {
+            final var opennmsConf = readOpennmsConf();
+            // use RUNAS from opennms.conf if found, fall back to -Dopennms.runas, fall back to "opennms" if nothing is found
+            RUNAS_USER = opennmsConf.getProperty("RUNAS", System.getProperty("opennms.runas", "opennms"));
+        }
+
+        return RUNAS_USER;
+    }
+
+    private Properties readOpennmsConf() throws IOException {
+        final var opennmsConf = Paths.get(m_opennms_home, "etc", "opennms.conf");
+        final var props = new Properties();
+
+        if (opennmsConf.toFile().exists()) {
+            final var lines = Files.readAllLines(opennmsConf);
+            lines.forEach(line -> {
+                final var shell = SHELL_VAR_PATTERN.matcher(line);
+                if (shell.matches()) {
+                    final var key = shell.group(1);
+                    var value = shell.group(2);
+                    var quotes = QUOTE_PATTERN.matcher(value);
+                    if (quotes.matches()) {
+                        value = quotes.group(1);
+                    }
+                    LOG.debug("opennms.conf: {}={}", key, value);
+                    props.put(key, value);
+                }
+            });
+        }
+
+        return props;
     }
 
     /**
@@ -706,6 +761,7 @@ public class Installer {
      * @param recursive a boolean.
      * @throws java.lang.Exception if any.
      */
+    @SuppressWarnings("deprecation")
     public void copyFile(String source, String destination,
             String description, boolean recursive) throws Exception {
         File sourceFile = new File(source);
