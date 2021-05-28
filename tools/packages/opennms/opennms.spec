@@ -53,6 +53,12 @@ AutoProv: no
 
 %define with_tests	0%{nil}
 
+%define create_user_group \
+	getent group opennms 2>/dev/null || groupadd --system opennms; \
+	if ! getent passwd opennms 2>/dev/null; then \
+		useradd --system -g opennms -d $RPM_INSTALL_PREFIX0 -s /sbin/nologin -c "OpenNMS service account" opennms; \
+        fi
+
 Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
@@ -668,7 +674,7 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'tca-datacollection-config.xml' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/bin ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v '/jmx-config-generator' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{sharedir} ! -type d | \
@@ -682,10 +688,10 @@ find %{buildroot}%{sharedir} ! -type d | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/contrib ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jradius' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
@@ -702,7 +708,7 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
@@ -737,79 +743,79 @@ rm -rf %{buildroot}
 ##############################################################################
 
 %files
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 
 %files core -f %{_tmppath}/files.main
-%defattr(664 root root 775)
-%attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{logdir}
-%attr(644,root,root)    %{_unitdir}/opennms.service
+%defattr(664 opennms opennms 775)
+%attr(755,opennms,opennms)	%{profiledir}/%{name}.sh
+%attr(755,opennms,opennms)	%{logdir}
+%attr(644,opennms,opennms)    %{_unitdir}/opennms.service
                         %config %{instprefix}/etc/custom.properties
-%attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
+%attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
 
 %files jmx-config-generator
-%attr(755,root,root) %{bindir}/jmx-config-generator
+%attr(755,opennms,opennms) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
 
 %files source
-%defattr(644 root root 755)
+%defattr(644 opennms opennms 755)
 %{jettydir}/opennms/source/*
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
-%defattr(644 root root 755)
+%defattr(644 opennms opennms 755)
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 
 %files webapp-hawtio
-%defattr(644 root root 755)
+%defattr(644 opennms opennms 755)
 %config %{jettydir}/hawtio/WEB-INF/*.xml
 %{jettydir}/hawtio
 
 %files plugins
 
 %files plugin-northbounder-jms
-%defattr(644 root root 755)
+%defattr(644 opennms opennms 755)
 %{instprefix}/lib/opennms-alarm-northbounder-jms-*.jar
 %config(noreplace) %{instprefix}/etc/jms-northbounder-configuration.xml
 %{sharedir}/etc-pristine/jms-northbounder-configuration.xml
 
 %files plugin-provisioning-dns
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
 
 %files plugin-provisioning-reverse-dns
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-reverse-dns-provisioning-adapter*.jar
 
 %files plugin-provisioning-rancid
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
 
 %files plugin-provisioning-snmp-asset
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
 
 %files plugin-provisioning-wsman-asset
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-wsman-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/wsman-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/wsman-asset-adapter-configuration.xml
 
 %files plugin-provisioning-snmp-hardware-inventory
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
 
 %files plugin-protocol-cifs
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
 
 %files plugin-ticketer-jira
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
 %{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar.sha1
 %{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
@@ -818,19 +824,19 @@ rm -rf %{buildroot}
 %{sharedir}/etc-pristine/jira.properties
 
 %files plugin-ticketer-otrs
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-integration-otrs-*.jar
 %config(noreplace) %{instprefix}/etc/otrs.properties
 %{sharedir}/etc-pristine/otrs.properties
 
 %files plugin-ticketer-rt
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
 
 %files plugin-protocol-nsclient
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %config(noreplace) %{instprefix}/etc/nsclient*.xml
 %{instprefix}/etc/examples/nsclient*.xml
 %{instprefix}/lib/org.opennms.protocols.nsclient*.jar
@@ -838,12 +844,12 @@ rm -rf %{buildroot}
 %{sharedir}/xsds/nsclient*.xsd
 
 %files plugin-protocol-radius
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/*jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
 %files plugin-protocol-xmp
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
 %{instprefix}/lib/xmp-*.jar
@@ -851,7 +857,7 @@ rm -rf %{buildroot}
 %{sharedir}/xsds/xmp*.xsd
 
 %files plugin-collector-juniper-tca
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %config(noreplace) %{instprefix}/etc/tca*.xml
 %config(noreplace) %{instprefix}/etc/datacollection/juniper-tca*
 %config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/juniper-tca*
@@ -861,7 +867,7 @@ rm -rf %{buildroot}
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
 %files plugin-collector-vtdxml-handler
-%defattr(664 root root 775)
+%defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
 %{instprefix}/lib/vtd-xml-*.jar
 
@@ -871,6 +877,8 @@ ROOT_INST="$RPM_INSTALL_PREFIX0"
 if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
+
+%create_user_group
 
 %post -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
@@ -961,6 +969,8 @@ echo "done"
 if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 	"$ROOT_INST/bin/runjava" "-s"
 fi
+
+"${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
 
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
