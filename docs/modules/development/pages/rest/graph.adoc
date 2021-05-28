@@ -62,7 +62,7 @@ At the moment, the context of a search must always be a concrete namespace and c
 |===
 
 
-NOTE: The API allows you to query any container and graph via REST, but in most cases you should query only for a graph view.
+NOTE: The API lets you query any container and graph via REST, but in most cases you should query only for a graph view.
 
 
 == Examples

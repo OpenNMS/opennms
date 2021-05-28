@@ -1,11 +1,11 @@
 
 = PageSequenceMonitor
 
-The _PageSequenceMonitor_ (PSM) allows OpenNMS to monitor web applications.
-This monitor has several configuration options regarding _IPv4_, _IPv6_ and how to deal with name resolution.
+The _PageSequenceMonitor_ (PSM) lets OpenNMS monitor web applications.
+This monitor has several configuration options regarding IPv4, IPv6, and how to deal with name resolution.
 To add flexibility, the node label and IP address can be passed as variable into the monitor.
-This allows running the monitor with node dependent configuration.
-Beyond testing a web application with a single _URL_ it can also test a path through a web application.
+This lets you run the monitor with node dependent configuration.
+Beyond testing a web application with a single URL, it can also test a path through a web application.
 A test path through an web application can look like this:
 
 . login to a certain web application

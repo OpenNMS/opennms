@@ -124,9 +124,8 @@
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
+** xref:performance-data-collection/collection-packages.adoc[]
 ** xref:performance-data-collection/collectd/configuration.adoc[]
-*** xref:performance-data-collection/collectd/configuration.adoc[]
-**** xref:performance-data-collection/collectd/collection-packages.adoc[]
 ** xref:performance-data-collection/collectors/collectors.adoc[]
 *** xref:performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 *** xref:performance-data-collection/collectors/jmx.adoc[]
@@ -213,7 +212,7 @@
 *** xref:operation/newts/newts-repository-converter.adoc[]
 
 ** xref:operation/timeseries/introduction.adoc[]
-** xref:operation/timeseries/configuration.adoc[]
+*** xref:operation/timeseries/configuration.adoc[]
 ** xref:operation/daemon-config-files/introduction.adoc[]
 ** xref:operation/daemon-config-files/eventd.adoc[]
 ** xref:operation/daemon-config-files/notifd.adoc[]

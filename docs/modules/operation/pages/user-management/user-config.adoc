@@ -40,7 +40,7 @@ NOTE: By default a new user has the following permissions:
 == Create User Duty Schedule
 
 A duty schedule specifies the days and times a user (or group) receives notifications, on a per-week basis. 
-This feature allows you to customize a schedule based on your team's hours of operation.  
+This feature lets you customize a schedule based on your team's hours of operation.  
 Schedules are additive: a user could have a regular work schedule, and a second schedule for days or weeks when they are on call.
 
 If {page-component-title} needs to notify an individual user, but that user is not on duty at the time, it will never send the notification to that user.
@@ -57,6 +57,6 @@ To add a duty schedule for a user (or group), follow these steps:
 . Click the gear icon in the top-right. 
 . Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
 . Choose the user (or group) you want to modify. 
-. In the *Duty Schedule* area, select the number of schedules you want to add from the drop-down and click *Add Schedule*. 
+. In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*. 
 . Specify the days and times during which you want the user (or group) to receive notifications. 
 . Click *Finish*.

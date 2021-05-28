@@ -2,7 +2,7 @@
 = Surveillance View
 
 When networks are larger and contain devices of different priority, it becomes interesting to show at a glance how the "whole system" is working.
-The surveillance view aims to do that. By using categories, you can define a matrix which allows to aggregate monitoring results.
+The surveillance view aims to do that. By using categories, you can define a matrix which lets you aggregate monitoring results.
 Imagine you have 10 servers with 10 internet connections and some 5 PCs with DSL lines:
 
 [options="header, autowidth"]
@@ -14,7 +14,7 @@ Imagine you have 10 servers with 10 internet connections and some 5 PCs with DSL
 |===
 
 The whole idea is to give somebody at a glance a hint on where the trouble is.
-The matrix-type of display allows a significantly higher aggregation than the simple list.
+The matrix-type of display enables a significantly higher aggregation than the simple list.
 In addition, the surveillance view shows nodes rather than services - an important tidbit of information when you look at categories.
 At a glance, you want to know how many of my servers have an issue rather than how many services in this category have an issue.
 
@@ -84,8 +84,8 @@ The Surveillance View configuration can also be modified using the Surveillance 
 .The Surveillance View Configurations UI
 image::surveillance-view/02_surveillance-view-config-ui.png[]
 
-This page gives an overview of the configured Surveillance Views and allows the user to edit, remove or even preview the defined Surveillance View.
-Furthermore, the default Surveillance View can be selected using the checkbox in the DEFAULT column.
+This page gives an overview of the configured Surveillance Views and lets you edit, remove, or even preview the defined Surveillance View.
+Furthermore, you can select the default Surveillance View using the check box in the DEFAULT column.
 
 When editing a Surveillance View the user has to define the view's title and the time in seconds between successive refreshes.
 On the left side of this dialog the defined rows, on the right side the defined columns are listed.

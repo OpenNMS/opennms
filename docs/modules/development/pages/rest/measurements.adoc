@@ -84,7 +84,7 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/measurements/node%5B1%5D
 | `/measurements` | Retrieve the measurements for one or more attributes, possibly spanning multiple resources, with support for JEXL expressions.
 |===
 
-Here we use a POST instead of a GET to retrieve the measurements, which allows us to perform complex queries that are difficult to express in a query string.
+Here we use a POST instead of a GET to retrieve the measurements, which lets you perform complex queries that are difficult to express in a query string.
 These requests cannot be used to update or create new metrics.
 
 An example of the POST body is available below.
@@ -196,7 +196,7 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
 ----
 == More Advanced Expressions
 
-The JEXL 2.1.x library is used to parse the expression string and this also allows Java objects and predefined functions to be included in the expression.
+The JEXL 2.1.x library is used to parse the expression string and this also lets Java objects and predefined functions to be included in the expression.
 
 JEXL uses a context that is pre-populated by OpenNMS with the results of the query.
 Several constants and arrays are also predefined as references in the context by OpenNMS.
