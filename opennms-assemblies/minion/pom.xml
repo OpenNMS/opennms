@@ -15,7 +15,7 @@
     <NAME_DISPLAY>Minion</NAME_DISPLAY>
     <NAME_LC>minion</NAME_LC>
     <INSTPREFIX>/opt/minion</INSTPREFIX>
-    <RUNAS>root</RUNAS>
+    <RUNAS>opennms</RUNAS>
     <INITDIR>/etc/init.d</INITDIR>
     <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
     <PIDFILE>/opt/minion/data/log/minion.pid</PIDFILE>

@@ -3,7 +3,7 @@
 JAVA_OPTIONS="-Xmx512m"
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
-RUNAS="root"
+RUNAS=opennms
 
 myuser="$(id -u -n)"
 if [ "$myuser" = "$RUNAS" ]; then

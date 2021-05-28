@@ -4,7 +4,7 @@ set -e # exit when a command fails
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
 # The user that OpenNMS needs to run as.
-RUNAS="root"
+RUNAS=opennms
 DATA_DIR="$OPENNMS_HOME/data"
 
 if [ -r "${OPENNMS_HOME}/etc/opennms.conf" ]; then

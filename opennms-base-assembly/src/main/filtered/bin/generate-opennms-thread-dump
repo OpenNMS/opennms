@@ -152,7 +152,7 @@ writeThreadDump() {
     chmod 0666 "${dump_file}"
 }
 
-RUNAS=root
+RUNAS=opennms
 # Load opennms.conf, if it exists, to override configuration options.
 if [ -f "${opennms_home}/etc/opennms.conf" ]; then
     # shellcheck disable=SC1090,SC1091

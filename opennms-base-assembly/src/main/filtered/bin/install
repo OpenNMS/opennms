@@ -4,7 +4,7 @@
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-RUNAS="root"
+RUNAS=opennms
 
 # if we have ulimit, attempt to raise it
 # shellcheck disable=SC3045
@@ -22,17 +22,17 @@ if ulimit -a >/dev/null 2>&1; then
 	done
 fi
 
-myuser="$(id -u -n)"
-if [ "$myuser" = "$RUNAS" ]; then
-	true # all is well
-else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4 # According to LSB: 4 - user had insufficient privileges
-fi
-
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	# shellcheck disable=SC1090,SC1091
 	. "$OPENNMS_HOME/etc/opennms.conf"
+fi
+
+myuser="$(id -u -n)"
+if [ "$myuser" = "${RUNAS}" ]; then
+	true # all is well
+else
+	echo "Error: you must run this script as '${RUNAS}', not '${myuser}'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 OPTIONS=""

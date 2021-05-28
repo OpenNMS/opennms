@@ -93,7 +93,7 @@ RUNJAVA_OPTIONS=""
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
-RUNAS="root"
+RUNAS=opennms
 
 # Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
@@ -898,6 +898,7 @@ if [ "$myuser" = "$RUNAS" ]; then
 	true # all is well
 else
 	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	echo "This can happen if you've changed the default \$RUNAS, but have not edited User= in the OpenNMS systemd service." >&2
 	exit 4	# According to LSB: 4 - user had insufficient privileges
 fi
 

@@ -33,14 +33,14 @@ override_dh_auto_install:
 	
 	# translate container prefix and etc directories in the init script, and put it in place
 	sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
-			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,RUNAS=opennms,RUNAS=$(CONTAINER_TYPE),g" \
 			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
 			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 			$$(pwd)/etc/$(CONTAINER_TYPE).init > $$(pwd)/debian/$(PACKAGE_NAME).$(CONTAINER_TYPE).init \
 		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc/$(CONTAINER_TYPE).init \
 		&& sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
-			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,RUNAS=opennms,RUNAS=$(CONTAINER_TYPE),g" \
 			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
 			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
 			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
@@ -61,7 +61,7 @@ override_dh_auto_install:
 	rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/COPYING
 	
 	# move the .conf to /etc/defaults and change the default RUNAS
-	sed -e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+	sed -e "s,RUNAS=opennms,RUNAS=$(CONTAINER_TYPE),g" \
 		-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
 		$$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf > $$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)/$(CONTAINER_TYPE) \
 		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf
