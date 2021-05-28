@@ -1420,8 +1420,8 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <karafVersion>4.2.11</karafVersion>
-    <kafkaBundleVersion>2.7.0_1</kafkaBundleVersion>
-    <kafkaVersion>2.7.0</kafkaVersion>
+    <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
+    <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -1479,8 +1479,8 @@
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.7</zookeeperVersion>
-    <zookeeper2Version>3.5.8</zookeeper2Version>
-    <zstdJniVersion>1.4.5-6</zstdJniVersion>
+    <zookeeper2Version>3.5.9</zookeeper2Version>
+    <zstdJniVersion>1.4.9-1</zstdJniVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
