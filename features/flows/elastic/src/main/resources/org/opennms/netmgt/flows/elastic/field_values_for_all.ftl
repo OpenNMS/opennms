@@ -10,6 +10,7 @@
     "aggs": {
         "my_buckets": {
             "composite": {
+                "size": ${fieldSize?long?c},
                 "sources": [
                     { "${field}": { "terms": { "field": "${field}" } } }
                 ]
