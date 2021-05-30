@@ -1,0 +1,32 @@
+= DNS Service Detector
+
+Use the DNS Service Detector to detect the availability of DNS services.
+The detector will ask to translate a name.
+If it succeeds the detector assigns the DNS service to the according interface. 
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.datagram.DnsDetector`
+|===
+
+== Configuration and Use
+
+.Parameters for the DNS Service Detector
+[options="header, %autowidth"]
+|===
+| Parameter | Description   | Required | Default value
+| `port`    | Port to query | optional | `53`
+| `lookup`  | Name to query | optional | `localhost`
+|===
+
+== Example Configuration
+
+[source,xml]
+----
+<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector">
+  <parameter key="port"   value="53"/>
+  <parameter key="lookup" value="localhost"/>
+</detector>
+----
