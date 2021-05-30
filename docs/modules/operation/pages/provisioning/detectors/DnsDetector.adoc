@@ -1,8 +1,34 @@
 = DNS Service Detector
 
-Use the DNS Service Detector to detect the availability of DNS services.
-The detector will ask to translate a name.
-If it succeeds the detector assigns the DNS service to the according interface. 
+This detector is build to test the availability of the _DNS service_ on remote IP interfaces.
+The detector tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
+
+The detector can be simulated with the command line tool `host`:
+
+[source]
+----
+~ % host -v -t a www.google.com 8.8.8.8
+Trying "www.google.com"
+Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:
+
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9324
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.google.com.			IN	A
+
+;; ANSWER SECTION:
+www.google.com.		283	IN	A	74.125.232.17
+www.google.com.		283	IN	A	74.125.232.20
+www.google.com.		283	IN	A	74.125.232.19
+www.google.com.		283	IN	A	74.125.232.16
+www.google.com.		283	IN	A	74.125.232.18
+
+Received 112 bytes from 8.8.8.8#53 in 41 ms
+----
 
 == Detector facts
 
