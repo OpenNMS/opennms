@@ -1,0 +1,40 @@
+=== HostResourceSWRunDetector
+
+This detector test the running state of one or more processes.
+It does this via SNMP by inspecting the _hrSwRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
+The test is done by matching a given process as _hrSwRunName_ against the numeric value of the _hrSwRunState_.
+
+This detector uses _SNMP_ to accomplish its work.
+Therefore systems against which it is to be used must have an SNMP agent installed and configured.
+Furthermore, the _SNMP agent_ on the system must support the _HOST-RESOURCES-MIB_.
+Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
+Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
+
+
+NOTE: This detector implements the <<provisioning/detectors/SnmpDetector.adoc>>.
+
+==== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector`
+|===
+
+==== Configuration and Use
+
+.Parameters for the <DETECTOR-NAME-HERE>
+[options="header, %autowidth"]
+|===
+| Parameter         | Description                            | Required | Default value
+| `serviceToDetect` | Process name that should be detected   | required | `-`
+|===
+
+
+==== Examples
+
+[source,xml]
+----
+<detector name="Process-dhcpd" class="org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector">
+    <parameter key="serviceToDetect" value="dhcpd"/>
+</detector>
+----
