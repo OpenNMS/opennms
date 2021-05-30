@@ -10,7 +10,6 @@ Furthermore, the _SNMP agent_ on the system must support the _HOST-RESOURCES-MIB
 Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
 Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
 
-
 NOTE: This detector implements the <<provisioning/detectors/SnmpDetector.adoc>>.
 
 ==== Detector facts
