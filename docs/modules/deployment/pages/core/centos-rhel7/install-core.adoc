@@ -35,7 +35,7 @@ EOF
 
 sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
-<1> Replace the `REPO_USER` and `REPO_PASS` with the credentials received with your Meridian subscription
+<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
 
 .Install {page-component-title} with all built-in dependencies
 [source, console]
