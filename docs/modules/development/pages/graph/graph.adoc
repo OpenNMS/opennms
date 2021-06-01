@@ -43,7 +43,7 @@ The following rules apply to the generic graph model:
   This identifier is called an `id`.
   The `id` must not be unique in the system, but within the graph.
 * Each vertex and edge has the same `namespace` as the graph it is part of.
-  This allows one to uniquely identify vertices and edges throughout the system.
+  This lets you to uniquely identify vertices and edges throughout the system.
 * Each graph, vertex, or edge has additional properties to define its nature in more detail.
   e.g., a vertex may contain a `label`, `node`, or `location` property.
 * Each edge contains the source and target ID of the vertex it connects; therefore, it is ALWAYS directed.
@@ -84,8 +84,8 @@ The latter is a convenient way to expose a container that consists of only one g
 
 === Meta Information
 
-Loading a graph container or graph may be very expensive, especially if only the metadata are of interest (e.g., label, description).
-Therefore each provider allows the ability to fetch the metadata only without loading the graph or container.
+Loading a graph container or graph may be very expensive, especially if only the metadata is of interest (for example, label, description).
+Therefore, each provider lets you to fetch the metadata only without loading the graph or container.
 
 == Cache
 
@@ -131,7 +131,7 @@ The applied semantic zoom level and focus are called a view of the graph.
 
 If the focus contains elements that are not part of the graph, they are not shown.
 
-The Graph Service API allows you to create a view on any given graph considering a custom or default focus as well as the semantic zoom level.
+The Graph Service API lets you create a view on any given graph considering a custom or default focus as well as the semantic zoom level.
 If no focus is provided when requesting the view, the default focus is applied.
 
 == Listening for Changes

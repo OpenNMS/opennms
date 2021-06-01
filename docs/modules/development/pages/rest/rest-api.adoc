@@ -17,7 +17,7 @@ By default you will not receive a challenge, so you must configure your REST cli
 
 == Data Format
 
-Jersey allows REST calls to be made using either XML or JSON.
+Jersey lets REST calls to be made using either XML or JSON.
 By default, a request to the API is returned in XML. 
 XML is delivered without namespaces.
 

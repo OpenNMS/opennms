@@ -105,7 +105,7 @@ This may change in the future.
 The interface uses SnmpInfo objects for communication.
 Therefore it is possible to set, for example, v1 and v3 parameters in one request (e.g., `readCommunity` String and `privProtocol` String).
 However {page-component-title} does not allow this.
-It only allows setting attributes that have no version restriction (e.g., timeout value) or the attributes that are limited to the version (e.g., `readCommunity` String if version is v1/v2c).
+It lets you set only attributes that have no version restriction (for example, timeout value) or the attributes that are limited to the version (for example, `readCommunity` String if version is v1/v2c).
 The same is true for getting data from the API, even if it is possible to store v1 and v3 parameters in one definition block in the `snmp-config.xml` manually, the REST API will return only the parameters that match the version.
 If no version is defined, the default is assumed (both in PUT and GET requests).
 

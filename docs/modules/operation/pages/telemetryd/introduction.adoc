@@ -72,7 +72,7 @@ The following options can help fine tune queue behavior:
 | `batch-interval`          | `batch.interval`           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
 |===
 
-TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` allows the messages to be balanced across all partitions.
+TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` balances the messages across all partitions.
 This can be done safely for flows, but is not supported for metrics when using thresholding (order is required).
 
 When setting these options in OpenNMS, they can be added as an attribute to the `<queue>` element.

@@ -115,8 +115,7 @@ OR
 [[ga-collectd-packages-services-meta-data]]
 === Meta-Data-DSL
 
-<<meta-data.adoc#ga-meta-data-dsl, Metadata-DSL>> allows you to use dynamic configuration in each parameter value to interpolate metadata into a parameter.
-The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+<<meta-data.adoc#ga-meta-data-dsl, Metadata-DSL>> lets you use dynamic configuration to interpolate metadata into parameter values during the collection process.
 
 During evaluation of an expression the following scopes are available:
 

@@ -34,7 +34,7 @@ config:update<6>
 <2> Set AWS SQS region
 <3> The AWS SQS access key
 <4> The AWS SQS secret for the access key
-<5> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Core server setting
+<5> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Core instance setting
 <6> Save and update the configuration
 
 .Restart the Minion to apply the configuration
