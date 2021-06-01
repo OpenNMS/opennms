@@ -1,4 +1,4 @@
-[releasenotes-2019]
+[[releasenotes-2019]]
 
 == OpenNMS Meridian 2019
 
@@ -9,7 +9,7 @@
 * *Default Heap Size*: The default heap size is now 2GB.
 * *PostgreSQL 10 or higher*: Meridian 2019 requires any supported version of PostgreSQL 10 or higher.
 
-[releasenotes-whatsnew-2019]
+[[releasenotes-whatsnew-2019]]
 
 === What's New in Meridian 2019
 
@@ -313,11 +313,30 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
-[releasenotes-changelog-Meridian-2019.1.19]
+[[releasenotes-changelog-Meridian-2019.1.20]]
+
+==== Release Meridian-2019.1.20
+
+Release 2019.1.20 contains a few bug fixes and small enhancements.
+
+The codename for 2019.1.20 is link:$$https://wikipedia.org/wiki/HIP_79431_b$$[_Barajeel_].
+
+===== Bug
+
+* IP interface link in Response Time graph page is broken (Issue http://issues.opennms.org/browse/NMS-13158[NMS-13158])
+* Validate query parameters in snmpInterfaces.jsp (Issue http://issues.opennms.org/browse/NMS-13308[NMS-13308])
+* Validate name parameter in DestinationWizardServlet (Issue http://issues.opennms.org/browse/NMS-13309[NMS-13309])
+
+===== Enhancement
+
+* Incorrect reference to org.opennms.netmgt.syslog.cfg (Issue http://issues.opennms.org/browse/NMS-13223[NMS-13223])
+* Location aware Requisitions from DNS (Issue http://issues.opennms.org/browse/NMS-13278[NMS-13278])
+
+[[releasenotes-changelog-Meridian-2019.1.19]]
 
 ==== Release Meridian-2019.1.19
 
-Release 2019.1.19 a number of security fixes, as well as fixes for a few other bugs.
+Release 2019.1.19 contains a number of security fixes, as well as fixes for a few other bugs.
 
 The codename for 2019.1.19 is link:$$https://wikipedia.org/wiki/WASP-17b$$[_Ditsö̀_].
 
@@ -332,7 +351,7 @@ The codename for 2019.1.19 is link:$$https://wikipedia.org/wiki/WASP-17b$$[_Dits
 * Fix Foundation 2019 branch building (Issue http://issues.opennms.org/browse/NMS-13275[NMS-13275])
 * Apache Commons IO Security Update: CVE-2021-29425 (Issue http://issues.opennms.org/browse/NMS-13279[NMS-13279])
 
-[releasenotes-changelog-Meridian-2019.1.18]
+[[releasenotes-changelog-Meridian-2019.1.18]]
 
 ==== Release Meridian-2019.1.18
 
@@ -352,7 +371,7 @@ The codename for 2019.1.18 is link:$$https://wikipedia.org/wiki/50000_Quaoar$$[_
 * Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
 * Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
 
-[releasenotes-changelog-Meridian-2019.1.17]
+[[releasenotes-changelog-Meridian-2019.1.17]]
 
 ==== Release Meridian-2019.1.17
 
@@ -374,7 +393,7 @@ The codename for 2019.1.17 is link:$$https://wikipedia.org/wiki/10252_Heidigraf$
 
 * create a table to show related events in the alarm detail view (Issue http://issues.opennms.org/browse/NMS-13170[NMS-13170])
 
-[releasenotes-changelog-Meridian-2019.1.16]
+[[releasenotes-changelog-Meridian-2019.1.16]]
 
 ==== Release Meridian-2019.1.16
 
@@ -388,7 +407,7 @@ The codename for 2019.1.16 is link:$$https://wikipedia.org/wiki/11020_Orwell$$[_
 * SFlow enhancment is not functional (Issue http://issues.opennms.org/browse/NMS-13093[NMS-13093])
 * JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
 
-[releasenotes-changelog-Meridian-2019.1.15]
+[[releasenotes-changelog-Meridian-2019.1.15]]
 
 ==== Release Meridian-2019.1.15
 
@@ -404,7 +423,7 @@ The codename for 2019.1.15 is link:$$https://wikipedia.org/wiki/List_of_minor_pl
 
 * Depend on haveged (and supply it in our repo) (Issue http://issues.opennms.org/browse/NMS-8959[NMS-8959])
 
-[releasenotes-changelog-Meridian-2019.1.14]
+[[releasenotes-changelog-Meridian-2019.1.14]]
 
 ==== Release Meridian-2019.1.14
 
@@ -417,7 +436,7 @@ The codename for 2019.1.14 is link:$$https://wikipedia.org/wiki/755_Quintilla$$[
 * RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
 * CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
 
-[releasenotes-changelog-Meridian-2019.1.13]
+[[releasenotes-changelog-Meridian-2019.1.13]]
 
 ==== Release Meridian-2019.1.13
 
@@ -434,7 +453,7 @@ The codename for 2019.1.13 is link:$$https://wikipedia.org/wiki/Meanings_of_mino
 
 * Identify message broker strategies in web "about" page (Issue http://issues.opennms.org/browse/NMS-12971[NMS-12971])
 
-[releasenotes-changelog-Meridian-2019.1.12]
+[[releasenotes-changelog-Meridian-2019.1.12]]
 
 ==== Release Meridian-2019.1.12
 
@@ -459,7 +478,7 @@ The codename for 2019.1.12 is link:$$https://wikipedia.org/wiki/55701_Ukalegon$$
 * sort custom reports (Issue http://issues.opennms.org/browse/NMS-12931[NMS-12931])
 * Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
 
-[releasenotes-changelog-Meridian-2019.1.11]
+[[releasenotes-changelog-Meridian-2019.1.11]]
 
 ==== Release Meridian-2019.1.11
 
@@ -489,7 +508,7 @@ The codename for 2019.1.11 is link:$$https://wikipedia.org/wiki/Haumea$$[_Haumea
 * Syslog should fallback on source address if hostname is not DNS resolvable. (Issue http://issues.opennms.org/browse/NMS-12846[NMS-12846])
 
 
-[releasenotes-changelog-Meridian-2019.1.10]
+[[releasenotes-changelog-Meridian-2019.1.10]]
 
 ==== Release Meridian-2019.1.10
 
@@ -512,7 +531,7 @@ The codename for 2019.1.10 is link:$$https://wikipedia.org/wiki/Ceres_(dwarf_pla
 * Encrypt the password in REST API POST endpoint /opennms/rest/users (Issue http://issues.opennms.org/browse/NMS-6470[NMS-6470])
 * Update OpenNMS DB functions and tests to handle Postgres 12 (Issue http://issues.opennms.org/browse/NMS-12819[NMS-12819])
 
-[releasenotes-changelog-Meridian-2019.1.9]
+[[releasenotes-changelog-Meridian-2019.1.9]]
 
 ==== Release Meridian-2019.1.9
 
@@ -539,7 +558,7 @@ The codename for 2019.1.9 is link:$$https://wikipedia.org/wiki/Pluto$$[_Pluto_].
 * Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
 * upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
 
-[releasenotes-changelog-Meridian-2019.1.8]
+[[releasenotes-changelog-Meridian-2019.1.8]]
 
 ==== Release Meridian-2019.1.8
 
@@ -562,7 +581,7 @@ The codename for 2019.1.8 is link:$$https://wikipedia.org/wiki/Neptune$$[_Neptun
 * Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
 * Send trouble ticket id to kafka alarm topic (Issue http://issues.opennms.org/browse/NMS-12725[NMS-12725])
 
-[releasenotes-changelog-Meridian-2019.1.7]
+[[releasenotes-changelog-Meridian-2019.1.7]]
 
 ==== Release Meridian-2019.1.7
 
@@ -586,7 +605,7 @@ The codename for 2019.1.7 is link:$$https://wikipedia.org/wiki/Uranus$$[_Uranus_
 * Add an example for SystemExecuteMonitor into the docs (Issue http://issues.opennms.org/browse/NMS-12568[NMS-12568])
 * Provide written procedures on the proper way to restart  (Issue http://issues.opennms.org/browse/NMS-12650[NMS-12650])
 
-[releasenotes-changelog-Meridian-2019.1.6]
+[[releasenotes-changelog-Meridian-2019.1.6]]
 
 ==== Release Meridian-2019.1.6
 
@@ -601,7 +620,7 @@ The codename for 2019.1.6 is link:$$https://wikipedia.org/wiki/Europa$$[_Europa_
 
 * Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
 
-[releasenotes-changelog-Meridian-2019.1.5]
+[[releasenotes-changelog-Meridian-2019.1.5]]
 
 ==== Release Meridian-2019.1.5
 
@@ -629,7 +648,7 @@ The codename for 2019.1.5 is link:$$https://wikipedia.org/wiki/Saturn$$[_Saturn_
 * Improve OIA performance when mapping alarms (Issue http://issues.opennms.org/browse/NMS-12581[NMS-12581])
 * Events not balanced across partitions when using opennms-kafka-producer (Issue http://issues.opennms.org/browse/NMS-12616[NMS-12616])
 
-[releasenotes-changelog-Meridian-2019.1.4]
+[[releasenotes-changelog-Meridian-2019.1.4]]
 
 ==== Release Meridian-2019.1.4
 
@@ -650,7 +669,7 @@ The codename for 2019.1.4 is link:$$https://wikipedia.org/wiki/Jupiter$$[_Jupite
 
 * Support signing code in CircleCI (Issue http://issues.opennms.org/browse/NMS-12557[NMS-12557])
 
-[releasenotes-changelog-Meridian-2019.1.3]
+[[releasenotes-changelog-Meridian-2019.1.3]]
 
 ==== Release Meridian-2019.1.3
 
@@ -668,7 +687,7 @@ The codename for 2019.1.3 is link:$$https://wikipedia.org/wiki/Mars$$[_Mars_].
 * The Karaf poller:test command is not location aware (Issue http://issues.opennms.org/browse/NMS-12460[NMS-12460])
 * NPE while compiling a MIB (Issue http://issues.opennms.org/browse/NMS-12472[NMS-12472])
 
-[releasenotes-changelog-Meridian-2019.1.2]
+[[releasenotes-changelog-Meridian-2019.1.2]]
 
 ==== Release Meridian-2019.1.2
 
@@ -697,7 +716,7 @@ The link:https://i.ytimg.com/vi/psiq5imRIj8/maxresdefault.jpg[c]odename for 2019
 * Add system test for IpfixTcpParser (Issue http://issues.opennms.org/browse/NMS-12434[NMS-12434])
 * Associate exporter node using Observation Domain Id (Issue http://issues.opennms.org/browse/NMS-12435[NMS-12435])
 
-[releasenotes-changelog-Meridian-2019.1.1]
+[[releasenotes-changelog-Meridian-2019.1.1]]
 
 ==== Release Meridian-2019.1.1
 
@@ -730,7 +749,7 @@ The codename for 2019.1.1 is link:$$https://wikipedia.org/wiki/Venus_(planet)$$[
 * Create a step-by-step guide how to setup Kafka for Minions (Issue http://issues.opennms.org/browse/NMS-12368[NMS-12368])
 * Enhance new snmp profiles to allow fitting to nodes inside requisitions without SNMP service associated to any IPs configured (Issue http://issues.opennms.org/browse/NMS-12396[NMS-12396])
 
-[releasenotes-changelog-Meridian-2019.1.0]
+[[releasenotes-changelog-Meridian-2019.1.0]]
 
 ==== Release Meridian-2019.1.0
 
