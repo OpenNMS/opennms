@@ -1,7 +1,7 @@
 
 = Cisco NX-OS Telemetry
 
-The Cisco NX-OS Telemetry allows you to push operational statistics asynchronously to {page-component-title}.
+The Cisco NX-OS Telemetry lets you push operational statistics asynchronously to {page-component-title}.
 {page-component-title} sends a request to stream periodic updates once to the device.
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 Detailed information about NX-OS can be found in link:https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/programmability/guide/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Programmability_Guide_7x_chapter_011000.html[NXOS documentation].

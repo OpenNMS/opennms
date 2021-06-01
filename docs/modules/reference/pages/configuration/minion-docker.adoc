@@ -61,6 +61,6 @@ bootstrap.servers=192.168.1.1,192.168.1.2
 [options="header, autowidth"]
 |===
 | Mountpoint                | Description
-| `/opt/minion-etc-overlay` | Allows to overwrite files relative to `/opt/minion/etc`
+| `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`
 | `/keystore`               | Directory with credentials for encrypted keystore file
 |===

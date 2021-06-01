@@ -22,9 +22,9 @@ image::deployment/minion/location.png[]
 By default, every node provisioned in {page-component-title} is created in the "Default" location.
 The central {page-component-title} instance itself handles all nodes and services in the "Default" location.
 To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
-The Minion will register itself to the {page-component-title} instance on startup.
+The Minion registers itself to the {page-component-title} instance on startup.
 
-{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] allows you to associate nodes with any location.
+{page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
 {page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
 
 Figure <<gi-install-minion-communication, Minion communication>> provides  a more detailed overview about the communication between a {page-component-title} instance and a _Minion_.
@@ -32,7 +32,7 @@ Figure <<gi-install-minion-communication, Minion communication>> provides  a mor
 .Minion communication
 image::deployment/minion/communication.png[]
 
-By default the Minion will be automatically provisioned as a node in the {page-component-title} instance and automatically monitored with the Minion-Heartbeat service.
+By default the Minion is automatically provisioned as a node in the {page-component-title} instance and automatically monitored with the Minion-Heartbeat service.
 The Minion sends heartbeat messages to ensure it is running and functioning properly in this location.
 
 The specific management protocol messages (e.g., SNMP, ICMP), are piped through a message broker communication channel and are executed by a Minion.

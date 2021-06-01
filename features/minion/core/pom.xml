@@ -16,5 +16,6 @@
         <module>features</module>
         <module>repository</module>
         <module>minion-rest-client</module>
+      <module>rest</module>
     </modules>
 </project>

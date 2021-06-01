@@ -9,8 +9,8 @@ NOTE: Originally database reports created reports working on data stored in the 
       This is no longer mandatory, you can also use performance data.
       Theoretically, the reports do not need to be {page-component-title} related.
 
-NOTE: The {page-component-title} Report Engine allows the creation of various reports and also supports distributed report repositories.
-         These features are not covered by this documentation.
+NOTE: The {page-component-title} Report Engine lets you create reports and supports distributed report repositories.
+         This documentation does not cover these features.
          It describes only reports using JasperReports and Grafana dashboards.
 
 [[ga-database-reports-overview]]
@@ -23,7 +23,7 @@ The {page-component-title} Report Engine passes a JDBC connection to the {page-c
 .feature overview
 |===
 |Supported Output Formats | `PDF`, `CSV`
-|`JasperReport` Version   | {\jasperreportsversion}
+|`JasperReport` Version   | {jasperreportsversion}
 |===
 
 For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
@@ -84,7 +84,7 @@ When developing new reports, we recommended using the Jaspersoft Studio applicat
 Download it link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
 
 TIP: We recommend always using the same Jaspersoft Studio version that the {page-component-title} JasperReport library uses.
-     Currently {page-component-title} uses version {\jasperreportsversion}.
+     Currently {page-component-title} uses version {jasperreportsversion}.
 
 [[ga-database-reports-connect-database]]
 === Connect to the {page-component-title} Database
@@ -122,7 +122,7 @@ NOTE: If the `Read Fields` functionality is not available, use the `Data preview
 WARNING: Before OpenNMS Horizon 17 and OpenNMS Meridian 2016, it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
          This is no longer possible; you must use the Measurements Datasource.
 
-To access performance data within reports, we created a custom Measurement Datasource that allows you to query the Measurements API and process the returned data in your reports.
+To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
 Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the Measurements API.
 
 NOTE:  When using the Measurements Datasource within a report, an `HTTP` connection to the Measurements API is only established if the report is NOT running within {page-component-title}, e.g., when used with Jaspersoft Studio.
@@ -295,7 +295,7 @@ image:database-reports/Dashboard-pdf.png[PDF report]
 === Before You Begin
 
 This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel.
-OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+OpenNMS lets you create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
 
 You must set up Grafana as a datasource by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}.
 
@@ -329,7 +329,7 @@ You can now use {page-component-title} to create PDF reports of Grafana dashboar
 . In the {page-component-title} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display.
 . In the `Report Parameters` area, specify the appropriate information.
-.. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the drop-down list.
+.. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the list.
 .. You can also specify CSV for report type.
 . Click `Create Report`.
 .. You are prompted to save the report locally or open it.
@@ -339,7 +339,7 @@ It also appears in the UI in the `Persisted Reports` tab.
 . Fill out the `Report Delivery Options`.
 .. If you select `Email report`, specify the recipient’s email address in the `Recipient` field.
 Separate multiple recipient emails with a comma.
-.. Webhook allows you to post the generated report to the specified URL.
+.. Webhook lets you post the generated report to the specified URL.
 . Click `Deliver Report`.
 . To schedule the report for regular delivery, click `Schedule this report`.
 . Specify the report frequency (daily, days per week, etc.) and interval of the report.

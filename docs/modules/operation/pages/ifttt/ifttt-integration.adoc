@@ -1,11 +1,11 @@
 
 = IFTTT Integration
 
-The free web-based IFTTT service allows you to combine web applications using simple conditional instructions.
+The free web-based IFTTT service lets you combine web applications using simple conditional instructions.
 Each supported service has several triggers that you can use to trigger the actions of other services.
-This allows you, for example, to change brightness and color of a smart bulb, and send messages or date to IoT devices.
+This lets you, for example, change brightness and color of a smart bulb, and send messages or date to IoT devices.
 
-The {page-component-title} integration uses the Webhooks service, that allows you to trigger actions when a specific web-request is received.
+The {page-component-title} integration uses the Webhooks service, that lets you trigger actions when a specific web-request is received.
 The basic operation is as follows: {page-component-title} polls for alarms and matches the alarm reduction key against a given filter and the alarm's associated nodes against a given category filter.
 For the resulting alarm, set the maximum severity and the total count is computed.
 If one of these values changed compared to the last poll, one or more events specified for the computed maximum severity will be sent to IFTTT.
@@ -64,7 +64,7 @@ IFTTT alarm polling will be enabled by setting the attribute `enabled` to `true`
 It is also possible to configure the polling interval.
 The following trigger package defines the trigger sets which themself define a sequence of events to be triggered at IFTTT.
 Each trigger defines the `eventName` and an additional delay.
-This allows deferral of the execution of the next trigger in a trigger set.
+This lets you defer the execution of the next trigger in a trigger set.
 
 == Example
 

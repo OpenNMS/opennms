@@ -6,7 +6,7 @@ The alarm history feature integrates with Elasticsearch to provide long term sto
 
 When enabled, alarms are indexed in Elasticsearch when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this below.)
 
-Alarms are indexed in such a fashion that allows operators to answer the following questions:
+Alarms are indexed so that operators can answer the following questions:
 
 . What were all the state changes of a particular alarm?
 . What was the last known state of an alarm at a given point in time?

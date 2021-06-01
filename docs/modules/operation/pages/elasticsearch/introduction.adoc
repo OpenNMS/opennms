@@ -65,12 +65,12 @@ You can set the following properties:
 | -
 
 | proxy
-| Allows defining an HTTP proxy. Only accepts valid URLs.
+| Defines a proxy server for communicating with your Elasticsearch cluster. Must be a valid URL.
 | optional
 | -
 
 | httpCompression
-| Allows the use of HTTP compression.
+| Defines that HTTP compression is enabled.
 | optional
 | -
 

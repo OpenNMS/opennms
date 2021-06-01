@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
 import io.restassured.RestAssured;
 
 @Category(MinionTests.class)
-public class JolokiaRestIT {
+public class MinionRestIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CollectorListIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MinionRestIT.class);
 
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINION;
@@ -57,23 +57,31 @@ public class JolokiaRestIT {
     public void setUp() {
         RestAssured.baseURI = stack.minion().getWebUrl().toString();
         RestAssured.port = stack.minion().getWebPort();
-        RestAssured.basePath = "/jolokia";
         RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
     @Test
     public void testMbeansOnMinionWithJolokia() throws Exception {
 
-        given().get()
+        given().get("/jolokia")
                 .then().assertThat()
                 .statusCode(200);
 
-        given().get("/read/java.lang:type=Memory/HeapMemoryUsage")
+        given().get("/jolokia/read/java.lang:type=Memory/HeapMemoryUsage")
                 .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
 
-        given().get("/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
+        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
                 .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
+
+    @Test
+    public void testRestHealthServiceOnMinion() throws Exception {
+
+        given().get("/minion/rest/health")
+                .then().assertThat()
+                .statusCode(200);
+    }
+
 
 
 

@@ -37,7 +37,7 @@ sudo vi deploy/jdbc-mysql.xml
 <2> The bundle is named `mysql-bundle` and we set the version number to `8.0.22`
 <3> Bundle to download version `8.0.22` with Maven from official repositories
 
-TIP: As soon you write the file, Karaf will pick up the feature and tries to install it.
+TIP: As soon you write the file, Karaf picks up the feature and tries to install it.
      You can troubleshoot the feature installation in the `data/log/karaf.log`
 
 .Connect to the Karaf Shell

@@ -29,15 +29,15 @@ The scheduler changed the polling interval back to 5 minutes.
 <3> after 12 hours of an ongoing outage until 5 days, the polling interval will be set to 10 minutes
 <4> after 5 days of an ongoing outage the service will be polled only once a hour and we do not delete services
 
-The last downtime interval can have an attribute `delete` and allows you to influence the service lifecycle. 
-It defines the behavior that happens if a service doesn't come back online after 5 days.
+The last downtime interval can have an attribute `delete` and lets you influence the service lifecycle. 
+It defines the behavior that happens if a service doesn't come back online after the specified interval.
 The following downtime attributes for `delete` can be used:
 
 [options="header, autowidth"]
 |===
 | Value     | description
-| `never`   | services will never be deleted automatically
+| `never`   | Services will never be deleted automatically (default value)
 | `managed` | only managed services will be deleted
 | `always`  | managed and unmanaged services will be deleted
-| _not set_ | if `delete` is not configured it is similar to `delete="never"` and is the default
+| _not set_ |assumes a default value of `never`
 |===
