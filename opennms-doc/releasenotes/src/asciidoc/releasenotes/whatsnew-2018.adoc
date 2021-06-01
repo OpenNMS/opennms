@@ -1,4 +1,4 @@
-[releasenotes-2018]
+[[releasenotes-2018]]
 
 === OpenNMS Meridian 2018
 
@@ -8,7 +8,7 @@
   To run Meridian 2018, we recommend the most recent version of Oracle JDK 8 for your platform.
 * *PostgreSQL 9*: Meridian 2018 requires PostgreSQL 9.x, version 9.2 or higher.
 
-[releasenotes-whatsnew-2018]
+[[releasenotes-whatsnew-2018]]
 
 ==== What's New in Meridian 2018
 
@@ -86,7 +86,8 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
-[releasenotes-changelog-Meridian-2018.1.28]
+
+[[releasenotes-changelog-Meridian-2018.1.28]]
 
 ==== Release Meridian-2018.1.28
 
@@ -98,7 +99,7 @@ The codename for 2018.1.28 is https://wikipedia.org/wiki/Solar_storm[_Solar Stor
 
 * Apache Commons IO Security Update: CVE-2021-29425 (Issue http://issues.opennms.org/browse/NMS-13279[NMS-13279])
 
-[releasenotes-changelog-Meridian-2018.1.27]
+[[releasenotes-changelog-Meridian-2018.1.27]]
 
 ==== Release Meridian-2018.1.27
 
@@ -113,7 +114,7 @@ The codename for 2018.1.27 is https://wikipedia.org/wiki/Volcano[_Volcano_].
 * Minion SNMPv3 trap configuration query is done every 60 seconds (Issue http://issues.opennms.org/browse/NMS-13217[NMS-13217])
 * Change Jetty default settings to eliminate TLS 1.0 and TLS 1.1 support (Issue http://issues.opennms.org/browse/NMS-10256[NMS-10256])
 
-[releasenotes-changelog-Meridian-2018.1.26]
+[[releasenotes-changelog-Meridian-2018.1.26]]
 
 ==== Release Meridian-2018.1.26
 
@@ -127,7 +128,7 @@ The codename for 2018.1.26 is _https://wikipedia.org/wiki/Drought[Drought]_.
 * Newts Cache priming flag is inverted (Issue http://issues.opennms.org/browse/NMS-13156[NMS-13156])
 * Dependabot: Upgrade Apache POI to 3.17 (CVE-2017-12626) (Issue http://issues.opennms.org/browse/NMS-13161[NMS-13161])
 
-[releasenotes-changelog-Meridian-2018.1.25]
+[[releasenotes-changelog-Meridian-2018.1.25]]
 
 ==== Release Meridian-2018.1.25
 
@@ -140,7 +141,7 @@ The codename for 2018.1.25 is _https://wikipedia.org/wiki/Mudflow[Mudflow]_.
 
 * JEXL expression handling updates (Issue http://issues.opennms.org/browse/NMS-13103[NMS-13103])
 
-[releasenotes-changelog-Meridian-2018.1.24]
+[[releasenotes-changelog-Meridian-2018.1.24]]
 
 ==== Release Meridian-2018.1.24
 
@@ -153,7 +154,7 @@ The codename for 2018.1.24 is _https://wikipedia.org/wiki/Tsunami[Tsunami]_.
 * RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
 * CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
 
-[releasenotes-changelog-Meridian-2018.1.23]
+[[releasenotes-changelog-Meridian-2018.1.23]]
 
 Release 2018.1.23 is a small update to 2018.1.22 that fixes an SNMP interface poller bug.
 
@@ -170,7 +171,7 @@ The codename for 2018.1.23 is _Tornado_.
 * Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
 
 
-[releasenotes-changelog-Meridian-2018.1.22]
+[[releasenotes-changelog-Meridian-2018.1.22]]
 
 ==== Release Meridian-2018.1.22
 
@@ -185,7 +186,7 @@ The codename for 2018.1.22 is _Firenado_.
 * Wildcard certificate rejected after upgrade (Issue http://issues.opennms.org/browse/NMS-12805[NMS-12805])
 * SslContextFactory needs to be changed to SslContextFactory.Server in jetty.xml (Issue http://issues.opennms.org/browse/NMS-12847[NMS-12847])
 
-[releasenotes-changelog-Meridian-2018.1.21]
+[[releasenotes-changelog-Meridian-2018.1.21]]
 
 ==== Release Meridian-2018.1.21
 
@@ -198,7 +199,7 @@ The codename for 2018.1.21 is _Blizzard_.
 * Support for optional snmpTrapAddress varbind needs documenting (Issue http://issues.opennms.org/browse/NMS-12795[NMS-12795])
 * RRD-to-Newts Converter doesn't handle fully-overlapping RRAs (Issue http://issues.opennms.org/browse/NMS-12835[NMS-12835])
 
-[releasenotes-changelog-Meridian-2018.1.20]
+[[releasenotes-changelog-Meridian-2018.1.20]]
 
 ==== Release Meridian-2018.1.20
 
@@ -219,7 +220,7 @@ The codename for 2018.1.20 is _Avalanche_.
 * Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
 * upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
 
-[releasenotes-changelog-Meridian-2018.1.19]
+[[releasenotes-changelog-Meridian-2018.1.19]]
 
 ==== Release Meridian-2018.1.19
 
@@ -236,7 +237,7 @@ The codename for 2018.1.19 is _Sinkhole_.
 
 * Add an example for SystemExecuteMonitor into the docs (Issue http://issues.opennms.org/browse/NMS-12568[NMS-12568])
 
-[releasenotes-changelog-Meridian-2018.1.18]
+[[releasenotes-changelog-Meridian-2018.1.18]]
 
 ==== Release Meridian-2018.1.18
 
@@ -249,7 +250,7 @@ The codename for 2018.1.18 is _Wildfire_.
 
 * Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
 
-[releasenotes-changelog-Meridian-2018.1.17]
+[[releasenotes-changelog-Meridian-2018.1.17]]
 
 ==== Release Meridian-2018.1.17
 
@@ -268,7 +269,7 @@ The codename for 2018.1.17 is _Pandemic_.
 
 * Backport CircleCI pipeline to foundation-2018 (Issue http://issues.opennms.org/browse/NMS-12476[NMS-12476])
 
-[releasenotes-changelog-Meridian-2018.1.16]
+[[releasenotes-changelog-Meridian-2018.1.16]]
 
 ==== Release Meridian-2018.1.16
 
@@ -285,7 +286,7 @@ The codename for 2018.1.16 is _Hurricane_.
 * Backport date/time format fixes to Meridian 2018 (Issue http://issues.opennms.org/browse/NMS-12514[NMS-12514])
 * HQL Injection (Issue http://issues.opennms.org/browse/NMS-12572[NMS-12572])
 
-[releasenotes-changelog-Meridian-2018.1.15]
+[[releasenotes-changelog-Meridian-2018.1.15]]
 
 ==== Release Meridian-2018.1.15
 
@@ -297,7 +298,7 @@ The codename for 2018.1.15 is _Cyclone_.
 
 * Cannot define a specific layer in topology app URL (Issue http://issues.opennms.org/browse/NMS-12431[NMS-12431])
 
-[releasenotes-changelog-Meridian-2018.1.14]
+[[releasenotes-changelog-Meridian-2018.1.14]]
 
 ==== Release Meridian-2018.1.14
 
@@ -313,7 +314,7 @@ The codename for 2018.1.14 is _Earthquake_.
 * "Page Not Found" in alarm-list when choosing number of alarms in dropdown-list (Issue http://issues.opennms.org/browse/NMS-12379[NMS-12379])
 * Elasticsearch event forwarder manipulates in-flight event (Issue http://issues.opennms.org/browse/NMS-12390[NMS-12390])
 
-[releasenotes-changelog-Meridian-2018.1.13]
+[[releasenotes-changelog-Meridian-2018.1.13]]
 
 ==== Release Meridian-2018.1.13
 
@@ -329,7 +330,7 @@ The codename for 2018.1.13 is _Flood_.
 
 * Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
 
-[releasenotes-changelog-Meridian-2018.1.12]
+[[releasenotes-changelog-Meridian-2018.1.12]]
 
 ==== Release Meridian-2018.1.12
 
@@ -349,7 +350,7 @@ The codename for 2018.1.12 is _link:https://en.wikipedia.org/wiki/Beaufort_scale
 * On the scheduled outage UI, the day is displayed as null for weekly schedule (Issue http://issues.opennms.org/browse/LTS-233[LTS-233])
 * Using special characters on the scheduled outages name breaks the UI (Issue http://issues.opennms.org/browse/LTS-234[LTS-234])
 
-[releasenotes-changelog-Meridian-2018.1.11]
+[[releasenotes-changelog-Meridian-2018.1.11]]
 
 ==== Release Meridian-2018.1.11
 
@@ -370,7 +371,7 @@ This is generally not a user-modified file and should always be overwritten, but
 
 * Improve diagnostics and resiliency of JMS RPC (w/ embedded ActiveMQ) (Issue http://issues.opennms.org/browse/NMS-12222[NMS-12222])
 
-[releasenotes-changelog-Meridian-2018.1.10]
+[[releasenotes-changelog-Meridian-2018.1.10]]
 
 ==== Release Meridian-2018.1.10
 
@@ -387,7 +388,7 @@ The codename for 2018.1.10 is _link:https://en.wikipedia.org/wiki/Beaufort_scale
 
 * Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
 
-[releasenotes-changelog-Meridian-2018.1.9]
+[[releasenotes-changelog-Meridian-2018.1.9]]
 
 ==== Release Meridian-2018.1.9
 
@@ -399,7 +400,7 @@ The codename for 2018.1.9 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 
 * Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
 
-[releasenotes-changelog-Meridian-2018.1.8]
+[[releasenotes-changelog-Meridian-2018.1.8]]
 
 ==== Release Meridian-2018.1.8
 
@@ -419,7 +420,7 @@ The codename for 2018.1.8 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Jetty HTTPS selectors can become unresponsive following CancelledKeyException (Issue http://issues.opennms.org/browse/NMS-10701[NMS-10701])
 * Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
 
-[releasenotes-changelog-Meridian-2018.1.7]
+[[releasenotes-changelog-Meridian-2018.1.7]]
 
 ==== Release Meridian-2018.1.7
 
@@ -445,7 +446,7 @@ The codename for 2018.1.7 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Allow the "step" (or interval) to be referenced from a Measurement API expression (Issue http://issues.opennms.org/browse/NMS-10633[NMS-10633])
 * "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
 
-[releasenotes-changelog-Meridian-2018.1.6]
+[[releasenotes-changelog-Meridian-2018.1.6]]
 
 ==== Release Meridian-2018.1.6
 
@@ -467,7 +468,7 @@ The codename for 2018.1.6 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 
 * Upgrade to Jetty 9.4.12 (Issue http://issues.opennms.org/browse/NMS-10558[NMS-10558])
 
-[releasenotes-changelog-Meridian-2018.1.5]
+[[releasenotes-changelog-Meridian-2018.1.5]]
 
 ==== Release Meridian-2018.1.5
 
@@ -490,7 +491,7 @@ The codename for 2018.1.5 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Cross-Frame Scripting (Issue http://issues.opennms.org/browse/NMS-10547[NMS-10547])
 * syslog parsing of messages without a year will sometimes infer the wrong year (Issue http://issues.opennms.org/browse/NMS-10548[NMS-10548])
 
-[releasenotes-changelog-Meridian-2018.1.4]
+[[releasenotes-changelog-Meridian-2018.1.4]]
 
 ==== Release Meridian-2018.1.4
 
@@ -519,7 +520,7 @@ The codename for 2018.1.4 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Meassure and improve performance of Interface loading and mapping (Issue http://issues.opennms.org/browse/NMS-10459[NMS-10459])
 * Meassure and improve performance of Cdp/Lldp/IsIsElement loading (Issue http://issues.opennms.org/browse/NMS-10487[NMS-10487])
 
-[releasenotes-changelog-Meridian-2018.1.3]
+[[releasenotes-changelog-Meridian-2018.1.3]]
 
 ==== Release Meridian-2018.1.3
 
@@ -544,7 +545,7 @@ The codename for 2018.1.3 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Be able to use Proxy for any Monitor or Collector that uses HttpClient (Issue http://issues.opennms.org/browse/NMS-9710[NMS-9710])
 * Detect and Attempt to Restart Failed Drools Engines (Issue http://issues.opennms.org/browse/NMS-10363[NMS-10363])
 
-[releasenotes-changelog-Meridian-2018.1.2]
+[[releasenotes-changelog-Meridian-2018.1.2]]
 
 ==== Release Meridian-2018.1.2
 
@@ -568,7 +569,7 @@ The codename for 2018.1.2 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Be able to use Proxy for any Monitor or Collector that uses HttpClient via UrlFactory (Issue http://issues.opennms.org/browse/NMS-10313[NMS-10313])
 * Improve concurrency in Vmware Connection Pool (Issue http://issues.opennms.org/browse/NMS-10373[NMS-10373])
 
-[releasenotes-changelog-Meridian-2018.1.1]
+[[releasenotes-changelog-Meridian-2018.1.1]]
 
 ==== Release Meridian-2018.1.1
 
@@ -589,7 +590,7 @@ The codename for 2018.1.1 is _link:https://en.wikipedia.org/wiki/Beaufort_scale#
 * Memory related env-variables from /etc/sysconfig/minion are not honored (Issue http://issues.opennms.org/browse/NMS-10332[NMS-10332])
 * Manage Minions page should link to the node for the minion (Issue http://issues.opennms.org/browse/NMS-10296[NMS-10296])
 
-[releasenotes-changelog-Meridian-2018.1.0]
+[[releasenotes-changelog-Meridian-2018.1.0]]
 
 ==== Release Meridian-2018.1.0
 
