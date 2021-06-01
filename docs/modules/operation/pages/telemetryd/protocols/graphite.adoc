@@ -1,7 +1,7 @@
 
 = Graphite Telemetry
 
-The Graphite telemetry adapter allows you to push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
+The Graphite telemetry adapter lets you push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
 
 To enable support for plaintext Graphite over UDP, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
 

@@ -3,7 +3,7 @@
 
 == GETs (Reading Data)
 
-Allows you to query the aggregated percentage availability for a given specific application and its services.
+Lets you query the aggregated percentage availability for a given specific application and its services.
 
 NOTE: This API is v2-only.
 

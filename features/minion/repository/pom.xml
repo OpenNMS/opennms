@@ -73,6 +73,7 @@
                                 <feature>scv-jceks-impl</feature>
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
+                                <featue>minion-rest-service</featue>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -414,6 +415,11 @@
         <dependency>
             <groupId>org.opennms.features.scv</groupId>
             <artifactId>org.opennms.features.scv.dominion-grpc-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>minion-rest-service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

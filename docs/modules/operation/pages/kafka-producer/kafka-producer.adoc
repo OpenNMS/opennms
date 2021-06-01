@@ -1,7 +1,7 @@
 
 = Kafka Producer
 
-The Kafka Producer feature allows events, alarms, nodes, topologies, and metrics from {page-component-title} to be forwarded to Kafka.
+The Kafka Producer feature lets {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
 These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
 See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
@@ -20,7 +20,7 @@ You can configure the name of the topic, and set up an optional filtering expres
 The Kafka Producer listens for changes made to the current set of alarms and forwards the resulting alarms to a Kafka topic.
 The records are keyed by alarm reduction key and contain a GPB-encoded model of the alarm.
 When an alarm is deleted, a null value is sent with the corresponding reduction key.
-Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+Publishing records in this fashion lets the topic be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
 The Kafka Producer will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the {page-component-title} database.
 
 By default, all alarms (and subsequent updates) are forwarded to a topic named `alarms`.
@@ -50,7 +50,7 @@ The topologies are provided by the enhanced linkd updaters via the OnmsTopology 
 An updater sends OnmsTopologyMessage to the subscribers.
 The records are keyed by GPB-encoded key of the protocol and TopologyRef and contain a GPB-encoded model of the vertex or edge.
 When a vertex or an edge is deleted, a null value is sent with the corresponding encoded GPB key.
-Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+Publishing records in this fashion lets the topic be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
 
 IMPORTANT: The topologies topic is not intended to include all of the vertices in the system, it only includes records for vertices that relate to topology messages that have been forwarded. 
 

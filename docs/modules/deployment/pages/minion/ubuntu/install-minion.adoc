@@ -18,8 +18,8 @@ NOTE: The message with conflicting distributions stable but got opennms-xx can b
 sudo apt -y install opennms-minion
 ----
 
-TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
-     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
 
 [source, console]

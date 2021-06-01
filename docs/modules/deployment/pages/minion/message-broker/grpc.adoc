@@ -53,7 +53,7 @@ config:property-set port 8990<2>
 config:update<3>
 ----
 
-<1> Set the host to connect to the gRPC server running on the {page-component-title} Core server, replace the `core-instance-ip` accordingly
+<1> Set the host to connect to the gRPC server running on the {page-component-title} Core instance, replace the `core-instance-ip` accordingly
 <2> Set the port of the gRPC server which is by default `8990`
 <3> Save the configuration
 
@@ -115,7 +115,7 @@ config:update<5>
 <5> Save and update the configuration
 
 TIP: This is optional and you can set a maximum message size for gRPC.
-     The maxium size has to be the same on the {page-component-title} Core server instance as well.
+     The maxium size has to be the same on the {page-component-title} Core instance as well.
      If you don't set a maximum message size the default is 10 MiB.
 
 .Configure maximum message size for gRPC in the Karaf Shell
