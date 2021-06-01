@@ -415,13 +415,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
         }
     }
 
-    public Optional<OnmsMetaData> findMetaDataForContextAndKey(final String context, final String key) {
-        return getMetaData().stream()
-                .filter(m -> m.getContext().equals(context))
-                .filter(m -> m.getKey().equals(key))
-                .findFirst();
-    }
-
     /**
      * <p>getIpInterface</p>
      *

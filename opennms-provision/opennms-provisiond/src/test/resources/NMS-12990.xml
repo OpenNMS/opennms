@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="nms12990">
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="foobar">
     <node node-label="scrubbed" foreign-id="1">
         <interface ip-addr="192.168.3.1" snmp-primary="P">
             <monitored-service service-name="ICMP"/>
