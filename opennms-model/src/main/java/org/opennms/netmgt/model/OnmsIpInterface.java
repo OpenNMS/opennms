@@ -378,13 +378,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_requisitionedMetaData.add(onmsMetaData);
     }
 
-    public Optional<OnmsMetaData> findMetaDataForContextAndKey(final String context, final String key) {
-        return getMetaData().stream()
-                .filter(m -> m.getContext().equals(context))
-                .filter(m -> m.getKey().equals(key))
-                .findFirst();
-    }
-
     @JsonIgnore
     @XmlTransient
     @ElementCollection(fetch = FetchType.LAZY)
