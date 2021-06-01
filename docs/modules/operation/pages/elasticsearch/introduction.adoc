@@ -116,7 +116,7 @@ When bulk operations fail, only the failed items are retried.
 | -
 
 | settings.index.routing_partition_size
-| The number of shards a custom routing valuce can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| The number of shards a custom routing value can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
 | -
 
