@@ -195,7 +195,7 @@ public class AvailabilityRestService extends OnmsRestService {
             final AvailabilityIpInterface ai = new AvailabilityIpInterface(iface, ifaceAvail);
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
                 final double serviceAvail = CategoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
-                final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail);
+                final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail, !svc.isDown());
                 ai.addService(ams);
             }
             node.addIpInterface(ai);
