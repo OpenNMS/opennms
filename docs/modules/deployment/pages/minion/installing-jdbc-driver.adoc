@@ -55,5 +55,5 @@ feature:list | grep mysql
 .MySQL bundle is installed and available
 [source, output]
 ----
-mysql-bundle   | 8.0.22   | x        | Started     | opennms-28.0.0-SNAPSHOT  |
+mysql-bundle   | 8.0.22   | x        | Started     | opennms-28.0.0  |
 ----
