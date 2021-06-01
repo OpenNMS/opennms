@@ -20,7 +20,10 @@ You can set the following properties:
 | Property | Description | Required | Default
 
 | elasticUrl
-| URL(s) to Elasticsearch nodes. Can either point directly to REST API or seed nodes. The format is: `<host>:<port>`. Comma separate multiple values.
+| URL(s) to Elasticsearch nodes.
+  Can either point directly to REST API or seed nodes.
+  The format is: `<host>:<port>`.
+  Comma separate multiple values.
 | required
 | `\http://localhost:9200`
 
@@ -45,27 +48,32 @@ You can set the following properties:
 | false
 
 | defaultMaxTotalConnectionPerRoute
-| Sets the default maximum connections per route. If a negative value is given, the value is ignored.
+| Sets the default maximum connections per route.
+  If a negative value is given, the value is ignored.
 | optional
 | `<available processors> * 2`
 
 | maxTotalConnection
-| Sets the default maximum total connections. If a negative value is given, the value is ignored.
+| Sets the default maximum total connections.
+  If a negative value is given, the value is ignored.
 | optional
 | `<max connections per route> * 3`
 
 | nodeDiscovery
-| Enable/disable node discovery. Valid values are `true\|false`.
+| Enable/disable node discovery.
+  Valid values are `true\|false`.
 | optional
 | `false`
 
 | nodeDiscoveryFrequency
-| Defines the frequency, in seconds, in which the nodes are re-discovered. Must be set, if `discovery=true`
+| Defines the frequency, in seconds, in which the nodes are re-discovered.
+  Must be set, if `discovery=true`
 | optional
 | -
 
 | proxy
-| Defines a proxy server for communicating with your Elasticsearch cluster. Must be a valid URL.
+| Defines a proxy server for communicating with your Elasticsearch cluster.
+  Must be a valid URL.
 | optional
 | -
 
@@ -80,7 +88,9 @@ You can set the following properties:
 | 0
 
 | retryCooldown
-| Defines the cool-down in ms to wait before retrying. Value of `0` means no cool-down. Value must be >= `0`.
+| Defines the cool-down in ms to wait before retrying.
+  Value of `0` means no cool-down.
+  Value must be >= `0`.
 | optional
 | `500`
 
@@ -96,32 +106,37 @@ You can set the following properties:
 
 | bulkRetryCount
 | Defines the number of retries performed before a bulk operation is considered failed.
-When bulk operations fail, only the failed items are retried.
+  When bulk operations fail, only the failed items are retried.
 | optional
 | `5`
 
 | settings.index.number_of_shards
-| The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| The number of primary shards that an index should have.
+  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
 | -
 
 | settings.index.number_of_replicas
-| The number of replicas each primary shard has. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| The number of replicas each primary shard has.
+  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
 | -
 
 | settings.index.refresh_interval
-| How often to perform a refresh operation, which makes recent changes to the index visible to search. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| How often to perform a refresh operation, which makes recent changes to the index visible to search.
+  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
 | -
 
 | settings.index.routing_partition_size
-| The number of shards a custom routing value can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| The number of shards a custom routing value can go to.
+  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional
 | -
 
 | indexPrefix
-| Prefix is prepended to the index and template names. Used in cases where you want to share the same Elasticsearch cluster with many {page-component-title} instances.
+| Prefix is prepended to the index and template names.
+  Used in cases where you want to share the same Elasticsearch cluster with many {page-component-title} instances.
 | optional
 | -
 |===
