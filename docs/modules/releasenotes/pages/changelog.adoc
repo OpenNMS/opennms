@@ -1,5 +1,30 @@
 [[release-2021-changelog]]
+
 = Changelog
+
+[[releasenotes-changelog-Meridian-2021.1.1]]
+
+== Release Meridian-2021.1.1
+
+Release 2021.1.1 contains a number of small bug fixes and a few enhancements.
+
+The codename for 2021.1.1 is link:$$https://wikipedia.org/wiki/Advanced_Composition_Explorer$$[_ACE_].
+
+=== Bug
+
+* Race condition when enabling the Situations Feedback feature (Issue http://issues.opennms.org/browse/NMS-12767[NMS-12767])
+* IP interface link in Response Time graph page is broken (Issue http://issues.opennms.org/browse/NMS-13158[NMS-13158])
+* Mark OIA Implementation for Timeseries as experimental (Issue http://issues.opennms.org/browse/NMS-13281[NMS-13281])
+* Meridian installation guide is incomplete (Issue http://issues.opennms.org/browse/NMS-13294[NMS-13294])
+* Validate query parameters in snmpInterfaces.jsp (Issue http://issues.opennms.org/browse/NMS-13308[NMS-13308])
+* Validate name parameter in DestinationWizardServlet (Issue http://issues.opennms.org/browse/NMS-13309[NMS-13309])
+* CLONE - DOC Branding: Icon in tab is still the old one (Issue http://issues.opennms.org/browse/NMS-13329[NMS-13329])
+
+=== Enhancement
+
+* Incorrect reference to org.opennms.netmgt.syslog.cfg (Issue http://issues.opennms.org/browse/NMS-13223[NMS-13223])
+* Update conventions for text formatting (Issue http://issues.opennms.org/browse/NMS-13336[NMS-13336])
+* Location aware Requisitions from DNS (Issue http://issues.opennms.org/browse/NMS-13278[NMS-13278])
 
 [[releasenotes-changelog-Meridian-2021.1.0]]
 
