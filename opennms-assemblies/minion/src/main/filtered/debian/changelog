@@ -1,3 +1,23 @@
+opennms-minion (28.0.0-1) stable; urgency=low
+
+  * New major release. It contains a refresh of the look-and-feel,
+    enhancements to flows, the minion, and documentation, and more.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/28.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 01 Jun 2021 12:12:00 -0400
+ 
+opennms-minion (27.2.0-1) stable; urgency=high
+
+  * New minor release.  It contains mostly bug fixes including a number of
+    security updates.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.2.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 May 2021 10:50:00 -0400
+ 
 opennms-minion (27.1.1-1) stable; urgency=high
 
   * New minor release.  It contains a few enhancements, as well as a number of
