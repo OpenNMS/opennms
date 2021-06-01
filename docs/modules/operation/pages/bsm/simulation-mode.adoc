@@ -4,10 +4,10 @@
 
 To visualize if the configured behavior works as expected, use the simulation mode to manually set an alarm status of an edge element.
 The operational status is calculated with the given map and reduce functions.
-This allows users to validate and tune their business service hierarchies until the desired status propagation is achieved.
+This lets users validate and tune their business service hierarchies until they achieve the desired status propagation.
 
 To enter simulation mode, open the Business Service View in the Topology User Interface and toggle the Simulation Mode option in the Simulate menu at the top of the screen.
-The Info Panel on the left allows you to set the severity of the selected edge element.
+The Info Panel on the left lets you set the severity of the selected edge element.
 Figure <<gu-bsm-simulate,BSM Simulation Mode>> shows the menu and severity setting.
 
 [[gu-bsm-simulate]]

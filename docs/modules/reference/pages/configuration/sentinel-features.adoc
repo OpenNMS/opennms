@@ -24,19 +24,19 @@ The following list contains some features which may be installed manually:
 
 | sentinel-newts
 | false
-| Provides functionality to persist measurement data to _Newts_.
+| Provides functionality to persist measurement data to Newts.
 
 | sentinel-telemetry-nxos
 | false
-| Allows using the `NxosGpbAdapter`
+| Lets you use `NxosGpbAdapter`
 
 | sentinel-telemetry-jti
 | false
-| Allows using the `JtiGpbAdapter`
+| Lets you use the `JtiGpbAdapter`
 
 | sentinel-telemetry-bmp
 | false
-| Allows using the `BmpTelemetryAdapter`
+| Lets you use the `BmpTelemetryAdapter`
 
 |====
 

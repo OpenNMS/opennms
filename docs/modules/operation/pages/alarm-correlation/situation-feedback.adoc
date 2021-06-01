@@ -6,7 +6,7 @@ This section describes how to configure {page-component-title} to provide real-t
 [[ga-situation-feedback]]
 == Situation Feedback
 
-Situation feedback allows operators to provide real-time feedback on alarm correlation.
+Situation feedback lets operators provide real-time feedback on alarm correlation.
 
 === Installation
 

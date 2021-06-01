@@ -47,15 +47,15 @@ services:
       retries: 3
 ----
 
-<1> Volume definitions to persist the {page-component-title} Core data, e.g. RRD Files and PDF reports
-<2> The {page-component-title} core instance service is named `horizon` with a friendly `container_name`
-<3> Image reference using the {page-component-title} container image with the Core services
-<4> Set the time zone and set the postgres credentials to initialize the database used for the {page-component-title} Core instance. To list all available time zones you can use `timedatectl list-timezones`
-<5> You have set here the host or IP address of the host which has the PostgreSQL database running
-<6> Persist performance data PDF reports in a volume
-<7> Mount the volumes for data persistence and bind mount the configuration in a local directory
-<8> Publish ports to access the web user interface and the Karaf Shell
-<9> Run an internal healt check against the web user interface to verify the service is healthy
+<1> Volume definitions to persist the {page-component-title} Core data; for example, RRD files and PDF reports.
+<2> The {page-component-title} Core instance service is named `horizon` with a friendly `container_name`.
+<3> Image reference using the {page-component-title} container image with the Core services.
+<4> Set the time zone and the postgres credentials to initialize the database that the {page-component-title} Core instance uses. To list all available time zones, use `timedatectl list-timezones`.
+<5> Set the host or IP address of the host that runs the PostgreSQL database.
+<6> Persist performance data PDF reports in a volume.
+<7> Mount the volumes for data persistence and bind mount the configuration in a local directory.
+<8> Publish ports to access the web UI and the Karaf shell.
+<9> Run an internal health check against the web UI to verify service health status.
 
 .Validate your Docker Compose file
 [source, console]

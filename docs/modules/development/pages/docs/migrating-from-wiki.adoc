@@ -30,7 +30,7 @@ When you identify an article in the OpenNMS wiki whose information should be mig
 image::docs/03_officialdocs-wiki-template-source.png[]
 
 [start=6]
-1. Enter an edit summary such as *Tagged for migration to official docs, NMS-12345* and click *Show preview*
+1. Type an edit summary such as *Tagged for migration to official docs, NMS-12345* and click *Show preview*
 2. After verifying that your changes render as expected (see image), click *Save changes*.
 
 .Rendering of `OfficialDocs` wiki template on an article pending migration

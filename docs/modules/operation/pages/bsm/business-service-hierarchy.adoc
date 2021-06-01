@@ -11,7 +11,7 @@ Based on the hierarchy, the operational status is calculated with map and reduce
 A map function influences which serverity from the edge is used as an input to the BS.
 A reduce function consolidates the serverities from all edges of a BS and uses them as inputs and reduces them into a single serverity, which is the operational status.
 
-The Topology User Interface allows users to traverse business service hierarchies using the semantic zoom level (SZL).
+The Topology User Interface lets users traverse business service hierarchies using the semantic zoom level (SZL).
 The semantic zoom level (SZL, pronounced as 'sizzle') defines how many neighbors are shown related to the elements which are in focus.
 The number can be interpreted as how many hops from the focus should be shown on the Topology User Interface.
 

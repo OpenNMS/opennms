@@ -1,12 +1,12 @@
 [[poller-jmx-monitor]]
 = JmxMonitor
 
-The _JMX_ monitor allows to test service availability of Java applications.
+The JMX monitor lets you test the service availability of Java applications.
 The monitor offers the following functionalities:
 
-* test the application's connectivity via _JMX_
+* test the application's connectivity via JMX
 * existence of management beans
-* test the status of a single or multiple management beans and evaluate their value
+* test the status of a single or multiple management bean, and evaluate its value(s)
 
 == Monitor Facts
 
