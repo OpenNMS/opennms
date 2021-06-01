@@ -86,6 +86,22 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[[releasenotes-changelog-Meridian-2018.1.29]]
+
+==== Release Meridian-2018.1.29
+
+Release 2018.1.29 is a small update with a few small enhancements.
+
+The codename for 2018.1.29 is https://wikipedia.org/wiki/Impact_event[_Asteroid Impact_].
+
+===== Bug
+
+* IP interface link in Response Time graph page is broken (Issue http://issues.opennms.org/browse/NMS-13158[NMS-13158])
+
+===== Enhancement
+
+* Location aware Requisitions from DNS (Issue http://issues.opennms.org/browse/NMS-13278[NMS-13278])
+
 
 [[releasenotes-changelog-Meridian-2018.1.28]]
 
