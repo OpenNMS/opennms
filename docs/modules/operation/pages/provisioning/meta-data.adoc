@@ -3,7 +3,7 @@
 A requisition can contain arbitrary link:#ga-meta-data[metadata] for each node, interface and service it contains.
 During provisioning, the metadata is copied to the model and persisted in the database.
 
-The Requisition UI allows to edit the metadata defined in a requisition.
+The Requisition UI lets you edit the metadata defined in a requisition.
 The edit function in the Requisition UI is limited to only edit the context called `requisition` by intention.
 All other contexts are reserved for future use by other provisioning-adapters and similar applications like asset-data.
 

@@ -221,7 +221,7 @@ Description: Enterprise-grade Open-source Network Management Platform (JMS Alarm
  and notification system handles both internally and externally generated
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
- The JMS Alarm Northbounder allows you to send OpenNMS alarms to an
+ The JMS Alarm Northbounder lets you send OpenNMS alarms to an
  external JMS listener.
 
 Package: opennms-plugin-provisioning-dns
@@ -237,7 +237,7 @@ Description: Enterprise-grade Open-source Network Management Platform (DNS Provi
  and notification system handles both internally and externally generated
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
- The DNS provisioning adapter allows for updating dynamic DNS records based on
+ The DNS provisioning adapter lets you update dynamic DNS records based on
  provisioned nodes.
 
 Package: opennms-plugin-provisioning-reverse-dns
@@ -253,7 +253,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Reverse D
  and notification system handles both internally and externally generated
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
- The Reverse DNS provisioning adapter allows for updating the hostname on an
+ The Reverse DNS provisioning adapter lets you update the hostname on an
  interface based on its reverse DNS lookup.
 
 Package: opennms-plugin-provisioning-rancid

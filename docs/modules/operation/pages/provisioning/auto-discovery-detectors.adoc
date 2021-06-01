@@ -19,7 +19,7 @@ You can define IP ranges and specifics in `discovery-configuration.xml`:
 </discovery-configuration>
 ----
 
-Auto discovery with detectors allows users to specify the services to detect apart from ICMP ping for the specified IP addresses to be discovered.
+Auto discovery with detectors lets users specify the services to detect, apart from ICMP ping, for the specified IP addresses to be discovered.
 Auto discovery sends a new suspect event only when the specified detectors succeeds.
 
 [source, xml]
@@ -66,7 +66,7 @@ A definition without any detectors will fall back to ICMP ping for discovery.
 == Metadata DSL
 Service detectors can use <<meta-data.adoc#ga-meta-data-dsl, MetaData DSL>> (domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter.
 
-The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+The syntax lets you use patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 
 During evaluation of an expression, the following scopes are available:
 

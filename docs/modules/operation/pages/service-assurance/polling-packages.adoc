@@ -43,7 +43,7 @@ It is also possible to exclude IP interfaces:
 [[ga-pollerd-packages-response-time-config]]
 == Response Time Configuration
 
-The definition of polling packages allows you to configure similar services with different polling intervals.
+The definition of polling packages lets you configure similar services with different polling intervals.
 All the response time measurements are persisted in RRD files and require a definition.
 Each polling package contains an RRD definition.
 
@@ -155,7 +155,7 @@ Usually, the poller used to monitor a pervice is found by the matching the polle
 In addition, you can find a matching poller if an additional element `pattern` is specified for the poller.
 If so, the poller is used for all services matching the RegEx pattern, too.
 
-The RegEx pattern allows you to specify named capture groups.
+The RegEx pattern lets you specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
 Please note, that the RegEx must be escaped or wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
 
@@ -232,7 +232,7 @@ The following example runs the ICMP monitor on a specific IP interface.
 opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
 
-The output is verbose which allows debugging of monitor configurations.
+The output is verbose, which lets you debug monitor configurations.
 Important output lines are shown as the following:
 
 .Important output testing a service on the CLI
