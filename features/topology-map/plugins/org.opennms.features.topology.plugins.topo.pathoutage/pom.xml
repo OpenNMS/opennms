@@ -7,7 +7,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>2018.1.29-SNAPSHOT
+    <version>2018.1.29
     </version>
   </parent>
   <properties>
