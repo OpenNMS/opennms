@@ -1,6 +1,6 @@
 = DNS Service Detector
 
-This detector is build to test the availability of the _DNS service_ on remote IP interfaces.
+This detector lets you find DNS services for monitoring in your network.
 The detector tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
 
 The detector can be simulated with the command line tool `host`:
