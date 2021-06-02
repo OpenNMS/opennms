@@ -4,6 +4,7 @@
 ** xref:configuration/minion-docker.adoc[]
 ** xref:configuration/minion-confd/minion-confd.adoc[]
 *** xref:configuration/minion-confd/jmx-exporter.adoc[]
+*** xref:configuration/minion-confd/test-confd.adoc[]
 ** xref:configuration/sentinel-features.adoc[]
 ** xref:configuration/tuning-kafka.adoc[]
 ** xref:configuration/tuning-activemq.adoc[]

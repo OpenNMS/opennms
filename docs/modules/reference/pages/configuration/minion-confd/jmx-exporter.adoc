@@ -1,11 +1,10 @@
 [[jmx-exporter]]
 = Prometheus JMX exporter
 
-To provide an out of band management of the JVM with the Minion process, the Prometheus JMX exporter is shipped with this container image.
-The default configuration is set to the following values and can be set in the `minion-config.yaml` file:
+To provide an out-of-band management of the JVM with the Minion process, this container image ships with the Prometheus JMX exporter.
+The default configuration, which you can edit, appears in the `minion-config.yaml` file:
 
 ```yaml
----
 java:
   agent:
     prom-jmx-exporter:
@@ -20,10 +19,10 @@ java:
       - "org.opennms.netmgt.telemetry:*"
 ```
 
-The Minion container images comes with the Prometheus JMX exporter and can be enabled with:
+The Minion container images come with the Prometheus JMX exporter.
+Enable them with the following:
 
 ```yaml
----
 process-env:
   java-opts:
     - -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml

@@ -65,4 +65,3 @@ bootstrap.servers=192.168.1.1,192.168.1.2
 | `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`
 | `/keystore`               | Directory with credentials for encrypted keystore file
 |===
-

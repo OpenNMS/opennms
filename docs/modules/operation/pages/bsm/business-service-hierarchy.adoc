@@ -1,15 +1,15 @@
 
-= Business Service Hierarchy
+= Business service hierarchy
 
-BS can depend on each other and together build a business service hierarchy.
-Visualize it using the Topology User Interface with the Business Services View.
-The operational status of a BS is ultimately calculated from alarms and their serverity.
-To define the class of alarms a reduction key is used and is represented as an edge of a BS.
+Business services can depend on each other and together build a business service hierarchy.
+Visualize the hierarchy using the Topology User Interface with the business services view.
+The operational status of a business service is ultimately calculated from alarms and their serverity.
+Ues a To define the class of alarms a reduction key is used and is represented as an edge of a business service.
 Giving more granularity than just Up or Down, the operational status uses the serverities, i.e., Normal, Warning, Minor, Major, Critical.
 
 Based on the hierarchy, the operational status is calculated with map and reduce functions.
-A map function influences which serverity from the edge is used as an input to the BS.
-A reduce function consolidates the serverities from all edges of a BS and uses them as inputs and reduces them into a single serverity, which is the operational status.
+A map function influences which serverity from the edge is used as an input to the business service.
+A reduce function consolidates the serverities from all edges of a business service and uses them as inputs and reduces them into a single serverity, which is the operational status.
 
 The Topology User Interface lets users traverse business service hierarchies using the semantic zoom level (SZL).
 The semantic zoom level (SZL, pronounced as 'sizzle') defines how many neighbors are shown related to the elements which are in focus.
@@ -19,10 +19,13 @@ The number can be interpreted as how many hops from the focus should be shown on
 .Business Service Hierarchy components
 image::bsm/02_bsm-service-hierarchy.png[]
 
-<1> A top-level business service that depends on other business services, monitored services, and alarms (referenced by reduction key)
-<2> Business service as child an the operational status is used as input for the top-level business service
-<3> IP service edge used as an input with auto-generated reduction keys for node down, interface down, and node lost service
-<4> Reduction key edge used as an input to the top-level BS, which references just a node-lost service of a page sequence monitor for the user login
+(1) A top-level business service that depends on other business services, monitored services, and alarms (referenced by reduction key).
+
+(2) Business service as child and the operational status are used as input for the top-level business service.
+
+(3) IP service edge used as an input with auto-generated reduction keys for node down, interface down, and node lost service.
+
+(4) Reduction key edge used as an input to the top-level business service, which references just a node-lost service of a page sequence monitor for the user login.
 
 To add or remove an additional selected BS or edge to focus use, in the context menu Add To Focus or Remove From Focus.
 If you want to have a specific BS or edge as a single focus use Set as Focal Point.
