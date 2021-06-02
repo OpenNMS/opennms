@@ -52,6 +52,11 @@
 <%@ page import="org.opennms.netmgt.model.OnmsOutage" %>
 <%@ page import="java.util.Collection" %>
 <%@ page import="org.opennms.web.services.ServiceJspUtil" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.Interpolator" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.FallbackScope" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.Scope" %>
+<%@ page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -318,15 +323,58 @@ function doDelete() {
               <div class="card-header">
                 <span>Service Parameters</span>
               </div>
-              <table class="table table-sm">
-              <c:forEach var="entry" items="${parameters}">
-                <tr>
-                  <th nowrap>${entry.key}</th>
-                  <td>${entry.value}</td>
-                </tr>
-              </c:forEach>
-              </table>
-            </div>
+                  <table class="table table-sm severity">
+                      <tr>
+                          <th colspan="2">Parameter</th>
+                          <th>Value</th>
+                          <th>Effective</th>
+                      </tr>
+                      <%
+                          final Scope nodeScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForNode(service.getNodeId());
+                          final Scope interfaceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForInterface(service.getNodeId(), ipAddr);
+                          final Scope serviceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForService(service.getNodeId(), InetAddressUtils.getInetAddress(ipAddr), serviceName);
+                          final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope);
+
+                          for(Map.Entry<String,String> entry : ((Map<String,String>)pageContext.getAttribute("parameters")).entrySet()) {
+                              %>
+                              <tr>
+                                  <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
+                                  <td><%=WebSecurityUtils.sanitizeString(entry.getValue())%></td>
+                                  <%
+                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), scope);
+
+                                      if (result.parts.size() == 1) {
+                                          %>
+                                          <td><%=WebSecurityUtils.sanitizeString(result.output)%><span style="float:right"><samp>match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'</samp></span></td>
+                                          <%
+                                      } else {
+                                          %>
+                                          <td><%=WebSecurityUtils.sanitizeString(result.output)%>
+                                          <%
+                                      }
+                                      if (result.parts.size() > 1) {
+                                          int counter = 1;
+                                          %>
+                                          </td>
+                                          <%
+                                          for(Interpolator.ResultPart part : result.parts) {
+                                            %>
+                                            </tr>
+                                                <tr class="CellStatus">
+                                                    <td class="severity-Cleared nobright spacer"></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(entry.getKey())%> #<%=counter++%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.input)%></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.value.value)%><span style="float:right"><samp>match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'</samp></span></td>
+                                            <%
+                                          }
+                                      }
+                              %>
+                              </tr>
+                              <%
+                          }
+                      %>
+                  </table>
+              </div>
             </c:if>
             <!-- XML parameters box -->
             <c:if test="${xmlParams != null}">
