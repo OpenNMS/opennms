@@ -17,7 +17,7 @@ NOTE: This detector implements the configuration parameters inherited from the <
 
 ==== Configuration and Use
 
-.Parameters for the <DETECTOR-NAME-HERE>
+.Parameters for the HostResourceSwRunDetector
 [options="header, %autowidth"]
 |===
 | Parameter         | Description                            | Required | Default value
