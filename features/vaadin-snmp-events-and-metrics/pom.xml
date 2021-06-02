@@ -6,7 +6,7 @@
     <relativePath>../topology-map/poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>2020.1.9</version>
+    <version>2020.1.10-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>vaadin-snmp-events-and-metrics</artifactId>
