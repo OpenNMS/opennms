@@ -1,6 +1,5 @@
 === HostResourceSWRunDetector
 
-This detector test the running state of one or more processes.
 Detect a process for monitoring using the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
 The test is done by matching a given process as _hrSwRunName_ against the numeric value of the _hrSwRunState_.
 
