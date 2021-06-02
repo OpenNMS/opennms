@@ -1,7 +1,7 @@
 === HostResourceSWRunDetector
 
 This detector test the running state of one or more processes.
-It does this via SNMP by inspecting the _hrSwRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
+Detect a process for monitoring using the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
 The test is done by matching a given process as _hrSwRunName_ against the numeric value of the _hrSwRunState_.
 
 This detector uses _SNMP_ to accomplish its work.
