@@ -1,0 +1,50 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: OpenNMS Minion RESTful API
+  description: OpenNMS Minion RESTful API
+  contact:
+    name: OpenNMS
+    url: 'http://www.opennms.com/'
+  license:
+    name: OpenNMS(R) Licensing
+    url: 'http://www.gnu.org/licenses/'
+servers:
+  - url: 'http://localhost:8181/minion/rest'
+paths:
+  /health/probe:
+    get:
+      summary: Health check results for all components
+      description: Health check results for all components. Only indicate if the health is good or not
+      operationId: probeHealth
+      parameters:
+        - name: t
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 5000
+      responses:
+        default:
+          description: default response
+  /health:
+    get:
+      summary: Health check results for all components with details
+      description: Health check results for all components. Include health check result details for each element
+      operationId: getHealth
+      parameters:
+        - name: t
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 5000
+      responses:
+        default:
+          description: default response
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
