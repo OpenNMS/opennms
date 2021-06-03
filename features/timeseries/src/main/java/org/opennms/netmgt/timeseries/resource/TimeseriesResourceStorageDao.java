@@ -182,25 +182,21 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         return attributes;
     }
 
-    @Deprecated
     @Override
     public void setStringAttribute(ResourcePath path, String key, String value) {
         throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
-    @Deprecated
     @Override
     public String getStringAttribute(ResourcePath path, String key) {
         throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
-    @Deprecated
     @Override
     public Map<String, String> getStringAttributes(ResourcePath path) {
         throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
-    @Deprecated
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
         throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
