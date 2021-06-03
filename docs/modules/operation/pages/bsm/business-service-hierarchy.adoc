@@ -3,7 +3,7 @@
 
 Business services can depend on each other and together build a business service hierarchy.
 Visualize the hierarchy using the Topology User Interface with the business services view.
-The operational status of a business service is ultimately calculated from alarms and their serverity.
+The operational status of a business service is calculated by rolling up alarms from all subordinate services and edges.
 Ues a To define the class of alarms a reduction key is used and is represented as an edge of a business service.
 Giving more granularity than just Up or Down, the operational status uses the serverities, i.e., Normal, Warning, Minor, Major, Critical.
 
