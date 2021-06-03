@@ -1,7 +1,7 @@
 [[minion-confd]]
 = Configuring Minion via confd
 
-For information on testing/developing confd templates, see xref:configuration/minion-confd/test-confd.adoc#confd-template-test[Test/develop confd templates].
+For information on testing confd templates, see xref:configuration/minion-confd/test-confd.adoc#confd-template-test[Test confd templates].
 
 == Mounting
 When starting the Minion container, mount a yaml file to the following path: `/opt/minion/minion-config.yaml`.

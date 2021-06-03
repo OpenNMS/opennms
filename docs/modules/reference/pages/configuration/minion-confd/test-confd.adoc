@@ -1,6 +1,6 @@
 
 [[confd-template-test]]
-= Test/develop confd templates
+= Test confd templates
 
 To locally test `confd` template changes, run a Minion container and map the corresponding files into the container. 
 The following procedure, which requires a Minion Docker container, might be useful:

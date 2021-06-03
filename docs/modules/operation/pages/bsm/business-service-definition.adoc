@@ -16,7 +16,7 @@ These attributes do not affect the dependencies or the status calculation of the
 
 TIP: You can use attributes to filter business services in Ops Board dashlets.
 
-Use the "Manage Business Services" option on the system admin page to manage and model the business services and their hierarchy.
+Use the *Manage Business Services* option on the system admin page to manage and model the business services and their hierarchy.
 Administrator permissions are required to define business services.
 
 .Managing business services with the business service editor
