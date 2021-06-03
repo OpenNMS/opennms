@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   version: 1.0.0
-  title: OpenNMS Minion RESTful API
-  description: OpenNMS Minion RESTful API
+  title: OpenNMS Health Check RESTful API
+  description: OpenNMS Health Check RESTful API
   contact:
     name: OpenNMS
     url: 'http://www.opennms.com/'
@@ -14,9 +14,9 @@ servers:
 paths:
   /health/probe:
     get:
-      summary: Health check results for all components
-      description: Health check results for all components. Only indicate if the health is good or not
-      operationId: probeHealth
+      summary: Health check probe for components
+      description: Health check probe for components. Only indicate if the health is good or not
+      operationId: getHealthProbe
       parameters:
         - name: t
           in: query
@@ -29,8 +29,8 @@ paths:
           description: default response
   /health:
     get:
-      summary: Health check results for all components with details
-      description: Health check results for all components. Include health check result details for each element
+      summary: Health check results for components with details
+      description: Health check results for components. Include health check result details for each element
       operationId: getHealth
       parameters:
         - name: t
