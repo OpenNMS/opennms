@@ -28,10 +28,7 @@
 
 package org.opennms.core.ipc.grpc.client;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 
 import io.grpc.ConnectivityState;
 
@@ -46,6 +43,11 @@ public class GrpcHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Connecting to gRPC IPC Server";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

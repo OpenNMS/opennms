@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
+import org.opennms.core.health.api.HealthTag;
 import org.opennms.core.health.rest.HealthCheckRestService;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
@@ -50,20 +51,6 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     private static final String ERROR_MESSAGE = "Oh no, something is wrong";
 
     private final HealthCheckService healthCheckService;
-
-    public enum HealthCheckElements {
-        CONTAINER_INTEGRITY_HEALTH_CHECK("ContainerIntegrityHealthCheck");
-
-        private final String className;
-
-        private HealthCheckElements(String className){
-            this.className = className;
-        }
-
-        public String getClassName() {
-            return className;
-        }
-    }
 
     public HealthCheckRestServiceImpl(final HealthCheckService healthCheckService) {
         this.healthCheckService = Objects.requireNonNull(healthCheckService);
@@ -90,8 +77,8 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         return getHealth(timeoutInMs, null);
     }
 
-    private Response getHealth(int timeoutInMs, String filter){
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, filter);
+    private Response getHealth(int timeoutInMs, HealthTag tag){
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tag);
         final Health health = healthWrapper.health;
 
         // Create response object
@@ -116,11 +103,11 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response getBundleHealth(int timeoutInMs) {
-        return getHealth(timeoutInMs, HealthCheckElements.CONTAINER_INTEGRITY_HEALTH_CHECK.getClassName());
+    public Response getLocalHealth(int timeoutInMs) {
+        return getHealth(timeoutInMs, HealthTag.LOCAL);
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs, String filter){
+    private HealthWrapper getHealthInternally(int timeoutInMs, HealthTag tag){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
@@ -130,7 +117,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get()), filter); // apply description
+                    response -> healthWrapper.descriptionMap.put(response, reference.get()), tag); // apply description
             healthWrapper.health = future.get();
             return healthWrapper;
         } catch (InterruptedException | ExecutionException e) {

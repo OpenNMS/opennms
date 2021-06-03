@@ -56,5 +56,5 @@ public interface HealthCheckService {
      * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform(Context)} method is invoked. May be null.
      * @return The {@link CompletableFuture} to retrieve the {@link Health} from.
      */
-    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer,String filter);
+    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer,HealthTag tag);
 }

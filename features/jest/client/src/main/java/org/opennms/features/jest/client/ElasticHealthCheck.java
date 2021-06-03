@@ -30,10 +30,7 @@ package org.opennms.features.jest.client;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 
 import com.google.common.base.Strings;
 
@@ -64,6 +61,11 @@ public class ElasticHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Connecting to ElasticSearch ReST API (" + featureName + ")";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

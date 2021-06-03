@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.health;
 
+import org.opennms.core.health.api.HealthTag;
 import org.opennms.features.apilayer.utils.InterfaceMapper;
 import org.opennms.integration.api.v1.health.HealthCheck;
 import org.opennms.integration.api.v1.health.Response;
@@ -48,6 +49,9 @@ public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms
             public String getDescription() {
                 return healthCheck.getDescription();
             }
+
+            @Override
+            public HealthTag getTag() {return HealthTag.UNDEFINED;}
 
             @Override
             public org.opennms.core.health.api.Response perform(org.opennms.core.health.api.Context context) throws Exception {

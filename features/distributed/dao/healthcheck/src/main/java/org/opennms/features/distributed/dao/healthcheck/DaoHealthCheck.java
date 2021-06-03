@@ -30,10 +30,7 @@ package org.opennms.features.distributed.dao.healthcheck;
 
 import java.util.Objects;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -57,6 +54,11 @@ public class DaoHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Retrieving NodeDao";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

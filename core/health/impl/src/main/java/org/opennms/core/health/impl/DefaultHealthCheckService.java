@@ -42,12 +42,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.Health;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.HealthCheckService;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -86,7 +81,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer,String filter) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, HealthTag tag) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -96,8 +91,8 @@ public class DefaultHealthCheckService implements HealthCheckService {
         try {
             // Fail if no checks are available
             List<HealthCheck> checks = getHealthChecks();
-            if (!Strings.isNullOrEmpty(filter)){
-                checks = checks.stream().filter(check -> check.getClass().getName().contains(filter)).collect(Collectors.toList());
+            if (tag != null){
+                checks = checks.stream().filter(check -> check.getTag().equals(tag)).collect(Collectors.toList());
             }
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");

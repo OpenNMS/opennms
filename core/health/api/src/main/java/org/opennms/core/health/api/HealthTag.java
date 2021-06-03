@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.impl;
+package org.opennms.core.health.api;
 
-import org.opennms.core.health.api.*;
-import org.opennms.distributed.core.api.RestClient;
-
-/**
- * Verifies the connection to the OpenNMS ReST API.
- *
- * @author mvrueden
- */
-public class RestConnectionHealthCheck implements HealthCheck {
-
-    private final RestClient restClient;
-
-    public RestConnectionHealthCheck(final RestClient restClient) {
-        this.restClient = restClient;
-    }
-
-    @Override
-    public Response perform(Context context) throws Exception {
-        restClient.ping();
-        return new Response(Status.Success);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Connecting to OpenNMS ReST API";
-    }
-
-    @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
+public enum HealthTag {
+    LOCAL,
+    BROKER,
+    OPENNMSREST,
+    UNDEFINED
 }

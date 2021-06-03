@@ -35,10 +35,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -61,6 +58,11 @@ public class JmsConnectionHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Connecting to JMS Broker";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

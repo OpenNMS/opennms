@@ -35,10 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.opennms.core.utils.InetAddressUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
@@ -54,6 +51,11 @@ public class NettyDnsHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "DNS Lookups (Netty)";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

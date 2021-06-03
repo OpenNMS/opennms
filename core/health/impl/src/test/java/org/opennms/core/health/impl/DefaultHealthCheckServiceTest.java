@@ -41,12 +41,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.Health;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
@@ -60,6 +55,11 @@ public class DefaultHealthCheckServiceTest {
         @Override
         public String getDescription() {
             return getClass().getSimpleName();
+        }
+
+        @Override
+        public HealthTag getTag() {
+            return HealthTag.UNDEFINED;
         }
 
         @Override

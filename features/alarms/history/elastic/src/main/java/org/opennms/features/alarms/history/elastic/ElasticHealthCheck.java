@@ -30,10 +30,7 @@ package org.opennms.features.alarms.history.elastic;
 
 import java.util.Objects;
 
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 
 /**
  * Verifies the basic functionality (+ connectivity to Elasticsearch) of
@@ -52,6 +49,11 @@ public class ElasticHealthCheck implements HealthCheck {
     @Override
     public String getDescription() {
         return "Number of active alarms stored in Elasticsearch (Alarm History)";
+    }
+
+    @Override
+    public HealthTag getTag() {
+        return HealthTag.UNDEFINED;
     }
 
     @Override

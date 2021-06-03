@@ -49,7 +49,7 @@ public interface HealthCheckRestService {
     Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 
     @GET
-    @Path("/bundle")
+    @Path("/local")
     @Produces(MediaType.APPLICATION_JSON)
-    Response getBundleHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+    Response getLocalHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 }

@@ -44,6 +44,8 @@ public interface HealthCheck {
      */
     String getDescription();
 
+    HealthTag getTag();
+
     /**
      * Implements the check itself, e.g. Connecting to a HTTP Endpoint.
      *
