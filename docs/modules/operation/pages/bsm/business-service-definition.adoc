@@ -17,7 +17,6 @@ These attributes do not affect the dependencies or the status calculation of the
 TIP: You can use attributes to filter business services in Ops Board dashlets.
 
 Use the business service editor to manage and model the business services and their hierarchy.
-You must have administrative permissions, available in "Login Name -> Configure OpenNMS -> Manage Business Services" in the Service Monitoring section.
 
 .Managing business services with the business service editor
 image:bsm/01_bsm-editor.png[]
