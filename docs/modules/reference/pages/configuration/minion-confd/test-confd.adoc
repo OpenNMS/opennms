@@ -6,7 +6,7 @@ To locally test `confd` template changes, run a Minion container and map the cor
 The following procedure, which requires a Minion Docker container, might be useful:
 
 . Download a Minion Docker image from a build in CircleCI. 
-It is an artifact of the `tarball-assembly` job. 
+This can be found as an artifact of the `tarball-assembly` job. 
 . Load the image into Docker: `docker load minion.oci`.
 . Create a `docker-compose.yaml` file in the parent folder of the checked-out `opennms` repo. 
 See below for a sample compose file.
