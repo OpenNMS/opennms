@@ -47,10 +47,8 @@ import org.opennms.netmgt.model.ResourcePath;
  */
 public final class TimeseriesUtils {
 
-    public static final boolean USE_TS_FOR_STRING_ATTRIBUTES = true; // TODO Patrick: remove when ok.
-
     public static final String PREFIX_INDEX =  "_idx";
-    public static final String PREFIX_RESOURCE_LEVEL_ATTRIBUTE =  "_rla";
+    public static final String PREFIX_RESOURCE_LEVEL_ATTRIBUTE =  "_rla_";
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
 

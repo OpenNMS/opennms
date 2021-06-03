@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
-import java.sql.SQLException;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -45,12 +41,9 @@ import javax.inject.Named;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
-import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.sampleread.SampleBatchEvent;
-import org.opennms.netmgt.timeseries.meta.MetaData;
-import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -103,9 +96,6 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     @Autowired
     private TimeseriesStorageManager storage;
 
-    @Autowired
-    private TimeSeriesMetaDataDao timeSeriesMetaDataDao;
-
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
@@ -125,19 +115,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         numEntriesOnRingBuffer.set(0L);
 
         registry.register(MetricRegistry.name("ring-buffer", "size"),
-                new Gauge<Long>() {
-                    @Override
-                    public Long getValue() {
-                        return numEntriesOnRingBuffer.get();
-                    }
-                });
+                (Gauge<Long>) numEntriesOnRingBuffer::get);
         registry.register(MetricRegistry.name("ring-buffer", "max-size"),
-                new Gauge<Long>() {
-                    @Override
-                    public Long getValue() {
-                        return Long.valueOf(TimeseriesWriter.this.ringBufferSize);
-                    }
-                });
+                (Gauge<Long>) () -> (long) TimeseriesWriter.this.ringBufferSize);
 
         droppedSamples = registry.meter(MetricRegistry.name("ring-buffer", "dropped-samples"));
         sampleWriteTsTimer = registry.timer("samples.write.ts");
@@ -181,10 +161,6 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         pushToRingBuffer(samples, TRANSLATOR);
     }
 
-    public void index(List<Sample> samples) {
-        pushToRingBuffer(samples, INDEX_ONLY_TRANSLATOR);
-    }
-
     private void pushToRingBuffer(List<Sample> samples, EventTranslatorOneArg<SampleBatchEvent, List<Sample>> translator) {
         // Add the samples to the ring buffer
         if (!ringBuffer.tryPublishEvent(translator, samples)) {
@@ -215,51 +191,16 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         // Decrement our entry counter
         numEntriesOnRingBuffer.decrementAndGet();
 
-        try {
-            if (event.isMetadata()) {
-                storeMetadata(event); // Sample represents metadata, no "real" Samples. Metadata is stored in table.
-            } else {
-                try(Timer.Context context = this.sampleWriteTsTimer.time()) {
-                    this.storage.get().store(event.getSamples());
-                }
-            }
+        try(Timer.Context context = this.sampleWriteTsTimer.time()){
+        this.storage.get().store(event.getSamples());
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
         }
     }
 
-    private void storeMetadata(SampleBatchEvent event) throws SQLException, ExecutionException {
-        // dedouble attributes
-        Set<MetaData> metaData = new HashSet<>();
-        for(Sample sample : event.getSamples()) {
-            Metric metric = sample.getMetric();
-            String resourceId = metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue();
-            metric.getMetaTags().forEach(tag -> metaData.add(new MetaData(resourceId, tag.getKey(), tag.getValue())));
-        }
-        this.timeSeriesMetaDataDao.store(metaData);
-    }
-
-    private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =
-            new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
-                public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
-                    event.setMetadata(false); // we are a "real" Sample
-                    event.setSamples(samples);
-                }
-            };
-
-    private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> INDEX_ONLY_TRANSLATOR =
-            new EventTranslatorOneArg<SampleBatchEvent, List<Sample>>() {
-                public void translateTo(SampleBatchEvent event, long sequence, List<Sample> samples) {
-                    event.setMetadata(true); // we are a "fake" Sample carrying meta data
-                    event.setSamples(samples);
-                }
-            };
+    private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR = (event, sequence, samples) -> event.setSamples(samples);
 
     public void setTimeSeriesStorage(final TimeseriesStorageManager timeseriesStorage) {
         this.storage = timeseriesStorage;
-    }
-
-    public void setTimeSeriesMetaDataDao(final TimeSeriesMetaDataDao timeSeriesMetaDataDao) {
-        this.timeSeriesMetaDataDao = timeSeriesMetaDataDao;
     }
 }

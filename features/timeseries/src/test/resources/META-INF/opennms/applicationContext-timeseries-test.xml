@@ -50,8 +50,6 @@
 
   <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
 
-  <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
-
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManager"/>
 
   <bean id="timeseriesStorageImpl" class="org.opennms.integration.api.v1.timeseries.InMemoryStorage" />

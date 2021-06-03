@@ -29,25 +29,18 @@
 package org.opennms.netmgt.timeseries.resource;
 
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.PREFIX_RESOURCE_LEVEL_ATTRIBUTE;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.USE_TS_FOR_STRING_ATTRIBUTES;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toMetricName;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourcePath;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
-import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -56,16 +49,11 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter;
-import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -88,9 +76,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private TimeseriesSearcher searcher;
-
-    @Autowired
-    private TimeseriesWriter writer;
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
@@ -153,13 +138,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
         Set<OnmsAttribute> attributes = Sets.newHashSet();
 
-        Future<Map<String, String>> stringAttributes;
-        if(!USE_TS_FOR_STRING_ATTRIBUTES) {
-            // Fetch the resource-level attributes in parallel
-            stringAttributes = ForkJoinPool.commonPool()
-                    .submit(getResourceAttributesCallable(path));
-        }
-
         // Gather the list of metrics available under the resource path
         Set<Metric> metrics = searchFor(path, 0);
         for (Metric metric : metrics) {
@@ -191,70 +169,41 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         // Add the resource level attributes to the result set
-        try {
-            if(USE_TS_FOR_STRING_ATTRIBUTES) {
-                Set<Metric> metricsWithStringAttributes = new HashSet<>(metrics);
-                metricsWithStringAttributes.addAll(searchFor(path, -1));
-                if(!metricsWithStringAttributes.isEmpty()) {
-                    metricsWithStringAttributes.iterator().next()
-                            .getMetaTags().stream()
-                            .filter(t -> t.getKey() !=null && t.getKey().startsWith(PREFIX_RESOURCE_LEVEL_ATTRIBUTE))
-                            .map(t -> new StringPropertyAttribute(t.getKey().substring(PREFIX_RESOURCE_LEVEL_ATTRIBUTE.length()), t.getValue()))
-                            .forEach(attributes::add);
-                }
-            } else {
-                stringAttributes.get().entrySet().stream()
-                        .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-                        .forEach(attributes::add);
-            }
-
-        } catch (InterruptedException|ExecutionException e) {
-            throw Throwables.propagate(e);
+        Set<Metric> metricsWithStringAttributes = new HashSet<>(metrics);
+        metricsWithStringAttributes.addAll(searchFor(path, -1));
+        if (!metricsWithStringAttributes.isEmpty()) {
+            metricsWithStringAttributes.iterator().next()
+                    .getMetaTags().stream()
+                    .filter(t -> t.getKey() != null && t.getKey().startsWith(PREFIX_RESOURCE_LEVEL_ATTRIBUTE))
+                    .map(t -> new StringPropertyAttribute(t.getKey().substring(PREFIX_RESOURCE_LEVEL_ATTRIBUTE.length()), t.getValue()))
+                    .forEach(attributes::add);
         }
 
         return attributes;
     }
 
+    @Deprecated
     @Override
-    // TODO: Patrick: We can remove this method from interface and force clients to use KV store?
     public void setStringAttribute(ResourcePath path, String key, String value) {
-        // Create a mock sample referencing the resource. This is a bit of a miss use of the Sample class but it allows
-        // us to use the ring buffer
-        Map<String, String> attributes = new ImmutableMap.Builder<String, String>()
-                .put(key, value)
-                .build();
-        Sample sample = TimeseriesUtils.createSampleForIndexingStrings(toResourceId(path), attributes);
-
-        // Index, but do not insert the sample(s)
-        // The key/value pair specified in the attributes map will be merged with the others.
-        writer.index(Lists.newArrayList(sample));
+        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
+    @Deprecated
     @Override
-    // TODO: Patrick: We can remove this method from interface and force clients to use KV store?
     public String getStringAttribute(ResourcePath path, String key) {
-        return getStringAttributes(path).get(key);
+        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
+    @Deprecated
     @Override
-    // TODO: Patrick: We can remove this method from interface and force clients to use KV store?
     public Map<String, String> getStringAttributes(ResourcePath path) {
-        return getMetaData(path);
+        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
+    @Deprecated
     @Override
-    // TODO: Patrick: We can remove this method from interface and force clients to use KV store?
     public Map<String, String> getMetaData(ResourcePath path) {
-        return searcher.getResourceAttributes(path);
-    }
-
-    private Callable<Map<String, String>> getResourceAttributesCallable(final ResourcePath path) {
-        return new Callable<Map<String, String>>() {
-            @Override
-            public Map<String, String> call() {
-                return searcher.getResourceAttributes(path);
-            }
-        };
+        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
     }
 
     @Override
@@ -289,10 +238,6 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
-    }
-
-    public void setWriter(TimeseriesWriter writer) {
-        this.writer = writer;
     }
 
     public void setSearcher(TimeseriesSearcher searcher) {

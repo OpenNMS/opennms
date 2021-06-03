@@ -233,7 +233,6 @@ public class TimeseriesResourceStorageDaoTest {
 
             return new HashSet<>(metrics);
         }).atLeastOnce();
-        EasyMock.expect(searcher.getResourceAttributes(EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
         EasyMock.replay(searcher);
     }
 

@@ -30,12 +30,12 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.timeseries.samplewrite.MetaTagConfiguration.CONFIG_KEY_FOR_CATEGORIES;
 import static org.opennms.netmgt.timeseries.samplewrite.MetaTagConfiguration.CONFIG_PREFIX_FOR_TAGS;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.USE_TS_FOR_STRING_ATTRIBUTES;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -95,7 +95,6 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,9 +136,6 @@ public class TimeseriesRoundtripIT {
 
     @Autowired
     private TimeseriesStorageManager timeseriesStorageManager;
-
-    @Autowired
-    private TimeSeriesMetaDataDao metaDataDao;
 
     @Autowired
     private MetaTagDataLoader metaTagDataLoader;
@@ -213,22 +209,22 @@ public class TimeseriesRoundtripIT {
         testForNumericAttribute("snmp/1/metrics", "m1", 900d);
         testForNumericAttribute("snmp/1/metrics", "m2", 1000d);
         // String attributes are stored in the OpenNMS Database:
-        testForStringAttribute("snmp/1/metrics", "idx-m2", "m2"); // Identified
-        testForStringAttribute("snmp/1", "sysname", "host1");
+        testForStringAttributeAtMetricLevel("snmp:1:metrics", "m2", "idx-m2", "m2"); // Identified
+        testForStringAttributeAtResourceLevel("snmp/1", "sysname", "host1");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/1/if-metrics", "m3", 44d);
         testForNumericAttribute("snmp/1/1/if-metrics", "m4", 55d);
         // String attributes are stored in the OpenNMS Database:
-        testForStringAttribute("snmp/1/1/if-metrics", "idx-m4", "m4"); // Identified
-        testForStringAttribute("snmp/1/1", "ifname", "eth0");
+        testForStringAttributeAtMetricLevel("snmp:1:1:if-metrics", "m4", "idx-m4", "m4"); // Identified
+        testForStringAttributeAtResourceLevel("snmp/1/1", "ifname", "eth0");
 
         // Tags contained in the Metric:
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m5", 66d);
         testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m6", 77d);
         // String attributes are stored in the OpenNMS Database:
-        testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
-        testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
+        testForStringAttributeAtMetricLevel("snmp:1:gen-metrics:gen-metrics", "m6", "idx-m6", "m6"); // Identified
+        testForStringAttributeAtResourceLevel("snmp/1/gen-metrics", "genname", "bgp");
 
         // test for additional meta tags that are provided to the timeseries plugin for external use. They are stored as additional meta tags
         // in the Metrics object
@@ -269,19 +265,26 @@ public class TimeseriesRoundtripIT {
         return timeseriesStorageManager.get().getTimeseries(request);
     }
 
-    private void testForStringAttribute(String resourcePath, String attributeName, String expectedValue) throws StorageException {
+    private void testForStringAttributeAtResourceLevel(String resourcePath, String attributeName, String expectedValue) throws StorageException {
         Map<String, String> stringAttributes;
-        if(USE_TS_FOR_STRING_ATTRIBUTES) {
-            ResourcePath path = ResourcePath.fromString(resourcePath);
-            stringAttributes = resourceStorageDao.getAttributes(path)
-                    .stream()
-                    .filter(a -> a instanceof StringPropertyAttribute)
-                    .map(a -> (StringPropertyAttribute) a)
-                    .collect(Collectors.toMap(StringPropertyAttribute::getName, StringPropertyAttribute::getValue));
-        } else {
-            stringAttributes = metaDataDao.getForResourcePath(ResourcePath.fromString(resourcePath));
-        }
+        ResourcePath path = ResourcePath.fromString(resourcePath);
+        stringAttributes = resourceStorageDao.getAttributes(path)
+                .stream()
+                .filter(a -> a instanceof StringPropertyAttribute)
+                .map(a -> (StringPropertyAttribute) a)
+                .collect(Collectors.toMap(StringPropertyAttribute::getName, StringPropertyAttribute::getValue));
         assertEquals(expectedValue, stringAttributes.get(attributeName));
+    }
+
+    private void testForStringAttributeAtMetricLevel(String resourceId, String metricName, String attributeName, String expectedValue) throws StorageException {
+        List<Metric> metrics = this.timeseriesStorageManager.get()
+                .getMetrics(Arrays.asList(
+                        new ImmutableTag(IntrinsicTagNames.resourceId, resourceId),
+                        new ImmutableTag(IntrinsicTagNames.name, metricName)));
+        assertEquals(1, metrics.size());
+        Tag tag = metrics.get(0).getFirstTagByKey(attributeName);
+        assertNotNull(tag);
+        assertEquals(expectedValue, tag.getValue());
     }
 
     private void createAndSaveNode() throws UnknownHostException {

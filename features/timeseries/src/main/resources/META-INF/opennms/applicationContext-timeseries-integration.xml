@@ -54,8 +54,6 @@
     <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
   </onmsgi:list>
 
-  <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
-
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
@@ -99,13 +97,6 @@
     <property name="expireAfterRead" value="${cache.timeseriesSearcherCache.expireAfterRead:300}" />
     <property name="maximumSize" value="${cache.timeseriesSearcherCache.maximumSize:8192}" />
     <property name="recordStats" value="${cache.timeseriesSearcherCache.recordStats:true}" />
-    <property name="metricRegistry" ref="timeseriesMetricRegistry" />
-  </bean>
-  <bean id="timeseriesMetaDataCache" class="org.opennms.core.cache.CacheConfig">
-    <constructor-arg index="0" value="timeseriesMetaDataCache" />
-    <property name="expireAfterRead" value="${cache.timeseriesMetaDataCache.expireAfterRead:300}" />
-    <property name="maximumSize" value="${cache.timeseriesMetaDataCache.maximumSize:8192}" />
-    <property name="recordStats" value="${cache.timeseriesMetaDataCache.recordStats:true}" />
     <property name="metricRegistry" ref="timeseriesMetricRegistry" />
   </bean>
 </beans>
