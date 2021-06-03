@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.core.cache.Cache;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.PersistException;
@@ -118,14 +119,15 @@ public class TimeseriesPersister extends AbstractPersister {
         popShouldPersist();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    @Override // Override to implement our own string attribute handling
     public void persistNumericAttribute(CollectionAttribute attribute) {
-        // override super class in order to persist the metric indentifiers in the meta data table
-        super.persistNumericAttribute(attribute);
+        boolean shouldIgnorePersist = isIgnorePersist() && AttributeType.COUNTER.equals(attribute.getType());
+        LOG.debug("Persisting {} {}", attribute, (shouldIgnorePersist ? ". Ignoring value because of sysUpTime changed." : ""));
+        Number value = shouldIgnorePersist ? Double.NaN : attribute.getNumericValue();
+        builder.setAttributeValue(attribute.getAttributeType(), value);
         if(attribute.getMetricIdentifier() != null) {
             ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(repository, ResourcePath.get(attribute.getResource().getPath(), attribute.getAttributeType().getGroupType().getName()));
-            this.builder.persistStringAttribute(path, attribute.getMetricIdentifier(), attribute.getName());
+            this.builder.persistStringAttributeForMetricLevel(path,  attribute.getName(), attribute.getMetricIdentifier(), attribute.getName());
         }
     }
 }

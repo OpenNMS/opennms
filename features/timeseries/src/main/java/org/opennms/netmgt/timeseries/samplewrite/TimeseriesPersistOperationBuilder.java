@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
@@ -59,6 +60,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Used to collect attribute values and meta-data for a given resource
@@ -75,8 +77,9 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     private final ResourceIdentifier resource;
 
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
-    private final Map<String, String> metaData = Maps.newLinkedHashMap();
+    private final Map<String, String> metaTags;
     private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
+    private final Map<Set<Tag>, Map<String, String>> stringAttributesByResourceIdAndName = Maps.newLinkedHashMap();
     private final Timer commitTimer;
 
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
@@ -88,7 +91,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         rrepository = repository;
         this.resource = resource;
         this.name = name;
-        metaData.putAll(metaTags);
+        this.metaTags = metaTags;
         this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
@@ -102,22 +105,29 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         declarations.put(attributeType, value);
     }
 
+    /**
+     * Persists a String attribute that is associated to a ResourcePath (resourceId)
+     */
     public void persistStringAttribute(ResourcePath path, String key, String value) {
         Map<String, String> stringAttributesForPath = stringAttributesByPath.computeIfAbsent(path, k -> Maps.newLinkedHashMap());
         stringAttributesForPath.put(key, value);
     }
 
+    /**
+     * Persists a String attribute that is associated to a Metric (resourceId & name)
+     */
+    public void persistStringAttributeForMetricLevel(ResourcePath path, String metricName, String key, String value) {
+        Set<Tag> intrinsicTags = Sets.newHashSet(new ImmutableTag(IntrinsicTagNames.resourceId, TimeseriesUtils.toResourceId(path)), new ImmutableTag(IntrinsicTagNames.name, metricName));
+        Map<String, String> stringAttributesForPath = this.stringAttributesByResourceIdAndName.computeIfAbsent(intrinsicTags, k -> Maps.newLinkedHashMap());
+        stringAttributesForPath.put(key, value);
+    }
+
     @Override
     public void setAttributeMetadata(String metricIdentifier, String name) {
-        if (metricIdentifier == null) {
-            if (name == null) {
-                LOG.warn("Cannot set attribute metadata with null key and null value");
-            } else {
-                LOG.warn("Cannot set attribute metadata with null key and value of: {}", name);
-            }
-        } else {
-            metaData.put(metricIdentifier, name);
-        }
+        // Ugly hack here:
+        // This method is normally called by AbstractPersister.persistNumericAttribute(CollectionAttribute attribute)
+        // but we are overriding that method in TimeseriesPersister => this method should never be called.
+        throw new UnsupportedOperationException("Should never be called. We made a mistake!");
     }
 
     @Override
@@ -128,10 +138,12 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     public List<Sample> getSamplesToInsert() {
+        final Map<String, String> resourceIdLevelMetaData = Maps.newLinkedHashMap();
+        resourceIdLevelMetaData.putAll(this.metaTags);
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), name));
 
-        // Add resource and group level attributes
+        // Collect resource and group level attributes
         Map<String, String> stringAttributes = new HashMap<>();
         ResourcePath p = path;
         while (p.hasParent()) {
@@ -141,9 +153,8 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                 stringAttributes.putAll(attributes);
             }
         }
-
         for (Entry<String, String> entry : stringAttributes.entrySet()) {
-            metaData.put(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue());
+            resourceIdLevelMetaData.put(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue());
         }
 
         String resourceId = TimeseriesUtils.toResourceId(path);
@@ -169,7 +180,17 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                     .intrinsicTag(IntrinsicTagNames.name, attrType.getName())
                     .metaTag(type);
-                metaData.forEach(builder::metaTag);
+
+            // add resource level string attributes
+            resourceIdLevelMetaData.forEach(builder::metaTag);
+
+            // add metric level string attributes
+            Map<String, String> metricLevelAttributes = stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags());
+            if (metricLevelAttributes != null) {
+                for (Entry<String, String> entry2 : stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags()).entrySet()) {
+                    builder.metaTag(entry2.getKey(), entry2.getValue());
+                }
+            }
 
             final ImmutableMetric metric = builder.build();
             final Double sampleValue = value.doubleValue();
