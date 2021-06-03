@@ -8,7 +8,7 @@ info:
     url: 'http://www.opennms.com/'
   license:
     name: OpenNMS(R) Licensing
-    url: 'http://www.gnu.org/licenses/'
+    url: 'https://github.com/OpenNMS/opennms/blob/develop/LICENSE.md'
 servers:
   - url: 'http://localhost:8181/minion/rest'
 paths:
