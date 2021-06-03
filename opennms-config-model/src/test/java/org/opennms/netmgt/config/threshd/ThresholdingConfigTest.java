@@ -29,8 +29,10 @@
 package org.opennms.netmgt.config.threshd;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
@@ -43,10 +45,32 @@ public class ThresholdingConfigTest extends XmlTestNoCastor<ThresholdingConfig> 
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        ThresholdingConfig thresholdingConfig = new ThresholdingConfig();
+        Group group = new Group();
+        group.setName("coffee");
+        group.setRrdRepository("${install.share.dir}/rrd/snmp/");
+        Expression expression = new Expression();
+        expression.setDescription("des");
+        expression.setType(ThresholdType.LOW);
+        expression.setDsType("node");
+        expression.setValue("${value:25.0|value1:23.0|25.9}");
+        expression.setRearm("-200.7e+5");
+        expression.setTrigger("003498090");
+        expression.setFilterOperator(FilterOperator.OR);
+        expression.setExpression("coffeePotLevel / coffeePotCapacity * ${percent:200.0 |100.0}");
+        List<Expression> expressions = new ArrayList<>();
+        expressions.add(expression);
+        group.setExpressions(expressions);
+        thresholdingConfig.addGroup(group);
         return Arrays.asList(new Object[][] {
             {
-                new ThresholdingConfig(),
-                "<thresholding-config/>"
+                thresholdingConfig,
+                "<thresholding-config>\n" +
+                        "   <group name=\"coffee\" rrdRepository=\"${install.share.dir}/rrd/snmp/\">\n" +
+                        "      <expression description=\"des\" type=\"low\" ds-type=\"node\" value=\"${value:25.0|value1:23.0|25.9}\" rearm=\"-200.7e+5\" " +
+                        "trigger=\"003498090\" filterOperator=\"OR\" expression=\"coffeePotLevel / coffeePotCapacity * ${percent:200.0 |100.0}\"/>\n" +
+                        "   </group>" +
+                        "</thresholding-config>"
             }
         });
     }
