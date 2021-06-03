@@ -34,7 +34,7 @@
 | `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication   | optional | `admin`
 |===
 
-.Apache Kafka Configuration
+.Settings when using Apache Kafka
 
 If you want to use Apache Kafka the environment variable names are converted with a prefix convention:
 
