@@ -14,7 +14,7 @@
 
 == Environment variables
 
-.Generic _Minion_ settings
+.Generic Minion settings
 [options="header, autowidth"]
 |===
 | Environment variable | Description                                     | Required | Default value
