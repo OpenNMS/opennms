@@ -135,3 +135,7 @@ IMPORTANT: Please change immediately the default password to a secure password.
 . Click in main navigation menu on btn:[admin] -> btn:[Change Password]
 . Use _admin_ as the current password and set a new password and confirm with btn:[Submit]
 . Logout and login with your new password
+
+== First monitored node
+The default configuration will discover a single node with an interface 127.0.0.1 and detect services exposed on the looopback interface including the OpenNMS-JVM service.
+Nodes with this service have JMX-based data collection performed on Java JVM statistics such as heap memory and open file handles.
