@@ -712,7 +712,12 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
-find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
+find %{buildroot}%{instprefix}/bin \
+	%{buildroot}%{instprefix}/contrib \
+	%{buildroot}%{instprefix}/etc \
+	%{buildroot}%{instprefix}/lib \
+	%{buildroot}%{instprefix}/system \
+	-type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
 
@@ -756,6 +761,7 @@ rm -rf %{buildroot}
 			%{instprefix}/deploy
 
 %files jmx-config-generator
+%defattr(644 opennms opennms 755)
 %attr(755,opennms,opennms) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
 
@@ -900,6 +906,7 @@ if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/logs"
 		ln -sf "$LOG_INST" "$ROOT_INST/logs"
+		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 		echo "done"
 	fi
 fi
@@ -912,6 +919,7 @@ if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/share"
 		ln -sf "$SHARE_INST" "$ROOT_INST/share"
+		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 		echo "done"
 	fi
 fi
@@ -956,6 +964,7 @@ for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 		fi
 	fi
 done
+"$ROOT_INST/bin/fix-permissions" "$ROOT_INST/etc/libraries.properties"
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
@@ -970,6 +979,7 @@ if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 	"$ROOT_INST/bin/runjava" "-s"
 fi
 
+"${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
 
 echo ""
@@ -995,6 +1005,66 @@ if [ "$1" = 0 ]; then
 		fi
 	done
 fi
+
+%post jmx-config-generator
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-jmx-config-generator"
+
+%post source
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-source"
+
+%post webapp-jetty
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-webapp-jetty"
+
+%post webapp-hawtio
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-webapp-hawtio"
+
+%post plugin-northbounder-jms
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-northbounder-jms"
+
+%post plugin-provisioning-dns
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-dns"
+
+%post plugin-provisioning-reverse-dns
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-reverse-dns"
+
+%post plugin-provisioning-rancid
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-rancid"
+
+%post plugin-provisioning-snmp-asset
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-snmp-asset"
+
+%post plugin-provisioning-wsman-asset
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-wsman-asset"
+
+%post plugin-provisioning-snmp-hardware-inventory
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-snmp-hardware-inventory"
+
+%post plugin-protocol-cifs
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-cifs"
+
+%post plugin-ticketer-jira
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-jira"
+
+%post plugin-ticketer-otrs
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-otrs"
+
+%post plugin-ticketer-rt
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-rt"
+
+%post plugin-protocol-nsclient
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-nsclient"
+
+%post plugin-protocol-radius
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-radius"
+
+%post plugin-protocol-xmp
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-protocol-xmp"
+
+%post plugin-collector-juniper-tca
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-juniper-tca"
+
+%post plugin-collector-vtdxml-handler
+"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-vtdxml-handler"
 
 %changelog
 * Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>
