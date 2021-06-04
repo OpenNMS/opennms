@@ -54,7 +54,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
-    private final Cache<ResourcePath, Set<Tag>> metaCache;
+    private final Cache<ResourcePath, Set<Tag>> configuredAdditionalMetaTagCache;
     private final MetricRegistry registry;
 
     @Inject
@@ -64,7 +64,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
                                       @Named("timeseriesMetricRegistry") MetricRegistry registry) {
         this.timeseriesWriter = timeseriesWriter;
         this.metaTagDataLoader = metaTagDataLoader;
-        this.metaCache = new CacheBuilder<>()
+        this.configuredAdditionalMetaTagCache = new CacheBuilder<>()
                 .withConfig(cacheConfig)
                 .withCacheLoader(metaTagDataLoader)
                 .build();
@@ -81,7 +81,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, metaCache, registry);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, metaTagDataLoader, configuredAdditionalMetaTagCache, registry);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

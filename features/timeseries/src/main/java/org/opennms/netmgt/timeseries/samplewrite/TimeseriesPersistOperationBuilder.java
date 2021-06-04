@@ -77,7 +77,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     private final ResourceIdentifier resource;
 
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
-    private final Set<Tag> userDefinedResourceIdLevelTags;
+    private final Set<Tag> configuredAdditionalMetaTags;
     private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
     private final Map<Set<Tag>, Map<String, String>> stringAttributesByResourceIdAndName = Maps.newLinkedHashMap();
     private final Timer commitTimer;
@@ -85,13 +85,13 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
     public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
-                                             ResourceIdentifier resource, String groupName, Set<Tag> userDefinedResourceIdLevelTags,
+                                             ResourceIdentifier resource, String groupName, Set<Tag> configuredAdditionalMetaTags,
                                              MetricRegistry metricRegistry) {
         this.writer = writer;
         rrepository = repository;
         this.resource = resource;
         this.groupName = groupName;
-        this.userDefinedResourceIdLevelTags = userDefinedResourceIdLevelTags;
+        this.configuredAdditionalMetaTags = configuredAdditionalMetaTags;
         this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
@@ -139,7 +139,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     public List<Sample> getSamplesToInsert() {
         final Set<Tag> resourceIdLevelMetaData = Sets.newHashSet();
-        resourceIdLevelMetaData.addAll(this.userDefinedResourceIdLevelTags);
+        resourceIdLevelMetaData.addAll(this.configuredAdditionalMetaTags);
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), groupName));
 
