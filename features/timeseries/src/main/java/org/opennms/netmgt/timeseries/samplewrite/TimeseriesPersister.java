@@ -29,11 +29,12 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.cache.Cache;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeType;
@@ -58,12 +59,12 @@ public class TimeseriesPersister extends AbstractPersister {
     private final RrdRepository repository;
     private final TimeseriesWriter writer;
     private final MetaTagDataLoader metaDataLoader;
-    private final Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache;
+    private final Cache<ResourcePath, Set<Tag>> metaTagsByResourceCache;
     private TimeseriesPersistOperationBuilder builder;
     private final MetricRegistry metricRegistry;
 
     protected TimeseriesPersister(ServiceParameters params, RrdRepository repository, TimeseriesWriter timeseriesWriter,
-                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Map<String, String>> metaTagsByResourceCache,
+                                  MetaTagDataLoader metaDataLoader, Cache<ResourcePath, Set<Tag>> metaTagsByResourceCache,
                                   MetricRegistry metricRegistry) {
         super(params, repository);
         this.repository = repository;
@@ -87,7 +88,7 @@ public class TimeseriesPersister extends AbstractPersister {
         if (shouldPersist()) {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
-            Map<String, String> metaTags = getMetaTags(resource);
+            Set<Tag> metaTags = getMetaTags(resource);
             builder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags, this.metricRegistry);
             if (resource.getTimeKeeper() != null) {
                 builder.setTimeKeeper(resource.getTimeKeeper());
@@ -96,13 +97,13 @@ public class TimeseriesPersister extends AbstractPersister {
         }
     }
 
-    private Map<String, String> getMetaTags(final CollectionResource resource) {
+    private Set<Tag> getMetaTags(final CollectionResource resource) {
         try {
             return metaTagsByResourceCache.get(resource.getPath());
         } catch (ExecutionException e) {
             LOG.warn("An exception occurred while trying to retrieve meta tags for {}", resource.getPath(), e);
         }
-        return Collections.emptyMap();
+        return Collections.emptySet();
     }
 
     @Override

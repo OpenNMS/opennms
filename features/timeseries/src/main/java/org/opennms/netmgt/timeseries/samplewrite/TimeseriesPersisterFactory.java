@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
-import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,6 +36,7 @@ import javax.inject.Named;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -53,7 +54,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
     private final MetaTagDataLoader metaTagDataLoader;
-    private final Cache<ResourcePath, Map<String, String>> metaCache;
+    private final Cache<ResourcePath, Set<Tag>> metaCache;
     private final MetricRegistry registry;
 
     @Inject

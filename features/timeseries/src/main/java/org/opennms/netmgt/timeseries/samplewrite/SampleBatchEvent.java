@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.sampleread;
+package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.List;
 

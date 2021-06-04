@@ -43,7 +43,6 @@ import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.sampleread.SampleBatchEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;

@@ -73,11 +73,11 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     private final TimeseriesWriter writer;
     private final RrdRepository rrepository;
-    private final String name;
+    private final String groupName;
     private final ResourceIdentifier resource;
 
     private final Map<CollectionAttributeType, Number> declarations = Maps.newLinkedHashMap();
-    private final Map<String, String> metaTags;
+    private final Set<Tag> userDefinedResourceIdLevelTags;
     private final Map<ResourcePath, Map<String, String>> stringAttributesByPath = Maps.newLinkedHashMap();
     private final Map<Set<Tag>, Map<String, String>> stringAttributesByResourceIdAndName = Maps.newLinkedHashMap();
     private final Timer commitTimer;
@@ -85,19 +85,19 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     private TimeKeeper timeKeeper = new DefaultTimeKeeper();
 
     public TimeseriesPersistOperationBuilder(TimeseriesWriter writer, RrdRepository repository,
-                                             ResourceIdentifier resource, String name, Map<String, String> metaTags,
+                                             ResourceIdentifier resource, String groupName, Set<Tag> userDefinedResourceIdLevelTags,
                                              MetricRegistry metricRegistry) {
         this.writer = writer;
         rrepository = repository;
         this.resource = resource;
-        this.name = name;
-        this.metaTags = metaTags;
+        this.groupName = groupName;
+        this.userDefinedResourceIdLevelTags = userDefinedResourceIdLevelTags;
         this.commitTimer = metricRegistry.timer("samples.write.integration");
     }
 
     @Override
     public String getName() {
-        return name;
+        return groupName;
     }
 
     @Override
@@ -138,10 +138,10 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     public List<Sample> getSamplesToInsert() {
-        final Map<String, String> resourceIdLevelMetaData = Maps.newLinkedHashMap();
-        resourceIdLevelMetaData.putAll(this.metaTags);
+        final Set<Tag> resourceIdLevelMetaData = Sets.newHashSet();
+        resourceIdLevelMetaData.addAll(this.userDefinedResourceIdLevelTags);
         final List<Sample> samples = Lists.newLinkedList();
-        ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), name));
+        ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), groupName));
 
         // Collect resource and group level attributes
         Map<String, String> stringAttributes = new HashMap<>();
@@ -154,7 +154,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             }
         }
         for (Entry<String, String> entry : stringAttributes.entrySet()) {
-            resourceIdLevelMetaData.put(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue());
+            resourceIdLevelMetaData.add(new ImmutableTag(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue()));
         }
 
         String resourceId = TimeseriesUtils.toResourceId(path);

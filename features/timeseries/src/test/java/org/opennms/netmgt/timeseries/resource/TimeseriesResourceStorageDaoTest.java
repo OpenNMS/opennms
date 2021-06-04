@@ -46,6 +46,7 @@ import org.junit.Test;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -220,12 +221,14 @@ public class TimeseriesResourceStorageDaoTest {
             String regex = toSearchRegex(resourcePath, depth + 1);
             Set<Metric> metrics = new HashSet<>();
             for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
+                Set<Tag> attributes = new HashSet<>();
                 if (Pattern.matches(regex, toResourceId(entry.getKey()))) { // find all paths that match our regex
                     for(String name : entry.getValue()) { // build the metric
                         ImmutableMetric.MetricBuilder metric =
                                 ImmutableMetric.builder()
                                 .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
                                 .intrinsicTag(IntrinsicTagNames.name, name);
+                        attributes.forEach(metric::metaTag);
                         metrics.add(metric.build());
                     }
                 }

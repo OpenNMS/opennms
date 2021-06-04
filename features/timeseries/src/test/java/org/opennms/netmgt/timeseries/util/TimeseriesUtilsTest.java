@@ -30,7 +30,14 @@ package org.opennms.netmgt.timeseries.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.model.ResourcePath;
 
 import com.google.re2j.Pattern;
