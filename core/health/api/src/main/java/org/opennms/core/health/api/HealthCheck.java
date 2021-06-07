@@ -28,6 +28,9 @@
 
 package org.opennms.core.health.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Interface to define a {@link HealthCheck}.
  *
@@ -50,7 +53,9 @@ public interface HealthCheck {
      *
      * @return The HealthTag type, describing category of the health-check.
      */
-    HealthTag getTag();
+    default List<String> getTags(){
+        return new ArrayList<>();
+    }
 
     /**
      * Implements the check itself, e.g. Connecting to a HTTP Endpoint.

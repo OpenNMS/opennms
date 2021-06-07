@@ -63,11 +63,6 @@ public class DefaultHealthCheckServiceTest {
         }
 
         @Override
-        public HealthTag getTag() {
-            return HealthTag.UNDEFINED;
-        }
-
-        @Override
         public Response perform(Context context) {
             long start = System.currentTimeMillis();
             long spent = 0;

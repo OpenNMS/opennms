@@ -28,6 +28,8 @@
 
 package org.opennms.distributed.jms.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.jms.Connection;
@@ -39,6 +41,7 @@ import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.HealthConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -64,8 +67,10 @@ public class JmsConnectionHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.BROKER;
+    public List<String> getTags() {
+        List<String> tags = new ArrayList<>();
+        tags.add(HealthConstants.BROKER);
+        return tags;
     }
 
     @Override

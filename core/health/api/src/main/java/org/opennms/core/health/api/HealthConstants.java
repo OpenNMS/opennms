@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,9 +28,12 @@
 
 package org.opennms.core.health.api;
 
-public enum HealthTag {
-    LOCAL,
-    BROKER,
-    OPENNMS_REST,
-    UNDEFINED
+public class HealthConstants {
+    public static final String LOCAL = "local";
+    public static final String OPENNMS_REST = "opennms_rest";
+
+    public static final String BROKER = "broker";
+
+    private HealthConstants() {
+    }
 }

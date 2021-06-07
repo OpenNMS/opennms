@@ -47,6 +47,7 @@ import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.HealthConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
@@ -85,8 +86,10 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.LOCAL;
+    public List<String> getTags() {
+        List<String> tags = new ArrayList<>();
+        tags.add(HealthConstants.LOCAL);
+        return tags;
     }
 
     @Override

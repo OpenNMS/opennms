@@ -60,11 +60,6 @@ public class DaoHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
-
-    @Override
     public Response perform(Context context) {
         // IMPORTANT: Do not change to Class reference here. This is a string on purpose to not have the maven bundle
         // plugin put a IMPORT-Package statement for org.opennms.netmgt.dao.api. Otherwise this Health Check is never

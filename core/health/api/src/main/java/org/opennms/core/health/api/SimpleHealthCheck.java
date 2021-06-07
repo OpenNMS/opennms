@@ -52,11 +52,6 @@ public class SimpleHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
-
-    @Override
     public Response perform(Context context) throws Exception {
         return response;
     }

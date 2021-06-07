@@ -85,7 +85,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, HealthTag tag) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, String tag) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -96,7 +96,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
             // Fail if no checks are available
             List<HealthCheck> checks = getHealthChecks();
             if (tag != null){
-                checks = checks.stream().filter(check -> check.getTag().equals(tag)).collect(Collectors.toList());
+                checks = checks.stream().filter(check -> check.getTags().equals(tag)).collect(Collectors.toList());
             }
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");

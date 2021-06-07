@@ -42,7 +42,7 @@ import org.json.JSONObject;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
-import org.opennms.core.health.api.HealthTag;
+import org.opennms.core.health.api.HealthConstants;
 import org.opennms.core.health.rest.HealthCheckRestService;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
@@ -77,7 +77,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         return getHealth(timeoutInMs, null);
     }
 
-    private Response getHealth(int timeoutInMs, HealthTag tag){
+    private Response getHealth(int timeoutInMs, String tag){
         final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tag);
         final Health health = healthWrapper.health;
 
@@ -104,10 +104,10 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
     @Override
     public Response getLocalHealth(int timeoutInMs) {
-        return getHealth(timeoutInMs, HealthTag.LOCAL);
+        return getHealth(timeoutInMs, HealthConstants.LOCAL);
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs, HealthTag tag){
+    private HealthWrapper getHealthInternally(int timeoutInMs, String tag){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);

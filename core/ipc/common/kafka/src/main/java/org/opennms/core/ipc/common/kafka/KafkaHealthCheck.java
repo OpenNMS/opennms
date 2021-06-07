@@ -55,11 +55,6 @@ public class KafkaHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.BROKER;
-    }
-
-    @Override
     public Response perform(Context context) throws Exception {
         Properties kafkaConfig = kafkaConfigProvider.getProperties();
         int timeout = Math.toIntExact(context.getTimeout());

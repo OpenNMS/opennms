@@ -55,11 +55,6 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
-
-    @Override
     public Response perform(Context context) {
         final long numAlarms = elasticAlarmHistoryRepository.getNumActiveAlarmsNow();
         // Any value is OK - a runtime exception is a failure

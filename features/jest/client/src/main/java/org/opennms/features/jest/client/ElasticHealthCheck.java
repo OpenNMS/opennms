@@ -67,11 +67,6 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
-
-    @Override
     public Response perform(Context context) {
         final Ping ping = new Ping.Builder().build();
         try {

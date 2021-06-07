@@ -49,11 +49,6 @@ public class GrpcHealthCheck implements HealthCheck {
     }
 
     @Override
-    public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
-    }
-
-    @Override
     public Response perform(Context context) throws Exception {
         if (minionGrpcClient.getChannelState().equals(ConnectivityState.READY)) {
             return new Response(Status.Success);
