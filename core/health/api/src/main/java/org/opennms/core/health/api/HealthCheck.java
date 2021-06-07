@@ -44,6 +44,12 @@ public interface HealthCheck {
      */
     String getDescription();
 
+    /**
+     *
+     * A tag to indicate the category of the health-check.
+     *
+     * @return The HealthTag type, describing category of the health-check.
+     */
     HealthTag getTag();
 
     /**
