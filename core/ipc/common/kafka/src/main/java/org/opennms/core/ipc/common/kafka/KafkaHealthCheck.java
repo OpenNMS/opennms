@@ -53,7 +53,7 @@ public class KafkaHealthCheck implements HealthCheck {
 
     @Override
     public HealthTag getTag() {
-        return HealthTag.UNDEFINED;
+        return HealthTag.BROKER;
     }
 
     @Override
