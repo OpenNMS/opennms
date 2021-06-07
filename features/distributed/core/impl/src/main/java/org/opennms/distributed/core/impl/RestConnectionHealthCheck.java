@@ -57,6 +57,6 @@ public class RestConnectionHealthCheck implements HealthCheck {
 
     @Override
     public HealthTag getTag() {
-        return HealthTag.OPENNMSREST;
+        return HealthTag.OPENNMS_REST;
     }
 }

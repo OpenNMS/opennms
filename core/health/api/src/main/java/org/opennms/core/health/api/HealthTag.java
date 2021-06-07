@@ -31,6 +31,6 @@ package org.opennms.core.health.api;
 public enum HealthTag {
     LOCAL,
     BROKER,
-    OPENNMSREST,
+    OPENNMS_REST,
     UNDEFINED
 }
