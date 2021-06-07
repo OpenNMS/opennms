@@ -30,7 +30,10 @@ package org.opennms.features.jest.client;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.opennms.core.health.api.*;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 
 import com.google.common.base.Strings;
 
