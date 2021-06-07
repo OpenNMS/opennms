@@ -4,7 +4,7 @@ This detector lets you find DNS services for monitoring in your network.
 The DNS service is detected when the server responds to a DNS query for an A resource record.
 You can customize the A record used in the query with the `lookup` configuration parameter.
 
-The detector can be simulated with the command line tool `host`:
+Use the command line tool `host` to simulate the detector:
 
 [source]
 ----
