@@ -35,6 +35,11 @@ import org.opennms.integration.api.v1.health.Context;
 import org.opennms.integration.api.v1.health.Status;
 import org.osgi.framework.BundleContext;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.opennms.core.health.api.HealthConstants.LOCAL;
+
 public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms.core.health.api.HealthCheck> {
 
     public HealthCheckManager(BundleContext bundleContext) {
@@ -60,6 +65,10 @@ public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms
                 return toResponse(response);
             }
         };
+    }
+
+    public List<String> getTags() {
+        return Arrays.asList(LOCAL);
     }
 
     private static org.opennms.core.health.api.Response toResponse(Response response) {

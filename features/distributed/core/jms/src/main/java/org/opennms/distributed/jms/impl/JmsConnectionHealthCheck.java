@@ -29,6 +29,7 @@
 package org.opennms.distributed.jms.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +45,8 @@ import org.opennms.core.health.api.Status;
 import org.opennms.core.health.api.HealthConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
+import static org.opennms.core.health.api.HealthConstants.BROKER;
 
 /**
  * Verifies that a connection to the configured ActiveMQ Broker can be established.
@@ -68,9 +71,7 @@ public class JmsConnectionHealthCheck implements HealthCheck {
 
     @Override
     public List<String> getTags() {
-        List<String> tags = new ArrayList<>();
-        tags.add(HealthConstants.BROKER);
-        return tags;
+        return Arrays.asList(BROKER);
     }
 
     @Override

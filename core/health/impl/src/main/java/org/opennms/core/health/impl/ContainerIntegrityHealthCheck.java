@@ -28,6 +28,8 @@
 
 package org.opennms.core.health.impl;
 
+import static org.opennms.core.health.api.HealthConstants.BUNDLE;
+import static org.opennms.core.health.api.HealthConstants.LOCAL;
 import static org.opennms.core.health.api.Status.Failure;
 import static org.opennms.core.health.api.Status.Starting;
 
@@ -87,9 +89,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
 
     @Override
     public List<String> getTags() {
-        List<String> tags = new ArrayList<>();
-        tags.add(HealthConstants.LOCAL);
-        return tags;
+        return Arrays.asList(LOCAL, BUNDLE);
     }
 
     @Override

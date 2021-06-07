@@ -36,7 +36,11 @@ import org.opennms.core.health.api.HealthConstants;
 import org.opennms.distributed.core.api.RestClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.opennms.core.health.api.HealthConstants.MINION;
+import static org.opennms.core.health.api.HealthConstants.REST;
 
 /**
  * Verifies the connection to the OpenNMS ReST API.
@@ -58,14 +62,12 @@ public class RestConnectionHealthCheck implements HealthCheck {
     }
 
     @Override
-    public String getDescription() {
-        return "Connecting to OpenNMS ReST API";
+    public List<String> getTags() {
+        return Arrays.asList(MINION, REST);
     }
 
     @Override
-    public List<String> getTags() {
-        List<String>  tags = new ArrayList<>();
-        tags.add(HealthConstants.OPENNMS_REST);
-        return tags;
+    public String getDescription() {
+        return "Connecting to OpenNMS ReST API";
     }
 }
