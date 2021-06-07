@@ -1,7 +1,7 @@
 === HostResourceSWRunDetector
 
 Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
-A given process matches against the numeric value of the _hrSwRunState_ to detect a process as _hrSwRunName_. 
+Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
 
 You must configure the SNMP protocol, and the SNMP agent must support HOST-RESOURCES-MIB.
 Most modern _SNMP agents_, e.g. _Net-SNMP agent_ and the _Microsoft SNMP service_, support the _HOST-RESOURCES-MIB_.
