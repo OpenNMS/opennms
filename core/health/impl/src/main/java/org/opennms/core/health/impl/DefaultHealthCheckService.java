@@ -41,7 +41,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.opennms.core.health.api.*;
+import org.opennms.core.health.api.HealthCheckService;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
