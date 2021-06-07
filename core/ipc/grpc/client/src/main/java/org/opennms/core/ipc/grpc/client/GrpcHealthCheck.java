@@ -28,7 +28,10 @@
 
 package org.opennms.core.ipc.grpc.client;
 
-import org.opennms.core.health.api.*;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 
 import io.grpc.ConnectivityState;
 

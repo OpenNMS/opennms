@@ -41,6 +41,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.Health;
+import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;

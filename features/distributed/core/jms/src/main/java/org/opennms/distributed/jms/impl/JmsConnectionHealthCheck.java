@@ -35,7 +35,10 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import org.opennms.core.health.api.*;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

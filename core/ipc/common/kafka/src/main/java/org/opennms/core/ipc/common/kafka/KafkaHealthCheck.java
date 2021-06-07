@@ -31,7 +31,10 @@ package org.opennms.core.ipc.common.kafka;
 
 import java.util.Properties;
 
-import org.opennms.core.health.api.*;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 
 
 public class KafkaHealthCheck implements HealthCheck {
