@@ -96,7 +96,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
             // Fail if no checks are available
             List<HealthCheck> checks = getHealthChecks();
             if (tag != null){
-                checks = checks.stream().filter(check -> check.getTags().equals(tag)).collect(Collectors.toList());
+                checks = checks.stream().filter(check -> check.getTags().contains(tag)).collect(Collectors.toList());
             }
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
