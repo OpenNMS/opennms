@@ -1,7 +1,7 @@
 .Install gnupg and add OpenNMS repository GPG key
 [source, console]
 ----
-sudo apt -y install gnupg
+sudo apt -y install gnupg ca-certificates
 sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
 ----
 
