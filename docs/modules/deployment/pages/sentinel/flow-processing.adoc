@@ -51,7 +51,7 @@ ssh -p 8301 admin@localhost
 .Configure access to persist flows to Elasticsearch
 [source, karaf]
 ----
-config:edit
+config:edit org.opennms.features.flows.persistence.elastic
 config:property-set elasticUrl http://elastic-ip:9200<1>
 config:property-set elasticIndexStrategy hourly<2>
 config:property-set settings.index.number_of_replicas 0<3>
