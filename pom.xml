@@ -1429,6 +1429,7 @@
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.8.2</log4j2Version>
+    <logbackClassicVersion>1.2.3</logbackClassicVersion>
     <mapstructVersion>1.2.0.CR1</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
     <minionKarafVersion>4.0.5</minionKarafVersion>
@@ -3992,6 +3993,11 @@
             <artifactId>jmxri</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logbackClassicVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.jsoup</groupId>
