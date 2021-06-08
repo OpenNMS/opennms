@@ -19,10 +19,12 @@ Note that there are different ways to contribute documentation, each suitable fo
 
 * Publish tutorials and how to's in our https://opennms.discourse.group/c/knowledgebase[knowledge base].
 For example, you want to describe how to use the Net-SNMP agent and the OpenNMS SNMP monitor to solve a special use case with OpenNMS. 
-This is a great way to help other OpenNMS community users who might have similar questions.
+This is a great way to help other OpenNMS users who might have similar questions.
 
 * Contribute formal technical documentation related to the source code on https://github.com/OpenNMS/opennms[GitHub]. 
-You must specify a reviewer for this content, at least one of whom must be on the technical writing team.  
+
+* Pick up "quickwin-docs" issues from our Jira documentation backlog.
+These are issues that should require only a short amount of time to address. 
 
 == Technical documentation tips 
 
