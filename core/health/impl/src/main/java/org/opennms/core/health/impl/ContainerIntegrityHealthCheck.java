@@ -28,8 +28,8 @@
 
 package org.opennms.core.health.impl;
 
-import static org.opennms.core.health.api.HealthConstants.BUNDLE;
-import static org.opennms.core.health.api.HealthConstants.LOCAL;
+import static org.opennms.core.health.api.HealthCheckConstants.BUNDLE;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 import static org.opennms.core.health.api.Status.Failure;
 import static org.opennms.core.health.api.Status.Starting;
 

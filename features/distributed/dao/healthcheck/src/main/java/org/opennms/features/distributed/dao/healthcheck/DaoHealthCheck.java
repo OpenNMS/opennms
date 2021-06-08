@@ -39,8 +39,8 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import static org.opennms.core.health.api.HealthConstants.DAO;
-import static org.opennms.core.health.api.HealthConstants.LOCAL;
+import static org.opennms.core.health.api.HealthCheckConstants.DAO;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 
 /**
  * Verifies that at least the NodeDao can be consumed as a OSGi service, otherwise

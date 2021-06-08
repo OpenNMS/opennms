@@ -37,7 +37,7 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 
-import static org.opennms.core.health.api.HealthConstants.ELASTIC;
+import static org.opennms.core.health.api.HealthCheckConstants.ELASTIC;
 
 /**
  * Verifies the basic functionality (+ connectivity to Elasticsearch) of

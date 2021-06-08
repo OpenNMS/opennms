@@ -45,7 +45,7 @@ import org.opennms.core.utils.InetAddressUtils;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 
-import static org.opennms.core.health.api.HealthConstants.LOCAL;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 
 public class NettyDnsHealthCheck implements HealthCheck {
 

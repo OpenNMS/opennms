@@ -52,4 +52,8 @@ public interface HealthCheckRestService {
     @Path("/local")
     @Produces(MediaType.APPLICATION_JSON)
     Response getLocalHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getHealthByTag(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 }

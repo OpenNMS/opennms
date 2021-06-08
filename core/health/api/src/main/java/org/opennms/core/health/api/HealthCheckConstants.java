@@ -28,7 +28,7 @@
 
 package org.opennms.core.health.api;
 
-public final class HealthConstants {
+public final class HealthCheckConstants {
     public static final String LOCAL = "local";
     public static final String REST = "rest";
     public static final String BROKER = "broker";
@@ -38,6 +38,6 @@ public final class HealthConstants {
     public static final String ELASTIC = "elastic";
     public static final String BUNDLE = "bundle";
 
-    private HealthConstants() {
+    private HealthCheckConstants() {
     }
 }

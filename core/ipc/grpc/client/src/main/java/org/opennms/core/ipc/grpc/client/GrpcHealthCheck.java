@@ -38,7 +38,7 @@ import io.grpc.ConnectivityState;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.opennms.core.health.api.HealthConstants.BROKER;
+import static org.opennms.core.health.api.HealthCheckConstants.BROKER;
 
 public class GrpcHealthCheck implements HealthCheck {
 

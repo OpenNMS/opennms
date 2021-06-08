@@ -38,7 +38,7 @@ import org.osgi.framework.BundleContext;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.opennms.core.health.api.HealthConstants.LOCAL;
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
 
 public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms.core.health.api.HealthCheck> {
 

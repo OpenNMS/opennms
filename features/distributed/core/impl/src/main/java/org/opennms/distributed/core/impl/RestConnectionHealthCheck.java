@@ -32,15 +32,13 @@ import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
-import org.opennms.core.health.api.HealthConstants;
 import org.opennms.distributed.core.api.RestClient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.opennms.core.health.api.HealthConstants.MINION;
-import static org.opennms.core.health.api.HealthConstants.REST;
+import static org.opennms.core.health.api.HealthCheckConstants.MINION;
+import static org.opennms.core.health.api.HealthCheckConstants.REST;
 
 /**
  * Verifies the connection to the OpenNMS ReST API.

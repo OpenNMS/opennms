@@ -38,7 +38,7 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 
-import static org.opennms.core.health.api.HealthConstants.BROKER;
+import static org.opennms.core.health.api.HealthCheckConstants.BROKER;
 
 
 public class KafkaHealthCheck implements HealthCheck {

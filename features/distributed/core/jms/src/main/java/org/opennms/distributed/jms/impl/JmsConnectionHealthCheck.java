@@ -28,7 +28,6 @@
 
 package org.opennms.distributed.jms.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -42,11 +41,10 @@ import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
-import org.opennms.core.health.api.HealthConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import static org.opennms.core.health.api.HealthConstants.BROKER;
+import static org.opennms.core.health.api.HealthCheckConstants.BROKER;
 
 /**
  * Verifies that a connection to the configured ActiveMQ Broker can be established.
