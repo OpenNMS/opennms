@@ -49,10 +49,13 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
@@ -70,6 +73,8 @@ public class TcpListener implements Listener {
     private EventLoopGroup workerGroup;
 
     private ChannelFuture socketFuture;
+
+    private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public TcpListener(final String name,
                        final TcpParser parser,
@@ -153,6 +158,18 @@ public class TcpListener implements Listener {
                                     }
                                 });
                     }
+
+                    @Override
+                    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.add(ctx.channel());
+                        super.channelActive(ctx);
+                    }
+
+                    @Override
+                    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+                        TcpListener.this.channels.remove(ctx.channel());
+                        super.channelInactive(ctx);
+                    }
                 })
                 .bind(address)
                 .sync();
@@ -164,6 +181,10 @@ public class TcpListener implements Listener {
             this.socketFuture.channel().close().sync();
         }
 
+        LOG.info("Disconnecting clients...");
+        this.channels.close().awaitUninterruptibly();
+
+        LOG.info("Stopping parser...");
         if (this.parser != null) {
             this.parser.stop();
         }
