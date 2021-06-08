@@ -29,6 +29,7 @@
 package org.opennms.core.health.rest.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +43,6 @@ import org.json.JSONObject;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
-import org.opennms.core.health.api.HealthCheckConstants;
 import org.opennms.core.health.rest.HealthCheckRestService;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
@@ -72,18 +72,8 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    @Override
-    public Response getHealth(int timeoutInMs) {
-        return getHealth(timeoutInMs, null);
-    }
-
-    @Override
-    public Response getHealthByTag(int timeoutInMs, String tag) {
-        return getHealth(timeoutInMs, tag);
-    }
-
-    private Response getHealth(int timeoutInMs, String tag){
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tag);
+    public Response getHealth(int timeoutInMs, List<String> tags){
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tags);
         final Health health = healthWrapper.health;
 
         // Create response object
@@ -107,7 +97,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs, String tag){
+    private HealthWrapper getHealthInternally(int timeoutInMs, List<String> tags){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
@@ -117,7 +107,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get()), tag); // apply description
+                    response -> healthWrapper.descriptionMap.put(response, reference.get()), tags); // apply description
             healthWrapper.health = future.get();
             return healthWrapper;
         } catch (InterruptedException | ExecutionException e) {
