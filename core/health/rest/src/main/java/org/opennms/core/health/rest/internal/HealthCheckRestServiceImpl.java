@@ -77,6 +77,11 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         return getHealth(timeoutInMs, null);
     }
 
+    @Override
+    public Response getHealthByTag(int timeoutInMs, String tag) {
+        return getHealth(timeoutInMs, tag);
+    }
+
     private Response getHealth(int timeoutInMs, String tag){
         final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tag);
         final Health health = healthWrapper.health;
@@ -100,11 +105,6 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .header("Health", health.isSuccess() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
                 .entity(jsonHealth.toString())
                 .build();
-    }
-
-    @Override
-    public Response getLocalHealth(int timeoutInMs) {
-        return getHealth(timeoutInMs, HealthCheckConstants.LOCAL);
     }
 
     private HealthWrapper getHealthInternally(int timeoutInMs, String tag){

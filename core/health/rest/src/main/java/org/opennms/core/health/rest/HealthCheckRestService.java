@@ -28,11 +28,7 @@
 
 package org.opennms.core.health.rest;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 
@@ -49,11 +45,7 @@ public interface HealthCheckRestService {
     Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
 
     @GET
-    @Path("/local")
+    @Path("/tags/{tag}")
     @Produces(MediaType.APPLICATION_JSON)
-    Response getLocalHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    Response getHealthByTag(@QueryParam("t") @DefaultValue("5000") int timeoutInMs);
+    Response getHealthByTag(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @PathParam("tag") String tag);
 }
