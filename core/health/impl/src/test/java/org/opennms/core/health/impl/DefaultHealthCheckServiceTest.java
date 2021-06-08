@@ -30,6 +30,7 @@ package org.opennms.core.health.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -60,6 +61,11 @@ public class DefaultHealthCheckServiceTest {
         @Override
         public String getDescription() {
             return getClass().getSimpleName();
+        }
+
+        @Override
+        public List<String> getTags() {
+            return new ArrayList<>();
         }
 
         @Override

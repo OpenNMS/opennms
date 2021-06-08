@@ -55,6 +55,11 @@ public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms
             }
 
             @Override
+            public List<String> getTags() {
+                return Arrays.asList(LOCAL);
+            }
+
+            @Override
             public org.opennms.core.health.api.Response perform(org.opennms.core.health.api.Context context) throws Exception {
                 final org.opennms.integration.api.v1.health.Response response = healthCheck.perform(new Context() {
                     @Override
@@ -65,10 +70,6 @@ public class HealthCheckManager extends InterfaceMapper<HealthCheck, org.opennms
                 return toResponse(response);
             }
         };
-    }
-
-    public List<String> getTags() {
-        return Arrays.asList(LOCAL);
     }
 
     private static org.opennms.core.health.api.Response toResponse(Response response) {

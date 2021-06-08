@@ -53,9 +53,7 @@ public interface HealthCheck {
      *
      * @return The HealthTag type, describing category of the health-check.
      */
-    default List<String> getTags(){
-        return new ArrayList<>();
-    }
+    List<String> getTags();
 
     /**
      * Implements the check itself, e.g. Connecting to a HTTP Endpoint.
