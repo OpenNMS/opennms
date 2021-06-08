@@ -57,28 +57,28 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header, autowidth"]
 |===
 | Parameter                  | Description                                                                                | Required | Default
-| `name`                     | The name of the page sequence.                                                             | optional | `-`
-| `method`                   | _HTTP_ method. For example, _GET_ or _POST_.                                               | optional | `GET`
-| `http-version`             | _HTTP_ protocol version number, 0.9, 1.0 or 1.1.                                           | optional | `HTTP/1.1`
-| `user-agent`               | Set the _user agent_ field in _HTTP_ header to identify the OpenNMS monitor                | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
-| `virtual-host`             | Set the _virtual host_ field in _HTTP_ header.
-                               In case of an HTTPS request, this is also the virtual domain to send as part of the _TLS_
-                               negotiation, known as server name indication (_SNI_).
-                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1.)                      | optional | `-`
+| `name`                     | The name of the page-sequence.                                                             | optional | `-`
+| `method`                   | HTTP method (_GET_ or _POST_)                                                              | optional | `-`
+| `http-version`             | HTTP protocol version (0.9, 1.0 or 1.1)                                                    | optional | `HTTP/1.1`
+| `user-agent`               | Set the _user agent_ field in HTTP header to identify the OpenNMS monitor.                 | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
+| `virtual-host`             | Set the _virtual host_ field in HTTP header.
+                               In case of an HTTPS request, this is also the virtual domain to send as part of the TLS
+                               negotiation, known as server name indication (_SNI_)
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1.)                     | optional | `-`
 | `path`                     | The relative URL to call in the request. Any query string content after a `?` should be part of the `query` parameter.   | required | `-`
-| `scheme`                   | Define the _URL_ scheme as `http` or `https`.                                              | optional | `http`
-| `user-info`                | Set _user info_ field in the _HTTP_ header. Colon-separated credentials such as `USERNAME:PASSWORD`.                     | optional | `-`
-| `host`                     | Set _host_ field in _HTTP_ header.                                                         | optional | `IP interface address of the service`
-| `requireIPv6`              | Communication requires a connection to an _IPv6_ address. (`true` or `false`)              | optional | `-`
-| `requireIPv4`              | Communication requires a connection to an _IPv4_ address. (`true` or `false`)              | optional | `-`
-| `disable-ssl-verification` | Enable or disable _SSL_ certificate verification for _HTTPS_ tests.
+| `scheme`                   | Define the URL scheme as `http` or `https`.                                                | optional | `http`
+| `user-info`                | Set _user info_ field in the HTTP header. Colon-separated credentials such as `USERNAME:PASSWORD`.                     | optional | `-`
+| `host`                     | Set _host_ field in HTTP header.                                                           | optional | `IP interface address of the service`
+| `requireIPv6`              | Communication requires a connection to an IPv6 address. (`true` or `false`)                | optional | `-`
+| `requireIPv4`              | Communication requires a connection to an IPv4 address. (`true` or `false`)                | optional | `-`
+| `disable-ssl-verification` | Enable or disable SSL certificate verification for HTTPS tests.
                                Please use this option carefully, for self-signed certificates import the CA certificate
                                in the JVM and don't just disable it.                                                      | optional | `false`
 | `port`                     | Host port number to use when connecting.                                                   | optional | `80`
 | `query`                    | Value to concatenate with a `?` after the _path_ parameter.                                | optional | `-`
 | `failureMatch`             | Text to look for in the response body.
                                This is a _Regular Expression_ matched against every line, and it will be considered a
-                               failure at the first match, and sets the service with this monitor _Down_.                 | optional | `-`
+                               failure at the first match and sets the service with this monitor _Down_.                  | optional | `-`
 | `failureMessage`           | The failure message is used to construct the reason code.
                                `${\n}` values may be used to pull information from matching groups in the `failureMatch`
                                regular expression.                                                                        | optional | `-`
@@ -89,7 +89,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | `response-range`           | Range for allowed HTTP error codes from the response.                                      | optional | `-`
 | `session-variable`         | Assign the value of a regex match group to a session variable with a user-defined name.
                                The match group is identified by number and must be zero or greater.                       | optional | `-`
-| `response-range`           | A comma-separated list of acceptable _HTTP_ response code ranges (`200-202,299`).          | optional | `100-399`
+| `response-range`           | A comma-separated list of acceptable HTTP response code ranges (`200-202,299`).            | optional | `100-399`
 |===
 
 TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
@@ -98,7 +98,7 @@ TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connect
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `$\{nodelabel}` | Nodelabel of the node the monitor is associated to.
+| `$\{nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
 == Session variables
@@ -111,15 +111,15 @@ The captured values can then be assigned to variable names by using the session-
 
 It is possible to collect response times for individual pages in a sequence.
 To use this functionality, a `ds-name` attribute must be added to each page whose load time should be tracked.
-The response time for each page will be stored in the same _RRD_ file specified for the service via the `rrd-base-name` parameter under the specified datasource name.
+The response time for each page will be stored in the same RRD file specified for the service via the `rrd-base-name` parameter under the specified datasource name.
 
-WARNING: You will need to delete existing _RRD_ files and let them be recreated with the new list of datasources when you add a `ds-name` attribute to a page in a sequence that is already storing response time data.
+WARNING: You will need to delete existing RRD files and let them be recreated with the new list of datasources when you add a `ds-name` attribute to a page in a sequence that is already storing response time data.
 
 == Examples
 
 The following example shows how to monitor the _OpenNMS_ web application using several mechanisms.
 It first does an _HTTP GET_ of `$\{ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
-Next, a login is attempted using _HTTP POST_ to the relative _URL_ for submitting form data (usually, the _URL_ which the form action points to).
+Next, a login is attempted using _HTTP POST_ to the relative URL for submitting form data (usually, the URL which the form action points to).
 The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to be submitted.
 Furthermore a custom header (`foo`) is set for demonstration purposes.
 After getting the resulting page, first the expression specified in the page's `failureMatch` attribute is verified, which when found anywhere on the page indicates that the page has failed.
@@ -130,7 +130,7 @@ In the example, the monitor navigates to the Event page, to ensure that the text
 Finally, the monitor calls the URL of the logout page to close the session.
 By using the `locationMatch` parameter, it is verified that the logout was successful and a redirect was triggered.
 
-NOTE: Each page is checked to ensure its _HTTP_ response code fits into the `response-range`, before the `failureMatch`, `successMatch`, and `locationMatch` expressions are evaluated.
+NOTE: Each page is checked to ensure its HTTP response code fits into the `response-range`, before the `failureMatch`, `successMatch`, and `locationMatch` expressions are evaluated.
 
 .Configuration to test the login to the OpenNMS Web application
 [source, xml]

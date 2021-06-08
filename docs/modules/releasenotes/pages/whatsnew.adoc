@@ -1,22 +1,51 @@
 [[releasenotes-28]]
 
-== What's New in OpenNMS Horizon 28
+= What's New in OpenNMS Horizon 28
 
-=== System Requirements
+== System Requirements
 
-* *Java 8 through 11*: OpenNMS Horizon 28 runs on JDK 8 through 11.
-  We recommend the most recent version of OpenJDK 11.
+* *Java 11*: OpenNMS Horizon 28 runs on JDK 11.
 * *PostgreSQL 10 or higher*: Horizon 28 requires any supported version of PostgreSQL from 10 up to (and including) 13.
 
-=== Breaking Changes
+== Breaking Changes
 
-==== Kafka RPC Enables single topic configuration by default.
+=== Kafka RPC Single Topic
 
-Enables single topic by default for Kafka RPC which would reduce number of topics on Kafka.
-Both Minion and OpenNMS need to be updated to OpenNMS Horizon 28.
-Make sure that Kafka Lag on Sink topics be minimal before upgrading otherwise there may be loss of those sink messages.
+This release changes the Kafka RPC default configuration to publish on a single target.  If you are using Minions, both the Minion _and_ OpenNMS need to be updated to OpenNMS Horizon 28.
 
-==== Situation Feedback Persistence Configuration
+Make sure that Kafka lag on Sink topics is minimal before upgrading, or there may be loss of those sink messages.
 
-The configuration file `etc/org.opennms.features.situation-feedback.persistence.elastic.cfg` is renamed to `etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`, i.e. the minus sign is removed from the filename.
+=== Situation Feedback Persistence Configuration
 
+The configuration file `etc/org.opennms.features.situation-feedback.persistence.elastic.cfg` has been renamed to `etc/org.opennms.features.situationfeedback.persistence.elastic.cfg` (i.e. the minus sign is removed from the filename).
+This fixes a race condition on startup when using ALEC.
+
+== New Features and Improvements
+
+=== New Look
+
+Horizon 28 has been updated to use the new OpenNMS branding, with a refreshed logo and fonts.
+
+=== Nephron Improvements
+
+If you are using Nephron for flow processing, a huge number of performance improvements have been made.
+Additionally, flow aggregation now supports DSCP ToS/QoS fields.
+
+=== New Documentation
+
+The documentation has been completely revamped and contains numerous cleanups, and improvements, in addition to the new layout and integration at https://docs.opennms.com/[docs.opennms.com].
+
+=== ReST API Improvements
+
+* Initial support for enumerating ReST API endpoints has been added, using Swagger. A link is available in the "help" section of the web UI.
+* Elastic flow queries return additional data for DSCP QoS/ToS data.
+
+=== The Minion
+
+* The Minion confd file has been updated with a bunch of documentation describing various options.
+* Support has been added for exporting a number of JMX metrics through Prometheus for out-of-band monitoring of the Minion.
+* The Minion now has support for querying its health through ReST.
+
+== Important Internal Changes
+
+* Our embedded Karaf has been updated to version 4.2.11

@@ -17,6 +17,9 @@ endif::[]
 [[requirements-core]]
 == Requirements
 
+ifeval::["{page-component-title}" == "Meridian"]
+* Credentials to access the Meridian repositories
+endif::[]
 * Linux physical server or a virtual machine running a supported xref:deployment:core/system-requirements.adoc#operating-systems-core[Linux operating system]
 * Internet access to download the installation packages
 * DNS works and localhost and your server's host name resolve properly
