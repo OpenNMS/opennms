@@ -154,6 +154,12 @@ function doDelete() {
 }
 </script>
 
+<script type="text/javascript" >
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
 </sec:authorize>
 	
       <h4>${service.serviceName} service on ${service.ipAddress.hostAddress}</h4>
@@ -345,7 +351,7 @@ function doDelete() {
 
                                       if (result.parts.size() == 1) {
                                           %>
-                                          <td><%=WebSecurityUtils.sanitizeString(result.output)%><span style="float:right"><samp>match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'</samp></span></td>
+                                            <td><div data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'"><%=WebSecurityUtils.sanitizeString(result.output)%></div></td>
                                           <%
                                       } else {
                                           %>
@@ -364,7 +370,7 @@ function doDelete() {
                                                     <td class="severity-Cleared nobright spacer"></td>
                                                     <td><%=WebSecurityUtils.sanitizeString(entry.getKey())%> #<%=counter++%></td>
                                                     <td><%=WebSecurityUtils.sanitizeString(part.input)%></td>
-                                                    <td><%=WebSecurityUtils.sanitizeString(part.value.value)%><span style="float:right"><samp>match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'</samp></span></td>
+                                                    <td><div data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'"><%=WebSecurityUtils.sanitizeString(part.value.value)%></div></td>
                                             <%
                                           }
                                       }
