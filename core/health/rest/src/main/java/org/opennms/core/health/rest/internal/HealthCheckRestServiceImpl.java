@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,7 +73,9 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    public Response getHealth(int timeoutInMs, List<String> tags){
+    @Override
+    public Response getHealth(int timeoutInMs, UriInfo uriInfo){
+        List<String> tags = uriInfo.getQueryParameters().get("tag");
         final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tags);
         final Health health = healthWrapper.health;
 
