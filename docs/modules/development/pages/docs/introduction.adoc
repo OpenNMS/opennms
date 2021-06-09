@@ -37,8 +37,8 @@ A good way to structure your contribution is as follows:
 If this is a new feature, include why it is important to users (for example, “This feature lets users validate and tune their business service hierarchies until they achieve the desired status propagation.”) 
 * Steps to complete the procedure, or technical content such as parameters, configuration, and examples 
 
-Minimize the use of images. 
-Include images only to illustrate a concept that may be difficult to understand or something that is not easy to locate in the UI.  
+Minimize the use of screenshots. 
+Include them only to illustrate a concept that may be difficult to understand or something that is not easy to locate in the UI.  
 
 [[gd-docs-file-structure]]
 == File structure in the opennms repository 
