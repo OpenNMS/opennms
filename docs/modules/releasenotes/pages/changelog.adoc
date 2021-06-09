@@ -3,14 +3,14 @@
 
 [[releasenotes-changelog-28.0.0]]
 
-==== Release 28.0.0
+== Release 28.0.0
 
 Release 28.0.0 is the first in the Horizon 28 series, introducing a requirement of Java 11,
 enhancements to flow aggregation to support DSCP ToS/QoS, and more.
 
 The codename for Horizon 28.0.0 is $$https://en.wikipedia.org/wiki/Jazz_(Transformers)$$[_Jazz_].
 
-===== Bug
+=== Bug
 
 * Quick Search Typing anything but numbers in the Node list gets 404 (Issue http://issues.opennms.org/browse/NMS-8012[NMS-8012])
 * "Search/Filter Resources" on "Resource Graphs" not functioning as expected (Issue http://issues.opennms.org/browse/NMS-11752[NMS-11752])
@@ -38,7 +38,7 @@ The codename for Horizon 28.0.0 is $$https://en.wikipedia.org/wiki/Jazz_(Transfo
 * CLONE - DOC Branding: Icon in tab is still the old one (Issue http://issues.opennms.org/browse/NMS-13329[NMS-13329])
 * Enumeration of DSCP values returns only 10 values (Issue http://issues.opennms.org/browse/NMS-13333[NMS-13333])
 
-===== Enhancement
+=== Enhancement
 
 * Migrate OpenNMS core docs to Antora (Issue http://issues.opennms.org/browse/NMS-12497[NMS-12497])
 * Overview chapter (Issue http://issues.opennms.org/browse/NMS-12670[NMS-12670])
