@@ -39,6 +39,13 @@ paths:
             type: integer
             format: int32
             default: 5000
+        - name: tag
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              default: ''
       responses:
         default:
           description: default response
