@@ -299,6 +299,10 @@ OpenNMS lets you create a report for any Grafana dashboard, not just those creat
 
 You must set up Grafana as a datasource by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}.
 
+If you are using the Docker image for Grafana, you must complete additional configuration.
+Refer to Grafana's https://grafana.com/docs/grafana/latest/administration/image_rendering/#remote-rendering-service[Remote rendering service documentation] for more information on how to set up remote rendering. 
+Additional details are available on https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md[GitHub].
+
 [[grafana-endpoint]]
 === Configure the Grafana Endpoint
 
