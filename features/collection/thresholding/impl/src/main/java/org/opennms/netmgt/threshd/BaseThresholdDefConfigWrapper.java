@@ -277,7 +277,7 @@ public abstract class BaseThresholdDefConfigWrapper {
 
     private Optional<Double> interpolateDoubleValue(String value, Scope scope) {
         if (Interpolator.containsMateData(value)) {
-            String interpolatedValue = Interpolator.interpolate(value, scope);
+            String interpolatedValue = Interpolator.interpolate(value, scope).output;
             return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
         }
         return Optional.empty();
@@ -285,7 +285,7 @@ public abstract class BaseThresholdDefConfigWrapper {
 
     private Optional<Integer> interpolateIntegerValue(String value, Scope scope) {
         if (Interpolator.containsMateData(value)) {
-            String interpolatedValue = Interpolator.interpolate(value, scope);
+            String interpolatedValue = Interpolator.interpolate(value, scope).output;
             return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
         }
         return Optional.empty();

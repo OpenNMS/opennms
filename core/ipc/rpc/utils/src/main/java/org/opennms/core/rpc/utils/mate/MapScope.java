@@ -35,15 +35,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MapScope implements Scope {
+    private final ScopeName scopeName;
     private final Map<ContextKey, String> values;
 
-    public MapScope(final Map<ContextKey, String> values) {
+    public MapScope(final ScopeName scopeName, final Map<ContextKey, String> values) {
+        this.scopeName = Objects.requireNonNull(scopeName);
         this.values = Objects.requireNonNull(values);
     }
 
     @Override
-    public Optional<String> get(final ContextKey contextKey) {
-        return Optional.ofNullable(this.values.get(contextKey));
+    public Optional<ScopeValue> get(final ContextKey contextKey) {
+        return Optional.ofNullable(this.values.get(contextKey))
+                .map(value -> new ScopeValue(this.scopeName, value));
     }
 
     @Override
@@ -51,9 +54,9 @@ public class MapScope implements Scope {
         return this.values.keySet();
     }
 
-    public static MapScope singleContext(final String context, final Map<String, String> values) {
+    public static MapScope singleContext(final ScopeName scopeName, final String context, final Map<String, String> values) {
         return new MapScope(
-                values.entrySet().stream()
+                scopeName, values.entrySet().stream()
                 .collect(Collectors.toMap(
                         e -> new ContextKey(context, e.getKey()),
                         e -> e.getValue())

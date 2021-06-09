@@ -92,9 +92,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             }
 
             List<Scope> scopes = new ArrayList<>();
-            scopes.add(transform(node.getMetaData()));
+            scopes.add(transform(Scope.ScopeName.NODE, node.getMetaData()));
 
-            Scope nodeScope = new ObjectScope<>(node)
+            Scope nodeScope = new ObjectScope<>(Scope.ScopeName.NODE, node)
                     .map(NODE, "criteria", this::getNodeCriteria)
                     .map(NODE, "label", (n) -> Optional.ofNullable(n.getLabel()))
                     .map(NODE, "foreign-source", (n) -> Optional.ofNullable(n.getForeignSource()))
@@ -113,7 +113,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             scopes.add(nodeScope);
 
             if (node.getAssetRecord() != null) {
-                Scope assetScope = new ObjectScope<>(node.getAssetRecord())
+                Scope assetScope = new ObjectScope<>(Scope.ScopeName.NODE, node.getAssetRecord())
                         .map(ASSET, "category", (a) -> Optional.ofNullable(a.getCategory()))
                         .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
                         .map(ASSET, "manufacturer", (a) -> Optional.ofNullable(a.getManufacturer()))
@@ -238,7 +238,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                 return EmptyScope.EMPTY;
             }
 
-            return new FallbackScope(transform(ipInterface.getMetaData()),
+            return new FallbackScope(transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()),
                     mapIpInterfaceKeys(ipInterface)
                             .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
                             .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
@@ -248,7 +248,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     }
 
     private static ObjectScope<OnmsIpInterface> mapIpInterfaceKeys(OnmsIpInterface ipInterface) {
-        return new ObjectScope<>(ipInterface)
+        return new ObjectScope<>(Scope.ScopeName.INTERFACE, ipInterface)
                 .map(INTERFACE, "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
                 .map(INTERFACE, "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
                 .map(INTERFACE, "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
@@ -270,7 +270,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             ArrayList<Scope> scopes = new ArrayList<>();
 
             // SNMP interface facts
-            scopes.add(new ObjectScope<>(snmpInterface)
+            scopes.add(new ObjectScope<>(Scope.ScopeName.INTERFACE, snmpInterface)
                     .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
                     .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
                     .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
@@ -278,7 +278,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             // IP interface facts w/ meta-data extracted from IP interface
             Optional.ofNullable(snmpInterface.getPrimaryIpInterface())
                     .ifPresent(ipInterface -> {
-                        scopes.add(transform(ipInterface.getMetaData()));
+                        scopes.add(transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()));
                         scopes.add(mapIpInterfaceKeys(ipInterface));
                     });
 
@@ -298,17 +298,17 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                 return EmptyScope.EMPTY;
             }
 
-            return new FallbackScope(transform(monitoredService.getMetaData()),
-                    new ObjectScope<>(monitoredService)
+            return new FallbackScope(transform(Scope.ScopeName.SERVICE, monitoredService.getMetaData()),
+                    new ObjectScope<>(Scope.ScopeName.SERVICE, monitoredService)
                             .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName()))
             );
         });
     }
 
-    private static MapScope transform(final Collection<OnmsMetaData> metaData) {
+    private static MapScope transform(final Scope.ScopeName scopeName, final Collection<OnmsMetaData> metaData) {
         final Map<ContextKey, String> map = metaData.stream()
                 .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), OnmsMetaData::getValue));
-        return new MapScope(map);
+        return new MapScope(scopeName, map);
     }
 
     public void setNodeDao(NodeDao nodeDao) {
