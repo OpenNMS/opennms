@@ -40,6 +40,7 @@ import org.opennms.core.rpc.utils.MetadataConstants;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.MapScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -140,7 +141,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             this.client.getEntityScopeProvider().getScopeForNode(service.getNodeId()),
             this.client.getEntityScopeProvider().getScopeForInterface(service.getNodeId(), service.getIpAddr()),
             this.client.getEntityScopeProvider().getScopeForService(service.getNodeId(), service.getAddress(), service.getSvcName()),
-            MapScope.singleContext("pattern", this.patternVariables)
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", this.patternVariables)
         ));
 
         final RpcTarget target = client.getRpcTargetHelper().target()

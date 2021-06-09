@@ -1338,7 +1338,7 @@
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
-    <bouncyCastleVersion>1.66</bouncyCastleVersion>
+    <bouncyCastleVersion>1.68</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1403,13 +1403,13 @@
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
-    <jcifsVersion>2.1.4</jcifsVersion>
+    <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jettyVersion>9.4.38.v20210224</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
-    <jinteropVersion>3.0.0</jinteropVersion>
+    <jinteropVersion>3.1.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
