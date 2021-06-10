@@ -766,7 +766,7 @@ jobs:
       - run:
           name: Install Docker buildx
           command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
