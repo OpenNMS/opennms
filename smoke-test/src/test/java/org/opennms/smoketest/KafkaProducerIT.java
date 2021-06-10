@@ -99,17 +99,8 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         event.setParmCollection(parms);
         stack.opennms().getRestClient().sendEvent(event);
 
-        // Grab the output from the
-        String shellOutput;
-        try (final SshClient sshClient = stack.opennms().ssh()) {
-            PrintStream pipe = sshClient.openShell();
-            pipe.println("kafka-producer:list-alarms");
-            pipe.println("logout");
-            await().atMost(60, SECONDS).until(sshClient.isShellClosedCallable());
-            shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-            shellOutput = StringUtils.substringAfter(shellOutput, "kafka-producer:list-alarms");
-        }
-        return shellOutput;
+        String shellOutput = runCommandAndLogout(stack, "kafka-producer:list-alarms");
+        return StringUtils.substringAfter(shellOutput, "kafka-producer:list-alarms");
     }
 
     @Test
@@ -138,14 +129,20 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         kafkaConsumer.stop();
     }
 
-    protected  String persistCollectionData(OpenNMSStack stack, String nodeId) throws Exception {
+    protected String persistCollectionData(OpenNMSStack stack, String nodeId) throws Exception {
+        return runCommandAndLogout(stack, "collection:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
+    }
+
+    /**
+     * log out and return the contents of the SSH output
+     */
+    protected String runCommandAndLogout(final OpenNMSStack stack, final String command) throws Exception {
         String shellOutput;
         try (final SshClient sshClient = stack.opennms().ssh()) {
             PrintStream pipe = sshClient.openShell();
-            //collection:collect --node #nodeId --persist org.opennms.netmgt.collectd.SnmpCollector #host
-            pipe.println("collection:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
+            pipe.println(command);
             pipe.println("logout");
-            await().atMost(60, SECONDS).until(sshClient.isShellClosedCallable());
+            await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
         }
         return shellOutput;
