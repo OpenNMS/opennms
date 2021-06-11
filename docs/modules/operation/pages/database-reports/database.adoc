@@ -278,7 +278,8 @@ WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`
  * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.
 
-== Creating PDF Reports from Grafana Dashboards Using {page-component-title}
+[[pdf-report]]
+== Create PDF Reports from Grafana Dashboards Using {page-component-title}
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
 You can also schedule and email these PDF reports to anyone:

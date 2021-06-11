@@ -15,7 +15,7 @@ ssh -p 8201 admin@localhost
 .Configuring Off-heap Storage 
 [source, karaf]
 ----
-config:org.opennms.core.ipc.sink.offheap<1>
+config:edit org.opennms.core.ipc.sink.offheap<1>
 config:property-set offHeapSize 1GB<2>
 config:property-set entriesAllowedOnHeap 100000<3>
 config:property-set offHeapFilePath /opt/minion/data <4>
