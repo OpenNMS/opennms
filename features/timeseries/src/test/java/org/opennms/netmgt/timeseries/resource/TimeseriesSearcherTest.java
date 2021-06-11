@@ -38,11 +38,10 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.cache.CacheConfig;
@@ -54,29 +53,31 @@ import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
-import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 
 public class TimeseriesSearcherTest {
 
     TimeSeriesStorage storage = spy(new InMemoryStorage());
     TimeseriesSearcher searcher;
 
-    @Test
-    public void shouldFindAllMetrics() throws StorageException {
+    @Before
+    public void setUp() {
         TimeseriesStorageManager storageManager = Mockito.mock(TimeseriesStorageManager.class);
         TimeSeriesMetaDataDao metaDataDao = Mockito.mock(TimeSeriesMetaDataDao.class);
         when(storageManager.get()).thenReturn(storage);
         CacheConfig cacheConfig = new CacheConfigBuilder().withName(TimeseriesSearcherTest.class.getSimpleName()).build();
         searcher = new TimeseriesSearcher(storageManager, metaDataDao, cacheConfig);
+    }
 
-        Metric abc = createAndAddMetric("a/b", "c");
-        Metric abcd1 = createAndAddMetric("a/b/c", "d1");
-        Metric abcd1e = createAndAddMetric("a/b/c/d1", "e");
-        Metric abcd2 = createAndAddMetric("a/b/c", "d2");
+    @Test
+    public void shouldFindAllMetrics() throws StorageException {
+
+        Metric abc = createAndAddMetric("a:b", "c");
+        Metric abcd1 = createAndAddMetric("a:b:c", "d1");
+        Metric abcd1e = createAndAddMetric("a:b:c:d1", "e");
+        Metric abcd2 = createAndAddMetric("a:b:c", "d2");
         test("a",  abc);
         test("a",  abc); // test cache: we should not have another invocation
         verify(storage, times(1)).findMetrics(any());
@@ -95,17 +96,10 @@ public class TimeseriesSearcherTest {
         assertEquals(expectedMetricsSet, foundMetrics);
     }
 
-    private Metric createAndAddMetric(final String path, final String name) throws StorageException {
+    private Metric createAndAddMetric(final String resourceId, final String name) throws StorageException {
         ImmutableMetric.MetricBuilder metricBuilder = ImmutableMetric.builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, path)
+                .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                 .intrinsicTag(IntrinsicTagNames.name, name);
-
-        // add index tags
-        Map<String, String> attributes = new HashMap<>();
-        TimeseriesUtils.addIndicesToAttributes(ResourcePath.fromString(path), attributes);
-        attributes.entrySet().stream()
-                .map(e -> new ImmutableTag(e.getKey(), e.getValue()))
-                .forEach(metricBuilder::metaTag);
         Metric metric = metricBuilder.build();
 
         storage.store(Collections.singletonList(ImmutableSample.builder().metric(metric).time(Instant.now()).value(3.0).build()));

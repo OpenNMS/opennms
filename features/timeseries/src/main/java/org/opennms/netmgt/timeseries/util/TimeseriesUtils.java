@@ -38,7 +38,6 @@ import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao;
 import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
@@ -52,32 +51,8 @@ public final class TimeseriesUtils {
 
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
-    public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "w";
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
-
-    /**
-     * Extends the attribute map with indices used by the {@link TimeseriesResourceStorageDao}.
-     *
-     * A resource path of the form [a, b, c, d] will be indexed with:
-     * <ul>
-     * <li> _idx1: (a, 4)
-     * <li> _idx2: (a:b, 4)
-     * <li> _idx2w=(a:b,*) // wildcard index to query for all resources under that resource
-     * <li> _idx3: (a:b:c, 4)
-     */
-    public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
-        final List<String> elements = Arrays.asList(path.elements());
-        final int n = elements.size();
-        for (int i = 0; i < n; i++) {
-            final String id = s_splitter.joinElementsToId(elements.subList(0, i+1));
-            attributes.put("_idx" + i, String.format("(%s,%d)", id, n));
-        }
-        if(elements.size() >= WILDCARD_INDEX_NO) {
-            final String id = s_splitter.joinElementsToId(elements.subList(0, WILDCARD_INDEX_NO));
-            attributes.put(String.format("_idx%sw", WILDCARD_INDEX_NO), String.format("(%s,*)", id));
-        }
-    }
 
     /**
      * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a Newts resource id.
