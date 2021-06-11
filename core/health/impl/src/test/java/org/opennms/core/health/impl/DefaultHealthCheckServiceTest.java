@@ -31,6 +31,7 @@ package org.opennms.core.health.impl;
 import static org.hamcrest.CoreMatchers.is;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -42,12 +43,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.Health;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
@@ -79,6 +75,23 @@ public class DefaultHealthCheckServiceTest {
                 }
                 spent += System.currentTimeMillis() - start;
             }
+            return new Response(Status.Success, "\\o/");
+        }
+    }
+
+    private static class TagsHealthCheck implements HealthCheck {
+        @Override
+        public String getDescription() {
+            return getClass().getSimpleName();
+        }
+
+        @Override
+        public List<String> getTags() {
+            return Arrays.asList(HealthCheckConstants.BUNDLE, HealthCheckConstants.BROKER);
+        }
+
+        @Override
+        public Response perform(Context context) {
             return new Response(Status.Success, "\\o/");
         }
     }
@@ -116,4 +129,38 @@ public class DefaultHealthCheckServiceTest {
         }
     }
 
+    @Test
+    public void filterChecksWithTagsTest(){
+        DefaultHealthCheckService healthCheckService = new DefaultHealthCheckService(EasyMock.createNiceMock(BundleContext.class));
+
+        //both checks and tags are null
+        List<HealthCheck> checks = null;
+        List<String> tags = null;
+        Assert.assertNull(healthCheckService.filterChecksWithTags(checks, tags));
+
+        //checks null, tags non-null
+        tags = new ArrayList<>();
+        tags.add(HealthCheckConstants.BUNDLE);
+        Assert.assertNull(healthCheckService.filterChecksWithTags(checks, tags));
+
+        //tags null. checks non-null
+        checks = new ArrayList<>();
+        checks.add(new BlockingHealthCheck());
+        tags = null;
+        Assert.assertEquals(1, healthCheckService.filterChecksWithTags(checks, tags).size());
+
+        //both checks and tags are non-null. Test filter.
+        checks.add(new TagsHealthCheck());
+        tags = new ArrayList<>();
+        tags.add(HealthCheckConstants.BUNDLE);
+        Assert.assertEquals(1, healthCheckService.filterChecksWithTags(checks, tags).size());
+
+        //test tags has null value
+        tags.add(null);
+        Assert.assertEquals(1, healthCheckService.filterChecksWithTags(checks, tags).size());
+
+        //test tags has empty value
+        tags.add("");
+        Assert.assertEquals(1, healthCheckService.filterChecksWithTags(checks, tags).size());
+    }
 }

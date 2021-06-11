@@ -93,9 +93,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
         try {
             // Fail if no checks are available
             List<HealthCheck> checks = getHealthChecks();
-            if (tags != null && tags.stream().anyMatch(tag -> !Strings.isNullOrEmpty(tag))){
-                checks = checks.stream().filter(check -> check.getTags().stream().anyMatch(tags::contains)).collect(Collectors.toList());
-            }
+            checks = filterChecksWithTags(checks, tags);
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
             } else {
@@ -107,6 +105,13 @@ public class DefaultHealthCheckService implements HealthCheckService {
             returnFuture.complete(health);
         }
         return returnFuture;
+    }
+
+    List<HealthCheck> filterChecksWithTags(List<HealthCheck> checks, List<String> tags){
+        if (checks != null && tags != null && tags.stream().anyMatch(tag -> !Strings.isNullOrEmpty(tag))){
+            checks = checks.stream().filter(check -> check.getTags().stream().anyMatch(tags::contains)).collect(Collectors.toList());
+        }
+        return checks;
     }
 
     // Asynchronously run all checks
