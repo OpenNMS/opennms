@@ -20,6 +20,7 @@ paths:
       parameters:
         - name: t
           in: query
+          description: timeout in milliseconds
           schema:
             type: integer
             format: int32
@@ -35,12 +36,15 @@ paths:
       parameters:
         - name: t
           in: query
+          description: timeout in milliseconds
           schema:
             type: integer
             format: int32
             default: 5000
         - name: tag
           in: query
+          description: "Use tag to filter Health Check components. A tag could be - local
+, rest, broker, telemetry, dao, minion, elastic, bundle"
           schema:
             type: array
             items:
