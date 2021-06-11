@@ -74,7 +74,7 @@ public class TimeseriesSearcher {
     private final TimeSeriesMetaDataDao metaDataDao;
 
     private final Cache<Tag, Set<Metric>> indexMetricsByTag;
-    private final Map<String, Set<Metric>> metricsByPath = new HashMap<>(); // TODO: Patrick move cache to class level
+    private final Cache<TagMatcher, Set<Metric>> indexMetricsByTagMatcher;
 
     @Autowired
     public TimeseriesSearcher(TimeseriesStorageManager timeseriesStorageManager,
@@ -85,15 +85,38 @@ public class TimeseriesSearcher {
                 .withConfig(cacheConfig)
                 .withCacheLoader(new MetricCacheLoader(timeseriesStorageManager))
                 .build();
+
+        CacheConfig cacheConfig2 = new CacheConfig("timeseriesSearcherCache2");
+        cacheConfig2.setEnabled(true);
+        cacheConfig2.setExpireAfterRead(cacheConfig.getExpireAfterRead());
+        cacheConfig2.setExpireAfterWrite(cacheConfig.getExpireAfterWrite());
+        cacheConfig2.setMaximumSize(cacheConfig.getMaximumSize());
+        cacheConfig2.setMetricRegistry(cacheConfig.getMetricRegistry());
+        indexMetricsByTagMatcher = new org.opennms.core.cache.CacheBuilder<>()
+                .withConfig(cacheConfig2) // TODO: Patrick
+                .withCacheLoader(new MetricCacheLoader2(timeseriesStorageManager))
+                .build();
     }
 
     /**
      * Gets all metrics that reside under the given path
      */
-    private Set<Metric> getMetricsBelowWildcardPath(final String wildcardPath) throws StorageException {
+    private Set<Metric> getMetricsBelowWildcardPathOld(final String wildcardPath) throws StorageException {
         String wildcardValue = String.format("(%s,*)", wildcardPath);
         Tag wildCardTag = new ImmutableTag(WILDCARD_INDEX, wildcardValue);
         return getMetricFromCacheOrLoad(wildCardTag);
+    }
+
+    /**
+     * Gets all metrics that reside under the given path
+     */
+    private Set<Metric> getMetricsBelowWildcardPathNew(final String wildcardPath) throws StorageException {
+        TagMatcher tagMatcher = ImmutableTagMatcher.builder()
+                .type(TagMatcher.Type.EQUALS_REGEX)
+                .key(IntrinsicTagNames.resourceId)
+                .value(wildcardPath + ":.*$")
+                .build();
+        return getMetricFromCacheOrLoad(tagMatcher);
     }
 
     public Map<String, String> getResourceAttributes(ResourcePath path) {
@@ -106,11 +129,11 @@ public class TimeseriesSearcher {
     }
 
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
-        // Set<Metric> oldSearch = searchOld(path, depth);
+        Set<Metric> oldSearch = searchOld(path, depth);
         Set<Metric> newSearch = searchNew(path, depth);
-//        if(!oldSearch.equals(newSearch)) {
-//            LOG.info("elles isch he!");
-//        }
+        if(!oldSearch.equals(newSearch)) {
+            LOG.info("elles isch he!");
+        }
         return newSearch;
     }
 
@@ -137,16 +160,16 @@ public class TimeseriesSearcher {
         // depth (defined as WILDCARD_INDEX_NO). We have a special index, the "wildcard" index for that.
         if (path.elements().length >= WILDCARD_INDEX_NO) {
             String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO)));
-            Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
+            Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPathOld(wildcardPath);
             for (Metric metric : metricsFromWildcard) {
                 metric.getMetaTags().stream()
                         .filter(tag -> tag.getKey() != null)
                         .filter(tag -> tag.getKey().startsWith("_idx"))
                         .filter(tag -> !tag.getKey().equals(WILDCARD_INDEX))
-                        .forEach(tag -> getMetricFromCacheOrAddEmptySet(tag).add(metric));
+                        .forEach(tag -> getMetricsFromCacheOrAddEmptySet(tag).add(metric));
             }
             // Either we have found it by now or it doesn't exist => add empty list
-            metrics = getMetricFromCacheOrAddEmptySet(indexTag);
+            metrics = getMetricsFromCacheOrAddEmptySet(indexTag);
 
         } else {
             // we are above the wildcard level -> let's just get metrics that are associated with the index tag
@@ -159,10 +182,14 @@ public class TimeseriesSearcher {
         if (depth < 0) {
             throw new IllegalArgumentException("depth cannot be negative.");
         }
-        String resourceId = toResourceId(path);
-        Set<Metric> metrics = metricsByPath.get(resourceId + depth);
+        TagMatcher indexMatcher = ImmutableTagMatcher.builder()
+                .type(TagMatcher.Type.EQUALS_REGEX)
+                .key(IntrinsicTagNames.resourceId)
+                .value(pathToRegex(path, depth + 1))
+                .build();
+        Set<Metric> metrics = indexMetricsByTagMatcher.getIfCached(indexMatcher);
 
-        // cache found => we are done
+        // found in cache => we are done
         if (metrics != null) {
             return metrics;
         }
@@ -171,34 +198,35 @@ public class TimeseriesSearcher {
         // depth (defined as WILDCARD_INDEX_NO).
         if (path.elements().length >= WILDCARD_INDEX_NO) {
             String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO)));
-            TagMatcher pathMather = ImmutableTagMatcher.builder()
-                    .type(TagMatcher.Type.EQUALS_REGEX)
-                    .key(IntrinsicTagNames.resourceId)
-                    .value(wildcardPath + ":.*$")
-                    .build();
-            List<Metric> metricsFromWildcard = this.timeseriesStorageManager.get().findMetrics(Collections.singletonList(pathMather));
-            // TODO: Patrick: put all found metrics in cache
-            metrics = metricsFromWildcard.stream()
-                    .filter(metric -> metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().startsWith(resourceId))
-                    .filter(metric -> {
-                        ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().replace(':', '/'));
-                        return pathOfMetric.elements().length == path.elements().length + 1 + depth;
-                    })
-                    .collect(Collectors.toSet());
+            Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPathNew(wildcardPath);
+
+            for (Metric metric : metricsFromWildcard) {
+                ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().replace(':', '/'));
+                ResourcePath currentPath = pathOfMetric;
+                while (true) {
+                    TagMatcher matcher = ImmutableTagMatcher.builder()
+                            .type(TagMatcher.Type.EQUALS_REGEX)
+                            .key(IntrinsicTagNames.resourceId)
+                            .value(pathToRegex(currentPath, pathOfMetric.elements().length - currentPath.elements().length))
+                            .build();
+                    getMetricsFromCacheOrAddEmptySet(matcher).add(metric);
+                    if (currentPath.hasParent()) {
+                        currentPath = currentPath.getParent();
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // Either we have found it by now or it doesn't exist => add empty list
+            metrics = getMetricsFromCacheOrAddEmptySet(indexMatcher);
 
         } else {
-            // we are above the wildcard level -> let's just get metrics that are associated with path and depth
-            TagMatcher pathMather = ImmutableTagMatcher.builder()
-                    .type(TagMatcher.Type.EQUALS_REGEX)
-                    .key(IntrinsicTagNames.resourceId)
-                    .value(pathToRegex(path, depth+1))
-                    .build();
-            metrics = new HashSet<>(this.timeseriesStorageManager.get().findMetrics(Collections.singletonList(pathMather)));
-            // TODO Patrick: put in cache
+            // we are above the wildcard level -> let's just get metrics that are associated with the index tag
+            metrics = getMetricFromCacheOrLoad(indexMatcher);
         }
         return metrics;
     }
-
     String pathToRegex(ResourcePath path, int depth) {
         return toResourceId(path) +
                 ":[^.:]*".repeat(depth) +
@@ -213,9 +241,26 @@ public class TimeseriesSearcher {
         }
     }
 
-    private Set<Metric> getMetricFromCacheOrAddEmptySet(Tag tag) {
+    private Set<Metric> getMetricFromCacheOrLoad(TagMatcher matcher) throws StorageException {
+        try {
+            return indexMetricsByTagMatcher.get(matcher);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+    }
+
+    private Set<Metric> getMetricsFromCacheOrAddEmptySet(Tag tag) {
         try {
             return indexMetricsByTag.get(tag, ConcurrentHashMap::newKeySet);
+        } catch (ExecutionException e) {
+            // should never happen
+            throw new RuntimeException("Error creating ConcurrentHashMap.newKeySet()", e);
+        }
+    }
+
+    private Set<Metric> getMetricsFromCacheOrAddEmptySet(TagMatcher tagMatcher) {
+        try {
+            return indexMetricsByTagMatcher.get(tagMatcher, ConcurrentHashMap::newKeySet);
         } catch (ExecutionException e) {
             // should never happen
             throw new RuntimeException("Error creating ConcurrentHashMap.newKeySet()", e);
@@ -234,6 +279,23 @@ public class TimeseriesSearcher {
         public Set<Metric> load(final Tag tag) throws Exception {
             TagMatcher matcher = ImmutableTagMatcher.TagMatcherBuilder.of(tag).build();
             List<Metric> metricList = timeseriesStorageManager.get().findMetrics(Collections.singletonList(matcher));
+            Set<Metric> metrics = ConcurrentHashMap.newKeySet();
+            metrics.addAll(metricList);
+            return metrics;
+        }
+    }
+
+    private final static class MetricCacheLoader2 extends CacheLoader<TagMatcher, Set<Metric>> {
+
+        private TimeseriesStorageManager timeseriesStorageManager;
+
+        public MetricCacheLoader2(TimeseriesStorageManager timeseriesStorageManager) {
+            this.timeseriesStorageManager = timeseriesStorageManager;
+        }
+
+        @Override
+        public Set<Metric> load(final TagMatcher tagMatcher) throws Exception {
+            List<Metric> metricList = timeseriesStorageManager.get().findMetrics(Collections.singletonList(tagMatcher));
             Set<Metric> metrics = ConcurrentHashMap.newKeySet();
             metrics.addAll(metricList);
             return metrics;
