@@ -351,7 +351,7 @@ function doDelete() {
 
                                       if (result.parts.size() == 1) {
                                           %>
-                                            <td><div data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'"><%=WebSecurityUtils.sanitizeString(result.output)%></div></td>
+                                            <td><%=WebSecurityUtils.sanitizeString(result.output)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).match)%>', scope='<%=WebSecurityUtils.sanitizeString(result.parts.get(0).value.scopeName.toString())%>'">&#9432;</span></td>
                                           <%
                                       } else {
                                           %>
@@ -370,7 +370,7 @@ function doDelete() {
                                                     <td class="severity-Cleared nobright spacer"></td>
                                                     <td><%=WebSecurityUtils.sanitizeString(entry.getKey())%> #<%=counter++%></td>
                                                     <td><%=WebSecurityUtils.sanitizeString(part.input)%></td>
-                                                    <td><div data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'"><%=WebSecurityUtils.sanitizeString(part.value.value)%></div></td>
+                                                    <td><%=WebSecurityUtils.sanitizeString(part.value.value)%> <span data-toggle="tooltip" data-placement="left" title="match='<%=WebSecurityUtils.sanitizeString(part.match)%>', scope='<%=WebSecurityUtils.sanitizeString(part.value.scopeName.toString())%>'">&#9432;</span></td>
                                             <%
                                           }
                                       }
