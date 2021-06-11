@@ -46,7 +46,7 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -205,7 +205,7 @@ public class TimeseriesWriterTest {
         }
 
         @Override
-        public List<Metric> getMetrics(Collection<Tag> tags) throws StorageException {
+        public List<Metric> findMetrics(Collection<TagMatcher> tagMatchers) throws StorageException {
             return null;
         }
 

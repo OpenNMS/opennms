@@ -35,21 +35,26 @@ import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
@@ -69,12 +74,13 @@ public class TimeseriesSearcher {
     private final TimeSeriesMetaDataDao metaDataDao;
 
     private final Cache<Tag, Set<Metric>> indexMetricsByTag;
+    private final Map<String, Set<Metric>> metricsByPath = new HashMap<>(); // TODO: Patrick move cache to class level
 
     @Autowired
     public TimeseriesSearcher(TimeseriesStorageManager timeseriesStorageManager,
                               TimeSeriesMetaDataDao metaDataDao, @Named("timeseriesSearcherCache") final CacheConfig cacheConfig) {
         this.timeseriesStorageManager = Objects.requireNonNull(timeseriesStorageManager, "timeseriesStorageManager must not be null");
-        this.metaDataDao =  Objects.requireNonNull(metaDataDao, "metaDataDao must not be null");
+        this.metaDataDao = Objects.requireNonNull(metaDataDao, "metaDataDao must not be null");
         indexMetricsByTag = new org.opennms.core.cache.CacheBuilder<>()
                 .withConfig(cacheConfig)
                 .withCacheLoader(new MetricCacheLoader(timeseriesStorageManager))
@@ -100,6 +106,16 @@ public class TimeseriesSearcher {
     }
 
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
+        // Set<Metric> oldSearch = searchOld(path, depth);
+        Set<Metric> newSearch = searchNew(path, depth);
+//        if(!oldSearch.equals(newSearch)) {
+//            LOG.info("elles isch he!");
+//        }
+        return newSearch;
+    }
+
+    // TODO: Patrick: remove when not needed anymore
+    public Set<Metric> searchOld(ResourcePath path, int depth) throws StorageException {
 
         // Numeric suffix for the index name, based on the length of parent path
         int idxSuffix = path.elements().length - 1;
@@ -139,6 +155,56 @@ public class TimeseriesSearcher {
         return metrics;
     }
 
+    public Set<Metric> searchNew(ResourcePath path, int depth) throws StorageException {
+        if (depth < 0) {
+            throw new IllegalArgumentException("depth cannot be negative.");
+        }
+        String resourceId = toResourceId(path);
+        Set<Metric> metrics = metricsByPath.get(resourceId + depth);
+
+        // cache found => we are done
+        if (metrics != null) {
+            return metrics;
+        }
+
+        // in order not to call the TimeseriesStorage implementation for every resource, we query all resources below a certain
+        // depth (defined as WILDCARD_INDEX_NO).
+        if (path.elements().length >= WILDCARD_INDEX_NO) {
+            String wildcardPath = toResourceId(ResourcePath.get(Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO)));
+            TagMatcher pathMather = ImmutableTagMatcher.builder()
+                    .type(TagMatcher.Type.EQUALS_REGEX)
+                    .key(IntrinsicTagNames.resourceId)
+                    .value(wildcardPath + ":.*$")
+                    .build();
+            List<Metric> metricsFromWildcard = this.timeseriesStorageManager.get().findMetrics(Collections.singletonList(pathMather));
+            // TODO: Patrick: put all found metrics in cache
+            metrics = metricsFromWildcard.stream()
+                    .filter(metric -> metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().startsWith(resourceId))
+                    .filter(metric -> {
+                        ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().replace(':', '/'));
+                        return pathOfMetric.elements().length == path.elements().length + 1 + depth;
+                    })
+                    .collect(Collectors.toSet());
+
+        } else {
+            // we are above the wildcard level -> let's just get metrics that are associated with path and depth
+            TagMatcher pathMather = ImmutableTagMatcher.builder()
+                    .type(TagMatcher.Type.EQUALS_REGEX)
+                    .key(IntrinsicTagNames.resourceId)
+                    .value(pathToRegex(path, depth+1))
+                    .build();
+            metrics = new HashSet<>(this.timeseriesStorageManager.get().findMetrics(Collections.singletonList(pathMather)));
+            // TODO Patrick: put in cache
+        }
+        return metrics;
+    }
+
+    String pathToRegex(ResourcePath path, int depth) {
+        return toResourceId(path) +
+                ":[^.:]*".repeat(depth) +
+                "$";
+    }
+
     private Set<Metric> getMetricFromCacheOrLoad(Tag tag) throws StorageException {
         try {
             return indexMetricsByTag.get(tag);
@@ -165,8 +231,9 @@ public class TimeseriesSearcher {
         }
 
         @Override
-        public Set<Metric> load(Tag tag) throws Exception {
-            List<Metric> metricList = timeseriesStorageManager.get().getMetrics(Collections.singletonList(tag));
+        public Set<Metric> load(final Tag tag) throws Exception {
+            TagMatcher matcher = ImmutableTagMatcher.TagMatcherBuilder.of(tag).build();
+            List<Metric> metricList = timeseriesStorageManager.get().findMetrics(Collections.singletonList(matcher));
             Set<Metric> metrics = ConcurrentHashMap.newKeySet();
             metrics.addAll(metricList);
             return metrics;

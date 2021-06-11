@@ -47,6 +47,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
+import org.opennms.integration.api.v1.timeseries.InMemoryStorage;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
@@ -56,7 +57,6 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.memory.InMemoryStorage;
 import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 
@@ -79,14 +79,14 @@ public class TimeseriesSearcherTest {
         Metric abcd2 = createAndAddMetric("a/b/c", "d2");
         test("a",  abc);
         test("a",  abc); // test cache: we should not have another invocation
-        verify(storage, times(1)).getMetrics(any());
+        verify(storage, times(1)).findMetrics(any());
 
         test("a/b", abcd1, abcd2);
         test("a/b/c", abcd1e);
         test("a/b/not-existing");
 
         // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
-        verify(storage, times(2)).getMetrics(any());
+        verify(storage, times(2)).findMetrics(any());
     }
 
     private void test(String path, Metric...expectedMetrics) throws StorageException {
@@ -110,6 +110,20 @@ public class TimeseriesSearcherTest {
 
         storage.store(Collections.singletonList(ImmutableSample.builder().metric(metric).time(Instant.now()).value(3.0).build()));
         return metric;
+    }
+
+    @Test
+    public void regexShouldWork() {
+        regexShouldWork("aa/bb/cc", "aa:bb:cc", 0, true);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc", 1, false);
+        regexShouldWork("aa/bb/cc/dd", "aa:bb:cc", 0, false);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd", 1, true);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 1, false);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 2, true);
+    }
+
+    private void regexShouldWork(String path, String testString, int depth, boolean expectToMatch) {
+        assertEquals(expectToMatch, testString.matches(searcher.pathToRegex(ResourcePath.fromString(path), depth)));
     }
 
 }

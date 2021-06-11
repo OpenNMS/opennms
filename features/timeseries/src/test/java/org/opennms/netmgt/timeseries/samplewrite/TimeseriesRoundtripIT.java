@@ -63,6 +63,7 @@ import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -246,9 +247,9 @@ public class TimeseriesRoundtripIT {
     }
 
     private List<Sample> retrieveSamples(final String resourceId, final String name) throws StorageException {
-        List<Metric> metrics = timeseriesStorageManager.get().getMetrics(Arrays.asList(
-                new ImmutableTag(IntrinsicTagNames.resourceId, resourceId),
-                new ImmutableTag(IntrinsicTagNames.name, name)));
+        List<Metric> metrics = timeseriesStorageManager.get().findMetrics(Arrays.asList(
+                ImmutableTagMatcher.builder().key(IntrinsicTagNames.resourceId).value(resourceId).build(),
+                ImmutableTagMatcher.builder().key(IntrinsicTagNames.name).value(name).build()));
         assertEquals(1, metrics.size());
 
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
