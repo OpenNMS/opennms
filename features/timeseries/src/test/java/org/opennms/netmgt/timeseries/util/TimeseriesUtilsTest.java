@@ -30,35 +30,23 @@ package org.opennms.netmgt.timeseries.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.junit.Test;
 import org.opennms.netmgt.model.ResourcePath;
 
 public class TimeseriesUtilsTest {
 
     @Test
-    public void shouldAddIndices() {
-        test("a", "_idx0=(a,1)");
-        test("a/b", "_idx0=(a,2)", "_idx1=(a:b,2)", "_idx2w=(a:b,*)");
-        test("a/b/c", "_idx0=(a,3)", "_idx1=(a:b,3)", "_idx2w=(a:b,*)", "_idx2=(a:b:c,3)");
-        test("a/b/c/d", "_idx0=(a,4)", "_idx1=(a:b,4)", "_idx2w=(a:b,*)", "_idx2=(a:b:c,4)", "_idx3=(a:b:c:d,4)");
+    public void regexShouldWork() {
+        regexShouldWork("aa/bb/cc", "aa:bb:cc", 0, true);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc", 1, false);
+        regexShouldWork("aa/bb/cc/dd", "aa:bb:cc", 0, false);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd", 1, true);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 1, false);
+        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 2, true);
     }
 
-    private void test(final String path, String...expectedIndices) {
-        Map<String, String> attributes = new HashMap<>();
-        TimeseriesUtils.addIndicesToAttributes(ResourcePath.fromString(path), attributes);
-        List<String> result = attributes.entrySet().stream()
-                .map(e -> (e.getKey() + "=" + e.getValue()))
-                .sorted()
-                .collect(Collectors.toList());
-        List<String> expectedResults = Arrays.asList(expectedIndices);
-        expectedResults.sort(String::compareTo);
-        assertEquals(expectedResults, result);
+    private void regexShouldWork(String path, String testString, int depth, boolean expectToMatch) {
+        assertEquals(expectToMatch, testString.matches(TimeseriesUtils.toSearchRegex(ResourcePath.fromString(path), depth)));
     }
 
 }

@@ -130,9 +130,6 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     public List<Sample> getSamplesToInsert() {
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), name));
-
-        // Add extra attributes that can be used to walk the resource tree.
-        TimeseriesUtils.addIndicesToAttributes(path, metaData);
         String resourceId = TimeseriesUtils.toResourceId(path);
 
         // Convert numeric attributes to samples

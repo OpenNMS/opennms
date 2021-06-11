@@ -106,18 +106,4 @@ public class TimeseriesSearcherTest {
         return metric;
     }
 
-    @Test
-    public void regexShouldWork() {
-        regexShouldWork("aa/bb/cc", "aa:bb:cc", 0, true);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc", 1, false);
-        regexShouldWork("aa/bb/cc/dd", "aa:bb:cc", 0, false);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd", 1, true);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 1, false);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 2, true);
-    }
-
-    private void regexShouldWork(String path, String testString, int depth, boolean expectToMatch) {
-        assertEquals(expectToMatch, testString.matches(searcher.pathToRegex(ResourcePath.fromString(path), depth)));
-    }
-
 }

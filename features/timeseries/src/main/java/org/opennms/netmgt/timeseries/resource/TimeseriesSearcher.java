@@ -29,6 +29,7 @@
 package org.opennms.netmgt.timeseries.resource;
 
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.WILDCARD_INDEX_NO;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.util.Arrays;
@@ -48,7 +49,6 @@ import org.opennms.core.cache.CacheConfig;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
-import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.TagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.netmgt.model.ResourcePath;
@@ -108,7 +108,7 @@ public class TimeseriesSearcher {
         TagMatcher indexMatcher = ImmutableTagMatcher.builder()
                 .type(TagMatcher.Type.EQUALS_REGEX)
                 .key(IntrinsicTagNames.resourceId)
-                .value(pathToRegex(path, depth + 1))
+                .value(toSearchRegex(path, depth + 1))
                 .build();
         Set<Metric> metrics = indexMetricsByTagMatcher.getIfCached(indexMatcher);
 
@@ -130,7 +130,7 @@ public class TimeseriesSearcher {
                     TagMatcher matcher = ImmutableTagMatcher.builder()
                             .type(TagMatcher.Type.EQUALS_REGEX)
                             .key(IntrinsicTagNames.resourceId)
-                            .value(pathToRegex(currentPath, pathOfMetric.elements().length - currentPath.elements().length))
+                            .value(toSearchRegex(currentPath, pathOfMetric.elements().length - currentPath.elements().length))
                             .build();
                     getMetricsFromCacheOrAddEmptySet(matcher).add(metric);
                     if (currentPath.hasParent()) {
@@ -149,13 +149,6 @@ public class TimeseriesSearcher {
             metrics = getMetricFromCacheOrLoad(indexMatcher);
         }
         return metrics;
-    }
-
-    String pathToRegex(ResourcePath path, int depth) {
-        return "^" + // start string
-                toResourceId(path) + // exact match
-                ":[^.:]*".repeat(depth) + // colon (:) plus any chars except colon (:), repeated 'depth' times
-                "$"; // end of String
     }
 
     private Set<Metric> getMetricFromCacheOrLoad(TagMatcher matcher) throws StorageException {

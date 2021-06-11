@@ -112,4 +112,11 @@ public final class TimeseriesUtils {
                 .build();
     }
 
+    public static String toSearchRegex(ResourcePath path, int depth) {
+        return "^" + // start string
+                toResourceId(path) + // exact match
+                ":[^.:]*".repeat(depth) + // colon (:) plus any chars except colon (:), repeated 'depth' times
+                "$"; // end of String
+    }
+
 }

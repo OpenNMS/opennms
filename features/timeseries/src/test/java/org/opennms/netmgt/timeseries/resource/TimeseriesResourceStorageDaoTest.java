@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.util.HashSet;
@@ -47,12 +48,10 @@ import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.util.TimeseriesUtils;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -61,8 +60,6 @@ import com.google.common.collect.Sets;
  * Used to verify the {@link TimeseriesResourceStorageDao} interface implemented
  * by the {@link TimeseriesResourceStorageDao}.
  *
- * Resources are indexed using {@link TimeseriesUtils#addIndicesToAttributes} and primitive searching is
- * performed using a mock {@link org.opennms.newts.cassandra.search.CassandraSearcher}.
  *
  * @author jwhite
  */
@@ -222,26 +219,15 @@ public class TimeseriesResourceStorageDaoTest {
                 ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
                 int depth = (Integer)EasyMock.getCurrentArguments()[1];
 
-                int idxSuffix = resourcePath.elements().length - 1;
-                int targetLen = idxSuffix + depth + 2;
-                String field = "_idx"+idxSuffix; // key
-                String value = String.format("(%s,%d)", toResourceId(resourcePath), targetLen); // value
-
+                String regex = toSearchRegex(resourcePath, depth + 1);
                 Set<Metric> metrics = new HashSet<>();
                 for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
-                    Map<String, String> attributes = Maps.newHashMap();
-                    // Build the indexed attributes and attempt to match them against the given query
-                    TimeseriesUtils.addIndicesToAttributes(entry.getKey(), attributes);
-                    if (value.equals(attributes.get(field))) {
-
-                        for(String name : entry.getValue()) {
+                    if (toResourceId(entry.getKey()).matches(regex)) { // find all paths that match our regex
+                        for(String name : entry.getValue()) { // build the metric
                             ImmutableMetric.MetricBuilder metric =
                                     ImmutableMetric.builder()
                                     .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
                                     .intrinsicTag(IntrinsicTagNames.name, name);
-                            attributes.entrySet().stream()
-                                    .map((e) -> new ImmutableTag(e.getKey(), e.getValue()))
-                                    .forEach(metric::metaTag);
                             metrics.add(metric.build());
                         }
                     }
