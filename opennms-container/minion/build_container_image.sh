@@ -21,6 +21,12 @@ if [ -z "${MINION_TARBALL}" ]; then
 fi
 cp "${MINION_TARBALL}" tarball/minion.tar.gz
 
+sed -e "s,@VERSION@,${VERSION}," \
+  -e "s,@REVISION@,${REVISION}," \
+  -e "s,@BRANCH@,${BRANCH}," \
+  -e "s,@BUILD_NUMBER@,${BUILD_NUMBER}," \
+  minion-config-schema.yml.in > minion-config-schema.yml
+
 docker build -t minion \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
