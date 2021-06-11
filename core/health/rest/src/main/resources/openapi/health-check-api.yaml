@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
-  version: 1.0.0
+  version: 0.1.0
   title: OpenNMS Health Check RESTful API
   description: OpenNMS Health Check RESTful API
   contact:
@@ -11,6 +11,8 @@ info:
     url: 'https://github.com/OpenNMS/opennms/blob/develop/LICENSE.md'
 servers:
   - url: 'http://localhost:8181/minion/rest'
+security:
+  - basicAuth: []
 paths:
   /health/probe:
     get:
@@ -20,7 +22,7 @@ paths:
       parameters:
         - name: t
           in: query
-          description: timeout in milliseconds
+          description: Timeout in milliseconds
           schema:
             type: integer
             format: int32
@@ -36,7 +38,7 @@ paths:
       parameters:
         - name: t
           in: query
-          description: timeout in milliseconds
+          description: Timeout in milliseconds
           schema:
             type: integer
             format: int32
