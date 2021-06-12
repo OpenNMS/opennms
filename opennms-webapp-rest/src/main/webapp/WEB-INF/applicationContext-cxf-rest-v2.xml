@@ -44,6 +44,7 @@
     </bean>
     <bean id="openApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
         <property name="title" value="OpenNMS V2 RESTful API" />
+        <property name="version" value="0.1.0" />
         <property name="description" value="OpenNMS V2 RESTful API" />
         <property name="license" value="OpenNMS(R) Licensing" />
         <property name="licenseUrl" value="http://www.gnu.org/licenses/" />
