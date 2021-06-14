@@ -164,7 +164,7 @@ applyConfd() {
 }
 
 applyOpennmsPropertiesD() {
-  for filename in ${MINION_HOME}/etc/opennms.properties.d/*.properties; do
+  find "${MINION_HOME}/etc/opennms.properties.d" -name '*.properties' | while IFS= read -r filename; do
     echo "appending to custom.system.properties: $filename"
     echo "" >> ${MINION_HOME}/etc/custom.system.properties
     cat "$filename" >> ${MINION_HOME}/etc/custom.system.properties
