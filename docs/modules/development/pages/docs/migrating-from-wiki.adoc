@@ -18,7 +18,7 @@ When you identify an article in the OpenNMS wiki whose information should be mig
 {{OfficialDocs | scope=article | guide=admin | issue=NMS-9926 | date=March 2018 | completed=false}}
 ----
 
-** The value of the `scope` attribute must be either `article`, if the entire article should be migrated,or `section` if only specific section(s) should be migrated.
+** The value of the `scope` attribute must be either `article`, if the entire article should be migrated, or `section` if only specific section(s) should be migrated.
 *** When using `scope = section`, it's fine to use this template multiple times in a single article.
 ** The value of the `guide` attribute must be one of `admin`, `development`, `install`, or `user`.
 *** If the information in an article should be migrated to multiple official guides, use multiple instances of the `\{\{OfficialDocs\}\}` template; try to target these by section when possible.
