@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,6 +47,7 @@ public class StackModel {
 
     private final OpenNMSProfile opennms;
     private final List<MinionProfile> minions;
+    private final List<Map<String,String>> legacyMinions;
     private final List<SentinelProfile> sentinels;
     private final boolean elasticsearchEnabled;
     private final boolean telemetryProcessingEnabled;
@@ -59,6 +61,7 @@ public class StackModel {
         // Profiles
         opennms = builder.opennms;
         minions = builder.minions;
+        legacyMinions = builder.legacyMinions;
         sentinels = builder.sentinels;
 
         // Flags
@@ -80,6 +83,7 @@ public class StackModel {
     public static final class Builder {
         private OpenNMSProfile opennms = OpenNMSProfile.DEFAULT;
         private List<MinionProfile> minions = new LinkedList<>();
+        private List<Map<String, String>> legacyMinions = new LinkedList<>();
         private List<SentinelProfile> sentinels = new LinkedList<>();
         private boolean elasticsearchEnabled = false;
         private boolean telemetryProcessingEnabled = false;
@@ -124,6 +128,30 @@ public class StackModel {
          */
         public Builder withMinions(MinionProfile... minions) {
             this.minions = Arrays.asList(minions);
+            return this;
+        }
+
+        /**
+         * Enable a Minion using the given configuration.
+         *
+         * @param minion configuration to use
+         * @return this builder
+         */
+
+        public Builder withMinion(final Map<String, String> configuration) {
+            legacyMinions = Collections.singletonList(configuration);
+            return this;
+        }
+
+        /**
+         * Enable many Minions using the given configurations.
+         *
+         * @param minions configurations to use
+         * @return this builder
+         */
+
+        public Builder withMinions(final Map<String, String> ... configurations) {
+            legacyMinions = Arrays.asList(configurations);
             return this;
         }
 
@@ -248,6 +276,10 @@ public class StackModel {
 
     public List<MinionProfile> getMinions() {
         return minions;
+    }
+
+    public List<Map<String, String>> getLegacyMinions() {
+        return legacyMinions;
     }
 
     public List<SentinelProfile> getSentinels() {
