@@ -43,7 +43,7 @@ Include them only to illustrate a concept that may be difficult to understand or
 [[gd-docs-file-structure]]
 == File structure in the opennms repository 
 
-Documentation is in the `docs\modules` directory. 
+Documentation is in the `docs` directory. 
 Within this directory, you will find the `/modules` directory, that contains all the technical documentation associated with the source code in this repository. 
 The `/modules` directory may have more nested directories to create a hierarchy for the content (component, subcomponents). 
 
