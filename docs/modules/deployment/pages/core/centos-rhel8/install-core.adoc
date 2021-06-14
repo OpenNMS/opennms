@@ -62,7 +62,6 @@ ifeval::["{page-component-title}" == "Horizon"]
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
 ----
-sudo dnf -y install yum-utils
 sudo dnf config-manager --disable opennms-repo-stable-*
 ----
 endif::[]
@@ -71,7 +70,6 @@ ifeval::["{page-component-title}" == "Meridian"]
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
 ----
-sudo dnf -y install yum-utils
 sudo dnf config-manager --disable meridian
 ----
 endif::[]
