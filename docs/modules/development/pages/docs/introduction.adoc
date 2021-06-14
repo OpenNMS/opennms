@@ -47,7 +47,7 @@ Documentation is in the `docs` directory.
 Within this directory, you will find the `./modules` directory, which contains all the technical documentation associated with the source code in this repository. 
 The `/modules` directory may have more nested directories to create a hierarchy for the content (component, subcomponents). 
 
-You will find `.adoc` files in the `/pages` directory or one of the subdirectories within the `/pages` directory.  
+You will find `.adoc` files in the `./pages` directory or one of the subdirectories within the `./pages` directory.  
 
 [options="header", cols="e,d"]
 |===
