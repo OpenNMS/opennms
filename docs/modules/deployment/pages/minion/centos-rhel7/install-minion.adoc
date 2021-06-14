@@ -4,16 +4,36 @@
 sudo yum -y install java-11-openjdk-headless
 ----
 
+////
+Repo: Horizon Minion
+////
+ifeval::["{page-component-title}" == "Horizon"]
 .Add repository and import GPG key
 [source, console]
 ----
-ifeval::["{page-component-title}" == "Horizon"]
 sudo yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
 sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
-endif::[]
 ----
+endif::[]
+
+////
+Repo: Meridian Minion
+////
 ifeval::["{page-component-title}" == "Meridian"]
-Configure the repository by copying the Meridian repository file you received from OpenNMS Sales to the Minion server.
+.Add repository and import GPG key
+[source, console]
+----
+cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
+[meridian]
+name=Meridian for Red Hat Enterprise Linux and CentOS
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel7<1>
+gpgcheck=1
+gpgkey=http://yum.opennms.org/OPENNMS-GPG-KEY
+EOF
+
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
 endif::[]
 
 .Install the {page-component-title} Minion package
@@ -22,7 +42,6 @@ endif::[]
 ifeval::["{page-component-title}" == "Horizon"]
 sudo yum -y install opennms-minion
 endif::[]
-
 ifeval::["{page-component-title}" == "Meridian"]
 sudo yum -y install meridian-minion
 endif::[]
@@ -36,7 +55,12 @@ TIP: Disable the OpenNMS {page-component-title} repository after installation to
 [source, console]
 ----
 sudo yum -y install yum-utils
+ifeval::["{page-component-title}" == "Horizon"]
 sudo yum-config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum-config-manager --disable meridian
+endif::[]
 ----
 
 .Verify directory structure with the tree command
