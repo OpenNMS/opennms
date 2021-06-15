@@ -3,11 +3,36 @@
 #
 # vim:set ai et sts=4 sw=4 tw=0:
 
-## create the OpenNMS group and user if it doesn't exist
-getent group opennms >/dev/null 2>&1 || addgroup --system opennms
-getent passwd opennms >/dev/null 2>&1 ||
-    adduser --system --home /usr/share/opennms --no-create-home \
-            --disabled-password --ingroup opennms opennms
+## create the OpenNMS group if it doesn't exist
+if ! getent group opennms >/dev/null 2>&1; then
+    if ! id -g 1000 >/dev/null 2>&1; then
+        # try to match Minion/Sentinel GID if possible
+        addgroup --system --gid 1000 opennms
+    else
+        addgroup --system opennms
+    fi
+fi
+
+## create the OpenNMS user if it doesn't exist
+if ! getent passwd opennms >/dev/null 2>&1; then
+    if ! id 1000 >/dev/null 2>&1; then
+        # try to match Minion/Sentinel UID if possible
+        adduser --system \
+                --uid 1000 \
+                --home /usr/share/opennms \
+                --no-create-home \
+                --disabled-password \
+                --ingroup opennms \
+                opennms
+    else
+        adduser --system \
+                --home /usr/share/opennms \
+                --no-create-home \
+                --disabled-password \
+                --ingroup opennms \
+                opennms
+    fi
+fi
 
 case "$1" in
     configure)
