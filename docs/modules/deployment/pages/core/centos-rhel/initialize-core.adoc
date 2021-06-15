@@ -1,7 +1,7 @@
 .Configure PostgreSQL database access
 [source, console]
 ----
-sudo vi /opt/opennms/etc/opennms-datasources.xml
+sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 ----
 
 .Set credentials to access the PostgreSQL database
@@ -53,6 +53,5 @@ sudo firewall-cmd --permanent --add-port=8980/tcp
 sudo systemctl reload firewalld
 ----
 
-TIP: To receive SNMP Traps or Syslog messages you must allow incoming traffic on your host firewall as well.
-     By default, the OpenNMS {page-component-title} SNMP trap daemon listens on 10162/udp and the Syslog daemon listens on 10514/udp.
-     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.
+NOTE: The core service user must be able to send ICMP echo requests.
+      During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot in `/etc/sysctl.d/99-opennms-non-root-icmp.conf`. 
