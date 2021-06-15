@@ -28,12 +28,18 @@
 
 package org.opennms.smoketest;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -41,18 +47,29 @@ import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MetadataPageIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataPageIT.class);
     private static final String UNPRIVILEDGED_USERNAME = "foo";
     private static final String UNPRIVILEDGED_PASSWORD = "bar";
+    private NodeDao nodeDao;
+    private IpInterfaceDao ipInterfaceDao;
+    private MonitoredServiceDao monitoredServiceDao;
 
     @Before
     public void setUp() throws Exception {
+        nodeDao = stack.postgres().getDaoFactory().getDao(NodeDaoHibernate.class);
+        ipInterfaceDao = stack.postgres().getDaoFactory().getDao(IpInterfaceDaoHibernate.class);
+        monitoredServiceDao = stack.postgres().getDaoFactory().getDao(MonitoredServiceDaoHibernate.class);
+
         createUnpriviledgedUser();
+
         LOG.debug("Creating node...");
-        final String node =
-                "<node type=\"A\" label=\"TestNode\" foreignSource=\"SmokeTests\" foreignId=\"TestNode\">" +
+
+        final String node = "<node type=\"A\" label=\"TestNode\" foreignSource=\"SmokeTests\" foreignId=\"TestNode\">" +
                         "<labelSource>H</labelSource>" +
                         "<sysContact>Me</sysContact>" +
                         "<sysDescription>PDP-8</sysDescription>" +
@@ -63,15 +80,19 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
                         "<lastCapsdPoll>2019-02-05T13:20:00.456-04:00</lastCapsdPoll>" +
                         "</node>";
         sendPost("rest/nodes", node, 201);
+
         LOG.debug("Node created!");
         LOG.debug("Creating an interface...");
+
         final String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
                 "<ipAddress>10.10.10.10</ipAddress>" +
                 "<hostName>test-machine1.local</hostName>" +
                 "</ipInterface>";
         sendPost("rest/nodes/SmokeTests:TestNode/ipinterfaces", ipInterface, 201);
+
         LOG.debug("Interface created!");
         LOG.debug("Creating a service...");
+
         final String service = "<service status=\"A\">\n" +
                 "<applications/>\n" +
                 "<serviceType id=\"1\">\n" +
@@ -79,30 +100,41 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
                 "</serviceType>\n" +
                 "</service>";
         sendPost("rest/nodes/SmokeTests:TestNode/ipinterfaces/10.10.10.10/services", service, 201);
+
         LOG.debug("Service created!");
-        LOG.debug("Creating meta-data for node...");
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextA/keyA1/valueA1", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextA/keyA2/valueA2", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextA/keyA3/valueA3", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextB/keysecretB1/valueB1", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextB/keySecretB2/valueB2", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextB/keyB3/valueB3", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextC/keypasswordC1/valueC1", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextC/keyPasswordC2/valueC2", "", 204);
-        sendPut("api/v2/nodes/SmokeTests:TestNode/metadata/contextC/keyC3/valueC3", "", 204);
-        LOG.debug("Meta-data for node created!");
-        LOG.debug("Creating meta-data for interface...");
-        sendPut("api/v2/nodes/SmokeTests:TestNode/ipinterfaces/10.10.10.10/metadata/contextD/keyD1/valueD1", "", 204);
-        LOG.debug("Meta-data for interface created!");
-        LOG.debug("Creating meta-data for service...");
-        sendPut("api/v2/nodes/SmokeTests:TestNode/ipinterfaces/10.10.10.10/services/ICMP/metadata/contextE/keyE1/valueE1", "", 204);
-        LOG.debug("Meta-data for service created!");
+
+        final OnmsNode onmsNode = nodeDao.get("SmokeTests:TestNode");
+        final List<OnmsMetaData> nodeMetadataList = new ArrayList<>();
+        nodeMetadataList.add(new OnmsMetaData("contextA","keyA1","valueA1"));
+        nodeMetadataList.add(new OnmsMetaData("contextA","keyA2","valueA2"));
+        nodeMetadataList.add(new OnmsMetaData("contextA","keyA3","valueA3"));
+        nodeMetadataList.add(new OnmsMetaData("contextB","keysecretB1","valueB1"));
+        nodeMetadataList.add(new OnmsMetaData("contextB","keySecretB2","valueB2"));
+        nodeMetadataList.add(new OnmsMetaData("contextB","keyB3","valueB3"));
+        nodeMetadataList.add(new OnmsMetaData("contextC","keypasswordC1","valueC1"));
+        nodeMetadataList.add(new OnmsMetaData("contextC","keyPasswordC2","valueC2"));
+        nodeMetadataList.add(new OnmsMetaData("contextC","keyC3","valueC3"));
+        onmsNode.setMetaData(nodeMetadataList);
+        nodeDao.saveOrUpdate(onmsNode);
+
+        final OnmsIpInterface onmsIpInterface = ipInterfaceDao.get(onmsNode, "10.10.10.10");
+        final List<OnmsMetaData> interfaceMetadataList = new ArrayList<>();
+        interfaceMetadataList.add(new OnmsMetaData("contextD","keyD1","valueD1"));
+        onmsIpInterface.setMetaData(interfaceMetadataList);
+        ipInterfaceDao.saveOrUpdate(onmsIpInterface);
+
+        final OnmsMonitoredService onmsMonitoredService = monitoredServiceDao.get(onmsNode.getId(), onmsIpInterface.getIpAddress(), "ICMP");
+        final List<OnmsMetaData> serviceMetadataList = new ArrayList<>();
+        serviceMetadataList.add(new OnmsMetaData("contextE", "keyE1","valueE1"));
+        onmsMonitoredService.setMetaData(serviceMetadataList);
+        monitoredServiceDao.saveOrUpdate(onmsMonitoredService);
     }
 
     @After
     public void tearDown() throws Exception {
         LOG.debug("Deleting node...");
-        sendDelete("rest/nodes/SmokeTests:TestNode", 202);
+        int nodeId = nodeDao.get("SmokeTests:TestNode").getId();
+        nodeDao.delete(nodeId);
         LOG.debug("Node deleted!");
         deleteUnpriviledgedUser();
     }
@@ -127,7 +159,6 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
 
         return null;
     }
-
 
     private void deleteUnpriviledgedUser() throws Exception{
         logout();
@@ -178,13 +209,8 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         this.findElementByName("Login").click();
     }
 
-    /**
-     * Test asset page.
-     *
-     * @throws Exception the exception
-     */
     @Test
-    public void testAssetPage() throws Exception {
+    public void testMetadataPage() throws Exception {
         // visit the node's page
         driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
 
