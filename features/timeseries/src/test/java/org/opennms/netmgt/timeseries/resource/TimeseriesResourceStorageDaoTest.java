@@ -32,8 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -41,7 +41,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
@@ -55,6 +54,7 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.re2j.Pattern;
 
 /**
  * Used to verify the {@link TimeseriesResourceStorageDao} interface implemented
@@ -213,28 +213,25 @@ public class TimeseriesResourceStorageDaoTest {
     }
 
     private void replay() throws StorageException {
-        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(new IAnswer<Set<Metric>>() {
-            public Set<Metric>
-            answer() {
-                ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
-                int depth = (Integer)EasyMock.getCurrentArguments()[1];
+        EasyMock.expect(searcher.search(EasyMock.anyObject(), EasyMock.anyInt())).andAnswer(() -> {
+            ResourcePath resourcePath = (ResourcePath)EasyMock.getCurrentArguments()[0];
+            int depth = (Integer)EasyMock.getCurrentArguments()[1];
 
-                String regex = toSearchRegex(resourcePath, depth + 1);
-                Set<Metric> metrics = new HashSet<>();
-                for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
-                    if (toResourceId(entry.getKey()).matches(regex)) { // find all paths that match our regex
-                        for(String name : entry.getValue()) { // build the metric
-                            ImmutableMetric.MetricBuilder metric =
-                                    ImmutableMetric.builder()
-                                    .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
-                                    .intrinsicTag(IntrinsicTagNames.name, name);
-                            metrics.add(metric.build());
-                        }
+            String regex = toSearchRegex(resourcePath, depth + 1);
+            Set<Metric> metrics = new HashSet<>();
+            for (Entry<ResourcePath, Set<String>> entry : indexedPaths.entrySet()) {
+                if (Pattern.matches(regex, toResourceId(entry.getKey()))) { // find all paths that match our regex
+                    for(String name : entry.getValue()) { // build the metric
+                        ImmutableMetric.MetricBuilder metric =
+                                ImmutableMetric.builder()
+                                .intrinsicTag(IntrinsicTagNames.resourceId, toResourceId(entry.getKey()))
+                                .intrinsicTag(IntrinsicTagNames.name, name);
+                        metrics.add(metric.build());
                     }
                 }
-
-                return new HashSet<>(metrics);
             }
+
+            return new HashSet<>(metrics);
         }).atLeastOnce();
         EasyMock.expect(searcher.getResourceAttributes(EasyMock.anyObject())).andReturn(Maps.newHashMap()).anyTimes();
         EasyMock.replay(searcher);
