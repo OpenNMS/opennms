@@ -87,7 +87,7 @@ public class TimeseriesSearcher {
         TagMatcher tagMatcher = ImmutableTagMatcher.builder()
                 .type(TagMatcher.Type.EQUALS_REGEX)
                 .key(IntrinsicTagNames.resourceId)
-                .value(wildcardPath + ":.*$")
+                .value(wildcardPath + "/.*$")
                 .build();
         return getMetricFromCacheOrLoad(tagMatcher);
     }
@@ -124,7 +124,7 @@ public class TimeseriesSearcher {
             Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
 
             for (Metric metric : metricsFromWildcard) {
-                ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue().replace(':', '/'));
+                ResourcePath pathOfMetric = ResourcePath.fromString(metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue());
                 ResourcePath currentPath = pathOfMetric;
                 while (true) {
                     TagMatcher matcher = ImmutableTagMatcher.builder()

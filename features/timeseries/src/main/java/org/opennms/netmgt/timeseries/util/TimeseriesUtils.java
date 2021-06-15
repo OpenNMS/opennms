@@ -38,8 +38,6 @@ import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
-import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
 
 /**
@@ -52,45 +50,40 @@ public final class TimeseriesUtils {
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
 
-    private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
-
     /**
-     * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a Newts resource id.
-     *
-     * @param path path to convert
-     * @return Newts resource id
+     * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a String.
+     * The elements are separated by a slash ('/').
+     * No escaping is done.
+     * Reverse function to toResourcePath()
      */
     public static String toResourceId(ResourcePath path) {
-        return s_splitter.joinElementsToId(Arrays.asList(path.elements()));
+        return String.join("/", path.elements());
     }
 
     /**
-     * Converts a Newts resource id to a {@link org.opennms.netmgt.model.ResourcePath}.
-     *
-     * @param resourceId Newts resource id
-     * @return path
+     * Converts a String to a {@link org.opennms.netmgt.model.ResourcePath}.
+     * The last element is treated as the resource name and not returned.
+     * @param resourceId String with elements separated by a slash ('/').
      */
     public static ResourcePath toResourcePath(String resourceId) {
         if (resourceId == null) {
             return null;
         }
 
-        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        List<String> els = Arrays.asList(resourceId.split("/"));
         return ResourcePath.get(els.subList(0, els.size() - 1));
     }
 
     /**
      * Extracts the metric name from the resource id.
-     *
-     * @param resourceId Newts resource id
-     * @return metric name
+     * The last path element is used as the name.
      */
     public static String toMetricName(String resourceId) {
         if (resourceId == null) {
             return null;
         }
 
-        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        List<String> els = Arrays.asList(resourceId.split("/"));
         return els.get(els.size() - 1);
     }
 
@@ -113,9 +106,10 @@ public final class TimeseriesUtils {
     }
 
     public static String toSearchRegex(ResourcePath path, int depth) {
+        // we have the guarantee that no forward slash (/) is part of the elements of a ResourcePath
         return "^" + // start string
-                toResourceId(path) + // exact match
-                ":[^.:]*".repeat(depth) + // colon (:) plus any chars except colon (:), repeated 'depth' times
+               toResourceId(path) + // exact match
+               "/[^./]*".repeat(depth) + // slash (/) plus any chars except slash (/), repeated 'depth' times
                 "$"; // end of String
     }
 

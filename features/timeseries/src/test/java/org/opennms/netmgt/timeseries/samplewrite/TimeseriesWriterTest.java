@@ -192,7 +192,7 @@ public class TimeseriesWriterTest {
     private ImmutableMetric.MetricBuilder createMetric() {
         return ImmutableMetric
                 .builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, "a:b")
+                .intrinsicTag(IntrinsicTagNames.resourceId, "a/b")
                 .intrinsicTag(IntrinsicTagNames.name, "c")
                 .intrinsicTag(IntrinsicTagNames.mtype, Metric.Mtype.counter.name());
     }

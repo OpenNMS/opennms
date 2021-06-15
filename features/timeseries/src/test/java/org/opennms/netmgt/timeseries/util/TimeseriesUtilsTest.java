@@ -33,20 +33,23 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.opennms.netmgt.model.ResourcePath;
 
+import com.google.re2j.Pattern;
+
 public class TimeseriesUtilsTest {
 
     @Test
     public void regexShouldWork() {
-        regexShouldWork("aa/bb/cc", "aa:bb:cc", 0, true);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc", 1, false);
-        regexShouldWork("aa/bb/cc/dd", "aa:bb:cc", 0, false);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd", 1, true);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 1, false);
-        regexShouldWork("aa/bb/cc", "aa:bb:cc:dd:ee", 2, true);
+        regexShouldWork("aa/bb/cc", "aa/bb/cc", 0, true);
+        regexShouldWork("aa/bb/cc", "aa/bb/cc", 1, false);
+        regexShouldWork("aa/bb/cc/dd", "aa/bb/cc", 0, false);
+        regexShouldWork("aa/bb/cc", "aa/bb/cc/dd", 1, true);
+        regexShouldWork("aa/bb/cc", "aa/bb/cc/dd/ee", 1, false);
+        regexShouldWork("aa/bb/cc", "aa/bb/cc/dd/ee", 2, true);
     }
 
     private void regexShouldWork(String path, String testString, int depth, boolean expectToMatch) {
-        assertEquals(expectToMatch, testString.matches(TimeseriesUtils.toSearchRegex(ResourcePath.fromString(path), depth)));
+        assertEquals(expectToMatch,
+                Pattern.matches(TimeseriesUtils.toSearchRegex(ResourcePath.fromString(path), depth), testString));
     }
 
 }

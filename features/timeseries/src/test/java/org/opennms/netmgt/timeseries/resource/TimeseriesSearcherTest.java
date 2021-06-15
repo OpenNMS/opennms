@@ -74,10 +74,10 @@ public class TimeseriesSearcherTest {
     @Test
     public void shouldFindAllMetrics() throws StorageException {
 
-        Metric abc = createAndAddMetric("a:b", "c");
-        Metric abcd1 = createAndAddMetric("a:b:c", "d1");
-        Metric abcd1e = createAndAddMetric("a:b:c:d1", "e");
-        Metric abcd2 = createAndAddMetric("a:b:c", "d2");
+        Metric abc = createAndAddMetric("a/b", "c");
+        Metric abcd1 = createAndAddMetric("a/b/c", "d1");
+        Metric abcd1e = createAndAddMetric("a/b/c/d1", "e");
+        Metric abcd2 = createAndAddMetric("a/b/c", "d2");
         test("a",  abc);
         test("a",  abc); // test cache: we should not have another invocation
         verify(storage, times(1)).findMetrics(any());

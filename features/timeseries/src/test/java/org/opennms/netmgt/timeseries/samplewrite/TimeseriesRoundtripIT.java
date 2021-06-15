@@ -203,33 +203,33 @@ public class TimeseriesRoundtripIT {
         Thread.sleep(5 * 1000);
 
         // Tags contained in the Metric:
-        testForNumericAttribute("snmp:1:metrics", "m1", 900d);
-        testForNumericAttribute("snmp:1:metrics", "m2", 1000d);
+        testForNumericAttribute("snmp/1/metrics", "m1", 900d);
+        testForNumericAttribute("snmp/1/metrics", "m2", 1000d);
         // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/metrics", "idx-m2", "m2"); // Identified
         testForStringAttribute("snmp/1", "sysname", "host1");
 
         // Tags contained in the Metric:
-        testForNumericAttribute("snmp:1:1:if-metrics", "m3", 44d);
-        testForNumericAttribute("snmp:1:1:if-metrics", "m4", 55d);
+        testForNumericAttribute("snmp/1/1/if-metrics", "m3", 44d);
+        testForNumericAttribute("snmp/1/1/if-metrics", "m4", 55d);
         // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/1/if-metrics", "idx-m4", "m4"); // Identified
         testForStringAttribute("snmp/1/1", "ifname", "eth0");
 
         // Tags contained in the Metric:
-        testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m5", 66d);
-        testForNumericAttribute("snmp:1:gen-metrics:gen-metrics", "m6", 77d);
+        testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m5", 66d);
+        testForNumericAttribute("snmp/1/gen-metrics/gen-metrics", "m6", 77d);
         // String attributes are stored in the OpenNMS Database:
         testForStringAttribute("snmp/1/gen-metrics/gen-metrics", "idx-m6", "m6"); // Identified
         testForStringAttribute("snmp/1/gen-metrics", "genname", "bgp");
 
         // test for additional meta tags that are provided to the timeseries plugin for external use. They are stored as additional meta tags
         // in the Metrics object
-        testForMetaTag("snmp:1:metrics", "m1", "sysObjectID", "abc");
-        testForMetaTag("snmp:1:metrics", "m1", "nodelabel","myNodeLabel");
-        testForMetaTag("snmp:1:metrics", "m1", "vendor","myVendor");
-        testForMetaTag("snmp:1:1:if-metrics", "m3",  "if-description","myDescription");
-        testForMetaTag("snmp:1:metrics", "m1",  "cat_myCategory","myCategory");
+        testForMetaTag("snmp/1/metrics", "m1", "sysObjectID", "abc");
+        testForMetaTag("snmp/1/metrics", "m1", "nodelabel","myNodeLabel");
+        testForMetaTag("snmp/1/metrics", "m1", "vendor","myVendor");
+        testForMetaTag("snmp/1/1/if-metrics", "m3",  "if-description","myDescription");
+        testForMetaTag("snmp/1/metrics", "m1",  "cat_myCategory","myCategory");
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
