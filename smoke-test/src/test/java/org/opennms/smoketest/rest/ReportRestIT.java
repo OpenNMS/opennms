@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.xml.bind.JAXB;
@@ -75,9 +76,7 @@ public class ReportRestIT extends AbstractRestIT {
             postUser(createUser("ulf", "Report Designer", "ulf@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_REPORT_DESIGNER", "ROLE_USER"));
         }
 
-        // Clear all reports created/scheduled
-        given().delete("persisted").then().statusCode(202);
-        given().delete("scheduled").then().statusCode(202);
+        clearReports();
 
         // Default Options
         deliveryOptions = new JSONObject();
@@ -107,10 +106,7 @@ public class ReportRestIT extends AbstractRestIT {
             sendDelete("/rest/users/test");
             sendDelete("/rest/users/ulf");
         }
-
-        // Clear all reports created/scheduled
-        given().delete("persisted").then().statusCode(202);
-        given().delete("scheduled").then().statusCode(202);
+        clearReports();
     }
 
     @Test
@@ -241,6 +237,25 @@ public class ReportRestIT extends AbstractRestIT {
 
         // Verify deleting scheduled reports work
         given().delete("scheduled").then().statusCode(403);
+    }
+
+    protected void clearReports() {
+        // Clear all reports created/scheduled
+        given().delete("persisted").then().statusCode(202);
+        given().delete("scheduled").then().statusCode(202);
+
+        await().atMost(30, SECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                try {
+                    given().get("persisted").then().statusCode(204);
+                    given().get("scheduled").then().statusCode(204);
+                } catch (final Exception e) {
+                    return false;
+                }
+                return true;
+            }
+        });
     }
 
     private static JSONObject getUsers() {
