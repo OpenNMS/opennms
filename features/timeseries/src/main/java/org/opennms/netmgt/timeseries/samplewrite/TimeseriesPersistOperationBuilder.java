@@ -182,7 +182,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     .metaTag(type);
 
             // add resource level string attributes
-            resourceIdLevelMetaData.forEach(builder::metaTag);
+            resourceIdLevelMetaData.forEach(builder::externalTag);
 
             // add metric level string attributes
             Map<String, String> metricLevelAttributes = stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags());
