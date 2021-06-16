@@ -32,7 +32,9 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.opennms.netmgt.events.api.EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.HIGH_THRESHOLD_EVENT_UEI;
 
@@ -45,10 +47,12 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -60,12 +64,20 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Tests to validate that thresholding works.
@@ -194,16 +206,24 @@ public class ThresholdingIT {
 
     private void setServiceDelay(long duration, TimeUnit unit) {
         LOG.info("Updating service delay to {} {}.", duration, unit);
-        OnmsMetaData metaData = new OnmsMetaData("test", "svc-delay", Long.toString(unit.toMillis(duration)));
-        Response response = restClient.setNodeLevelMetadata(TEST_NODE_CRITERIA, metaData);
-        assertThat(response.getStatus(), equalTo(HttpServletResponse.SC_NO_CONTENT));
+
+        final NodeDao nodeDao = stack.postgres().dao(org.opennms.netmgt.dao.hibernate.NodeDaoHibernate.class);
+
+        final OnmsNode node = nodeDao.get(TEST_NODE_CRITERIA);
+        node.addMetaData("test", "svc-delay", Long.toString(unit.toMillis(duration)));
+
+        nodeDao.saveOrUpdate(node);
     }
 
     private void setServiceJitter(long duration, TimeUnit unit) {
         LOG.info("Updating service jitter to {} {}.", duration, unit);
-        OnmsMetaData metaData = new OnmsMetaData("test", "svc-jitter", Long.toString(unit.toMillis(duration)));
-        Response response = restClient.setNodeLevelMetadata(TEST_NODE_CRITERIA, metaData);
-        assertThat(response.getStatus(), equalTo(HttpServletResponse.SC_NO_CONTENT));
+
+        final NodeDao nodeDao = stack.postgres().dao(org.opennms.netmgt.dao.hibernate.NodeDaoHibernate.class);
+
+        final OnmsNode node = nodeDao.get(TEST_NODE_CRITERIA);
+        node.addMetaData("test", "svc-jitter", Long.toString(unit.toMillis(duration)));
+
+        nodeDao.saveOrUpdate(node);
     }
 
     private OnmsNode addNode() {
@@ -214,6 +234,9 @@ public class ThresholdingIT {
         node.setForeignId(TEST_NODE_FID);
         node.setLabel(TEST_NODE_FID);
         node.setType(OnmsNode.NodeType.ACTIVE);
+
+	// Initial metadata configuration
+        node.addMetaData("test", "svc-delay", Integer.toString(0));
 
         // Create the node
         Response response = restClient.addNode(node);
@@ -228,14 +251,6 @@ public class ThresholdingIT {
 
         // Now add a category to the node
         restClient.addCategoryToNode(TEST_NODE_CRITERIA, TEST_NODE_CATEGORY);
-
-        // Add meta-data to the node
-        OnmsMetaData metaData = new OnmsMetaData();
-        metaData.setContext("test");
-        metaData.setKey("svc-delay");
-        metaData.setValue(Integer.toString(0));
-        response = restClient.setNodeLevelMetadata(TEST_NODE_CRITERIA, metaData);
-        assertThat(response.getStatus(), equalTo(HttpServletResponse.SC_NO_CONTENT));
 
         // Add Interface to node
         OnmsIpInterface iface = new OnmsIpInterface();
