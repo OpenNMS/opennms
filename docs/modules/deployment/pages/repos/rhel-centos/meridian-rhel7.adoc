@@ -1,0 +1,14 @@
+.Add repository and import GPG key
+[source, console]
+----
+cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
+[meridian]
+name=Meridian for Red Hat Enterprise Linux and CentOS
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel7<1>
+gpgcheck=1
+gpgkey=http://yum.opennms.org/OPENNMS-GPG-KEY
+EOF
+
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
