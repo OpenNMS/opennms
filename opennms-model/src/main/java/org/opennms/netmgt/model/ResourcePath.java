@@ -63,7 +63,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     public ResourcePath(Iterable<String> pathElements) {
         for (String el : pathElements) {
             if(el != null && el.contains("/")) {
-                throw new IllegalArgumentException("path elements must not contain a forward slash");
+                throw new IllegalArgumentException(String.format("path elements must not contain a forward slash. Offender: %s in %s", el, pathElements));
             }
             elements.add(el);
         }
@@ -77,7 +77,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         elements.addAll(parent.elements);
         for (String el : pathElements) {
             if(el != null && el.contains("/")) {
-                throw new IllegalArgumentException("path elements must not contain a forward slash");
+                throw new IllegalArgumentException(String.format("path elements must not contain a forward slash. Offender: %s in %s", el, pathElements));
             }
             elements.add(el);
         }
