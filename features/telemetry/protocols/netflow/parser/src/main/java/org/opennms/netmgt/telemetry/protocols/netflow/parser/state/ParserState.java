@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.state;
 
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.List;
 
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import com.google.common.collect.ImmutableList;
 
-/**
- * Interface used by the daemon to manage parsers.
- *
- * When messages are received, they should be forwarded to the given {@link AsyncDispatcher}.
- *
- * @author jwhite
- */
-public interface Parser {
-    String getName();
-    String getDescription();
+public class ParserState {
 
-    Object dumpInternalState();
+    public final List<ExporterState> exporters;
 
-    void start(final ScheduledExecutorService executorService);
-    void stop();
+    private ParserState(final Builder builder) {
+        this.exporters = builder.exporters.build();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final ImmutableList.Builder<ExporterState> exporters = ImmutableList.builder();
+
+        private Builder() {
+        }
+
+        public Builder withExporter(final ExporterState state) {
+            this.exporters.add(state);
+            return this;
+        }
+
+        public Builder withExporter(final ExporterState.Builder state) {
+            return this.withExporter(state.build());
+        }
+
+        public ParserState build() {
+            return new ParserState(this);
+        }
+    }
 }

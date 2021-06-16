@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.netmgt.telemetry.api;
 
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.List;
 
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.Listener;
 
-/**
- * Interface used by the daemon to manage parsers.
- *
- * When messages are received, they should be forwarded to the given {@link AsyncDispatcher}.
- *
- * @author jwhite
- */
-public interface Parser {
-    String getName();
-    String getDescription();
+public interface TelemetryManager {
+    /**
+     * Get the list of currently configured and enabled listeners.
+     *
+     * @return the listeners
+     */
+    List<Listener> getListeners();
 
-    Object dumpInternalState();
-
-    void start(final ScheduledExecutorService executorService);
-    void stop();
+    /**
+     * Get the list of currently configured and enabled adapters.
+     *
+     * @return the adapters
+     */
+    List<Adapter> getAdapters();
 }

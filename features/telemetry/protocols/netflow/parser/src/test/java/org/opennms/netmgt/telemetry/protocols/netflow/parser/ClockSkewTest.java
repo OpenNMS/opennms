@@ -182,5 +182,10 @@ public class ClockSkewTest {
                 }
             };
         }
+
+        @Override
+        public Object dumpInternalState() {
+            return null;
+        }
     }
 }
