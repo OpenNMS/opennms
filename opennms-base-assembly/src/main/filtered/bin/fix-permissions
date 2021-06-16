@@ -104,11 +104,9 @@ find "${OPENNMS_HOME}"/* -type l -maxdepth 0 | while read -r SUBDIR; do
   do_chown "${SUBDIR}/"
 done
 
-for TOOL in opennms minion sentinel; do
-  for TOOLFILE in "/etc/default/${TOOL}" "/etc/sysconfig/${TOOL}"; do
-    if [ -e "${TOOLFILE}" ]; then
-      echo "* fixing ownership of ${TOOLFILE}"
-      do_chown "${TOOLFILE}"
-    fi
-  done
+for TOOLFILE in "/etc/default/opennms" "/etc/sysconfig/opennms"; do
+  if [ -e "${TOOLFILE}" ]; then
+    echo "* fixing ownership of ${TOOLFILE}"
+    do_chown "${TOOLFILE}"
+  fi
 done
