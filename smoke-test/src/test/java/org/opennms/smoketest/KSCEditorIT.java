@@ -93,7 +93,7 @@ public class KSCEditorIT extends OpenNMSSeleniumIT {
         clickElementByXpath("//button[text()='View Child Resource']");
 
         // select the first subresource (127.0.0.1)
-        clickElementByName("subresource:Response Time:127.0.0.1");
+        clickElementByName("subresource:Response Time:Response Time for 127.0.0.1");
         clickElementByXpath("//button[text()='View Child Resource']");
 
         // choose the resource
