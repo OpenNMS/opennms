@@ -1,0 +1,50 @@
+
+[[ga-events-sources-kafka]]
+
+= Kafka Consumer (Events)
+
+Events can also be created by routing them to a specific topic on Kafka.
+The Kafka Consumer feature allows events to be consumed from specific topic on Kafka.
+
+Events should be created in protobuf format link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)]
+See `kafka-consumer-events.proto`  for the model definitions.
+
+The Kafka Consumer by default consumes events from topic named `opennms-events` and forward them to `Eventd`.
+
+== Enable Kafka Consumer
+
+The Kafka Consumer is disabled by default and can be enabled as follows.
+
+First, log in to the Karaf shell of your {page-component-title} instance and configure the Kafka client settings to point to your Kafka broker.
+See link:https://kafka.apache.org/27/documentation.html#consumerconfigs[Consumer Configs] for a complete list of available options.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.consumer.client
+admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
+admin@opennms()> config:update
+----
+
+Next, install the `opennms-kafka-consumer` feature from that same shell using:
+
+[source]
+----
+admin@opennms()> feature:install opennms-kafka-consumer
+----
+
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-consumer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+== Configure Topic Name
+
+.Karaf login, configuration of events topic
+[source]
+----
+[root@localhost /root]# $ ssh -p 8101 admin@localhost
+...
+opennms> config:edit org.opennms.features.kafka.consumer
+opennms> config:property-set eventsTopic opennms-events
+opennms> config:update
+----
+

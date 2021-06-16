@@ -1,0 +1,37 @@
+syntax = "proto3";
+option java_package = "org.opennms.features.kafka.consumer.events";
+option java_outer_classname = "EventsProto";
+
+// The values differ from the standard codes in OpenNMS
+// since proto3 enforces us to start at 0
+enum Severity {
+    INDETERMINATE = 0;
+    CLEARED = 1;
+    NORMAL = 2;
+    WARNING = 3;
+    MINOR = 4;
+    MAJOR = 5;
+    CRITICAL = 6;
+}
+
+message EventParameter {
+    string name = 1;
+    string value = 2;
+}
+
+message Event {
+    string uei = 1;
+    string source = 2;
+    uint64 create_time = 3;
+    Severity severity = 4;
+    string host = 5;
+    uint32 node_id = 6;
+    string ip_address = 7;
+    string service_name = 8;
+    uint32 if_index = 9;
+    string description = 10;
+    string dist_poller = 11;
+    string log_dest = 12;
+    string log_content = 13;
+    repeated EventParameter parameter = 14;
+}

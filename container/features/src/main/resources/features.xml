@@ -977,6 +977,13 @@
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
+    <feature name="opennms-kafka-consumer" version="${project.version}" description="OpenNMS :: Kafka :: Consumer">
+        <feature>opennms-kafka</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-model</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.consumer/${project.version}</bundle>
+    </feature>
     <feature name="opennms-telemetry-collection" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature>guava</feature>
         <feature version="${netty4Version}">netty4</feature>
