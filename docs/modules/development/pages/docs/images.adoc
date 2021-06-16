@@ -28,12 +28,13 @@ This makes is easier to organize and find images associated with an AsciiDoc tex
         |   └── images<5>
         |       ├── admin <6>
         |       |   └── login.png <7>
-        |       |   └── notification-status.png <7>        
-        |   └── pages<8>
-        |       ├── admin <9>
-        |       |   └── introduction.adoc <10>
-        |       |   └── restart.adoc <10>            
-        └── antora.yml <11>
+        |       |   └── restart-process.png <7>
+        |       |   └── restart-process.graphml <8>        
+        |   └── pages<9>
+        |       ├── admin <10>
+        |       |   └── introduction.adoc <11>
+        |       |   └── restart.adoc <11>            
+        └── antora.yml <12>
 ----
 
 <1> This folder contains all documentation modules.
@@ -44,15 +45,17 @@ This makes is easier to organize and find images associated with an AsciiDoc tex
 Images should be *.png or *.jpg if included in the documentation.
 <6> Directory to mirror text directory structure.
 Images in this diretory are associated with the text in the same directory in the `/pages` folder.  
+This folder should also include the editable version of images created from tools like yED.
 <7> The image file. 
 Use a unique name with no spaces.
-<8> Pages folder.
+<8> Editable version of an image source file.
+<9> Pages folder.
 Contains .adoc files with text content. 
-<9> Folder for a specific documentation topic (equivalent to a chapter).
+<10> Folder for a specific documentation topic (equivalent to a chapter).
 Text files in this folder may be related. 
-<10> AsciiDoc source file.
+<11> AsciiDoc source file.
 May include references to images stored in a corresponding folder in the `/images` hierarchy.
-<11> Component descriptor file Antora uses to help build the documentation.  
+<12> Component descriptor file Antora uses to help build the documentation.  
 
 
 IMPORTANT: All images share the same namespace; therefore, best practice is to use unique identifiers for images.
