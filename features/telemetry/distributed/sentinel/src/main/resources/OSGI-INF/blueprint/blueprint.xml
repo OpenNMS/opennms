@@ -29,6 +29,7 @@
             <entry key="service.pid" value="org.opennms.features.telemetry.adapters"/>
         </service-properties>
     </service>
+    <service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="adapterManager" />
 
     <!--
         Usually the CollectionAgentFactory is exposed via opennms-services, as that bundle is not available
