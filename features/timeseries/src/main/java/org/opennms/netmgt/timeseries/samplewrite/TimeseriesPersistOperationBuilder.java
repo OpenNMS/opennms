@@ -139,6 +139,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
 
     public List<Sample> getSamplesToInsert() {
         final Set<Tag> resourceIdLevelMetaData = Sets.newHashSet();
+        final Set<Tag> resourceIdLevelExternalData = Sets.newHashSet();
         resourceIdLevelMetaData.addAll(this.configuredAdditionalMetaTags);
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), groupName));
@@ -154,7 +155,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             }
         }
         for (Entry<String, String> entry : stringAttributes.entrySet()) {
-            resourceIdLevelMetaData.add(new ImmutableTag(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue()));
+            resourceIdLevelExternalData.add(new ImmutableTag(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue()));
         }
 
         String resourceId = TimeseriesUtils.toResourceId(path);
@@ -182,7 +183,8 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
                     .metaTag(type);
 
             // add resource level string attributes
-            resourceIdLevelMetaData.forEach(builder::externalTag);
+            resourceIdLevelMetaData.forEach(builder::metaTag);
+            resourceIdLevelExternalData.forEach(builder::externalTag);
 
             // add metric level string attributes
             Map<String, String> metricLevelAttributes = stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags());

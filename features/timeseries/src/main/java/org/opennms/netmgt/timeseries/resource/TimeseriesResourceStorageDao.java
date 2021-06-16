@@ -42,6 +42,7 @@ import java.util.stream.IntStream;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
+import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
@@ -173,12 +174,11 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         metricsWithStringAttributes.addAll(searchFor(path, -1));
         if (!metricsWithStringAttributes.isEmpty()) {
             metricsWithStringAttributes.iterator().next()
-                    .getMetaTags().stream()
+                    .getExternalTags().stream()
                     .filter(t -> t.getKey() != null && t.getKey().startsWith(PREFIX_RESOURCE_LEVEL_ATTRIBUTE))
                     .map(t -> new StringPropertyAttribute(t.getKey().substring(PREFIX_RESOURCE_LEVEL_ATTRIBUTE.length()), t.getValue()))
                     .forEach(attributes::add);
         }
-
         return attributes;
     }
 
@@ -189,22 +189,39 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public String getStringAttribute(ResourcePath path, String key) {
-        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
+        return getStringAttributes(path).get(key);
     }
 
     @Override
     public Map<String, String> getStringAttributes(ResourcePath path) {
-        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
+        return getMetaData(path);
     }
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        throw new UnsupportedOperationException("This method is not supported anymore. Please use KV store instead.");
+        Set<Metric> metricsWithStringAttributes = new HashSet<>();
+        metricsWithStringAttributes.addAll(searchFor(path, 0));
+        metricsWithStringAttributes.addAll(searchFor(path, -1)); // resource level
+        return metricsWithStringAttributes
+                    .stream()
+                    .flatMap(m->m.getExternalTags().stream())
+                    .distinct()
+                    .collect(Collectors.toMap(t -> stripPrefix(t.getKey(), PREFIX_RESOURCE_LEVEL_ATTRIBUTE), Tag::getValue));
+    }
+
+    private static String stripPrefix(final String s, final String prefix) {
+        if (s==null) {
+            return null;
+        } else if(s.startsWith(prefix)){
+            return s.substring(prefix.length());
+        } else {
+            return s;
+        }
     }
 
     @Override
     public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
-        // These are already stored by the indexer
+        // These are already stored.
     }
 
     private Set<Metric> searchFor(ResourcePath path, int depth) {

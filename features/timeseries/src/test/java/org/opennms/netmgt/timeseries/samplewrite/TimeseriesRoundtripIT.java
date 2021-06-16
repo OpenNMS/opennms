@@ -274,13 +274,14 @@ public class TimeseriesRoundtripIT {
                 .map(a -> (StringPropertyAttribute) a)
                 .collect(Collectors.toMap(StringPropertyAttribute::getName, StringPropertyAttribute::getValue));
         assertEquals(expectedValue, stringAttributes.get(attributeName));
+        assertEquals(expectedValue, resourceStorageDao.getStringAttribute(path, attributeName));
     }
 
     private void testForStringAttributeAtMetricLevel(String resourceId, String metricName, String attributeName, String expectedValue) throws StorageException {
         List<Metric> metrics = this.timeseriesStorageManager.get()
-                .getMetrics(Arrays.asList(
-                        new ImmutableTag(IntrinsicTagNames.resourceId, resourceId),
-                        new ImmutableTag(IntrinsicTagNames.name, metricName)));
+                .findMetrics(Arrays.asList(
+                        ImmutableTagMatcher.builder().key(IntrinsicTagNames.resourceId).value(resourceId).build(),
+                        ImmutableTagMatcher.builder().key(IntrinsicTagNames.name).value(metricName).build()));
         assertEquals(1, metrics.size());
         Tag tag = metrics.get(0).getFirstTagByKey(attributeName);
         assertNotNull(tag);
