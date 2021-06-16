@@ -40,6 +40,8 @@ import static org.opennms.netmgt.events.api.EventConstants.HIGH_THRESHOLD_EVENT_
 
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -210,7 +212,10 @@ public class ThresholdingIT {
         final NodeDao nodeDao = stack.postgres().dao(org.opennms.netmgt.dao.hibernate.NodeDaoHibernate.class);
 
         final OnmsNode node = nodeDao.get(TEST_NODE_CRITERIA);
-        node.addMetaData("test", "svc-delay", Long.toString(unit.toMillis(duration)));
+
+	final List<OnmsMetaData> nodeMetadataList = new ArrayList<>();
+	nodeMetadataList.add(new OnmsMetaData("test", "svc-delay", Long.toString(unit.toMillis(duration))));
+	node.setMetaData(nodeMetadataList);
 
         nodeDao.saveOrUpdate(node);
     }
@@ -221,7 +226,11 @@ public class ThresholdingIT {
         final NodeDao nodeDao = stack.postgres().dao(org.opennms.netmgt.dao.hibernate.NodeDaoHibernate.class);
 
         final OnmsNode node = nodeDao.get(TEST_NODE_CRITERIA);
-        node.addMetaData("test", "svc-jitter", Long.toString(unit.toMillis(duration)));
+
+	final List<OnmsMetaData> nodeMetadataList = new ArrayList<>();
+	nodeMetadataList.add(new OnmsMetaData("test", "svc-delay", Long.toString(0)));
+	nodeMetadataList.add(new OnmsMetaData("test", "svc-jitter", Long.toString(unit.toMillis(duration))));
+	node.setMetaData(nodeMetadataList);
 
         nodeDao.saveOrUpdate(node);
     }
