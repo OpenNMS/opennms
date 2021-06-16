@@ -28,30 +28,18 @@
 
 package org.opennms.core.rpc.utils.mate;
 
-import java.io.StringReader;
-import java.io.StringWriter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import org.opennms.core.xml.JaxbUtils;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import org.opennms.core.xml.JaxbUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-
 public class Interpolator {
-    private static final Logger LOG = LoggerFactory.getLogger(Interpolator.class);
-
     private static final String OUTER_REGEXP = "\\$\\{([^\\}]+?:[^\\}]+?)\\}";
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
@@ -68,6 +56,9 @@ public class Interpolator {
     }
 
     public static Object interpolate(final Object value, final Scope scope) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof String) {
             return interpolate((String) value, scope).output;
         } else {
