@@ -52,4 +52,10 @@ public class TimeseriesUtilsTest {
                 Pattern.matches(TimeseriesUtils.toSearchRegex(ResourcePath.fromString(path), depth), testString));
     }
 
+    @Test
+    public void toResourcePathShouldWork() {
+        assertEquals(ResourcePath.fromString("aa/bb"), TimeseriesUtils.toResourcePath("aa/bb/cc")); // last element is treated as the name and not part of path
+        assertEquals(ResourcePath.fromString(""), TimeseriesUtils.toResourcePath("aa")); // last element is treated as the name and not part of path
+        assertEquals(ResourcePath.fromString(""), TimeseriesUtils.toResourcePath("")); // last element is treated as the name and not part of path
+    }
 }
