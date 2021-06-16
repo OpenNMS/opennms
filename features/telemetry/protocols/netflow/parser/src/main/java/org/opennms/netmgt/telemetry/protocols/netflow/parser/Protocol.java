@@ -28,14 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
+import java.util.Objects;
+
 public enum Protocol {
-    NETFLOW5(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header.VERSION),
-    NETFLOW9(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header.VERSION),
-    IPFIX(org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header.VERSION);
+    NETFLOW5(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header.VERSION, "Netflow v5"),
+    NETFLOW9(org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header.VERSION, "Netflow v9"),
+    IPFIX(org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header.VERSION, "IPFix");
 
     public final int version;
+    public final String description;
 
-    Protocol(final int version) {
+    Protocol(final int version, final String description) {
         this.version = version;
+        this.description = Objects.requireNonNull(description);
     }
 }

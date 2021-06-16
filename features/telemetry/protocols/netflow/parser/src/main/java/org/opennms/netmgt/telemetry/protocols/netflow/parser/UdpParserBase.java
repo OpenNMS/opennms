@@ -127,4 +127,9 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public void setTemplateTimeout(final Duration templateTimeout) {
         this.templateTimeout = templateTimeout;
     }
+
+    @Override
+    public Object dumpInternalState() {
+        return this.sessionManager.dumpInternalState();
+    }
 }

@@ -20,5 +20,6 @@
     <module>listeners</module>
     <module>protocols</module>
     <module>registry</module>
+    <module>shell</module>
   </modules>
 </project>
