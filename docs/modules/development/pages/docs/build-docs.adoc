@@ -25,7 +25,7 @@ After you have cloned the repo to your local system, you can track those branche
 
 [source, shell]
 ----
-$ git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
+git checkout -b <local_branch_name> <remote_repo>/<remote_branch_name>
 ----
 
 == Write the docs
@@ -78,5 +78,4 @@ The generic path to a given version of the docs is:
 ----
 <docs_repo_dir>/build/site/<distro>/<branch_dir_name>
 ----
-
 
