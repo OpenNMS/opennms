@@ -1538,7 +1538,7 @@
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
     <argLineMemory>-Xmx2g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom</argLine>
+    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
     <skipITs>true</skipITs>
 
     <!--

@@ -809,6 +809,7 @@ if [ -z "$JAVA_SHORT_VERSION" ]; then
 	JAVA_SHORT_VERSION=0
 fi
 
+# JDK 9+ modules we need
 JAVA_MODULES=(
 	java.base \
 	java.compiler \
@@ -835,6 +836,41 @@ JAVA_MODULES=(
 	jdk.xml.dom \
 )
 
+# JDK 9+ modules that need to read from public methods
+JAVA_READS=(
+	"java.xml=java.logging"
+)
+
+# JDK 9+ modules that need public methods available to reflection
+JAVA_EXPORTS=(
+	"java.base/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED" \
+	"java.base/sun.net.www.protocol.file=ALL-UNNAMED" \
+	"java.base/sun.net.www.protocol.ftp=ALL-UNNAMED" \
+	"java.base/sun.net.www.protocol.http=ALL-UNNAMED" \
+	"java.base/sun.net.www.protocol.https=ALL-UNNAMED" \
+	"java.base/sun.net.www.protocol.jar=ALL-UNNAMED" \
+	"java.base/sun.net.www.content.text=ALL-UNNAMED" \
+	"java.base/sun.security.x509=ALL-UNNAMED" \
+	"jdk.xml.dom/org.w3c.dom.html=ALL-UNNAMED" \
+	"jdk.naming.rmi/com.sun.jndi.url.rmi=ALL-UNNAMED" \
+	"java.rmi/sun.rmi.registry=ALL-UNNAMED" \
+	"java.security.sasl/com.sun.security.sasl=ALL-UNNAMED"
+)
+
+# JDK 9+ modules that need public+private methods available to reflection
+JAVA_OPENS=(
+	"java.base/jdk.internal.loader=ALL-UNNAMED" \
+	"java.base/java.lang=ALL-UNNAMED" \
+	"java.base/java.lang.reflect=ALL-UNNAMED" \
+	"java.base/java.net=ALL-UNNAMED" \
+	"java.base/java.security=ALL-UNNAMED" \
+	"java.base/java.text=ALL-UNNAMED" \
+	"java.base/java.util=ALL-UNNAMED" \
+	"java.desktop/java.awt.font=ALL-UNNAMED" \
+	"java.naming/javax.naming.spi=ALL-UNNAMED" \
+	"java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED"
+)
+
 JPDA_ADDRESS="*:8001"
 JPDA_SUSPEND="n"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
@@ -845,9 +881,19 @@ else
 	# Java 9+, add required modules
 	OIFS="$IFS"
 	IFS=","
-	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
+	JAVA_CMD=("${JAVA_CMD[@]}" "--add-modules=${JAVA_MODULES[*]}")
 	IFS="$OIFS"
-	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+
+	for READ in "${JAVA_READS[@]}"; do
+		JAVA_CMD+=("--add-reads" "${READ}")
+	done
+	for EXPORT in "${JAVA_EXPORTS[@]}"; do
+		JAVA_CMD+=("--add-exports" "${EXPORT}")
+	done
+	for OPEN in "${JAVA_OPENS[@]}"; do
+		JAVA_CMD+=("--add-opens" "${OPEN}")
+	done
+
 	# see NMS-12261 -- use backwards-compatible locale provider by default
 	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi
