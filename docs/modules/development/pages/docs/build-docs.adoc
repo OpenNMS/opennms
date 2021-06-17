@@ -15,7 +15,7 @@ If you already know how to use https://git-scm.com/[git], then this is going to 
 If not, here’s the full walk-through:
 
 . Install git.
-. Locate the OpenNMS repo you want to write docs for and https://help.github.com/articles/fork-a-repo/[fork] it. (For example, the https://github.com/OpenNMS/opennms-helm[OpenNMS Helm repo].)
+. Locate the OpenNMS repo you want to write docs for and https://help.github.com/articles/fork-a-repo/[fork] it. (For example, the https://github.com/OpenNMS/opennms[core OpenNMS repository].)
 
 . Use git to clone the repo (either the original or your fork, as appropriate) to your local system: `git clone <repo URL>`
 
@@ -64,13 +64,12 @@ Transforming an Antora repo into a documentation site is pretty easy:
 
 [source, shell]
 ----
-antora generate local-site.yml
+make docs
 ----
 
 === Build Output
 
-Antora creates a .zip file of the documentation site in the `build` directory. 
-Unzipping the file reveals the HTML content in the `site` directory. 
+Antora creates an archive of the documentation in `build/site.zip` and an extracted one in `public/index.html`, which you can open directly in a browser. 
 
 The generic path to a given version of the docs is:
 
