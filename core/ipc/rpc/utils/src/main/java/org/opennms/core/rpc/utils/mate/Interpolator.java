@@ -28,18 +28,19 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import org.opennms.core.xml.JaxbUtils;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-
 public class Interpolator {
-    private static final String OUTER_REGEXP = "\\$\\{(.+?:.+?)\\}";
+    private static final String OUTER_REGEXP = "\\$\\{([^\\}]+?:[^\\}]+?)\\}";
     private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
@@ -55,10 +56,17 @@ public class Interpolator {
     }
 
     public static Object interpolate(final Object value, final Scope scope) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof String) {
             return interpolate((String) value, scope).output;
         } else {
-            return value;
+            if (value.getClass().isAnnotationPresent(XmlRootElement.class)) {
+                return JaxbUtils.unmarshal(value.getClass(), interpolate(JaxbUtils.marshal(value), scope).output, false);
+            } else {
+                return value;
+            }
         }
     }
 
