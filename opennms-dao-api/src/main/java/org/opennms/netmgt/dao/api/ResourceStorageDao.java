@@ -117,16 +117,20 @@ public interface ResourceStorageDao {
 
     /**
      * Sets the specified (resource-level) attribute at the given path.
+     * Deprecated: if needed store collector specific string attributes in a KV store
      */
-    public void setStringAttribute(ResourcePath path, String key, String value);
+    @Deprecated
+    void setStringAttribute(ResourcePath path, String key, String value);
 
     /**
      * Returns the value for the given (resource-level) attribute, or null if it does not exist.
+     * Deprecated: if needed store collector specific string attributes in a KV store
      */
     public String getStringAttribute(ResourcePath path, String key);
 
     /**
      * Returns the value for the given (resource-level) attribute, or null if it does not exist.
+     * Deprecated: if needed store collector specific string attributes in a KV store
      */
     public Map<String, String> getStringAttributes(ResourcePath path);
 
