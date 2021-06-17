@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.distributed.minion;
+package org.opennms.core.health.api;
 
-import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
+public final class HealthCheckConstants {
+    public static final String LOCAL = "local";
+    public static final String REST = "rest";
+    public static final String BROKER = "broker";
+    public static final String TELEMETRY = "telemetry";
+    public static final String DAO = "dao";
+    public static final String MINION = "minion";
+    public static final String ELASTIC = "elastic";
+    public static final String BUNDLE = "bundle";
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
-import static org.opennms.core.health.api.HealthCheckConstants.TELEMETRY;
-
-public class ListenerHealthCheck extends SimpleHealthCheck {
-
-    public ListenerHealthCheck(ListenerDefinition listenerDefinition) {
-        super(() -> "Verifying Listener " + listenerDefinition.getName() + " (" + listenerDefinition.getClassName() + ")");
-    }
-
-    @Override
-    public List<String> getTags() {
-        return Arrays.asList(LOCAL, TELEMETRY);
+    private HealthCheckConstants() {
     }
 }
-
-

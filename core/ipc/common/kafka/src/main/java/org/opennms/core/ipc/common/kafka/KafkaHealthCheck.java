@@ -29,12 +29,16 @@
 package org.opennms.core.ipc.common.kafka;
 
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
+
+import static org.opennms.core.health.api.HealthCheckConstants.BROKER;
 
 
 public class KafkaHealthCheck implements HealthCheck {
@@ -48,10 +52,14 @@ public class KafkaHealthCheck implements HealthCheck {
         this.type = type;
     }
 
-
     @Override
     public String getDescription() {
         return "Connecting to Kafka from " + type ;
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(BROKER);
     }
 
     @Override

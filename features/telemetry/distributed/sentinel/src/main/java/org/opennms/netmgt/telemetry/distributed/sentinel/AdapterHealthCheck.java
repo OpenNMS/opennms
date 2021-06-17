@@ -31,6 +31,12 @@ package org.opennms.netmgt.telemetry.distributed.sentinel;
 import org.opennms.core.health.api.SimpleHealthCheck;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.opennms.core.health.api.HealthCheckConstants.LOCAL;
+import static org.opennms.core.health.api.HealthCheckConstants.TELEMETRY;
+
 public class AdapterHealthCheck extends SimpleHealthCheck {
 
     public AdapterHealthCheck(AdapterDefinition adapterDef) {
@@ -39,5 +45,10 @@ public class AdapterHealthCheck extends SimpleHealthCheck {
 
     private AdapterHealthCheck(final String adapterName, final String adapterType) {
         super(() -> "Verifying Adapter " + adapterName + " (" + adapterType + ")");
+    }
+
+    @Override
+    public List<String> getTags() {
+        return Arrays.asList(LOCAL, TELEMETRY);
     }
 }
