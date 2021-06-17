@@ -55,7 +55,6 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao;
 
 public class TimeseriesSearcherTest {
 
@@ -65,10 +64,9 @@ public class TimeseriesSearcherTest {
     @Before
     public void setUp() {
         TimeseriesStorageManager storageManager = Mockito.mock(TimeseriesStorageManager.class);
-        TimeSeriesMetaDataDao metaDataDao = Mockito.mock(TimeSeriesMetaDataDao.class);
         when(storageManager.get()).thenReturn(storage);
         CacheConfig cacheConfig = new CacheConfigBuilder().withName(TimeseriesSearcherTest.class.getSimpleName()).build();
-        searcher = new TimeseriesSearcher(storageManager, metaDataDao, cacheConfig);
+        searcher = new TimeseriesSearcher(storageManager, cacheConfig);
     }
 
     @Test

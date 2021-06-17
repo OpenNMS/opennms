@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+
+  <changeSet author="pschweizer" id="29.0.0-drop-timeseries_meta-table">
+    <dropTable tableName="timeseries_meta"/>
+    <rollback>
+      <createTable tableName="timeseries_meta">
+        <column name="resourceid" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="name" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="value" type="text">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addUniqueConstraint tableName="timeseries_meta" columnNames="resourceid,name" />
+      <createIndex tableName="timeseries_meta"
+                   indexName="timeseries_meta_resourceid_idx" unique="false">
+        <column name="resourceid" />
+      </createIndex>
+    </rollback>
+  </changeSet>
+</databaseChangeLog>
