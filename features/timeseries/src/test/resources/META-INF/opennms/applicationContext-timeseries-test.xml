@@ -54,7 +54,7 @@
 
   <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManager"/>
 
-  <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.memory.InMemoryStorage" />
+  <bean id="timeseriesStorageImpl" class="org.opennms.integration.api.v1.timeseries.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
   <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>

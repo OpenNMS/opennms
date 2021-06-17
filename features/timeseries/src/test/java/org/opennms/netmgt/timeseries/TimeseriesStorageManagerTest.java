@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.netmgt.timeseries.memory.InMemoryStorage;
+import org.opennms.integration.api.v1.timeseries.InMemoryStorage;
 
 public class TimeseriesStorageManagerTest {
 
