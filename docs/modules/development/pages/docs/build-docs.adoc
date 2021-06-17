@@ -38,7 +38,7 @@ You need to include every new directory or text file in the general structure of
 The `nav.adoc` file defines the content hierarchy.
 
 .Sample structure of a nav.adoc file
-[source]
+[source, nav.adoc]
 ----
 
 .About  <1>
@@ -78,4 +78,3 @@ The generic path to a given version of the docs is:
 ----
 <docs_repo_dir>/build/site/<distro>/<branch_dir_name>
 ----
-
