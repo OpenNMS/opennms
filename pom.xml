@@ -1476,7 +1476,17 @@
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
     <argLineMemory>-Xmx2g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLineAllowReflection>--add-opens java.base/java.lang=ALL-UNNAMED
+        --add-opens=java.desktop/java.beans=ALL-UNNAMED
+        --add-opens=java.base/java.io=ALL-UNNAMED
+        --add-opens=java.base/java.math=ALL-UNNAMED
+        --add-opens=java.base/java.util=ALL-UNNAMED
+        --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+        --add-opens=java.base/java.util.regex=ALL-UNNAMED
+        --add-opens=java.base/java.net=ALL-UNNAMED
+        --add-opens=java.base/java.text=ALL-UNNAMED
+        --add-opens=java.sql/java.sql=ALL-UNNAMED</argLineAllowReflection>
+    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom ${argLineAllowReflection}</argLine>
     <skipITs>true</skipITs>
     <runPingTests>false</runPingTests>
 
