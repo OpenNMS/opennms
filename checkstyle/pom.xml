@@ -31,7 +31,7 @@
                   <version>[3.5,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
-                  <version>[11,12)</version>
+                  <version>[11,18)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>

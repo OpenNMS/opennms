@@ -804,7 +804,7 @@ if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
 fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
-JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1 | cut -d- -f1)"
 if [ -z "$JAVA_SHORT_VERSION" ]; then
 	JAVA_SHORT_VERSION=0
 fi
