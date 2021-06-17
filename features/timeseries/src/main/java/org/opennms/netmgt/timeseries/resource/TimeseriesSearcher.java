@@ -89,9 +89,6 @@ public class TimeseriesSearcher {
     }
 
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
-        if (depth < 0) {
-            throw new IllegalArgumentException("depth cannot be negative.");
-        }
         TagMatcher indexMatcher = ImmutableTagMatcher.builder()
                 .type(TagMatcher.Type.EQUALS_REGEX)
                 .key(IntrinsicTagNames.resourceId)
