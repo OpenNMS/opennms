@@ -53,6 +53,7 @@
   <onmsgi:list id="timeseriesStorageList" interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage">
     <onmsgi:listener ref="timeseriesStorageManager" bind-method="onBind" unbind-method="onUnbind"/>
   </onmsgi:list>
+  <onmsgi:service interface="org.opennms.netmgt.timeseries.TimeseriesStorageManager" ref="timeseriesStorageManager" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />

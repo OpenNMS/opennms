@@ -191,7 +191,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         numEntriesOnRingBuffer.decrementAndGet();
 
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
-        this.storage.get().store(event.getSamples());
+            this.storage.get().store(event.getSamples());
+            this.storage.getStats().record(event.getSamples());
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
         }

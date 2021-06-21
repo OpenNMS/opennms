@@ -37,6 +37,7 @@ import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import org.opennms.netmgt.timeseries.stats.MetricStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,8 @@ public class TimeseriesStorageManager {
     private CopyOnWriteArrayList<TimeSeriesStorage> stackOfStorages;
 
     private ServiceLookup<Class<?>, String> LOOKUP;
+
+    private MetricStats stats = new MetricStats();
 
     public TimeseriesStorageManager() {
         this(new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
@@ -77,6 +80,10 @@ public class TimeseriesStorageManager {
 
     private TimeSeriesStorage getOrNull() {
         return this.stackOfStorages.isEmpty() ? null : this.stackOfStorages.get(this.stackOfStorages.size()-1);
+    }
+
+    public MetricStats getStats() {
+        return this.stats;
     }
 
     @SuppressWarnings("rawtypes")
