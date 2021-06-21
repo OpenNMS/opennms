@@ -41,7 +41,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -336,8 +335,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         assertThat(eventsWithDistPoller, hasSize(greaterThanOrEqualTo(1)));
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
-        assertNotNull(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getLastEvent().getDistPoller());
-        assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getLastEvent().getDistPoller(), is("systemId1"));
         // Verify the consumed Node objects
         List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
         assertThat(nodes.size(), equalTo(2));

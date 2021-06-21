@@ -91,6 +91,7 @@ public class ProtobufMapper {
                         if (node == null) {
                             return builder.setId(nodeId).build();
                         }
+                        builder.setId(node.getId().longValue());
                         getString(node.getForeignId()).ifPresent(builder::setForeignId);
                         getString(node.getForeignSource()).ifPresent(builder::setForeignSource);
                         getString(node.getLabel()).ifPresent(builder::setNodeLabel);
