@@ -28,15 +28,24 @@
 
 package org.opennms.netmgt.timeseries.stats;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.Tag;
+
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+
+import net.agkn.hll.HLL;
 
 /**
  * We record statistics to answer the following questions:
@@ -49,32 +58,50 @@ import org.opennms.integration.api.v1.timeseries.Sample;
  */
 public class MetricStats {
 
-    private final static int MAX = 10;
+    private final static int MAX_TOP_N_METRIC = 10;
+    private final static int MAX_TOP_N_TAG_KEYS = 10000;
 
     private final AtomicInteger lowestTagCount = new AtomicInteger();
-    private final ConcurrentSkipListSet<Metric> topN = new ConcurrentSkipListSet<>(
+    private final ConcurrentSkipListSet<Metric> topNMetrics = new ConcurrentSkipListSet<>(
             Comparator.comparingInt(m -> ((Metric)m).getMetaTags().size() + ((Metric)m).getExternalTags().size())
                     .reversed()
                     .thenComparing(m -> ((Metric)m).getKey())); // write should not happen very often since we just push to the highest limit
+
+
+    private final ConcurrentHashMap<String, HLL> topNTags = new ConcurrentHashMap<>();
+
+    @SuppressWarnings("UnstableApiUsage")
+    private final HashFunction hllHashFunction = Hashing.murmur3_128();
 
     public void record(Collection<Sample> samples) {
         // race conditions might happen but it shouldn't matter for statistical purposes.
         for (Sample sample : samples) {
             Metric metric = sample.getMetric();
             int count = countNoOfTags(metric);
-            if (topN.size() < MAX && count >= lowestTagCount.get() || count > lowestTagCount.get() ) {
-                putInTopNList(metric);
-                // TODO: Patrick: Which string properties have the most unique values?
+            if (topNMetrics.size() < MAX_TOP_N_METRIC && count >= lowestTagCount.get() || count > lowestTagCount.get() ) {
+                putInTopNMetrics(metric);
+            }
+            if (this.topNTags.size() < MAX_TOP_N_TAG_KEYS) { // we stop counting once we reached the max
+                metric.getIntrinsicTags().forEach(this::putInTopTags);
+                metric.getMetaTags().forEach(this::putInTopTags);
+                metric.getExternalTags().forEach(this::putInTopTags);
             }
         }
     }
 
-    void putInTopNList(final Metric metric) {
-        topN.add(metric);
-        if(topN.size() > MAX) {
-            topN.pollLast();
+    void putInTopNMetrics(final Metric metric) {
+        topNMetrics.add(metric);
+        if(topNMetrics.size() > MAX_TOP_N_METRIC) {
+            topNMetrics.pollLast();
         }
-        this.lowestTagCount.set(countNoOfTags(topN.last()));
+        this.lowestTagCount.set(countNoOfTags(topNMetrics.last()));
+    }
+
+    void putInTopTags(final Tag tag) {
+        @SuppressWarnings("UnstableApiUsage")
+        long hash = hllHashFunction.hashString(tag.getValue(), StandardCharsets.UTF_8).asLong();
+        topNTags.computeIfAbsent( tag.getKey(), k -> new HLL(14, 5))
+                .addRaw(hash);
     }
 
     private int countNoOfTags(final Metric metric) {
@@ -85,6 +112,16 @@ public class MetricStats {
      * List.get(0) => has most tags (top n)
      */
     public List<Metric> getTopNMetricsWithMostTags() {
-        return topN.stream().collect(Collectors.toUnmodifiableList());
+        return topNMetrics.stream().collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<String> getTopNTags() {
+        Comparator<Map.Entry<String, HLL>> comp = Comparator.<Map.Entry<String, HLL>>comparingLong(e -> e.getValue().cardinality())
+                .reversed()
+                .thenComparing(Map.Entry::getKey);
+        return topNTags.entrySet().stream()
+                .sorted(comp)
+                .map(e -> e.getKey() + ": " + e.getValue().cardinality())
+                .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -50,8 +50,8 @@ public class TimeseriesStatsCommand implements Action {
     @Override
     public Object execute() {
         System.out.printf("Active TimeSeriesStorage plugin: %s%n", storageManager.get().getClass().getName());
-        System.out.printf("Metrics with highest number of tags:%n%s%n", storageManager.getStats().getTopNMetricsWithMostTags());
-        // TODO: Patrick print: Which string properties have the most unique values?
+        System.out.printf("Metrics with highest number of tags:%n%s%n%n", storageManager.getStats().getTopNMetricsWithMostTags());
+        System.out.printf("Tags with highest number of unique values:%n%s%n", storageManager.getStats().getTopNMetricsWithMostTags());
         return null;
     }
 }

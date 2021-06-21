@@ -64,6 +64,9 @@ public class MetricStatsTest {
         assertEquals(10, topN.size());
         assertEquals(12, count(topN.get(0)));
         assertEquals(4, count(topN.get(9)));
+
+        List<String> topNTags = stats.getTopNTags();
+        assertEquals(3, topNTags.size());
     }
 
     private List<Sample> createSample(int noTags) {
