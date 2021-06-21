@@ -25,7 +25,7 @@ opennms-core-ipc-grpc-client
 ----
 
 .Configure the gRPC client and the Minion location via the Karaf Shell
-[source, karaf]
+[source, console]
 ----
 ssh -p 8201 admin@localhost
 ----
@@ -92,7 +92,7 @@ TIP: This optional, if you want to enable TLS for gRPC you have to provide certi
      The commands for TLS are described below.
 
 .Connect to the Karaf Shell
-[source, karaf]
+[source, console]
 ----
 ssh -p 8201 admin@localhost
 ----

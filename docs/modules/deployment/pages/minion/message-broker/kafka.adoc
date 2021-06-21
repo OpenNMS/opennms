@@ -26,7 +26,7 @@ opennms-core-ipc-sink-kafka
 ----
 
 .Configure the Kafka features and the Minion location via the Karaf Shell
-[source, karaf]
+[source, console]
 ----
 ssh -p 8201 admin@localhost
 ----

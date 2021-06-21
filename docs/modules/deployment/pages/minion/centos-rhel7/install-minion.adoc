@@ -4,16 +4,12 @@
 sudo yum -y install java-11-openjdk-headless
 ----
 
-.Add repository and import GPG key
-[source, console]
-----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+include::../../repos/rhel-centos/horizon-rhel7.adoc[]
 endif::[]
-----
+
 ifeval::["{page-component-title}" == "Meridian"]
-Configure the repository by copying the Meridian repository file you received from OpenNMS Sales to the Minion server.
+include::../../repos/rhel-centos/meridian-rhel7.adoc[]
 endif::[]
 
 .Install the {page-component-title} Minion package
@@ -22,7 +18,6 @@ endif::[]
 ifeval::["{page-component-title}" == "Horizon"]
 sudo yum -y install opennms-minion
 endif::[]
-
 ifeval::["{page-component-title}" == "Meridian"]
 sudo yum -y install meridian-minion
 endif::[]
@@ -36,7 +31,12 @@ TIP: Disable the OpenNMS {page-component-title} repository after installation to
 [source, console]
 ----
 sudo yum -y install yum-utils
+ifeval::["{page-component-title}" == "Horizon"]
 sudo yum-config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum-config-manager --disable meridian
+endif::[]
 ----
 
 .Verify directory structure with the tree command
