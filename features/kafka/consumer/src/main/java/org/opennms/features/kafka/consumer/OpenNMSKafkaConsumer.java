@@ -26,23 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.consumer.events;
+package org.opennms.features.kafka.consumer;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -50,11 +47,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.features.kafka.consumer.events.EventsMapper;
+import org.opennms.features.kafka.consumer.events.EventsProto;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -131,7 +127,7 @@ public class OpenNMSKafkaConsumer {
         public void run() {
             KafkaConsumer<String, byte[]> consumer = new KafkaConsumer<>(consumerConfig);
             if (Strings.isNullOrEmpty(eventsTopic)) {
-                LOG.error("EventsTopic is invalid, not invoking kafka consumer");
+                LOG.error("EventsTopic is either null or empty, not invoking kafka consumer");
                 return;
             }
             consumer.subscribe(Arrays.asList(eventsTopic));
@@ -153,46 +149,13 @@ public class OpenNMSKafkaConsumer {
             }
         }
 
-        private void forwardEventsToOpenNMS(List<EventsProto.Event> pbEvents) {
-            List<Event> events = pbEvents.stream().map(this::toEvent).collect(Collectors.toList());
+        void forwardEventsToOpenNMS(List<EventsProto.Event> pbEvents) {
+            List<Event> events = EventsMapper.mapProtobufToEvents(pbEvents);
             Log log = new Log();
             events.forEach(log::addEvent);
-            eventForwarder.sendNow(log);
+            // SendNowSync sends events in synchronous mode which puts more backpressure on Kafka.
+            eventForwarder.sendNowSync(log);
             LOG.debug(" {} events forwarded to OpenNMS", events.size());
-        }
-
-
-        private Event toEvent(EventsProto.Event pbEvent) {
-            final EventBuilder builder = new EventBuilder(pbEvent.getUei(), pbEvent.getSource());
-            builder.setSeverity(OnmsSeverity.get(pbEvent.getSeverity().name()).getLabel());
-            getString(pbEvent.getHost()).ifPresent(builder::setHost);
-            if (pbEvent.getNodeId() > 0) {
-                builder.setNodeid(pbEvent.getNodeId());
-            }
-            getString(pbEvent.getIpAddress()).ifPresent(ip -> builder.setInterface(InetAddressUtils.getInetAddress(ip)));
-            getString(pbEvent.getServiceName()).ifPresent(builder::setService);
-            if(pbEvent.getIfIndex() > 0) {
-                builder.setIfIndex(pbEvent.getIfIndex());
-            }
-            getString(pbEvent.getDistPoller()).ifPresent(builder::setDistPoller);
-            getString(pbEvent.getDescription()).ifPresent(builder::setDescription);
-            getString(pbEvent.getLogDest()).ifPresent(builder::setLogDest);
-            getString(pbEvent.getLogContent()).ifPresent(builder::setLogMessage);
-            for (EventsProto.EventParameter p : pbEvent.getParameterList()) {
-                builder.setParam(p.getName(), p.getValue());
-            }
-            Event event = builder.getEvent();
-            if(pbEvent.getCreateTime() > 0) {
-                event.setCreationTime(new Date(pbEvent.getCreateTime()));
-            }
-            return event;
-        }
-
-        private Optional<String> getString(String value) {
-            if (!Strings.isNullOrEmpty(value)) {
-                return Optional.of(value);
-            }
-            return Optional.empty();
         }
 
     }

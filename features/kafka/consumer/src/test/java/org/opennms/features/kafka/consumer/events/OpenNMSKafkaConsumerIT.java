@@ -35,7 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +52,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.features.kafka.consumer.OpenNMSKafkaConsumer;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -104,15 +104,12 @@ public class OpenNMSKafkaConsumerIT {
         kafkaConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
-        long eventCreationTime = System.currentTimeMillis();
         EventBuilder eventBuilder = new EventBuilder().setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
                 .setSource("kafka-events-test").addParam("interface", "192.168.0.1");
         Event event = eventBuilder.getEvent();
-        event.setCreationTime(new Date(eventCreationTime));
         eventdIpcMgr.getEventAnticipator().anticipateEvent(event);
         KafkaProducer<String, byte[]> kafkaProducer = new KafkaProducer<String, byte[]>(kafkaConfig);
         EventsProto.Event eventsProto = EventsProto.Event.newBuilder().setSeverity(EventsProto.Severity.NORMAL).setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
-                                    .setCreateTime(eventCreationTime)
                                     .setSource("kafka-events-test").addParameter(EventsProto.EventParameter.newBuilder().setName("interface").setValue("192.168.0.1").build())
                                     .build();
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>("opennms-events", eventsProto.toByteArray());

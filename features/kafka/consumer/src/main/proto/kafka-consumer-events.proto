@@ -20,18 +20,17 @@ message EventParameter {
 }
 
 message Event {
-    string uei = 1;
-    string source = 2;
-    uint64 create_time = 3;
-    Severity severity = 4;
-    string host = 5;
-    uint32 node_id = 6;
-    string ip_address = 7;
-    string service_name = 8;
-    uint32 if_index = 9;
-    string description = 10;
-    string dist_poller = 11;
-    string log_dest = 12;
-    string log_content = 13;
-    repeated EventParameter parameter = 14;
+    string uei = 1; // required field
+    string source = 2; // required field
+    Severity severity = 3; // required field
+    string host = 4;
+    uint32 node_id = 5;
+    string ip_address = 6;
+    string service_name = 7;
+    uint32 if_index = 8;
+    string description = 9;
+    string dist_poller = 10;
+    string log_dest = 11;
+    string log_content = 12;
+    repeated EventParameter parameter = 13;
 }
