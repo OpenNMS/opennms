@@ -58,3 +58,5 @@ You will find `.adoc` files in the `./pages` directory or one of the subdirector
 | `docs/modules/reference/`      | Glossary and miscellaneous configuration topics
 | `docs/modules/releasenotes/`      | Changelog and release notes
 |===
+
+NOTE: Documentation for other OpenNMS projects (for example, opennms-helm) follows a similar hierarchy, as appropriate to that project. 
