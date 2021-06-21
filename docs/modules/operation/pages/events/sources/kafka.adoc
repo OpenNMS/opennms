@@ -59,3 +59,4 @@ config:property-set eventsTopic opennms-kafka-events
 config:update
 ----
 
+NOTE: While configuring events topic, make sure that it doesn't conflict with other topics in OpenNMS subsystem. If you are unsure, keep the default one.
