@@ -32,8 +32,6 @@
         <configuration>
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-            <Karaf-Commands>*</Karaf-Commands>
-            <Bundle-Activator>org.opennms.features.kafka.producer.collection.KafkaPersisterActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -88,21 +86,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-      <version>${kafkaBundleVersion}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka</artifactId>
+      <version>${project.version}</version>
     </dependency>
-
 
     <dependency>
       <groupId>junit</groupId>

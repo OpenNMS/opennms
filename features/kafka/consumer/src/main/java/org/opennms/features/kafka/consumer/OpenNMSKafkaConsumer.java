@@ -29,7 +29,6 @@
 package org.opennms.features.kafka.consumer;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -47,6 +46,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.kafka.consumer.events.EventsMapper;
 import org.opennms.features.kafka.consumer.events.EventsProto;
@@ -125,16 +125,15 @@ public class OpenNMSKafkaConsumer {
 
         @Override
         public void run() {
-            KafkaConsumer<String, byte[]> consumer = new KafkaConsumer<>(consumerConfig);
+            KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(consumerConfig), KafkaConsumer.class.getClassLoader());
             if (Strings.isNullOrEmpty(eventsTopic)) {
                 LOG.error("EventsTopic is either null or empty, not invoking kafka consumer");
                 return;
             }
             consumer.subscribe(Arrays.asList(eventsTopic));
-            LOG.info("subscribed to  {}", eventsTopic);
+            LOG.info("subscribed to {}", eventsTopic);
             while (!closed.get()) {
-
-                ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(10000));
+                ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
                 LOG.trace("Received {} records", records.count());
                 List<EventsProto.Event> pbEvents = new ArrayList<>();
                 for (ConsumerRecord<String, byte[]> record : records) {
@@ -143,7 +142,7 @@ public class OpenNMSKafkaConsumer {
                         pbEvents.add(pbEvent);
                         forwardEventsToOpenNMS(pbEvents);
                     } catch (InvalidProtocolBufferException e) {
-                        LOG.warn("Error while parsing event with key {} ", record.key());
+                        LOG.warn("Error while parsing event with key {}", record.key());
                     }
                 }
             }
@@ -155,7 +154,9 @@ public class OpenNMSKafkaConsumer {
             events.forEach(log::addEvent);
             // SendNowSync sends events in synchronous mode which puts more backpressure on Kafka.
             eventForwarder.sendNowSync(log);
-            LOG.debug(" {} events forwarded to OpenNMS", events.size());
+            log.getEvents().getEventCollection().forEach(event -> {
+                LOG.debug(" Event with uei {}, source {} forwarded to OpenNMS", event.getUei(), event.getSource());
+            });
         }
 
     }
