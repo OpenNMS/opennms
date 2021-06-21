@@ -87,17 +87,17 @@ public class ProtobufMapper {
                 public OpennmsModelProtos.NodeCriteria load(Long nodeId)  {
                     return sessionUtils.withReadOnlyTransaction(() -> {
                         final OnmsNode node = nodeDao.get(nodeId.intValue());
-                        if (node != null && node.getForeignId() != null && node.getForeignSource() != null) {
-                            return OpennmsModelProtos.NodeCriteria.newBuilder()
-                                    .setId(nodeId)
-                                    .setForeignId(node.getForeignId())
-                                    .setForeignSource(node.getForeignSource())
-                                    .build();
-                        } else {
-                            return OpennmsModelProtos.NodeCriteria.newBuilder()
-                                    .setId(nodeId)
-                                    .build();
+                        OpennmsModelProtos.NodeCriteria.Builder builder = OpennmsModelProtos.NodeCriteria.newBuilder();
+                        if (node == null) {
+                            return builder.setId(nodeId).build();
                         }
+                        getString(node.getForeignId()).ifPresent(builder::setForeignId);
+                        getString(node.getForeignSource()).ifPresent(builder::setForeignSource);
+                        getString(node.getLabel()).ifPresent(builder::setNodeLabel);
+                        if(node.getLocation() != null) {
+                            getString(node.getLocation().getLocationName()).ifPresent(builder::setLocation);
+                        }
+                        return builder.build();
                     });
                 }
             });
@@ -211,6 +211,7 @@ public class ProtobufMapper {
 
         getString(eventConfDao.getEventLabel(event.getUei())).ifPresent(builder::setLabel);
         getString(event.getDescr()).ifPresent(builder::setDescription);
+        getString(event.getDistPoller()).ifPresent(builder::setDistPoller);
 
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
@@ -290,6 +291,9 @@ public class ProtobufMapper {
 
             setTimeIfNotNull(event.getEventTime(), builder::setTime);
             setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
+            if(event.getDistPoller() != null) {
+                getString(event.getDistPoller().getId()).ifPresent(builder::setDistPoller);
+            }
             return builder;
         } catch (RuntimeException e) {
             // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi

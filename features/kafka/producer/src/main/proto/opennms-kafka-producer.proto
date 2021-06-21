@@ -35,6 +35,8 @@ message NodeCriteria {
   uint64 id = 1;
   string foreign_source = 2;
   string foreign_id = 3;
+  string node_label = 4;
+  string location = 5;
 }
 
 message EventParameter {
@@ -58,6 +60,7 @@ message Event {
   bool display = 12;
   NodeCriteria node_criteria = 13;
   string ip_address = 14;
+  string dist_poller = 15;
 }
 
 message Alarm {
