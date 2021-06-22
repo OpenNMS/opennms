@@ -157,6 +157,7 @@
 *** xref:events/sources/eif-adapter.adoc[]
 *** xref:events/sources/tl1.adoc[]
 *** xref:events/sources/sink-api.adoc[]
+*** xref:events/sources/kafka.adoc[]
 ** xref:events/eventbus.adoc[]
 ** xref:events/event-configuration.adoc[]
 ** xref:events/event-translator.adoc[]
