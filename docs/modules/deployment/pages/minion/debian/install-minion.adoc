@@ -13,9 +13,9 @@ sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 sudo apt update
 ----
 
-NOTE: The message with conflicting distributions stable but got opennms-xx can be safely ignored.
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
 
-.Installing the of {page-component-title} Minion
+.Install the {page-component-title} Minion package
 [source, console]
 ----
 sudo apt -y install opennms-minion
@@ -23,7 +23,7 @@ sudo apt -y install opennms-minion
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to performing an upgrade.
 
 [source, console]
 ----

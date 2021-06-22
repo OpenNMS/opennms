@@ -13,10 +13,10 @@ encryption.enabled = true<1>
 #...
 encryption.algorithm = SHA-512<2>
 ----
-<1> Enable password encryption from `false` to `true`
-<2> Set a secure encryption algorithm like `SHA-512`
+<1> Enable password encryption from `false` to `true`.
+<2> Set a secure encryption algorithm like `SHA-512`.
 
-As soon the file is saved, Karaf will immediately encrypt the password in `users.properties`.
+Once the file is saved, Karaf immediately encrypts the password in `users.properties`.
 
 .Set a secure admin password for Karaf
 [source, console]
@@ -33,8 +33,8 @@ sudo vi /opt/minion/etc/users.properties
 # OPENNMS: Change the admin user from 'karaf' to 'admin'
 admin = {CRYPT}C7AD...{CRYPT},_g_:admingroup<1>
 ----
-<1> Replace the whole string `\{CRYPT}C7AD...\{CRYPT}` with your new password in plainttext.
-    As soon you save the file the password will be SHA-512 encrypted.
+<1> Replace the whole string `\{CRYPT}C7AD...\{CRYPT}` with your new password in plaintext.
+    After you save the file, the password will be SHA-512 encrypted.
 
 .Set restrictive file permissions
 [source, console]
