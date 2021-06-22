@@ -29,8 +29,8 @@
 package org.opennms.netmgt.timeseries.resource;
 
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.WILDCARD_INDEX_NO;
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
 import java.util.Arrays;
 import java.util.Collections;

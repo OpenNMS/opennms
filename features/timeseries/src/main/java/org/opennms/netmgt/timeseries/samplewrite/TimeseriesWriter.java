@@ -43,6 +43,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -94,6 +95,9 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     @Autowired
     private TimeseriesStorageManager storage;
+
+    @Autowired
+    private StatisticsCollector stats;
 
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
@@ -192,7 +196,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
         try(Timer.Context context = this.sampleWriteTsTimer.time()){
             this.storage.get().store(event.getSamples());
-            this.storage.getStats().record(event.getSamples());
+            this.stats.record(event.getSamples());
         } catch (Throwable t) {
             RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
         }

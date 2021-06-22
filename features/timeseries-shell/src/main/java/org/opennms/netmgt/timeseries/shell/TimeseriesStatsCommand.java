@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.timeseries.shell;
 
+import java.io.PrintStream;
+
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollector;
 
 /**
  * Shows statistics of the time series layer.
@@ -47,11 +52,28 @@ public class TimeseriesStatsCommand implements Action {
     @Reference
     private TimeseriesStorageManager storageManager;
 
+    @Reference
+    private StatisticsCollector stats;
+
+
     @Override
     public Object execute() {
-        System.out.printf("Active TimeSeriesStorage plugin: %s%n", storageManager.get().getClass().getName());
-        System.out.printf("Metrics with highest number of tags:%n%s%n%n", storageManager.getStats().getTopNMetricsWithMostTags());
-        System.out.printf("Tags with highest number of unique values:%n%s%n", storageManager.getStats().getTopNMetricsWithMostTags());
+        PrintStream out = System.out;
+        out.println("Active TimeSeriesStorage plugin:");
+        out.println(storageManager.get().getClass().getName());
+        out.println();
+        out.println("Metrics with highest number of tags:");
+        stats.getTopNMetricsWithMostTags().stream().map(this::toString).forEach(out::println);
+        out.println();
+        System.out.println("Tags with highest number of unique values (top 100):");
+        stats.getTopNTags().stream().limit(100).forEach(out::println);
         return null;
+    }
+
+    private String toString(final Metric metric) {
+        return metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue() + "/"
+                + metric.getFirstTagByKey(IntrinsicTagNames.name).getValue() +
+                "\n    metaTags:      " + metric.getMetaTags().toString() +
+                "\n    intrinsicTags: " + metric.getIntrinsicTags().toString();
     }
 }

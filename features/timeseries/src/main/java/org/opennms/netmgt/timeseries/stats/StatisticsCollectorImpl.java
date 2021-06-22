@@ -47,16 +47,7 @@ import com.google.common.hash.Hashing;
 
 import net.agkn.hll.HLL;
 
-/**
- * We record statistics to answer the following questions:
- * <ul>
- *     <li>What metrics series have the highest tag cardinality?
- *         What does the set tags for the top 10 look like?</li>
- *     <li>Which string properties have the most unique values?</li>
- * </ul>
- *
- */
-public class MetricStats {
+public class StatisticsCollectorImpl implements StatisticsCollector {
 
     private final static int MAX_TOP_N_METRIC = 10;
     private final static int MAX_TOP_N_TAG_KEYS = 10000;
@@ -66,10 +57,7 @@ public class MetricStats {
             Comparator.comparingInt(m -> ((Metric)m).getMetaTags().size() + ((Metric)m).getExternalTags().size())
                     .reversed()
                     .thenComparing(m -> ((Metric)m).getKey())); // write should not happen very often since we just push to the highest limit
-
-
     private final ConcurrentHashMap<String, HLL> topNTags = new ConcurrentHashMap<>();
-
     @SuppressWarnings("UnstableApiUsage")
     private final HashFunction hllHashFunction = Hashing.murmur3_128();
 
@@ -121,6 +109,7 @@ public class MetricStats {
                 .thenComparing(Map.Entry::getKey);
         return topNTags.entrySet().stream()
                 .sorted(comp)
+                .limit(100)
                 .map(e -> e.getKey() + ": " + e.getValue().cardinality())
                 .collect(Collectors.toUnmodifiableList());
     }

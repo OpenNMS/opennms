@@ -41,13 +41,13 @@ import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
-import org.opennms.netmgt.timeseries.stats.MetricStats;
+import org.opennms.netmgt.timeseries.stats.StatisticsCollectorImpl;
 
-public class MetricStatsTest {
+public class StatisticsCollectorImplTest {
 
     @Test
     public void test() {
-        MetricStats stats = new MetricStats();
+        StatisticsCollectorImpl stats = new StatisticsCollectorImpl();
         stats.record(createSample(3));
         stats.record(createSample(4));
         stats.record(createSample(4));
