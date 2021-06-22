@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -73,6 +74,7 @@ public class ProtobufMapper {
     private final NodeDao nodeDao;
     private final HwEntityDao hwEntityDao;
     private final LoadingCache<Long, OpennmsModelProtos.NodeCriteria> nodeIdToCriteriaCache;
+    public static final int EVENT_SNMP_FIELD_SIZE = 256;
 
     public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao, SessionUtils sessionUtils,
                           NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
@@ -213,7 +215,6 @@ public class ProtobufMapper {
         getString(eventConfDao.getEventLabel(event.getUei())).ifPresent(builder::setLabel);
         getString(event.getDescr()).ifPresent(builder::setDescription);
         getString(event.getDistPoller()).ifPresent(builder::setDistPoller);
-
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
         }
@@ -246,6 +247,9 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(event.getTime(), builder::setTime);
         setTimeIfNotNull(event.getCreationTime(), builder::setCreateTime);
+
+        String eventSnmp = event.getSnmp() == null ? null : SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE);
+        getString(eventSnmp).ifPresent(builder::setEventSnmp);
 
         return builder;
     }
@@ -289,12 +293,12 @@ public class ProtobufMapper {
                         .setName(param.getName())
                         .setValue(param.getValue()));
             }
-
             setTimeIfNotNull(event.getEventTime(), builder::setTime);
             setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
             if(event.getDistPoller() != null) {
                 getString(event.getDistPoller().getId()).ifPresent(builder::setDistPoller);
             }
+            getString(event.getEventSnmp()).ifPresent(builder::setEventSnmp);
             return builder;
         } catch (RuntimeException e) {
             // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
@@ -381,7 +385,7 @@ public class ProtobufMapper {
         setTimeIfNotNull(alarm.getFirstEventTime(), builder::setFirstEventTime);
         setTimeIfNotNull(alarm.getLastEventTime(), builder::setLastEventTime);
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
-
+        setTimeIfNotNull(alarm.getLastUpdateTime(), builder::setLastUpdateTime);
         return builder;
     }
 

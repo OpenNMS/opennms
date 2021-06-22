@@ -61,6 +61,7 @@ message Event {
   NodeCriteria node_criteria = 13;
   string ip_address = 14;
   string dist_poller = 15;
+  string event_snmp = 16;
 }
 
 message Alarm {
@@ -93,6 +94,7 @@ message Alarm {
   repeated Alarm relatedAlarm = 22;
   string trouble_ticket_id = 23;
   TroubleTicketState trouble_ticket_state = 24;
+  uint64 last_update_time = 25;
 }
 
 message AlarmFeedback {
