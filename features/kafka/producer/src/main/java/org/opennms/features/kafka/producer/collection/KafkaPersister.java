@@ -28,9 +28,10 @@
 
 package org.opennms.features.kafka.producer.collection;
 
+import java.util.List;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.opennms.features.kafka.producer.collection.CollectionSetMapper;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -47,6 +48,8 @@ public class KafkaPersister implements Persister {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
 
+    private final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
+
     private CollectionSetMapper collectionSetMapper;
 
     private KafkaProducer<String, byte[]> producer;
@@ -59,6 +62,111 @@ public class KafkaPersister implements Persister {
 
         CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
                 .buildCollectionSetProtos(collectionSet);
+        bisectAndSendMessageToKafka(collectionSetProto);
+    }
+
+    void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
+        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+
+            if(collectionSetProto.getResourceCount() == 1) {
+                /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
+                CollectionSetProtos.CollectionSetResource collectionSetResource = collectionSetProto.getResource(0);
+                if(collectionSetResource.getNumericList().size() > 0) {
+                    // Handle numeric attributes only.
+                    CollectionSetProtos.CollectionSetResource.Builder numericResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
+                    numericResourceBuilder.mergeFrom(collectionSetResource).clearString();
+                    CollectionSetProtos.CollectionSet collectionSetWithNumeric = CollectionSetProtos.CollectionSet.newBuilder()
+                            .addResource(numericResourceBuilder).setTimestamp(collectionSetProto.getTimestamp()).build();
+                    bisectNumericAttributes(collectionSetWithNumeric);
+                }
+                if(collectionSetResource.getStringList().size() > 0) {
+                    // Handle string attributes only
+                    CollectionSetProtos.CollectionSetResource.Builder stringResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
+                    stringResourceBuilder.mergeFrom(collectionSetResource).clearNumeric();
+                    CollectionSetProtos.CollectionSet collectionSetWithStringAttributes = CollectionSetProtos.CollectionSet.newBuilder()
+                            .addResource(stringResourceBuilder).setTimestamp(collectionSetProto.getTimestamp()).build();
+                    bisectStringAttributes(collectionSetWithStringAttributes);
+                }
+            } else {
+                // Divide resources into two in recursive way.
+                int middle = collectionSetProto.getResourceCount() / 2;
+                List<CollectionSetResource> firstPart = collectionSetProto.getResourceList().subList(0, middle);
+                CollectionSetProtos.CollectionSet firstPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
+                        .mergeFrom(collectionSetProto).clearResource().addAllResource(firstPart).build();
+                bisectAndSendMessageToKafka(firstPartCollectionSet);
+
+                List<CollectionSetResource> secondPart = collectionSetProto.getResourceList().subList(middle, collectionSetProto.getResourceCount());
+                CollectionSetProtos.CollectionSet secondPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
+                        .mergeFrom(collectionSetProto).clearResource().addAllResource(secondPart).build();
+                bisectAndSendMessageToKafka(secondPartCollectionSet);
+            }
+        } else {
+            sendMessageToKafka(collectionSetProto);
+        }
+    }
+
+    private void bisectNumericAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
+        // Divide numeric attributes in recursive way
+        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+            // First Part
+            int middle = collectionSetProto.getResource(0).getNumericCount() / 2;
+            List<CollectionSetProtos.NumericAttribute> firstPartNumericAttributes = collectionSetProto.getResource(0).getNumericList().subList(0, middle);
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, firstPartNumericAttributes));
+
+            // Second Part.
+            List<CollectionSetProtos.NumericAttribute> secondPartNumericAttributes = collectionSetProto.getResource(0).getNumericList()
+                    .subList(middle, collectionSetProto.getResource(0).getNumericCount());
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, secondPartNumericAttributes));
+        } else {
+            sendMessageToKafka(collectionSetProto);
+        }
+    }
+
+    private CollectionSetProtos.CollectionSet buildCollectionSetWithNumericAttributes(CollectionSetProtos.CollectionSet originalCollectionSet,
+                                                                                      List<CollectionSetProtos.NumericAttribute> numericAttributes) {
+
+        CollectionSetProtos.CollectionSet.Builder collectionSetBuilder = CollectionSetProtos.CollectionSet.newBuilder()
+                .setTimestamp(originalCollectionSet.getTimestamp());
+        CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
+        collectionSetResourceBuilder.mergeFrom(originalCollectionSet.getResource(0)).clearNumeric().addAllNumeric(numericAttributes);
+        collectionSetBuilder.addResource(collectionSetResourceBuilder);
+        return collectionSetBuilder.build();
+    }
+
+    private void bisectStringAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
+        // Divide string attributes in recursive way
+        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+            // First Part
+            int middle = collectionSetProto.getResource(0).getStringCount() / 2;
+            List<CollectionSetProtos.StringAttribute> firstPartStringAttributes = collectionSetProto.getResource(0).getStringList().subList(0, middle);
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, firstPartStringAttributes));
+
+            // Second Part.
+            List<CollectionSetProtos.StringAttribute> secondPartStringAttributes = collectionSetProto.getResource(0).getStringList().
+                    subList(middle, collectionSetProto.getResource(0).getStringCount());
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, secondPartStringAttributes));
+        } else {
+            sendMessageToKafka(collectionSetProto);
+        }
+    }
+
+    private CollectionSetProtos.CollectionSet buildCollectionSetWithStringAttributes(CollectionSetProtos.CollectionSet originalCollectionSet,
+                                                                                      List<CollectionSetProtos.StringAttribute> stringAttributes) {
+
+        CollectionSetProtos.CollectionSet.Builder collectionSetBuilder = CollectionSetProtos.CollectionSet.newBuilder()
+                .setTimestamp(originalCollectionSet.getTimestamp());
+        CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
+        collectionSetResourceBuilder.mergeFrom(originalCollectionSet.getResource(0)).clearString().addAllString(stringAttributes);
+        collectionSetBuilder.addResource(collectionSetResourceBuilder);
+        return collectionSetBuilder.build();
+    }
+
+    boolean checkForMaxSize(int length) {
+        return length > MAX_BUFFER_SIZE_CONFIGURED;
+    }
+    
+    private void sendMessageToKafka( CollectionSetProtos.CollectionSet collectionSetProto) {
+
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key,
@@ -71,7 +179,6 @@ public class KafkaPersister implements Persister {
                 LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
             }
         });
-
     }
 
     private String deriveKeyFromCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {

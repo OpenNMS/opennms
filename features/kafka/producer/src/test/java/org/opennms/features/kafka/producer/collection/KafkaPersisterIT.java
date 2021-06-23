@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -83,12 +84,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/applicationContext-test-kafka-collection.xml" })
+        "classpath:/applicationContext-test-kafka-collection.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
 public class KafkaPersisterIT {
@@ -158,7 +159,7 @@ public class KafkaPersisterIT {
         CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(latencyCollectionResource, new Date());
         persister.visitCollectionSet(collectionSet);
         persister.visitCollectionSet(responseTimeCollectionSet);
-        
+
         await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
         List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream().map(CollectionSetProtos.CollectionSet::getResourceList).flatMap(Collection::stream).collect(Collectors.toList());
         Optional<CollectionSetProtos.CollectionSetResource> responseTimeResource = resources.stream().filter(CollectionSetProtos.CollectionSetResource::hasResponse).findFirst();
@@ -176,6 +177,12 @@ public class KafkaPersisterIT {
                 }
         );
 
+    }
+
+    @After
+    public void destroy() {
+        kafkaConsumer.shutdown();
+        executor.shutdown();
     }
 
 }
