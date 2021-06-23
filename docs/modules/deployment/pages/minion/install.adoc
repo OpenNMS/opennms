@@ -17,7 +17,7 @@
 * Java installed {compatible-javajdk}
 * DNS configured so that localhost and your server's host name resolve properly
 * {page-component-title} core instance runs on latest stable release
-* Minion server can access the {page-component-title} core instance via REST (8980/tcp) and desired message broker nodes (for example, ActiveMQ 61616/tcp, Apache Kafke 9092/tcp)
+* Minion server can access the {page-component-title} core instance via REST (8980/tcp) and desired message broker nodes (for example, ActiveMQ 61616/tcp, Apache Kafka 9092/tcp)
 * System user with administrative permissions (sudo) to perform the installation tasks
 ifeval::["{page-component-title}" == "Horizon"]
 * If you are running the services in link:https://docs.docker.com/[Docker] you also need link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples
