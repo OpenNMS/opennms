@@ -756,7 +756,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
-                - "jira/NMS-13285"
 
 jobs:
   build:

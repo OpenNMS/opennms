@@ -56,8 +56,6 @@ publishPackage cloudsmith push raw \
   "${PROJECT}/config-schema" \
   "/tmp/minion-config-schema/minion-config-schema.yml"
 
-# this is just for testing, remove it later!
-exit 0
 for FILE in /tmp/rpm-horizon/*.rpm /tmp/rpm-minion/*.rpm /tmp/rpm-sentinel/*.rpm; do
   # give it 3 tries then die
   publishPackage cloudsmith push rpm --no-wait-for-sync "${PROJECT}/$REPO/any-distro/any-version" "$FILE" ||
