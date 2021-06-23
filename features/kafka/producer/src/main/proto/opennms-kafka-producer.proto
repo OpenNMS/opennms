@@ -45,6 +45,15 @@ message EventParameter {
   string type = 3;
 }
 
+message SnmpInfo {
+  string id = 1;
+  string id_text = 2;
+  string version = 3;
+  uint32 specific = 4;
+  uint32 generic = 5;
+  string community = 6;
+}
+
 message Event {
   uint64 id = 1;
   string uei = 2;
@@ -61,7 +70,7 @@ message Event {
   NodeCriteria node_criteria = 13;
   string ip_address = 14;
   string dist_poller = 15;
-  string event_snmp = 16;
+  SnmpInfo snmpInfo = 16;
 }
 
 message Alarm {

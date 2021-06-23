@@ -57,9 +57,11 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Snmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Enums;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -74,7 +76,6 @@ public class ProtobufMapper {
     private final NodeDao nodeDao;
     private final HwEntityDao hwEntityDao;
     private final LoadingCache<Long, OpennmsModelProtos.NodeCriteria> nodeIdToCriteriaCache;
-    public static final int EVENT_SNMP_FIELD_SIZE = 256;
 
     public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao, SessionUtils sessionUtils,
                           NodeDao nodeDao, long nodeIdToCriteriaMaxCacheSize) {
@@ -247,11 +248,25 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(event.getTime(), builder::setTime);
         setTimeIfNotNull(event.getCreationTime(), builder::setCreateTime);
-
-        String eventSnmp = event.getSnmp() == null ? null : SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE);
-        getString(eventSnmp).ifPresent(builder::setEventSnmp);
-
+        if (event.getSnmp() != null) {
+            builder.setSnmpInfo(buildSnmpInfo(event.getSnmp()));
+        }
         return builder;
+    }
+
+    private OpennmsModelProtos.SnmpInfo.Builder buildSnmpInfo(Snmp snmp) {
+        OpennmsModelProtos.SnmpInfo.Builder snmpInfoBuilder = OpennmsModelProtos.SnmpInfo.newBuilder();
+        getString(snmp.getId()).ifPresent(snmpInfoBuilder::setId);
+        getString(snmp.getIdtext()).ifPresent(snmpInfoBuilder::setIdText);
+        getString(snmp.getVersion()).ifPresent(snmpInfoBuilder::setVersion);
+        if (snmp.hasSpecific()) {
+            snmpInfoBuilder.setSpecific(snmp.getSpecific());
+        }
+        if (snmp.hasGeneric()) {
+            snmpInfoBuilder.setGeneric(snmp.getGeneric());
+        }
+        getString(snmp.getCommunity()).ifPresent(snmpInfoBuilder::setCommunity);
+        return snmpInfoBuilder;
     }
 
     public OpennmsModelProtos.Event.Builder toEvent(OnmsEvent event) {
@@ -298,7 +313,12 @@ public class ProtobufMapper {
             if(event.getDistPoller() != null) {
                 getString(event.getDistPoller().getId()).ifPresent(builder::setDistPoller);
             }
-            getString(event.getEventSnmp()).ifPresent(builder::setEventSnmp);
+            if(!Strings.isNullOrEmpty(event.getEventSnmp())) {
+                Snmp snmp = SnmpInfo.createSnmp(event.getEventSnmp());
+                if(snmp != null) {
+                    builder.setSnmpInfo(buildSnmpInfo(snmp));
+                }
+            }
             return builder;
         } catch (RuntimeException e) {
             // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
@@ -620,4 +640,8 @@ public class ProtobufMapper {
         return Optional.empty();
     }
 
+    @VisibleForTesting
+    LoadingCache<Long, OpennmsModelProtos.NodeCriteria> getNodeIdToCriteriaCache() {
+        return nodeIdToCriteriaCache;
+    }
 }
