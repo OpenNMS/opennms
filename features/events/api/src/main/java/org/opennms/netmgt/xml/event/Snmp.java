@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.events.api.model.ISnmp;
 
 /**
  * The snmp information from the trap
