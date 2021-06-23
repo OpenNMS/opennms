@@ -42,9 +42,14 @@ import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,7 +134,7 @@ public class Installer {
 
     private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
 
-    private static String RUNAS_USER = null;
+    private String RUNAS_USER = null;
 
     /**
      * <p>Constructor for Installer.</p>
@@ -340,10 +345,11 @@ public class Installer {
 
     /**
      * <p>loadProperties</p>
+     * @throws IOException
      *
      * @throws java.lang.Exception if any.
      */
-    public void loadProperties() throws Exception {
+    public void loadProperties() throws IOException {
         m_properties = new Properties();
         m_properties.load(Installer.class.getResourceAsStream("/installer.properties"));
 
@@ -402,11 +408,11 @@ public class Installer {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public String fetchProperty(String property) throws Exception {
+    public String fetchProperty(String property) throws IllegalStateException {
         String value;
 
         if ((value = m_properties.getProperty(property)) == null) {
-            throw new Exception("property \"" + property + "\" not set "
+            throw new IllegalStateException("property \"" + property + "\" not set "
                     + "from bundled installer.properties file");
         }
 
@@ -595,7 +601,7 @@ public class Installer {
         }
     }
 
-    private String getRunas() throws IOException {
+    protected String getRunas() throws IOException {
         if (RUNAS_USER == null) {
             final var opennmsConf = readOpennmsConf();
             // use RUNAS from opennms.conf if found, fall back to -Dopennms.runas, fall back to "opennms" if nothing is found
@@ -605,7 +611,11 @@ public class Installer {
         return RUNAS_USER;
     }
 
-    private Properties readOpennmsConf() throws IOException {
+    protected Properties readOpennmsConf() throws IOException {
+        if (m_opennms_home == null) {
+            this.loadProperties();
+        }
+
         final var opennmsConf = Paths.get(m_opennms_home, "etc", "opennms.conf");
         final var props = new Properties();
 
