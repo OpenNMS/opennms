@@ -58,8 +58,9 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response probeHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+    public Response probeHealth(int timeoutInMs, UriInfo uriInfo) {
+        List<String> tags = uriInfo.getQueryParameters().get("tag");
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs,tags);
         final Health health = healthWrapper.health;
         if (health.isSuccess()) {
             return Response.ok()
@@ -116,11 +117,6 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    private HealthWrapper getHealthInternally(int timeoutInMs) {
-        return getHealthInternally(timeoutInMs, null);
     }
 
     private static class HealthWrapper {
