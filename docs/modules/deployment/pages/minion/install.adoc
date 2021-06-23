@@ -1,32 +1,32 @@
 [[install-minion]]
-= Installing Minion
+= Install Minion
 
 [[objectives]]
 == Objectives
 
-* Install a {page-component-title} Minion on one of the following <<minion/system-requirements.adoc#operating-systems-Core, operating systems>>
-* Secure access with encrypted passwords to the Karaf shell
+* Install a {page-component-title} Minion on one of the supported <<minion/system-requirements.adoc#operating-systems-Core, operating systems>>
+* Secure access to the Karaf shell with encrypted passwords 
 * Configure connection to message broker for communication with the {page-component-title} core instance
 * Verify the setup
 
 == Requirements
 
-* The {page-component-title} core instance is running and configured with a <<core/setup-message-broker.adoc#setup-message-broker,message broker>>
+* {page-component-title} core instance running and configured with a <<core/setup-message-broker.adoc#setup-message-broker,message broker>>
 * Linux physical server or a virtual machine running a supported Linux operating system
 * Internet access to download the installation packages
 * Java installed {compatible-javajdk}
-* DNS is configured, localhost and your server's host name is resolved properly
+* DNS configured so that localhost and your server's host name resolve properly
 * {page-component-title} core instance runs on latest stable release
-* Minion server can access the {page-component-title} core instance via REST (8980/tcp) and desired message broker nodes (e.g., ActiveMQ 61616/tcp, Apache Kafke 9092/tcp)
+* Minion server can access the {page-component-title} core instance via REST (8980/tcp) and desired message broker nodes (for example, ActiveMQ 61616/tcp, Apache Kafka 9092/tcp)
 * System user with administrative permissions (sudo) to perform the installation tasks
 ifeval::["{page-component-title}" == "Horizon"]
-* If you are running the services in link:https://docs.docker.com/[Docker] you also need link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
+* If you are running the services in link:https://docs.docker.com/[Docker] you also need link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples
 
 NOTE: If you run Debian, you have to install and configure `sudo` yourself (see the link:https://wiki.debian.org/sudo/[Debian Wiki]).
 
 endif::[]
 
-== Installing the Minion package
+== Install the Minion package
 
 [{tabs}]
 ====
@@ -63,7 +63,7 @@ include::docker/minion.adoc[]
 endif::[]
 ====
 
-== Secure Access to Karaf Shell
+== Secure access to Karaf shell
 
 IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell and encrypt it.
 
@@ -90,19 +90,19 @@ include::docker/secure-karaf.adoc[]
 endif::[]
 ====
 
-TIP: Changing the password or encryption algorithm get applied immediately.
-     You do not need to restart the Minion.
+Changes to the password or encryption algorithm are applied immediately.
+You do not need to restart the Minion.
 
 TIP: By default, the Karaf Shell is restricted to 127.0.0.1.
      To enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
      The change is applied immediately and a Minion restart is not required.
-     If you have firewall running on your host, allow `8201/tcp` to grant access to the Karaf Shell.
+     If you have a firewall running on your host, allow `8201/tcp` to grant access to the Karaf shell.
 
-== Configure Connectivity to the Core Instance
+== Configure connectivity to the Core instance
 
-NOTE: Configurations has to be made in the {page-component-title} etc directory.
-      We reference `etc` relative to the OpenNMS {page-component-title} core home directory.
-      Depending on your operating system the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+Set configuration in the {page-component-title} `etc` directory.
+We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
+Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
 
 [{tabs}]
 ====
@@ -136,4 +136,4 @@ include::message-broker/aws-sqs.adoc[]
 . Log in to the web UI as an administrative user.
 . Click the gears icon and choose *Manage Minions* in the *Distributed Monitoring* area. 
 
-After a few minutes your Minion should be provisioned automatically and the status should be _up_.
+After a few minutes your Minion should be provisioned automatically and the status should be "up".
