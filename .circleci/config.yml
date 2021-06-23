@@ -736,6 +736,7 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
+                - "jira/NMS-13285"
 
 jobs:
   build:
@@ -816,19 +817,6 @@ jobs:
               -Dopennms.home=/opt/opennms \
               javadoc:aggregate --batch-mode
       - run:
-          name: Collect Artifacts
-          command: |
-            mkdir -p target/{artifacts,tarballs}
-            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
-            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp target/*-source.tar.gz ./target/artifacts/
-      - run:
           name: Build Minion OCI
           command: |
             cd opennms-container/minion
@@ -872,10 +860,28 @@ jobs:
                 echo "No branch to push to registry."
                 ;;
             esac
+      - run:
+          name: Collect Artifacts
+          command: |
+            mkdir -p target/{artifacts,config-schema,tarballs}
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
+            pushd target/site/apidocs
+              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+            popd
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp target/*-source.tar.gz ./target/artifacts/
+            cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
           destination: artifacts
+      - store_artifacts:
+          when: always
+          path: ~/project/target/config-schema
+          destination: config-schema
       - store_artifacts:
           when: always
           path: ~/project/target/tarballs
@@ -883,14 +889,12 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
           destination: minion.oci
+      - cache-workflow-assets:
+          cache_prefix: minion-config-schema
+          source_path: target/config-schema/
       - cache-oci:
           key: minion
           path: opennms-container/minion/images/
-      # any idea why we persisted this? seems like nothing later uses it
-      #- persist_to_workspace:
-      #    root: ~/
-      #    paths:
-      #      - project/target/tarballs
 
   horizon-rpm-build:
     executor: centos-build-executor
@@ -1366,6 +1370,8 @@ jobs:
           cache_prefix: rpm-minion
       - restore-workflow-assets:
           cache_prefix: rpm-sentinel
+      - restore-workflow-assets:
+          cache_prefix: minion-config-schema
       - run:
           name: Publish Packages
           command: |

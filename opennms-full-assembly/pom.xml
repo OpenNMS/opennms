@@ -504,6 +504,7 @@
                 <feature>opennms-icmp-commands</feature>
                 <feature>opennms-javamail</feature>
                 <feature>opennms-kafka-producer</feature>
+                <feature>opennms-kafka-consumer</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
                 <feature>opennms-poller-shell</feature>
