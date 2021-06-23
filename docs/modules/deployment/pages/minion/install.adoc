@@ -15,7 +15,7 @@
 * Linux physical server or a virtual machine running a supported Linux operating system
 * Internet access to download the installation packages
 * Java installed {compatible-javajdk}
-* DNS configured, localhost, and your server's host name resolved properly
+* DNS configured so that localhost and your server's host name resolve properly
 * {page-component-title} core instance runs on latest stable release
 * Minion server can access the {page-component-title} core instance via REST (8980/tcp) and desired message broker nodes (for example, ActiveMQ 61616/tcp, Apache Kafke 9092/tcp)
 * System user with administrative permissions (sudo) to perform the installation tasks
