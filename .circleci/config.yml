@@ -43,11 +43,11 @@ defaults: &defaults
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: release-27.x
+      default: foundation-2021
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: release-27.x
+      default: foundation-2021
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -766,7 +766,7 @@ jobs:
       - run:
           name: Install Docker buildx
           command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
@@ -1171,7 +1171,7 @@ jobs:
           suite: core
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1182,7 +1182,7 @@ jobs:
           suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 5
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
