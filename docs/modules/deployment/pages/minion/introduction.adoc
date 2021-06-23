@@ -22,7 +22,7 @@ image::deployment/minion/location.png[]
 By default, every node provisioned in {page-component-title} is created in the default location.
 The central {page-component-title} instance itself handles all nodes and services in the default location.
 
-To enable the Minion to handle all the nodes and services in a remote location, you define that location (for example, Pittsboro office, building-3), and set the Minion's location configuration property to that location. 
+To enable the Minion to handle all the nodes and services in a remote location, you define a location (for example, "Pittsboro office, building-3") in your core server, and configure the location property on the Minion to match. 
 The Minion registers itself to the {page-component-title} instance on start-up.
 
 {page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
