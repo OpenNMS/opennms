@@ -1,4 +1,4 @@
-.Create a file to install AWS SQS features on Minion startup
+.Create a file to install AWS SQS features on Minion start-up
 [source, console]
 ----
 sudo vi etc/featuresBoot.d/aws-sqs.boot
@@ -14,7 +14,7 @@ opennms-core-ipc-rpc-aws-sqs
 opennms-core-ipc-sink-aws-sqs
 ----
 
-.Configure the AWS SQS via the Karaf Shell
+.Configure the AWS SQS via the Karaf shell
 [source, karaf]
 ----
 ssh -p 8201 admin@localhost
@@ -30,12 +30,12 @@ config:property-set sink.FifoQueue false<5>
 config:update<6>
 ----
 
-<1> Configure the AWS SQS feature
-<2> Set AWS SQS region
+<1> Configure the AWS SQS feature.
+<2> Set AWS SQS region.
 <3> The AWS SQS access key
 <4> The AWS SQS secret for the access key
-<5> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Core instance setting
-<6> Save and update the configuration
+<5> If you require consistent ordering of incoming messages, use FIFO queues. The default is false and **must** match the Core instance setting.
+<6> Save and update the configuration.
 
 .Restart the Minion to apply the configuration
 [source,console]
@@ -55,7 +55,7 @@ ssh -p 8201 admin@localhost
 opennms:health-check
 ----
 
-.Verify if all components are configured properly
+.Verify all components are configured properly
 [source, output]
 ----
 Verifying the health of the container
@@ -68,4 +68,4 @@ Connecting to AWS-SQS from Sink Producer [ Success  ]
 => Everything is awesome
 ----
 
-TIP: You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queueing Services reference] section.
+TIP: You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queue Service reference] section.

@@ -13,7 +13,7 @@ sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 sudo apt update
 ----
 
-NOTE: The message with conflicting distributions stable but got opennms-xx can be safely ignored.
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
 
 .Installing the of {page-component-title} Sentinel
 [source, console]
