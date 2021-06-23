@@ -27,10 +27,10 @@ vi users.properties
 .Set a secure admin password for Karaf
 [source, users.properties]
 ----
-admin = my-karaf-password,_g_:admingroup<1>
+admin = new-karaf-password,_g_:admingroup<1>
 _g_\:admingroup = group,admin,manager,viewer,systembundles,ssh<2>
 ----
-<1> Replace the string `my-karaf-password` with your new password in plaintext.
+<1> Replace the string `new-karaf-password` with your new password in plaintext.
 <2> Assign permissions to allow administrative tasks and access via SSH.
 
 .Set Minion process as owner and restrictive file permissions
