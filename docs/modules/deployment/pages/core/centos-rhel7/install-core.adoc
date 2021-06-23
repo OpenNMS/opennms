@@ -1,48 +1,21 @@
-////
-Repo and install: OpenNMS Horizon
-////
-
 ifeval::["{page-component-title}" == "Horizon"]
-.Add repository and import GPG key
-[source, console]
-----
-sudo yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
-----
-
-.Install {page-component-title} with all built-in dependencies
-[source, console]
-----
-sudo yum -y install opennms
-----
+include::../../repos/rhel-centos/horizon-rhel7.adoc[]
 endif::[]
-
-////
-Repo and install: OpenNMS Meridian
-////
 
 ifeval::["{page-component-title}" == "Meridian"]
-.Add repository and import GPG key
-[source, console]
-----
-cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
-[meridian]
-name=Meridian for Red Hat Enterprise Linux and CentOS
-baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2021/stable/rhel7<1>
-gpgcheck=1
-gpgkey=http://yum.opennms.org/OPENNMS-GPG-KEY
-EOF
-
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
-----
-<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
+include::../../repos/rhel-centos/meridian-rhel7.adoc[]
+endif::[]
 
 .Install {page-component-title} with all built-in dependencies
 [source, console]
 ----
-sudo yum -y install meridian
-----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo yum -y install opennms
 endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum -y install meridian
+endif::[]
+----
 
 If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
 The additional download size for packages is ~390 MB.
@@ -58,23 +31,17 @@ TIP: Disable the OpenNMS {page-component-title} repository after installation to
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 
+.Disable auto updates for OpenNMS {page-component-title}
+[source, console]
+----
+sudo yum -y install yum-utils
 ifeval::["{page-component-title}" == "Horizon"]
-.Disable auto updates for OpenNMS {page-component-title}
-[source, console]
-----
-sudo yum -y install yum-utils
 sudo yum-config-manager --disable opennms-repo-stable-*
-----
 endif::[]
-
 ifeval::["{page-component-title}" == "Meridian"]
-.Disable auto updates for OpenNMS {page-component-title}
-[source, console]
-----
-sudo yum -y install yum-utils
 sudo yum-config-manager --disable meridian
-----
 endif::[]
+----
 
 .Verify directory structure with the tree command
 [source, console]

@@ -3,8 +3,13 @@
 set -e
 set -o pipefail
 
+MYDIR="$(dirname "$0")"
+MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
+
 PROJECT="opennms"
 REPO=""
+VERSION="$("${MYDIR}/pom2version.sh" "${MYDIR}/../../pom.xml")"
+
 case "${CIRCLE_BRANCH}" in
   release-*.x)
     YEAR="$(echo "${CIRCLE_BRANCH}" | sed -e 's,^release-,,' -e 's,.x$,,')"
@@ -51,6 +56,14 @@ publishPackage() {
   rmdir "${_tmpdir}" || :
   return "$ret"
 }
+
+publishPackage cloudsmith push raw \
+  --republish \
+  --version "${VERSION}" \
+  --name "${REPO}/minion-config-schema.yml" \
+  --description "minion-config-schema.yml for version ${VERSION} in the ${REPO} repository" \
+  "${PROJECT}/config-schema" \
+  "/tmp/minion-config-schema/minion-config-schema.yml"
 
 for FILE in /tmp/rpm-meridian/*.rpm /tmp/rpm-minion/*.rpm /tmp/rpm-sentinel/*.rpm; do
   # give it 3 tries then die
