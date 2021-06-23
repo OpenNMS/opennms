@@ -75,10 +75,10 @@ include::debian-ubuntu/secure-karaf.adoc[]
 endif::[]
 ====
 
-TIP: Changing the password or encryption algorithm get applied immediately.
+TIP: Password or encryption algorithm changes happen immediately.
      It is not required to restart the Sentinel
 
 TIP: By default the Karaf Shell is restricted to 127.0.0.1.
      If you want enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
      The change is applied immediately and a Sentinel restart is not required.
-     If you have firewall running on your host, allow `8301/tcp` to grant access to the Karaf Shell.
+     If you have a firewall running on your host, allow `8301/tcp` to grant access to the Karaf Shell.
