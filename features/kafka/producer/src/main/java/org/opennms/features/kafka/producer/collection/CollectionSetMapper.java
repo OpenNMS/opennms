@@ -28,6 +28,7 @@
 
 package org.opennms.features.kafka.producer.collection;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
@@ -43,8 +44,11 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,13 +61,17 @@ public class CollectionSetMapper {
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
 
     @Autowired
-    private NodeDao nodeDao;
+    private final NodeDao nodeDao;
+
+    @Autowired
+    private final ResourceDao resourceDao;
 
     private final SessionUtils sessionUtils;
 
-    public CollectionSetMapper(NodeDao nodeDao, SessionUtils sessionUtils) {
+    public CollectionSetMapper(NodeDao nodeDao, SessionUtils sessionUtils, ResourceDao resourceDao) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
+        this.resourceDao = Objects.requireNonNull(resourceDao);
     }
 
     public CollectionSetProtos.CollectionSet buildCollectionSetProtos(CollectionSet collectionSet) {
@@ -81,10 +89,12 @@ public class CollectionSetMapper {
             @Override
             public void visitResource(CollectionResource resource) {
                 collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
+                long nodeId = 0;
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_NODE)) {
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
                     CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                             nodeCriteria);
+                    nodeId = nodeResourceBuilder.getNodeId();
                     collectionSetResourceBuilder.setNode(nodeResourceBuilder);
                 } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
                     CollectionSetProtos.InterfaceLevelResource.Builder interfaceResourceBuilder = CollectionSetProtos.InterfaceLevelResource
@@ -93,6 +103,7 @@ public class CollectionSetMapper {
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
+                        nodeId = nodeResourceBuilder.getNodeId();
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
                         Optional.ofNullable(resource.getInterfaceLabel()).ifPresent(interfaceResourceBuilder::setInstance);
                         // Skip Aliased Resources which doesn't have instance.
@@ -115,11 +126,27 @@ public class CollectionSetMapper {
                     if (!Strings.isNullOrEmpty(nodeCriteria)) {
                         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
                                 nodeCriteria);
+                        nodeId = nodeResourceBuilder.getNodeId();
                         genericResourceBuilder.setNode(nodeResourceBuilder);
                     }
                     genericResourceBuilder.setType(resource.getResourceTypeName());
                     genericResourceBuilder.setInstance(resource.getInstance());
                     collectionSetResourceBuilder.setGeneric(genericResourceBuilder);
+                }
+                // Response time resources doesn't embed any node info, they will not have any resource-id info.
+                if (nodeId > 0) {
+                    ResourceId resourceId = getResourceId(resource, nodeId);
+                    if (resourceId != null) {
+                        OnmsResource onmsResource = resourceDao.getResourceById(resourceId);
+                        if (onmsResource != null) {
+                            getString(onmsResource.getId().toString()).ifPresent(collectionSetResourceBuilder::setResourceId);
+                            getString(onmsResource.getLabel()).ifPresent(collectionSetResourceBuilder::setResourceLabel);
+                            getString(onmsResource.getName()).ifPresent(collectionSetResourceBuilder::setResourceName);
+                            getString(onmsResource.getResourceType().getLabel()).ifPresent(collectionSetResourceBuilder::setResourceTypeName);
+                        }
+                    } else {
+                        LOG.error("Couldn't fetch resource from ResourceId {} ", resourceId);
+                    }
                 }
             }
 
@@ -266,5 +293,38 @@ public class CollectionSetMapper {
             return null;
         });
         return nodeResourceBuilder;
+    }
+
+    public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+        if ( resource == null) {
+            return null;
+        }
+        String resourceType  = resource.getResourceTypeName();
+        String resourceLabel = resource.getInterfaceLabel();
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
+            resourceType  = "nodeSnmp";
+            resourceLabel = "";
+        }
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
+            resourceType = "interfaceSnmp";
+        }
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
+        String parentResourceName = String.valueOf(nodeId);
+        if (resource.getParent() != null && resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
+    }
+
+    private static Optional<String> getString(String value) {
+        if (!Strings.isNullOrEmpty(value)) {
+            return Optional.of(value);
+        }
+        return Optional.empty();
     }
 }

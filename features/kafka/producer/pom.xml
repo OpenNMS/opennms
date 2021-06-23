@@ -23,13 +23,13 @@
   <build>
     <!-- Enable below extension and plugin when you need to generate java source files from proto -->
 
-<!--    <extensions>
-      <extension>
+    <extensions>
+<!--      <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
         <version>1.6.2</version>
-      </extension>
-    </extensions>-->
+      </extension>-->
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
