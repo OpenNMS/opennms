@@ -45,7 +45,7 @@ If you require retry and/or timeout behavior, you must implement it in the scrip
 
 Depending on the `run-type`, the script must provide its results in different ways.
 For minimal scripts with very simple logic, `run-type` `eval` is the simple option.
-Scripts running in `eval` mode have to return a string matching one of the `status codes`.
+Scripts running in `eval` mode must return a string matching one of the `status codes`.
 
 If your script is more than one line, `run-type` `exec` is required.
 Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the _results_ object.
