@@ -80,9 +80,17 @@ public class MinionRestIT {
         given().get("/minion/rest/health")
                 .then().assertThat()
                 .statusCode(200);
+
+        given().get("/minion/rest/health?tag=local")
+                .then().assertThat()
+                .statusCode(200);
+
+        given().get("/minion/rest/health/prob")
+                .then().assertThat()
+                .statusCode(200);
+
+        given().get("/minion/rest/health/prob?tag=local")
+                .then().assertThat()
+                .statusCode(200);
     }
-
-
-
-
 }
