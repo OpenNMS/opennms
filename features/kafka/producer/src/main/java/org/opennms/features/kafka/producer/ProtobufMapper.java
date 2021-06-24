@@ -257,7 +257,6 @@ public class ProtobufMapper {
     private OpennmsModelProtos.SnmpInfo.Builder buildSnmpInfo(Snmp snmp) {
         OpennmsModelProtos.SnmpInfo.Builder snmpInfoBuilder = OpennmsModelProtos.SnmpInfo.newBuilder();
         getString(snmp.getId()).ifPresent(snmpInfoBuilder::setId);
-        getString(snmp.getIdtext()).ifPresent(snmpInfoBuilder::setIdText);
         getString(snmp.getVersion()).ifPresent(snmpInfoBuilder::setVersion);
         if (snmp.hasSpecific()) {
             snmpInfoBuilder.setSpecific(snmp.getSpecific());

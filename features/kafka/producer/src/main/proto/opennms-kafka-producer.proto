@@ -47,11 +47,10 @@ message EventParameter {
 
 message SnmpInfo {
   string id = 1;
-  string id_text = 2;
-  string version = 3;
-  uint32 specific = 4;
-  uint32 generic = 5;
-  string community = 6;
+  string version = 2;
+  uint32 specific = 3;
+  uint32 generic = 4;
+  string community = 5;
 }
 
 message Event {

@@ -2260,41 +2260,31 @@ public final class OpennmsModelProtos {
         getIdBytes();
 
     /**
-     * <code>string id_text = 2;</code>
-     */
-    java.lang.String getIdText();
-    /**
-     * <code>string id_text = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getIdTextBytes();
-
-    /**
-     * <code>string version = 3;</code>
+     * <code>string version = 2;</code>
      */
     java.lang.String getVersion();
     /**
-     * <code>string version = 3;</code>
+     * <code>string version = 2;</code>
      */
     com.google.protobuf.ByteString
         getVersionBytes();
 
     /**
-     * <code>uint32 specific = 4;</code>
+     * <code>uint32 specific = 3;</code>
      */
     int getSpecific();
 
     /**
-     * <code>uint32 generic = 5;</code>
+     * <code>uint32 generic = 4;</code>
      */
     int getGeneric();
 
     /**
-     * <code>string community = 6;</code>
+     * <code>string community = 5;</code>
      */
     java.lang.String getCommunity();
     /**
-     * <code>string community = 6;</code>
+     * <code>string community = 5;</code>
      */
     com.google.protobuf.ByteString
         getCommunityBytes();
@@ -2313,7 +2303,6 @@ public final class OpennmsModelProtos {
     }
     private SnmpInfo() {
       id_ = "";
-      idText_ = "";
       version_ = "";
       specific_ = 0;
       generic_ = 0;
@@ -2353,26 +2342,20 @@ public final class OpennmsModelProtos {
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              idText_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
               version_ = s;
               break;
             }
-            case 32: {
+            case 24: {
 
               specific_ = input.readUInt32();
               break;
             }
-            case 40: {
+            case 32: {
 
               generic_ = input.readUInt32();
               break;
             }
-            case 50: {
+            case 42: {
               java.lang.String s = input.readStringRequireUtf8();
 
               community_ = s;
@@ -2444,44 +2427,10 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int ID_TEXT_FIELD_NUMBER = 2;
-    private volatile java.lang.Object idText_;
-    /**
-     * <code>string id_text = 2;</code>
-     */
-    public java.lang.String getIdText() {
-      java.lang.Object ref = idText_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        idText_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string id_text = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getIdTextBytes() {
-      java.lang.Object ref = idText_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        idText_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int VERSION_FIELD_NUMBER = 3;
+    public static final int VERSION_FIELD_NUMBER = 2;
     private volatile java.lang.Object version_;
     /**
-     * <code>string version = 3;</code>
+     * <code>string version = 2;</code>
      */
     public java.lang.String getVersion() {
       java.lang.Object ref = version_;
@@ -2496,7 +2445,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string version = 3;</code>
+     * <code>string version = 2;</code>
      */
     public com.google.protobuf.ByteString
         getVersionBytes() {
@@ -2512,28 +2461,28 @@ public final class OpennmsModelProtos {
       }
     }
 
-    public static final int SPECIFIC_FIELD_NUMBER = 4;
+    public static final int SPECIFIC_FIELD_NUMBER = 3;
     private int specific_;
     /**
-     * <code>uint32 specific = 4;</code>
+     * <code>uint32 specific = 3;</code>
      */
     public int getSpecific() {
       return specific_;
     }
 
-    public static final int GENERIC_FIELD_NUMBER = 5;
+    public static final int GENERIC_FIELD_NUMBER = 4;
     private int generic_;
     /**
-     * <code>uint32 generic = 5;</code>
+     * <code>uint32 generic = 4;</code>
      */
     public int getGeneric() {
       return generic_;
     }
 
-    public static final int COMMUNITY_FIELD_NUMBER = 6;
+    public static final int COMMUNITY_FIELD_NUMBER = 5;
     private volatile java.lang.Object community_;
     /**
-     * <code>string community = 6;</code>
+     * <code>string community = 5;</code>
      */
     public java.lang.String getCommunity() {
       java.lang.Object ref = community_;
@@ -2548,7 +2497,7 @@ public final class OpennmsModelProtos {
       }
     }
     /**
-     * <code>string community = 6;</code>
+     * <code>string community = 5;</code>
      */
     public com.google.protobuf.ByteString
         getCommunityBytes() {
@@ -2581,20 +2530,17 @@ public final class OpennmsModelProtos {
       if (!getIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
       }
-      if (!getIdTextBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, idText_);
-      }
       if (!getVersionBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, version_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, version_);
       }
       if (specific_ != 0) {
-        output.writeUInt32(4, specific_);
+        output.writeUInt32(3, specific_);
       }
       if (generic_ != 0) {
-        output.writeUInt32(5, generic_);
+        output.writeUInt32(4, generic_);
       }
       if (!getCommunityBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, community_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, community_);
       }
       unknownFields.writeTo(output);
     }
@@ -2608,22 +2554,19 @@ public final class OpennmsModelProtos {
       if (!getIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
       }
-      if (!getIdTextBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, idText_);
-      }
       if (!getVersionBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, version_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, version_);
       }
       if (specific_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, specific_);
+          .computeUInt32Size(3, specific_);
       }
       if (generic_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(5, generic_);
+          .computeUInt32Size(4, generic_);
       }
       if (!getCommunityBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, community_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, community_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2643,8 +2586,6 @@ public final class OpennmsModelProtos {
       boolean result = true;
       result = result && getId()
           .equals(other.getId());
-      result = result && getIdText()
-          .equals(other.getIdText());
       result = result && getVersion()
           .equals(other.getVersion());
       result = result && (getSpecific()
@@ -2666,8 +2607,6 @@ public final class OpennmsModelProtos {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + ID_FIELD_NUMBER;
       hash = (53 * hash) + getId().hashCode();
-      hash = (37 * hash) + ID_TEXT_FIELD_NUMBER;
-      hash = (53 * hash) + getIdText().hashCode();
       hash = (37 * hash) + VERSION_FIELD_NUMBER;
       hash = (53 * hash) + getVersion().hashCode();
       hash = (37 * hash) + SPECIFIC_FIELD_NUMBER;
@@ -2811,8 +2750,6 @@ public final class OpennmsModelProtos {
         super.clear();
         id_ = "";
 
-        idText_ = "";
-
         version_ = "";
 
         specific_ = 0;
@@ -2848,7 +2785,6 @@ public final class OpennmsModelProtos {
       public org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInfo buildPartial() {
         org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInfo result = new org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInfo(this);
         result.id_ = id_;
-        result.idText_ = idText_;
         result.version_ = version_;
         result.specific_ = specific_;
         result.generic_ = generic_;
@@ -2903,10 +2839,6 @@ public final class OpennmsModelProtos {
         if (other == org.opennms.features.kafka.producer.model.OpennmsModelProtos.SnmpInfo.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
-          onChanged();
-        }
-        if (!other.getIdText().isEmpty()) {
-          idText_ = other.idText_;
           onChanged();
         }
         if (!other.getVersion().isEmpty()) {
@@ -3021,78 +2953,9 @@ public final class OpennmsModelProtos {
         return this;
       }
 
-      private java.lang.Object idText_ = "";
-      /**
-       * <code>string id_text = 2;</code>
-       */
-      public java.lang.String getIdText() {
-        java.lang.Object ref = idText_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          idText_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string id_text = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getIdTextBytes() {
-        java.lang.Object ref = idText_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          idText_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string id_text = 2;</code>
-       */
-      public Builder setIdText(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        idText_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string id_text = 2;</code>
-       */
-      public Builder clearIdText() {
-        
-        idText_ = getDefaultInstance().getIdText();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string id_text = 2;</code>
-       */
-      public Builder setIdTextBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        idText_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object version_ = "";
       /**
-       * <code>string version = 3;</code>
+       * <code>string version = 2;</code>
        */
       public java.lang.String getVersion() {
         java.lang.Object ref = version_;
@@ -3107,7 +2970,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string version = 3;</code>
+       * <code>string version = 2;</code>
        */
       public com.google.protobuf.ByteString
           getVersionBytes() {
@@ -3123,7 +2986,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string version = 3;</code>
+       * <code>string version = 2;</code>
        */
       public Builder setVersion(
           java.lang.String value) {
@@ -3136,7 +2999,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string version = 3;</code>
+       * <code>string version = 2;</code>
        */
       public Builder clearVersion() {
         
@@ -3145,7 +3008,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string version = 3;</code>
+       * <code>string version = 2;</code>
        */
       public Builder setVersionBytes(
           com.google.protobuf.ByteString value) {
@@ -3161,13 +3024,13 @@ public final class OpennmsModelProtos {
 
       private int specific_ ;
       /**
-       * <code>uint32 specific = 4;</code>
+       * <code>uint32 specific = 3;</code>
        */
       public int getSpecific() {
         return specific_;
       }
       /**
-       * <code>uint32 specific = 4;</code>
+       * <code>uint32 specific = 3;</code>
        */
       public Builder setSpecific(int value) {
         
@@ -3176,7 +3039,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>uint32 specific = 4;</code>
+       * <code>uint32 specific = 3;</code>
        */
       public Builder clearSpecific() {
         
@@ -3187,13 +3050,13 @@ public final class OpennmsModelProtos {
 
       private int generic_ ;
       /**
-       * <code>uint32 generic = 5;</code>
+       * <code>uint32 generic = 4;</code>
        */
       public int getGeneric() {
         return generic_;
       }
       /**
-       * <code>uint32 generic = 5;</code>
+       * <code>uint32 generic = 4;</code>
        */
       public Builder setGeneric(int value) {
         
@@ -3202,7 +3065,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>uint32 generic = 5;</code>
+       * <code>uint32 generic = 4;</code>
        */
       public Builder clearGeneric() {
         
@@ -3213,7 +3076,7 @@ public final class OpennmsModelProtos {
 
       private java.lang.Object community_ = "";
       /**
-       * <code>string community = 6;</code>
+       * <code>string community = 5;</code>
        */
       public java.lang.String getCommunity() {
         java.lang.Object ref = community_;
@@ -3228,7 +3091,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string community = 6;</code>
+       * <code>string community = 5;</code>
        */
       public com.google.protobuf.ByteString
           getCommunityBytes() {
@@ -3244,7 +3107,7 @@ public final class OpennmsModelProtos {
         }
       }
       /**
-       * <code>string community = 6;</code>
+       * <code>string community = 5;</code>
        */
       public Builder setCommunity(
           java.lang.String value) {
@@ -3257,7 +3120,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string community = 6;</code>
+       * <code>string community = 5;</code>
        */
       public Builder clearCommunity() {
         
@@ -3266,7 +3129,7 @@ public final class OpennmsModelProtos {
         return this;
       }
       /**
-       * <code>string community = 6;</code>
+       * <code>string community = 5;</code>
        */
       public Builder setCommunityBytes(
           com.google.protobuf.ByteString value) {
@@ -23046,94 +22909,94 @@ public final class OpennmsModelProtos {
       "(\t\022\022\n\nforeign_id\030\003 \001(\t\022\022\n\nnode_label\030\004 \001" +
       "(\t\022\020\n\010location\030\005 \001(\t\";\n\016EventParameter\022\014" +
       "\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\014\n\004type\030\003 \001(" +
-      "\t\"n\n\010SnmpInfo\022\n\n\002id\030\001 \001(\t\022\017\n\007id_text\030\002 \001" +
-      "(\t\022\017\n\007version\030\003 \001(\t\022\020\n\010specific\030\004 \001(\r\022\017\n" +
-      "\007generic\030\005 \001(\r\022\021\n\tcommunity\030\006 \001(\t\"\327\002\n\005Ev" +
-      "ent\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022\r\n\005label\030\003 " +
-      "\001(\t\022\014\n\004time\030\004 \001(\004\022\016\n\006source\030\005 \001(\t\022\"\n\tpar" +
-      "ameter\030\006 \003(\0132\017.EventParameter\022\023\n\013create_" +
-      "time\030\007 \001(\004\022\023\n\013description\030\010 \001(\t\022\023\n\013log_m" +
-      "essage\030\t \001(\t\022\033\n\010severity\030\n \001(\0162\t.Severit" +
-      "y\022\013\n\003log\030\013 \001(\010\022\017\n\007display\030\014 \001(\010\022$\n\rnode_" +
-      "criteria\030\r \001(\0132\r.NodeCriteria\022\022\n\nip_addr" +
-      "ess\030\016 \001(\t\022\023\n\013dist_poller\030\017 \001(\t\022\033\n\010snmpIn" +
-      "fo\030\020 \001(\0132\t.SnmpInfo\"\271\005\n\005Alarm\022\n\n\002id\030\001 \001(" +
-      "\004\022\013\n\003uei\030\002 \001(\t\022$\n\rnode_criteria\030\003 \001(\0132\r." +
-      "NodeCriteria\022\022\n\nip_address\030\004 \001(\t\022\024\n\014serv" +
-      "ice_name\030\005 \001(\t\022\025\n\rreduction_key\030\006 \001(\t\022\031\n" +
-      "\004type\030\007 \001(\0162\013.Alarm.Type\022\r\n\005count\030\010 \001(\004\022" +
-      "\033\n\010severity\030\t \001(\0162\t.Severity\022\030\n\020first_ev" +
-      "ent_time\030\n \001(\004\022\023\n\013description\030\013 \001(\t\022\023\n\013l" +
-      "og_message\030\014 \001(\t\022\020\n\010ack_user\030\r \001(\t\022\020\n\010ac" +
-      "k_time\030\016 \001(\004\022\032\n\nlast_event\030\017 \001(\0132\006.Event" +
-      "\022\027\n\017last_event_time\030\020 \001(\004\022\020\n\010if_index\030\021 " +
-      "\001(\r\022\035\n\025operator_instructions\030\022 \001(\t\022\021\n\tcl" +
-      "ear_key\030\023 \001(\t\022\037\n\027managed_object_instance" +
-      "\030\024 \001(\t\022\033\n\023managed_object_type\030\025 \001(\t\022\034\n\014r" +
-      "elatedAlarm\030\026 \003(\0132\006.Alarm\022\031\n\021trouble_tic" +
-      "ket_id\030\027 \001(\t\0221\n\024trouble_ticket_state\030\030 \001" +
-      "(\0162\023.TroubleTicketState\022\030\n\020last_update_t" +
-      "ime\030\031 \001(\004\"D\n\004Type\022\026\n\022PROBLEM_WITH_CLEAR\020" +
-      "\000\022\t\n\005CLEAR\020\001\022\031\n\025PROBLEM_WITHOUT_CLEAR\020\002\"" +
-      "\217\002\n\rAlarmFeedback\022\025\n\rsituation_key\030\001 \001(\t" +
-      "\022\035\n\025situation_fingerprint\030\002 \001(\t\022\021\n\talarm" +
-      "_key\030\003 \001(\t\0222\n\rfeedback_type\030\004 \001(\0162\033.Alar" +
-      "mFeedback.FeedbackType\022\016\n\006reason\030\005 \001(\t\022\014" +
-      "\n\004user\030\006 \001(\t\022\021\n\ttimestamp\030\007 \001(\004\"P\n\014Feedb" +
-      "ackType\022\022\n\016FALSE_POSITIVE\020\000\022\022\n\016FALSE_NEG" +
-      "ATIVE\020\001\022\013\n\007CORRECT\020\002\022\013\n\007UNKNOWN\020\003\"\275\001\n\013Ip" +
-      "Interface\022\n\n\002id\030\001 \001(\004\022\022\n\nip_address\030\002 \001(" +
-      "\t\022\020\n\010if_index\030\003 \001(\r\022.\n\014primary_type\030\004 \001(" +
-      "\0162\030.IpInterface.PrimaryType\022\017\n\007service\030\005" +
-      " \003(\t\";\n\013PrimaryType\022\013\n\007PRIMARY\020\000\022\r\n\tSECO" +
-      "NDARY\020\001\022\020\n\014NOT_ELIGIBLE\020\002\"\317\001\n\rSnmpInterf" +
-      "ace\022\n\n\002id\030\001 \001(\004\022\020\n\010if_index\030\002 \001(\r\022\020\n\010if_" +
-      "descr\030\003 \001(\t\022\017\n\007if_type\030\004 \001(\r\022\017\n\007if_name\030" +
-      "\005 \001(\t\022\020\n\010if_speed\030\006 \001(\004\022\027\n\017if_phys_addre" +
-      "ss\030\007 \001(\t\022\027\n\017if_admin_status\030\010 \001(\r\022\026\n\016if_" +
-      "oper_status\030\t \001(\r\022\020\n\010if_alias\030\n \001(\t\"%\n\007H" +
-      "wAlias\022\r\n\005index\030\001 \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010H" +
-      "wEntity\022\032\n\022ent_physical_index\030\001 \001(\r\022\021\n\te" +
-      "ntity_id\030\002 \001(\r\022\032\n\022ent_physical_class\030\003 \001" +
-      "(\t\022\032\n\022ent_physical_descr\030\004 \001(\t\022\033\n\023ent_ph" +
-      "ysical_is_fru\030\005 \001(\010\022\031\n\021ent_physical_name" +
-      "\030\006 \001(\t\022 \n\030ent_physical_vendor_type\030\007 \001(\t" +
-      "\022\036\n\014ent_hw_alias\030\010 \003(\0132\010.HwAlias\022\033\n\010chil" +
-      "dren\030\t \003(\0132\t.HwEntity\"\270\002\n\004Node\022\n\n\002id\030\001 \001" +
-      "(\004\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_id" +
-      "\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\020\n\010category\030\005 \003" +
-      "(\t\022\r\n\005label\030\006 \001(\t\022\023\n\013create_time\030\007 \001(\004\022\023" +
-      "\n\013sys_contact\030\010 \001(\t\022\027\n\017sys_description\030\t" +
-      " \001(\t\022\025\n\rsys_object_id\030\n \001(\t\022\"\n\014ip_interf" +
-      "ace\030\013 \003(\0132\014.IpInterface\022&\n\016snmp_interfac" +
-      "e\030\014 \003(\0132\016.SnmpInterface\022\037\n\014hw_inventory\030" +
-      "\r \001(\0132\t.HwEntity\"\222\001\n\013TopologyRef\022\n\n\002id\030\001" +
-      " \001(\t\022\'\n\010protocol\030\002 \001(\0162\025.TopologyRef.Pro" +
-      "tocol\"N\n\010Protocol\022\010\n\004LLDP\020\000\022\010\n\004OSPF\020\001\022\010\n" +
-      "\004ISIS\020\002\022\n\n\006BRIDGE\020\003\022\007\n\003CDP\020\004\022\017\n\013USERDEFI" +
-      "NED\020\005\",\n\017TopologySegment\022\031\n\003ref\030\001 \001(\0132\014." +
-      "TopologyRef\"{\n\014TopologyPort\022\021\n\tvertex_id" +
-      "\030\001 \001(\t\022\020\n\010if_index\030\002 \001(\004\022\017\n\007if_name\030\003 \001(" +
-      "\t\022\017\n\007address\030\004 \001(\t\022$\n\rnode_criteria\030\005 \001(" +
-      "\0132\r.NodeCriteria\"\227\002\n\014TopologyEdge\022\031\n\003ref" +
-      "\030\001 \001(\0132\014.TopologyRef\022#\n\nsourcePort\030\003 \001(\013" +
-      "2\r.TopologyPortH\000\022)\n\rsourceSegment\030\004 \001(\013" +
-      "2\020.TopologySegmentH\000\022\033\n\nsourceNode\030\005 \001(\013" +
-      "2\005.NodeH\000\022#\n\ntargetPort\030\006 \001(\0132\r.Topology" +
-      "PortH\001\022)\n\rtargetSegment\030\007 \001(\0132\020.Topology" +
-      "SegmentH\001\022\033\n\ntargetNode\030\010 \001(\0132\005.NodeH\001B\010" +
-      "\n\006sourceB\010\n\006target*g\n\010Severity\022\021\n\rINDETE" +
-      "RMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WA" +
-      "RNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICA" +
-      "L\020\006*\212\002\n\022TroubleTicketState\022\010\n\004OPEN\020\000\022\022\n\016" +
-      "CREATE_PENDING\020\001\022\021\n\rCREATE_FAILED\020\002\022\022\n\016U" +
-      "PDATE_PENDING\020\003\022\021\n\rUPDATE_FAILED\020\004\022\n\n\006CL" +
-      "OSED\020\005\022\021\n\rCLOSE_PENDING\020\006\022\020\n\014CLOSE_FAILE" +
-      "D\020\007\022\014\n\010RESOLVED\020\010\022\023\n\017RESOLVE_PENDING\020\t\022\022" +
-      "\n\016RESOLVE_FAILED\020\n\022\r\n\tCANCELLED\020\013\022\022\n\016CAN" +
-      "CEL_PENDING\020\014\022\021\n\rCANCEL_FAILED\020\rB?\n)org." +
-      "opennms.features.kafka.producer.modelB\022O" +
-      "pennmsModelProtosb\006proto3"
+      "\t\"]\n\010SnmpInfo\022\n\n\002id\030\001 \001(\t\022\017\n\007version\030\002 \001" +
+      "(\t\022\020\n\010specific\030\003 \001(\r\022\017\n\007generic\030\004 \001(\r\022\021\n" +
+      "\tcommunity\030\005 \001(\t\"\327\002\n\005Event\022\n\n\002id\030\001 \001(\004\022\013" +
+      "\n\003uei\030\002 \001(\t\022\r\n\005label\030\003 \001(\t\022\014\n\004time\030\004 \001(\004" +
+      "\022\016\n\006source\030\005 \001(\t\022\"\n\tparameter\030\006 \003(\0132\017.Ev" +
+      "entParameter\022\023\n\013create_time\030\007 \001(\004\022\023\n\013des" +
+      "cription\030\010 \001(\t\022\023\n\013log_message\030\t \001(\t\022\033\n\010s" +
+      "everity\030\n \001(\0162\t.Severity\022\013\n\003log\030\013 \001(\010\022\017\n" +
+      "\007display\030\014 \001(\010\022$\n\rnode_criteria\030\r \001(\0132\r." +
+      "NodeCriteria\022\022\n\nip_address\030\016 \001(\t\022\023\n\013dist" +
+      "_poller\030\017 \001(\t\022\033\n\010snmpInfo\030\020 \001(\0132\t.SnmpIn" +
+      "fo\"\271\005\n\005Alarm\022\n\n\002id\030\001 \001(\004\022\013\n\003uei\030\002 \001(\t\022$\n" +
+      "\rnode_criteria\030\003 \001(\0132\r.NodeCriteria\022\022\n\ni" +
+      "p_address\030\004 \001(\t\022\024\n\014service_name\030\005 \001(\t\022\025\n" +
+      "\rreduction_key\030\006 \001(\t\022\031\n\004type\030\007 \001(\0162\013.Ala" +
+      "rm.Type\022\r\n\005count\030\010 \001(\004\022\033\n\010severity\030\t \001(\016" +
+      "2\t.Severity\022\030\n\020first_event_time\030\n \001(\004\022\023\n" +
+      "\013description\030\013 \001(\t\022\023\n\013log_message\030\014 \001(\t\022" +
+      "\020\n\010ack_user\030\r \001(\t\022\020\n\010ack_time\030\016 \001(\004\022\032\n\nl" +
+      "ast_event\030\017 \001(\0132\006.Event\022\027\n\017last_event_ti" +
+      "me\030\020 \001(\004\022\020\n\010if_index\030\021 \001(\r\022\035\n\025operator_i" +
+      "nstructions\030\022 \001(\t\022\021\n\tclear_key\030\023 \001(\t\022\037\n\027" +
+      "managed_object_instance\030\024 \001(\t\022\033\n\023managed" +
+      "_object_type\030\025 \001(\t\022\034\n\014relatedAlarm\030\026 \003(\013" +
+      "2\006.Alarm\022\031\n\021trouble_ticket_id\030\027 \001(\t\0221\n\024t" +
+      "rouble_ticket_state\030\030 \001(\0162\023.TroubleTicke" +
+      "tState\022\030\n\020last_update_time\030\031 \001(\004\"D\n\004Type" +
+      "\022\026\n\022PROBLEM_WITH_CLEAR\020\000\022\t\n\005CLEAR\020\001\022\031\n\025P" +
+      "ROBLEM_WITHOUT_CLEAR\020\002\"\217\002\n\rAlarmFeedback" +
+      "\022\025\n\rsituation_key\030\001 \001(\t\022\035\n\025situation_fin" +
+      "gerprint\030\002 \001(\t\022\021\n\talarm_key\030\003 \001(\t\0222\n\rfee" +
+      "dback_type\030\004 \001(\0162\033.AlarmFeedback.Feedbac" +
+      "kType\022\016\n\006reason\030\005 \001(\t\022\014\n\004user\030\006 \001(\t\022\021\n\tt" +
+      "imestamp\030\007 \001(\004\"P\n\014FeedbackType\022\022\n\016FALSE_" +
+      "POSITIVE\020\000\022\022\n\016FALSE_NEGATIVE\020\001\022\013\n\007CORREC" +
+      "T\020\002\022\013\n\007UNKNOWN\020\003\"\275\001\n\013IpInterface\022\n\n\002id\030\001" +
+      " \001(\004\022\022\n\nip_address\030\002 \001(\t\022\020\n\010if_index\030\003 \001" +
+      "(\r\022.\n\014primary_type\030\004 \001(\0162\030.IpInterface.P" +
+      "rimaryType\022\017\n\007service\030\005 \003(\t\";\n\013PrimaryTy" +
+      "pe\022\013\n\007PRIMARY\020\000\022\r\n\tSECONDARY\020\001\022\020\n\014NOT_EL" +
+      "IGIBLE\020\002\"\317\001\n\rSnmpInterface\022\n\n\002id\030\001 \001(\004\022\020" +
+      "\n\010if_index\030\002 \001(\r\022\020\n\010if_descr\030\003 \001(\t\022\017\n\007if" +
+      "_type\030\004 \001(\r\022\017\n\007if_name\030\005 \001(\t\022\020\n\010if_speed" +
+      "\030\006 \001(\004\022\027\n\017if_phys_address\030\007 \001(\t\022\027\n\017if_ad" +
+      "min_status\030\010 \001(\r\022\026\n\016if_oper_status\030\t \001(\r" +
+      "\022\020\n\010if_alias\030\n \001(\t\"%\n\007HwAlias\022\r\n\005index\030\001" +
+      " \001(\r\022\013\n\003oid\030\002 \001(\t\"\210\002\n\010HwEntity\022\032\n\022ent_ph" +
+      "ysical_index\030\001 \001(\r\022\021\n\tentity_id\030\002 \001(\r\022\032\n" +
+      "\022ent_physical_class\030\003 \001(\t\022\032\n\022ent_physica" +
+      "l_descr\030\004 \001(\t\022\033\n\023ent_physical_is_fru\030\005 \001" +
+      "(\010\022\031\n\021ent_physical_name\030\006 \001(\t\022 \n\030ent_phy" +
+      "sical_vendor_type\030\007 \001(\t\022\036\n\014ent_hw_alias\030" +
+      "\010 \003(\0132\010.HwAlias\022\033\n\010children\030\t \003(\0132\t.HwEn" +
+      "tity\"\270\002\n\004Node\022\n\n\002id\030\001 \001(\004\022\026\n\016foreign_sou" +
+      "rce\030\002 \001(\t\022\022\n\nforeign_id\030\003 \001(\t\022\020\n\010locatio" +
+      "n\030\004 \001(\t\022\020\n\010category\030\005 \003(\t\022\r\n\005label\030\006 \001(\t" +
+      "\022\023\n\013create_time\030\007 \001(\004\022\023\n\013sys_contact\030\010 \001" +
+      "(\t\022\027\n\017sys_description\030\t \001(\t\022\025\n\rsys_objec" +
+      "t_id\030\n \001(\t\022\"\n\014ip_interface\030\013 \003(\0132\014.IpInt" +
+      "erface\022&\n\016snmp_interface\030\014 \003(\0132\016.SnmpInt" +
+      "erface\022\037\n\014hw_inventory\030\r \001(\0132\t.HwEntity\"" +
+      "\222\001\n\013TopologyRef\022\n\n\002id\030\001 \001(\t\022\'\n\010protocol\030" +
+      "\002 \001(\0162\025.TopologyRef.Protocol\"N\n\010Protocol" +
+      "\022\010\n\004LLDP\020\000\022\010\n\004OSPF\020\001\022\010\n\004ISIS\020\002\022\n\n\006BRIDGE" +
+      "\020\003\022\007\n\003CDP\020\004\022\017\n\013USERDEFINED\020\005\",\n\017Topology" +
+      "Segment\022\031\n\003ref\030\001 \001(\0132\014.TopologyRef\"{\n\014To" +
+      "pologyPort\022\021\n\tvertex_id\030\001 \001(\t\022\020\n\010if_inde" +
+      "x\030\002 \001(\004\022\017\n\007if_name\030\003 \001(\t\022\017\n\007address\030\004 \001(" +
+      "\t\022$\n\rnode_criteria\030\005 \001(\0132\r.NodeCriteria\"" +
+      "\227\002\n\014TopologyEdge\022\031\n\003ref\030\001 \001(\0132\014.Topology" +
+      "Ref\022#\n\nsourcePort\030\003 \001(\0132\r.TopologyPortH\000" +
+      "\022)\n\rsourceSegment\030\004 \001(\0132\020.TopologySegmen" +
+      "tH\000\022\033\n\nsourceNode\030\005 \001(\0132\005.NodeH\000\022#\n\ntarg" +
+      "etPort\030\006 \001(\0132\r.TopologyPortH\001\022)\n\rtargetS" +
+      "egment\030\007 \001(\0132\020.TopologySegmentH\001\022\033\n\ntarg" +
+      "etNode\030\010 \001(\0132\005.NodeH\001B\010\n\006sourceB\010\n\006targe" +
+      "t*g\n\010Severity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEA" +
+      "RED\020\001\022\n\n\006NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020" +
+      "\004\022\t\n\005MAJOR\020\005\022\014\n\010CRITICAL\020\006*\212\002\n\022TroubleTi" +
+      "cketState\022\010\n\004OPEN\020\000\022\022\n\016CREATE_PENDING\020\001\022" +
+      "\021\n\rCREATE_FAILED\020\002\022\022\n\016UPDATE_PENDING\020\003\022\021" +
+      "\n\rUPDATE_FAILED\020\004\022\n\n\006CLOSED\020\005\022\021\n\rCLOSE_P" +
+      "ENDING\020\006\022\020\n\014CLOSE_FAILED\020\007\022\014\n\010RESOLVED\020\010" +
+      "\022\023\n\017RESOLVE_PENDING\020\t\022\022\n\016RESOLVE_FAILED\020" +
+      "\n\022\r\n\tCANCELLED\020\013\022\022\n\016CANCEL_PENDING\020\014\022\021\n\r" +
+      "CANCEL_FAILED\020\rB?\n)org.opennms.features." +
+      "kafka.producer.modelB\022OpennmsModelProtos" +
+      "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -23164,7 +23027,7 @@ public final class OpennmsModelProtos {
     internal_static_SnmpInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SnmpInfo_descriptor,
-        new java.lang.String[] { "Id", "IdText", "Version", "Specific", "Generic", "Community", });
+        new java.lang.String[] { "Id", "Version", "Specific", "Generic", "Community", });
     internal_static_Event_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_Event_fieldAccessorTable = new
