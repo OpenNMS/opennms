@@ -1,0 +1,62 @@
+
+[[ga-events-sources-kafka]]
+
+= Kafka Consumer (Events)
+
+You can also create events by routing them to a specific topic on Kafka.
+The Kafka Consumer feature allows events to be consumed from a specific topic on Kafka.
+
+Create events in protobuf format link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+See `kafka-consumer-events.proto` for the model definitions.
+
+The Kafka Consumer by default consumes events from the topic configured and forwards them to `Eventd`.
+
+== Enable Kafka Consumer
+
+The Kafka Consumer is disabled by default and can be enabled as follows.
+
+First, log in to the Karaf shell of your {page-component-title} instance and configure the Kafka client settings to point to your Kafka broker.
+See link:https://kafka.apache.org/27/documentation.html#consumerconfigs[Consumer Configs] for a complete list of available options.
+
+.Configure features and kafka client via Karaf shell
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure Kafka for Event Consumer
+[source, karaf]
+----
+config:edit org.opennms.features.kafka.consumer.client
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
+config:update
+----
+
+<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+
+Next, install the `opennms-kafka-consumer` feature from that same shell:
+
+.Install Kafka Consumer feature
+[source, karaf]
+----
+feature:install opennms-kafka-consumer
+----
+
+To ensure that the feature continues to be installed on subsequent restarts, add `opennms-kafka-consumer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+== Configure Topic Name
+
+.Karaf login, configuration of events topic
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+[source, karaf]
+----
+config:edit org.opennms.features.kafka.consumer
+config:property-set eventsTopic opennms-kafka-events
+config:update
+----
+
+NOTE: While configuring the eventsTopic, make sure that it doesn't conflict with other topics in the OpenNMS subsystem. If you are unsure, keep the default one.

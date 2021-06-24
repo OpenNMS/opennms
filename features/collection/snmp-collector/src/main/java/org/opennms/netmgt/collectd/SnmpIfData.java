@@ -33,6 +33,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * <p>SnmpIfData class.</p>
  *
@@ -143,4 +145,16 @@ public class SnmpIfData {
         return m_attributes;
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("nodeId", m_nodeId)
+                .add("collectionEnabled", m_collectionEnabled)
+                .add("ifIndex", m_ifIndex)
+                .add("ifType", m_ifType)
+                .add("rrdLabel", m_rrdLabel)
+                .add("ifAlias", m_ifAlias)
+                .add("attributes", m_attributes)
+                .toString();
+    }
 }

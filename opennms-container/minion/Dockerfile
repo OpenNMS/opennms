@@ -60,6 +60,7 @@ COPY --chown=10001:0 --from=minion-base /opt/prom-jmx-exporter /opt/prom-jmx-exp
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
+COPY ./minion-config-schema.yml /opt/minion/confd/
 
 # Create the directory for server certificates
 RUN mkdir /opt/minion/server-certs

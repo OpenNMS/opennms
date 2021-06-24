@@ -5,40 +5,41 @@ Minions communicate with these remote devices while OpenNMS performs coordinatio
 
 Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via an ActiveMQ or Apache Kafka message broker. 
 
-Using Minions to monitor devices and services in hard-to-reach, remote network locations:
+Use Minions to monitor devices and services in hard-to-reach, remote network locations:
 
-* means you do not have to set up and maintain a large set of firewall rules for multiple mangement protocols
-* avoids the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols
-* simplifies the network communication to the message broker and REST endpoint
+* no need to set up and maintain a large set of firewall rules for multiple management protocols
+* avoid the difficulty of communicating with managed devices over unreliable networks, using UDP-based management protocols
+* simplify network communication to the message broker and REST endpoint
 
-== How it Works
+== How it works
 
-A Minion monitors all the managed nodes and IP services in the same location (e.g., Pittsboro office, building_3). 
+A Minion monitors all the managed nodes and IP services in the same location (for example, Pittsboro office, building-3). 
 The Minion communicates with the message broker, which in turn communicates with the OpenNMS instance. 
 
 ._Nodes_ with _Minions_ in _locations_
 image::deployment/minion/location.png[]
 
-By default, every node provisioned in {page-component-title} is created in the "Default" location.
-The central {page-component-title} instance itself handles all nodes and services in the "Default" location.
-To enable the Minion to handle all the nodes and services in a remote location, you define that location (e.g., Pittsboro office, building_3), and set the Miniion's location configuration property to that location. 
-The Minion registers itself to the {page-component-title} instance on startup.
+By default, every node provisioned in {page-component-title} is created in the default location.
+The central {page-component-title} instance itself handles all nodes and services in the default location.
+
+To enable the Minion to handle all the nodes and services in a remote location, you define a location (for example, "Pittsboro office, building-3") in your core server, and configure the location property on the Minion to match. 
+The Minion registers itself to the {page-component-title} instance on start-up.
 
 {page-component-title}'s' xref:operation:provisioning/introduction.adoc#ga-provisioning-introduction[provisioning system] lets you associate nodes with any location.
 {page-component-title} delegates monitoring requests for nodes in a specified location to the Minion(s) configured for that location, using the Minion as a proxy.
 
-Figure <<gi-install-minion-communication, Minion communication>> provides  a more detailed overview about the communication between a {page-component-title} instance and a _Minion_.
+The following provides a more detailed overview of the communication between a {page-component-title} instance and a Minion:
 
 .Minion communication
 image::deployment/minion/communication.png[]
 
-By default the Minion is automatically provisioned as a node in the {page-component-title} instance and automatically monitored with the Minion-Heartbeat service.
-The Minion sends heartbeat messages to ensure it is running and functioning properly in this location.
+By default, the {page-component-title} instance automatically provisions the Minion as a node and automatically monitors it with the Minion-Heartbeat service.
+The Minion sends heartbeat messages to show it is running and functioning properly in this location.
 
-The specific management protocol messages (e.g., SNMP, ICMP), are piped through a message broker communication channel and are executed by a Minion.
+The specific management protocol messages (for example, SNMP, ICMP) are piped through a message broker communication channel and executed by a Minion.
 The broker forwards responses to the central {page-component-title} instance, which processes them accordingly.
 
-The following management protocols are currently supported in a Minion proxy scenario:
+A Minion proxy scenario supports the following management protocols:
 
 * Receive Syslog messages and SNMP traps and forward them through the message broker to a central {page-component-title} instance
 * Act as a proxy for SNMP performance data collection

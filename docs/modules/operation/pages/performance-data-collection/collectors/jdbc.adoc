@@ -18,7 +18,7 @@ Attributes are retrieved using SQL queries.
 When running on Minion the data sources in `opennms-datasources.xml` cannot be referenced.
 Instead, you must set the JDBC connection settings using the service parameters.
 
-Also, the JDBC driver must be properly loaded in the Minion container (see <<minion/jdbc-driver.adoc, Installing JDBC drivers in Minion>>)
+Also, the JDBC driver must be properly loaded in the Minion container (see <<minion/jdbc-driver.adoc, Install JDBC drivers in Minion>>)
 By default, only the JDBC driver for PostgreSQL is available.
 
 == Collector Parameters

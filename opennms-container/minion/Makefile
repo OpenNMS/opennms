@@ -19,10 +19,17 @@ DOCKER_ARCH             := linux/amd64
 DOCKER_FLAGS            := --output=type=docker,dest=images/minion.oci
 SOURCE                  := $(shell git remote get-url origin)
 REVISION                := $(shell git describe --always)
-BUILD_NUMBER            := "unset"
+BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
 PROM_JMX_EXPORTER_VERSION := 0.15.0
+
+%.yml: %.yml.in
+	@echo "Generating $@..."
+	@sed -e 's,@VERSION@,$(VERSION),' \
+		-e 's,@REVISION@,$(REVISION),' \
+		-e 's,@BRANCH@,$(BUILD_BRANCH),' \
+		-e 's,@BUILD_NUMBER@,$(BUILD_NUMBER),' $< > $@
 
 help:
 	@echo ""
@@ -67,7 +74,7 @@ test:
 	@command -v docker-buildx
 	test -f ../../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
 
-build: test
+build: test minion-config-schema.yml
 	@echo "Copy Minion tarball to Docker context ..."
 	@find ../../opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./tarball/minion.tar.gz \;
 	@echo "Initialize builder instance ..."
@@ -107,3 +114,4 @@ clean-all:
 	@echo "Delete tarball and artifacts ..."
 	@rm -rf images/*.*
 	@rm -rf tarball/*.*
+	@rm -rf minion-config-schema.yml

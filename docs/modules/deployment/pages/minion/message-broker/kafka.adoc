@@ -1,4 +1,4 @@
-.Create a file to prevent installing ActiveMQ features on Minion startup
+.Create a file to prevent installing ActiveMQ features on Minion start-up
 [source, console]
 ----
 sudo vi etc/featuresBoot.d/disable-activemq.boot
@@ -12,21 +12,21 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 !opennms-core-ipc-sink-camel
 ----
 
-.Create a file to install Kafka features on Minion startup
+.Create a file to install Kafka features on Minion start-up
 [source, console]
 ----
 sudo vi etc/featuresBoot.d/kafka.boot
 ----
 
-.Add the following lines to install the remote producer call (RPC) and sink feature for Kafka on Minion startup and save the file
+.Add the following lines to install the remote producer call (RPC) and sink feature for Kafka on Minion start-up and save the file
 [source, kafka.boot]
 ----
 opennms-core-ipc-rpc-kafka
 opennms-core-ipc-sink-kafka
 ----
 
-.Configure the Kafka features and the Minion location via the Karaf Shell
-[source, karaf]
+.Configure the Kafka features and the Minion location via the Karaf shell
+[source, console]
 ----
 ssh -p 8201 admin@localhost
 ----
@@ -40,22 +40,22 @@ config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:update<4>
 ----
 
-<1> Edit the minion configuration
-<2> Replace my-location with a location name representing your remote location the Minion is running
-<3> Replace the example `http-url` with the URL of your {page-component-title} Core instance
-<4> Save the configuration
+<1> Edit the Minion configuration.
+<2> Replace my-location with a location name that represents the remote location where the Minion is running.
+<3> Replace the example `http-url` with the URL of your {page-component-title} Core instance.
+<4> Save the configuration.
 
-TIP: By default the Minion generates a unique id.
-     If you want to provide a human readable Minion identifier yourself with `config:property-set id my-minion-name`
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`.
 
 .Configure the credentials for the REST endpoint and exit Karaf shell
 [source, karaf]
 ----
 opennms:scv-set opennms.http my-minion-user my-minion-password<1>
 ----
-<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance
+<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
 
-NOTE: The credentials are encrypted on disk in `etc/scv.jce`.
+The credentials are encrypted on disk in `etc/scv.jce`.
 
 .Configure the Kafka endpoints for RPC feature
 [source, karaf]
@@ -65,9 +65,9 @@ config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
 
-<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
-.Configure the Kafka endpoints for Sink feature
+.Configure the Kafka endpoints for sink feature
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.sink.kafka
@@ -75,15 +75,15 @@ config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
 
-<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
+<1> Connect to the specified Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
-NOTE: If you set more than one Kafka node as `bootstrap.servers` the driver will attempt to connect to the first entry.
-      If that is successful the whole broker topology will be discovered and will be known by the client.
-      The other entries are only used if the connection to the first entry fails.
+If you set more than one Kafka node as `bootstrap.servers`. the driver attempts to connect to the first entry.
+If that is successful, the whole broker topology will be discovered and will be known by the client.
+The other entries are used only if the connection to the first entry fails.
 
 IMPORTANT: Ensure you use the FQDN or IP for your Kafka nodes as configured as advertised listener.
 
-Exit the Karaf Shell with kbd:[Ctrl+d]
+Exit the Karaf shell with kbd:[Ctrl+d]
 
 .Restart the Minion to apply the configuration
 [source,console]
@@ -91,7 +91,7 @@ Exit the Karaf Shell with kbd:[Ctrl+d]
 sudo systemctl restart minion
 ----
 
-.Verify the configuration using the health check in the Karaf Shell
+.Verify the configuration using the health check in the Karaf shell
 [source, console]
 ----
 ssh -p 8201 admin@localhost
@@ -103,7 +103,7 @@ ssh -p 8201 admin@localhost
 opennms:health-check
 ----
 
-.Verify if all components are configured properly
+.Verify all components are configured properly
 [source, output]
 ----
 Verifying the health of the container

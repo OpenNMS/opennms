@@ -4,18 +4,13 @@
 sudo dnf -y install java-11-openjdk-headless
 ----
 
-.Add repository and import GPG key
-[source, console]
-----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
-endif::[]
-----
-ifeval::["{page-component-title}" == "Meridian"]
-Configure the repository by copying the Meridian repository file you received from OpenNMS Sales to the Minion server.
+include::../../repos/rhel-centos/horizon-rhel8.adoc[]
 endif::[]
 
+ifeval::["{page-component-title}" == "Meridian"]
+include::../../repos/rhel-centos/meridian-rhel8.adoc[]
+endif::[]
 
 .Install the {page-component-title} Minion package
 [source, console]
@@ -30,12 +25,17 @@ endif::[]
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+     For this reason, we recommended that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 
 .Disable auto updates for {page-component-title} Minion
 [source, console]
 ----
+ifeval::["{page-component-title}" == "Horizon"]
 sudo dnf config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo dnf config-manager --disable meridian
+endif::[]
 ----
 
 .Verify directory structure with the tree command
