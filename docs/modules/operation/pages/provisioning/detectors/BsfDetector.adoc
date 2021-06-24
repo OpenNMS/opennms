@@ -43,7 +43,7 @@ If you require retry and/or timeout behavior, you must implement it in the scrip
 
 == Requirements for the script (run-types)
 
-Depending on the `run-type`, the script has to provide its results in different ways.
+Depending on the `run-type`, the script must provide its results in different ways.
 For minimal scripts with very simple logic, `run-type` `eval` is the simple option.
 Scripts running in `eval` mode have to return a string matching one of the `status codes`.
 
