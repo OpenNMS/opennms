@@ -76,10 +76,11 @@ public class StatisticsCollectorImpl implements StatisticsCollector {
     }
 
     public void record(Collection<Sample> samples) {
-        // race conditions might happen but it shouldn't matter for statistical purposes.
         for (Sample sample : samples) {
             Metric metric = sample.getMetric();
             int count = countNoOfTags(metric);
+            // we don't synchronize this method for performance reasons. Therefore the lowestTagCount might be changed while we run
+            // through the method by another thread. But this should be inconsequential for statistic purposes.
             if (topNMetrics.size() < MAX_TOP_N_METRIC && count >= lowestTagCount.get() || count > lowestTagCount.get() ) {
                 putInTopNMetrics(metric);
             }
