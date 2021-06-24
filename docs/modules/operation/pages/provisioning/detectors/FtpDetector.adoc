@@ -17,7 +17,6 @@ It finds the FTP server on multiple ports and can also use login credentials for
 |===
 | Parameter            | Description   | Required | Default value
 | `port`               | Port to query | optional | `21`
-| `multilineIndicator` | ???           | optional | `-`
 |===
 
 == Example Configuration
