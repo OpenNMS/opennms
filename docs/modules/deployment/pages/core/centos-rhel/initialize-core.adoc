@@ -54,5 +54,5 @@ sudo systemctl reload firewalld
 ----
 
 TIP: To receive SNMP Traps or Syslog messages you must allow incoming traffic on your host firewall as well.
-     By default, the OpenNMS {page-component-title} SNMP trap daemon listens on 162/udp and the Syslog daemon listens on 10514/udp.
+     By default, the OpenNMS {page-component-title} SNMP trap daemon listens on 10162/udp and the Syslog daemon listens on 10514/udp.
      The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.
