@@ -39,7 +39,7 @@ CAUTION: Avoid non-character names for parameters to avoid problems in the scrip
 == Timeout and Retry
 
 The BSFDetector does not perform any timeout or retry processing on its own.
-If retry and or timeout behavior is required, you must implement it in the script itself.
+If you require retry and/or timeout behavior, you must implement it in the script itself.
 
 == Requirements for the script (run-types)
 
