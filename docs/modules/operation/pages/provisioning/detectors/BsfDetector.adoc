@@ -92,7 +92,7 @@ if (testFile.exists()) {
 }
 ----
 
-=== Groovy Example
+=== Groovy example
 
 .Groovy example for `run-type` `eval`
 [source, xml]
