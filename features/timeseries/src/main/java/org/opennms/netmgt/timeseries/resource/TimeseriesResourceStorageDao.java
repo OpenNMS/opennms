@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.timeseries.resource;
 
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.PREFIX_RESOURCE_LEVEL_ATTRIBUTE;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toMetricName;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourcePath;
 
@@ -40,6 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
@@ -175,8 +175,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         if (!metricsWithStringAttributes.isEmpty()) {
             metricsWithStringAttributes.iterator().next()
                     .getExternalTags().stream()
-                    .filter(t -> t.getKey() != null && t.getKey().startsWith(PREFIX_RESOURCE_LEVEL_ATTRIBUTE))
-                    .map(t -> new StringPropertyAttribute(t.getKey().substring(PREFIX_RESOURCE_LEVEL_ATTRIBUTE.length()), t.getValue()))
+                    .map(t -> new StringPropertyAttribute(t.getKey(), t.getValue()))
                     .forEach(attributes::add);
         }
         return attributes;
@@ -204,19 +203,10 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         metricsWithStringAttributes.addAll(searchFor(path, -1)); // resource level
         return metricsWithStringAttributes
                     .stream()
-                    .flatMap(m->m.getExternalTags().stream())
+                    .flatMap(m -> m.getExternalTags().stream())
                     .distinct()
-                    .collect(Collectors.toMap(t -> stripPrefix(t.getKey(), PREFIX_RESOURCE_LEVEL_ATTRIBUTE), Tag::getValue));
-    }
-
-    private static String stripPrefix(final String s, final String prefix) {
-        if (s==null) {
-            return null;
-        } else if(s.startsWith(prefix)){
-            return s.substring(prefix.length());
-        } else {
-            return s;
-        }
+                    .filter(t -> !t.getKey().endsWith(MetaTagNames.mtype)) // mtype is on Metric level => we are one above (resource level)
+                    .collect(Collectors.toMap(Tag::getKey, Tag::getValue));
     }
 
     @Override

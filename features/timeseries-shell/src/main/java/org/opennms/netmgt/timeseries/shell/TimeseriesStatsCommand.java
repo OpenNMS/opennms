@@ -65,7 +65,7 @@ public class TimeseriesStatsCommand implements Action {
         out.println("Metrics with highest number of tags:");
         stats.getTopNMetricsWithMostTags().stream().map(this::toString).forEach(out::println);
         out.println();
-        System.out.println("Tags with highest number of unique values (top 100):");
+        out.println("Tags with highest number of unique values (top 100):");
         stats.getTopNTags().stream().limit(100).forEach(out::println);
         return null;
     }
