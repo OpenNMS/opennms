@@ -47,7 +47,7 @@ public class StatisticsCollectorImplTest {
 
     @Test
     public void test() {
-        StatisticsCollectorImpl stats = new StatisticsCollectorImpl();
+        StatisticsCollectorImpl stats = new StatisticsCollectorImpl(4);
         stats.record(createSample(3));
         stats.record(createSample(4));
         stats.record(createSample(4));

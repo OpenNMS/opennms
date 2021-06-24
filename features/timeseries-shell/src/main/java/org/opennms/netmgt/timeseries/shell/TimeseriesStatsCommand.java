@@ -74,6 +74,6 @@ public class TimeseriesStatsCommand implements Action {
         return metric.getFirstTagByKey(IntrinsicTagNames.resourceId).getValue() + "/"
                 + metric.getFirstTagByKey(IntrinsicTagNames.name).getValue() +
                 "\n    metaTags:      " + metric.getMetaTags().toString() +
-                "\n    intrinsicTags: " + metric.getIntrinsicTags().toString();
+                "\n    externalTags: " + metric.getExternalTags().toString();
     }
 }

@@ -36,7 +36,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
@@ -44,6 +48,7 @@ import org.opennms.integration.api.v1.timeseries.Tag;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import com.google.common.util.concurrent.Striped;
 
 import net.agkn.hll.HLL;
 
@@ -51,6 +56,7 @@ public class StatisticsCollectorImpl implements StatisticsCollector {
 
     private final static int MAX_TOP_N_METRIC = 10;
     private final static int MAX_TOP_N_TAG_KEYS = 10000;
+    private final static int STRIPE_MULTIPLIER = 4;
 
     private final AtomicInteger lowestTagCount = new AtomicInteger();
     private final ConcurrentSkipListSet<Metric> topNMetrics = new ConcurrentSkipListSet<>(
@@ -60,6 +66,14 @@ public class StatisticsCollectorImpl implements StatisticsCollector {
     private final ConcurrentHashMap<String, HLL> topNTags = new ConcurrentHashMap<>();
     @SuppressWarnings("UnstableApiUsage")
     private final HashFunction hllHashFunction = Hashing.murmur3_128();
+    @SuppressWarnings("UnstableApiUsage")
+    private final Striped<Lock> stripedLock;
+
+    @Inject
+    @SuppressWarnings("UnstableApiUsage")
+    public StatisticsCollectorImpl(@Named("timeseries.writer_threads") Integer numWriterThreads) {
+        stripedLock = Striped.lazyWeakLock(numWriterThreads * STRIPE_MULTIPLIER);
+    }
 
     public void record(Collection<Sample> samples) {
         // race conditions might happen but it shouldn't matter for statistical purposes.
@@ -79,17 +93,28 @@ public class StatisticsCollectorImpl implements StatisticsCollector {
 
     void putInTopNMetrics(final Metric metric) {
         topNMetrics.add(metric);
-        if(topNMetrics.size() > MAX_TOP_N_METRIC) {
+        while(topNMetrics.size() > MAX_TOP_N_METRIC) {
             topNMetrics.pollLast();
         }
         this.lowestTagCount.set(countNoOfTags(topNMetrics.last()));
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     void putInTopTags(final Tag tag) {
         @SuppressWarnings("UnstableApiUsage")
         long hash = hllHashFunction.hashString(tag.getValue(), StandardCharsets.UTF_8).asLong();
-        topNTags.computeIfAbsent( tag.getKey(), k -> new HLL(14, 5))
-                .addRaw(hash);
+        Lock lock = null;
+        try {
+            lock = stripedLock.get(tag.getKey());
+            lock.lock();
+            topNTags.computeIfAbsent( tag.getKey(), k -> new HLL(14, 5))
+                    .addRaw(hash);
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
+
     }
 
     private int countNoOfTags(final Metric metric) {
