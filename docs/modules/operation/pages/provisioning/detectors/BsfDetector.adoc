@@ -141,7 +141,7 @@ if (testFile.exists()) {
 }
 ----
 
-=== Example Jython
+=== Jython example 
 
 To use the Jython (Java implementation of Python) language an additional library is required.
 Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart {page-component-title}.
