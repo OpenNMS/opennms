@@ -52,6 +52,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public abstract class StringUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
@@ -434,5 +436,16 @@ public abstract class StringUtils {
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+
+    public static Integer parseInt(String value, Integer defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 }
