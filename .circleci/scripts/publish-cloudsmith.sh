@@ -58,6 +58,7 @@ publishPackage() {
 }
 
 publishPackage cloudsmith push raw \
+  --verbose \
   --republish \
   --version "${VERSION}" \
   --name "${REPO}/minion-config-schema.yml" \
