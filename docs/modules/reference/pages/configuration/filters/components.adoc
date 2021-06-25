@@ -1,0 +1,11 @@
+[[filter-components]]
+= OpenNMS components that use filters
+
+; notifd : Notification rules control whether or not a received event triggers a notification. Each event is tested against the rules in notifications.xml looking for a match. When a match is found, the corresponding notification is sent. The default for most notifications is "IPADDR IPLIKE *.*.*.*", however, any valid rule may be used. To do an exclusive filter use "!(IPADDR IPLIKE 169.254.*.*)". This allows you to be very granular when defining what to alert on. 
+; collectd : Controls which IP interfaces are included in a collection package.  Evaluated at startup.
+; pollerd : Controls which IP interfaces are included in a polling package.  Evaluated at startup.
+
+; threshd : Controls which IP interfaces are included in a thresholding package.  Evaluated at startup.
+; webUI : The webUI uses filters to validate rules when configuring notifications. This insures that the rule will be syntactically correct, and it allows the administrator to preview the list of matching interfaces before finalizing the notification.
+
+: Filters are also used with rules when configuring path outages to select a list of nodes that lie behind the specified outage path. This list may be previewed before finalizing the configuration.

@@ -1,0 +1,123 @@
+[[filter-parameters]]
+= Parameters
+
+Here is a partial list of the possible rule parameters. 
+You can add parameters not present in `database-schema.xml` for use in filter expressions, as long as you follow the existing database table hierarchy.
+
+*Pollers*  
+
+* dpNumber
+* dpName
+* dpIP
+* dpComment
+* dpDiscLimit
+* dpAdminState
+* dpRunState|
+
+*Nodes*
+ 
+* nodeID
+* foreignSource
+* foreignID
+* dpName
+* nodeCreateTime
+* nodeParentID
+* nodeType
+* nodeSysOID
+* nodeSysName
+* nodeSysDescription
+* nodeSysLocation
+* nodeSysContact
+* nodeLabel
+* location
+
+*Surveillance categories*
+
+* categoryID
+* categoryName
+* categoryDescription 
+
+*Applications*
+
+name - Use for alerting on user-defined applications, that span multiple systems and services.
+
+*IpInterface*
+
+* ipAddr
+* ipHostname
+* isManaged
+
+*ipStatus*
+
+* ipLastCapsdPoll
+
+*SNMP Interface*
+
+* snmpIpAdEntNetMask
+* snmpPhysAddr
+* snmpIfIndex
+* snmpIfDescr
+* snmpIfType
+* snmpIfSpeed
+* snmpIfAlias
+* snmpIfAdminStatus
+* snmpIfOperStatus
+
+*Services*
+
+* serviceName
+
+*ifServices*
+
+* serviceID
+* lastGood
+* lastFail 
+
+*Server map*
+
+* serverName
+
+*Service Map*
+
+* serviceMapName
+
+*Assets*
+
+* displayCategory
+* notifyCategory
+* pollerCategory
+* thresholdCategory
+* category
+* manufacturer
+* vendor
+* modelnumber
+* serialnumber
+* description
+* circuitid
+* assetnumber
+* operatingsystem
+* rack
+* slot
+* port
+* region
+* division
+* department
+* address1
+* address2
+* city
+* state
+* zip
+* building
+* floor
+* room
+* vendorphone
+* vendorfax
+* vendorassetnumber
+* lease
+* leaseexpires
+* supportphone
+* maintcontract
+* maintcontractexpires
+* comment
+* managedobjectinstance
+* managedobjecttype

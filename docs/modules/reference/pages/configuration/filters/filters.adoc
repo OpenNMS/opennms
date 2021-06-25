@@ -1,0 +1,72 @@
+[[filters]]
+= Filters
+
+A filter (also known as a rule) is a shorthand SQL statement that automatically selects ipaddr from the ipinterface table. 
+You are basically building the WHERE clause with the rule that you write. 
+There is an XML file called http://opennms.svn.sourceforge.net/viewvc/opennms/opennms/trunk/opennms-base-assembly/src/main/filtered/etc/database-schema.xml?view=markup[database-schema.xmlBROKEN LINK] in the /opt/opennms/etc directory that informs the filter code of what tables it can use in building the WHERE clause. 
+Here is an explaination of that file:
+
+Each table used by the filter code is in a &lt;table&gt; tag. 
+If a table has an attribute of `visible=false`, then no columns in that table can be used in the WHERE clause and thus can't appear in the rule. 
+You will get a syntax exception if it sees any non-visible columns in the rule. 
+The same applies to a non-visible column in a table.
+
+A <join> tag tells the filter module how to relate this table to the ipinterface table. 
+The ipinterface table is marked with the attribute `key=primary`, meaning that it is going to be the table we select ipaddr from and join all other tables to.
+
+In brief, you can use C/Java-style comparison operators to data types they apply to ( == and != can be used on strings, as can the SQL "LIKE" keyword).
+
+For LIKE comparisons, the character "_" matches any single character and "%" matches any series of characters (or none at all). 
+For example, "F_o%"" matches "Foo", "Foom", and "Flowers" but not "Foip".
+
+To handle NULL values (which include cases where you've joined across to a table where there is no matching row), use the "IS NULL" and "IS NOT NULL" operators. 
+Note that comparing a null value to anything with any other operator always returns false, so 
+`<pre>categoryName != 'SomeCategory'</pre>` will not return anything with a null categoryName. 
+Instead, you probably need to use `<pre>categoryName != 'SomeCategory' | categoryName IS NULL</pre>`.
+
+You can group expressions using parentheses and apply boolean operators anywhere in an expression. 
+Note that, in a departure from C/Java convention, boolean operators are single characters rather than double, so they look more like the bitwise arithmetic operators in C:
+
+*AND*
+
+&amp;
+
+*OR*
+
+|
+
+*NOT*
+
+!
+
+Each comparision is joined together with the & or | operators meaning logical AND, logical OR operations. 
+Anything delimited by an & or | character gets translated into a sub-select that selects the ipaddr based on the comparision for that clause. 
+
+NOTE: Depending on the format you use in your rules, you might need to escape your AND operator. 
+See xref:filters/rule-formats.adoc#filter-rule-format[Rule_formats].
+
+Here is an example:
+
+Rule:
+
+`<pre>(nodesysname == 'something') & (snmpifdescr == 'something else')</pre>`
+
+SQL
+
+[source, sql]
+----
+<pre>
+SELECT ipaddr
+FROM ipinterface
+WHERE ipaddr in (SELECT ipaddr FROM ipinterface, node
+                 WHERE nodesysname='something'
+                 AND ipinterface.nodeid =node.nodeid)
+AND   ipaddr in (SELECT ipaddr FROM ipinterface, snmpInterface
+                 WHERE snmpifdescr='something else'
+                 AND ipinterface.ipaddr = snmpInterface.ipaddr);
+</pre>
+----
+
+The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges. 
+is<Service> is shorthand to build a complicated join to match on a service name.  
+##notis<Service>## 
