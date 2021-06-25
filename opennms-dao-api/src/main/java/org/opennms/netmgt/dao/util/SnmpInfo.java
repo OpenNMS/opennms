@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.dao.util;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.function.Consumer;
+
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Snmp;
+
+import com.google.common.base.Strings;
 
 /**
  * This class is used to format the Snmp block into an appropiate string for
@@ -100,5 +107,47 @@ public abstract class SnmpInfo {
         }
 
         return EventDatabaseConstants.format(snmpStr.toString(), maxlen);
+    }
+
+    /**
+     *  Tries to create Snmp Object from formatted eventSnmp String.
+     * @param eventSnmp formatted snmp string that has all the @Snmp fields.
+     * @return snmp Snmp object created or null if it can't be created.
+     */
+    public static Snmp createSnmp(String eventSnmp) {
+        if (Strings.isNullOrEmpty(eventSnmp)) {
+            return null;
+        }
+        String[] snmpFields = eventSnmp.split(String.valueOf(EventDatabaseConstants.DB_ATTRIB_DELIM));
+        if (snmpFields.length == 0) {
+            return null;
+        }
+        Iterator<String> fields = Arrays.stream(snmpFields).iterator();
+        Snmp snmp = new Snmp();
+        snmp.setId(fields.next());
+        setFieldText(fields, snmp::setIdtext);
+        setFieldText(fields, snmp::setVersion);
+        setFieldValue(fields, snmp::setSpecific);
+        setFieldValue(fields, snmp::setGeneric);
+        setFieldText(fields, snmp::setCommunity);
+        return snmp;
+    }
+
+    private static void setFieldText(Iterator<String> fields, Consumer<String> setter) {
+        if (fields.hasNext()) {
+            String fieldValue = fields.next();
+            if (!Strings.isNullOrEmpty(fieldValue) && !fieldValue.equals("undefined")) {
+                setter.accept(fieldValue);
+            }
+        }
+    }
+
+    private static void setFieldValue(Iterator<String> fields, Consumer<Integer> setter) {
+        if (fields.hasNext()) {
+            String fieldValue = fields.next();
+            if (!Strings.isNullOrEmpty(fieldValue) && !fieldValue.equals("undefined")) {
+                setter.accept(StringUtils.parseInt(fieldValue, null));
+            }
+        }
     }
 }
