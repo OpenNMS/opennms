@@ -1,13 +1,13 @@
 Source: opennms
 Section: contrib/net
 Priority: optional
-Maintainer: Jeff Gehlbach <jeffg@opennms.org>
+Maintainer: Benjamin Reed <ranger@opennms.org>
 Build-Depends: oracle-java11-installer | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | openjdk-11-jdk-headless | openjdk-11-jdk | java11-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync
 Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
-Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
+Depends: opennms-common (=${binary:Version}), opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
 Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | java11-jdk
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
@@ -24,7 +24,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Full Inst
 
 Package: opennms-source
 Architecture: all
-Depends: opennms-webapp-jetty (=${binary:Version})
+Depends: opennms-common (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Source)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -39,7 +39,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Source)
 
 Package: opennms-db
 Architecture: all
-Depends: postgresql-13 | postgresql-12 | postgresql-11 | postgresql-10, iplike-pgsql13 | iplike-pgsql12 | iplike-pgsql11 | iplike-pgsql10, debconf
+Depends: opennms-common (=${binary:Version}), postgresql-13 | postgresql-12 | postgresql-11 | postgresql-10, iplike-pgsql13 | iplike-pgsql12 | iplike-pgsql11 | iplike-pgsql10, debconf
 Description: Enterprise-grade Open-source Network Management Platform (Database)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -74,7 +74,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Daemon)
 
 Package: opennms-jmx-config-generator
 Architecture: all
-Depends: adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre
+Depends: opennms-common (=${binary:Version}),adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre
 Description: Enterprise-grade Open-source Network Management Platform (JMX Config Generator)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -137,7 +137,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Depends: opennms-common (=${binary:Version}), jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Conflicts: opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0), opennms-plugin-protocol-xml (<<${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
@@ -153,6 +153,7 @@ Description: Enterprise-grade Open-source Network Management Platform (OpenNMS L
 
 Package: libopennmsdeps-java
 Architecture: all
+Depends: opennms-common (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Required Libraries)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -167,6 +168,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Required 
 Package: opennms-doc
 Section: contrib/doc
 Architecture: all
+Depends: opennms-common (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (Documentation)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

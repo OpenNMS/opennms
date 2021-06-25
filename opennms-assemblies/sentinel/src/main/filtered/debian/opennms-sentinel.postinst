@@ -15,11 +15,13 @@ if [ ! -f "${ETCDIR}/host.key" ]; then
 	chown "${SENTINELUSER}:${SENTINELUSER}" "${ETCDIR}/host.key"
 fi
 
+"${SENTINELHOME}/bin/update-package-permissions" "opennms-sentinel"
+
 # Remove the directory used as the local Maven repo cache
 rm -rf "${SENTINELHOME}/.local"
 rm -rf "${SENTINELHOME}/.m2"
 
-chown -R "${SENTINELUSER}:${SENTINELUSER}" "${ETCDIR}" "${SENTINELHOME}" "${SENTINELDATA}" "${SENTINELLOG}"
+"${SENTINELHOME}/bin/fix-permissions" -R "${SENTINELHOME}"/* "${ETCDIR}" "${SENTINELDATA}" "${SENTINELLOG}"
 
 # attempt to configure the kernel to allow ping as non-root
 "${SENTINELHOME}/bin/ensure-user-ping.sh" sentinel || :

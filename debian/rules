@@ -103,6 +103,7 @@ install: build
 	mv debian/temp/lib/opennms-alarm-northbounder-jms-*.jar                                    debian/opennms-plugin-northbounder-jms/usr/share/java/opennms/
 	mv debian/temp/etc/jms-northbounder-configuration.xml                                      debian/opennms-plugin-northbounder-jms/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jms-northbounder-configuration.xml   debian/opennms-plugin-northbounder-jms/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-northbounder-jms,g' debian/package-permissions.sh > debian/opennms-plugin-northbounder-jms.postinst
 	
 	##
 	## Setup the provision adapter packages
@@ -119,6 +120,13 @@ install: build
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
 	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-dns.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-link,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-link.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-map,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-map.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-rancid,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-rancid.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-reverse-dns,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-reverse-dns.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-snmp-asset,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-snmp-asset.postinst
+	sed -e 's,@PACKAGE@,opennms-plugin-provisioning-snmp-hardware-inventory,g' debian/package-permissions.sh > debian/opennms-plugin-provisioning-snmp-hardware-inventory.postinst
 	
 	# etc-pristine version
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/var/lib/opennms/etc-pristine/
@@ -140,6 +148,7 @@ install: build
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms/{datacollection,snmp-graph.properties.d}
+	sed -e 's,@PACKAGE@,opennms-plugin-collector-juniper-tca,g' debian/package-permissions.sh > debian/opennms-plugin-collector-juniper-tca.postinst
 	
 	# Setup ticketers
 	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/usr/share/java/opennms
@@ -148,20 +157,24 @@ install: build
 
 	# CIFS
 	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
+	sed -e 's,@PACKAGE@,opennms-plugin-protocol-cifs,g' debian/package-permissions.sh > debian/opennms-plugin-protocol-cifs.postinst
 
 	# NSClient
 	mv debian/temp/lib/org.opennms.protocols.nsclient-*.jar                                    debian/opennms-plugin-protocol-nsclient/usr/share/java/opennms/
 	mv debian/temp/etc/nsclient*.xml                                                           debian/opennms-plugin-protocol-nsclient/etc/opennms/
 	mv debian/temp/share/xsds/nsclient*.xsd                                                    debian/opennms-plugin-protocol-nsclient/var/lib/opennms/xsds/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/nsclient*.xml                        debian/opennms-plugin-protocol-nsclient/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-protocol-nsclient,g' debian/package-permissions.sh > debian/opennms-plugin-protocol-nsclient.postinst
 	
 	# RADIUS
 	mv debian/temp/lib/*radius*.jar                                                            debian/opennms-plugin-protocol-radius/usr/share/java/opennms/
+	sed -e 's,@PACKAGE@,opennms-plugin-protocol-radius,g' debian/package-permissions.sh > debian/opennms-plugin-protocol-radius.postinst
 	
 	# VTD-XML
 	install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
 	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
+	sed -e 's,@PACKAGE@,opennms-plugin-collector-vtdxml-handler,g' debian/package-permissions.sh > debian/opennms-plugin-collector-vtdxml-handler.postinst
 	
 	# XMP
 	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
@@ -169,6 +182,7 @@ install: build
 	mv debian/temp/etc/xmp*-config.xml                                                         debian/opennms-plugin-protocol-xmp/etc/opennms/
 	mv debian/temp/share/xsds/xmp*.xsd                                                         debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xmp*-config.xml                      debian/opennms-plugin-protocol-xmp/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-protocol-xmp,g' debian/package-permissions.sh > debian/opennms-plugin-protocol-xmp.postinst
 	
 	# Juniper TCA
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/{datacollection,snmp-graph.properties.d}
@@ -179,6 +193,7 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/tca*-config.xml                      debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/juniper-tca*          debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	sed -e 's,@PACKAGE@,opennms-plugin-collector-juniper-tca,g' debian/package-permissions.sh > debian/opennms-plugin-collector-juniper-tca.postinst
 	
 	# JIRA
 	mkdir -p debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-troubleticketer
@@ -187,16 +202,19 @@ install: build
 	mv debian/temp/system/org/opennms/features/jira-client/*                                   debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-client/
 	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-jira,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-jira.postinst
 	
 	# OTRS
 	mv debian/temp/lib/opennms-integration-otrs*.jar                                           debian/opennms-plugin-ticketer-otrs/usr/share/java/opennms/
 	mv debian/temp/etc/otrs.properties                                                         debian/opennms-plugin-ticketer-otrs/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/otrs.properties                      debian/opennms-plugin-ticketer-otrs/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-otrs,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-otrs.postinst
 	
 	# RT
 	mv debian/temp/lib/opennms-integration-rt*.jar                                             debian/opennms-plugin-ticketer-rt/usr/share/java/opennms/
 	mv debian/temp/etc/rt.properties                                                           debian/opennms-plugin-ticketer-rt/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
+	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-rt,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-rt.postinst
 	
 	##
 	## opennms-jmx-config-generator
@@ -205,6 +223,7 @@ install: build
 	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
 	mv debian/temp/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
 	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
+	sed -e 's,@PACKAGE@,opennms-jmx-config-generator,g' debian/package-permissions.sh > debian/opennms-jmx-config-generator.postinst
 	
 	##
 	## Setup the libopennms-java package
@@ -212,12 +231,14 @@ install: build
 	mv debian/temp/lib/opennms*.jar debian/libopennms-java/usr/share/java/opennms/
 	mv debian/temp/lib/endorsed     debian/libopennms-java/usr/share/java/opennms/
 	chmod 644 debian/libopennms-java/usr/share/java/opennms/*.jar debian/libopennms-java/usr/share/java/opennms/endorsed/*.jar
+	sed -e 's,@PACKAGE@,libopennms-java,g' debian/package-permissions.sh > debian/libopennms-java.postinst
 
 	##
 	## Setup the libopennmsdeps-java package
 	##
 	mv debian/temp/lib/*.jar debian/libopennmsdeps-java/usr/share/java/opennms/
 	chmod 644 debian/libopennmsdeps-java/usr/share/java/opennms/*
+	sed -e 's,@PACKAGE@,libopennmsdeps-java,g' debian/package-permissions.sh > debian/libopennmsdeps-java.postinst
 
 	##
 	## Setup the opennms-common package
@@ -261,6 +282,7 @@ install: build
 	##
 	## Setup the opennms-db package
 	##
+	sed -e 's,@PACKAGE@,opennms-db,g' debian/package-permissions.sh > debian/opennms-db.postinst
 
 	##
 	## Setup the opennms-server package
@@ -272,6 +294,7 @@ install: build
 	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
 	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/usr/share/opennms/jetty-webapps/opennms/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+	sed -e 's,@PACKAGE@,opennms-source,g' debian/package-permissions.sh > debian/opennms-source.postinst
 
 	##
 	## Setup the opennms-webapp-jetty package
@@ -281,6 +304,7 @@ install: build
 	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
 	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+	sed -e 's,@PACKAGE@,opennms-webapp-jetty,g' debian/package-permissions.sh > debian/opennms-webapp-jetty.postinst
 
 	##
 	## Setup the opennms-webapp-hawtio package
@@ -289,6 +313,7 @@ install: build
 	install -m 644 debian/opennms-webapp-hawtio.overrides debian/opennms-webapp-hawtio/usr/share/lintian/overrides/opennms-webapp-hawtio
 	mv debian/temp/jetty-webapps/hawtio/* debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio/
 	find debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio* -type f -execdir chmod 644 {} \;
+	sed -e 's,@PACKAGE@,opennms-webapp-hawtio,g' debian/package-permissions.sh > debian/opennms-webapp-hawtio.postinst
 
 	##
 	## Setup the opennms-contrib package
@@ -302,6 +327,7 @@ install: build
 	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
+	sed -e 's,@PACKAGE@,opennms-contrib,g' debian/package-permissions.sh > debian/opennms-contrib.postinst
 	
 	##
 	## Make sure there aren't any files left over in debian/temp that missed packaging

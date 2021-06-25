@@ -9,6 +9,18 @@
 
 == Breaking Changes
 
+=== OpenNMS Runs As Non-Root By Default
+
+By default, OpenNMS runs as the `opennms` user rather than `root`.
+
+WARNING: If you are upgrading from a version of OpenNMS Horizon older than 29, you will have to fix the ownership of your files.
+
+Since many OpenNMS instances are very large with thousands or even millions of RRD and similar data files in `$OPENNMS_HOME/share`,
+we decided _not_ to change ownership automatically upon package upgrade.
+
+The OpenNMS installer will detect if you need to fix the ownership of your files and warn you to run the script to fix permissions
+(`$OPENNMS_HOME/bin/fix-permissions`) in this case.
+
 === Your Change Here
 
 == New Features and Improvements
