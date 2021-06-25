@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
@@ -51,10 +52,12 @@ public class FilterSearchProvider implements SearchProvider {
 
     private final FilterDao filterDao;
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public FilterSearchProvider(FilterDao filterDao, NodeDao nodeDao) {
+    public FilterSearchProvider(final FilterDao filterDao, final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.filterDao = Objects.requireNonNull(filterDao);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class FilterSearchProvider implements SearchProvider {
             final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
             final List<SearchResultItem> searchResultItems = matchingNodes.stream()
                     .map(node -> new SearchResultItemBuilder()
-                            .withOnmsNode(node)
+                            .withOnmsNode(node, entityScopeProvider)
                             .withMatch("filter.criteria", "Filter Criteria", input).build())
                     .collect(Collectors.toList());
             return new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(nodeMap.size() > matchingNodes.size());

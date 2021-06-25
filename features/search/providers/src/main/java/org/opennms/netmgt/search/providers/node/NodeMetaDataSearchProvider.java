@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,31 +28,26 @@
 
 package org.opennms.netmgt.search.providers.node;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.search.api.*;
+import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.search.api.Contexts;
-import org.opennms.netmgt.search.api.Match;
-import org.opennms.netmgt.search.api.SearchContext;
-import org.opennms.netmgt.search.api.SearchProvider;
-import org.opennms.netmgt.search.api.SearchQuery;
-import org.opennms.netmgt.search.api.SearchResult;
-import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.api.QueryUtils;
-import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
-
-public class NodeLocationSearchProvider implements SearchProvider {
+public class NodeMetaDataSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
     private final EntityScopeProvider entityScopeProvider;
 
-    public NodeLocationSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
+    public NodeMetaDataSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
@@ -65,18 +60,27 @@ public class NodeLocationSearchProvider implements SearchProvider {
     @Override
     public SearchResult query(final SearchQuery query) {
         final String input = query.getInput();
+
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class)
-                .alias("location", "location", Alias.JoinType.INNER_JOIN)
-                .ilike("location.locationName", QueryUtils.ilike(input))
+                .sql("{alias}.nodeid IN (SELECT m.id FROM node_metadata m WHERE m.key !~ '.*([pP]assword|[sS]ecret).*' AND m.value LIKE '%" + StringEscapeUtils.escapeSql(input) + "%')")
                 .distinct();
         final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
-        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
+        final Criteria criteria = criteriaBuilder.orderBy("label").distinct().limit(query.getMaxResults()).toCriteria();
+
+        final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
             final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
-            searchResultItem.addMatch(new Match("location.name", "Node Location", node.getLocation().getLocationName()));
+            for (OnmsMetaData onmsMetaData : node.getMetaData()) {
+                if (onmsMetaData.getValue() != null && !onmsMetaData.getKey().matches(".*([pP]assword|[sS]ecret).*") && onmsMetaData.getValue().contains(input)) {
+                    searchResultItem.addMatch(new Match(onmsMetaData.getContext() + ":" + onmsMetaData.getKey(), "Meta-Data '" + onmsMetaData.getContext() + ":" + onmsMetaData.getKey() + "'", onmsMetaData.getValue()));
+                    break;
+                }
+            }
+            searchResultItem.setWeight(100);
             return searchResultItem;
         }).collect(Collectors.toList());
-        final SearchResult searchResult = new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(totalCount > searchResultItems.size());
+        final SearchResult searchResult = new SearchResult(Contexts.Node).withMore(totalCount > searchResultItems.size()).withResults(searchResultItems);
         return searchResult;
     }
+
 }
