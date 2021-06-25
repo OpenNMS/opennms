@@ -19,7 +19,7 @@ RUN mv /opt/minion-* /opt/minion
 # Install wget and update certificates for arm/v7 otherwise SSL
 # ERROR: cannot verify repo1.maven.org's certificate, issued by 'CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US':
 # To connect to repo1.maven.org insecurely, use `--no-check-certificate'.
-RUN apt-get update && apt-get -y install wget && update-ca-certificates -f
+RUN apt-get update && apt-get -y install wget ca-certificates && update-ca-certificates -f
 RUN mkdir -p /opt/prom-jmx-exporter && \
     wget "${PROM_JMX_EXPORTER_URL}" --output-document=/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
 
