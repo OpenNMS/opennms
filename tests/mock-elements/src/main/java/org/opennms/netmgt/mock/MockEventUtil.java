@@ -315,6 +315,7 @@ public abstract class MockEventUtil {
     public static EventBuilder createNodeDownEventBuilder(String source, OnmsNode node) {
         EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
         event.setSeverity(OnmsSeverity.MAJOR.getLabel());
+        event.setDistPoller("systemId1");
         // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
         AlarmData alarmData = new AlarmData();
         alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");

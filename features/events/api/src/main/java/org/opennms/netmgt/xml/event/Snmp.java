@@ -35,12 +35,14 @@ package org.opennms.netmgt.xml.event;
 import org.opennms.netmgt.events.api.model.ISnmp;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * The snmp information from the trap
@@ -340,5 +342,18 @@ public class Snmp implements Serializable {
         @Override
     public String toString() {
     	return new OnmsStringBuilder(this).toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Snmp snmp = (Snmp) o;
+        return Objects.equals(_id, snmp._id) && Objects.equals(_idtext, snmp._idtext) && Objects.equals(_version, snmp._version) && Objects.equals(_specific, snmp._specific) && Objects.equals(_generic, snmp._generic) && Objects.equals(_community, snmp._community) && Objects.equals(_timeStamp, snmp._timeStamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_id, _idtext, _version, _specific, _generic, _community, _timeStamp);
     }
 }
