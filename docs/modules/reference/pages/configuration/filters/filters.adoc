@@ -26,7 +26,7 @@ For example, "F_o%"" matches "Foo", "Foom", and "Flowers" but not "Foip".
 
 To handle NULL values (which include cases where you've joined across to a table where there is no matching row), use the "IS NULL" and "IS NOT NULL" operators. 
 Note that comparing a null value to anything with any other operator always returns false, so 
-`<pre>categoryName != 'SomeCategory'</pre>` will not return anything with a null categoryName. 
+`categoryName != 'SomeCategory'` will not return anything with a null categoryName. 
 Instead, you probably need to use `<pre>categoryName != 'SomeCategory' | categoryName IS NULL</pre>`.
 
 You can use parentheses to group expressions and can apply boolean operators anywhere in an expression. 
