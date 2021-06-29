@@ -124,7 +124,7 @@ dpNumber
 
 dpRunState 
 
-| *Nodes* | *Server map* | *Services*
+| *Nodes* | *SNMP interface*| *Server map* 
 
 | dpName
 
@@ -154,14 +154,6 @@ nodeSysName
 
 nodeType
 
-| serverName
-
-| serviceName
-
-| *Service map* | *SNMP interface* |*Surveillance categories*
-
-| serviceMapName
-
 | snmpIfAdminStatus
 
 snmpIfAlias
@@ -179,6 +171,16 @@ snmpIfType
 snmpIpAdEntNetMask
 
 snmpPhysAddr
+
+| serverName
+
+| *Services*| *Service map* |*Surveillance categories*
+
+| serviceName
+
+| serviceMapName
+
+
 
 | categoryDescription
 
