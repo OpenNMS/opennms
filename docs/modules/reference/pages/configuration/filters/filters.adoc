@@ -32,7 +32,12 @@ Instead, you probably need to use `categoryName != 'SomeCategory' | categoryName
 You can use parentheses to group expressions and can apply boolean operators anywhere in an expression. 
 Note that, in a departure from C/Java convention, boolean operators are single characters rather than double, so they look more like the bitwise arithmetic operators in C:
 
-image:configuration/bitwise.png[bitwise, 100]
+[options="header, autowidth"]
+|===
+| Operator | Bitwise Expression
+| AND      | `&`
+| OR       | `|`
+| NOT      | `!`
 
 Each comparision is joined together with the & or | operators meaning logical AND, logical OR operations. 
 Anything delimited by an & or | character gets translated into a sub-select that selects the ipaddr based on the comparision for that clause. 
