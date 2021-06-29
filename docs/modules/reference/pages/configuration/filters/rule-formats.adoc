@@ -29,7 +29,7 @@ In this example, instead of using the CDATA construct above, we escape the amper
 For the GUI, drop the unescaped value into the text field:
 
 [source]
-<pre>(IPADDR != '0.0.0.0' & (IPADDR IPLIKE 192.168.1.1-154) & (isSMTP | isPOP3 ) & (categoryName == 'Production'))</pre>
+(IPADDR != '0.0.0.0' & (IPADDR IPLIKE 192.168.1.1-154) & (isSMTP | isPOP3 ) & (categoryName == 'Production'))
 
 == catinc
 
