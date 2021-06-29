@@ -25,7 +25,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial Unix operating syst
 [options="header, autowidth"]
 |===
 | Parameter            | Description                                                                                    | Required | Default value
-| `port`               | The port of the SNMP agent of the server to test.                                            | optional | `from snmp-config.xml`
+| `port`               | The port of the SNMP agent of the server to test.                                              | optional | `from snmp-config.xml`
 | `service-name`       | The name of the process to be monitored. This parameter's value is case-sensitive and is
                          evaluated as an exact match.                                                                   | required | `-`
 | `match-all`          | If the process name appears multiple times in the _hrSWRunTable_, and this parameter is set to
