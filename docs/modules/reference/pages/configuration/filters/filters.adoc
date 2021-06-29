@@ -58,7 +58,6 @@ WHERE ipaddr in (SELECT ipaddr FROM ipinterface, node
 AND   ipaddr in (SELECT ipaddr FROM ipinterface, snmpInterface
                  WHERE snmpifdescr='something else'
                  AND ipinterface.ipaddr = snmpInterface.ipaddr);
-</pre>
 ----
 
 The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges. 
