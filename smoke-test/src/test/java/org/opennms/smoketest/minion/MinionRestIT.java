@@ -30,6 +30,7 @@ package org.opennms.smoketest.minion;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
+import static org.hamcrest.Matchers.*;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
@@ -44,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
+
+import java.util.Arrays;
 
 @Category(MinionTests.class)
 public class MinionRestIT {
@@ -82,15 +85,26 @@ public class MinionRestIT {
                 .statusCode(200);
 
         given().get("/minion/rest/health?tag=local")
-                .then().assertThat()
-                .statusCode(200);
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("healthy", in(Arrays.asList(true, false)))
+                .assertThat()
+                .body("responses.description", anyOf(hasItem("Verifying installed bundles"),
+                        hasItem("Verifying Listener "),
+                        hasItem("Retrieving NodeDao"),
+                        hasItem("DNS Lookups (Netty)")));
 
         given().get("/minion/rest/health/probe")
-                .then().assertThat()
-                .statusCode(200);
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("healthy", in(Arrays.asList(true, false)));
 
         given().get("/minion/rest/health/probe?tag=local")
-                .then().assertThat()
-                .statusCode(200);
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("healthy", in(Arrays.asList(true, false)));
     }
 }
