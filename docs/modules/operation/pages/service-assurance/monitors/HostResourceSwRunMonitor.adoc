@@ -3,7 +3,7 @@
 
 This monitor tests the running state of one or more processes.
 It does this via SNMP by inspecting the _hrSWRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
-The test is done by matching a given process as _hrSWRunName_ against the numeric value of the _hrSWRunState_.
+The test matches a given process as _hrSWRunName_ against the numeric value of the _hrSWRunState_.
 
 This monitor uses SNMP to accomplish its work.
 Therefore systems against which it is to be used must have an SNMP agent installed and configured.
