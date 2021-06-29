@@ -16,6 +16,7 @@ case "$1" in
         # try to detect java if possible
         if [ ! -e /etc/opennms/java.conf ]; then
             /usr/share/opennms/bin/runjava -s || :
+            /usr/share/opennms/bin/fix-permissions -R /usr/share/opennms/etc/java.conf
         fi
 
         if [ -d "/usr/share/opennms/data" ]; then

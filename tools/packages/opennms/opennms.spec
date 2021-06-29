@@ -973,7 +973,7 @@ for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 		fi
 	fi
 done
-"$ROOT_INST/bin/fix-permissions" "$ROOT_INST/etc/libraries.properties"
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/etc/libraries.properties"
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
@@ -986,6 +986,7 @@ echo "done"
 
 if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 	"$ROOT_INST/bin/runjava" "-s"
+	"${ROOT_INST}/bin/fix-permissions" -R "${ROOT_INST}/etc/java.conf"
 fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
