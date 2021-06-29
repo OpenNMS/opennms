@@ -41,7 +41,6 @@ You cannot do this using any variation of, for example, (categoryName == 'Produc
 Use the "catinc" function as follows: 
 
 [source]
-<pre>
 <rule> <![CDATA[((IPADDR != '0.0.0.0') & catincProduction & catincLinux)]]> </rule>
 </pre>
 
