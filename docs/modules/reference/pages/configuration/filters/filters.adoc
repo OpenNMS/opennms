@@ -27,7 +27,7 @@ For example, "F_o%"" matches "Foo", "Foom", and "Flowers" but not "Foip".
 To handle NULL values (which include cases where you've joined across to a table where there is no matching row), use the "IS NULL" and "IS NOT NULL" operators. 
 Note that comparing a null value to anything with any other operator always returns false, so 
 `categoryName != 'SomeCategory'` will not return anything with a null categoryName. 
-Instead, you probably need to use `categoryName != 'SomeCategory' | categoryName IS NULL`.
+Instead, you would need to use `categoryName != 'SomeCategory' | categoryName IS NULL` to exclude all nodes that are tagged with `SomeCategory`.
 
 You can use parentheses to group expressions and can apply boolean operators anywhere in an expression. 
 Note that, in a departure from C/Java convention, boolean operators are single characters rather than double, so they look more like the bitwise arithmetic operators in C:
@@ -35,9 +35,10 @@ Note that, in a departure from C/Java convention, boolean operators are single c
 [options="header, autowidth"]
 |===
 | Operator | Bitwise Expression
-| AND      | `&`
-| OR       | `|`
-| NOT      | `!`
+| AND      | &amp;
+| OR       | \|
+| NOT      | !
+|===
 
 Each comparision is joined together with the & or | operators meaning logical AND, logical OR operations. 
 Anything delimited by an & or | character gets translated into a sub-select that selects the ipaddr based on the comparision for that clause. 
@@ -55,16 +56,15 @@ SQL
 
 [source, sql]
 ----
-SELECT ipaddr
+SELECT DISTINCT ipInterface.ipAddr
 FROM ipinterface
-WHERE ipaddr in (SELECT ipaddr FROM ipinterface, node
-                 WHERE nodesysname='something'
-                 AND ipinterface.nodeid =node.nodeid)
-AND   ipaddr in (SELECT ipaddr FROM ipinterface, snmpInterface
-                 WHERE snmpifdescr='something else'
-                 AND ipinterface.ipaddr = snmpInterface.ipaddr);
+JOIN node ON (ipInterface.nodeID = node.nodeID) 
+JOIN snmpInterface ON (ipInterface.snmpinterfaceid = snmpInterface.id) 
+WHERE (node.nodesysname = 'something') 
+AND (snmpInterface.snmpifdescr = 'something else') 
+LIMIT 1
 ----
 
 The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges. 
 isService is shorthand to build a complicated join to match on a service name.  
-notis<Service> is also available. 
+notisService is also available. 

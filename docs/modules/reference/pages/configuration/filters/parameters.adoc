@@ -8,7 +8,7 @@ You can add parameters not available in `database-schema.xml` for use in filter 
 [frame=none]
 [grid=none]
 |===
-*Applications* | |
+|*Applications* | |
 
 | name 
 
@@ -124,7 +124,7 @@ dpNumber
 
 dpRunState 
 
-| *Nodes* | *Server map* | *SNMP interface*
+| *Nodes* | *Server map* | *Services*
 
 | dpName
 
@@ -156,13 +156,11 @@ nodeType
 
 | serverName
 
-*Services*
+| serviceName
 
-serviceName
+| *Service map* | *SNMP interface* |*Surveillance categories*
 
-*Service map*
-
-serviceMapName
+| serviceMapName
 
 | snmpIfAdminStatus
 
@@ -181,8 +179,6 @@ snmpIfType
 snmpIpAdEntNetMask
 
 snmpPhysAddr
-
-|*Surveillance categories*| |
 
 | categoryDescription
 
