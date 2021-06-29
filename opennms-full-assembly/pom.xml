@@ -609,6 +609,7 @@
                 <feature>scv-api</feature>
                 <feature>scv-jceks-impl</feature>
                 <feature>scv-shell</feature>
+                <feature>opennms-timeseries-shell</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>

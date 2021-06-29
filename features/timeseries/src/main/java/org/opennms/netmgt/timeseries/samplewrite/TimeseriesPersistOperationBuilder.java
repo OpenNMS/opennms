@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.timeseries.samplewrite;
 
-import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.PREFIX_RESOURCE_LEVEL_ATTRIBUTE;
-
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +36,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
+import org.opennms.integration.api.v1.timeseries.MetaTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -138,9 +137,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
     }
 
     public List<Sample> getSamplesToInsert() {
-        final Set<Tag> resourceIdLevelMetaData = Sets.newHashSet();
         final Set<Tag> resourceIdLevelExternalData = Sets.newHashSet();
-        resourceIdLevelMetaData.addAll(this.configuredAdditionalMetaTags);
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(rrepository, ResourcePath.get(resource.getPath(), groupName));
 
@@ -155,7 +152,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             }
         }
         for (Entry<String, String> entry : stringAttributes.entrySet()) {
-            resourceIdLevelExternalData.add(new ImmutableTag(PREFIX_RESOURCE_LEVEL_ATTRIBUTE + entry.getKey(), entry.getValue()));
+            resourceIdLevelExternalData.add(new ImmutableTag(entry.getKey(), entry.getValue()));
         }
 
         String resourceId = TimeseriesUtils.toResourceId(path);
@@ -180,17 +177,17 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
             ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
                     .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
                     .intrinsicTag(IntrinsicTagNames.name, attrType.getName())
-                    .metaTag(type);
+                    .externalTag(type);
 
             // add resource level string attributes
-            resourceIdLevelMetaData.forEach(builder::metaTag);
+            this.configuredAdditionalMetaTags.forEach(builder::metaTag);
             resourceIdLevelExternalData.forEach(builder::externalTag);
 
             // add metric level string attributes
             Map<String, String> metricLevelAttributes = stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags());
             if (metricLevelAttributes != null) {
                 for (Entry<String, String> entry2 : stringAttributesByResourceIdAndName.get(builder.build().getIntrinsicTags()).entrySet()) {
-                    builder.metaTag(entry2.getKey(), entry2.getValue());
+                    builder.externalTag(entry2.getKey(), entry2.getValue());
                 }
             }
 
@@ -214,7 +211,7 @@ public class TimeseriesPersistOperationBuilder implements PersistOperationBuilde
         } else {
             mtype = ImmutableMetric.Mtype.gauge;
         }
-        return new ImmutableTag(IntrinsicTagNames.mtype, mtype.name());
+        return new ImmutableTag(MetaTagNames.mtype, mtype.name());
     }
 
     /**

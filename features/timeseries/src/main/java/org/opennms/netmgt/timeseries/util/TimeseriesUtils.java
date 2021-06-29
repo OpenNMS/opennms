@@ -47,8 +47,7 @@ import org.opennms.netmgt.model.ResourcePath;
  */
 public final class TimeseriesUtils {
 
-    public static final String PREFIX_INDEX =  "_idx";
-    public static final String PREFIX_RESOURCE_LEVEL_ATTRIBUTE =  "_ext_";
+    public static final String PREFIX_EXTERNAL_TAG =  "_ext_";
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
 

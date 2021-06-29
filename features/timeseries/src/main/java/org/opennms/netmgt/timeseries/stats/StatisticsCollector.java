@@ -26,13 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries;
+package org.opennms.netmgt.timeseries.stats;
 
-import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
+import java.util.Collection;
+import java.util.List;
+
+import org.opennms.integration.api.v1.timeseries.Metric;
+import org.opennms.integration.api.v1.timeseries.Sample;
 
 /**
- * Responsible for retrieving the TimeseriesStorage that was exposed via osgi.
+ * We record statistics to answer the following questions:
+ * <ul>
+ *     <li>What metrics series have the highest tag cardinality?
+ *         What does the set tags for the top 10 look like?</li>
+ *     <li>Which string properties have the most unique values?</li>
+ * </ul>
  */
-public interface TimeseriesStorageManager {
-    TimeSeriesStorage get();
+
+public interface StatisticsCollector {
+
+    void record(Collection<Sample> samples);
+
+    /**
+     * List.get(0) => has most tags (top n)
+     */
+    List<Metric> getTopNMetricsWithMostTags();
+
+    List<String> getTopNTags();
 }
