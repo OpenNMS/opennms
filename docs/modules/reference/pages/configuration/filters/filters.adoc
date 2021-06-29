@@ -66,5 +66,5 @@ AND   ipaddr in (SELECT ipaddr FROM ipinterface, snmpInterface
 ----
 
 The IPLIKE function is shorthand to call a PostgreSQL function that was written in C to compare ipaddresses using *, lists, and ranges. 
-is<Service> is shorthand to build a complicated join to match on a service name.  
+isService is shorthand to build a complicated join to match on a service name.  
 notis<Service> is also available. 
