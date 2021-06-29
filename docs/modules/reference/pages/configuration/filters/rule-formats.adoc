@@ -21,7 +21,7 @@ In this example, instead of using the CDATA construct above, we escape the amper
 [subs=+quotes]
 ----
 
-rule>(IPADDR != '0.0.0.0' *&amp;* (IPADDR IPLIKE 192.168.1.1-154) *&amp;* (isSMTP | isPOP3 ) *&amp;* (categoryName == 'Production'))</rule>
+<rule>(IPADDR != '0.0.0.0' *&amp;* (IPADDR IPLIKE 192.168.1.1-154) *&amp;* (isSMTP | isPOP3 ) *&amp;* (categoryName == 'Production'))</rule>
 ----
 
 == GUI construct
