@@ -87,7 +87,7 @@ public class MinionRestIT {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("healthy", Matchers.in(Arrays.asList(true, false)))
+                .body("healthy", Matchers.oneOf(true, false))
                 .assertThat()
                 .body("responses.description", Matchers.anyOf(Matchers.hasItem("Verifying installed bundles"),
                         Matchers.hasItem("Verifying Listener "),
@@ -98,12 +98,12 @@ public class MinionRestIT {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("healthy", Matchers.in(Arrays.asList(true, false)));
+                .body("healthy", Matchers.oneOf(true, false));
 
         given().get("/minion/rest/health/probe?tag=local")
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("healthy", Matchers.in(Arrays.asList(true, false)));
+                .body("healthy", Matchers.oneOf(true, false));
     }
 }
