@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
 
-import java.util.Arrays;
 
 @Category(MinionTests.class)
 public class MinionRestIT {
@@ -87,7 +86,6 @@ public class MinionRestIT {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("healthy", Matchers.oneOf(true, false))
                 .assertThat()
                 .body("responses.description", Matchers.anyOf(Matchers.hasItem("Verifying installed bundles"),
                         Matchers.hasItem("Verifying Listener "),
@@ -97,13 +95,11 @@ public class MinionRestIT {
         given().get("/minion/rest/health/probe")
                 .then()
                 .assertThat()
-                .statusCode(200)
-                .body("healthy", Matchers.oneOf(true, false));
+                .statusCode(200);
 
         given().get("/minion/rest/health/probe?tag=local")
                 .then()
                 .assertThat()
-                .statusCode(200)
-                .body("healthy", Matchers.oneOf(true, false));
+                .statusCode(200);
     }
 }
