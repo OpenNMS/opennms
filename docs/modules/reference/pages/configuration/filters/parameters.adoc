@@ -2,21 +2,22 @@
 [[filter-parameters]]
 = Parameters
 
-This is a partial list of rule parameters. 
+This is a partial list of rule parameters, grouped by component.
 You can add parameters not available in `database-schema.xml` for use in filter expressions as long as you follow the existing database table hierarchy.
 
-[frame=none]
-[grid=none]
+[frame=none, grid=none]
 |===
-|*Applications* | |
+| *Applications*
 
-| name 
+| name
 
-| Use to alert on user-defined applications that span multiple systems and services.
+(Use to alert on user-defined applications that span multiple systems and services.)
+|===
 
-|
+[grid=none, frame=none]
+|===
+|*Assets* | |
 
-|*Assets* ||
 | address1
 
 address2
@@ -92,23 +93,12 @@ vendorfax
 vendorphone
 
 zip
+|===
 
-| *ifServices* | *IpInterface* | *Pollers*
-| lastGood
 
-lastFail
-
-serviceID
-
-| ipAddr
-
-ipLastCapsdPoll
-
-ipHostname
-
-ipStatus
-
-isManaged
+[frame=none, grid=none]
+|===
+| *Distributed pollers/Minions* | |
 
 | dpAdminState
 
@@ -116,15 +106,41 @@ dpComment
 
 dpDiscLimit
 
-dpIP
+| dpIP
 
 dpName
 
 dpNumber
 
-dpRunState 
+| dpRunState
+|===
 
-| *Nodes* | *SNMP interface*| *Server map* 
+
+[frame=none, grid=none]
+|===
+| *ifServices* | |
+| lastGood | lastFail | serviceID
+|===
+
+
+[frame=none, grid=none]
+|===
+| *IpInterface* | |
+| ipAddr
+
+ipLastCapsdPoll
+
+| ipHostname
+
+ipStatus
+
+| isManaged
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Nodes* | |
 
 | dpName
 
@@ -136,7 +152,7 @@ location
 
 nodeCreateTime
 
-nodeID
+| nodeID
 
 nodeLabel
 
@@ -146,49 +162,63 @@ nodeSysContact
 
 nodeSysDescription
 
-nodeSysLocation
+|nodeSysLocation
 
 nodeSysOID
 
 nodeSysName
 
 nodeType
+|===
 
+
+[frame=none, grid=none]
+|===
+| *Server Map*
+| serverName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Services*
+| serviceName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Service map*
+| serviceMapName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *SNMP interface* | |
 | snmpIfAdminStatus
 
 snmpIfAlias
 
 snmpIfDescr
 
-snmpIfIndex
+| snmpIfIndex
 
 snmpIfOperStatus
 
-snmpIfSpeed
+| snmpIfSpeed
 
 snmpIfType
 
-snmpIpAdEntNetMask
+|snmpIpAdEntNetMask
 
 snmpPhysAddr
-
-| serverName
-
-| *Services*| *Service map* |*Surveillance categories*
-
-| serviceName
-
-| serviceMapName
+|===
 
 
+[frame=none, grid=none]
+|===
+|*Surveillance categories* | |
 
-| categoryDescription
-
-categoryID
-
-categoryName
-
-|
-|
-
+| categoryDescription | categoryID | categoryName
 |===
