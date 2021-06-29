@@ -50,7 +50,6 @@ SQL
 
 [source, sql]
 ----
-<pre>
 SELECT ipaddr
 FROM ipinterface
 WHERE ipaddr in (SELECT ipaddr FROM ipinterface, node
