@@ -28,7 +28,6 @@
 
 package org.opennms.features.kafka.producer.collection;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
@@ -135,18 +133,22 @@ public class CollectionSetMapper {
                 }
                 // Response time resources doesn't embed any node info, they will not have any resource-id info.
                 if (nodeId > 0) {
-                    ResourceId resourceId = getResourceId(resource, nodeId);
+                    populateResourceIdFields(resource, nodeId);
+                }
+            }
+
+            private void populateResourceIdFields(CollectionResource collectionResource, long nodeId) {
+                try {
+                    ResourceId resourceId = resourceDao.getResourceId(collectionResource, nodeId);
                     if (resourceId != null) {
-                        OnmsResource onmsResource = resourceDao.getResourceById(resourceId);
-                        if (onmsResource != null) {
-                            getString(onmsResource.getId().toString()).ifPresent(collectionSetResourceBuilder::setResourceId);
-                            getString(onmsResource.getLabel()).ifPresent(collectionSetResourceBuilder::setResourceLabel);
-                            getString(onmsResource.getName()).ifPresent(collectionSetResourceBuilder::setResourceName);
-                            getString(onmsResource.getResourceType().getLabel()).ifPresent(collectionSetResourceBuilder::setResourceTypeName);
-                        }
+                            getString(resourceId.toString()).ifPresent(collectionSetResourceBuilder::setResourceId);
+                            getString(resourceId.getName()).ifPresent(collectionSetResourceBuilder::setResourceName);
+                            getString(resourceId.getType()).ifPresent(collectionSetResourceBuilder::setResourceTypeName);
                     } else {
                         LOG.error("Couldn't fetch resource from ResourceId {} ", resourceId);
                     }
+                } catch (Exception e) {
+                    LOG.error("Couldn't map ResourceId fields from CollectionResource {}", collectionResource);
                 }
             }
 
@@ -280,9 +282,9 @@ public class CollectionSetMapper {
                 OnmsNode node = nodeDao.get(nodeCriteria);
                 if (node != null) {
                     nodeResourceBuilder.setNodeId(node.getId());
-                    nodeResourceBuilder.setNodeLabel(node.getLabel());
-                    nodeResourceBuilder.setForeignId(node.getForeignId());
-                    nodeResourceBuilder.setForeignSource(node.getForeignSource());
+                    getString(node.getLabel()).ifPresent(nodeResourceBuilder::setNodeLabel);
+                    getString(node.getForeignSource()).ifPresent(nodeResourceBuilder::setForeignId);
+                    getString(node.getForeignId()).ifPresent(nodeResourceBuilder::setForeignSource);
                     if (node.getLocation() != null) {
                         nodeResourceBuilder.setLocation(node.getLocation().getLocationName());
                     }
@@ -295,36 +297,12 @@ public class CollectionSetMapper {
         return nodeResourceBuilder;
     }
 
-    public ResourceId getResourceId(CollectionResource resource, long nodeId) {
-        if ( resource == null) {
-            return null;
-        }
-        String resourceType  = resource.getResourceTypeName();
-        String resourceLabel = resource.getInterfaceLabel();
-        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
-            resourceType  = "nodeSnmp";
-            resourceLabel = "";
-        }
-        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
-            resourceType = "interfaceSnmp";
-        }
-        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
-        String parentResourceName = String.valueOf(nodeId);
-        if (resource.getParent() != null && resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
-            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
-            String[] parts = resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
-            if (parts.length == 3) {
-                parentResourceTypeName = "nodeSource";
-                parentResourceName = parts[1] + ":" + parts[2];
-            }
-        }
-        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
-    }
-
     private static Optional<String> getString(String value) {
         if (!Strings.isNullOrEmpty(value)) {
             return Optional.of(value);
         }
         return Optional.empty();
     }
+
+
 }

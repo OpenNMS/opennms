@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharEncoding;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.collectd.Package;
@@ -50,6 +52,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -133,7 +136,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>getCollectdConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @return a {@link org.opennms.netmgt.config.api.CollectdConfigFactory} object.
      */
     public CollectdConfigFactory getCollectdConfig() {
         return m_collectdConfig;
@@ -142,7 +145,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>setCollectdConfig</p>
      *
-     * @param collectdConfig a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @param collectdConfig a {@link org.opennms.netmgt.config.api.CollectdConfigFactory} object.
      */
     public void setCollectdConfig(CollectdConfigFactory collectdConfig) {
         m_collectdConfig = collectdConfig;
@@ -397,5 +400,34 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             }
         }
         return false;
+    }
+
+    @Override
+    public ResourceId getResourceId(CollectionResource resource, long nodeId) {
+        if ( resource == null) {
+            return null;
+        }
+
+        String resourceType  = resource.getResourceTypeName();
+        String resourceLabel = resource.getInterfaceLabel();
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
+            resourceType  = NodeSnmpResourceType.NODE_RESOURCE_TYPE_NAME;
+            resourceLabel = "";
+        }
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
+            resourceType = InterfaceSnmpResourceType.INTERFACE_RESOURCE_TYPE_NAME;
+        }
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
+        String parentResourceName = String.valueOf(nodeId);
+        // I can't find a better way to deal with this when storeByForeignSource is enabled
+        if (resource.getParent() != null && resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
+            if (parts.length == 3) {
+                parentResourceTypeName = "nodeSource";
+                parentResourceName = parts[1] + ":" + parts[2];
+            }
+        }
+        return ResourceId.get(parentResourceTypeName, parentResourceName).resolve(resourceType, resourceLabel);
     }
 }

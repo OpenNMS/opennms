@@ -49,7 +49,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 public final class NodeSnmpResourceType implements OnmsResourceType {
 
     private final ResourceStorageDao m_resourceStorageDao;
-
+    public static final String NODE_RESOURCE_TYPE_NAME = "nodeSnmp";
     /**
      * <p>Constructor for NodeSnmpResourceType.</p>
      *
@@ -66,7 +66,7 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
      */
     @Override
     public String getName() {
-        return "nodeSnmp";
+        return NODE_RESOURCE_TYPE_NAME;
     }
 
     /**

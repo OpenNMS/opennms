@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -173,6 +174,7 @@ public class KafkaPersisterIT {
                     assertThat(resource.getNode().getNodeId(), equalTo(node.getId().longValue()));
                     assertThat(resource.getNumericList().size(), equalTo(2));
                     assertThat(resource.getNumeric(0).getValue(), isOneOf(105.0, 1050.0));
+                    assertThat(resource.getResourceId(), Matchers.containsString(String.valueOf(node.getId())));
                 }
         );
 

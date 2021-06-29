@@ -52,8 +52,7 @@ message CollectionSetResource {
   }
   string resource_id = 5;
   string resource_name = 6;
-  string resource_label = 7;
-  string resource_type_name = 8;
+  string resource_type_name = 7;
   repeated StringAttribute string = 10;
   repeated NumericAttribute numeric = 11;
 }

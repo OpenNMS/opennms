@@ -16,6 +16,7 @@
     <bean id="collectionSetMapper" class="org.opennms.features.kafka.producer.collection.CollectionSetMapper">
        <constructor-arg ref="nodeDao"/>
        <constructor-arg ref="sessionUtils"/>
+      <constructor-arg ref="resourceDao"/>
     </bean>
 
 </beans>
