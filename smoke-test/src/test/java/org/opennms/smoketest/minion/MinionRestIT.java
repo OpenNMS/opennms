@@ -33,7 +33,9 @@ import static io.restassured.RestAssured.preemptive;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
+import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -44,6 +46,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 @Category(MinionTests.class)
@@ -82,26 +87,22 @@ public class MinionRestIT {
                 .then().assertThat()
                 .statusCode(200);
 
-        given().get("/minion/rest/health?tag=local")
+        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Verifying Listener ", "Retrieving NodeDao", "DNS Lookups (Netty)");
+        List<String> descriptions = given().get("/minion/rest/health?tag=local")
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .assertThat()
-                .body("responses.description", Matchers.anyOf(Matchers.hasItem("Verifying installed bundles"),
-                        Matchers.hasItem("Verifying Listener "),
-                        Matchers.hasItem("Retrieving NodeDao"),
-                        Matchers.hasItem("DNS Lookups (Netty)")));
-
-        given().get("/minion/rest/health/probe")
-                .then()
-                .assertThat()
-                .statusCode(200)
-                .body("healthy", Matchers.notNullValue());
+                .body("healthy", Matchers.notNullValue())
+                .extract()
+                .body()
+                .jsonPath().getList("responses.description",String.class);
+        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d)));
 
         given().get("/minion/rest/health/probe?tag=local")
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("healthy", Matchers.notNullValue());
+                .contentType(ContentType.TEXT)
+                .body(Matchers.anyOf(Matchers.equalTo("Everything is awesome"), Matchers.equalTo("Oh no, something is wrong")));
     }
 }
