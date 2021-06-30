@@ -52,6 +52,30 @@ echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.
 
 CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
 
+//TODO provide the steps to achieve this as an example
+////
+<authorizationPlugin>
+  <map>
+    <authorizationMap>
+      <authorizationEntries>
+        <!-- Users in the admin role can read/write/create any queue/topic -->
+        <authorizationEntry queue=">" read="admin" write="admin" admin="admin" />
+        <authorizationEntry topic=">" read="admin" write="admin" admin="admin"/>
+        <!-- Users in the minion role can write/create queues that are not keyed by location -->
+        <authorizationEntry queue="<YOUR INSTANCE ID>.*.*" write="minion" admin="minion" />
+        <!-- Users in the minion role can read/create from queues that are keyed by location -->
+        <authorizationEntry queue="<YOUR INSTANCE ID>.*.*.*" read="minion" admin="minion" />
+        <!-- Users in the minion role can read/write/create advisory topics -->
+        <authorizationEntry topic="ActiveMQ.Advisory.>" read="minion" write="minion" admin="minion"/>
+      </authorizationEntries>
+      <!-- Allow all users to read/write/create temporary destinations (by omitting a <tempDestinationAuthorizationEntry>) -->
+    </authorizationMap>
+  </map>
+</authorizationPlugin>
+////
+
+//TODO Consequently, it's good to remind people to add the instance id property to the minions registered to the OpenNMS server. The same property should be present in ${MINION_HOME}/etc/custom.system.properties. 
+
 == Tuning the RPC client in OpenNMS
 
 The following system properties can be used to tune the thread pool used to issue RPCs:
