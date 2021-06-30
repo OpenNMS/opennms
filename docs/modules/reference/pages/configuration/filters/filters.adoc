@@ -39,7 +39,7 @@ NOTE: In a departure from C/Java convention, boolean operators are single charac
 |===
 
 Each comparision is joined together with the & or | operators meaning logical AND, logical OR operations. 
-Anything delimited by an & or | character gets translated into a sub-select that selects IP addresses based on the comparison for that clause. 
+Anything delimited by an `&` or `|` character gets translated into a sub-select that selects IP addresses based on the comparison for that clause. 
 
 NOTE: Depending on the format you use in your rules, you might need to escape your AND operator. 
 See xref:configuration/filters/rule-formats.adoc#filter-rule-format[Rule_formats].
