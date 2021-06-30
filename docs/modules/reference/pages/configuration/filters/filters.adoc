@@ -13,7 +13,7 @@ If a table has an attribute of "visible=false", then none of the columns in that
 You will get a syntax exception if it sees any non-visible columns in the rule. 
 The same applies to a non-visible column in a table.
 
-A <join> tag tells the filter module how to relate this table to the ipinterface table. 
+A `<join>` tag tells the filter module how to relate this table to the ipinterface table. 
 The ipinterface table is marked with the attribute "key=primary", meaning that it is going to be the table we select ipaddr from and join all other tables to.
 
 === Operators
