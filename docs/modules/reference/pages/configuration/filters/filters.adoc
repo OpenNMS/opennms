@@ -8,7 +8,7 @@ The https://github.com/OpenNMS/opennms/blob/develop/opennms-config/src/main/reso
 
 == Explanation of database-schema.xml file
 
-Each table the filter code uses appears in a <table> tag. 
+Each table the filter code uses appears in a `<table>` tag. 
 If a table has an attribute of "visible=false", then none of the columns in that table can be used in the WHERE clause and thus cannot appear in the rule. 
 You will get a syntax exception if it sees any non-visible columns in the rule. 
 The same applies to a non-visible column in a table.
