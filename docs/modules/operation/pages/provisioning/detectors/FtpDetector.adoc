@@ -25,6 +25,5 @@ It finds the FTP server on multiple ports and can also use login credentials for
 ----
 <detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector">
   <parameter key="port" value="21"/>
-  <parameter key="multilineIndicator" value="-"/>
 </detector>
 ----
