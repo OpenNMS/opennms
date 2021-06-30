@@ -17,40 +17,54 @@
     <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
     <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="mandatory"/>
+    <reference id="entityScopeProvider"         interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider"     availability="mandatory"/>
 
     <!-- Node Providers -->
+    <bean id="nodeMetaDataSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeMetaDataSearchProvider">
+        <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
+    </bean>
+    <service ref="nodeMetaDataSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
+
     <bean id="nodeSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeLabelSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeCategorySearchProvider" class="org.opennms.netmgt.search.providers.node.NodeCategorySearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeCategorySearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeLocationSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeLocationSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeLocationSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeServiceSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeServiceSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeServiceSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeIpSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeIpSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeIpSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeAssetSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeAssetSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeAssetSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeGeolocationSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeGeolocationSearchProvider">
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeGeolocationSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
@@ -92,6 +106,7 @@
     <bean id="filterSearchProvider" class="org.opennms.netmgt.search.providers.FilterSearchProvider">
         <argument ref="filterDao" />
         <argument ref="nodeDao" />
+        <argument ref="entityScopeProvider" />
     </bean>
     <service ref="filterSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
