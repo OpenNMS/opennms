@@ -28,7 +28,7 @@ The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variable
 * `org.codehaus.groovy.bsf.GroovyEngine`
 * `org.apache.bsf.engines.jython.JythonEngine`                                                                                | optional | 
 | `fileExtensions` | A comma-separated list of file extensions to consider a valid script for this BSF instance.            | optional | 
-| `runType`       a| Which way to run the BSF script. Choices:
+| `runType`        | Mode to run the BSF script. Choices:
 
 * `eval` - expects the script to print the OK/NOK status for validation
 * `exec` - expects the script to manipulate the provided results hashmap directly                                           | optional | `eval`
