@@ -144,7 +144,7 @@ if (testFile.exists()) {
 === Jython example 
 
 The Jython (Java implementation of Python) language requires an additional library.
-Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart {page-component-title}.
+Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart {page-component-title} to make Jython available for the BSF Detector.
 
 .Jython example for `run-type` `exec`
 [source, xml]
