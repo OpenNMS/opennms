@@ -4,7 +4,7 @@
 
 A filter (also known as a rule) is a shorthand expression that allows you to select IP addresses from the ipinterface table.
 The rule builds the WHERE clause of a SQL query. 
-The https://github.com/OpenNMS/opennms/blob/develop/opennms-config/src/main/resources/database-schema.xml[database-schema.xml] file in the /opt/opennms/etc directory informs the filter code the tables it can use to build the WHERE clause.
+The https://github.com/OpenNMS/opennms/blob/develop/opennms-config/src/main/resources/database-schema.xml[database-schema.xml] file in the `/opt/opennms/etc` directory informs the filter parser which tables can be used in an expression.
 
 == Explanation of database-schema.xml file
 
