@@ -169,4 +169,4 @@ else:
         results.put("status", "NOK")
 ----
 
-NOTE: We have to use `run-type` `exec` here because Jython chokes on the +import+ keyword in `eval` mode.
+NOTE: We have to use a run type of `exec` here because Jython chokes on the **import** keyword in `eval` mode.
