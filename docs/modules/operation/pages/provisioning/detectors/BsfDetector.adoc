@@ -47,7 +47,7 @@ Depending on the `run-type`, the script must provide its results in different wa
 For minimal scripts with simple logic, a `run-type` of `eval` is the easiest option.
 Scripts running in `eval` mode must return a string matching a status code of `OK` or `NOK`.
 
-If your script is more than one line, `run-type` `exec` is required.
+A script with more than one line of logic requires a `run-type` of `exec`.
 Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the _results_ object.
 Additionally, the _results_ object can also carry a "reason":"message" entry that is used in non `OK` states.
 
