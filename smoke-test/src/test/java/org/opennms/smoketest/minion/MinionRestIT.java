@@ -83,13 +83,13 @@ public class MinionRestIT {
     @Test
     public void testRestHealthServiceOnMinion() throws Exception {
 
-        LOG.info("testing /minion/rest/health");
+        LOG.info("testing /minion/rest/health .........");
         given().get("/minion/rest/health")
                 .then().log().ifStatusCodeIsEqualTo(200)
                 .statusCode(200);
 
-        LOG.info("testing /minion/rest/health?tag=local");
-        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Verifying Listener ", "Retrieving NodeDao", "DNS Lookups (Netty)");
+        LOG.info("testing /minion/rest/health?tag=local .........");
+        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)");
         List<String> descriptions = given().get("/minion/rest/health?tag=local")
                 .then()
                 .log().ifStatusCodeIsEqualTo(200)
@@ -99,8 +99,10 @@ public class MinionRestIT {
                 .body()
                 .jsonPath().getList("responses.description",String.class);
 
-        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d)));
+        LOG.info("descriptions in tag 'local' is: ", Arrays.toString(descriptions.toArray()));
+        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d) || d.contains("Verifying Listener")));
 
+        LOG.info("testing /minion/rest/health/probe?tag=local  .......");
         given().get("/minion/rest/health/probe?tag=local")
                 .then()
                 .assertThat()
