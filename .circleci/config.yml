@@ -73,7 +73,7 @@ aliases:
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
-      echo "export MINION_IMAGE=docker.io/opennmsdcttest/minion" >> $BASH_ENV
+      echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
   - &setup_dct_key
     name: Setup DCT key
@@ -584,7 +584,6 @@ workflows:
           filters:
             branches:
               only:
-                - jira/NMS-13318
                 - develop
                 - /^master-/
                 - /^release-/
@@ -595,7 +594,6 @@ workflows:
           filters:
             branches:
               only:
-                - jira/NMS-13318
                 - develop
                 - /^master-/
                 - /^release-/
