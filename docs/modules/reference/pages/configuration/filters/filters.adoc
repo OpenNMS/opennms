@@ -23,7 +23,7 @@ You can use C/Java-style comparison operators with data types they apply to.
 For LIKE comparisons, the character "_" matches any single character and "%" matches any series of characters (or none at all). 
 For example, "F_o%"" matches "Foo", "Foom", and "Flowers" but not "Foip".
 
-To handle NULL values (which include cases where you've joined across to a table where there is no matching row), use the "IS NULL" and "IS NOT NULL" operators. 
+To handle NULL values (which include cases where you've joined across to a table where there is no matching row), use the `IS NULL` and `IS NOT NULL` operators. 
 Comparing a null value to anything with any other operator always returns false, so `categoryName != 'SomeCategory'` will not return anything with a null categoryName. 
 Instead, you would need to use `categoryName != 'SomeCategory' | categoryName IS NULL` to exclude all nodes that are tagged with `SomeCategory`.
 
