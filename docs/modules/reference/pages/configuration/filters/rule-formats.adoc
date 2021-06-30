@@ -6,7 +6,7 @@ There are at least two formats for these rules in xml (GUI format follows).
 
 == CDATA construct
 
-In this example, the entire rule is wrapped in "<![CDATA[...]]>" so that you do not have to escape ampersands ("&"). 
+In this example, the entire rule is wrapped in `<![CDATA[...]]>` so that you do not have to escape ampersands ("&"). 
 The CDATA bits are in bold:
 
 [source]
