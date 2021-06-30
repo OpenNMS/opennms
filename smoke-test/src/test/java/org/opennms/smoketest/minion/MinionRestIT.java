@@ -99,7 +99,7 @@ public class MinionRestIT {
                 .body()
                 .jsonPath().getList("responses.description",String.class);
 
-        LOG.info("descriptions in tag 'local' is: ", Arrays.toString(descriptions.toArray()));
+        LOG.info("descriptions in tag 'local' is: {}", Arrays.toString(descriptions.toArray()));
         descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d) || d.contains("Verifying Listener")));
 
         LOG.info("testing /minion/rest/health/probe?tag=local  .......");
