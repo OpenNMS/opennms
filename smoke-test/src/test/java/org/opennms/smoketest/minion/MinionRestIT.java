@@ -96,6 +96,7 @@ public class MinionRestIT {
                 .extract()
                 .body()
                 .jsonPath().getList("responses.description",String.class);
+        LOG.info("descriptions of tag 'local' is", Arrays.toString(descriptions.toArray()));
         descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d)));
 
         given().get("/minion/rest/health/probe?tag=local")
