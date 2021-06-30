@@ -7,9 +7,9 @@
 Notification rules control whether a received event triggers a notification. 
 Each event is tested against the rules in notifications.xml looking for a match. 
 When a match is found, the corresponding notification is sent. 
-The default for most notifications is "IPADDR IPLIKE *.*.*.*"; however, you may use any valid rule. 
+The default for most notifications is `IPADDR IPLIKE *.*.*.*`; however, you may use any valid rule. 
 
-For an exclusive filter, use "!(IPADDR IPLIKE 169.254.*.*)". 
+For an exclusive filter, use `!(IPADDR IPLIKE 169.254.*.*)`. 
 This allows you to be very granular when defining what to alert on. 
 
 == collectd

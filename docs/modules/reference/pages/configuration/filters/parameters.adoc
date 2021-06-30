@@ -119,6 +119,7 @@ dpNumber
 [frame=none, grid=none]
 |===
 | *ifServices* | |
+
 | lastGood | lastFail | serviceID
 |===
 
@@ -126,6 +127,7 @@ dpNumber
 [frame=none, grid=none]
 |===
 | *IpInterface* | |
+
 | ipAddr
 
 ipLastCapsdPoll
@@ -175,6 +177,7 @@ nodeType
 [frame=none, grid=none]
 |===
 | *Server Map*
+
 | serverName
 |===
 
@@ -182,6 +185,7 @@ nodeType
 [frame=none, grid=none]
 |===
 | *Services*
+
 | serviceName
 |===
 
@@ -189,6 +193,7 @@ nodeType
 [frame=none, grid=none]
 |===
 | *Service map*
+
 | serviceMapName
 |===
 
@@ -196,6 +201,7 @@ nodeType
 [frame=none, grid=none]
 |===
 | *SNMP interface* | |
+
 | snmpIfAdminStatus
 
 snmpIfAlias

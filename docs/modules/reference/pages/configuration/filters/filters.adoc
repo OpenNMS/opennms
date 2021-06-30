@@ -28,6 +28,7 @@ Comparing a null value to anything with any other operator always returns false,
 Instead, you would need to use `categoryName != 'SomeCategory' | categoryName IS NULL` to exclude all nodes that are tagged with `SomeCategory`.
 
 You can use parentheses to group expressions and can apply boolean operators anywhere in an expression. 
+
 NOTE: In a departure from C/Java convention, boolean operators are single characters rather than double, so they look more like the bitwise arithmetic operators in C:
 
 [options="header, autowidth"]
