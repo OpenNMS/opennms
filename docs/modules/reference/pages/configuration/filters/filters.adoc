@@ -18,7 +18,7 @@ A `<join>` tag tells the filter module how to relate this table to the ipinterfa
 === Operators
 
 You can use C/Java-style comparison operators with data types they apply to.
-(You can use == and != on strings, as well as the SQL "LIKE" keyword.)
+(You can use `==` and `!=` on strings, as well as the SQL `LIKE` keyword.)
 
 For LIKE comparisons, the character "_" matches any single character and "%" matches any series of characters (or none at all). 
 For example, "F_o%"" matches "Foo", "Foom", and "Flowers" but not "Foip".
