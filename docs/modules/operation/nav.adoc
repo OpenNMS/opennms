@@ -24,6 +24,7 @@
 **** xref:provisioning/detectors/BgpSessionDetector.adoc[]
 **** xref:provisioning/detectors/DnsDetector.adoc[]
 **** xref:provisioning/detectors/HostResourceSWRunDetector.adoc[]
+**** xref:provisioning/detectors/FtpDetector.adoc[]
 **** xref:provisioning/detectors/HttpDetector.adoc[]
 **** xref:provisioning/detectors/HttpsDetector.adoc[]
 **** xref:provisioning/detectors/SnmpDetector.adoc[]
