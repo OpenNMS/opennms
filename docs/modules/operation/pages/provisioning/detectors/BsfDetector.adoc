@@ -53,7 +53,8 @@ Additionally, the _results_ object can also carry a `"reason":"message"` entry t
 
 == Commonly used language settings
 
-The BSF detector supports many languages. The following table provides the required setup for commonly used languages.
+The BSF detector supports many languages.
+The following table provides the required setup for commonly used languages.
 
 .BSF language setups
 [options="header, %autowidth"]
