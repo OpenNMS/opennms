@@ -78,9 +78,8 @@ build: test minion-config-schema.yml
 	@echo "Copy Minion tarball to Docker context ..."
 	@find ../../opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./tarball/minion.tar.gz \;
 	@echo "Initialize builder instance ..."
-	# If we don't have a builder instance create it, otherwise use the existing one
-	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
-	@docker-buildx use $(DOCKERX_INSTANCE)
+	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
+	docker-buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker-buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
