@@ -133,7 +133,7 @@ There is a convenient way to delete all the nodes that have been provided from a
 From the main _Admin/Provisioning Groups_ screen in the Web-UI, click the _Delete Nodes_ button.
 This button deletes all the nodes defined in the Bronze requisition.
 It is very important to note that once this is done, it cannot be undone!
-Well it can’t be undone from the Web-UI and can only be undone if you’ve been good about keeping a backup copy of your '$OPENMS_ETC/' directory tree.
+Well it can’t be undone from the Web-UI and can only be undone if you’ve been good about keeping a backup copy of your '$OPENNMS_ETC/' directory tree.
 If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the '$OPENNMS_HOME/etc/imports' directory.
 
 .All node definitions have been removed from the Bronze requisition. The Web-UI indicates an import is now required to remove them from {page-component-title}.
@@ -171,12 +171,12 @@ image:provisioning/000002.png[]
 
 image:provisioning/000018.png[]
 
-=== Service Detection
+=== Service detection
 
 As IP interfaces are found during the node scan process, service detection tasks are scheduled for each IP interface.
 The service detections defined in the foreign source determines which services are to be detected and how (i.e. the values of the parameters that parameters control how the service is detected, port, timeout, etc.).
 
-==== Applying a New Foreign Source Definition
+==== Applying a new foreign source definition
 
 This example node has been provisioned using the Default foreign source definition.
 By navigating to the Provisioning Groups screen in the {page-component-title} Web-UI and clicking the Edit Foreign Source link of a group, you can create a new foreign source definition that defines service detection and policies.
@@ -205,11 +205,11 @@ Edit the provisioning group and just change the foreign ID.
 That will make Provisiond think that a node was deleted and a new node was added in the same requisition!
 Use this hint with caution and an full understanding of the impact of deleting an existing node.
 
-==== Provisioning with Policies
+==== Provisioning with policies
 
 The Policy API in Provisiond allow you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.
 
-==== Matching IP Interface Policy
+==== Matching IP interface policy
 
 The Matching IP Interface policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
 
@@ -259,7 +259,7 @@ image:provisioning/00015.jpeg[]
 
 NOTE: The _UNMANAGE_ behavior will be applied to existing interfaces.
 
-==== Matching SNMP Interface Policy
+==== Matching SNMP interface policy
 
 Like the Matching IP Interface Policy, this policy controls the whether discovered SNMP interface entities are to be persisted and whether or not {page-component-title} should collect performance metrics from the SNMP agent for Interface’s index (MIB2 IfIndex).
 
@@ -268,7 +268,7 @@ Following the same steps as when creating an IP Management Policy, edit the fore
 Let’s call it: _noAAL5s_.
 We’ll use Match SNMP Interface class for each policy and add a parameter with _ifType_ as the key and _49_ as the value.
 
-.Matching SNMP Interface Policy example for Persistence and Data Collection
+.Matching SNMP interface policy example for persistence and data collection
 image:provisioning/00003.jpeg[]
 
 NOTE: At the appropriate time during the scanning phase, Provisiond will
@@ -277,7 +277,7 @@ appropriate action. If during the policy evaluation process any policy
 matches for a “DO_NOT_PERSIST” action, no further policy evaluations
 will happen for that particular entity (IP Interface, SNMP Interface).
 
-==== Node Categorization Policy
+==== Node categorization policy
 
 With this policy, node entities will automatically be assigned categories.
 The policy is defined in the same manner as the IP and SNMP interface polices.
@@ -301,7 +301,7 @@ To do so, change the action to DISABLE_POLLING.
 .Example: Node Category setting policy
 image:provisioning/00020.jpeg[]
 
-==== Script Policy
+==== Script policy
 
 This policy lets you use Groovy scripts to modify provisioned node data.
 These scripts have to be placed in the {page-component-title} `etc/script-policies` directory.
@@ -331,22 +331,22 @@ node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
 return node;
 ----
 
-==== Node Metadata Policy
+==== Node metadata policy
 
 The Metadata Policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
 It uses the same matching mechanism as the Node Categorization Policy.
 
-==== Interface Metadata Policy
+==== Interface metadata policy
 
 The Metadata Policy lets you set interface-level metadata in the context `requisition` for provisioned nodes.
 It uses the same matching mechanism as the Matching IP Interface Policy.
 
-=== New Import Capabilities
+=== New import capabilities
 
 Several new XML entities have been added to the import requisition since the introduction of the OpenNMS Importer service in version 1.6.
 So, in addition to provisioning the basic node, interface, service, and node categories, you can now also provision asset data.
 
-==== Provisiond Configuration
+==== Provisiond configuration
 
 The configuration of the Provisioning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
 The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own _Cron_ based schedule for automatic importing from various sources (intended for integration with external URL such as HTTP and this new DNS protocol handler.
@@ -359,7 +359,7 @@ This default configuration has an example for scheduling an import from a DNS se
 <?xml version="1.0" encoding="UTF-8"?>
     <provisiond-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
         foreign-source-dir="/opt/opennms/etc/foreign-sources"
-        requistion-dir="/opt/opennms/etc/imports"
+        requisition-dir="/opt/opennms/etc/imports"
         importThreads="8"
         scanThreads="10"
         rescanThreads="10"
@@ -379,7 +379,7 @@ This default configuration has an example for scheduling an import from a DNS se
 </provisiond-configuration>
 ----
 
-==== Configuration Reload
+==== Configuration reload
 
 Like many of the daemon configurations in the 1.7 branch, _Provisiond’s_ configuration is re-loadable without having to restart OpenNMS.
 Use the reloadDaemonConfig uei:
@@ -388,7 +388,7 @@ Use the reloadDaemonConfig uei:
 
 This means that you don't have to restart {page-component-title} every time you update the configuration!
 
-==== Provisioning Asset Data
+==== Provisioning asset data
 
 The Provisioning Groups Web-UI had been updated to expose the ability to add Node Asset data in an import requisition.
 Click the _Add Node Asset_ link and you can select from a drop down list all the possible node asset attributes that can be defined.
@@ -399,17 +399,17 @@ After an import, you can navigate to the _Node Page_ and click the _Asset Info_ 
 
 image:provisioning/000004.png[]
 
-=== External Requisition Sources
+=== External requisition sources
 
 Because Provisiond takes a _URL_ as the location service for import requisitions, {page-component-title} can be easily extended to support sources in addition to the native URL handling provided by Java: _file://_, _http://_, and _https://_.
 When you configure _Provisiond_ to import requisitions on a schedule you specify using a _URL_ Resource.
 For requisitions created by the _Provisioning Groups_ WebUI, you can specify a file based URL.
 
-==== Provisioning Nodes from DNS
+==== Provisioning nodes from DNS
 
 The new Provisioning service in {page-component-title} is continuously improving and adapting to the needs of the community.
 One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL.
-Most commmonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI. However, these same requistions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs specifying the HTTP protocol: http://myinventory.server.org/nodes.cgi)
+Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI. However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs specifying the HTTP protocol: http://myinventory.server.org/nodes.cgi)
 
 Now, using Java's extensible protocol handling specification, a new protocol handler was created so that a URL can be specified for requesting a Zone Transfer (_AXFR_) request from a DNS server.
 The _A records_ are recorded and used to build an import requisition.
@@ -419,13 +419,13 @@ The format of the URL for this new protocol handler is:
 
  dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]
 
-==== Simple Example
+==== Simple example
 
  dns://my-dns-server/myzone.com
 
 This will import all _A records_ from the host _my-dns-server_ on port 53 (default port) from zone _myzone.com_ and since the foreign source (a.k.a. the provisioning group) is not specified it will default to the specified zone.
 
-==== Using a Regular Expression Filter
+==== Using a regular expression filter
 
 You can also specify a subset of the _A records_ from the zone transfer using a regular expression:
 
@@ -433,13 +433,13 @@ You can also specify a subset of the _A records_ from the zone transfer using a 
 
 This will import all nodes from the same server and zone but will only manage the nodes in the zone matching the regular expression `^port-.*` and will and they will be assigned a unique foreign source (provisioning group) for managing these nodes as a subset of nodes from within the specified zone.
 
-==== URL Encoding
+==== URL encoding
 
 If your expression requires URL encoding (for example you need to use a `?` in the expression) it must be properly encoded.
 
  dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
 
-==== DNS Setup
+==== DNS setup
 
 Currently, the DNS server requires to be setup to allow a zone transfer from the {page-component-title} server.
 It is recommended that a secondary DNS server is running on {page-component-title} and that the {page-component-title} server be allowed to request a zone transfer.

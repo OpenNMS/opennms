@@ -1,17 +1,17 @@
 
 [[import-handlers]]
-= Import Handlers
+= Import handlers
 
 The new Provisioning service in {page-component-title} is continuously improving and adapting to the needs of the community.
 
 One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL.
-Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
+Most commonly, these URLs are files on the file system (`file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
 However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs.
 For example a requisition can be retrieved using the HTTP protocol.
 
 In addition to the standard protocols supported by Java, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 
-== Generic Handler
+== Generic handler
 
 The generic handler is made available using URLs of the form: requisition://type?param=1;param=2
 
@@ -36,7 +36,7 @@ The `opennms:show-import` command available via the _Karaf Shell_ can be used to
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-== File Handler
+== File handler
 
 Examples:
 
@@ -48,7 +48,7 @@ Examples:
 
  requisition://file?path=/path/to/my/requisition.xml;location=MINION
 
-== HTTP Handler
+== HTTP handler
 
 Examples:
 
@@ -62,7 +62,7 @@ Examples:
 
 TIP: When using the generic handler, the URL should be "URL encoded".
 
-== DNS Handler
+== DNS handler
 
 The DNS handler requests a _Zone Transfer (AXFR) request_ from a DNS server.
 The A records are recorded and used to build an import requisition.
@@ -79,7 +79,7 @@ DNS Import Examples:
 
 This URL will import all A records from the host `my-dns-server` on port 53 (default port) from zone "myzone.com" and since the foreign source (a.k.a. the provisioning group) is not specified it will default to the specified zone.
 
-== Using a Regular Expression Filter
+== Using a regular expression filter
 
  dns://my-dns-server/myzone.com/portland/?expression=^por-.*
 
@@ -105,7 +105,7 @@ This will associate nodes for the host entries `foo.e46.hs-fulda.de.` and `bar.e
 
 TIP: You can use online tools like `https://www.urlencoder.org` to encode your parameters.
 
-=== DNS Setup
+=== DNS setup
 
 Currently, the DNS server requires to be setup to allow a zone transfer from the {page-component-title} server.
 It is recommended that a secondary DNS server is running on {page-component-title} and that the {page-component-title} server be allowed to request a zone transfer.
@@ -115,7 +115,7 @@ A quick way to test if zone transfers are working is:
 
 === Configuration
 
-The configuration of the Provisoning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
+The configuration of the Provisioning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
 The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own cron based schedule for automatic importing from various sources (intended for integration with external URL such as http and this new dns protocol handler.
 
 A default configuration is provided in the {page-component-title} `etc/` directory and is called: `provisiond-configuration.xml`.
@@ -127,7 +127,7 @@ Not very practical but is a good example.
 <?xml version="1.0" encoding="UTF-8"?>
     <provisiond-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
                               foreign-source-dir="/opt/opennms/etc/foreign-sources"
-                              requistion-dir="/opt/opennms/etc/imports"
+                              requisition-dir="/opt/opennms/etc/imports"
                               importThreads="8"
                               scanThreads="10"
                               rescanThreads="10"
@@ -148,7 +148,7 @@ Not very practical but is a good example.
 </provisiond-configuration>
 ----
 
-== Configuration Reload
+== Configuration reload
 
 Like many of the daemon configuration in the 1.7 branch, the configurations are reloadable without having to restart {page-component-title}, using the reloadDaemonConfig uei:
 

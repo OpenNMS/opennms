@@ -1,22 +1,24 @@
 
 [[provisiond-integration]]
-= Integrating with Provisiond
+= Integrating with provisiond
 
-Use the ReST API for integration from other provisioning systems with {page-component-title}.
-The ReST API provides an interface for defining foreign sources and requisitions.
+If you have another inventory system in use to keep track of nodes on your network, you can define a requisition to group nodes within {page-component-title}.
+There are multiple ways you can add nodes to a requisition.
+One way is to use the ReST API to automate syncing nodes from your inventory system.
+The ReST API provides an endpoint for defining foreign sources and requisitions.
 
-== Provisioning Groups of Nodes
+== Provisioning groups of nodes
 
 Just as with the web UI, groups of nodes can be managed via the ReST API from an external system.
 The steps are:
 
-. Update the default foreign source defintion (if not using the default) for the group
-. Update the SNMP configuration for each node in the group
-. Create/update the group of nodes
+* Update the default foreign source definition (if not using the default) for the group.
+* Update the SNMP configuration for each node in the group as needed.
+* Create/update the group of nodes.
 
-== Example
+== Example provisioning via ReST API
 
-=== Step 1 - Create a Foreign Source
+=== Step 1 - Create a foreign source
 
 To change the policies for this group of nodes you should create a foreign source for the group.
 You can do so using the ReST API:
@@ -90,4 +92,3 @@ curl -X POST -H "Content-Type: application/xml" -d "<?xml version="1.0" encoding
 A provisioning group file called `etc/imports/customer-a.xml` will be found on the {page-component-title} system following the successful completion of this `curl` command and will also be visible via the WebUI.
 
 NOTE: _Add_, _Update_, _Delete_ operations are handled via the ReST API in the same manner as described in detailed specification.
-
