@@ -65,7 +65,7 @@ The BSF detector supports many languages. The following table provides the requi
 |===
 
 
-== Example Configurations
+== Example configurations
 
 === BeanShell example
 
