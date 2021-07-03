@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
@@ -112,11 +113,14 @@ public class TcaCollectorComplianceIT extends CollectorComplianceTest {
         ResourceType resourceType = TcaCollectorIT.getJuniperTcaEntryResourceType();
         when(resourceTypesDao.getResourceTypeByName(TcaCollectionHandler.RESOURCE_TYPE_NAME)).thenReturn(resourceType);
 
+        BlobStore blobStore = mock(BlobStore.class);
+
         return new ImmutableMap.Builder<String, Object>()
                 .put("tcaDataCollectionConfigDao", tcaDataCollectionConfigDao)
                 .put("resourceStorageDao", resourceStorageDao)
                 .put("resourceTypesDao", resourceTypesDao)
                 .put("locationAwareSnmpClient", m_client)
+                .put("blobStore", blobStore)
                 .build();
     }
 }
