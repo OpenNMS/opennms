@@ -38,7 +38,7 @@ TIP:
 This monitor is intended for testing the availability of a DNS service.
 If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -46,30 +46,33 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
 .Monitor specific parameters for the DnsMonitor
 [options="header, autowidth"]
+
+All listed parameters are optional. 
+
 |===
-| Parameter              | Description                                                                                  | Required | Default value
-| `retry`                | Number of retries before the service is marked as _down_                                     | optional | `0`
-| `timeout`              | Time in milliseconds to wait for the _A Record_ response from the server                     | optional | `5000`
-| `port`                 | UDP Port for the DNS server                                                                  | optional | `53`
-| `lookup`               | DNS _A Record_ for lookup test                                                               | optional | `localhost`
-| `fatal-response-codes` | A comma-separated list of numeric DNS response codes that will be considered fatal if
-                           present in the server's response. Default value is `2` corresponds to _Server Failed_. A
-                           list of codes and their meanings is found in http://tools.ietf.org/html/rfc2929[RFC 2929]    | optional | `2`
-| `min-answers`          | Minmal number of records in the DNS server respone for the given lookup                      | optional | `-`
-| `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
+| *Parameter* | *Description* | *Default*                                                                             
+| `retry`                | Number of retries before the service is marked as down.                                    | 0
+| timeout              | Time in milliseconds to wait for the A Record response from the server.                     | 5000
+| port                 | UDP Port for the DNS server                                                                  | 53
+| lookup               | DNS A Record for lookup test                                                               | localhost
+| -*fatal-response-codes | A comma-separated list of numeric DNS response codes considered fatal if
+                           present in the server's response. Default value is `2` corresponds to `Server Failed`. See http://tools.ietf.org/html/rfc2929[RFC 2929] for a
+                           list of codes and their meanings.  | 2
+| min-answers          | Minmal number of records in the DNS server respone for the given lookup.                      | n/a
+| max-answers          | Maximum number of records in the DNS server respone for the given lookup.                     | n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-== Examples
+== Example
 
-The given examples shows how to monitor if the IP interface from a given DNS server resolves a DNS request.
+The example shows how to monitor whether the IP interface from a given DNS server resolves a DNS request.
 This service should be bound to a DNS server which should be able to give a valid DNS respone for DNS request _www.google.com_.
-The service is _up_ if the DNS server gives between `1` and `10` _A record_ responses.
+The service is up if the DNS server gives between one and 10 A record responses.
 
 .Example configuration monitoring DNS request for a given server for www.google.com
 [source, xml]

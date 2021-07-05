@@ -1,11 +1,15 @@
 
 = AvailabilityMonitor
 
-This monitor tests reachability of a node by using the _isReachable_ method of the _InetAddress_ java class.
+This monitor uses the _isReachable_ method of the _InetAddress_ Java class to test the reachability of a node.
 The service is considered available if isReachable returns true.
 See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
 
-== Monitor Facts
+Note that under most configurations the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>> supercedes the AvailabilityMonitor. 
+The AvailabilityMonitor was developed when the ICMPMonitor was not remote enabled, to circumvent this limitation.
+Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations, so you should not need the AvailabilityMonitor. 
+
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -13,7 +17,7 @@ See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isRe
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
@@ -28,9 +32,4 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 <monitor service="AVAIL" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
 ----
-
-[[poller-availability-monitor-vs-icmp-monitor]]
-== IcmpMonitor vs. AvailabilityMonitor
-This monitor has been developed in a time when the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>> wasn't remote enabled, to circumvent this limitation.
-Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations and this monitor shouldn't be needed.
 

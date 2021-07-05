@@ -4,27 +4,29 @@
 This monitor tests the availablity of an ActiveMQ Broker.
 The service is considered available if a successful connection is made.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.ActiveMQMonitor`
 |===
 
-== Configuration and Use
+== Configuration and use
 
 .Monitor specific parameters for the ActiveMQMonitor
 [options="header, autowidth"]
-|===
-| Parameter        | Description                                                                                        | Required | Default value
-| `broker-url`     | The ActiveMQ Broker URL to connect to.                                                             | required | `vm://localhost?create=false&broker.persistent=false`
-| `user`           | The user name used to login to the ActiveMQ broker.                                                | optional | `-`
-| `password`       | The password used to authenticate the user on the ActiveMQ broker.                                 | optional | `-`
-| `use-nodelabel`  | A boolean to enable using the nodelabel when connecting to the ActiveMQ broker.                    | optional | `false`
-| `create-session` | A boolean to enable creating a JMS Session when connecting to the ActiveMQ broker.                 | optional | `false`
-| `client-id`      | The client ID to use when connecting to the ActiveMQ broker.                                       | optional | `-`
-|===
 
+|===
+3+|*Required*
+| *Parameter* | *Description* | *Default* 
+| broker-url     | The ActiveMQ Broker URL to connect to.                                                  | vm://localhost?create=false&broker.persistent=false
+3+| *Optional*
+| user | The user name used to login to the ActiveMQ broker. |n/a                                               
+| password | The password used to authenticate the user on the ActiveMQ broker. | n/a                     
+| use-nodelabel  | A boolean to enable using the nodelabel when connecting to the ActiveMQ broker.     | false
+| create-session | A boolean to enable creating a JMS Session when connecting to the ActiveMQ broker.   | false
+| client-id | The client ID to use when connecting to the ActiveMQ broker. | n/a
+|===             
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

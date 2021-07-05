@@ -1,4 +1,4 @@
-
+[[pagesequencemonitor]]
 = PageSequenceMonitor
 
 The _PageSequenceMonitor_ (PSM) lets OpenNMS monitor web applications.
