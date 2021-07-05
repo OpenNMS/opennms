@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>protocol-collectors</artifactId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-tca</artifactId>
@@ -70,7 +70,6 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.0.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

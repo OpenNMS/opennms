@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -107,13 +107,19 @@
 
  <% if (limit > 0 ) { %> 
   <div class="text-center my-2">
-  <strong>Results <%=startResult%>-<%=endResult%></strong>
+  <strong>Results <%=startResult%>-<%=endResult%>,</strong>
+  <jsp:include page="/includes/listSize.jsp" flush="false">
+    <jsp:param name="limitSize" value="<%=limit%>" />
+  </jsp:include>
   </div>
  <% } else { %>
   <div class="text-center">
-  <strong>All Results</strong>
+  <strong>All Results,</strong>
+  <jsp:include page="/includes/listSize.jsp" flush="false">
+    <jsp:param name="limitSize" value="<%=limit%>" />
+  </jsp:include>
   </div>
- <% } %> 
+ <% } %>
 
   <% if( itemCount >= limit || multiple > 0 ) { %>
   <nav class="btn-toolbar" role="toolbar">

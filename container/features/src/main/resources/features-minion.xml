@@ -181,4 +181,11 @@
         <bundle>mvn:org.opennms.features.minion/minion-rest-client/${project.version}</bundle>
     </feature>
 
+  <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
+    <feature>opennms-health-rest</feature>
+    <feature version="${cxfVersion}">cxf-core</feature>
+    <feature version="${cxfVersion}">cxf-jaxrs</feature>
+    <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
+  </feature>
+
 </features>

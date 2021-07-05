@@ -51,14 +51,10 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
  * Perspective response time resources are stored in paths like:
  *   response/${ipaddr}/perspective/${perspectiveLocation}/ds.rrd
  */
-public final class PerspectiveResponseTimeResourceType implements OnmsResourceType {
+public final class PerspectiveResponseTimeResourceType extends PerspectiveServiceResourceType {
 
-    private final ResourceStorageDao resourceStorageDao;
-    private final IpInterfaceDao ipInterfaceDao;
-
-    public PerspectiveResponseTimeResourceType(final ResourceStorageDao resourceStorageDao, final IpInterfaceDao ipInterfaceDao) {
-        this.resourceStorageDao = resourceStorageDao;
-        this.ipInterfaceDao = ipInterfaceDao;
+    public PerspectiveResponseTimeResourceType(final ResourceStorageDao resourceStorageDao, final ServiceResourceType serviceType) {
+        super(resourceStorageDao, serviceType);
     }
 
     @Override
@@ -69,67 +65,5 @@ public final class PerspectiveResponseTimeResourceType implements OnmsResourceTy
     @Override
     public String getName() {
         return "perspectiveResponseTime";
-    }
-
-    @Override
-    public String getLinkForResource(final OnmsResource resource) {
-        return null;
-    }
-
-    @Override
-    public boolean isResourceTypeOnParent(final OnmsResource parent) {
-        if (!NodeResourceType.isNode(parent)) {
-            return false;
-        }
-
-        return !this.getResourcesForParent(parent).isEmpty();
-    }
-
-    @Override
-    public List<OnmsResource> getResourcesForParent(final OnmsResource parent) {
-        if (parent == null) {
-            return Collections.emptyList();
-        }
-
-        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
-        final String residentLocation = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
-
-        return node.getIpInterfaces().stream()
-                   .map(OnmsIpInterface::getIpAddress)
-                   .map(InetAddressUtils::str)
-                   .flatMap(ipAddress -> {
-                       final ResourcePath basePath = ResponseTimeResourceType.getInterfacePath(residentLocation, ipAddress);
-                       return this.resourceStorageDao.children(new ResourcePath(basePath, "perspective"), 1).stream()
-                                                     .map(path -> createResource(ipAddress, path.getName(), path));
-                   })
-                   .collect(Collectors.toList());
-    }
-
-    @Override
-    public OnmsResource getChildByName(final OnmsResource parent, final String ipWithPerspective) {
-        final int splitIndex = ipWithPerspective.indexOf('@');
-        if (splitIndex == -1) {
-            return null;
-        }
-
-        final String ipAddress = ipWithPerspective.substring(0, splitIndex);
-        final String perspectiveLocation = ipWithPerspective.substring(splitIndex + 1);
-
-        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
-        final String residentLocation = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
-
-        final ResourcePath basePath = ResponseTimeResourceType.getInterfacePath(residentLocation, ipAddress);
-
-        final OnmsResource resource = createResource(ipAddress, perspectiveLocation, new ResourcePath(basePath, "perspective", perspectiveLocation));
-        resource.setParent(parent);
-        return resource;
-    }
-
-    private OnmsResource createResource(final String ipAddress, final String perspectiveLocation, final ResourcePath path) {
-        final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(this.resourceStorageDao, path);
-        final Set<OnmsAttribute> set = new LazySet<>(loader);
-
-        return new OnmsResource(String.format("%s@%s", ipAddress, perspectiveLocation),
-                                String.format("%s from %s", ipAddress, perspectiveLocation), this, set, path);
     }
 }

@@ -1,0 +1,50 @@
+.Configure PostgreSQL database access
+[source, shell]
+----
+sudo vi /usr/share/opennms/etc/opennms-datasources.xml
+----
+
+.Set credentials to access the PostgreSQL database
+[source, opennms-datasources.xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name {page-component-title} should use.
+<2> Set the user name to access the opennms database table.
+<3> Set the password to access the opennms database table.
+<4> Set the postgres user for administrative access to PostgreSQL.
+<5> Set the password for administrative access to PostgreSQL.
+
+.Detect Java environment and persist in /usr/share/opennms/etc/java.conf
+[source, console]
+----
+sudo /usr/share/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, console]
+----
+sudo /usr/share/opennms/bin/install -dis
+----
+
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
+TIP: By default the OpenNMS SNMP Trap daemon listens on 10162/udp and the Syslog daemon listens on 10514/udp.
+     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.

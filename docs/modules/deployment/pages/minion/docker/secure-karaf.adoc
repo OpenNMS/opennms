@@ -1,0 +1,57 @@
+The only way to change the admin password and enable encryption is to inject configuration files into the container.
+Commands are executed in the Docker project directory for the Minion.
+
+.Create the configuration file to enable encryption
+[source, console]
+----
+vi org.apache.karaf.jaas.cfg
+----
+
+.Enable encryption for the admin password
+[source, org.apache.karaf.jaas.cfg]
+----
+encryption.enabled = true
+encryption.prefix = {CRYPT}
+encryption.suffix = {CRYPT}
+encryption.algorithm = SHA-512
+encryption.encoding = hexadecimal
+----
+
+.Create a property file for the SSH user for the Karaf shell
+
+[source, console]
+----
+vi users.properties
+----
+
+.Set a secure admin password for Karaf
+[source, users.properties]
+----
+admin = new-karaf-password,_g_:admingroup<1>
+_g_\:admingroup = group,admin,manager,viewer,systembundles,ssh<2>
+----
+<1> Replace the string `new-karaf-password` with your new password in plaintext.
+<2> Assign permissions to allow administrative tasks and access via SSH.
+
+.Set Minion process as owner and restrictive file permissions
+[source, console]
+----
+chown 10001:10001 users.properties
+chmod 600 users.properties
+----
+
+.Inject the configuration files
+[source, docker-compose.yml]
+----
+volumes:
+  - ./minion-config.yaml:/opt/minion/minion-config.yaml
+  - ./scv.jce:/opt/minion/scv.jce
+  - ./users.properties:/opt/minion/etc/users.properties
+  - ./org.apache.karaf.jaas.cfg:/opt/minion/etc/org.apache.karaf.jaas.cfg
+----
+
+.Restart the Minion container
+[source, console]
+----
+docker-compose restart minion
+----

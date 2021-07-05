@@ -1,0 +1,63 @@
+.Install PostgreSQL client and server
+[source, console]
+----
+sudo dnf -y install postgresql-server postgresql
+----
+
+.Initialize the PostgreSQL database
+[source, console]
+----
+sudo postgresql-setup --initdb --unit postgresql
+----
+
+.Enable PostgreSQL on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now postgresql
+----
+
+.Create an opennms database user and password
+[source, console]
+----
+sudo -i -u postgres createuser -P opennms
+----
+
+IMPORTANT: You must provide a password for the `opennms` database user.
+         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder. 
+         Please set a secure password.
+
+.Create an empty database and set the owner to the opennms user
+[source, console]
+----
+sudo -i -u postgres createdb -O opennms opennms
+----
+
+.Set a password for PostgreSQL superuser
+[source, console]
+----
+sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+----
+
+IMPORTANT: Change `YOUR-POSTGRES-PASSWORD` to a secure one.
+         The superuser is required to be able to initialize and change the database schema for installation and updates.
+
+.Change the access policy for PostgreSQL
+[source, console]
+----
+sudo vi /var/lib/pgsql/data/pg_hba.conf
+----
+
+.Allow {page-component-title} to access the database over the local network with an MD5 hashed password
+[source, pg_hba.conf]
+----
+host    all             all             127.0.0.1/32            md5<1>
+host    all             all             ::1/128                 md5<1>
+----
+
+<1> Change method from `ident` to `md5` for IPv4 and IPv6 on localhost.
+
+.Apply configuration changes for PostgreSQL
+[source, console]
+----
+sudo systemctl reload postgresql
+----

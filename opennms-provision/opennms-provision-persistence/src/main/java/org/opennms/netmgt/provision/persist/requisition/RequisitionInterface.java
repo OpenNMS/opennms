@@ -37,8 +37,10 @@
 package org.opennms.netmgt.provision.persist.requisition;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -398,8 +400,12 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
         }
         if (m_monitoredServices != null) {
+            Set<String> serviceNameSet = new HashSet<>();
             for (final RequisitionMonitoredService svc : m_monitoredServices) {
                 svc.validate();
+                if (!serviceNameSet.add(svc.getServiceName())) {
+                    throw new ValidationException("Duplicate service name: " + svc.getServiceName());
+                }
             }
         }
     }

@@ -1,0 +1,39 @@
+
+= Code snippets
+
+You can include code snippets, configuration, or source code files in the documentation.
+Provide the given language parameter to enable syntax highlighting. 
+This works on source code or configuration.
+
+== Explicitly defined in the document
+
+WARNING: Use this kind of code snippet as sparsely as possible.
+Code becomes obsolete very quickly; archaic usage practices are detrimental.
+
+To include snippets, use the following method:
+
+.Sample configuration explicitly in the documentation
+[source,xml]
+----
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+  <parameter key="lookup" value="localhost" />
+  <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="dns" />
+  <parameter key="ds-name" value="dns" />
+</service>
+----
+
+If there is no suitable syntax highlighter for the code used, just omit the language: +[source]+.
+
+The following syntax highlighters are enabled:
+
+* Bash
+* Groovy
+* Java
+* JavaScript
+* Python
+* XML

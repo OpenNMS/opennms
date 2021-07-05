@@ -42,6 +42,9 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
+import org.opennms.core.utils.jexl.OnmsJexlSandbox;
+import org.opennms.core.utils.jexl.OnmsJexlUberspect;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;
@@ -247,8 +250,9 @@ public class GraphResultsController extends AbstractController implements Initia
      * @return an array of {@link java.lang.String} objects.
      */
 	public String[] getSuggestedReports(ResourceId resourceId, String matching) {
-		List<String> metricList = new ArrayList<>();
-		JexlEngine expressionParser = new JexlEngine();
+		List<String> metricList = new ArrayList<String>();
+        final JexlEngine expressionParser = new OnmsJexlEngine();
+
 		try {
 		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
 		    for (List<String> list : e.getVariables()) {

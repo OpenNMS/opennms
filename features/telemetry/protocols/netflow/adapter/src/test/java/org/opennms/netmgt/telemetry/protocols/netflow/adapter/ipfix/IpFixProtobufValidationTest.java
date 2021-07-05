@@ -52,11 +52,10 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -135,7 +134,7 @@ public class IpFixProtobufValidationTest {
 
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress());
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
         for (byte[] payload : payloads) {
             final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
@@ -145,18 +144,14 @@ public class IpFixProtobufValidationTest {
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = new byte[0];
+                    final FlowMessage flowMessage;
                     try {
-                        message = Utils.buildAndSerialize(Protocol.IPFIX, rec);
+                        flowMessage = Utils.buildAndSerialize(Protocol.IPFIX, rec).build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    try {
-                        FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
-                    } catch (InvalidProtocolBufferException e) {
-                        throw new RuntimeException(e);
-                    }
+
+                    flows.addAll(ipFixConverter.convert(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

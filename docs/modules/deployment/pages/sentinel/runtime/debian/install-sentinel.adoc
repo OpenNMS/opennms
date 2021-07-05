@@ -1,0 +1,56 @@
+.Install gnupg and add OpenNMS repository GPG key
+[source, console]
+----
+sudo apt -y install gnupg ca-certificates
+sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Add apt repository
+[source, console]
+----
+sudo apt -y install software-properties-common
+sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
+sudo apt update
+----
+
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
+
+.Installing the of {page-component-title} Sentinel
+[source, console]
+----
+sudo apt -y install opennms-sentinel
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+[source, console]
+----
+sudo apt-mark hold opennms-sentinel
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo apt -y install tree
+tree /usr/share/sentinel -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/usr/share/sentinel
+├── bin
+├── data -> /var/lib/sentinel/data
+├── deploy -> /var/lib/sentinel/deploy
+├── etc -> /etc/sentinel
+├── lib
+└── system
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----

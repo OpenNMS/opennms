@@ -207,7 +207,7 @@ public class VmwareImporter {
 
         logger.debug("Connecting VIJava access for host {} ...", request.getHostname());
         try {
-            vmwareViJavaAccess.connect();
+            vmwareViJavaAccess.connect(request.getTimeout());
         } catch (MalformedURLException e) {
             logger.warn("Error connecting VMware management server '{}': '{}'", request.getHostname(), e.getMessage());
             return null;
@@ -216,10 +216,6 @@ public class VmwareImporter {
             return null;
         }
         logger.debug("Successfully connected VIJava access for host {}", request.getHostname());
-
-        if (!vmwareViJavaAccess.setTimeout(request.getTimeout())) {
-            logger.warn("Error setting connection timeout");
-        }
 
         logger.debug("Starting to enumerate VMware managed objects from host {} ...", request.getHostname());
         try {

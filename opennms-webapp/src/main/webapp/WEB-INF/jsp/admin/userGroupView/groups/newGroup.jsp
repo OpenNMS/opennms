@@ -43,7 +43,7 @@
 </jsp:include>
 
 <script type="text/javascript">
-  function validateFormInput() 
+  function validateFormInput()
   {
     var id = new String(document.newGroupForm.groupName.value);
     if (id.toLowerCase()=="admin")
@@ -51,6 +51,18 @@
         alert("The group ID '" + document.newGroupForm.groupName.value + "' cannot be used. It may be confused with the administration group ID 'Admin'.");
         return false;
     }
+
+    if (/.*[&<>"`']+.*/.test(id)) {
+        alert("The group ID must not contain any HTML markup.");
+        return false;
+    }
+
+    var comment = new String(document.newGroupForm.groupComment.value);
+    if (/.*[&<>"`']+.*/.test(comment)) {
+        alert("The group comment must not contain any HTML markup.");
+        return false;
+    }
+
     document.newGroupForm.operation.value="addGroup";
     return true;
   }    
@@ -73,6 +85,7 @@
   <div class="card-body">
     <form role="form" class="form" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();" action="admin/userGroupView/groups/modifyGroup">
       <input type="hidden" name="operation" />
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
       <div class="form-group">
         <label for="groupName" class="">Group Name</label>

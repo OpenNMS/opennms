@@ -19,6 +19,7 @@
         <exclude>**/.settings</exclude>
         <exclude>**/.settings/**/*</exclude>
         <exclude>**/.DS_Store</exclude>
+        <exclude>**/.idea</exclude>
         <exclude>**/target</exclude>
         <exclude>**/target/**/*</exclude>
       </excludes>

@@ -1,0 +1,77 @@
+.Create a configuration file for gRPC settings
+
+[source, console]
+----
+sudo vi etc/opennms.properties.d/grpc.properties
+----
+
+.Set OSGi as IPC strategy
+[source, grpc.properties]
+----
+org.opennms.core.ipc.strategy=osgi
+----
+
+.Create a file to install gRPC features on startup
+[source, shell]
+----
+sudo vi etc/featuresBoot.d/grpc.boot
+----
+
+.Add the gRPC server features
+[source, grpc.boot]
+----
+opennms-core-ipc-grpc-server
+----
+
+.Apply the changes with {page-component-title} Core instance restart
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+The gRPC server listens on port `8990/tcp` by default.
+      Use `ss -lnpt = :8990` to verify the port is listening. 
+
+Optional: to enable TLS for gRPC, you must provide certificate files and enable it.
+     See below for TLS commands.
+
+.Connect to the Karaf shell
+[source, karaf]
+----
+ssh -p 8101 admin@localhost
+----
+
+.Configure TLS and certificate parameters
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.grpc.server
+config:property-set tls.enabled true<1>
+config:property-set server.cert.filepath /custom-path/server.crt<2>
+config:property-set server.private.key.filepath /custom-path/server.pem<3>
+config:property-set trust.cert.filepath /custom-path/ca.crt<4>
+config:update<5>
+----
+
+<1> Enable TLS for the gRPC server. 
+<2> Set the path to your CA certificate file.
+<3> Set the path to the server certificate private key file.
+<4> Set the path to your server certificate file
+<5> Save and update the configuration.
+
+This is optional and you can set a maximum message size for gRPC.
+     The maximum size must be the same on the Minion.
+     Default maximum message size is 10 MiB.
+
+.Configure maximum message size for gRPC in the Karaf shell
+[source, karaf]
+----
+config:edit org.opennms.core.ipc.grpc.client
+config:property-set max.message.size 10485760
+config:update
+----
+
+.Apply the changes with {page-component-title} Core instance restart
+[source, console]
+----
+sudo systemctl restart opennms
+----

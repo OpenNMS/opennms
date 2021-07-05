@@ -129,7 +129,7 @@
     <feature name="commons-lang3" version="${commonsLang3Version}" description="Apache :: commons-lang3">
         <bundle>mvn:org.apache.commons/commons-lang3/${commonsLang3Version}</bundle>
     </feature>
-    <feature name="commons-net" version="3.6" description="Apache :: commons-net">
+    <feature name="commons-net" version="${commonsNetVersion}" description="Apache :: commons-net">
         <bundle>mvn:commons-net/commons-net/3.6</bundle>
     </feature>
     <feature name="dnsjava" version="${dnsjavaVersion}" description="dnsjava">
@@ -314,6 +314,7 @@
         <feature>jaxb</feature>
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-jexl</feature>
         <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -449,7 +450,7 @@
         <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
-        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
     </feature>
     <feature name="opennms-aws-sqs" version="${project.version}" description="OpenNMS :: Features :: AWS SQS">
         <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/${awsSdkVersion}</bundle>
@@ -529,6 +530,7 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
@@ -951,11 +953,11 @@
         <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
         <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaVersion}$Bundle-Version=${kafkaVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaVersion}"</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
-        <bundle dependency="true">mvn:com.github.luben/zstd-jni/1.4.3-1</bundle>
+        <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/1.6.0</bundle>
-        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.7.3</bundle>
+        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <!-- These are only needed for  servicemix implementation of kafka streams -->
         <!--
@@ -974,6 +976,14 @@
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-kafka-consumer" version="${project.version}" description="OpenNMS :: Kafka :: Consumer">
+        <feature>opennms-kafka</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-model</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.consumer/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-collection" version="${project.version}" description="OpenNMS :: Telemetry :: Collection">
         <feature>guava</feature>
@@ -1010,13 +1020,25 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
+        <feature>opennms-telemetry-bmp-adapter</feature>
+        <feature>rate-limited-logger</feature>
+        <feature>resilience4j</feature>
+        <feature>opennms-dnsresolver-api</feature>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-telemetry-bmp-adapter" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Adapter">
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
-        <feature>resilience4j</feature>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.adapter/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.transport/${project.version}</bundle>
+    </feature>
+    <!-- Currently, this only runs on OpenNMS -->
+    <feature name="opennms-telemetry-bmp-stats" version="${project.version}" description="OpenNMS :: Telemetry :: BMP :: Stats Aggregator">
+        <bundle>mvn:org.opennms.features.telemetry.protocols.bmp/org.opennms.features.telemetry.protocols.bmp.stats/${project.version}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
+        <feature>commons-net</feature>
     </feature>
     <feature name="opennms-telemetry-jti" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
@@ -1474,6 +1496,10 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
         <bundle>mvn:org.opennms.features/jira-client/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-inmemory-ticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: InMemory">
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.inmemory/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
     </feature>
     <feature name="datachoices" version="${project.version}" description="OpenNMS :: Features :: Data Choices">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>

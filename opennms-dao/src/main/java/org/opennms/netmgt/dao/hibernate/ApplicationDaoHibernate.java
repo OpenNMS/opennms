@@ -49,11 +49,15 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
 public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplication, Integer> implements ApplicationDao {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ApplicationDaoHibernate.class);
 
 	/**
 	 * <p>Constructor for ApplicationDaoHibernate.</p>
@@ -122,28 +126,26 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	public List<MonitoredServiceStatusEntity> getAlarmStatus(final List<OnmsApplication> applications) {
 		Objects.requireNonNull(applications);
 		final List<OnmsMonitoredService> services = applications.stream().flatMap(application -> application.getMonitoredServices().stream()).collect(Collectors.toList());
-		return getAlarmStatusForServices(services);
-	}
 
-	private List<MonitoredServiceStatusEntity> getAlarmStatusForServices(final List<OnmsMonitoredService> services) {
-		Objects.requireNonNull(services);
+		final String sql = "select alarm.node.id, alarm.ipAddr, alarm.serviceType.id, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) " +
+				"from OnmsAlarm alarm " +
+				"where alarm.severity != :severity and alarm.reductionKey in :keys " +
+				"group by alarm.node.id, alarm.ipAddr, alarm.serviceType.id";
+
+		// Build query based on reduction keys
+		final Set<String> reductionKeys = services.stream().flatMap(service -> ReductionKeyHelper.getNodeLostServiceFromPerspectiveReductionKeys(service).stream()).collect(Collectors.toSet());
+
 		// Avoid querying the database if unnecessary
-		if (services.isEmpty()) {
+		if (services.isEmpty() || reductionKeys.isEmpty()) {
 			return Lists.newArrayList();
 		}
-		// Build query based on reduction keys
-		final Set<String> reductionKeys = services.stream().flatMap(service -> ReductionKeyHelper.getReductionKeys(service).stream()).collect(Collectors.toSet());
-		final StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.append("select distinct alarm.node.id, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) ");
-		sqlBuilder.append("from OnmsAlarm alarm ");
-		sqlBuilder.append("where alarm.severity > 3 and alarm.alarmAckTime is null and alarm.reductionKey in :keys ");
-		sqlBuilder.append("group by alarm.node.id");
 
 		// Convert to object
-		final List<Object[][]> nodeIdToSeverityMapping = (List<Object[][]>) getHibernateTemplate().findByNamedParam(sqlBuilder.toString(), new String[]{"keys"}, new Object[]{reductionKeys.toArray()});
+		final List<Object[][]> perspectiveAlarmsForService = (List<Object[][]>) getHibernateTemplate().findByNamedParam(sql, new String[]{"keys", "severity"}, new Object[]{reductionKeys.toArray(), OnmsSeverity.CLEARED});
 		final List<MonitoredServiceStatusEntity> entityList = new ArrayList<>();
-		for (Object[] eachRow : nodeIdToSeverityMapping) {
-			MonitoredServiceStatusEntity entity = new MonitoredServiceStatusEntity((Integer)eachRow[0], (Date) eachRow[1], (OnmsSeverity) eachRow[2], (Long) eachRow[3]);
+		for (Object[] eachRow : perspectiveAlarmsForService) {
+			MonitoredServiceStatusEntity entity = new MonitoredServiceStatusEntity((Integer)eachRow[0],
+					(InetAddress)eachRow[1], (Integer)eachRow[2],(Date) eachRow[3], (OnmsSeverity) eachRow[4], (Long) eachRow[5]);
 			entityList.add(entity);
 		}
 		return entityList;

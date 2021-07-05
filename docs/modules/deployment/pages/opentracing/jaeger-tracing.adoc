@@ -1,0 +1,31 @@
+= Setting up Jaeger Tracing
+
+OpenTracing enables distributed tracing which makes it possible to monitor RPCs or transactions across process boundaries.
+You can leverage this functionality to help track and diagnose communication problems that may arise in distributed deployments of _{page-component-title}_ components; for example, Core instance, Minion, and/or Sentinel.
+OpenTracing is supported on RPC calls between {page-component-title} Core instance for Sink API calls (including flows) between Minion and Sentinel.
+By default the tracing instrumentation {page-component-title} is disabled (a no-op tracer is used.)
+
+The project Jaeger is an open source, end-to-end distributed tracing software.
+It lets you monitor and troubleshoot transactions in distributed software components when {page-component-title} is deployed with Minion and Sentinel.
+_{page-component-title}_ components support link:https://www.jaegertracing.io/[Jaeger] which implements the OpenTracing API.
+
+[{tabs}]
+====
+Core::
++
+--
+include::core.adoc[]
+--
+
+Minion::
++
+--
+include::minion.adoc[]
+--
+
+Sentinel::
++
+--
+include::sentinel.adoc[]
+--
+====

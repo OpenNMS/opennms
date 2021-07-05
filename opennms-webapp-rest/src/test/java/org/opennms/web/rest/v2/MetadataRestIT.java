@@ -43,7 +43,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaDataList;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
@@ -52,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -75,6 +80,13 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private ServletContext m_context;
 
+    @Autowired
+    private DatabasePopulator databasePopulator;
+
+    private OnmsNode node;
+    private OnmsIpInterface ipInterface;
+    private OnmsMonitoredService service;
+
     public MetadataRestIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -85,46 +97,33 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Before
+    @Transactional
     public void before() throws Exception {
-        final String node = "<node type=\"A\" label=\"CCC\" foreignSource=\"AAA\" foreignId=\"BBB\">" +
-                "<location>Default</location>" +
-                "<labelSource>H</labelSource>" +
-                "<sysContact>The Owner</sysContact>" +
-                "<sysDescription>" +
-                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-                "</sysDescription>" +
-                "<sysLocation>DevJam</sysLocation>" +
-                "<sysName>TestMachine1</sysName>" +
-                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-                "</node>";
-        sendPost("/nodes", node, 201);
+        this.databasePopulator.populateDatabase();
 
-        final String ipInterface = "<ipInterface snmpPrimary=\"P\">" +
-                "<ipAddress>10.10.10.10</ipAddress>" +
-                "<hostName>TestMachine</hostName>" +
-                "</ipInterface>";
-        sendPost("/nodes/AAA:BBB/ipinterfaces", ipInterface, 201);
+        this.node = this.databasePopulator.getNode1();
+        this.node.addMetaData("c1", "k1", "v1");
+        this.node.addMetaData("c2", "k2", "v2");
 
-        final String service = "<service status=\"A\">" +
-                "<serviceType>" +
-                "<name>ICMP</name>" +
-                "</serviceType>" +
-                "</service>";
-        sendPost("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services", service, 201);
+        this.ipInterface = node.getIpInterfaceByIpAddress("192.168.1.1");
+        this.ipInterface.addMetaData("c3", "k3", "v3");
+        this.ipInterface.addMetaData("c4", "k4", "v4");
 
-        sendPut("/nodes/AAA:BBB/metadata/c1/k1/v1", service, 204);
-        sendPut("/nodes/AAA:BBB/metadata/c2/k2/v2", service, 204);
+        this.service = ipInterface.getMonitoredServiceByServiceType("ICMP");
+        this.service.addMetaData("c5", "k5", "v5");
+        this.service.addMetaData("c6", "k6", "v6");
 
-        sendPut("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/metadata/c3/k3/v3", service, 204);
-        sendPut("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/metadata/c4/k4/v4", service, 204);
-
-        sendPut("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services/ICMP/metadata/c5/k5/v5", service, 204);
-        sendPut("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services/ICMP/metadata/c6/k6/v6", service, 204);
+        this.databasePopulator.getNodeDao().saveOrUpdate(this.node);
+        this.databasePopulator.getNodeDao().flush();
+        this.databasePopulator.getIpInterfaceDao().saveOrUpdate(this.ipInterface);
+        this.databasePopulator.getIpInterfaceDao().flush();
+        this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.service);
+        this.databasePopulator.getMonitoredServiceDao().flush();
     }
 
     @After
     public void after() throws Exception {
-        sendRequest(DELETE, "/nodes/AAA:BBB", 204);
+        this.databasePopulator.resetDatabase();
     }
 
     private String requestJson(final String url, final int status) throws Exception {
@@ -143,7 +142,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testNodeMetadataJson() throws Exception {
-        final String json = requestJson("/nodes/AAA:BBB/metadata", 200);
+        final String json = requestJson(String.format("/nodes/%s/metadata", this.node.getNodeId()), 200);
         JSONAssert.assertEquals(new JSONObject(
                 "{\"offset\" : 0, \"count\" : 2, \"totalCount\" : 2, \"metaData\" : [ { \"context\" : \"c1\", \"key\" : \"k1\", \"value\" : \"v1\" }, { \"context\" : \"c2\", \"key\" : \"k2\", \"value\" : \"v2\" }] }"
         ), new JSONObject(json), false);
@@ -151,7 +150,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testNodeMetadataXml() throws Exception {
-        final String xml = requestXml("/nodes/AAA:BBB/metadata", 200);
+        final String xml = requestXml(String.format("/nodes/%s/metadata", this.node.getNodeId()), 200);
         Assert.assertEquals(JAXB.unmarshal(new StringSource(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>c1</context><key>k1</key><value>v1</value></meta-data><meta-data><context>c2</context><key>k2</key><value>v2</value></meta-data></meta-data-list>"),
                 OnmsMetaDataList.class
@@ -160,7 +159,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testInterfaceMetadataJson() throws Exception {
-        final String json = requestJson("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/metadata", 200);
+        final String json = requestJson(String.format("/nodes/%s/ipinterfaces/%s/metadata", this.node.getNodeId(), this.ipInterface.getIpAddressAsString()), 200);
         JSONAssert.assertEquals(new JSONObject(
                 "{\"offset\" : 0, \"count\" : 2, \"totalCount\" : 2, \"metaData\" : [ { \"context\" : \"c3\", \"key\" : \"k3\", \"value\" : \"v3\" }, { \"context\" : \"c4\", \"key\" : \"k4\", \"value\" : \"v4\" }] }"
         ), new JSONObject(json), false);
@@ -168,7 +167,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testInterfaceMetadataXml() throws Exception {
-        final String xml = requestXml("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/metadata", 200);
+        final String xml = requestXml(String.format("/nodes/%s/ipinterfaces/%s/metadata", this.node.getNodeId(), this.ipInterface.getIpAddressAsString()), 200);
         Assert.assertEquals(JAXB.unmarshal(new StringSource(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>c3</context><key>k3</key><value>v3</value></meta-data><meta-data><context>c4</context><key>k4</key><value>v4</value></meta-data></meta-data-list>"),
                 OnmsMetaDataList.class
@@ -177,7 +176,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testServiceMetadataJson() throws Exception {
-        final String json = requestJson("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services/ICMP/metadata", 200);
+        final String json = requestJson(String.format("/nodes/%s/ipinterfaces/%s/services/%s/metadata", this.node.getNodeId(), this.ipInterface.getIpAddressAsString(), this.service.getServiceName()), 200);
         JSONAssert.assertEquals(new JSONObject(
                 "{\"offset\" : 0, \"count\" : 2, \"totalCount\" : 2, \"metaData\" : [ { \"context\" : \"c5\", \"key\" : \"k5\", \"value\" : \"v5\" }, { \"context\" : \"c6\", \"key\" : \"k6\", \"value\" : \"v6\" }] }"
         ), new JSONObject(json), false);
@@ -185,7 +184,7 @@ public class MetadataRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testServiceMetadataXml() throws Exception {
-        final String xml = requestXml("/nodes/AAA:BBB/ipinterfaces/10.10.10.10/services/ICMP/metadata", 200);
+        final String xml = requestXml(String.format("/nodes/%s/ipinterfaces/%s/services/%s/metadata", this.node.getNodeId(), this.ipInterface.getIpAddressAsString(), this.service.getServiceName()), 200);
         Assert.assertEquals(JAXB.unmarshal(new StringSource(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?><meta-data-list count=\"2\" offset=\"0\" totalCount=\"2\"><meta-data><context>c5</context><key>k5</key><value>v5</value></meta-data><meta-data><context>c6</context><key>k6</key><value>v6</value></meta-data></meta-data-list>"),
                 OnmsMetaDataList.class

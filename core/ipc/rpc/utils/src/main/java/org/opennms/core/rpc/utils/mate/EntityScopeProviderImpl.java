@@ -49,6 +49,8 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -57,6 +59,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
+
+import ch.hsr.geohash.GeoHash;
 
 public class EntityScopeProviderImpl implements EntityScopeProvider {
 
@@ -88,9 +92,9 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             }
 
             List<Scope> scopes = new ArrayList<>();
-            scopes.add(transform(node.getMetaData()));
+            scopes.add(transform(Scope.ScopeName.NODE, node.getMetaData()));
 
-            Scope nodeScope = new ObjectScope<>(node)
+            Scope nodeScope = new ObjectScope<>(Scope.ScopeName.NODE, node)
                     .map(NODE, "criteria", this::getNodeCriteria)
                     .map(NODE, "label", (n) -> Optional.ofNullable(n.getLabel()))
                     .map(NODE, "foreign-source", (n) -> Optional.ofNullable(n.getForeignSource()))
@@ -104,13 +108,13 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     .map(NODE, "sys-description", (n) -> Optional.ofNullable(n.getSysDescription()))
                     .map(NODE, "sys-object-id", (n) -> Optional.ofNullable(n.getSysObjectId()))
                     .map(NODE, "location", (n) -> Optional.ofNullable(n.getLocation().getLocationName()))
-                    .map(NODE, "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()));
+                    .map(NODE, "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()))
+                    .map(NODE, "geohash", this::getNodeGeoHash);
             scopes.add(nodeScope);
 
             if (node.getAssetRecord() != null) {
-                Scope assetScope = new ObjectScope<>(node.getAssetRecord())
+                Scope assetScope = new ObjectScope<>(Scope.ScopeName.NODE, node.getAssetRecord())
                         .map(ASSET, "category", (a) -> Optional.ofNullable(a.getCategory()))
-                        .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
                         .map(ASSET, "manufacturer", (a) -> Optional.ofNullable(a.getManufacturer()))
                         .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
                         .map(ASSET, "model-number", (a) -> Optional.ofNullable(a.getModelNumber()))
@@ -184,6 +188,43 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         }
     }
 
+    /**
+     * Computes a geohash from the lat/lon associated with the node.
+     *
+     * This function is expected to be called in the context of a transaction.
+     *
+     * @param node node from which to derive the geohash
+     * @return geohash
+     */
+    private Optional<String> getNodeGeoHash(final OnmsNode node) {
+        double latitude = Double.NaN;
+        double longitude = Double.NaN;
+
+        // Safely retrieve the geo-location from the node's asset record
+        final OnmsAssetRecord assetRecord = node.getAssetRecord();
+        if (assetRecord == null) {
+            return Optional.empty();
+        }
+        final OnmsGeolocation geolocation = assetRecord.getGeolocation();
+        if (geolocation == null) {
+            return Optional.empty();
+        }
+
+        // Safely retrieve the lat/lon value from the geo-location
+        if (geolocation.getLatitude() != null) {
+            latitude = geolocation.getLatitude();
+        }
+        if (geolocation.getLongitude() != null) {
+            longitude = geolocation.getLongitude();
+        }
+        if (!Double.isFinite(latitude) || !Double.isFinite(longitude)) {
+            return Optional.empty();
+        }
+
+        // We have a finite lat/lon, compute the geohash using maximum precision
+        return Optional.of(GeoHash.withCharacterPrecision(latitude, longitude, 12).toBase32());
+    }
+
     @Override
     public Scope getScopeForInterface(final Integer nodeId, final String ipAddress) {
         if (nodeId == null || Strings.isNullOrEmpty(ipAddress)) {
@@ -196,7 +237,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                 return EmptyScope.EMPTY;
             }
 
-            return new FallbackScope(transform(ipInterface.getMetaData()),
+            return new FallbackScope(transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()),
                     mapIpInterfaceKeys(ipInterface)
                             .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
                             .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
@@ -206,7 +247,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     }
 
     private static ObjectScope<OnmsIpInterface> mapIpInterfaceKeys(OnmsIpInterface ipInterface) {
-        return new ObjectScope<>(ipInterface)
+        return new ObjectScope<>(Scope.ScopeName.INTERFACE, ipInterface)
                 .map(INTERFACE, "hostname", (i) -> Optional.ofNullable(i.getIpHostName()))
                 .map(INTERFACE, "address", (i) -> Optional.ofNullable(i.getIpAddress()).map(InetAddressUtils::toIpAddrString))
                 .map(INTERFACE, "netmask", (i) -> Optional.ofNullable(i.getNetMask()).map(InetAddressUtils::toIpAddrString))
@@ -228,7 +269,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             ArrayList<Scope> scopes = new ArrayList<>();
 
             // SNMP interface facts
-            scopes.add(new ObjectScope<>(snmpInterface)
+            scopes.add(new ObjectScope<>(Scope.ScopeName.INTERFACE, snmpInterface)
                     .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
                     .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
                     .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
@@ -236,7 +277,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             // IP interface facts w/ meta-data extracted from IP interface
             Optional.ofNullable(snmpInterface.getPrimaryIpInterface())
                     .ifPresent(ipInterface -> {
-                        scopes.add(transform(ipInterface.getMetaData()));
+                        scopes.add(transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()));
                         scopes.add(mapIpInterfaceKeys(ipInterface));
                     });
 
@@ -256,17 +297,17 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                 return EmptyScope.EMPTY;
             }
 
-            return new FallbackScope(transform(monitoredService.getMetaData()),
-                    new ObjectScope<>(monitoredService)
+            return new FallbackScope(transform(Scope.ScopeName.SERVICE, monitoredService.getMetaData()),
+                    new ObjectScope<>(Scope.ScopeName.SERVICE, monitoredService)
                             .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName()))
             );
         });
     }
 
-    private static MapScope transform(final Collection<OnmsMetaData> metaData) {
+    private static MapScope transform(final Scope.ScopeName scopeName, final Collection<OnmsMetaData> metaData) {
         final Map<ContextKey, String> map = metaData.stream()
                 .collect(Collectors.toMap(e -> new ContextKey(e.getContext(), e.getKey()), OnmsMetaData::getValue));
-        return new MapScope(map);
+        return new MapScope(scopeName, map);
     }
 
     public void setNodeDao(NodeDao nodeDao) {

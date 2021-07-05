@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.telemetry.config.model;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,10 @@ import com.google.common.base.MoreObjects;
 @XmlRootElement(name="adapter")
 @XmlAccessorType(XmlAccessType.NONE)
 public class AdapterConfig implements AdapterDefinition {
+
+    @XmlTransient
+    private QueueConfig queue;
+
     @XmlAttribute(name="name", required=true)
     private String name;
 
@@ -60,6 +67,10 @@ public class AdapterConfig implements AdapterDefinition {
 
     @XmlElement(name="package")
     private List<PackageConfig> packages = new ArrayList<>();
+
+    public QueueConfig getQueue() {
+        return this.queue;
+    }
 
     @Override
     public String getName() {
@@ -85,6 +96,12 @@ public class AdapterConfig implements AdapterDefinition {
 
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    @XmlTransient
+    public String getFullName() {
+        return String.format("%s.%s", this.queue.getName(), this.getName());
     }
 
     public List<Parameter> getParameters() {
@@ -141,5 +158,9 @@ public class AdapterConfig implements AdapterDefinition {
                 .addValue(this.parameters)
                 .add("packages", this.packages)
                 .toString();
+    }
+
+    public void afterUnmarshal(final Unmarshaller u, final Object parent) {
+        this.queue = (QueueConfig) parent;
     }
 }

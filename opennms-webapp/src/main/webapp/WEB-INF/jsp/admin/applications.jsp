@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,7 +63,7 @@
               <div class="form-group">
                 <input type="textfield" class="form-control" placeholder="Application name" name="newApplicationName" size="40"/>
               </div>
-              <button type="submit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
+              <button type="submit" name="newApplicationSubmit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
             </form>
           </td>
         </tr>

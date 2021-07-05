@@ -1,0 +1,83 @@
+
+= JdbcCollector
+
+The JdbcCollector collects performance data via JDBC drivers.
+Attributes are retrieved using SQL queries.
+
+== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name            | `org.opennms.netmgt.collectd.JdbcCollector`
+| Package               | core
+| Supported on Minion   | `Yes` (see limitations)
+|===
+
+=== Limitations on Minion
+
+When running on Minion the data sources in `opennms-datasources.xml` cannot be referenced.
+Instead, you must set the JDBC connection settings using the service parameters.
+
+Also, the JDBC driver must be properly loaded in the Minion container (see <<minion/jdbc-driver.adoc, Install JDBC drivers in Minion>>)
+By default, only the JDBC driver for PostgreSQL is available.
+
+== Collector Parameters
+
+Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the JdbcCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                     | Required | Default value
+| `collection`           | The name of the JDBC Collection to use.                         | required | (empty)
+| `data-source`          | Use an existing datasource defined in _opennms-datasources.xml_ | optional | NO_DATASOURCE_FOUND
+| `driver`               | Driver class name                                               | optional | org.postgresql.Driver
+| `url`                  | JDBC URL                                                        | optional | jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+| `user`                 | JDBC username                                                   | optional | postgres
+| `password`             | JDBC password                                                   | optional | (empty string)
+|===
+
+== 0JDBC Collection Configuration
+
+NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+
+Define JDBC Collections in `etc/jdbc-datacollection-config.xml`.
+
+This snippet provided a collection definition named `opennms-stats`:
+
+[source, xml]
+----
+<jdbc-collection name="opennms-stats">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <queries>
+    <query name="opennmsQuery" ifType="ignore">
+      <statement data-source="opennms">
+        <queryString>select count(*) as event_count from events;</queryString>
+      </statement>
+      <columns>
+        <column name="event_count" data-source-name="event_count" alias="event_count" type="GAUGE"/>
+      </columns>
+    </query>
+  </queries>
+</jdbc-collection>
+----
+
+Once added to `etc/jdbc-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
+
+[source]
+----
+opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats data-source=opennms
+----
+
+To test this same collection on Minion you must specify the JDBC settings as service attributes, for example:
+
+[source]
+----
+opennms:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats driver=org.postgresql.Driver url=jdbc:postgresql://localhost:5432/opennms user=opennms password=opennms
+----

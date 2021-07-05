@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase(dirtiesContext=false,reuseDatabase=false)
 public class FilterFavoriteServiceIT {
 
 	@Autowired

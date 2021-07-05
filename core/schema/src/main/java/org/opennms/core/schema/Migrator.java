@@ -32,7 +32,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,23 +43,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import liquibase.database.DatabaseConnection;
-import liquibase.exception.DatabaseException;
-import liquibase.integration.spring.SpringLiquibase;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import liquibase.database.DatabaseConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * <p>Migrator class.</p>
@@ -830,6 +837,24 @@ public class Migrator {
         }
     }
 
+    public void addTimescaleDBExtension() throws MigrationException {
+        LOG.info("adding timescaledb extension in template db");
+
+        Connection c = null;
+        Statement st = null;
+
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("CREATE EXTENSION IF NOT EXISTS timescaledb;");
+        } catch (SQLException e) {
+            throw new MigrationException("could not add timescaledb extension", e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+
+    }
+
     /**
      * <p>prepareDatabase</p>
      *
@@ -942,9 +967,13 @@ public class Migrator {
         }
     }
 
-    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike) throws MigrationException, Exception, IOException {
+    public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
         validateDatabaseVersion();
 
+        // Creating extension in template1 before creating opennms DB.
+        if(timescaleDB) {
+            addTimescaleDBExtension();
+        }
         if (updateDatabase) {
             prepareDatabase();
         }

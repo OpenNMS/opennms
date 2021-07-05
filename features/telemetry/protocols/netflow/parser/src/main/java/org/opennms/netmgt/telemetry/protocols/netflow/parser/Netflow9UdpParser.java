@@ -33,6 +33,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -56,6 +57,9 @@ import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 
 public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
+
+    private final Netflow9MessageBuilder messageBuilder = new Netflow9MessageBuilder();
+
     public Netflow9UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
                              final EventForwarder eventForwarder,
@@ -63,6 +67,10 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
         super(Protocol.NETFLOW9, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public Netflow9MessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override
@@ -83,12 +91,6 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress.getAddress(), localAddress);
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException{
-        Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
-        return builder.buildData();
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {
@@ -126,5 +128,29 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
         public InetAddress getRemoteAddress() {
             return this.remoteAddress;
         }
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
     }
 }

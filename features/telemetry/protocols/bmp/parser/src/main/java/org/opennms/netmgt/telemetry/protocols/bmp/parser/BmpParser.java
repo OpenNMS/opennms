@@ -177,8 +177,8 @@ public class BmpParser implements TcpParser {
 
     @Override
     public void start(final ScheduledExecutorService executorService) {
-        this.sendHeartbeat(HeartbeatMode.STARTED);
-        this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC),
+        this.sendHeartbeat(HeartbeatMode.STARTED, InetSocketAddress.createUnresolved("0.0.0.0", 0));
+        this.heartbeatFuture = executorService.scheduleAtFixedRate(() -> this.sendHeartbeat(HeartbeatMode.PERIODIC, InetSocketAddress.createUnresolved("0.0.0.0", 0)),
                 HEARTBEAT_INTERVAL,
                 HEARTBEAT_INTERVAL,
                 TimeUnit.MILLISECONDS);
@@ -187,7 +187,7 @@ public class BmpParser implements TcpParser {
     @Override
     public void stop() {
         this.heartbeatFuture.cancel(false);
-        this.sendHeartbeat(HeartbeatMode.STOPPED);
+        this.sendHeartbeat(HeartbeatMode.STOPPED, InetSocketAddress.createUnresolved("0.0.0.0", 0));
     }
 
     @Override
@@ -306,13 +306,13 @@ public class BmpParser implements TcpParser {
             @Override
             public void active() {
                 BmpParser.this.connections.add(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE, remoteAddress);
             }
 
             @Override
             public void inactive() {
                 BmpParser.this.connections.remove(remoteAddress.getAddress());
-                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE);
+                BmpParser.this.sendHeartbeat(HeartbeatMode.CHANGE, remoteAddress);
             }
         };
     }
@@ -376,7 +376,7 @@ public class BmpParser implements TcpParser {
         }
     }
 
-    private void sendHeartbeat(final HeartbeatMode mode) {
+    private void sendHeartbeat(final HeartbeatMode mode, InetSocketAddress remoteAddress) {
         final Transport.Message.Builder message = Transport.Message.newBuilder();
 
         message.getHeartbeatBuilder()
@@ -396,7 +396,7 @@ public class BmpParser implements TcpParser {
                 }))
                 .addAllRouters(Iterables.transform(this.connections, BmpParser::address));
 
-        this.dispatcher.send(new TelemetryMessage(InetSocketAddress.createUnresolved("0.0.0.0", 0), ByteBuffer.wrap(message.build().toByteArray())));
+        this.dispatcher.send(new TelemetryMessage(remoteAddress, ByteBuffer.wrap(message.build().toByteArray())));
         BmpParser.this.recordsDispatched.mark();
     }
 

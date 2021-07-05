@@ -57,6 +57,8 @@ import io.netty.buffer.ByteBuf;
 
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
+    private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
@@ -64,6 +66,10 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
         super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+    }
+
+    public IpFixMessageBuilder getMessageBuilder() {
+        return this.messageBuilder;
     }
 
     @Override
@@ -85,12 +91,6 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress, localAddress);
-    }
-
-    @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
-        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
-        return builder.buildData();
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {
@@ -131,4 +131,27 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
 
     }
 
+    public Long getFlowActiveTimeoutFallback() {
+        return this.messageBuilder.getFlowActiveTimeoutFallback();
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.messageBuilder.getFlowInactiveTimeoutFallback();
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
+    }
 }

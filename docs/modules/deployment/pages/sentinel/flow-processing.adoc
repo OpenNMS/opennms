@@ -1,0 +1,119 @@
+[[sentinel-flow-processing]]
+= Setting up Flow Processing
+
+== Objectives
+
+* Install features to persist and network flow messages with Sentinel to Elasticsearch
+* Consume flow messages from Minions through a message broker, i.e. ActiveMQ or Apache Kafka
+* Allow Sentinel to generate and send events to {page-component-title} Core instance via message broker
+
+== Requirements
+
+* PostgreSQL, Elasticsearch and REST endpoint to {page-component-title} Core instance are running and reachable from the Sentinel node
+* Message broker (ActiveMQ or Apache Kafka) is running and reachable from the Sentinel node
+* Credentials for authentication is configured for the REST endpoint in {page-component-title} Core instance, Message broker, Elasticsearch and the PostgreSQL database
+
+NOTE: Configurations has to be made in the `etc` directory relative to the {page-component-title} Sentinel home directory.
+      Depending on your operating system the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+
+== Configure Access to PostgreSQL Database
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure access to the PostgreSQL database
+[source, karaf]
+----
+config:edit org.opennms.netmgt.distributed.datasource
+config:property-set datasource.url jdbc:postgresql://postgres-ip:postgres-port/opennms-db-name<1>
+config:property-set datasource.username my-db-user<2>
+config:property-set datasource.password my-db-password<3>
+config:property-set datasource.databaseName opennms-db-name<4>
+config:update
+----
+
+<1> JDBC connection string, replace `postres-ip`, `postgres-port` and `opennms-db-name` accordingly
+<2> PostgreSQL user name with read/write access to the `opennms-db-name` database
+<3> PostgreSQL password for `my-db-user` user
+<4> Database name of your {page-component-title} Core instance database
+
+== Configure Access to Elasticsearch
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure access to persist flows to Elasticsearch
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set elasticUrl http://elastic-ip:9200<1>
+config:property-set elasticIndexStrategy hourly<2>
+config:property-set settings.index.number_of_replicas 0<3>
+config:property-set connTimeout 30000<4>
+config:property-set readTimeout 60000<5>
+config:update
+----
+
+<1> Add here the URL to Elasticsearch cluster
+<2> Select an index strategy
+<3> Set a number of replicas, 0 is just a default and in production you should have at least 1
+<4> Timeout in milliseconds the Sentinel is waiting to connect the Elasticsearch cluster
+<5> Read timeout when data is fetched from the Elasticsearch cluster
+
+== Setting up Message Broker
+
+[{tabs}]
+====
+Kafka::
++
+--
+include::message-broker/kafka.adoc[]
+--
+
+ActiveMQ::
++
+--
+include::message-broker/activemq.adoc[]
+--
+====
+
+== Enable Flow Processing Protocols
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+[{tabs}]
+====
+Netflow v5::
++
+--
+include::flows/netflow5.adoc[]
+--
+
+Netflow v9::
++
+--
+include::flows/netflow9.adoc[]
+--
+
+sFlow::
++
+--
+include::flows/sflow.adoc[]
+--
+
+IPFIX::
++
+--
+include::flows/ipfix.adoc[]
+--
+====

@@ -134,7 +134,7 @@ public class SnmpPollInterfaceMonitor {
             }
             LOG.debug("Received admin/operational statuses for interfaces in '{}' at location {}", ipAddress, m_location);
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Exception while retrieving admin/operational statuses for interfaces in '{}' at location", ipAddress, m_location, e);
+            LOG.error("Exception while retrieving admin/operational statuses for interfaces in '{}' at location {}", ipAddress, m_location, e);
             return null;
         }
 

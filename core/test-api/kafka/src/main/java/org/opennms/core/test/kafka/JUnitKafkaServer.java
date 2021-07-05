@@ -57,6 +57,7 @@ import kafka.cluster.Broker;
 import kafka.metrics.KafkaMetricsReporter;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
+import kafka.server.metadata.MetadataBroker;
 import scala.Option;
 import scala.collection.JavaConverters;
 import scala.collection.mutable.Buffer;
@@ -127,9 +128,7 @@ public class JUnitKafkaServer extends ExternalResource {
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
 
-        final List<KafkaMetricsReporter> kmrList = new ArrayList<>();
-        final Buffer<KafkaMetricsReporter> metricsList = JavaConverters.asScalaBuffer(kmrList);
-        kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), metricsList);
+        kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), false);
         kafkaServer.startup();
         await().atMost(1, MINUTES).until(this::getBrokers, hasSize(greaterThanOrEqualTo(1)));
 
@@ -153,7 +152,7 @@ public class JUnitKafkaServer extends ExternalResource {
         }
     }
 
-    private List<Broker> getBrokers() {
+    private List<MetadataBroker> getBrokers() {
         return JavaConverters.seqAsJavaList(kafkaServer.metadataCache().getAliveBrokers().toList());
     }
 

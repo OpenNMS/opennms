@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 
 /**
  * Used to get callbacks when alarm entities are created, updated and/or deleted.
@@ -68,5 +69,7 @@ public interface AlarmEntityListener {
     void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime);
 
     void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms);
+
+    void onTicketStateChanged(OnmsAlarm alarm, TroubleTicketState previousState);
 
 }

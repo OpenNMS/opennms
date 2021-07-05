@@ -186,7 +186,7 @@ public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
         final Function<String, Consumer<Transport.StatisticsReportPacket.Gauge>> addGauge = (name) -> (gauge) -> {
             final String identifier = String.format("bmp_%s_%s", peerAddress, name);
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", name, gauge.getValue(), AttributeType.COUNTER, identifier);
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", name, gauge.getValue(), AttributeType.GAUGE, identifier);
         };
 
         Optional.ofNullable(stats.getRejected()).ifPresent(addCounter.apply("rejected"));

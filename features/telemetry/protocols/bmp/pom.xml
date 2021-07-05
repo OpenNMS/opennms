@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry</groupId>
     <artifactId>org.opennms.features.telemetry.protocols</artifactId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols</groupId>
@@ -14,5 +14,7 @@
     <module>transport</module>
     <module>parser</module>
     <module>adapter</module>
+    <module>persistence</module>
+    <module>stats</module>
   </modules>
 </project>

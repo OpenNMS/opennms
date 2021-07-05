@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -109,6 +110,18 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("start", start)
                 .put("end", end)
                 .build());
+    }
+
+    public String getSeriesFromQuery(int size, long step, long start, long end,
+                                     String groupByTerm, List<Filter> filters) {
+        return render("series_for_terms.ftl", ImmutableMap.builder()
+                                                          .put("filters", getFilterQueries(filters))
+                                                          .put("size", size)
+                                                          .put("groupByTerm", groupByTerm)
+                                                          .put("step", step)
+                                                          .put("start", start)
+                                                          .put("end", end)
+                                                          .build());
     }
 
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
@@ -209,6 +222,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    @Override
+    public String visit(final DscpFilter dscpFilter) {
+        return render("filter_term.ftl", ImmutableMap.builder()
+                .put("term", "netflow.dscp")
+                .put("values", dscpFilter.getDscp())
+                .build());
+    }
+
     public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
         return render("hostname_by_convo.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
@@ -220,6 +241,14 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         return render("hostname_by_host.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("host", host)
+                .build());
+    }
+
+    public String getAllValues(String field, int fieldSize, List<Filter> filters) {
+        return render("field_values_for_all.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("field", field)
+                .put("fieldSize", fieldSize)
                 .build());
     }
 }

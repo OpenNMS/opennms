@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,14 @@
 
 package org.opennms.smoketest;
 
+import static org.awaitility.Awaitility.await;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,13 +45,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.openqa.selenium.support.ui.ExpectedConditions.not;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 /**
  * The Test Class for the New Provisioning UI using AngularJS.
@@ -181,6 +182,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         // Save the IP interface
         clickId("save-interface", false);
         wait.until(visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
+        wait.until(invisibilityOfElementLocated(By.xpath("//div[contains(@class,'modal-backdrop')]")));
 
         // Add an asset to the node
         clickId("tab-assets", false);
@@ -224,7 +226,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         final By findModal = By.cssSelector(".modal-dialog");
         wait.until(visibilityOfElementLocated(findModal));
         // Find the 'Yes' button in the modal and click it until we can't click anymore
-        By findYesButton = By.xpath("//div/button[text()='Yes']");
+        By findYesButton = By.xpath("//div/button[text()='Synchronize']");
         final WebElement yesButton = wait.until(elementToBeClickable(findYesButton));
         await().until(() -> {
             try {

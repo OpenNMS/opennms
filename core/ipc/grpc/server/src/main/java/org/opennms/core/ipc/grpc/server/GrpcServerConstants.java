@@ -39,6 +39,6 @@ public interface GrpcServerConstants {
     String GRPC_SERVER_PORT = "port";
     String TLS_ENABLED = "tls.enabled";
     String SERVER_CERTIFICATE_FILE_PATH = "server.cert.filepath";
-    String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
     String PRIVATE_KEY_FILE_PATH = "server.private.key.filepath";
+    String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
 }

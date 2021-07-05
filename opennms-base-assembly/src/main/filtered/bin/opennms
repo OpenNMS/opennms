@@ -67,8 +67,11 @@ STATUS_WAIT=5
 # attempt we sleep for STATUS_WAIT seconds.
 STOP_TIMEOUT=10
 
-# Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=2048
+# Initial heap size (-Xms) in megabytes
+JAVA_INITIAL_HEAP_SIZE=""
+
+# Maximum heap size (-Xmx) in megabytes
+JAVA_HEAP_SIZE="2048"
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -93,7 +96,7 @@ RUNJAVA_OPTIONS=""
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
-RUNAS="root"
+RUNAS=opennms
 
 # Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
@@ -112,7 +115,7 @@ APP_PARMS_AFTER=""
 
 OVERRIDEABLE_ARRAYS=(RUNJAVA_OPTIONS ADDITIONAL_CONTROLLER_OPTIONS ADDITIONAL_MANAGER_OPTIONS APP_PARMS_CONTROLLER APP_PARMS_AFTER)
 
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "${OPENNMS_HOME}/bin/_lib.sh"
 
 # Load opennms.conf, if it exists, to override above configuration options.
@@ -150,6 +153,7 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -f  Foreground mode. Don't fork & execute.
       -n  "No execute" mode.  Don't call Java to do anything.
       -t  Test mode.  Enable JPDA on port 8001.
+      -T  Test mode.  Enable JPDA on port 8001 and suspend until a debugger is attached.
       -p  Enable TIJMP profiling
       -o  Enable OProfile profiling
       -c  Controller HTTP connection timeout in seconds.
@@ -410,7 +414,7 @@ doStart(){
 	###########################################################################
 	if [ "$TEST" -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001" >&2
-		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=${JPDA_ADDRESS},suspend=n")
+		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=${JPDA_ADDRESS},suspend=${JPDA_SUSPEND}")
 	fi
 
 	# See: http://www.khelekore.org/jmp/tijmp/
@@ -657,7 +661,7 @@ else
 	# Source function library.
 	for dir in "$INITDIR" /etc /etc/rc.d; do
 		if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" -eq 0 ]; then
-			# shellcheck disable=SC1090
+			# shellcheck disable=SC1090,SC1091
 			. "$dir/init.d/functions"
 			FUNCTIONS_LOADED=1
 		fi
@@ -679,7 +683,7 @@ fi
 
 ulimit -s $MAXIMUM_SIZE_STACK_SEGMENT > /dev/null 2>&1
 ulimit -n $MAXIMUM_FILE_DESCRIPTORS > /dev/null 2>&1
-if [ x"$(uname)" = x"Darwin" ]; then
+if [ "$(uname)" = "Darwin" ]; then
 	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
 		ulimit $flag unlimited >/dev/null 2>&1
 	done
@@ -699,8 +703,16 @@ MANAGER_OPTIONS=()
 #MANAGER_OPTIONS+=("-DOPENNMSLAUNCH")
 MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
-MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+fi
+
+if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+fi
+
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 
@@ -731,6 +743,7 @@ JAVA_MODULES=(
 )
 
 JPDA_ADDRESS="*:8001"
+JPDA_SUSPEND="n"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	# Java 8, use the endorsed directory
 	JAVA_CMD=("${JAVA_CMD[@]}" "-Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed")
@@ -822,7 +835,7 @@ SYSTEMD=0
 
 NAME="opennms"
 
-while getopts c:fsntvpoQ c; do
+while getopts c:fsntTvpoQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER+=("-t" "$OPTARG")
@@ -841,6 +854,10 @@ while getopts c:fsntvpoQ c; do
 			;;
 		t)
 			TEST=1
+			;;
+		T)
+			TEST=1
+			JPDA_SUSPEND=y
 			;;
 		p)
 			TPROFILE=1
@@ -879,20 +896,24 @@ if [ "$#" -gt 0 ]; then
 	exit 1
 fi
 
-if [ x"$SERVICE" = x"all" ]; then
+if [ "$SERVICE" = "all" ]; then
 	SERVICE=""
 fi
 
-if [ x"$VERBOSE_GC" != x"" ]; then
+if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
 myuser="$(id -u -n)"
-if [ x"$myuser" = x"$RUNAS" ]; then
+if [ "$myuser" = "$RUNAS" ]; then
 	true # all is well
 else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4	# According to LSB: 4 - user had insufficient privileges
+	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
+	echo "       in the OpenNMS systemd service." >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 if [ -e "${OPENNMS_PIDFILE}" ]; then

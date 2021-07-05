@@ -22,6 +22,7 @@ Bootstrap Theme Specific Stylesheet
 @import "~bootstrap/scss/_functions.scss";
 @import "~bootstrap/scss/_variables.scss";
 @import "severities.scss";
+@import "availability.scss";
 
 /* =1.0 Structure
 ----------------------------------------------- */
@@ -365,4 +366,8 @@ iframe.vaadin-fullscreen {
 // Use no margin for the last table in cards
 .card table:last-of-type {
   margin-bottom: 0px;
+}
+
+.opennms-bg-chromatic-black {
+     background-color: $opennms-chromatic-black;
 }

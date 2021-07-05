@@ -60,6 +60,10 @@ public class RenameUserServlet extends HttpServlet {
         String userID = request.getParameter("userID");
         String newID = request.getParameter("newID");
 
+        if (newID != null && newID.matches(".*[&<>\"`']+.*")) {
+            throw new ServletException("User ID must not contain any HTML markup.");
+        }
+
         // now save to the xml file
         try {
             UserManager userFactory = UserFactory.getInstance();

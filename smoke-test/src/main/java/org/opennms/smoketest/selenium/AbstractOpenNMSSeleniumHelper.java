@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -546,8 +546,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         getDriver().navigate().back();
     }
 
-    public void clickElement(final By by) {
-        waitUntil(new Callable<WebElement>() {
+    public WebElement clickElement(final By by) {
+        return waitUntil(new Callable<WebElement>() {
             @Override public WebElement call() throws Exception {
                 final WebElement el = getElementImmediately(by);
                 el.click();
@@ -848,7 +848,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected void sleepQuietly(final int millis) {
+    public void sleepQuietly(final int millis) {
         try {
             Thread.sleep(millis);
         } catch (final InterruptedException e) {
@@ -1140,12 +1140,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public boolean requisitionExists(final String foreignSource) {
-        LOG.debug("requisitionExists: foreignSource={}", foreignSource);
         try {
             final String foreignSourceUrlFragment = URLEncoder.encode(foreignSource, "UTF-8");
             final Integer status = doRequest(new HttpGet(getBaseUrlExternal() + "opennms/rest/requisitions/" + foreignSourceUrlFragment));
+            LOG.debug("requisitionExists: foreignSource={}, status={}", foreignSource, status);
             return status == 200;
         } catch (final IOException | InterruptedException e) {
+            LOG.debug("requisitionExists: failed:", e);
             throw new OpenNMSTestException(e);
         }
     }

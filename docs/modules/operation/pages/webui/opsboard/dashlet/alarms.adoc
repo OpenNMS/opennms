@@ -1,0 +1,21 @@
+
+= Alarms
+
+This Alarms dashlet shows a table with a short alarm description.
+
+.Information of the alarm
+[options="header, autowidth"]
+|===
+| Field        | Description
+| Time       | Absolute time since the alarm appeared
+| Node label | Node label of the node where the alarm occurred
+| UEI        | {page-component-title} Unique event idntifier for this alarm
+|===
+
+Configure the Alarms dashlet with the following parameters.
+
+[options="autowidth"]
+|===
+|Boost support | <<webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+| Configuration | <<webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
+|===

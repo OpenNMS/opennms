@@ -1,0 +1,57 @@
+.Install gnupg and add OpenNMS repository GPG key
+[source, console]
+----
+sudo apt -y install gnupg ca-certificates
+sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Add apt repository
+[source, console]
+----
+sudo apt -y install software-properties-common
+sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
+sudo apt update
+----
+
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
+
+.Install the {page-component-title} Minion package
+[source, console]
+----
+sudo apt -y install opennms-minion
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+     For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to performing an upgrade.
+
+[source, console]
+----
+sudo apt-mark hold opennms-minion
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+sudo apt -y install tree
+tree /usr/share/minion -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+/usr/share/minion
+├── bin
+├── data -> /var/lib/minion/data
+├── deploy -> /var/lib/minion/deploy
+├── etc -> /etc/minion
+├── lib
+├── repositories
+└── system
+----
+
+.Enable {page-component-title} Minion on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now minion
+----

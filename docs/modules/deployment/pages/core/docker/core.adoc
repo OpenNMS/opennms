@@ -1,0 +1,64 @@
+:docker-version-tag: bleeding
+ifeval::["{prerelease}" == "false"]
+:docker-version-tag: {page-component-version}
+endif::[]
+
+.Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
+[source, console]
+----
+mkdir horizon
+cd horizon
+vi docker-compose.yml
+----
+
+[source, docker-compose.yml]
+[subs="verbatim,attributes"]
+----
+---
+version: '3'
+
+volumes:
+  data-opennms: {}<1>
+
+services:
+  horizon:<2>
+    image: opennms/horizon:{docker-version-tag}<3>
+    container_name: horizon
+    environment:<4>
+      TZ: 'America/New_York'
+      POSTGRES_HOST: 'my-database-host'<5>
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'my-postgres-password'
+      OPENNMS_DBNAME: 'opennms-core-db'
+      OPENNMS_DBUSER: 'opennms'
+      OPENNMS_DBPASS: 'my-opennms-db-password'
+    volumes:<6>
+      - data-opennms:/opennms-data
+      - ./etc:/opt/opennms/etc<7>
+    command: ["-s"]
+    ports:<8>
+      - '8980:8980/tcp'
+      - '8101:8101/tcp'
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', '-I', 'http://localhost:8980/opennms/login.jsp' ]<9>
+      interval: 1m
+      timeout: 5s
+      retries: 3
+----
+
+<1> Volume definitions to persist the {page-component-title} Core data; for example, RRD files and PDF reports.
+<2> The {page-component-title} Core instance service is named `horizon` with a friendly `container_name`.
+<3> Image reference using the {page-component-title} container image with the Core services.
+<4> Set the time zone and the postgres credentials to initialize the database that the {page-component-title} Core instance uses. To list all available time zones, use `timedatectl list-timezones`.
+<5> Set the host or IP address of the host that runs the PostgreSQL database.
+<6> Persist performance data PDF reports in a volume.
+<7> Mount the volumes for data persistence and bind mount the configuration in a local directory.
+<8> Publish ports to access the web UI and the Karaf shell.
+<9> Run an internal health check against the web UI to verify service health status.
+
+.Validate your Docker Compose file
+[source, console]
+----
+docker-compose config -q
+----

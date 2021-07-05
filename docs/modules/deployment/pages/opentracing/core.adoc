@@ -1,0 +1,45 @@
+Enable tracing with Jaeger on Core instance by installing the `opennms-core-tracing-jaeger` feature and creating a configuration file with the Jaeger specific settings.
+
+NOTE: Configurations has to be made in the `etc` directory relative to the {page-component-title} Core home directory.
+      Depending on your operating system the home directory is in `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+
+.Create a file to load the tracing feature on startup
+[source, console]
+----
+sudo vi etc/featuresBoot.d/jaeger.boot
+----
+
+.Add the Jaeger feature and save the file
+[source, jaeger.boot]
+----
+opennms-core-tracing-jaeger
+----
+
+NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+      To disable tracing with Jaeger, remove the reference from the features boot file and restart the Core.
+
+.Create a configuration file for tracing settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/jaeger.properties
+----
+
+.Configure tracing with Jaeger
+[source, jaeger.properties]
+----
+org.opennms.core.tracer=jaeger<1>
+JAEGER_AGENT_HOST=my-jaeger-host<2>
+----
+
+<1> Set Jaeger as the tracing implementation
+<2> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+
+TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
+
+NOTE: The Jaeger service name is the `Instance-ID` of the Core instance.
+
+.Restart {page-component-title} Core instance to apply the changes
+[source, console]
+----
+sudo systemctl restart opennms
+----

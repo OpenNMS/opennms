@@ -39,6 +39,10 @@
 		org.opennms.netmgt.config.*
 	"
 %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 
 <%!
     public void init() throws ServletException {
@@ -65,6 +69,15 @@
         if(varbind.getVbvalue()!=null) {
          	varbindValue=varbind.getVbvalue();
         }
+    }
+    final int paramSize = newNotice.getParameters().size();
+    String parameterName[] = new String[paramSize];
+    String parameterValue[] = new String[paramSize];
+    int p=0;
+    for(final Parameter parameter : newNotice.getParameters()) {
+        parameterName[p] = parameter.getName();
+        parameterValue[p] = parameter.getValue();
+        p++;
     }
 %>
 
@@ -116,7 +129,33 @@
   
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
+<script type="text/javascript">
+    // add row
+    $(document).ready(function() {
+        $("#addRow").click(function () {
+            var html = '';
+            html+='<div class="row" id="inputFormRow">';
+            html+='  <div class="col-md-5">';
+            html+='    <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value=""/>';
+            html+='  </div>';
+            html+='  <div class="col-md-5">';
+            html+='    <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value=""/>';
+            html+='  </div>';
+            html+='  <div class="col-md-2">';
+            html+='    <label>&nbsp;&nbsp;&nbsp;</label><button class="form-control" id="removeRow" type="button" class="btn btn-danger">Remove</button>';
+            html+='  </div>';
+            html+='</div>';
+            $('#newRow').append(html);
+        });
+    });
+
+    // remove row
+    $(document).on('click', '#removeRow', function () {
+        $(this).closest('#inputFormRow').remove();
+    });
+</script>
+
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + WebSecurityUtils.sanitizeString(newNotice.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="info"
       action="admin/notification/noticeWizard/notificationWizard">
@@ -135,7 +174,7 @@
             <label>Name:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="name" value='<%=(newNotice.getName()!=null ? newNotice.getName() : "")%>'/>
+            <input type="text" class="form-control" name="name" value='<%=(newNotice.getName()!=null ? WebSecurityUtils.sanitizeString(newNotice.getName()) : "")%>'/>
           </td>
         </tr>
         <tr>
@@ -143,57 +182,87 @@
             <label>Description:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="description" value='<%=newNotice.getDescription().orElse("")%>'/>
+            <input type="text" class="form-control" name="description" value='<%=WebSecurityUtils.sanitizeString(newNotice.getDescription().orElse(""))%>'/>
           </td>
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            <label>Parameter:</label>
+            <label>Var-Bind:</label>
           </td>
           <td valign="top" align="left">
             <div class="row">
               <div class="col-md-6">
-                <label>Name:</label> <input type="text" class="form-control" size="30" name="varbindName" value='<%=varbindName%>'/>
+                <label>Name:</label> <input type="text" class="form-control" size="30" name="varbindName" value='<%=WebSecurityUtils.sanitizeString(varbindName)%>'/>
               </div>
               <div class="col-md-6">
-                <label>Value:</label> <input class="form-control" type="text" size="30" name="varbindValue" value='<%=varbindValue%>'/>
+                <label>Value:</label> <input class="form-control" type="text" size="30" name="varbindValue" value='<%=WebSecurityUtils.sanitizeString(varbindValue)%>'/>
               </div>
             </div>
           </td>
         </tr>
-        <tr>
+
+          <tr>
+              <td width="10%" valign="top" align="left">
+                  <label>Parameter:</label>
+              </td>
+              <td valign="top" align="left">
+                  <div id="newRow">
+                      <%
+                          for(int i=0;i<parameterName.length;i++) {
+                            %>
+                              <div class="row" id="inputFormRow">
+                                <div class="col-md-5">
+                                  <label>Name:</label> <input type="text" class="form-control" size="30" name="parameterName" value='<%=WebSecurityUtils.sanitizeString(parameterName[i])%>'/>
+                                </div>
+                                <div class="col-md-5">
+                                  <label>Value:</label> <input class="form-control" type="text" size="30" name="parameterValue" value='<%=WebSecurityUtils.sanitizeString(parameterValue[i])%>'/>
+                                </div>
+                                <div class="col-md-2">
+                                  <label>&nbsp;&nbsp;&nbsp;</label><button class="form-control" id="removeRow" type="button" class="btn btn-danger">Remove</button>
+                                </div>
+                              </div>
+                            <%
+                          }
+                      %>
+                  </div>
+                  <br/>
+                  <button id="addRow" type="button" class="btn btn-secondary">Add Parameter</button>
+              </td>
+          </tr>
+
+          <tr>
           <td width="10%" valign="top" align="left">
             <label>Choose A Path:</label>
           </td>
           <td valign="top" align="left">
             <%=buildPathSelect(newNotice.getDestinationPath())%>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Text Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? newNotice.getTextMessage() : "")%></textarea>
+            <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? WebSecurityUtils.sanitizeString(newNotice.getTextMessage()) : "")%></textarea>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Short Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="1" class="form-control" name="numMsg"><%=newNotice.getNumericMessage().orElse("")%></textarea>
+            <textarea rows="1" class="form-control" name="numMsg"><%=WebSecurityUtils.sanitizeString(newNotice.getNumericMessage().orElse(""))%></textarea>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Email Subject:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" class="form-control" name="subject" value='<%=newNotice.getSubject().orElse("")%>'/>
+            <input type="text" class="form-control" name="subject" value='<%=WebSecurityUtils.sanitizeString(newNotice.getSubject().orElse(""))%>'/>
           </td>
-         </tr>
-         <tr>
+        </tr>
+        <tr>
           <td width="10%" valign="top" align="left">
             <label>Special Values:</label>
           </td>
@@ -205,31 +274,31 @@
               <tr>
                 <td>%noticeid% = Notification ID number</td>
                 <td>%time% = Time sent</td>
-                <td>%severity% = Event severity</td>                          
+                <td>%severity% = Event severity</td>
               </tr>
               <tr>
                 <td>%nodelabel% = May be IP address or empty</td>
+                <td>%nodeid% = Database ID of node or empty</td>
+                <td>%foreignid% = Foreign Source ID of node or empty</td>
+              </tr>
+              <tr>
+                <td>%eventid% = Event ID, may be empty</td>
                 <td>%interface% = IP address, may be empty</td>
                 <td>%service% = Service name, may be empty</td>
               </tr>
               <tr>
-				<td>%eventid% = Event ID, may be empty</td>
-				<td>%parm[a_parm_name]% = Value of a named event parameter</td>
-				<td>%parm[#N]% = Value of the event parameter at index N</td>
-			  </tr>
-			  <tr>
-			    <td>%ifalias% = SNMP ifAlias of affected interface</td>
-			    <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
-               <td>%operinstruct% = Operator instructions from event definition</td>		     
-			  </tr>
+                <td>%ifalias% = SNMP ifAlias of affected interface</td>
+                <td>%parm[a_parm_name]% = Value of a named event parameter</td>
+                <td>%parm[#N]% = Value of the event parameter at index N</td>
+              </tr>
               <tr>
-                  <td>\${context:key|…} = node / interface / service meta-data</td>
-                  <td></td>
-                  <td></td>
+                <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
+                <td>%operinstruct% = Operator instructions from event definition</td>
+                <td>\${context:key|…} = node / interface / service meta-data</td>
               </tr>
             </table>
           </td>
-         </tr>
+        </tr>
       </table>
         <div class="card-footer">
               <a class="btn btn-secondary" href="javascript:finish()">Finish</a>

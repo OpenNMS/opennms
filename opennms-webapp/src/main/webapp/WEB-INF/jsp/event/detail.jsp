@@ -41,6 +41,7 @@
 
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
 <%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.event.EventIdNotFoundException"%>
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.springframework.util.Assert"%>
 
@@ -70,6 +71,9 @@
 	    parms = event.getParms();
 	}
 
+    if (event == null) {
+      throw new EventIdNotFoundException("Event not found in database.", (String) req.getAttribute("eventId"));
+    }
 %>
 
 <% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
@@ -103,7 +107,7 @@
           <th class="col-1">Node</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
-              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
+              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>

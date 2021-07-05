@@ -1,0 +1,33 @@
+name: horizon
+version: '29.0.0-SNAPSHOT'
+title: Horizon
+prerelease: true
+asciidoc:
+  attributes:
+    experimental: true
+    prerelease: true
+    source-language: asciidoc@
+    xrefstyle: short@
+    compatible-centos7: '7.x'
+    compatible-centos8: '8.x'
+    compatible-rhel7: '7.x'
+    compatible-rhel8: '8.x'
+    compatible-ubuntu: '20.04 LTS'
+    compatible-debian: '9 - 10'
+    compatible-opennms-helm: '3+'
+    compatible-oia: '0.2.x'
+    compatible-cassandra: '3.11.x'
+    compatible-elasticsearch: '6.7.0 - 7.6.2'
+    compatible-javajdk: 'OpenJDK 8, OpenJDK 11'
+    compatible-kafka: '1.x - 2.x'
+    compatible-postgresql: '10.x - 13.x'
+    compatible-rrdtool: '1.7.x'
+    jasperreportsversion: '6.3.0'
+    postgresql-version: '13'
+nav:
+- modules/ROOT/index.adoc
+- modules/releasenotes/nav.adoc
+- modules/deployment/nav.adoc
+- modules/operation/nav.adoc
+- modules/development/nav.adoc
+- modules/reference/nav.adoc

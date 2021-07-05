@@ -41,6 +41,8 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -172,8 +174,13 @@ public class ClockSkewTest {
         }
 
         @Override
-        protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
-            return new byte[0];
+        protected MessageBuilder getMessageBuilder() {
+            return new MessageBuilder() {
+                @Override
+                public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
+                    return FlowMessage.newBuilder();
+                }
+            };
         }
     }
 }

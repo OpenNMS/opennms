@@ -32,7 +32,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -76,8 +78,11 @@ public class WalkCommand extends SnmpRequestCommand implements Action {
                         System.out.println(String.format("[%s].[%s] = %s", res.getBase(), res.getInstance(), res.getValue()));
                     });
                 break;
-            } catch (Exception e) {
-                System.out.println(String.format("%s: %s", m_host, e.getClass().getName()));
+            } catch (TimeoutException e) {
+                //pass
+                System.out.print(".");
+            } catch (InterruptedException | ExecutionException e) {
+                System.out.println(String.format("\n %s: %s", m_host, e.getMessage()));
                 break;
             }
         }

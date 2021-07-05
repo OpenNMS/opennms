@@ -71,6 +71,11 @@ public class Parameter implements Serializable {
         m_value = value == null? null : value.intern();
     }
 
+    public Parameter(final String key, final String value) {
+        this.m_key = key;
+        this.m_value = value;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

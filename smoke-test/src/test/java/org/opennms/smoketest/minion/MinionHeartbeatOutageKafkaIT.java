@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,9 +27,9 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This test starts up Minion with the Apache Kafka sink and makes sure
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Seth
  */
+@Category(MinionTests.class)
 public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
 
     @Override

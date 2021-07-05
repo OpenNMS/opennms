@@ -163,4 +163,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         return null;
     }
 
+    public static void setFirstCall(boolean firstCall) {
+        MockSnmpStrategy.firstCall = firstCall;
+    }
 }

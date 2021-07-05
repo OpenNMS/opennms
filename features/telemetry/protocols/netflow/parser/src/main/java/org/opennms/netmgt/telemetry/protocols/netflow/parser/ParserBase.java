@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,8 +55,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +66,11 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
@@ -128,6 +133,8 @@ public abstract class ParserBase implements Parser {
 
     private long illegalFlowEventRate = 0;
 
+    private int sequenceNumberPatience = 32;
+
     private boolean dnsLookupsEnabled = true;
 
     private LoadingCache<InetAddress, Optional<Instant>> clockSkewEventCache;
@@ -179,6 +186,8 @@ public abstract class ParserBase implements Parser {
         setIllegalFlowEventRate(DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS);
         setThreads(DEFAULT_NUM_THREADS);
     }
+
+    protected abstract MessageBuilder getMessageBuilder();
 
     @Override
     public void start(ScheduledExecutorService executorService) {
@@ -250,6 +259,14 @@ public abstract class ParserBase implements Parser {
         return illegalFlowEventRate;
     }
 
+    public int getSequenceNumberPatience() {
+        return this.sequenceNumberPatience;
+    }
+
+    public void setSequenceNumberPatience(final int sequenceNumberPatience) {
+        this.sequenceNumberPatience = sequenceNumberPatience;
+    }
+
     public boolean getDnsLookupsEnabled() {
         return dnsLookupsEnabled;
     }
@@ -304,10 +321,16 @@ public abstract class ParserBase implements Parser {
                     // if we can't keep up
                     final Runnable dispatch = () -> {
                         // Let's serialize
-                        byte[] flowMessage = new byte[0];
+                        final FlowMessage.Builder flowMessage;
                         try {
-                            flowMessage = buildMessage(record, enrichment);
-                        } catch (IllegalFlowException e) {
+                            flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
+                        } catch (final  Exception e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        // Check if the flow is valid (and maybe correct it)
+                        final List<String> corrections = this.correctFlow(flowMessage);
+                        if (!corrections.isEmpty()) {
                             this.invalidFlows.mark();
 
                             final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(session.getRemoteAddress());
@@ -323,20 +346,19 @@ public abstract class ParserBase implements Parser {
                                         .setDistPoller(identity.getId())
                                         .addParam("monitoringSystemId", identity.getId())
                                         .addParam("monitoringSystemLocation", identity.getLocation())
-                                        .setParam("cause", e.getMessage())
+                                        .setParam("cause", Joiner.on('\n').join(corrections))
                                         .setParam("protocol", protocol.name())
                                         .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
                                         .getEvent());
 
-                                LOG.warn("Illegal flow detected from exporter {}", session.getRemoteAddress().getAddress(), e);
+                                for (final String correction : corrections) {
+                                    LOG.warn("Illegal flow detected from exporter {}: \n{}", session.getRemoteAddress().getAddress(), correction);
+                                }
                             }
-
-                            future.complete(null);
-                            return;
                         }
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage));
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
 
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b, exx) -> {
@@ -389,8 +411,6 @@ public abstract class ParserBase implements Parser {
         return future;
     }
 
-    protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException;
-
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
             long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
@@ -418,4 +438,31 @@ public abstract class ParserBase implements Parser {
         }
     }
 
+    private List<String> correctFlow(final FlowMessage.Builder flow) {
+        final List<String> corrections = Lists.newArrayList();
+
+        if (flow.getFirstSwitched().getValue() > flow.getLastSwitched().getValue()) {
+            corrections.add(String.format("Malformed flow: lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
+                                  flow.getSrcAddress(),
+                                  flow.getDstAddress(),
+                                  flow.getFirstSwitched().getValue(),
+                                  flow.getLastSwitched().getValue(),
+                                  flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
+
+            // Re-calculate a (somewhat) valid timout from the flow timestamps
+            final long timeout = (flow.hasDeltaSwitched() && flow.getDeltaSwitched().getValue() != flow.getFirstSwitched().getValue())
+                    ? (flow.getLastSwitched().getValue() - flow.getDeltaSwitched().getValue())
+                    : 0L;
+
+            flow.getLastSwitchedBuilder().setValue(flow.getTimestamp());
+            flow.getFirstSwitchedBuilder().setValue(flow.getTimestamp() - timeout);
+            flow.getDeltaSwitchedBuilder().setValue(flow.getTimestamp() - timeout);
+        }
+
+        return corrections;
+    }
+
+    protected SequenceNumberTracker sequenceNumberTracker() {
+        return new SequenceNumberTracker(this.sequenceNumberPatience);
+    }
 }

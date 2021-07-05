@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
+import java.lang.NullPointerException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,8 +43,10 @@ import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.selenium.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -80,7 +83,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         testBoard.preview();
 
         try {
-            setImplicitWait(1, TimeUnit.SECONDS);
+            setImplicitWait(5, TimeUnit.SECONDS);
             new WebDriverWait(driver, 5).until(not(pageContainsText("Access denied")));
             new WebDriverWait(driver, 5).until(pageContainsText("Topology"));
 
@@ -88,6 +91,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
             // This method can throw StateElementReference exceptions, so we try multiple times
             await().atMost(1, TimeUnit.MINUTES)
                     .ignoreExceptionsInstanceOf(WebDriverException.class)
+                    .ignoreExceptionsInstanceOf(NullPointerException.class)
                     .until(() -> driver.switchTo().parentFrame()
                             .switchTo().frame(findElementByXpath("//div[@id = 'opsboard-topology-iframe']//iframe"))
                             .findElement(By.id("header")).isDisplayed(), equalTo(false));
@@ -163,14 +167,13 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
     }
 
     private static class OpsBoardAdminPage extends AbstractPage {
-
         OpsBoardAdminPage(AbstractOpenNMSSeleniumHelper testCase) {
             super(testCase);
         }
 
         public OpsBoardAdminPage open() {
             get("/admin/wallboardConfig.jsp");
-            getDriver().switchTo().frame(findElement(By.name("wallboard-config")));
+            getDriver().switchTo().frame(findElementByName("wallboard-config"));
             return this;
         }
 
@@ -183,7 +186,20 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         public OpsBoardAdminPage removeAll() {
             List<WebElement> elements = findElements(By.xpath("//*[@class='v-button-caption' and contains(text(), 'Remove')]"));
             while(elements.size() > 0) {
-                elements.get(0).click();
+                final WebElement element = elements.get(0);
+                element.click();
+                this.testCase.waitUntil(new ExpectedCondition<Boolean>() {
+                    @Override
+                    public Boolean apply(final WebDriver driver) {
+                        try {
+                            element.isEnabled();
+                        } catch (final Exception e) {
+                            // if it throws an exception, the element is gone; move on to the next one
+                            return true;
+                        }
+                        return false;
+                    }
+                });
                 elements = findElements(By.xpath("//*[@class='v-button-caption' and contains(text(), 'Remove')]"));
             }
             return this;
@@ -191,15 +207,14 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
         public OpsBoardAdminEditorPage createNew(String name) {
             // Create new
-            getDriver().findElement(By.xpath("//div[@class='v-captiontext' and contains(text(), '+')]")).click();
+            findElementByXpath("//div[@class='v-captiontext' and contains(text(), '+')]").click();
             waitUntil(pageContainsText("New Ops Board"));
 
             // Set name
-            final WebElement element = findElement(By.id("newopsboard.name"));
-            element.sendKeys(name);
+            enterText(By.id("newopsboard.name"), name);
 
             // click save
-            findElement(By.id("newopsboard.save")).click();
+            clickElement(By.id("newopsboard.save"));
             return new OpsBoardAdminEditorPage(testCase);
         }
     }
@@ -210,13 +225,14 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardAdminEditorPage addDashlet(DashletConfig dashletConfig) {
-            findElement(By.id("opsboard.action.addDashlet")).click();
+            clickElement(By.id("opsboard.action.addDashlet"));
             if (dashletConfig.getDuration() != null) {
-                findElement(By.id("opsboard.duration")).clear();
-                findElement(By.id("opsboard.duration")).sendKeys("" + dashletConfig.getDuration());
+                final By id = By.id("opsboard.duration");
+                findElement(id).clear();
+                enterText(id, "" + dashletConfig.getDuration());
             }
             if (dashletConfig.getTitle() != null) {
-                findElement(By.id("opsboard.title")).sendKeys(dashletConfig.getTitle());
+                enterText(By.id("opsboard.title"), dashletConfig.getTitle());
             }
             if (dashletConfig.getType() != null) {
                 new Select(findElement(By.xpath("//*[@id='opsboard.type']//select"))).selectByVisibleText(dashletConfig.getType());
@@ -235,7 +251,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardPreviewPage open() {
-            findElement(By.id("opsboard.action.preview")).click();
+            clickElement(By.id("opsboard.action.preview"));
 
             waitUntil(driver -> driver.findElements(By.tagName("iframe")).size() == 2);
             getDriver().switchTo().frame(1);
@@ -243,7 +259,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         }
 
         public OpsBoardAdminEditorPage close() {
-            findElement(By.id("//span[@class='v-button-caption' and contains(text(), 'Close')]")).click();
+            clickElement(By.id("//span[@class='v-button-caption' and contains(text(), 'Close')]"));
             getDriver().switchTo().parentFrame();
             return new OpsBoardAdminEditorPage(testCase);
         }

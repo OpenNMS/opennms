@@ -1,0 +1,63 @@
+.Connect to the Karaf shell with user `admin` and password `admin`
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure REST endpoints, ActiveMQ and remote location name
+[source, karaf]
+----
+config:edit org.opennms.minion.controller<1>
+config:property-set location my-location<2>
+config:property-set http-url http://core-instance-ip:8980/opennms<3>
+config:property-set broker-url failover:tcp://core-instance-ip:61616<4>
+config:update<5>
+----
+<1> Edit the Minion configuration.
+<2> Replace `my-location` with a location name that represents the remote location where the Minion is running.
+<3> Replace the REST endpoint URL that goes to your {page-component-title} Core instance.
+<4> Replace the broker URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
+<5> Save the configuration.
+
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`
+
+.Configure the credentials and exit Karaf shell
+[source, karaf]
+----
+opennms:scv-set opennms.http my-minion-user my-minion-password<1>
+opennms:scv-set opennms.broker my-minion-user my-minion-password<2>
+----
+<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
+<2> Set the credentials for the ActiveMQ message broker.
+
+The credentials are encrypted on disk in `etc/scv.jce`.
+
+Exit the Karaf shell with kbd:[Ctrl+d]
+
+.Restart the Minion to apply the configuration
+[source,console]
+----
+sudo systemctl restart minion
+----
+
+.Verify the configuration using the health check in the Karaf shell
+[source,console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Run the health check to verify connectivity
+[source,karaf]
+----
+opennms:health-check
+----
+
+.The result should show success for each component
+[source,output]
+----
+Connecting to OpenNMS ReST API   [ Success  ]
+Verifying installed bundles      [ Success  ]
+Connecting to JMS Broker         [ Success  ]
+=> Everything is awesome
+----

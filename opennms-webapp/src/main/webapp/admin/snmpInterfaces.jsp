@@ -29,9 +29,10 @@
 --%>
 
 <%@page language="java"	contentType="text/html" session="true"%>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%
-  String nodeId = request.getParameter("node");
-  String nodeLabel = request.getParameter("nodelabel");
+  String nodeId = WebSecurityUtils.sanitizeString(request.getParameter("node"));
+  String nodeLabel = WebSecurityUtils.sanitizeString(request.getParameter("nodelabel"));
 
   if (nodeId == null) {
     throw new org.opennms.web.servlet.MissingParameterException("node");

@@ -43,6 +43,7 @@
                 <value>org.opennms.netmgt.enlinkd</value>
                 <value>org.opennms.netmgt.endpoints</value>
                 <value>org.opennms.netmgt.graph</value>
+                <value>org.opennms.netmgt.telemetry.protocols.bmp.persistence.api</value>
             </list>
         </property>
         <!--  property name="schemaUpdate" value="true">

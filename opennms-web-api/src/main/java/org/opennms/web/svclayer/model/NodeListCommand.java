@@ -59,6 +59,7 @@ public class NodeListCommand {
     private String m_nodeId;
     private String m_monitoringLocation;
     private Boolean m_flows;
+    private String m_topology;
 
     public void setNodeId(String nodeId) {
         m_nodeId = nodeId;
@@ -270,5 +271,17 @@ public class NodeListCommand {
 
     public boolean hasFlows() {
         return m_flows != null;
+    }
+
+    public String getTopology() {
+        return m_topology;
+    }
+
+    public boolean hasTopology() {
+        return m_topology != null;
+    }
+
+    public void setTopology(String topology) {
+        this.m_topology = topology;
     }
 }

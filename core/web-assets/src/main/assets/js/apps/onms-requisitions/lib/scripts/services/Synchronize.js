@@ -46,46 +46,44 @@ require('./Requisitions');
           RequisitionsService.startTiming();
           RequisitionsService.synchronizeRequisition(requisition.foreignSource, rescanExisting).then(
             function() { // success
-              growl.success('The import operation has been started for ' + requisition.foreignSource + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
+              growl.success('The import operation has been started for ' + _.escape(requisition.foreignSource) + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
               requisition.setDeployed(true);
             },
             errorHandler
           );
         };
-        bootbox.dialog({
-          message: 'Do you want to rescan existing nodes ?<br/><hr/>' +
-                   'Choose <b>yes</b> to synchronize all the nodes with the database executing the scan phase.<br/>' +
-                   'Choose <b>no</b> to synchronize only the new and deleted nodes with the database executing the scan phase only for new nodes.<br/>' +
-                   'Choose <b>dbonly</b> to synchronize all the nodes with the database skipping the scan phase.<br/>' +
-                   'Choose <b>cancel</b> to abort the request.',
-          title: 'Synchronize Requisition ' + requisition.foreignSource,
-          buttons: {
-            fullSync: {
-              label: 'Yes',
-              className: 'btn-primary',
-              callback: function() {
-                doSynchronize(requisition, 'true');
-              }
+        bootbox.prompt({
+            title: 'Synchronize Requisition  ' +  _.escape(requisition.foreignSource),
+            message: '<p><b>Choose a scan option: </b></p>',
+            inputType: 'radio',
+            inputOptions: [
+            {
+                text: 'Scan all nodes',
+                value: 'true',
             },
-            dbOnlySync: {
-              label: 'DB Only',
-              className: 'btn-secondary',
-              callback: function() {
-                doSynchronize(requisition, 'dbonly');
-              }
+            {
+                text: 'Scan added nodes only',
+                value: 'false',
             },
-            ignoreExistingSync: {
-              label: 'No',
-              className: 'btn-secondary',
-              callback: function() {
-                doSynchronize(requisition, 'false');
-              }
-            },
-            main: {
-              label: 'Cancel',
-              className: 'btn-secondary'
+            {
+                text: 'No scanning',
+                value: 'dbonly',
             }
-          }
+            ],
+            buttons: {
+                    confirm: {
+                        label: 'Synchronize',
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                    }
+                },
+            swapButtonOrder: 'true',
+            callback: function (result) {
+                if (result !== null) {
+                    doSynchronize(requisition, result);
+                }
+            }
         });
       }
     };

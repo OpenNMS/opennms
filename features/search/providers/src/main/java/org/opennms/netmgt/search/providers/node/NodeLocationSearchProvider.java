@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Contexts;
@@ -49,9 +50,11 @@ import org.opennms.netmgt.search.providers.SearchResultItemBuilder;
 public class NodeLocationSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public NodeLocationSearchProvider(final NodeDao nodeDao) {
+    public NodeLocationSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class NodeLocationSearchProvider implements SearchProvider {
         final int totalCount = nodeDao.countMatching(criteriaBuilder.toCriteria());
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria());
         final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
-            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
             searchResultItem.addMatch(new Match("location.name", "Node Location", node.getLocation().getLocationName()));
             return searchResultItem;
         }).collect(Collectors.toList());

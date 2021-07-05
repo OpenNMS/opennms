@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,12 +31,16 @@ package org.opennms.smoketest.graph;
 import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -47,12 +51,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
@@ -61,9 +65,9 @@ import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -72,7 +76,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
-
+    private static final Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
 
     private final RestClient restClient = stack.opennms().getRestClient();
@@ -89,12 +93,38 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Ensure no graph exists
         graphmlDocument = new GraphmlDocument(CONTAINER_ID, "/topology/graphml/test-topology.xml");
         graphmlDocument.delete(restClient);
+
+        cleanUpApplications();
     }
 
     @After
     public void tearDown() {
         RestAssured.reset();
         graphmlDocument.delete(restClient);
+
+        cleanUpRequisition();
+        cleanUpApplications();
+    }
+
+    private void cleanUpApplications() {
+        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
+        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
+        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class);
+
+        try {
+            applicationDao.findAll().forEach(applicationDao::delete);
+            applicationDao.flush();
+            outageDao.findAll().forEach(outageDao::delete);
+            outageDao.flush();
+        } catch (final Exception e) {
+            LOG.warn("Failed to delete existing application-related data.", e);
+
+        }
+    }
+
+    private void cleanUpRequisition() {
+        deleteExistingRequisition(OpenNMSSeleniumIT.REQUISITION_NAME);
+        deleteExistingForeignSource(OpenNMSSeleniumIT.REQUISITION_NAME);
     }
 
     @Test
@@ -112,41 +142,41 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().accept(ContentType.JSON).get()
                 .then().statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].id", Matchers.is("application"))
-                .content("[0].label", Matchers.is("Application Graph"))
-                .content("[0].graphs.size()", Matchers.is(1))
-                .content("[0].graphs[0].namespace", Matchers.is("application"))
-                .content("[0].graphs[0].label", Matchers.is("Application Graph"))
-                .content("[0].graphs[0].description", Matchers.is("Displays all defined applications and their calculated states."))
+                .body("[0].id", Matchers.is("application"))
+                .body("[0].label", Matchers.is("Application Graph"))
+                .body("[0].graphs.size()", Matchers.is(1))
+                .body("[0].graphs[0].namespace", Matchers.is("application"))
+                .body("[0].graphs[0].label", Matchers.is("Application Graph"))
+                .body("[0].graphs[0].description", Matchers.is("Displays all defined applications and their calculated states."))
 
-                .content("[1].id", Matchers.is("bsm"))
-                .content("[1].label", Matchers.is("Business Service Graph"))
-                .content("[1].graphs.size()", Matchers.is(1))
-                .content("[1].graphs[0].namespace", Matchers.is("bsm"))
-                .content("[1].graphs[0].label", Matchers.is("Business Service Graph"))
-                .content("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
+                .body("[1].id", Matchers.is("bsm"))
+                .body("[1].label", Matchers.is("Business Service Graph"))
+                .body("[1].graphs.size()", Matchers.is(1))
+                .body("[1].graphs[0].namespace", Matchers.is("bsm"))
+                .body("[1].graphs[0].label", Matchers.is("Business Service Graph"))
+                .body("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
-                .content("[2].id", Matchers.is("nodes"))
-                .content("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                .content("[2].graphs.size()", Matchers.is(1))
-                .content("[2].graphs[0].namespace", Matchers.is("nodes"))
-                .content("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
-                .content("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+                .body("[2].id", Matchers.is("nodes"))
+                .body("[2].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs.size()", Matchers.is(1))
+                .body("[2].graphs[0].namespace", Matchers.is("nodes"))
+                .body("[2].graphs[0].label", Matchers.is("Enhanced Linkd Topology Provider"))
+                .body("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
 
-                .content("[3].id", Matchers.is(CONTAINER_ID))
-                .content("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
-                .content("[3].graphs.size()", Matchers.is(2))
-                .content("[3].graphs[0].namespace", Matchers.is("acme:markets"))
-                .content("[3].graphs[0].label", Matchers.is("Markets"))
-                .content("[3].graphs[0].description", Matchers.is("The Markets Layer"))
-                .content("[3].graphs[1].namespace", Matchers.is("acme:regions"))
+                .body("[3].id", Matchers.is(CONTAINER_ID))
+                .body("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))
+                .body("[3].graphs.size()", Matchers.is(2))
+                .body("[3].graphs[0].namespace", Matchers.is("acme:markets"))
+                .body("[3].graphs[0].label", Matchers.is("Markets"))
+                .body("[3].graphs[0].description", Matchers.is("The Markets Layer"))
+                .body("[3].graphs[1].namespace", Matchers.is("acme:regions"))
 
-                .content("[4].id", Matchers.is("vmware"))
-                .content("[4].label", Matchers.is("VMware Topology Provider"))
-                .content("[4].graphs.size()", Matchers.is(1))
-                .content("[4].graphs[0].namespace", Matchers.is("vmware"))
-                .content("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
-                .content("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
+                .body("[4].id", Matchers.is("vmware"))
+                .body("[4].label", Matchers.is("VMware Topology Provider"))
+                .body("[4].graphs.size()", Matchers.is(1))
+                .body("[4].graphs[0].namespace", Matchers.is("vmware"))
+                .body("[4].graphs[0].label", Matchers.is("VMware Topology Provider"))
+                .body("[4].graphs[0].description", Matchers.is("The VMware Topology Provider displays the infrastructure information gathered by the VMware Provisioning process."))
                 ;
     }
 
@@ -155,21 +185,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         createGraphMLAndWaitUntilDone(graphmlDocument);
         given().get(CONTAINER_ID).then()
                 .contentType(ContentType.JSON)
-                .content("graphs", Matchers.hasSize(2))
-                .content("graphs[0].id", Matchers.is("markets"))
-                .content("graphs[0].namespace", Matchers.is("acme:markets"))
-                .content("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
-                .content("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
-                .content("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                .content("graphs[0].vertices", Matchers.hasSize(16))
-                .content("graphs[0].edges", Matchers.hasSize(0))
+                .body("graphs", Matchers.hasSize(2))
+                .body("graphs[0].id", Matchers.is("markets"))
+                .body("graphs[0].namespace", Matchers.is("acme:markets"))
+                .body("graphs[0].defaultFocus.type", Matchers.is("SELECTION"))
+                .body("graphs[0].defaultFocus.vertexIds.size()", Matchers.is(1))
+                .body("graphs[0].defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .body("graphs[0].vertices", Matchers.hasSize(16))
+                .body("graphs[0].edges", Matchers.hasSize(0))
 
-                .content("graphs[1].id", Matchers.is("regions"))
-                .content("graphs[1].namespace", Matchers.is("acme:regions"))
-                .content("graphs[1].defaultFocus.type", Matchers.is("ALL"))
-                .content("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
-                .content("graphs[1].vertices", Matchers.hasSize(4))
-                .content("graphs[1].edges", Matchers.hasSize(16));
+                .body("graphs[1].id", Matchers.is("regions"))
+                .body("graphs[1].namespace", Matchers.is("acme:regions"))
+                .body("graphs[1].defaultFocus.type", Matchers.is("ALL"))
+                .body("graphs[1].defaultFocus.vertexIds.size()", Matchers.is(4))
+                .body("graphs[1].vertices", Matchers.hasSize(4))
+                .body("graphs[1].edges", Matchers.hasSize(16));
     }
 
     @Test
@@ -178,21 +208,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         given().get(CONTAINER_ID + "/{namespace}", "acme:markets")
                 .then()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("markets"))
-                .content("defaultFocus.type", Matchers.is("SELECTION"))
-                .content("defaultFocus.vertexIds.size()", Matchers.is(1))
-                .content("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
-                .content("vertices", Matchers.hasSize(16))
-                .content("edges", Matchers.hasSize(0));
+                .body("id", Matchers.is("markets"))
+                .body("defaultFocus.type", Matchers.is("SELECTION"))
+                .body("defaultFocus.vertexIds.size()", Matchers.is(1))
+                .body("defaultFocus.vertexIds[0].id", Matchers.is("north.4"))
+                .body("vertices", Matchers.hasSize(16))
+                .body("edges", Matchers.hasSize(0));
         given().get(CONTAINER_ID + "/{namespace}", "acme:regions")
                 .then()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("regions"))
-                .content("namespace", Matchers.is("acme:regions"))
-                .content("defaultFocus.type", Matchers.is("ALL"))
-                .content("defaultFocus.vertexIds.size()", Matchers.is(4))
-                .content("vertices", Matchers.hasSize(4))
-                .content("edges", Matchers.hasSize(16));
+                .body("id", Matchers.is("regions"))
+                .body("namespace", Matchers.is("acme:regions"))
+                .body("defaultFocus.type", Matchers.is("ALL"))
+                .body("defaultFocus.vertexIds.size()", Matchers.is(4))
+                .body("vertices", Matchers.hasSize(4))
+                .body("edges", Matchers.hasSize(16));
     }
 
     @Test
@@ -212,10 +242,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .then().log().ifValidationFails()
                .statusCode(200)
                .contentType(ContentType.JSON)
-               .content("[0].context", Matchers.is("GenericVertex"))
-               .content("[0].label", Matchers.is("North Region"))      
-               .content("[0].provider", Matchers.is("LabelSearchProvider"))
-               .content("", Matchers.hasSize(1));
+               .body("[0].context", Matchers.is("GenericVertex"))
+               .body("[0].label", Matchers.is("North Region"))      
+               .body("[0].provider", Matchers.is("LabelSearchProvider"))
+               .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -237,9 +267,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                .then().log().ifValidationFails()
                .statusCode(200)
                .contentType(ContentType.JSON)
-               .content("[0].namespace", Matchers.is("acme:regions"))
-               .content("[0].id", Matchers.is("north"))
-               .content("", Matchers.hasSize(1));
+               .body("[0].namespace", Matchers.is("acme:regions"))
+               .body("[0].id", Matchers.is("north"))
+               .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -256,14 +286,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("focus.semanticZoomLevel", Matchers.is(1))
-                .content("focus.vertices", Matchers.hasSize(1))
-                .content("vertices", Matchers.hasSize(2))
-                .content("edges", Matchers.hasSize(1))
-                .content("vertices[0].id", Matchers.is("v1.1"))
-                .content("vertices[1].id", Matchers.is("v1.1.2"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("focus.semanticZoomLevel", Matchers.is(1))
+                .body("focus.vertices", Matchers.hasSize(1))
+                .body("vertices", Matchers.hasSize(2))
+                .body("edges", Matchers.hasSize(1))
+                .body("vertices[0].id", Matchers.is("v1.1"))
+                .body("vertices[1].id", Matchers.is("v1.1.2"));
     }
 
     @Test
@@ -283,12 +313,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(2))
-                .content("edges", Matchers.hasSize(1))
-                .content("vertices[0].id", Matchers.is("v1.1"))
-                .content("vertices[1].id", Matchers.is("v1.1.1"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("vertices", Matchers.hasSize(2))
+                .body("edges", Matchers.hasSize(1))
+                .body("vertices[0].id", Matchers.is("v1.1"))
+                .body("vertices[1].id", Matchers.is("v1.1.1"));
 
         //  Increase SZL
         query.put("semanticZoomLevel", 2);
@@ -299,14 +329,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("test"))
-                .content("namespace", Matchers.is("test"))
-                .content("vertices", Matchers.hasSize(4))
-                .content("edges", Matchers.hasSize(3))
-                .content("vertices[0].id", Matchers.is("v1"))
-                .content("vertices[1].id", Matchers.is("v1.1"))
-                .content("vertices[2].id", Matchers.is("v1.1.1"))
-                .content("vertices[3].id", Matchers.is("v1.1.2"));
+                .body("id", Matchers.is("test"))
+                .body("namespace", Matchers.is("test"))
+                .body("vertices", Matchers.hasSize(4))
+                .body("edges", Matchers.hasSize(3))
+                .body("vertices[0].id", Matchers.is("v1"))
+                .body("vertices[1].id", Matchers.is("v1.1"))
+                .body("vertices[2].id", Matchers.is("v1.1.1"))
+                .body("vertices[3].id", Matchers.is("v1.1.2"));
     }
 
     @Test
@@ -323,10 +353,10 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].context", Matchers.is("Node"))
-                .content("[0].label", Matchers.is("Node A"))
-                .content("[0].provider", Matchers.is("NodeSearchProvider"))
-                .content("", Matchers.hasSize(1))
+                .body("[0].context", Matchers.is("Node"))
+                .body("[0].label", Matchers.is("Node A"))
+                .body("[0].provider", Matchers.is("NodeSearchProvider"))
+                .body("", Matchers.hasSize(1))
                 .extract().response().asString();
         final JSONArray result = new JSONArray(new JSONTokener(response));
         assertThat(result.length(), Matchers.is(1));
@@ -342,9 +372,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("[0].namespace", Matchers.is("acme:markets"))
-                .content("[0].id", Matchers.is("north.2"))
-                .content("", Matchers.hasSize(1));
+                .body("[0].namespace", Matchers.is("acme:markets"))
+                .body("[0].id", Matchers.is("north.2"))
+                .body("", Matchers.hasSize(1));
     }
 
     @Test
@@ -364,21 +394,21 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .then()
                 .log().ifValidationFails()
                 .contentType(ContentType.JSON)
-                .content("id", Matchers.is("markets"))
-                .content("namespace", Matchers.is("acme:markets"))
-                .content("vertices", Matchers.hasSize(3))
-                .content("edges", Matchers.hasSize(0))
-                .content("vertices[0].id", Matchers.is("north.1"))
-                .content("vertices[1].id", Matchers.is("north.2"))
-                .content("vertices[1].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
-                .content("vertices[1].nodeInfo.foreignId", Matchers.is("node1"))
-                .content("vertices[1].nodeInfo.label", Matchers.is("Node A"))
-                .content("vertices[1].nodeInfo.categories", Matchers.hasItems("Test", "Server"))
-                .content("vertices[2].id", Matchers.is("north.3"))
-                .content("vertices[2].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
-                .content("vertices[2].nodeInfo.foreignId", Matchers.is("node2"))
-                .content("vertices[2].nodeInfo.label", Matchers.is("Node B"))
-                .content("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
+                .body("id", Matchers.is("markets"))
+                .body("namespace", Matchers.is("acme:markets"))
+                .body("vertices", Matchers.hasSize(3))
+                .body("edges", Matchers.hasSize(0))
+                .body("vertices[0].id", Matchers.is("north.1"))
+                .body("vertices[1].id", Matchers.is("north.2"))
+                .body("vertices[1].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .body("vertices[1].nodeInfo.foreignId", Matchers.is("node1"))
+                .body("vertices[1].nodeInfo.label", Matchers.is("Node A"))
+                .body("vertices[1].nodeInfo.categories", Matchers.hasItems("Test", "Server"))
+                .body("vertices[2].id", Matchers.is("north.3"))
+                .body("vertices[2].nodeInfo.foreignSource", Matchers.is(REQUISITION_NAME))
+                .body("vertices[2].nodeInfo.foreignId", Matchers.is("node2"))
+                .body("vertices[2].nodeInfo.label", Matchers.is("Node B"))
+                .body("vertices[2].nodeInfo.categories", Matchers.hasItems("Test", "Node"));
     }
 
     @Test
@@ -396,45 +426,68 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                     .log().ifValidationFails()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
-                    .content("vertices", Matchers.hasSize(1))
-                    .content("vertices[0].status", Matchers.is("Normal"));
+                    .body("vertices", Matchers.hasSize(1))
+                    .body("vertices[0].status", Matchers.is("Normal"));
         } finally {
             karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
         }
     }
 
     @Test
-    public void verifyStatusEnrichmentApplication() {
-        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
-        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
-        final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
-        final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
-        final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+    public void verifyStatusEnrichmentApplication() throws InterruptedException {
+        final String applicationName = "StatusEnrichmentTest";
 
-        // Clean up
-        applicationDao.findAll().forEach(applicationDao::delete);
+        final InetAddress localhost = InetAddressUtils.getInetAddress("127.0.0.1");
+        final String perspectiveKey = "perspective";
+        final String perspectiveName = "Default";
+
+        final String testServiceName = "ICMP";
+        final String minorSeverity = OnmsSeverity.MINOR.getLabel();
+        final String criticalSeverity = OnmsSeverity.CRITICAL.getLabel();
 
         // Set up test data
         createRequisition();
-        final OnmsApplication tmpApplication = transactionTemplate.execute(transactionStatus -> {
-            final OnmsApplication theApplication = new OnmsApplication();
-            theApplication.setName("OpenNMS Application");
-            monitoredServiceDao.findAllServices().stream()
-                    .filter(ms -> ms.getIpAddress().toString().contains("127.0.0.1"))
-                    .forEach(service -> service.addApplication(theApplication));
-            applicationDao.save(theApplication);
-            return theApplication;
-        });
 
-        // Force fully initialized to prevent LazyLoad-Exceptions
-        final OnmsApplication application = transactionTemplate.execute(status -> {
-            final OnmsApplication initializedApplication = applicationDao.get(tmpApplication.getId());
-            initializedApplication.getMonitoredServices().stream().forEach(OnmsMonitoredService::getNodeId);
-            return initializedApplication;
-        });
+        adminPage();
+        findElementByLink("Manage Applications").click();
+
+        // create the application
+        waitForElement(By.name("newApplicationName"));
+        enterText(By.name("newApplicationName"), applicationName);
+        clickElement(By.cssSelector("form[action='admin/applications.htm'] > button"));
+
+        // browse to the application page
+        clickElement(By.linkText(applicationName));
+
+        clickElement(By.linkText("Edit application"));
+        // make sure the forms have loaded
+        waitForElement(By.id("input_toAdd"));
+
+        // add the services
+        clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node A / 127.0.0.1 / ICMP')]"));
+        clickElement(By.id("input_addService"));
+        clickElement(By.xpath("//select[@id='input_toAdd']/option[contains(text(), 'Node B / 127.0.0.1 / ICMP')]"));
+        clickElement(By.id("input_addService"));
+
+        // add the default location
+        clickElement(By.xpath("//select[@id='input_locationAdd']/option[@value='Default']"));
+        clickElement(By.id("input_addLocation"));
+
+        // get the application
+        final List<OnmsApplication> applications = restClient.getApplications();
+        System.err.println("applications=" + applications);
+        final Optional<OnmsApplication> app = applications.stream().filter(a -> applicationName.equals(a.getName())).findFirst();
+        if (!app.isPresent()) {
+            throw new IllegalStateException("Failed to retrieve application '" + applicationName + "'");
+        }
+        final OnmsApplication application = app.get();
 
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
-        karafShell.runCommand("opennms:graph-force-reload --container application");
+        awaitForApplicationStatus(application, "Normal");
+
+        final List<OnmsNode> nodes = restClient.getNodes();
+        final int nodeId1 = nodes.stream().filter(n -> "Node A".equals(n.getLabel())).findFirst().get().getId();
+        final int nodeId2 = nodes.stream().filter(n -> "Node B".equals(n.getLabel())).findFirst().get().getId();
 
         // Fetch data nothing down
         final JSONObject query = new JSONObject()
@@ -448,50 +501,88 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(3))
-                .content("vertices[0].status.severity", Matchers.is("Normal"))
-                .content("vertices[1].status.severity", Matchers.is("Normal"))
-                .content("vertices[2].status.severity", Matchers.is("Normal"))
-                .content("vertices[0].status.count", Matchers.is(0))
-                .content("vertices[1].status.count", Matchers.is(0))
-                .content("vertices[2].status.count", Matchers.is(0));
+                .body("vertices", Matchers.hasSize(3))
+                .body("vertices[0].status.severity", Matchers.is("Normal"))
+                .body("vertices[1].status.severity", Matchers.is("Normal"))
+                .body("vertices[2].status.severity", Matchers.is("Normal"))
+                .body("vertices[0].status.count", Matchers.is(0))
+                .body("vertices[1].status.count", Matchers.is(0))
+                .body("vertices[2].status.count", Matchers.is(0));
 
         // Prepare simulated outages
-        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
-        final int nodeId1 = services.get(0).getNodeId();
-        final int nodeId2 = services.get(1).getNodeId();
-        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getClass().getSimpleName())
+        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId1)
-                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
-                .setService("ICMP")
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(minorSeverity)
                 .getEvent();
-        final Event nodeDownEvent = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, getClass().getSimpleName())
+        final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId2)
+                .setInterface(localhost)
+                .setService(testServiceName)
+                .setParam(perspectiveKey, perspectiveName)
+                .setSeverity(criticalSeverity)
                 .getEvent();
+
+        getDriver().get(getBaseUrlInternal() + "opennms/topology");
+        waitForElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'View')]"));
+
+        clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'View')]"));
+        clickElement(By.xpath("//span[@class='v-menubar-menuitem-caption' and contains(text(), 'Application')]"));
+
+        // Waiting for perspective poller to detect services as UP
+        await().atMost(2, MINUTES)
+               .until(() -> this.restClient.getEventsForNodeByEventUei(nodeId1, EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI).getTotalCount(),
+                      Matchers.greaterThan(0));
+
+        await().atMost(2, MINUTES)
+               .until(() -> this.restClient.getEventsForNodeByEventUei(nodeId2, EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI).getTotalCount(),
+                      Matchers.greaterThan(0));
 
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
-        karafShell.runCommand("opennms:graph-force-reload --container application");
-        final Response response = given().log().ifValidationFails()
-                .body(query.toString())
-                .contentType(ContentType.JSON)
-                .post("{container_id}/{namespace}", "application", "application")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().response();
+        awaitForApplicationStatus(application, "Minor");
+
+        final Response response = getApplicationViewResponse(query.toString());
         final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
         assertThat(applicationViewResponse.length(), Matchers.is(3));
         verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
         verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
         verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
 
-        // Take node down, reload graph and verify
-        restClient.sendEvent(nodeDownEvent);
-        karafShell.runCommand("opennms:graph-force-reload --container application");
-        final Response response2 = given().log().ifValidationFails()
-                .body(query.toString())
+        // Take service down with severity higher than Major
+        restClient.sendEvent(nodeLostServiceEventApp2);
+        awaitForApplicationStatus(application, "Critical");
+
+        final Response response2 = getApplicationViewResponse(query.toString());
+        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
+        assertThat(applicationViewResponse2.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Critical", 1); // we expect the same severity as the interface with the highest severity
+    }
+
+    private void awaitForApplicationStatus(final OnmsApplication application, final String severity) {
+        final JSONObject query = new JSONObject()
+                .put("semanticZoomLevel", 1)
+                .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
+        await()
+                .atMost(2, MINUTES)
+                .until(() -> {
+                    karafShell.runCommand("opennms:graph-force-reload --container application");
+                    final String status = new ApplicationViewResponse(getApplicationViewResponse(query.toString()))
+                            .getVertexByApplicationId(application.getId())
+                            .getJSONObject("status")
+                            .getString("severity");
+                    LOG.debug("application {} status={}", application.getId(), status);
+                    return status;
+                }, equalTo(severity));
+    }
+
+    private Response getApplicationViewResponse(final String query) {
+        return given().log().ifValidationFails()
+                .body(query)
                 .contentType(ContentType.JSON)
                 .post("{container_id}/{namespace}", "application", "application")
                 .then()
@@ -499,14 +590,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .extract().response();
-        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
-        assertThat(applicationViewResponse2.length(), Matchers.is(3));
-        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Major", 1);
-        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
-        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Major", 1);
-
-        // Finally clean up
-        applicationDao.delete(application);
     }
 
     @Test
@@ -561,12 +644,12 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .content("vertices", Matchers.hasSize(5))
-                .content("vertices[0].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[1].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[2].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
-                .content("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
+                .body("vertices", Matchers.hasSize(5))
+                .body("vertices[0].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[1].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[2].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
+                .body("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
         } finally {
             karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
         }
@@ -578,11 +661,11 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
             given().accept(ContentType.JSON).get()
                     .then().statusCode(200)
                     .contentType(ContentType.JSON)
-                    .content("[0].id", Matchers.is("application"))
-                    .content("[1].id", Matchers.is("bsm"))
-                    .content("[2].id", Matchers.is("nodes"))
-                    .content("[3].id", Matchers.is(CONTAINER_ID))
-                    .content("[4].id", Matchers.is("vmware"));
+                    .body("[0].id", Matchers.is("application"))
+                    .body("[1].id", Matchers.is("bsm"))
+                    .body("[2].id", Matchers.is("nodes"))
+                    .body("[3].id", Matchers.is(CONTAINER_ID))
+                    .body("[4].id", Matchers.is("vmware"));
         });
     }
     private void createRequisition() {
