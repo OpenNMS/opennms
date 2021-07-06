@@ -99,7 +99,7 @@ Returns the SNMP configuration for IP address 10.1.1.1 as defined in example 1.
 
 == API version 2
 
-Since version 2, you can set or get all attributes of a `<definition />` entry defined in `snmp-config.xsd` (http://xmlns.opennms.org/xsd/config/snmp) can be set or get via the interface, however it is only possible to set the configuration for one IP address and not for a range of IP addresses.
+Since version 2, you can set or get all attributes of a `<definition />` entry defined in `snmp-config.xsd` (http://xmlns.opennms.org/xsd/config/snmp) can be set or get via the interface, however it is only possible to set the configuration for one IP address per request and not for a range of IP addresses at a time.
 This may change in the future.
 
 The interface uses `SnmpInfo` objects for communication.
