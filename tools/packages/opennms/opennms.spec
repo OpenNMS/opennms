@@ -915,9 +915,9 @@ if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/logs"
 		ln -sf "$LOG_INST" "$ROOT_INST/logs"
-		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 		echo "done"
 	fi
+	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 fi
 
 if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
@@ -928,9 +928,9 @@ if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/share"
 		ln -sf "$SHARE_INST" "$ROOT_INST/share"
-		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 		echo "done"
 	fi
+	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 fi
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
