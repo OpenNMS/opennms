@@ -180,7 +180,9 @@ See note below table for explanation of these values.
 | enterpriseId            | enterprise-id             |              | v3                    |
 |===
 
-For the `securityLevel` field:
+.Note on the `securityLevel` field
+****
+Possible values for this field:
 
 * 1 means `noAuthNoPriv`.
 * 2 means `authNoPriv`.
@@ -191,6 +193,7 @@ If you do not set the security level manually it is determined automatically:
 * If no `authPassPhrase` set, the securityLevel is 1.
 * If `authPassPhrase` is set but no `privPassPhrase` is set, the security level is 2.
 * If both a `authPassPhrase` and a `privPassPhrase` are set, the security level is 3.
+****
 
 .Example 1:
 [source, bash]
