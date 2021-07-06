@@ -9,6 +9,7 @@ User=opennms
 Environment="OPENNMS_HOME=${install.dir}"
 
 Type=forking
+RuntimeDirectory=opennms
 PIDFile=${install.pid.file}
 
 ExecStart=${install.init.dir}/opennms -s start
