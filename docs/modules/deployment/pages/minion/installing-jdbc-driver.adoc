@@ -1,16 +1,18 @@
-= Installing JDBC Driver
+= Install JDBC driver
 
-For any JDBC service to be detected/polled/collected, corresponding JDBC driver needs to be installed in Minion.
-Following are steps to install JDBC driver.
+To detect/poll/collect any JDBC service, you must install the corresponding JDBC driver in Minion.
+The following shows how to install JDBC driver.
 
-NOTE: We reference the `repository directory` relative to the Minion home directory.
-      Depending on your operating system the home directory is `/usr/share/minion` for Debian/Ubuntu or `/opt/minion` for CentOS/RHEL.
+We reference the `repository directory` relative to the Minion home directory.
+Depending on your operating system, the home directory is `/usr/share/minion` for Debian/Ubuntu or `/opt/minion` for CentOS/RHEL.
 
-1. Download the JDBC driver JAR from a repository, e.g. a public link:https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven Repository]
-2. Install the JAR file in the repository directory following the maven repository pattern.
-   For MySQL 8.0.22 the path would be `repositories/default/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar`.
+. Download the JDBC driver JAR from a repository, for example a public link:https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.22[Maven Repository].
+. Install the JAR file in the repository directory following the Maven repository pattern.
 
-3. Create a Karaf feature for the MySQL JDBC driver
++
+For MySQL 8.0.22, the path would be `repositories/default/mysql/mysql-connector-java/8.0.22/mysql-connector-java-8.0.22.jar`.
+
+. Create a Karaf feature for the MySQL JDBC driver.
 
 .Create a features configuration file
 [source, console]
@@ -33,20 +35,20 @@ sudo vi deploy/jdbc-mysql.xml
 </features>
 -----
 
-<1> The version should match with your {page-component-title} Core version
-<2> The bundle is named `mysql-bundle` and we set the version number to `8.0.22`
-<3> Bundle to download version `8.0.22` with Maven from official repositories
+<1> The version should match your {page-component-title} Core version.
+<2> The bundle is named `mysql-bundle` and we set the version number to `8.0.22`.
+<3> Bundle to download version `8.0.22` with Maven from official repositories.
 
-TIP: As soon you write the file, Karaf picks up the feature and tries to install it.
-     You can troubleshoot the feature installation in the `data/log/karaf.log`
+As soon you write the file, Karaf picks up the feature and tries to install it.
+Troubleshoot the feature installation in the `data/log/karaf.log`.
 
-.Connect to the Karaf Shell
+.Connect to the Karaf shell
 [source,console]
 ----
 ssh -p 8201 admin@localhost
 ----
 
-.Verify installation and startup of the feature
+.Verify installation and start-up of the feature
 [source, karaf]
 ----
 feature:list | grep mysql

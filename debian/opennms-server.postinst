@@ -23,6 +23,8 @@ case "$1" in
             find /usr/share/opennms/data/tmp/* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
         fi
 
+        /usr/share/opennms/bin/update-package-permissions opennms-server
+
         echo ""
         echo " *** Installation complete.  You must still run the installer at"
         echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"

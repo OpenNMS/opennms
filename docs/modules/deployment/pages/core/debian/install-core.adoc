@@ -13,7 +13,7 @@ sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 sudo apt update
 ----
 
-NOTE: You can safely ignore the message regarding conflicting distributions (expected stable but got opennms-xx).
+NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
 
 .Install OpenNMS {page-component-title} with built-in dependencies
 [source, console]

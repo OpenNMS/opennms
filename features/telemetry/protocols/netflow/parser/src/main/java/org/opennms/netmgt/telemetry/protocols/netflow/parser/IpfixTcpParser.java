@@ -121,4 +121,12 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
         this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
     }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
+    }
 }

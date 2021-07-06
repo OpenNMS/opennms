@@ -15,7 +15,7 @@ NOTE: Other than writing documentation, you can help out by providing comments o
 To do this, head over to http://issues.opennms.org/browse/NMS/[GitHub].
 
 [[gd-docs-conventions]]
-== Conventions for Text Formatting
+== Conventions for text formatting
 
 The documentation uses the following conventions:
 
@@ -149,9 +149,9 @@ Which renders as: http://www.opennms.org/
 NOTE: It is acceptable to have a period trailing after the URL, it will not render as a part of the link.
 
 [[doc-guideline-admonitions-notes]]
-== Admonitions and Useful Notes
+== Admonitions and useful notes
 
-Use to define specific sections, such as Notes, Tips and Important information.
+Use to define specific sections, such as Notes, Tips, and Important information.
 We encourage their use in the documentation as long as they are used appropriately.
 Choose from the following:
 
@@ -309,3 +309,4 @@ this is rendered as:
 | `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
                            `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
 |===
+

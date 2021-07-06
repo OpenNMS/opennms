@@ -61,8 +61,7 @@
 ** xref:docs/writing.adoc[]
 ** xref:docs/images.adoc[]
 ** xref:docs/include-source.adoc[]
-** xref:docs/cheat-sheets.adoc[]
-** xref:docs/migrating-from-wiki.adoc[]
+** xref:docs/build-docs.adoc[]
 
 * xref:amqp/introduction.adoc[]
 ** xref:amqp/event_forwarder.adoc[]

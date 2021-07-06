@@ -4,7 +4,10 @@
 # See the readme MINION_CONFIG_SCHEMA_README.md for more information.
 
 # Version of Minion this schema configuration is applicable to
-version: "28.0.0"
+version: "@VERSION@"
+revision: "@REVISION@"
+branch: "@BRANCH@"
+buildnumber: @BUILD_NUMBER@
 
 # The root set of categories configurable on a Minion container. Ordering here is used only to determine order for
 # display purposes.

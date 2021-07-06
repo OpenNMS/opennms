@@ -115,7 +115,6 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             if (node.getAssetRecord() != null) {
                 Scope assetScope = new ObjectScope<>(Scope.ScopeName.NODE, node.getAssetRecord())
                         .map(ASSET, "category", (a) -> Optional.ofNullable(a.getCategory()))
-                        .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
                         .map(ASSET, "manufacturer", (a) -> Optional.ofNullable(a.getManufacturer()))
                         .map(ASSET, "vendor", (a) -> Optional.ofNullable(a.getVendor()))
                         .map(ASSET, "model-number", (a) -> Optional.ofNullable(a.getModelNumber()))
