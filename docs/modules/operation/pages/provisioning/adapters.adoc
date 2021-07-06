@@ -6,9 +6,12 @@ When node entities are added, updated, deleted, or receive a configuration manag
 
 Currently, {page-component-title} supports the following adapters:
 
-== DDNS Adapter
+== DDNS adapter
 
 The DDNS adapter uses the dynamic DNS protocol to update a DNS system as nodes are provisioned into {{page-component-title}.
 To configure this adapter, edit the `opennms.properties` file and set the `importer.adapter.dns.server property`:
 
- importer.adapter.dns.server=192.168.1.1
+[source]
+----
+importer.adapter.dns.server=192.168.1.1
+----

@@ -1,6 +1,4 @@
-
-
-= SNMP Profiles
+= SNMP profiles
 
 SNMP Profiles are prefabricated sets of SNMP configuration which are automatically "fitted" against eligible IP addresses at provisioning time.
 Each profile may have a unique label and an optional filter expression.
@@ -36,14 +34,14 @@ In the above config,
 1. `profile1` doesn't have a filter expression.
 This profile will be tried for every interface.
 
-2. `profile2` has a filter expression that compares `iphostname` (the hostname resulting from a reverse DNS lookup of the IP address being fitted) against a preconfigured value.
+2. `profile2` has a filter expression that compares `iphostname` (the hostname resulting from a reverse DNS lookup of the IP address being fitted) against a pre-configured value.
 This profile's SNMP parameters will be fitted only against IP addresses whose hostname contains the string `opennms`.
 
 3. `profile3` has an IPLIKE expression that matches all interfaces in the range specified in the filter.
 This profile's SNMP parameters will be fitted only against IP addresses in the range specified by the `IPLIKE` expression.
 
 NOTE: Profiles will be tried in the order they are configured.
-The first match that produces a successful SNMP `GET-REQUEST` on the scalar instance of `sysObjectID` will be saved by `Provisiond` as the SNMP configuratoin definition to use for all future SNMP operations against the fitted IP address.
+The first match that produces a successful SNMP `GET-REQUEST` on the scalar instance of `sysObjectID` will be saved by `Provisiond` as the SNMP configuration definition to use for all future SNMP operations against the fitted IP address.
 
 NOTE: `default` as profile label is reserved for default SNMP config.
 
@@ -79,6 +77,6 @@ admin@opennms()> opennms:snmp-remove-from-definition -l MINION 172.1.0.255
 This removes IP address `172.1.0.255` at location `MINION` from the system-wide SNMP configuration so that this IP address can be fitted to a new profile.
 This command might be useful when an IP address formerly assigned to an SNMPv2c-capable switch is reassigned to an SNMPv3-capable load balancer.
 
-== Using SNMP profiles in Snmp Detector
+== Using SNMP profiles with the SNMP detector
 
 By default SnmpDetector doesn't use SNMP profiles. Add property `useSnmpProfiles` and set it to `true` in order to use SNMP Profiles.

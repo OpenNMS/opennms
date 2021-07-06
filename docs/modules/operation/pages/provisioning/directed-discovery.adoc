@@ -1,5 +1,5 @@
 
-= Directed Discovery
+= Directed discovery
 
 Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
 Two other methods for manually adding nodes (quick add node and manually adding an interface) are in the process of being deprecated. We do not recommend using these features.
@@ -7,7 +7,7 @@ Two other methods for manually adding nodes (quick add node and manually adding 
 Make sure you complete the tasks in the <<provisioning/getting-started.adoc#provision-getting-started, Getting Started>> section before adding nodes.
 
 [[requisition-add-nodes]]
-== Add Nodes through the Requisition UI
+== Add nodes through the Requisition UI
 
 Before adding nodes to a requisition, you must <<provisioning/getting-started.adoc#requisition-create, create a requisition>>.
 

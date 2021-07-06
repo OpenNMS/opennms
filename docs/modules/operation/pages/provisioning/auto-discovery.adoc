@@ -1,5 +1,5 @@
 
-= Auto Discovery
+= Auto discovery
 
 Auto discovery is the process of automatically adding nodes to {page-component-title}.
 You do this through discovery, either periodically on schedule or through single, unscheduled times.
@@ -7,7 +7,7 @@ You do this through discovery, either periodically on schedule or through single
 Make sure you complete the tasks in the <<provisioning/getting-started.adoc#provision-getting-started, Getting Started>> section before adding nodes.
 
 [[discovery-configure]]
-== Configure Discovery
+== Configure discovery
 
 Configuring discovery specifies the parameters {page-component-title} uses when scanning for nodes.
 
