@@ -59,7 +59,7 @@ These are defined in `snmp-info.xsd`:
 ----
 
 The following table shows all supported attributes, optional restrictions, and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
-All parameters can be set regardless the version.
+All parameters can be set regardless of the version.
 
 [options="header"]
 |===
@@ -150,8 +150,8 @@ The SnmpInfo schema is defined as follows:
 </xs:schema>
 ----
 
-The following table shows all supported attributes, the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
-It also shows the version limitations, default values, and the restrictions - if any.
+The following table shows all supported attributes and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
+It also shows the version limitations, default values, and the restrictions, if any.
 
 [options="header, %autowidth"]
 |===
@@ -191,8 +191,8 @@ Possible values for this field:
 If you do not set the security level manually it is determined automatically:
 
 * If no `authPassPhrase` set, the securityLevel is 1.
-* If `authPassPhrase` is set but no `privPassPhrase` is set, the security level is 2.
-* If both a `authPassPhrase` and a `privPassPhrase` are set, the security level is 3.
+* If `authPassPhrase` is set but no `privPassPhrase` is set, the securityLevel is 2.
+* If both a `authPassPhrase` and a `privPassPhrase` are set, the securityLevel is 3.
 ****
 
 .Example 1:
