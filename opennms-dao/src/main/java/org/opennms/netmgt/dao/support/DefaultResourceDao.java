@@ -63,6 +63,8 @@ import org.springframework.util.Assert;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
+import static org.opennms.netmgt.dao.support.NodeSnmpResourceType.PARENT_RESOURCE_TYPE_FOR_STORE_BY_FOREIGN_SOURCE;
+
 /**
  * Retrieves and enumerates elements from the resource tree.
  *
@@ -419,12 +421,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         }
         String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = String.valueOf(nodeId);
-        // I can't find a better way to deal with this when storeByForeignSource is enabled
+        // When storeByForeignSource is enabled, need to account for parent resource.
         if (resource.getParent() != null && resource.getParent().toString().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
             // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
             String[] parts = resource.getParent().toString().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
-                parentResourceTypeName = "nodeSource";
+                parentResourceTypeName = PARENT_RESOURCE_TYPE_FOR_STORE_BY_FOREIGN_SOURCE;
                 parentResourceName = parts[1] + ":" + parts[2];
             }
         }
