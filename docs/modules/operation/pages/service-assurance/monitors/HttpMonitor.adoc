@@ -21,54 +21,68 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the HttpMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the HttpMonitor
+[options="header, %autowidth"]
 
-All listed parameters are optional. 
 |===
-| Parameter              | Description                                                  | Default | Placeholder substitution
-| basic-authentication | Authentication credentials to perform basic authentication. +
+| Parameter              | Description                                                  | Default 
+| basic-authentication
+
+*{}*
+ | Authentication credentials to perform basic authentication. +
                            Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945], section
                            11.1, without the Base64 encoding part: be a string made of the concatenation of: +
                            1- the user ID; +
                            2- a colon; +
                            3- the password. +
-                          `basic-authentication` takes precedence over the `user` and `password` parameters.           |n/a| Yes
+                          `basic-authentication` takes precedence over the `user` and `password` parameters.           |n/a
 | header[0-9]+         | Additional headers to send along with the request. +
                            Example of valid parameter names are +
-                           header0, header1, and header180. `header` is *not* a valid parameter name.             | n/a | No
-| host-name            | Specify the Host header's value. | n/a | No
+                           header0, header1, and header180. `header` is *not* a valid parameter name.             | n/a 
+| host-name            | Specify the Host header's value. | n/a 
 | nodelabel-host-name | If the host-name parameter isn't set and the resolve-ip parameter is set to false, 
                            then {page-component-title} uses the node's label to set the Host header's value if
                            this parameter is set to true. Otherwise, {page-component-title} falls back using
-                           the node interface's IP address as Host header value.                                     | false | No
-| password             | Use this parameter with the `user` parameter to perform basic +
+                           the node interface's IP address as Host header value.                                     | false 
+| password      
+
+*{}*
+       | Use this parameter with the `user` parameter to perform basic +
                            authentication. This parameter specifies the password to use. The user and password +
-                           parameters are ignored when the basic-authentication parameter is defined.                | empty string | Yes
-| port              | A list of TCP ports to try connection on.                                     | 80,8080,8888 | No
-| retry                | Number of attempts to get a valid HTTP response/response-text.                             | 0 | No
+                           parameters are ignored when the basic-authentication parameter is defined.                | empty string
+| port              | A list of TCP ports to try connection on.                                     | 80,8080,8888 
+| retry                | Number of attempts to get a valid HTTP response/response-text.                             | 0 
 | resolve-ip           | If the host-name parameter is not set and this parameter is set to true,
                            {page-component-title} uses DNS to resolve the node interface's IP address, and uses
                            the result to set the Host header's value. When set to false and the host-name
                            parameter is not set, {page-component-title} tries to use the nodelabel-host-name
-                           parameter to set the Host header's value.                                                 | false | No
+                           parameter to set the Host header's value.                                                 | false 
 | response             | A comma-separated list of acceptable HTTP response code ranges.
                            Example: 200-202,299                                                                      | If the url parameter is set to `/`, the default +
-                           value for this parameter is 100-499, otherwise it is 100-399. | No
+                           value for this parameter is 100-499, otherwise it is 100-399. 
 | response-text        | Text to look for in the response body. This will be matched against every line, and it will
                            be considered a success at the first match. If there is a `~` at the beginning of the
                            parameter, the rest of the string is used as a regular expression pattern match;
                            otherwise, the match will be a substring match. The regular expression match is anchored at
                            the beginning and end of the line, so you will likely need to put a `.*` on both sides of
-                           your pattern unless you are going to match on the entire line.                        | n/a | No
-| `url                  | URL to retrieve via the HTTP GET command.                                              | `/` | Yes
-| user                | Use this parameter with the password parameter to perform
+                           your pattern unless you are going to match on the entire line.                        | n/a 
+| url     
+
+*{}*
+             | URL to retrieve via the HTTP GET command.                                              | `/` 
+| user    
+
+*{}*
+            | Use this parameter with the password parameter to perform
                            basic authentication. This parameter specifies the user ID to use. The user and
-                           password parameters are ignored when the basic-authentication parameter is defined.     | n/a | Yes
-| user-agent           | Specifies the user-agent HTTP header. (Also see
-                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616], section 14.43.)                          | OpenNMS HttpMonitor | Yes
+                           password parameters are ignored when the basic-authentication parameter is defined.     | n/a 
+| user-agent   
+
+*{}*
+        | Specifies the user-agent HTTP header. (Also see
+                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616], section 14.43.)                          | OpenNMS HttpMonitor 
 | verbose              | When set to true, full communication between client and the webserver will be logged
-                           (with a log level of `DEBUG`).                                                              | n/a | No
+                           (with a log level of `DEBUG`).                                                              | n/a 
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

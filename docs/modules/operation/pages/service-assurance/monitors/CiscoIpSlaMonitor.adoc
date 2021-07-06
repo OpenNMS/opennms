@@ -28,10 +28,9 @@ If the RTT_LATEST_OPERSENSE returns with overThreshold(3), the service is marked
 
 == Configuration and use
 
-.Monitor-specific parameters for the CiscoIpSlaMonitor
+.Required monitor-specific parameters for the CiscoIpSlaMonitor
 [options="header, autowidth"]
 
-Listed parameters are required. 
 |===
 | *Parameter* | *Description* | *Default* 
 | admin-tag    | The tag attribute from the IP SLA configuration you want to monitor.  | n/a

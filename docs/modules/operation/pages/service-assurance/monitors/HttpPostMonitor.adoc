@@ -15,29 +15,41 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the HttpPostMonitor
-[options="header, autowidth"]
+.Monitor-specific parameters for the HttpPostMonitor
+[options="header, %autowidth"]
 |===
-4+| Required
-| *Parameter* |*Description* |                         *Default* | *Placeholder substitution* 
-| payload     | The body of the POST; for example, properly escaped XML.               | n/a | No
-4+|*Optional*
-| auth-password| The password to use for HTTP BASIC auth.                              | n/a | Yes
-| auth-username| The username to use for HTTP BASIC auth.                              | n/a | Yes
+3+| Required
+| *Parameter* |*Description* |                         *Default* 
+| payload     | The body of the POST; for example, properly escaped XML.               | n/a 
+3+|*Optional*
+| auth-password
+
+*{}*
+| The password to use for HTTP BASIC auth.                              | n/a 
+| auth-username
+
+*{}*
+| The username to use for HTTP BASIC auth.                              | n/a 
 | header[0-9]+ | Additional headers to be sent along with the request. Example of valid
                    parameter's names are header0, header1, and header180. +
-                   `header` is *not* a valid parameter name.                             | n/a | No
-| banner       | A string that is matched against the response of the HTTP POST.
+                   `header` is *not* a valid parameter name.                             | n/a 
+| banner       
+
+*{}*
+| A string that is matched against the response of the HTTP POST.
                    If the output contains the banner, the service is determined as up.
-                   Specify a regex by starting with `~`.                                 | n/a | Yes
-| charset      | Set the character set for the POST.                                   | UTF-8 | No
-| mimetype     | Set the mimetype for the POST.                                        | text/xml | No
-| port         | The port for the web server where the POST is send to.                | 80 | No
-| scheme       | The connection scheme to use.                                         | http | No
-| usesslfilter | Enables or disables the SSL ceritificate validation. `true - false`   | false | No
-| uri          | The uri to use during the POST.                                       | n/a | Yes
+                   Specify a regex by starting with `~`.                                 | n/a 
+| charset      | Set the character set for the POST.                                   | UTF-8 
+| mimetype     | Set the mimetype for the POST.                                        | text/xml
+| port         | The port for the web server where the POST is send to.                | 80 
+| scheme       | The connection scheme to use.                                         | http 
+| usesslfilter | Enables or disables the SSL ceritificate validation. `true - false`   | false 
+| uri        
+
+*{}*
+  | The uri to use during the POST.                                       | n/a 
 | use-system-proxy | Should the system-wide proxy settings be used? The system proxy
-                   settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties] | false | No
+                   settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties] | false 
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

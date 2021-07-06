@@ -19,19 +19,22 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the FtpMonitor.
-[options="header, autowidth"]
-
-All listed parameters are optional. 
+.Optional monitor-specific parameters for the FtpMonitor
+[options="header, %autowidth"]
 
 |===
-| Parameter              | Description                                                                                 |Default| Placeholder substitution
-| retry                | Number of attempts to get a valid FTP response/response-text.                                | 0| No
-| port                 | A list of TCP ports to which connection shall be tried.                                     | 20, 21 | No
-| password             | Use this parameter with the `userid` parameter to perform
-                           authentication. This parameter specifies the password to use.                           | empty string | Yes
-| userid            | Use this parameter with the `password` parameter to perform
-                           authentication. This parameter specifies the user ID to use.                            |n/a | Yes
+| Parameter              | Description                                                                                 |Default
+| retry                | Number of attempts to get a valid FTP response/response-text.                                | 0
+| port                 | A list of TCP ports to which connection shall be tried.                                     | 20, 21 
+| password
+
+*{}*             | Use this parameter with the userid parameter to perform
+                           authentication. This parameter specifies the password to use.                           | empty string 
+| userid  
+
+*{}*
+          | Use this parameter with the password parameter to perform
+                           authentication. This parameter specifies the user ID to use.                            |n/a 
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

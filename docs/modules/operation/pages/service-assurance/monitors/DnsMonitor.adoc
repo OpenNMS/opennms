@@ -48,14 +48,11 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 
 == Configuration and use
 
-.Monitor specific parameters for the DnsMonitor
-[options="header, autowidth"]
-
-All listed parameters are optional. 
-
+.Optional monitor-specific parameters for the DnsMonitor
+[options="header, %autowidth"]
 |===
 | *Parameter* | *Description* | *Default*                                                                             
-| `retry`                | Number of retries before the service is marked as down.                                    | 0
+| retry                | Number of retries before the service is marked as down.                                    | 0
 | timeout              | Time in milliseconds to wait for the A Record response from the server.                     | 5000
 | port                 | UDP Port for the DNS server                                                                  | 53
 | lookup               | DNS A Record for lookup test                                                               | localhost

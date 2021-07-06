@@ -2,7 +2,7 @@
 = HttpsMonitor
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server.
-The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
+It is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
 All HttpMonitor parameters apply; refer to <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>> for more information.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -16,10 +16,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the HttpsMonitor
-[options="header, autowidth"]
-
-Listed parameter is optional. 
+.Optional monitor-specific parameter for the HttpsMonitor
+[options="header, %autowidth"]
 
 |===
 | Parameter              | Description                                             | Default

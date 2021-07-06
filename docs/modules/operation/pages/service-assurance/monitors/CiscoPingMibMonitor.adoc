@@ -64,15 +64,12 @@ IOS seems to clean up entries in this table within minutes after their ping oper
 
 == Configuration and use
 
-.Monitor specific parameters for the CiscoPingMibMonitor
-[options="header, autowidth"]
-
-This monitor has no required parameters.
-The following are optional parameters. 
+.Optional monitor-specific parameters for the CiscoPingMibMonitor
+[options="header, %autowidth"]
 |===
 | *Parameter* | *Description* | *Default* 
 | version                    | SNMP protocol version (1, 2c, or 3) to use for operations this service monitor performs. 
-                                  Do not use without a very good reason to do so.                             | from snmp-config.xml
+                                                            | from snmp-config.xml
 | packet-count                | Number of ping packets that the remote IOS device should send.                      | 5
 | packet-size                 | Size, in bytes, of each ping packet that the remote IOS device should send.         | 100
 | packet-timeout              | Timeout, in milliseconds, of each ping packet sent by the remote IOS device.        | 2000
@@ -115,8 +112,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 This is optional just if you can use variables in the configuration.
 
-.Variables which can be used in the configuration
-[options="header, autowidth"]
+.Variables for use in the configuration
+[options="header, %autowidth"]
 |===
 | Variable        | Description
 | $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service

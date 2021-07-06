@@ -20,8 +20,8 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 
 == Configuration and use
 
-.Monitor specific parameters for the HostResourceSwRunMonitor
-[options="header, autowidth"]
+.Monitor-specific parameters for the HostResourceSwRunMonitor
+[options="header, %autowidth"]
 |===
 3+| Required
 | *Parameter*            | *Description* | *Default*

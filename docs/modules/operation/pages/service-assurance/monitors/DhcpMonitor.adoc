@@ -24,15 +24,11 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == DhcpMonitor configuration
 
-.DhcpMonitor parameters in `poller-configuration.xml`.
+.Optional DhcpMonitor parameters in poller-configuration.xml.
 [options="header, %autowidth"]
 |===
-3+|*Required*
-| *Parameter*          | *Description*  | *Default*
-| rrd-repository | The location to write RRD data. Generally, you will not want to change this from the default.  | $\{OPENNMS_HOME}/share/rrd/response
-| rrd-base-name  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | dhcp
-| ds-name        | The name as reference for this particular data source in the RRD file.                 | dhcp
 3+|*Optional*
+| *Parameter*          | *Description*  | *Default*
 | macAddress      | The MAC address that {page-component-title} uses for a DHCP request.                         | 00:06:0D:BE:9C:B2
 | relayMode        | Puts the poller in relay mode .                                                             | false
 | myIpAddress      | This parameter will usually be set to the IP address of the {page-component-title} server,

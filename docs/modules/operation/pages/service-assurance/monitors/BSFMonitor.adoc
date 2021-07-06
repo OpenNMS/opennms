@@ -21,7 +21,7 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 
 == Configuration and use
 
-.Monitor specific parameters for the BSFMonitor
+.Monitor-specific parameters for the BSFMonitor
 [options="header, autowidth"]
 |===
 3+|*Required*
@@ -40,8 +40,8 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-.Beans which can be used in the script
-[options="header, autowidth"]
+.Beans available for the script
+[options="header, %autowidth"]
 |===
 | Variable      | Type                            | Description
 | map       | Map<String, Object>           | The map contains all parameters passed to the monitor
@@ -124,7 +124,7 @@ Additionally, the results object can also carry a "reason":"message" entry that 
 The BSF supports many languages. 
 The following table provides the required setup for commonly used languages.
 
-._BSF_ language setups
+.BSF language setups
 [options="header, autowidth"]
 |===
 | Language                            | lang-class  | bsf-engine                                    | required library

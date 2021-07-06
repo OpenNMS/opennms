@@ -14,10 +14,8 @@ The monitor opens a TCP socket and tests the greeting banner returns with `ICA`;
 
 == Configuration and use
 
-.Monitor specific parameters for the CitrixMonitor
+.Optional monitor-specific parameter for the CitrixMonitor
 [options="header, autowidth"]
-
-This parameter is optional.
 |===
 | *Parameter* | *Description* | *Default* 
 | port    | TCP port where the ICA protocol listens.                                                         |1494
