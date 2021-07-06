@@ -15,6 +15,7 @@ ADD ./tarball/minion.tar.gz /opt/
 
 # Organize files based on the build home dir /opt/minion
 RUN mv /opt/minion-* /opt/minion
+RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
 
 # Install wget and update certificates for arm/v7 otherwise SSL
 # ERROR: cannot verify repo1.maven.org's certificate, issued by 'CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US':

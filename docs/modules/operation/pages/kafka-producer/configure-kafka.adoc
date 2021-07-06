@@ -77,10 +77,6 @@ Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in you
 
 To enable metric forwarding, set the value of the `forward.metrics` property to `true`.
 
-WARNING: The producer's code sends a full CollectionSet per message to Kafka. 
-Large network equipment might have hundreds of thousands of metrics that could generate messages over the Kafka limit (1MB in size by default).
-You must increase `max.request.size` at the producer level and `message.max.bytes` and `replica.fetch.max.bytes` at the broker level to avoid problems with the consumers.
-
 [source]
 ----
 $ ssh -p 8101 admin@localhost
