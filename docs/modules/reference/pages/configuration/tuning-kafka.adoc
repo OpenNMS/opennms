@@ -13,8 +13,7 @@ Find available configuration parameters for Kafka here:
 == Multiple {page-component-title} instances
 
 Topics will be automatically created and are prefixed by default with OpenNMS.
-If you want to use an Apache Kafka cluster with multiple {page-component-title} instances, customize the topic prefix by setting `org.opennms.instance.id` in {page-component-title} and its Minions to a string value that identifies your instance.
-If you're using Sentinels, that must be used there as well.
+If you want to use an Apache Kafka cluster with multiple {page-component-title} instances, customize the topic prefix by setting the `org.opennms.instance.id` system property on {page-component-title} and all its Minions and Sentinels to a string value that identifies your instance.
 
 == Tips for Kafka
 
