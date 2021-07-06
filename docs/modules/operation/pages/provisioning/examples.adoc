@@ -15,7 +15,7 @@ Navigate to the Admin Menu and click `Manage Provisioning Requisitions` from the
 .Creating a new requisition
 image:provisioning/00006.jpeg[]
 
-Clicking the _Add Requisition_ button will prompt for a name to create a blank requisition, and will update the page to display the newly created entry at the end.
+Clicking the `Add Requisition` button will prompt for a name to create a blank requisition, and will update the page to display the newly created entry at the end.
 
 image:provisioning/00028.jpeg[]
 
@@ -55,7 +55,7 @@ Two more nodes will be added for the benefit of this example.
 image:provisioning/00021.jpeg[]
 
 This set of nodes represents an import requisition for the Bronze requisition.
-As this requisition is being edited via the Web UI, changes are being persisted into the {page-component-title} configuration directory '$OPENNMS_HOME/etc/imports/pending` as an XML file having the name `bronze.xml`.
+As this requisition is being edited via the Web UI, changes are being persisted into the {page-component-title} configuration directory `$OPENNMS_HOME/etc/imports/pending` as an XML file having the name `bronze.xml`.
 
 NOTE: The name of the XML file containing the import requisition is the same as the requisition name.
 Therefore naming your requisition without spaces makes them easier to manage on the file system.
@@ -101,14 +101,14 @@ To apply changes to an existing node, simply add, change, or delete the necessar
 For example, to change the IP address of the Primary SNMP interface for the node, _barbrady.opennms.com_, just change the requisition and re-import.
 
 Each element in the Web UI has an associated Edit icon
-Click this icon to change the IP address for barbrady.opennms.com, click save, and then Click the Done button.
+Click this icon to change the IP address for _barbrady.opennms.com_, click save, and then Click the Done button.
 
 .Changing the IP address of _barbrady.opennms.com_ from 10.1.1.2 to 192.168.1.1
 image:provisioning/00027.jpeg[]
 
 The Web UI will return you to the Provisioning Requisitions screen where you will see that there are the time stamp showing that the requisition’s last modification is more recent that the last import time.
 
-.The Provisioning Group must be re-imported
+.The Requisition must be re-imported
 image:provisioning/000012.png[]
 
 This provides an indication that the group must be re-imported for the changes made to the requisition to take effect.
@@ -120,9 +120,9 @@ image:provisioning/000008.png[]
 === Deleting a node
 
 _Barbrady_ has not been behaving, as one might expect, so it is time to remove him from the system.
-Edit the provisioning group, click the delete button next to the node _barbrady.opennms.com_, click the `Done` button.
+Edit the requisition, click the delete button next to the node _barbrady.opennms.com_, click the `Done` button.
 
-.Bronze Provisioning Group definition indicates a node has been removed and requires an import to delete the node entity from the {page-component-title} system
+.Bronze Requisition definition indicates a node has been removed and requires an import to delete the node entity from the {page-component-title} system
 image:provisioning/000010.png[]
 
 Click the Import button for the Bronze group and the Barbrady node and its interfaces, services, and any other related data will be immediately deleted from the {page-component-title} system.
@@ -134,11 +134,11 @@ image:provisioning/000011.png[]
 === Deleting all the nodes
 
 There is a convenient way to delete all the nodes that have been provided from a specific foreign source.
-From the main Admin/Provisioning Groups screen in the Web UI, click the `Delete Nodes` button.
+From the main Admin/Requisitions screen in the Web UI, click the `Delete Nodes` button.
 This button deletes all the nodes defined in the Bronze requisition.
 It is very important to note that once this is done, it cannot be undone!
-Well it can’t be undone from the Web UI and can only be undone if you’ve been good about keeping a backup copy of your '$OPENNMS_ETC/' directory tree.
-If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the '$OPENNMS_HOME/etc/imports' directory.
+Well it can’t be undone from the Web UI and can only be undone if you’ve been good about keeping a backup copy of your `$OPENNMS_ETC/` directory tree.
+If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the `$OPENNMS_HOME/etc/imports` directory.
 
 .All node definitions have been removed from the Bronze requisition. The Web UI indicates an import is now required to remove them from {page-component-title}.
 image:provisioning/000019.png[]
@@ -152,13 +152,13 @@ When no node entities from the group exist in {page-component-title}, then the _
 == Advanced provisioning example
 
 In the previous example, we provisioned three nodes and let Provisiond complete all of its import phases using a default foreign source definition.
-Each Provisioning Group can have a separate foreign source definition that controls:
+Each Requisition can have a separate foreign source definition that controls:
 
 * The rescan interval
 * The services to be detected
 * The policies to be applied
 
-This example will demonstrate how to create a foreign source definition and how it is used to control the behavior of Provisiond when importing a _Provisioning Group/foreign source requisition_.
+This example will demonstrate how to create a foreign source definition and how it is used to control the behavior of Provisiond when importing a requisition.
 
 First let’s simply provision the node and let the default foreign source definition apply.
 
@@ -184,7 +184,7 @@ The values of the parameters control how the service is detected, port, timeout,
 ==== Applying a new foreign source definition
 
 This example node has been provisioned using the Default foreign source definition.
-By navigating to the Provisioning Groups screen in the {page-component-title} Web UI and clicking the Edit Foreign Source link of a group, you can create a new foreign source definition that defines service detection and policies.
+By navigating to the Requisitions screen in the {page-component-title} Web UI and clicking the Edit Foreign Source link of a group, you can create a new foreign source definition that defines service detection and policies.
 The policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behaviors.
 
 .When creating a new foreign source definition, the default definition is used as a template
@@ -196,7 +196,7 @@ For this example, we will remove detection of all services accept ICMP and DNS, 
 .Custom foreign source definition
 image:provisioning/00022.jpeg[]
 
-Click the Done button and re-import the NMS Provisioning Group.
+Click the Done button and re-import the NMS Requisition.
 During this and any subsequent re-imports or re- scans, the {page-component-title} detector will be active, and the detectors that have been removed will no longer test for the related services for the interfaces on nodes managed in the requisition, however, the currently detected services will not be removed.
 There are 2 ways to delete the previously detected services:
 
@@ -222,7 +222,7 @@ The Policy API in Provisiond allow you to control the persistence of discovered 
 
 The Matching IP Interface policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
 
-Continuing with this example Provisioning Group, we are going to define a few policies that:
+Continuing with this example Requisition, we are going to define a few policies that:
 
 a. Prevent discovered 10 network addresses from being persisted.
 b. Force 192.168 network addresses to be unmanaged.
@@ -291,7 +291,7 @@ If during the policy evaluation process any policy matches for a `DO_NOT_PERSIST
 
 With this policy, node entities will automatically be assigned categories.
 The policy is defined in the same manner as the IP and SNMP interface polices.
-Click the Add Policy button and give the policy name, `cisco` and choose the `Set Node Category` class.
+Click the `Add Policy` button and give the policy name, `cisco` and choose the `Set Node Category` class.
 Edit the required category key and set the value to `Cisco`.
 Add a policy parameter and choose the sysObjectId key with a value `~^\.1\.3\.6\.1\.4\.1\.9\..*`.
 
