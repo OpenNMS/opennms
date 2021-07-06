@@ -24,7 +24,7 @@ The OpenNMS installer will detect if you need to fix the ownership of your files
 
 === Timeseries Integration Layer
 * Time series plugins need to be compatible with OIA 0.6.x.
-* String attributes are now also stored via the plugin in the respective time series database.
+* Resource level string attributes are now also stored via the plugin in the respective time series database.
   The so far used database tables in PostgreSQL have been removed.
   There is no migration support.
 
