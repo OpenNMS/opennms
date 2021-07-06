@@ -28,6 +28,7 @@
 
 package org.opennms.features.kafka.producer.collection;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -43,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 
 public class KafkaPersister implements Persister {
 
@@ -89,15 +91,15 @@ public class KafkaPersister implements Persister {
                 }
             } else {
                 // Divide resources into two in recursive way.
-                int middle = collectionSetProto.getResourceCount() / 2;
-                List<CollectionSetResource> firstPart = collectionSetProto.getResourceList().subList(0, middle);
+                Iterator<List<CollectionSetResource>> subList = Iterables.partition(collectionSetProto.getResourceList(),
+                        (collectionSetProto.getResourceCount() + 1) / 2).iterator();
+
                 CollectionSetProtos.CollectionSet firstPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
-                        .mergeFrom(collectionSetProto).clearResource().addAllResource(firstPart).build();
+                        .mergeFrom(collectionSetProto).clearResource().addAllResource(subList.next()).build();
                 bisectAndSendMessageToKafka(firstPartCollectionSet);
 
-                List<CollectionSetResource> secondPart = collectionSetProto.getResourceList().subList(middle, collectionSetProto.getResourceCount());
                 CollectionSetProtos.CollectionSet secondPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
-                        .mergeFrom(collectionSetProto).clearResource().addAllResource(secondPart).build();
+                        .mergeFrom(collectionSetProto).clearResource().addAllResource(subList.next()).build();
                 bisectAndSendMessageToKafka(secondPartCollectionSet);
             }
         } else {
@@ -106,17 +108,12 @@ public class KafkaPersister implements Persister {
     }
 
     private void bisectNumericAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
-        // Divide numeric attributes in recursive way
+        // Divide numeric attributes into two in recursive way
         if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
-            // First Part
-            int middle = collectionSetProto.getResource(0).getNumericCount() / 2;
-            List<CollectionSetProtos.NumericAttribute> firstPartNumericAttributes = collectionSetProto.getResource(0).getNumericList().subList(0, middle);
-            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, firstPartNumericAttributes));
-
-            // Second Part.
-            List<CollectionSetProtos.NumericAttribute> secondPartNumericAttributes = collectionSetProto.getResource(0).getNumericList()
-                    .subList(middle, collectionSetProto.getResource(0).getNumericCount());
-            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, secondPartNumericAttributes));
+            Iterator<List<CollectionSetProtos.NumericAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getNumericList(),
+                    (collectionSetProto.getResource(0).getNumericCount() + 1) / 2).iterator();
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
         } else {
             sendMessageToKafka(collectionSetProto);
         }
@@ -134,17 +131,12 @@ public class KafkaPersister implements Persister {
     }
 
     private void bisectStringAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
-        // Divide string attributes in recursive way
+        // Divide string attributes into two in recursive way
         if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
-            // First Part
-            int middle = collectionSetProto.getResource(0).getStringCount() / 2;
-            List<CollectionSetProtos.StringAttribute> firstPartStringAttributes = collectionSetProto.getResource(0).getStringList().subList(0, middle);
-            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, firstPartStringAttributes));
-
-            // Second Part.
-            List<CollectionSetProtos.StringAttribute> secondPartStringAttributes = collectionSetProto.getResource(0).getStringList().
-                    subList(middle, collectionSetProto.getResource(0).getStringCount());
-            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, secondPartStringAttributes));
+            Iterator<List<CollectionSetProtos.StringAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getStringList(),
+                    (collectionSetProto.getResource(0).getStringCount() + 1) / 2).iterator();
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
         } else {
             sendMessageToKafka(collectionSetProto);
         }

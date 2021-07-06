@@ -56,6 +56,7 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.features.kafka.producer.KafkaForwarderIT;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 
+
 public class KafkaMetricsMaxSizeIT {
 
     @Rule
@@ -137,7 +138,7 @@ public class KafkaMetricsMaxSizeIT {
 
         CollectionSetProtos.CollectionSet input = builderWithResources.build();
         kafkaPersister.bisectAndSendMessageToKafka(input);
-        await().atMost(60, TimeUnit.SECONDS).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(16));
+        await().atMost(60, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(16));
         CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();
         result.setTimestamp(timeStamp);
         CollectionSetProtos.CollectionSetResource.Builder resourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
