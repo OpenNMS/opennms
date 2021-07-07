@@ -50,7 +50,8 @@ In order to isolate multiple instances on the same broker, you can customize the
 echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/instance-id.properties"
 ----
 
-Update minion's instance id accordingly to match the OpenNMS instance's. The same id instance property should be present in ${MINION_HOME}/etc/custom.system.properties.
+Update minion's instance ID accordingly to match the {page-component-title} instance.
+The same ID instance property should be present in `${MINION_HOME}/etc/custom.system.properties`.
 
 [source, sh]
 ----
