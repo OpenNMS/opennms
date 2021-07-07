@@ -100,7 +100,7 @@ if [ -n "$1" ]; then
 fi
 
 do_chown "${OPENNMS_HOME}/"
-find "${OPENNMS_HOME}"/* -type l -maxdepth 0 | while read -r SUBDIR; do
+find "${OPENNMS_HOME}"/* -maxdepth 0 -type l | while read -r SUBDIR; do
   do_chown "${SUBDIR}/"
 done
 
