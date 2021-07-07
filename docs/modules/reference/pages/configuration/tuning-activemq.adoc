@@ -50,10 +50,16 @@ In order to isolate multiple instances on the same broker, you can customize the
 echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/instance-id.properties"
 ----
 
-CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
+Update minion's instance id accordingly to match the OpenNMS instance's. The same id instance property should be present in ${MINION_HOME}/etc/custom.system.properties.
 
-//TODO provide the steps to achieve this as an example
-////
+[source, sh]
+----
+echo 'org.opennms.instance.id=MyNMS' > "$\{MINION_HOME}/etc/custom.system.properties"
+----
+CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix:
+
+[source, xml]
+----
 <authorizationPlugin>
   <map>
     <authorizationMap>
@@ -72,9 +78,7 @@ CAUTION: If you change the instance id setting when using the embedded broker, y
     </authorizationMap>
   </map>
 </authorizationPlugin>
-////
-
-//TODO Consequently, it's good to remind people to add the instance id property to the minions registered to the OpenNMS server. The same property should be present in ${MINION_HOME}/etc/custom.system.properties. 
+----
 
 == Tuning the RPC client in OpenNMS
 
