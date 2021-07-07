@@ -17,7 +17,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 == Configuration and use
 
 .Optional monitor-specific parameter for the HttpsMonitor
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 
 |===
 | Parameter              | Description                                             | Default

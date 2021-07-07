@@ -13,7 +13,8 @@ Application- or device-specific monitors are based on a generic API that provide
 These minimum configuration parameters are available in all monitors and describe the behavior for timeouts, retries, and so on.
 
 .Optional common configuration parameters
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | Parameter | Description                                                         | Default
 | retry   | Number of attempts to test a service's status (up or down).            | 3
@@ -33,10 +34,9 @@ Use this mechanism to monitor the Minions individually.
 
 Use the following parameters to override this behavior and control *where* the service monitors are executed.
 
-.Minion configuration parameters
-[options="header, autowidth"]
-
-The listed parameters are optional.
+.Optional Minion configuration parameters
+[options="header"]
+[cols="1,3,2"]
 
 |===
 | Parameter   | Description                                                 | Default

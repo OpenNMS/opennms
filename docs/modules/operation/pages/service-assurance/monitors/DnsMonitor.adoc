@@ -49,7 +49,8 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 == Configuration and use
 
 .Optional monitor-specific parameters for the DnsMonitor
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | *Parameter* | *Description* | *Default*                                                                             
 | retry                | Number of retries before the service is marked as down.                                    | 0

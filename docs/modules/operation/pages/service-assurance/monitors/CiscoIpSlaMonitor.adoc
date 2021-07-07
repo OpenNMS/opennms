@@ -29,7 +29,8 @@ If the RTT_LATEST_OPERSENSE returns with overThreshold(3), the service is marked
 == Configuration and use
 
 .Required monitor-specific parameters for the CiscoIpSlaMonitor
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 
 |===
 | *Parameter* | *Description* | *Default* 

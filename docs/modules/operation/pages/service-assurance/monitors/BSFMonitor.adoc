@@ -22,7 +22,8 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 == Configuration and use
 
 .Monitor-specific parameters for the BSFMonitor
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 3+|*Required*
 | *Parameter* | *Description* | *Default* 
@@ -41,7 +42,8 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Beans available for the script
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | Variable      | Type                            | Description
 | map       | Map<String, Object>           | The map contains all parameters passed to the monitor

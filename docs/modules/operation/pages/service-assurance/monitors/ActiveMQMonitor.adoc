@@ -14,7 +14,8 @@ The service is considered available if a successful connection is made.
 == Configuration and use
 
 .Monitor specific parameters for the ActiveMQMonitor
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 
 |===
 3+|*Required*

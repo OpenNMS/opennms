@@ -15,7 +15,8 @@ The service is considered available when the node sends back an echo-reply ICMP 
 == Configuration and use
 
 .Optional monitor-specific parameters for the IcmpMonitor
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 
 |===
 | Parameter               | Description                                                 | Default

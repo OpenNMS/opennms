@@ -65,7 +65,8 @@ IOS seems to clean up entries in this table within minutes after their ping oper
 == Configuration and use
 
 .Optional monitor-specific parameters for the CiscoPingMibMonitor
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | *Parameter* | *Description* | *Default* 
 | version                    | SNMP protocol version (1, 2c, or 3) to use for operations this service monitor performs. 
@@ -113,7 +114,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 This is optional just if you can use variables in the configuration.
 
 .Variables for use in the configuration
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3"]
 |===
 | Variable        | Description
 | $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service

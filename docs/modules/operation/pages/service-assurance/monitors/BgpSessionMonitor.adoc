@@ -38,7 +38,8 @@ See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine
 
 == Configuration and use
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 3+|*Required*
 | *Parameter* | *Description* | *Default* 

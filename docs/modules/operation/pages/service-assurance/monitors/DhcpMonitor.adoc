@@ -25,12 +25,13 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 == DhcpMonitor configuration
 
 .Optional DhcpMonitor parameters in poller-configuration.xml.
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 3+|*Optional*
 | *Parameter*          | *Description*  | *Default*
 | macAddress      | The MAC address that {page-component-title} uses for a DHCP request.                         | 00:06:0D:BE:9C:B2
-| relayMode        | Puts the poller in relay mode .                                                             | false
+| relayMode        | Puts the poller in relay mode.                                                             | false
 | myIpAddress      | This parameter will usually be set to the IP address of the {page-component-title} server,
                        if relayMode is set to true.
                        In relay mode, the DHCP server being polled will unicast its responses directly
