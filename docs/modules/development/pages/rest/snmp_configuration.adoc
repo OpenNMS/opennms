@@ -1,5 +1,5 @@
 
-= SNMP configuration
+= SNMP Configuration
 
 Use this interface to edit the community string, SNMP version, etc. for an IP address.
 If you make a change that would overlap with an existing `snmp-config.xml`, it will automatically create groups of `<definition />` entries as necessary.
