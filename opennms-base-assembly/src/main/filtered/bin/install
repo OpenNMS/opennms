@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/usr/bin/env bash
 
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
@@ -27,10 +27,14 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
-if [ "$myuser" = "${RUNAS}" ]; then
-	true # all is well
-else
+if [ "$myuser" != "$RUNAS" ]; then
+	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+		echo "WARNING: relaunching as $RUNAS" >&2
+		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
+		exec "${_cmd[@]}"
+	fi
 	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
 	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
 	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2

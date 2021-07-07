@@ -53,33 +53,6 @@ AutoProv: no
 
 %define with_tests	0%{nil}
 
-%define create_user_group \
-    if ! getent group opennms >/dev/null 2>&1; then \
-        if ! id -g 1000 >/dev/null 2>&1; then \
-            groupadd --system --gid 1000 opennms; \
-        else \
-            groupadd --system opennms; \
-        fi; \
-    fi; \
-    if ! getent passwd opennms >/dev/null 2>&1; then \
-        if ! id 1000 >/dev/null 2>&1; then \
-            useradd --system \
-                    --uid 1000 \
-                    --gid opennms \
-                    --home-dir "$RPM_INSTALL_PREFIX0" \
-                    --shell /sbin/nologin \
-                    --comment "OpenNMS service account" \
-                    opennms; \
-        else \
-            useradd --system \
-                    --gid opennms \
-                    --home-dir "$RPM_INSTALL_PREFIX0" \
-                    --shell /sbin/nologin \
-                    --comment "OpenNMS service account" \
-                    opennms; \
-        fi; \
-    fi
-
 Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
@@ -127,6 +100,8 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
+Requires(pre):	/usr/sbin/useradd
+Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
@@ -905,7 +880,20 @@ if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
 
-%create_user_group
+if ! getent group opennms >/dev/null 2>&1; then \
+	if ! id -g 1000 >/dev/null 2>&1; then
+		groupadd --system --gid 1000 opennms
+	else
+		groupadd --system opennms;
+	fi
+fi
+if ! getent passwd opennms >/dev/null 2>&1; then
+	if ! id 1000 >/dev/null 2>&1; then
+		useradd --system --uid 1000 --gid opennms --home-dir "$RPM_INSTALL_PREFIX0" --shell /sbin/nologin --comment "OpenNMS service account" opennms
+	else
+		useradd --system --gid opennms --home-dir "$RPM_INSTALL_PREFIX0" --shell /sbin/nologin --comment "OpenNMS service account" opennms
+	fi
+fi
 
 %post -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
@@ -927,9 +915,9 @@ if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/logs"
 		ln -sf "$LOG_INST" "$ROOT_INST/logs"
-		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 		echo "done"
 	fi
+	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 fi
 
 if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
@@ -940,9 +928,9 @@ if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 	else
 		rm -rf "$ROOT_INST/share"
 		ln -sf "$SHARE_INST" "$ROOT_INST/share"
-		"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 		echo "done"
 	fi
+	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 fi
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
@@ -985,7 +973,7 @@ for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 		fi
 	fi
 done
-"$ROOT_INST/bin/fix-permissions" "$ROOT_INST/etc/libraries.properties"
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/etc/libraries.properties"
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then
@@ -998,6 +986,7 @@ echo "done"
 
 if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 	"$ROOT_INST/bin/runjava" "-s"
+	"${ROOT_INST}/bin/fix-permissions" -R "${ROOT_INST}/etc/java.conf"
 fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
