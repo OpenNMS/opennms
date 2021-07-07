@@ -34,8 +34,7 @@ To determine the version of the API running in your {page-component-title} type 
 
 == API version 1
 
-Version 1 supports only a few attributes defined in `snmp-config.xsd`.
-These are defined in `snmp-info.xsd`:
+Version 1 supports only a few attributes defined in `snmp-info.xsd`.
 
 [source, xml]
 ----
@@ -63,13 +62,13 @@ All parameters can be set regardless of the version.
 
 [options="header"]
 |===
-| attribute snmp-info.xml | attribute snmp-config.xml | default | restricted to version | restriction
-| version                 | version                   | v1      | -                     | `v1`, `v2c`, or `v3` are valid arguments.
-                                                                                          If an invalid or empty argument is provided `v1` is used.
-| port                    | port                      | 161     | -                     | Integer > 0
-| retries                 | retry                     | 1       | -                     | Integer > 0
-| timeout                 | timeout                   | 3000    | -                     | Integer > 0
-| community               | read-community            | public  | -                     | any string with a length >= 1
+| attribute snmp-info.xml | attribute snmp-config.xml | default | restriction
+| version                 | version                   | v1      | `v1`, `v2c`, or `v3` are valid arguments.
+                                                                  If an invalid or empty argument is provided, `v1` is used.
+| port                    | port                      | 161     | Integer > 0
+| retries                 | retry                     | 1       | Integer > 0
+| timeout                 | timeout                   | 3000    | Integer > 0
+| community               | read-community            | public  | any string with a length >= 1
 |===
 
 .Example 1:
