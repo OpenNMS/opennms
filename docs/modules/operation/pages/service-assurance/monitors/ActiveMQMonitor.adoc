@@ -13,13 +13,13 @@ The service is considered available if a successful connection is made.
 
 == Configuration and use
 
-.Monitor specific parameters for the ActiveMQMonitor
+.Monitor-specific parameters for the ActiveMQMonitor
 [options="header"]
 [cols="1,3,2"]
 
 |===
+| Parameter | Description | Default 
 3+|*Required*
-| *Parameter* | *Description* | *Default* 
 | broker-url     | The ActiveMQ Broker URL to connect to.                                                  | vm://localhost?create=false&broker.persistent=false
 3+| *Optional*
 | user | The user name used to login to the ActiveMQ broker. |n/a                                               
