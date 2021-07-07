@@ -61,14 +61,15 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | `method`                   | HTTP method (_GET_ or _POST_)                                                              | optional | `-`
 | `http-version`             | HTTP protocol version (0.9, 1.0 or 1.1)                                                    | optional | `HTTP/1.1`
 | `user-agent`               | Set the _user agent_ field in HTTP header to identify the OpenNMS monitor.                 | optional | `OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")`
-| `virtual-host`             | Set the _virtual host_ field in HTTP header.
+| `virtual-host`             | Set the _host_ field in HTTP header.
+                               Useful in cases where one server hosts multiple sites.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the TLS
                                negotiation, known as server name indication (_SNI_)
                                (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1.)                     | optional | `-`
 | `path`                     | The relative URL to call in the request. Any query string content after a `?` should be part of the `query` parameter.   | required | `-`
 | `scheme`                   | Define the URL scheme as `http` or `https`.                                                | optional | `http`
 | `user-info`                | Set _user info_ field in the HTTP header. Colon-separated credentials such as `USERNAME:PASSWORD`.                     | optional | `-`
-| `host`                     | Set _host_ field in HTTP header.                                                           | optional | `IP interface address of the service`
+| `host`                     | Set the IP or FQDN of destination host for the request.                                    | optional | `IP interface address of the service`
 | `requireIPv6`              | Communication requires a connection to an IPv6 address. (`true` or `false`)                | optional | `-`
 | `requireIPv4`              | Communication requires a connection to an IPv4 address. (`true` or `false`)                | optional | `-`
 | `disable-ssl-verification` | Enable or disable SSL certificate verification for HTTPS tests.
