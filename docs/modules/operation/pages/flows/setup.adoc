@@ -16,7 +16,7 @@ From a Karaf shell on your {page-component-title} instance, start by configuring
 $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
-admin@opennms()> config:property-set elasticUrl http://elastic:9200
+admin@opennms()> config:property-set elasticUrl http://${YOUR_ELASTICSEARCH_URL}:9200
 admin@opennms()> config:update
 ----
 
