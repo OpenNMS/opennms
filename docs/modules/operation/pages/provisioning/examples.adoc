@@ -7,71 +7,70 @@ Here are a few practical examples of provisioning nodes to help with your unders
 
 This example adds three nodes and requires no {page-component-title} configuration other than specifying the node entities to be provisioned and managed in {page-component-title}.
 
-=== Defining the nodes via the web UI
+=== Defining nodes via the web UI
 
-Using the Requisition Web UI, three nodes are created given a single IP address.
-Navigate to the Admin Menu and click `Manage Provisioning Requisitions` from the list of Provisioning options and create the group "Bronze".
+Navigate to the Admin Menu (gears in the top right corner) and click `Manage Provisioning Requisitions` from the list of options in the Provisioning section.
+
+Clicking the `Add Requisition` button will prompt for a name.
+For this example, we are using "Laboratory"
 
 .Creating a new requisition
-image:provisioning/00006.jpeg[]
+image:provisioning/00006.png[]
 
-Clicking the `Add Requisition` button will prompt for a name to create a blank requisition, and will update the page to display the newly created entry at the end.
-
-image:provisioning/00028.jpeg[]
-
-NOTE: At this point, the XML structure for holding the new requisition group has been persisted to the `$OPENNMS_HOME/etc/imports/pending` directory.
-
-Clicking the `Edit` link (pencil icon) will bring you to the screen where you can begin the process of defining node entities that will be imported into {page-component-title}.
+Clicking the `Edit` button (pencil icon) will bring you to the screen where you can begin the process of defining node entities that will be imported into {page-component-title}.
 Clicking the `Add Node` button will begin the node entity creation process.
 Fill in the node label and click the `Save` button.
 
+NOTE: Only use the `Location` field if you have defined Monitoring Locations and deployed Minions.
+If not, leave that field blank or `Default`.
+
 .Creating a new node definition in the requisition
-image:provisioning/00026.jpeg[]
+image:provisioning/00026.png[]
 
 At this point, the requisition contains the basic structure of a node entity but it is not complete until the interface(s) and interface service(s) have been defined.
 After having clicked the `Save` button, we can continue to populate node data in the `Path Outage`, `Interfaces`, `Assets`, `Categories`, and `Meta-Data` tabs as necessary.
 Click the `Interfaces` tab and then the `Add Interface` button to add an interface entity to the node.
 
 .Adding an interface to the node definition
-image:provisioning/00009.jpeg[]
+image:provisioning/00009.png[]
 
 Type the IP address for this interface entity, an optional description, and specify the SNMP Primary attribute as `P` (Primary), `S` (Secondary), or `N` (Not eligible) and click the save button.
 Only one interface on a node can be set as Primary, and this determines which IP will be used for collecting SNMP metrics.
 There is an `Add Service` button that will let you specify services to monitor on this interface.
 The foreign source definition's detectors will be checked against the interface to look for services not explicitly specified.
 For this example, add `ICMP` and then click the `Add Service` button again to add `SNMP`.
-Finally, click the `Save` button to save the interface, then the `Save` the `Return` buttons on the node page.
+Finally, click the `Save` button to save the interface, then the `Save` and `Return` buttons on the node page.
 
 .A complete node definition with all required elements defined
-image:provisioning/00007.jpeg[]
+image:provisioning/00007.png[]
 
 Now the node entity definition contains all the required elements necessary for importing this requisition into {page-component-title}.
-At this point, all the interfaces that are required for the node in this example should be added.
+At this point, any additional the interfaces that are required for the node should be added.
 For example, NAT interfaces should be specified if there are services that they provide because they will not be discovered during the Scan Phase.
 
 Two more nodes will be added for the benefit of this example.
 
-.The completed requisition for the Bronze example
-image:provisioning/00021.jpeg[]
+.The completed requisition for the Laboratory example
+image:provisioning/00021.png[]
 
-This set of nodes represents an import requisition for the Bronze requisition.
-As this requisition is being edited via the Web UI, changes are being persisted into the {page-component-title} configuration directory `$OPENNMS_HOME/etc/imports/pending` as an XML file having the name `bronze.xml`.
+This set of nodes represents an import requisition for our demo Laboratory requisition.
+As this requisition is being edited via the Web UI, changes are being persisted into the {page-component-title} configuration directory `$OPENNMS_HOME/etc/imports/pending` as an XML file having the name `Laboratory.xml`.
 
 NOTE: The name of the XML file containing the import requisition is the same as the requisition name.
 Therefore naming your requisition without spaces makes them easier to manage on the file system.
 
 Click the `Return` button to return to the Requisitions list screen.
-The details of the Bronze group now indicate that there are three nodes in the requisition and that there are no nodes in the database from this group.
+The details of the Laboratory requisition now indicate that there are three nodes in the requisition and that there are no nodes in the database from this group.
 Additionally, you can see that time the requisition was last modified and the time it last imported are given (the time stamps are stored as attributes inside the requisition and are not the file system time stamps).
 These details are indicative of how well the database represents what is in the requisition.
 
-image:provisioning/00013.jpeg[]
+image:provisioning/00013.png[]
 
-NOTE: You can tell that this is a pending requisition for two reasons: There number of nodes defines and in the database do not match, and the requisition has been modified since the last import (in this case `never`).
+NOTE: You can tell this requisition is in a pending state because the number of nodes defined does not match the number in the database and the requisition has been modified since the last import (in this case `never`).
 
 === Import the nodes
 
-In this example, you see that there are three nodes in the pending requisition and zero in the database.
+Since we have three nodes in the pending requisition and zero in the database, it is time to import them to start monitoring.
 Click the `Synchronize` button (double arrows) to submit the requisition to the provisioning system.
 This sends an event to the Provisiond system, telling it to begin the Import Phase for this requisition.
 
@@ -79,75 +78,65 @@ NOTE: Do not refresh this page to check the values of these details.
 To refresh the details to verify the import, go to another page and then return to the Requisitions page.
 
 You should be able to immediately verify the import was successful as this import happens very quickly since there is only a small number of nodes.
-Provisiond has several threads ready for processing the import operations of the nodes, and more nodes in a requisition and detectors in the foreign source definition will take more time to complete the import process.
+The number of nodes in a requisition and detectors in the foreign source definition will determine how long it will take to complete the import process.
+More nodes/detectors will increase the time it takes for directed discovery.
 
-A few SNMP packets are sent and received to get the SNMP details of the node and the interfaces defined in the requisition.
+A couple pings and SNMP packets are sent and received to get the SNMP details of the node and the interfaces defined in the requisition.
 Upon receipt of these packets, or not, each node is inserted as a database transaction.
 
 .The nodes are now added to {page-component-title} and are under management
 image:provisioning/000014.png[]
 
-Following the import of a node with thousands of interfaces, you will be able to refresh the Interface table browser on the Node page and see that interfaces and services are being discovered and added in the background.
-This is the discovery component of directed discovery.
+NOTE: There is a link at the bottom of the node list that will show/hide the interfaces on each node.
+By default, the IP addresses are hidden from this view.
 
 === Adding a node
 
-To add another node from a foreign source, in this example the Bronze requisition, simply add a new node definition to the existing requisition and re-synchronize.
+To add another node from a foreign source, in this example the Laboratory requisition, simply add a new node definition to the existing requisition and re-synchronize.
 It is important to remember that all the node definitions will be re-imported, and the existing managed nodes will be updated if necessary.
 
 === Changing a node
 
 To apply changes to an existing node, simply add, change, or delete the necessary attributes of the node definition and re-synchronize.
-For example, to change the IP address of the Primary SNMP interface for the node, _barbrady.opennms.com_, just change the requisition and re-import.
+For example, to change the IP address of the Primary SNMP interface for the node, _bob.opennms.com_, just change the requisition and re-import.
 
-Each element in the Web UI has an associated Edit icon
-Click this icon to change the IP address for _barbrady.opennms.com_, click save, and then Click the Done button.
+Once edited, the Web UI will return you to the Provisioning Requisitions screen where you will see that there are the time stamp showing that the requisition’s last modification is more recent that the last import time.
 
-.Changing the IP address of _barbrady.opennms.com_ from 10.1.1.2 to 192.168.1.1
-image:provisioning/00027.jpeg[]
-
-The Web UI will return you to the Provisioning Requisitions screen where you will see that there are the time stamp showing that the requisition’s last modification is more recent that the last import time.
-
-.The Requisition must be re-imported
+.The Requisition must be re-imported to apply changes
 image:provisioning/000012.png[]
 
-This provides an indication that the group must be re-imported for the changes made to the requisition to take effect.
-The IP Interface will be simply updated and all the required events (messages) will be sent to communicate this change within {page-component-title}.
+Once the import is complete, you can see the updated interface(s) on the node.
 
-.The IP interface for barbrady.opennms.com is immediately updated
+.The updated IP interface for bob.opennms.com can be seen added to the node
 image:provisioning/000008.png[]
 
 === Deleting a node
 
-_Barbrady_ has not been behaving, as one might expect, so it is time to remove him from the system.
-Edit the requisition, click the delete button next to the node _barbrady.opennms.com_, click the `Done` button.
+_Bob_ has not been behaving, so it is time to remove it from the system.
+Edit the requisition, click the delete button (trash icon) next to the node _bob.opennms.com_ and click Ok to confirm.
 
-.Bronze Requisition definition indicates a node has been removed and requires an import to delete the node entity from the {page-component-title} system
+.The Delete button will remove a node from the requisition
 image:provisioning/000010.png[]
 
-Click the Import button for the Bronze group and the Barbrady node and its interfaces, services, and any other related data will be immediately deleted from the {page-component-title} system.
-All the required Events (messages) will be sent by Provisiond to provide indication to the {page-component-title} system that the node Barbrady has been deleted.
+Click the Synchronize button for the requisition, and the Bob node and its interfaces, services, and any other related data will be immediately deleted from the {page-component-title} system.
 
-.Barbrady has been deleted
+.Bob has been deleted
 image:provisioning/000011.png[]
 
 === Deleting all the nodes
 
 There is a convenient way to delete all the nodes that have been provided from a specific foreign source.
-From the main Admin/Requisitions screen in the Web UI, click the `Delete Nodes` button.
-This button deletes all the nodes defined in the Bronze requisition.
+From the main Requisitions page, click the `...` button to access the `Remove All Nodes` option.
+This button deletes all the nodes defined in the selected requisition.
 It is very important to note that once this is done, it cannot be undone!
-Well it can’t be undone from the Web UI and can only be undone if you’ve been good about keeping a backup copy of your `$OPENNMS_ETC/` directory tree.
-If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the `$OPENNMS_HOME/etc/imports` directory.
+(Unless you have a backup of the requisition file)
 
-.All node definitions have been removed from the Bronze requisition. The Web UI indicates an import is now required to remove them from {page-component-title}.
+.`Remove All Nodes` option is available from the `...` menu on the requisition entry
 image:provisioning/000019.png[]
 
-Clicking the `Import` button will cause the Audit Phase of Provisiond to determine that all the nodes from the Bronze requisition should be deleted from the database and will create `Delete` operations.
-At this point, if you are satisfied that the nodes have been deleted and that you will no longer require nodes to be defined in this Group, you will see that the `Delete Nodes` button has now changed to the _Delete Group_ button.
-The _Delete Group_ button is displayed when there are no nodes entities from that group (foreign source) in {page-component-title}.
-
-When no node entities from the group exist in {page-component-title}, then the _Delete Group_ button is displayed.
+Make sure to click the Synchronize button to tell the database to purge the nodes from the system to apply the deletion.
+If you no longer want the requisition in your system, you can select the `Delete Requisition` option from the `...` menu.
+You can only delete a requisition if there are no nodes in the database for the requisition.
 
 == Advanced provisioning example
 
