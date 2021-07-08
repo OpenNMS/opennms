@@ -47,9 +47,8 @@ The JCifsMonitor *cannot* test:
 [options="header"]
 [cols="1,3,2"]
 |===
-3+|*Required*
 | Parameter           | Description                                                                                     | Default
-
+3+|*Required*
 | path              | Path to the resource you want to test                                                           | empty string 
 
 3+|*Optional*

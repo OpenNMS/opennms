@@ -5,7 +5,7 @@
 The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
 During the poll, the monitor attempts to connect on the specified port(s).
 The monitor can test web servers on multiple ports.
-By default, it makes the against ports 80, 8080, and 8888.
+By default, it makes the test against ports 80, 8080, and 8888.
 If the connection request is successful, an HTTP GET command is sent to the interface.
 The response is parsed and a return code extracted and verified.
 
@@ -32,14 +32,14 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 *{}*
  | Authentication credentials to perform basic authentication. +
                            Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945], section
-                           11.1, without the Base64 encoding part: be a string made of the concatenation of: +
+                           11.1, without the Base64 encoding part and be a string made of the concatenation of: +
                            1- the user ID; +
                            2- a colon; +
                            3- the password. +
-                          `basic-authentication` takes precedence over the `user` and `password` parameters.           |n/a
-| header[0-9]+         | Additional headers to send along with the request. +
+                          `basic-authentication` takes precedence over the user and password parameters.           |n/a
+| header[0-9]+         | Additional headers to send with the request. +
                            Example of valid parameter names are +
-                           header0, header1, and header180. `header` is *not* a valid parameter name.             | n/a 
+                           header0, header1, and header180. `header`is not a valid parameter name.             | n/a 
 | host-name            | Specify the Host header's value. | n/a 
 | nodelabel-host-name | If the host-name parameter isn't set and the resolve-ip parameter is set to false, 
                            then {page-component-title} uses the node's label to set the Host header's value if
@@ -48,9 +48,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | password      
 
 *{}*
-       | Use this parameter with the `user` parameter to perform basic +
-                           authentication. This parameter specifies the password to use. The user and password +
-                           parameters are ignored when the basic-authentication parameter is defined.                | empty string
+       | Specifies the password to use. Use this parameter with the user parameter to perform basic +
+                           authentication. The user and password parameters are ignored when the basic-authentication parameter is defined.                | empty string
 | port              | A list of TCP ports to try connection on.                                     | 80,8080,8888 
 | retry                | Number of attempts to get a valid HTTP response/response-text.                             | 0 
 | resolve-ip           | If the host-name parameter is not set and this parameter is set to true,
@@ -60,7 +59,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                            parameter to set the Host header's value.                                                 | false 
 | response             | A comma-separated list of acceptable HTTP response code ranges.
                            Example: 200-202,299                                                                      | If the url parameter is set to `/`, the default +
-                           value for this parameter is 100-499, otherwise it is 100-399. 
+                           value for this parameter is 100-499; otherwise, it is 100-399. 
 | response-text        | Text to look for in the response body. This will be matched against every line, and it will
                            be considered a success at the first match. If there is a `~` at the beginning of the
                            parameter, the rest of the string is used as a regular expression pattern match;
@@ -74,8 +73,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | user    
 
 *{}*
-            | Use this parameter with the password parameter to perform
-                           basic authentication. This parameter specifies the user ID to use. The user and
+            | Specifies the user ID to use. Use this parameter with the password parameter to perform
+                           basic authentication. The user and
                            password parameters are ignored when the basic-authentication parameter is defined.     | n/a 
 | user-agent   
 
@@ -141,7 +140,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 If a filtering proxy server is set up to allow retrieval of some URLs but deny others, the HttpMonitor can verify this behavior.
 
 As an example, a proxy server runs on TCP port 3128 and serves http://www.opennms.org/ but never http://www.myspace.com/.
-To test this behaviour, the configure the HttpMonitor as follows:
+To test this behavior, configure the HttpMonitor as follows:
 
 [source, xml]
 ----

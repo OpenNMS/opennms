@@ -1,8 +1,8 @@
 
 = BgpSessionMonitor
 
-This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.
-The monitor uses the RFC1269 SNMP MIB to monitor the BGP-Session, and uses the following OIDs to test the session status:
+This monitor checks if a BGP session to a peering partner (peer-ip) is functional.
+The monitor uses the link:https://datatracker.ietf.org/doc/html/rfc1269[RFC1269 SNMP MIB] to monitor the BGP-Session, and uses the following OIDs to test the session status:
 
  BGP_PEER_STATE_OID = .1.3.6.1.2.1.15.3.1.2.<peer-ip>
  BGP_PEER_ADMIN_STATE_OID = .1.3.6.1.2.1.15.3.1.3.<peer-ip>
@@ -12,8 +12,8 @@ The monitor uses the RFC1269 SNMP MIB to monitor the BGP-Session, and uses the f
 
 The `<peer-ip>` is the far end IP address of the BGP session end point.
 
-An SNMP get request for `BGP_PEER_STATE_OID` returns a result between `1` to `6`.
-The servicestates for {page-component-title} are mapped as follows:
+An SNMP GET request for `BGP_PEER_STATE_OID` returns a result between 1 and 6.
+The service states for {page-component-title} are mapped as follows:
 
 [options="header, autowidth"]
 |===
@@ -51,7 +51,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-To monitor the session state _Established_ you add a service to your poller configuration in '$\{OPENNMS_HOME}/etc/poller-configuration.xml'. 
+To monitor the session state `Established`, add a service to your poller configuration in `$\{OPENNMS_HOME}/etc/poller-configuration.xml`. 
 For example:
 
 [source, xml]
@@ -70,8 +70,8 @@ For example:
 
 == Error code mapping
 
-The _BGP_PEER_LAST_ERROR_OID_ gives an error in HEX-code.
-A codemapping table makes it human readable:
+The BGP_PEER_LAST_ERROR_OID gives an error in hex code.
+A code-mapping table makes it human-readable:
 
 [options="header, autowidth"]
 |===
@@ -112,7 +112,7 @@ A codemapping table makes it human readable:
 | 0608     | Cease - Out of Resources
 |===
 
-Instead of HEX-code, the error message will be displayed in the service-down log message.
+Instead of hex code, the error message will be displayed in the service-down log message.
 The log message also provides the following additional information:
 
  BGP-Peer Adminstate
@@ -121,7 +121,7 @@ The log message also provides the following additional information:
 
 == Debugging
 
-If you cannot detect or monitor the BGP Session, use the following command to determine the problem.
+If you cannot detect or monitor the BGP session, use the following command to determine the problem.
 
 [source, bash]
 ----
@@ -129,4 +129,4 @@ snmpwalk -v 2c -c <myCommunity> <myRouter2Monitor> .1.3.6.1.2.1.15.3.1.2.99.99.9
 ----
 
 Replace `99.99.99.99` with your BGP-Peer IP.
-The result should be an integer between `1` and `6`.
+The result should be an integer between 1 and 6.

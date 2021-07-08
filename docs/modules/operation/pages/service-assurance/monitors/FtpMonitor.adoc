@@ -29,20 +29,20 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | port                 | A list of TCP ports to which connection shall be tried.                                     | 20, 21 
 | password
 
-*{}*             | Use this parameter with the userid parameter to perform
-                           authentication. This parameter specifies the password to use.                           | empty string 
+*{}*             | Specifies the password to use. Use this parameter with the userid parameter to perform
+                           authentication.                         | empty string 
 | userid  
 
 *{}*
-          | Use this parameter with the password parameter to perform
-                           authentication. This parameter specifies the user ID to use.                            |n/a 
+          | Specifies the user ID to use. Use this parameter with the password parameter to perform
+                           authentication.                            |n/a 
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-Example configuration on how to configure the monitor in poller-configuration.xml.
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
 [source, xml]
 ----
 <service name="FTP" interval="300000" user-defined="false" status="on">

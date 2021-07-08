@@ -94,7 +94,8 @@ It can also use both sendmail-test and readmail-test independently to determine 
 |===
 
 .Optional options for readmail-protocol
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | Attribute    | Description                                                     | Default
 | transport  | The transport protocol to use. One of: pop3, pop3s, imap, imaps.                                   | pop3

@@ -1,13 +1,13 @@
 
 = AvailabilityMonitor
 
-This monitor uses the _isReachable_ method of the _InetAddress_ Java class to test the reachability of a node.
+This monitor uses the isReachable method of the InetAddress Java class to test the reachability of a node.
 The service is considered available if isReachable returns true.
 See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
 
 Note that under most configurations the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>> supercedes the AvailabilityMonitor. 
-The AvailabilityMonitor was developed when the ICMPMonitor was not remote enabled, to circumvent this limitation.
-Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations, so you should not need the AvailabilityMonitor. 
+The AvailabilityMonitor was developed when the ImpMonitor was not remote enabled, to circumvent this limitation.
+Now, with the JNA ICMP implementation, the IcmpMonitor is remote-enabled under most configurations, so you should not need the AvailabilityMonitor. 
 
 == Monitor facts
 

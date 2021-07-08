@@ -22,10 +22,10 @@ The service is considered available if a successful connection is made.
 3+|*Required*
 | broker-url     | The ActiveMQ Broker URL to connect to.                                                  | vm://localhost?create=false&broker.persistent=false
 3+| *Optional*
-| user | The user name used to login to the ActiveMQ broker. |n/a                                               
+| user | The user name used to log in to the ActiveMQ broker. |n/a                                               
 | password | The password used to authenticate the user on the ActiveMQ broker. | n/a                     
 | use-nodelabel  | A boolean to enable using the nodelabel when connecting to the ActiveMQ broker.     | false
-| create-session | A boolean to enable creating a JMS Session when connecting to the ActiveMQ broker.   | false
+| create-session | A boolean to enable creating a JMS session when connecting to the ActiveMQ broker.   | false
 | client-id | The client ID to use when connecting to the ActiveMQ broker. | n/a
 |===             
 
@@ -34,7 +34,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+Sample configuration on how to configure the monitor in `poller-configuration.xml`.
 
 [source, xml]
 ----

@@ -9,7 +9,7 @@ If the results indicate success according to the configured parameters in the se
 If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
 If something goes wrong during the setup of the entry or the subsequent querying of its status, the monitored service is reported to be in an unknown state.
 
-NOTE: Unlike most poller monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
+Unlike most poller monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
 The packet-count and packet-timeout parameters instead serve this purpose from the perspective of the remote IOS device.
 
 .Supported MIB OIDs from CISCO_PING_MIB
@@ -37,21 +37,21 @@ The packet-count and packet-timeout parameters instead serve this purpose from t
 
 == Prerequisites
 
-* One or more Cisco devices running any 12.2 or later IOS image after 12.2.
+* One or more Cisco devices running any 12.2 or later IOS image.
 Even very low-end devices appear to support the CISCO-PING-MIB.
 * The IOS devices that will perform the remote pings must be configured with an SNMP write community string whose source address access-list includes the address of the {page-component-title} server and whose MIB view (if any) includes the OID of the ciscoPingTable.
 * The corresponding SNMP write community string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of `snmp-config.xml` or a `<definition>` child element that applies to the SNMP-primary interface of the IOS device(s) that will perform the remote pings.
 
 == Scalability concerns
 
-This monitor spends a fair amount of time sleeping while it waits for the remote IOS device to complete the requested ping operations.
+This monitor spends a lot of time sleeping while it waits for the remote IOS device to complete the requested ping operations.
 The monitor is pessimistic in calculating the delay between creation of the ciscoPingTable entry and its first attempt to retrieve the results of that entry's ping operations -- it will always wait at least (`packet-count * (packet-timeout + packet-delay)`) milliseconds before even checking whether the remote pings have completed.
-Therefore, it is prone to hogging poller threads if used with large values for the `packet-count`, `packet-timeout`, and/or `packet-delay` parameters.
+Therefore, it is prone to hogging poller threads if used with large values for the packet-count, packet-timeout, and/or packet-delay parameters.
 Keep these values as small as practical to avoid tying up poller threads unnecessarily.
 
 This monitor always uses the current time in whole seconds since the UNIX epoch as the instance identifier of the ciscoPingTable entries that it creates.
 The object that holds this identifier is a signed 32-bit integer type, precluding a finer resolution.
-It's probably a good idea to mix in the least-significant byte of the millisecond-accurate time as a substitute for that of the whole-second-accurate value to avoid collisions.
+It's a good idea to mix in the least-significant byte of the millisecond-accurate time as a substitute for that of the whole-second-accurate value to avoid collisions.
 IOS seems to clean up entries in this table within minutes after their ping operations have completed.
 
 == Monitor facts
@@ -70,7 +70,7 @@ IOS seems to clean up entries in this table within minutes after their ping oper
 |===
 | *Parameter* | *Description* | *Default* 
 | version                    | SNMP protocol version (1, 2c, or 3) to use for operations this service monitor performs. 
-                                                            | from snmp-config.xml
+                                                            | from `snmp-config.xml`
 | packet-count                | Number of ping packets that the remote IOS device should send.                      | 5
 | packet-size                 | Size, in bytes, of each ping packet that the remote IOS device should send.         | 100
 | packet-timeout              | Timeout, in milliseconds, of each ping packet sent by the remote IOS device.        | 2000
@@ -100,20 +100,18 @@ IOS seems to clean up entries in this table within minutes after their ping oper
                                   remote IOS device) to consider this service available. As an
                                   example, if `packet-count` is left at its default value of five but you wish the
                                   service to be considered available even if only one of those five pings is successful,
-                                  then set this parameter's value to `20`.                                              | 100
+                                  then set this parameter's value to 20.                                              | 100
 | rrd-repository              | Base directory of an RRD repository in which to store this service monitor's
                                   response-time samples.            |n/a
 | ds-name                     | Name of the RRD datasource (DS) name in which to store this service monitor's
-                                  response-time samples; rrd-base-name Base name of the RRD file (minus the `.rrd` or
+                                  response-time samples. The rrd-base-name Base name of the RRD file (minus the `.rrd` or
                                   `.jrb` file extension) within the specified rrd-repository path in which this service
                                   monitor's response-time samples will be persisted                                     | n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-This is optional just if you can use variables in the configuration.
-
-.Variables for use in the configuration
+.Optional variables for use in the configuration
 [options="header"]
 [cols="1,3"]
 |===
@@ -134,7 +132,7 @@ All of Foo Corporation's CPE routers must be Cisco IOS devices to achieve full c
 One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 
 We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
-Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we statically list that value for the `target-ip-addr` address.
+Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we statically list that value for the `target-ip-addr` address.
 
 [source, xml]
 ----

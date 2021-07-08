@@ -2,7 +2,7 @@
 = CitrixMonitor
 
 This monitor tests if a Citrix(R) Server or XenApp Server(R) is providing the Independent Computing Architecture (ICA) protocol on TCP 1494.
-The monitor opens a TCP socket and tests the greeting banner returns with `ICA`; otherwise, the service is unavailable.
+The monitor opens a TCP socket and tests the greeting banner returns with ICA; otherwise, the service is unavailable.
 
 == Monitor facts
 
@@ -28,7 +28,7 @@ WARNING: If you use session reliability to configure the MetaFrame Presentation 
          Find more information on http://support.citrix.com/article/CTX104147[CTX104147].
         It is not verified if the monitor works in this case.
 
-== Example
+== Examples
 
 The following example configures {page-component-title} to monitor the ICA protocol on TCP 1494 with two retries and waiting five seconds for each retry.
 [source, xml]

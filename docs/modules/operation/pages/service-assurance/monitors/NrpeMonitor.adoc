@@ -12,7 +12,7 @@ The full output of the check command output message is passed into the service d
 
 IMPORTANT: NRPE configuration on the server is required and the check command has to be configured; for example, `command[check_apt]=/usr/lib/nagios/plugins/check_apt`
 
-CAUTION: {page-component-title} executes every NRPE check in a Java thread without `fork()` a process, and it is more resource friendly.
+CAUTION: {page-component-title} runs every NRPE check in a Java thread without `fork()` a process, and it is more resource friendly.
          Nevertheless, it is possible to run NRPE plugins that combine a lot of external programs like sed, awk, or cut.
          Be aware, each command forks additional processes.
 

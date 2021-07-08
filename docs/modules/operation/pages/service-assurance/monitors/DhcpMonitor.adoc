@@ -1,12 +1,12 @@
 
 = DhcpMonitor
 
-Use this monitor to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
-The monitor class DhcpMonitor is executed by Pollerd and opens the background process listening for incoming DHCP responses.
+Use this monitor to check the availability and functionality of [DHCP servers.
+The monitor class DhcpMonitor is run by Pollerd and opens the background process listening for incoming DHCP responses.
 A DHCP server is tested by sending a DISCOVER message.
 If the DHCP server responds with an OFFER, the service is marked as up.
 The background listening process is started only if the DhcpMonitor is used.
-You can modify the behavior for testing the DHCP server in the `poller-configuration.xml` configuration file.
+You can modify the behavior for testing the DHCP server in `poller-configuration.xml`.
 
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
@@ -14,7 +14,7 @@ CAUTION: Make sure no DHCP client is running on the {page-component-title} serve
 
 == Monitor facts
 
-[options="header, autowidth"]
+[options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.DhcpMonitor`
 | Remote Enabled | true
@@ -28,8 +28,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header"]
 [cols="1,3,2"]
 |===
-3+|*Optional*
-| *Parameter*          | *Description*  | *Default*
+| Parameter          | Description  | Default
 | macAddress      | The MAC address that {page-component-title} uses for a DHCP request.                         | 00:06:0D:BE:9C:B2
 | relayMode        | Puts the poller in relay mode.                                                             | false
 | myIpAddress      | This parameter will usually be set to the IP address of the {page-component-title} server,
@@ -56,7 +55,7 @@ image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 
 == Example: testing DHCP server in the same subnet
 
-Example configuration on how to configure the monitor in the `poller-configuration.xml`.
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
 The monitor tries to send a maximum of three DISCOVER messages and waits three seconds for the DHCP server OFFER message.
 
 .Configure a DHCP service in `poller-configuration.xml`

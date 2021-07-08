@@ -29,23 +29,23 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 [options="header"]
 [cols="1,3,2"]
 |===
-3+|Required
-| *Parameter*    | *Description*                                           |*Default*
+| Parameter    | Description                                           |Default
+3+|*Required*
 | disk      | A pattern that a storage's description (hrStorageDescr) must match to be taken into account.     |n/a
 3+|*Optional*
 | free       | The minimum amount of free space that storage matching the criteria must have available.
                  This parameter is evaluated as a percent of the storage's reported maximum capacity. |15
 | match-type | The way the pattern specified by the disk parameter must be compared to the storage's description.
                  Must be one of the following symbolic operators: +
-                 `endswith`: The disk parameter's value is evaluated as a string that storages' description
+                 `endswith`: The disk parameter's value is evaluated as a string that the storage's description
                                 must end with; +
-                 `exact`: The disk parameter's value is evaluated as a string that storages' description
+                 `exact`: The disk parameter's value is evaluated as a string that the storage's description
                                 must exactly match; +
-                 `regex`: The disk parameter's value is evaluated as a regular expression that storages'
+                 `regex`: The disk parameter's value is evaluated as a regular expression that the storage's
                                 description must match; +
-                 `startswith`: The disk parameter's value is evaluated as a string that storages' description
+                 `startswith`: The disk parameter's value is evaluated as a string that storage's description
                                 must start with. +
-                 Note: Comparisons are case-sensitive.                                                               | exact
+                 Note that comparisons are case-sensitive.                                                               | exact
 | port       | Destination port where the SNMP requests are sent.                                            |from snmp-config.xml
 | retries    | Deprecated.
                  Same as `retry`.
@@ -71,4 +71,4 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == DiskUsageMonitor vs. thresholds
 
-You can also use thresholds to monitor storages' available free space if you are already collecting these data.
+You can also use thresholds to monitor a storage's available free space if you are already collecting these data.

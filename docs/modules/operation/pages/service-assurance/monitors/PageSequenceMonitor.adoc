@@ -9,7 +9,7 @@ Beyond testing a web application with a single URL, it can also test a path thro
 A test path through an web application can look like this:
 
 . Log in to a certain web application.
-. Execute an action while logged in.
+. Run an action while logged in.
 . Log off.
 
 The service is considered as up if all this works.
@@ -41,7 +41,7 @@ Additionally, it is possible to configure a page sequence that contains a path t
 |===
 | Parameter        | Description                                                     | Default
 3+|*Required*
-| page-sequence  | Definition of the page sequence to execute. See table with_Page Sequence Parameters                 | n/a
+| page-sequence  | Definition of the page sequence to run. See table with_Page Sequence Parameters                 | n/a
 3+|*Optional*
 | retry          | The number of retries per page.                                                                      | 0
 | strict-timeout | Defines how long to wait before retrying.

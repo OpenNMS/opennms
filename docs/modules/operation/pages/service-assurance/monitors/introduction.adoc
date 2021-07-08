@@ -1,7 +1,7 @@
 
 = Service monitors
 
-To support several specific applications and management agents, Pollerd executes service monitors.
+To support several specific applications and management agents, Pollerd runs service monitors.
 This section describes all available built-in service monitors.
 You can configure them to allow complex monitoring.
 For information on how to extend these monitors, see the xref:development:overview/overview.adoc#overview[Development section].
@@ -27,21 +27,21 @@ TIP: If the monitor uses SNMP, the default configuration for timeout and retry a
 [[ga-service-assurance-monitors-minion-parameters]]
 === Minion configuration parameters
 
-When nodes are configured with a non-default location, the associated service monitors are executed on a Minion configured with that same location.
-If a given location has many Minions, the service monitor may be executed on any of the Minions that are currently available.
-To execute a service monitor on a specific Minion, specify the System ID of the Minion.
+When nodes are configured with a non-default location, the associated service monitors run on a Minion configured with that same location.
+If a given location has many Minions, the service monitor may run on any of the Minions that are currently available.
+To run a service monitor on a specific Minion, specify the System ID of the Minion.
 Use this mechanism to monitor the Minions individually.
 
-Use the following parameters to override this behavior and control *where* the service monitors are executed.
+Use the following parameters to override this behavior and control where the service monitors run.
 
 .Optional Minion configuration parameters
 [options="header"]
-[cols="1,3,2"]
+[cols="1,3,1"]
 
 |===
 | Parameter   | Description                                                 | Default
-| location  | Specify the location to execute the service monitor.        | The location of the associated node.
-| system-id | Specify the system ID on which to execute the service monitor.   | None
+| location  | Specify the location to run the service monitor.        | The location of the associated node.
+| system-id | Specify the system ID on which to run the service monitor.   | n/a
 | use-foreign-id-as-system-id | Use the foreign id of the associated node as the system ID. | false
 |===
 
@@ -58,6 +58,6 @@ The supported properties are:
 * foreignSource
 * foreignId
 * ipAddr (or ipAddress)
-* all node asset record fields (for example, username, password)
+* all node asset record fields (for example: username, password)
 
-Parameters that support placeholder substitution have a *{}* icon beside them in the *Configuaration and Use* section of the monitor documentation.
+Parameters that support placeholder substitution have a *{}* icon beside them in the *Configuaration and use* section of the monitor documentation.

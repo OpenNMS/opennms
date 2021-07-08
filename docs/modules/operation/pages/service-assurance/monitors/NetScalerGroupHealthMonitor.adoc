@@ -29,8 +29,8 @@ IMPORTANT: This monitor doesn not check the load-balanced service itself.
 [options="header"]
 [cols="1,3,2"]
 |===
-3+|*Required*
 | Parameter     | Description                                                     |Default
+3+|*Required*
 | group-name | The name of the server group to check.                                        | n/a
 3+|*Optional*
 | group-health| The percentage of active servers vs. total servers of the group, as an integer.  | 60

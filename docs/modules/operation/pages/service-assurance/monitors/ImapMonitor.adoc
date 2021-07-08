@@ -22,7 +22,7 @@ You can simulate the behavior with `telnet`:
 <2> Sending an `ONMSPOLLER LOGOUT`.
 <3> Test server responds: it must start with `* BYE` to be up.
 
-If one of the tests in the sample above fails the service is marked down.
+If one of the tests in the sample above fails, the service is marked down.
 
 == Monitor facts
 

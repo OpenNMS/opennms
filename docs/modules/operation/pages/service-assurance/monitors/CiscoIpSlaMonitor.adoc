@@ -13,10 +13,10 @@ This monitor supports the following SNMP OIDS from http://www.circitor.fr/Mibs/H
 
 You can run this monitor in two scenarios.
 The first tests the RTT_LATEST_OPERSENSE, which is a sense code for the completion status of the latest RTT operation.
-If the RTT_LATEST_OPERSENSE returns ok(1), the service is marked as up.
+If the RTT_LATEST_OPERSENSE returns `ok(1)`, the service is marked as up.
 
 The second scenario monitors the configured threshold in the IP SLA config.
-If the RTT_LATEST_OPERSENSE returns with overThreshold(3), the service is marked down.
+If the RTT_LATEST_OPERSENSE returns with `overThreshold(3)`, the service is marked down.
 
 == Monitor facts
 
@@ -101,5 +101,5 @@ To monitor both of the entries, the configuration in `poller-configuration.xml` 
 <monitor service="IP-SLA-WEB-Google" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
 <monitor service="IP-SLA-PING-OpenNMS" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
 ----
-<1> Service is up if the IP SLA state is ok(1).
-<2> Service is down if the IP SLA state is overThreshold(3).
+<1> Service is up if the IP SLA state is `ok(1)``.
+<2> Service is down if the IP SLA state is `overThreshold(3)`.

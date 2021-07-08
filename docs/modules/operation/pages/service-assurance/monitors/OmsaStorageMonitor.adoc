@@ -64,7 +64,7 @@ The disk array state is resolved to a human-readable value as in the following s
 
 .Optional monitor-specific parameters for the OmsaStorageMonitor
 [options="header"]
-[cols="1,3,2"]
+[cols="2,3,2"]
 |===
 | Parameter           | Description                                                     | Default
 | virtualDiskNumber | The disk index of your RAID array.                                                               | 1

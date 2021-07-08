@@ -21,8 +21,8 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 [options="header"]
 [cols="1,3,2"]
 |===
+| Parameter          | Description                                                        | Default
 3+|*Required*
-| Parameter          | Description                                                        | *Default* 
 | driver           | JDBC driver class to use.                                           | org.postgresql.Driver
 | url  
 

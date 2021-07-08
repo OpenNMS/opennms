@@ -1,7 +1,7 @@
 
 = HttpPostMonitor
 
-If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a SOAP endpoint), you can use the HttpPostMonitor.
+If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a SOAP endpoint), use the HttpPostMonitor.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -19,8 +19,9 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 [options="header"]
 [cols="1,3,2"]
 |===
-3+| Required
-| *Parameter* |*Description* |                         *Default* 
+
+| Parameter |Description | Default 
+3+| *Required*
 | payload     | The body of the POST; for example, properly escaped XML.               | n/a 
 3+|*Optional*
 | auth-password
@@ -31,9 +32,9 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 *{}*
 | The username to use for HTTP BASIC auth.                              | n/a 
-| header[0-9]+ | Additional headers to be sent along with the request. Example of valid
-                   parameter's names are header0, header1, and header180. +
-                   `header` is *not* a valid parameter name.                             | n/a 
+| header[0-9]+ | Additional headers to send with the request. Example of valid
+                   parameter names are header0, header1, and header180. +
+                   `header` is not a valid parameter name.                             | n/a 
 | banner       
 
 *{}*
@@ -42,22 +43,22 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                    Specify a regex by starting with `~`.                                 | n/a 
 | charset      | Set the character set for the POST.                                   | UTF-8 
 | mimetype     | Set the mimetype for the POST.                                        | text/xml
-| port         | The port for the web server where the POST is send to.                | 80 
+| port         | The port for the web server to send the POST.                | 80 
 | scheme       | The connection scheme to use.                                         | http 
-| usesslfilter | Enables or disables the SSL ceritificate validation. `true - false`   | false 
+| usesslfilter | Enables or disables the SSL ceritificate validation. (Options: true - false)   | false 
 | uri        
 
 *{}*
   | The uri to use during the POST.                                       | n/a 
 | use-system-proxy | Should the system-wide proxy settings be used? The system proxy
-                   settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties] | false 
+                   settings can be configured in <<system-properties/introduction.adoc#system-properties[system properties] | false 
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-The following example would create a POST that contains the payload _World_.
+The following example creates a POST that contains the payload _World_.
 [source, xml]
 ----
 <service name="MyServlet" interval="300000" user-defined="false" status="on">

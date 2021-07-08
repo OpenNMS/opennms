@@ -1,10 +1,10 @@
 
 = DnsMonitor
 
-This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.
+This monitor tests the availability of the DNS service on remote IP interfaces.
 The monitor tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
 
-The monitor is marked as _up_ if the _DNS Server_ is able to send a valid response to the monitor.
+The monitor is marked as up if the DNS Server can send a valid response to the monitor.
 For multiple records it is possible to test if the number of responses are within a given boundary.
 
 The monitor can be simulated with the command line tool `host`:
@@ -34,9 +34,8 @@ www.google.com.		283	IN	A	74.125.232.18
 Received 112 bytes from 8.8.8.8#53 in 41 ms
 ----
 
-TIP:
-This monitor is intended for testing the availability of a DNS service.
-If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+TIP: This monitor is intended for testing the availability of a DNS service.
+To monitor the DNS resolution of some of your nodes from a client's perspective, use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
 
 == Monitor facts
 
@@ -55,12 +54,12 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | *Parameter* | *Description* | *Default*                                                                             
 | retry                | Number of retries before the service is marked as down.                                    | 0
 | timeout              | Time in milliseconds to wait for the A Record response from the server.                     | 5000
-| port                 | UDP Port for the DNS server                                                                  | 53
+| port                 | UDP port for the DNS server                                                                  | 53
 | lookup               | DNS A Record for lookup test                                                               | localhost
-| -*fatal-response-codes | A comma-separated list of numeric DNS response codes considered fatal if
-                           present in the server's response. Default value is `2` corresponds to `Server Failed`. See http://tools.ietf.org/html/rfc2929[RFC 2929] for a
+| fatal-response-codes | A comma-separated list of numeric DNS response codes considered fatal if
+                           present in the server's response. Default value is 2 and corresponds to `Server Failed`. See http://tools.ietf.org/html/rfc2929[RFC 2929] for a
                            list of codes and their meanings.  | 2
-| min-answers          | Minmal number of records in the DNS server respone for the given lookup.                      | n/a
+| min-answers          | Minimum number of records in the DNS server respone for the given lookup.                      | n/a
 | max-answers          | Maximum number of records in the DNS server respone for the given lookup.                     | n/a
 |===
 
