@@ -581,6 +581,7 @@ workflows:
           context: "docker-content-trust"
           requires:
             - tarball-assembly
+            - smoke-test-minion
           filters:
             branches:
               only:
