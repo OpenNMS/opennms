@@ -22,11 +22,11 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 |===
 | Parameter  | Description | Default
 3+|*Required*
-| driver   | JDBC driver class to use                                               | org.postgresql.Driver
+| driver   | JDBC driver class to use.                                               | org.postgresql.Driver
 | url
 
 *{}*  
- | JDBC URL to connect to                                                 |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+ | JDBC URL to connect to.                                                 |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
 | user
 
 *{}*  
@@ -35,11 +35,11 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 *{}*  
 | Database password                                                      | empty string
-| query   | The SQL query to run                                                   | n/a
-| action   | What evaluation action to perform                                      | row_count
-| column   | The result column to evaluate against when using compare_string method | n/a
-| operator | Operator to use for the evaluation                                     | >=
-| operand  | The operand to compare against the SQL query result                    | depends on the action
+| query   | The SQL query to run.                                                   | n/a
+| action   | The evaluation action to perform.                                      | row_count
+| column   | The result column to evaluate against when using compare_string method. | n/a
+| operator | Operator to use for the evaluation.                                     | >=
+| operand  | The operand to compare against the SQL query result.                    | depends on the action
 
 3+|*Optional*
 
@@ -83,8 +83,8 @@ The evaluation can be against the value of one column or the number of rows the 
 
 The JDBCQueryMonitor is based on JDBC and requires a JDBC driver to communicate with any database.
 Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
-For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a jar-file.
-To provide a JDBC driver, place the driver-jar in the opennms/lib folder of your {page-component-title}.
+For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
+To provide a JDBC driver, place the driver-jar in your {page-component-title} opennms/lib folder.
 
 == Examples
 

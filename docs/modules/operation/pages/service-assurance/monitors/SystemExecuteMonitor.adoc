@@ -32,11 +32,11 @@ If the banner is not available in the output, the status is determined as down.
               service is determined as UP.                                                                            | n/a
 |===
 
-The parameter args supports variable replacement for the following set of variables.
+The parameter `args` supports variable replacement for the following set of variables.
 
 TIP: Always providing a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
 
-.Variables which can be used in the configuration
+.Variables that can be used in the configuration
 [options="header, autowidth"]
 |===
 | Variable        | Description
@@ -124,8 +124,8 @@ fi
 The SystemExecuteMonitor is the successor of the GpMonitor. 
 The main differences are:
 
-* Variable replacement for the parameter argumentss
-* There are no fixed arguments handed to the system call
+* Variable replacement for the parameter arguments
+* No fixed arguments handed to the system call
 
 To migrate services from the GpMonitor to the SystemExecuteMonitor, you must alter the parameter arguments
 to match `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.

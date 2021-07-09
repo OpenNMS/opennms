@@ -44,5 +44,5 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#https
 == Dell MIBs
 
 FInd Dell MIBs link:https://www.dell.com/support/kbdoc/en-ca/000177052/how-to-find-dell-management-information-base-mib-files[here].
-Download the DCMIB<version>.zip or DCMIB<version>.exe file corresponding to the version of your OpenManage agents.
+Download the `DCMIB<version>.zip` or `DCMIB<version>.exe` file that corresponds to the version of your OpenManage agents.
 The latest one should be sufficient for all previous versions.

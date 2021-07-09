@@ -1,12 +1,14 @@
 
 = VmwareCimMonitor
 
-This monitor is part of the VMware integration Provisiond provides.
+This monitor is part of the VMware integration that Provisiond provides.
 The monitor is specialized to test the health status provided from all host system (host) sensor data.
 
 This monitor runs only if the host is in power state "on".
 
-This monitor requires hosts be imported with Provisiond and the VMware import.{page-component-title} requires network access to VMware vCenter and the hosts. It uses the credentials from vmware-config.xml for the responsible vCenter to get the sensor data. 
+This monitor requires hosts be imported with Provisiond and the VMware import. 
+{page-component-title} requires network access to VMware vCenter and the hosts. 
+It uses the credentials from `vmware-config.xml` for the responsible vCenter to get the sensor data. 
 The following asset fields are filled from Provisiond and provided by the VMware import feature:
 
 * VMware Management Server
@@ -25,11 +27,11 @@ A sensor state could be represented as the following:
 * Non-recoverable error(30)
 
 The service is up if all sensors have the status OK(5).
-If any sensor gives another status than OK(5), the service is marked as down.
-The monitor error reason contains a list of all sensors which do not return status OK(5).
+If any sensor gives a status other than OK(5), the service is marked as down.
+The monitor error reason contains a list of all sensors that do not return status OK(5).
 
 When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), the standBy state forces a service down. 
-The health status is gathrered with a direct connection to the host and in standby this connection is unavailable and the service is down.
+The health status is gathered with a direct connection to the host and in standby this connection is unavailable and the service is down.
 
 To deal with standby states, use the ignoreStandBy parameter.
 In case of a standby state, the service is considered as up. See the ignoreStandBy parameter on how to change the state. 
@@ -56,7 +58,7 @@ In case of a standby state, the service is considered as up. See the ignoreStand
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-Some example configuration on how to configure the monitor in poller-configuration.xml.
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
 
 [source, xml]
 ----

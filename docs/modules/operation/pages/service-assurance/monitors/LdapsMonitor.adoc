@@ -16,7 +16,7 @@ This monitor implements the same <<service-assurance/monitors/introduction.adoc#
 
 == Configuration and use
 
-.Optional monitor-specific parameters for the LdapsMonitor
+.Optional monitor-specific parameter for the LdapsMonitor
 [options="header"]
 [cols="1,3,2"]
 |===

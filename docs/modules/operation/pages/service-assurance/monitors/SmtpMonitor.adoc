@@ -4,10 +4,10 @@
 The SMTP monitor tests for SMTP service availability on a node.
 The monitor first tries to establish a TCP connection on the specified port.
 If it establishes a connection, it should have received a service banner.
-The monitor makes sure the service banner is a valid SMTP banner (starts with "220").
-If the banner is valid, the monitor sends a HELO SMTP command, identifying itself with the hostname of the OpenNMS server, and makes sure the service answers with a valid response (starts with "250").
+The monitor makes sure the service banner is a valid SMTP banner (starts with `220`).
+If the banner is valid, the monitor sends a HELO SMTP command, identifying itself with the hostname of the OpenNMS server, and makes sure the service answers with a valid response (starts with `250`).
 If the response to the HELO is valid, the monitor issues a QUIT SMTP command.
-The service is considered available if the service's answer to the HELO command is valid (starts with "221").
+The service is considered available if the service's answer to the HELO command is valid (starts with `221`).
 
 Simulate the behavior with telnet or netcat:
 

@@ -2,8 +2,8 @@
 = StrafePingMonitor
 
 This monitor uses ICMP to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint.
-The main use case is to monitor a WAN endpoint and visualize packet loss and ICMP packet round trip time deviation.
-The StrafePingMonitor performs multiple ICMP echo requests (pings) and stores the response-time of each as well as the packet loss in an RRD file.
+The main use case is to monitor a WAN endpoint and visualize packet loss and ICMP packet round-trip time deviation.
+The StrafePingMonitor performs multiple ICMP echo requests (pings) and stores the response time of each as well as the packet loss in an RRD file.
 Credit to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
 
 .Visualization of a graph from the StrafePingMonitor
@@ -27,7 +27,7 @@ image::service-assurance/monitors/01_strafeping.png[]
 3+|*Required*
 | ping-count          | The number of pings to attempt each interval.                                               | 20
 | failure-ping-count  | The number of pings that need to fail for the service to be considered down.                | 20
-| wait-interval       | Time in milliseconds to wait between each ICMP_ _echo-request packet.                     | 50
+| wait-interval       | Time in milliseconds to wait between each ICMP echo-request packet.                     | 50
 | rrd-repository      | The location to write RRD data. Generally, you will not want to change this from the default. | $\{OPENNMS_HOME}/share/rrd/response
 | rrd-base-name       | The name of the RRD file to write (minus the extension, .rrd or .jrb).                  | strafeping
 
@@ -45,7 +45,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 The StrafePingMonitor is typically used on WAN connections and not activated for every ICMP-enabled device in your network.
 This monitor is much I/O heavier than just a simple RRD graph with a single ICMP response time measurement.
-By default, you can find a separate poller package in poller-configuration.xml called strafer.
+By default, you can find a separate poller package in `poller-configuration.xml` called `strafer`.
 Configure the include-range or a filter to enable monitoring for devices with the service StrafePing.
 
 TIP: Don't forget to assign the StrafePing service on the IP interface to be activated.

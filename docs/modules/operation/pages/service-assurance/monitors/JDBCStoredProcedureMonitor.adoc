@@ -17,7 +17,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the JDBCStoredProcedureMonitor
+.Monitor-specific parameters for the JDBCStoredProcedureMonitor
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -27,7 +27,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | url  
 
 *{}*
-            | JDBC Url to connect to.                                            |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+            | JDBC URL to connect to.                                            |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
 | user       
 
 *{}*
@@ -51,16 +51,15 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 The JDBCStoredProcedureMonitor is based on JDBC and requires a JDBC driver to communicate with any database.
 Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
-For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a jar-file.
-To provide a JDBC driver, place the driver-jar in the opennms/lib folder of your {page-component-title}.
+For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
+To provide a JDBC driver, place the driver-jar in your {page-component-title} opennms/lib folder.
 
-
-== Example
+== Examples
 
 The following example checks a stored procedure added to the PostgreSQL database {page-component-title} uses.
-The stored procedure returns true as long as less than 250000 events are in the {page-component-title} events table.
+The stored procedure returns true as long as less than 250,000 events are in the {page-component-title} events table.
 
-.Stored procedure which is used in the monitor
+.Stored procedure used in the monitor
 [source, sql]
 ----
 CREATE OR REPLACE FUNCTION eventlimit_sp() RETURNS boolean AS

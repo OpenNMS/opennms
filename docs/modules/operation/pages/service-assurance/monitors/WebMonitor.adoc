@@ -1,7 +1,7 @@
 
 = WebMonitor
 
-WebMonitor is a clone of HttpMonitor, that uses a different underlying library for doing HTTP connections. 
+WebMonitor is a clone of <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>>, that uses a different underlying library for doing HTTP connections. 
 WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, and so on) than HttpMonitor.  
 
 == Monitor facts
@@ -13,7 +13,7 @@ WebMonitor uses Apache HttpClient, which acts more like a real browser (follows 
 
 == Configuration and use
 
-.Optional Configuration parameters
+.Optional configuration parameters
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -25,13 +25,13 @@ WebMonitor uses Apache HttpClient, which acts more like a real browser (follows 
 
 | scheme | Protocol/scheme to use. | http, https
 | port| The port to connect to. | 80
-| path | The path of the URL to request (for example, /store/index.html).| n/a
-| queryString | The query string to add to the URL after a `?` (for example, foo=bar&baz=zot)|n/a
+| path | The path of the URL to request (for example, `/store/index.html`).| n/a
+| queryString | The query string to add to the URL after a `?` (for example, foo=bar&baz=zot). |n/a
 | timeout | The connection/socket timeout. |
 | user-agent| The User-Agent: header to send.|
 | virtual-host | The Host: header to send. |
 | http-1.0 | True/false whether to use HTTP 1.0 or 1.1.|
-|header_#/header_#_value| Headers to add| n/a
+|header_#/header_#_value| Headers to add. | n/a
 |use-ssl-filter | Defaults to false. If true, it will trust self-signed certificates. | false
 |auth-enabled| Whether to enable basic authentication. | n/a
 |auth-user| The username for basic authentication. | n/a

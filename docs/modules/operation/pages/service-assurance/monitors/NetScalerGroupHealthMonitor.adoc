@@ -1,19 +1,19 @@
 
 = NetScalerGroupHealthMonitor
 
-This monitor is designed for Citrix(R) NetScaler(R) loadbalancing checks.
+This monitor is designed for Citrix(R) NetScaler(R) load-balancing checks.
 It checks if more than x percent of the servers assigned to a specific group on a load-balanced service are active.
-The required data is gathered via SNMP from the NetScaler(R).
-The status of the servers is determined by the NetScaler(R).
+The required data is gathered via SNMP from the NetScaler.
+The status of the servers is determined by the NetScaler.
 The provided service itself is not part of the check.
 The basis of this monitor is the SnmpMonitorStrategy.
-A valid SNMP configuration in {page-component-title} for the NetScaler(R) is required.
+A valid SNMP configuration in {page-component-title} for the NetScaler is required.
 
-A NetScaler(R) can manage several groups of servers per application.
+A NetScaler can manage several groups of servers per application.
 This monitor just covers one group at a time.
 To check multiple groups, define one monitor per group.
 
-IMPORTANT: This monitor doesn not check the load-balanced service itself.
+IMPORTANT: This monitor does not check the load-balanced service itself.
 
 == Monitor facts
 
@@ -43,7 +43,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 The following example checks a server group called central_webfront_http.
 If at least 70% of the servers are active, the service is up.
 If less then 70% of the servers are active, the service is down.
-Use a configuration like the following for the example in the poller-configuration.xml:
+Use a configuration like the following in `poller-configuration.xml`:
 
 [source, xml]
 ----

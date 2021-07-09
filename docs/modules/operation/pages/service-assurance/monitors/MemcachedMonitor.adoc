@@ -54,7 +54,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-The following example shows a configuration in poller-configuration.xml.
+The following example shows a configuration in `poller-configuration.xml`.
 
 [source, xml]
 ----

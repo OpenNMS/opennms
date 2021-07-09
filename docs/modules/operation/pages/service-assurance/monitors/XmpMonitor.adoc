@@ -14,8 +14,8 @@ The service is considered available when the session attempt succeeds and the ag
 
 == Configuration and use
 
-You can set these parameters in the XMP service entry in collectd-configuration.xml and will override settings from xmp-config.xml.
-Also, don't forget to add an entry in response-graph.properties so that response values will be graphed.
+You can set these parameters in the XMP service entry in `collectd-configuration.xml` and will override settings from `xmp-config.xml`.
+Don't forget to add an entry in response-graph.properties so that response values will be graphed.
 
 .Optional monitor-specific parameters for the XmpMonitor
 [options="header"]

@@ -24,7 +24,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | readmail-test | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.        |debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"
 |===
 
-.Optional options for sendmail-test
+.Optional attributes for sendmail-test
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -35,7 +35,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | attempt-interval   | Interval in milliseconds between send attempts.                                                           | 3000
 |===
 
-.Optional options for sendmail-host
+.Optional attributes for sendmail-host
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -44,24 +44,24 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | port          | The SMTP server port.                                                           | 25
 |===
 
-.Optional options for sendmail-protocol
+.Optional attributes for sendmail-protocol
 [options="header"]
 [cols="1,3,2"]
 |===
 | Attribute              | Description                                                     | Default
 | char-set             | Set the character set.                                                                        | us-ascii
 | mailer               | Use smtpsend or an alternate mailer.                                                          | smtpsend
-| message-content-type | Set the message content-type.                                                                 | text/plain
+| message-content-type | Set the message content type.                                                                 | text/plain
 | message-encoding     | Set the message encoding.                                                                     | 7-bit
 | quit-wait            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
                             to true (the default), it causes the transport to wait for the response to the QUIT command.   | true
 | transport            | The transport protocol to use. One of smtp  or smtps.                                    | smtp
-| ssl-enable           | Whether to use SSL                                                                               | false
+| ssl-enable           | Whether to use SSL.                                                                               | false
 | start-tls            | Use the STARTTLS command (if supported or required by the server) to switch the connection 
                             to a TLS-protected connection before issuing any login commands.                             | false
 |===
 
-.Optional options for sendmail-message
+.Optional attributes for sendmail-message
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -72,7 +72,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | body    | The body of the message.                                                                                   | This is an OpenNMS test message.
 |===
 
-.Optional options for readmail-test
+.Optional attributes for readmail-test
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -84,7 +84,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | delete-all-mail  | Delete all read mail after a successful match.                                                    | false
 |===
 
-.Optional options for readmail-host
+.Optional attributes for readmail-host
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -93,18 +93,18 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | port      | The appropriate port for the protocol.                                                                   | 110
 |===
 
-.Optional options for readmail-protocol
+.Optional attributes for readmail-protocol
 [options="header"]
 [cols="1,3,2"]
 |===
 | Attribute    | Description                                                     | Default
 | transport  | The transport protocol to use. One of: pop3, pop3s, imap, imaps.                                   | pop3
-| ssl-enable | Whether to enable SSL for the connection                                                               | false
+| ssl-enable | Whether to enable SSL for the connection.                                                               | false
 | start-tls  | Use the STARTTLS command (if supported or required by the server) to switch the connection to a 
                   TLS-protected connection before issuing any login commands.                                            | false
 |===
 
-.Optional options for user-auth
+.Optional attributes for user-auth
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -177,21 +177,29 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 ----
 
 == Tests
-There are five basic tests that this monitor can perform.
+There are four basic tests that this monitor can perform.
 
-Sending mail: the most basic test, the sendmail-test is highly configurable.
+=== Sending mail
+
+The most basic test, the sendmail-test is highly configurable.
 An exception thrown during the sending of the configured email message causes the poll to fail.
 
-Access of mail store and folder: configure a readmail-test and don't configure a subject-match attribute. 
+=== Access of mail store and folder
+
+Configure a readmail-test and don't configure a subject-match attribute. 
 This tests only the ability to open the default mail store and the configured mail folder (INBOX) by default. 
 Folders are given by `INBOX<separator>Foldername`.
 The separator character might vary between IMAP implementations. 
 Exchange uses `/` as a separator, for example.
 
-Specific message in folder: configure a readmail-test and a matching subject. 
+=== Specific message in folder
+
+Configure a readmail-test and a matching subject. 
 Optionally, configure the test to delete all read mail. 
 Do not do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
 
-Sending and receipt (end-to-end test) of a message: Test your infrastructure's ability to send and receive email. 
+=== Sending and receipt (end-to-end test) of a message
+
+Test your infrastructure's ability to send and receive email. 
 It tests sending and receiving of an mail message via one or two separate mail servers. 
 For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.

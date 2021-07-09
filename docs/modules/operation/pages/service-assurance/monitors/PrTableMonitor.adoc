@@ -35,10 +35,10 @@ ____
 [cols="1,3,2"]
 |===
 | Parameter | Description                                                        | Default
-| port    | The port to which to try connection.                       |from snmp-config.xml
+| port    | The port to which to try connection.                       |from `snmp-config.xml`
 | retries | *Deprecated*.
               Same as retry.
-              Parameter retry takes precedence if both are set.                | from snmp-config.xml
+              Parameter retry takes precedence if both are set.                | from `snmp-config.xml`
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

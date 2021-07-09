@@ -8,7 +8,7 @@ If it succeeds, it attempts to establish an LDAP connection and do a simple sear
 If the search returns a result within the specified timeout and attempts, the service will be considered available.
 The scope of the LDAP search is limited to the immediate subordinates of the base object.
 The LDAP search is anonymous by default.
-The LDAP monitor makes use of the com.novell.ldap.LDAPConnection class.
+The LDAP monitor uses the com.novell.ldap.LDAPConnection class.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -39,7 +39,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | retry       | Number of attempts to get a search result.                        | 1
 | searchbase    | The base distinguished name to search from.                       | base
 | searchfilter  | The LDAP search's filter.                                         | (objectclass=*)
-| version      | The version of the LDAP protocol to use, specified as an integer.
+| version      | The version of the LDAP protocol to use, specified as an integer. +
                     Note: Only LDAPv3 is supported.                     | 3
 |===
 

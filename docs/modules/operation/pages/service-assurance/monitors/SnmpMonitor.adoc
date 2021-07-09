@@ -5,7 +5,7 @@ The SNMP monitor gives a generic possibility to monitor states and results from 
 This monitor has two basic operation modes:
 
 * Test the response value of one specific OID (scalar object identifier)
-* Test multiple values in a whole table.
+* Test multiple values in a whole table
 
 To decide which mode to use, use the `walk` and `match-all` parameters.
 
@@ -15,12 +15,12 @@ The _Operating mode selection_ and _Monitor specific parameters for the SnmpMoni
 [options="header"]
 [cols="1,1,3"]
 |===
-    | walk       | match-all                                                  | Operating mode
-.3+^|true      | true                                                     | tabular, all values must match
-    | false    | tabular, any value must match
+| walk       | match-all                                                  | Operating mode
+.3+|true      | true                                                     | tabular, all values must match
+| false    | tabular, any value must match
     | count    | specifies that the value of at least minimum and at most
                    maximum objects encountered in
-.3+^|false     | true                                                     | scalar
+.3+|false     | true                                                     | scalar
     | false    | scalar
     | count    | tabular, between minimum and maximum values must match
 |===
@@ -33,7 +33,7 @@ The _Operating mode selection_ and _Monitor specific parameters for the SnmpMoni
 | Remote Enabled | false
 |===
 
-When the monitor is configured to persist the response time, it counts the total amount of time spent until it obtains a successful, including the retries.
+When the monitor is configured to persist the response time, it counts the total amount of time spent until it obtains a successful one, including the retries.
 It will not store the time spent during the last successful attempt.
 
 == Configuration and use
@@ -81,14 +81,14 @@ It will not store the time spent during the last successful attempt.
                       Note: Comparison will always succeed if either the operand or operator parameter isn't set
                             and the monitored value is non-null.
                       Keep in mind that you need to escape all < and > characters as XML entities (`&amp;lt;` and `&amp;gt;`
-                      respectively)                                                                                    | n/a
-| port            | Destination port where the SNMP requests are sent.                                          | from snmp-config.xml
+                      respectively).                                                                                    | n/a
+| port            | Destination port where the SNMP requests are sent.                                          | from `snmp-config.xml`
 | reason-template | A user-provided template used for the monitor's reason code if the service is unvailable.
                       Defaults to a reasonable value if unset.
                       See below for an explanation of the possible template parameters.                                | depends on operation mode
 
-| retries         | *Deprecated* Same as retry. Parameter retry takes precedence if both are set.                | from snmp-config.xml
-| walk            | `false`: Sets the monitor to poll for a scalar object unless if the match-all parameter is set
+| retries         | *Deprecated* Same as retry. Parameter retry takes precedence if both are set.                | from `snmp-config.xml`
+| walk            | `false`: Sets the monitor to poll for a scalar object unless the match-all parameter is set
                       to `count`, in which case the match-all parameter takes precedence. +
                       `true`: Sets the monitor to poll for a tabular object where the match-all parameter defines how
                       the tabular object's values must match the criteria defined by the operator and operand
@@ -97,7 +97,7 @@ It will not store the time spent during the last successful attempt.
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-.Variables which can be used in the reason-template parameter
+.Variables that can be used in the reason-template parameter
 [options="header"]
 [cols="1,3"]
 |===
@@ -177,7 +177,7 @@ Any other value indicates a problem with the thermal fan status and marks the se
 <3> Integer 2 as operand for the test.
 <4> Encode MIB status in the reason code to give more detailed information if the service goes down.
 
-== Example test SNMP table with all matching values
+== Example: test SNMP table with all matching values
 
 The second mode shows how to monitor the values of a whole SNMP table.
 As a practical use case, the status of a set of physical drives is monitored.
@@ -219,7 +219,7 @@ predictiveFailure(4)
  should be replaced.
 ----
 
-The configuration in our monitor will test all physical drives for status `ok(2)`.
+The configuration in our monitor tests all physical drives for status `ok(2)`.
 
 .Example SnmpMonitor as HP Insight physical drive monitor in poller-configuration.xml
 [source, xml]
@@ -242,10 +242,10 @@ The configuration in our monitor will test all physical drives for status `ok(2)
 <5> Test in walk mode has to pass for every entry in the table.
 <6> Encode MIB status in the reason code to give more detailed information if the service goes down.
 
-== Example test SNMP table with all matching values
+== Example: test SNMP table with all matching values
 
 This example shows how to use the SnmpMonitor to test if the number of static routes are within a given boundary.
-The service is marked as up if at least three and at maximum 10 static routes are set on a network device.
+The service is marked as up if at least three and at maximum of 10 static routes are set on a network device.
 This status can be monitored by polling the table ipRouteProto from the http://www.ietf.org/rfc/rfc1213.txt[RFC1213-MIB2].
 
 `ipRouteProto 1.3.6.1.2.1.4.21.1.9`

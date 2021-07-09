@@ -4,6 +4,7 @@
 This monitor lets you test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
 The availability is tested by sending an AUTH packet to the RADIUS server.
 If a valid ACCEPT response is received, the RADIUS service is up and considered available.
+
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 IMPORTANT: You must install the RADIUS protocol for {page-component-title} to use this monitor. 
@@ -82,7 +83,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-Sample configuration shows how to configure the monitor in poller-configuration.xml.
+Sample configuration shows how to configure the monitor in `poller-configuration.xml`.
 
 [source, xml]
 ----

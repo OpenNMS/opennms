@@ -3,11 +3,11 @@
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
 Use the JolokiaBeanMonitor when you need to run a method via JMX or poll an attribute via JMX.
-This monitor requires a fully installed and configured Jolokia agent to be deployed in the JVM container.
+This monitor requires a fully installed and configured Jolokia agent deployed in the JVM container.
 If required, you can provide attribute names, paths, and method parameters as additional arguments to the call.
 
 To determine the status of the service, the JolokiaBeanMonitor relies on the output to be matched against a banner. 
-If the banner is part of the output, the status is interpreted as up, otherwise it is considered down. 
+If the banner is part of the output, the status is interpreted as up; otherwise, it is considered down. 
 Banner matching supports regular expression and substring match.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -41,7 +41,10 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 *{}*
  | The password to use for HTTP BASIC auth.                                                            | n/a
-| banner       | A string that is matched against the output of the system-call. If the output contains the banner,
+| banner    
+
+*{}*
+   | A string that is matched against the output of the system-call. If the output contains the banner,
                     the service is determined as up. Start with `~` to specify a regex.                            | n/a
 | input1
 
@@ -59,7 +62,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | url
 
 *{}*
-           | The jolokia agent.                                 | http://<ipaddr>:<port>/jolokia
+           | The jolokia agent URL.                                 | http://<ipaddr>:<port>/jolokia
 |===
 
 NOTE: The attrname and methodname parameters are optional but one of them must be set. 
@@ -77,7 +80,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-Some example configuration on how to configure the monitor in the `poller-configuration.xml`.
+Some example configuration on how to configure the monitor in `poller-configuration.xml`.
 [source, xml]
 ----
 <parameter key="url" value="http://$\{ipaddr}:$\{port}/jolokia"/>

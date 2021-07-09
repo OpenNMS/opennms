@@ -44,7 +44,7 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-This example shows how to test if the link:https://en.wikipedia.org/wiki/Independent_Computing_Architecture[ICA] service is available on TCP port 1494.
+This example shows how to test if the Independent_Computing_Architecture(ICA) service is available on TCP port 1494.
 The test evaluates the connection banner starting with `ICA`.
 
 [source, xml]

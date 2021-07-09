@@ -4,10 +4,10 @@
 This monitor is part of the VMware integration provided in Provisiond and tests the power state of a virtual machine (VM) or a host system (host).
 If the power state of a VM or host is poweredOn, the service is up.
 The state `off` of the service on the VM or Host is marked as down.
-By default standBy is also considered as down.
+By default, standBy is also considered as down.
 When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), you can change the standBy state. See the ignoreStandBy parameter.
 
-CAUTION: The information for the status of a virtual machine is collected from the responsible VMware vCenter using the credentials from the vmware-config.xml.
+CAUTION: The information for the status of a virtual machine is collected from the responsible VMware vCenter using the credentials from `vmware-config.xml`.
          It is also required to get specific asset fields assigned to an imported virtual machine and host system.
          The following asset fields are required, which are populated by the VMware integration in Provisiond: VMware Management Server, VMware Managed Entity Type, and the foreignId, which contains an internal VMware vCenter Identifier.
 
@@ -33,8 +33,8 @@ CAUTION: The information for the status of a virtual machine is collected from t
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-Sample configuration on how to configure the monitor in poller-configuration.xml.
-With this configuration the monitor will go down if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
+Sample configuration on how to configure the monitor in `poller-configuration.xml`.
+With this configuration, the monitor will go down if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
 
 [source, xml]
 ----

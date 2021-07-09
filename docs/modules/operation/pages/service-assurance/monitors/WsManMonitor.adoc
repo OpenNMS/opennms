@@ -1,7 +1,7 @@
 
 = WsManMonitor
 
-This monitor can be used to issue a WS-Man _Get_ command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
+Use this monitor to issue a WS-Man GET command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
@@ -14,7 +14,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 == Configuration and use
 
-.Monitor specific parameters for the WsManMonitor
+.Monitor-specific parameters for the WsManMonitor
 [options="header, autowidth"]
 |===
 | Parameter      | Description                                                                 | Default

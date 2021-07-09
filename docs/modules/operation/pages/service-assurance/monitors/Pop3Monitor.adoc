@@ -5,7 +5,7 @@ The POP3 monitor tests for POP3 service availability on a node.
 The monitor first tries to establish a TCP connection on the specified port.
 If it establishes a connection, a service banner should have been received.
 The monitor makes sure the service banner is a valid POP3 banner (in other words, starts with +OK).
-If the banner is valid, the monitor sends a QUIT POP3 command and makes sure the service answers with a valid response (in other words, a response that starts with +OK).
+If the banner is valid, the monitor sends a QUIT POP3 command and makes sure the service answers with a valid response (a response that starts with +OK).
 The service is considered available if the service's answer to the QUIT command is valid.
 
 Simulate the behavior with telnet:

@@ -31,9 +31,9 @@ The monitor offers the following functionalities:
 | urlPath               | Path used in JMX connection string.                        | /jmxrmi
 | rmiServerPort         | RMI port.                                                  | 45444
 | remoteJMX             | Use an alternative JMX URL scheme.                         | false
-| beans.<variable>      | Defines an mbeans objectname to access.
+| beans.<variable>      | Defines an MBeans objectname to access.
                             The <variable> name is arbitrary.                         | n/a
-| tests.<variable>      | Tests an mbeans attribute value.
+| tests.<variable>      | Tests an MBeans attribute value.
                             The <variable> name is arbitrary.                         | n/a
 |===
 

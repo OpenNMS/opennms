@@ -12,7 +12,7 @@ A test path through an web application can look like this:
 . Run an action while logged in.
 . Log off.
 
-The service is considered as up if all this works.
+The service is considered as up if all of this works.
 If there is an error somewhere, your application will need attention and the service changes the state to down.
 
 == Monitor facts
@@ -35,24 +35,24 @@ image::service-assurance/monitors/03_page-sequence-monitor-config.png[]
 The overall layout of the monitor configuration is more complex.
 Additionally, it is possible to configure a page sequence that contains a path through a web application.
 
-.Monitor parameters for the PageSequenceMonitor
+.Monitor-specific parameters for the PageSequenceMonitor
 [options="header"]
 [cols="1,3,2"]
 |===
 | Parameter        | Description                                                     | Default
 3+|*Required*
-| page-sequence  | Definition of the page sequence to run. See table with_Page Sequence Parameters                 | n/a
+| page-sequence  | Definition of the page sequence to run. See table below with page sequence parameters.                 | n/a
 3+|*Optional*
 | retry          | The number of retries per page.                                                                      | 0
 | strict-timeout | Defines how long to wait before retrying.
                      Used only if at least one (1) retry is configured.
-                     If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller Daemon
+                     If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller daemon
                      waits `NOW - InitialAttempt ms + Timeout ms`.
                      With `strict-timout = false` the next attempt starts right after a failure.                      | false
 
 | sequence-retry | The retry parameter for the entire page sequence.                                                    | 0
 | use-system-proxy | Should the system-wide proxy settings be used? Configure the system proxy settings via
-                     <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties>>                                                | false
+                     <<system-properties/introduction.adoc#system-properties, system properties>>                                                | false
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -72,7 +72,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | virtual-host             | Set the virtual host field in the HTTP header.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the TLS
                                negotiation, known as server name indication (SNI)
-                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1.)                     | n/a
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.)                     | n/a
 
 | scheme                   | Define the URL scheme as http or https.                                                | http
 | user-info                | Set user info field in the HTTP header. Colon-separated credentials such as USERNAME:PASSWORD.                     | n/a
@@ -88,7 +88,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
                                This is a regular expression matched against every line, is considered a
                                failure at the first match, and sets the service with this monitor as Down.                  | n/a
 | failureMessage           | The failure message constructs the reason code.
-                               Use ${\n} values to pull information from matching groups in the failureMatch
+                               Use `${\n}` values to pull information from matching groups in the failureMatch
                                regular expression.                                                                        | n/a
 | successMatch             | Text to look for in the response body.
                                This is a regular expression matched against every line, is considered a
@@ -100,14 +100,14 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | response-range           | A comma-separated list of acceptable HTTP response code ranges (200-202,299).            |100-399
 |===
 
-TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
+TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
 
 .Variables that can be passed in the configuration
 [options="header"]
 [cols="1,3"]
 |===
 | Variable        | Description
-| $\{nodelabel}  | Nodelabel of the node the monitor is associated to.
+| $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
 |===
 
 == Session variables
@@ -118,11 +118,10 @@ Use the session-variable parameter to assign the captured values to variable nam
 
 == Per-page response times
 
-It is possible to collect response times for individual pages in a sequence.
-To use this functionality, add a ds-name attribute to each page whose load time should be tracked.
+To collect response times for individual pages in a sequence, add a ds-name attribute to each page whose load time should be tracked.
 The response time for each page will be stored in the same RRD file specified for the service via the rrd-base-name parameter under the specified datasource name.
 
-WARNING: You need to delete existing RRD files and let them be recreated with the new list of datasources when you add a ds-name attribute to a page in a sequence that is already storing response time data.
+WARNING: You need to delete existing RRD files and let them be recreated with the new list of datasources when you add a ds-name attribute to a page in a sequence that is already storing response-time data.
 
 == Examples
 
@@ -142,7 +141,7 @@ In the example, the monitor navigates to the Event page, to ensure that it finds
 Finally, the monitor calls the URL of the logout page to close the session.
 Using the locationMatch parameter verifies that the logout was successful and a redirect was triggered.
 
-NOTE: Each page is checked to ensure its HTTP response code fits into the response-range, before the failureMatch, successMatch, and locationMatch expressions are evaluated.
+Each page is checked to ensure its HTTP response code fits into the response-range, before the failureMatch, successMatch, and locationMatch expressions are evaluated.
 
 .Configuration to test the login to the OpenNMS Web application
 [source, xml]

@@ -12,7 +12,7 @@ This monitor supports the following OIDs from the https://www.dell.com/support/m
  arrayDiskState                              .1.3.6.1.4.1.674.10893.1.20.130.4.1.4
 
 Use virtualDiskRollUpStatus to test the status of the disk array.
-If the result of the virtualDiskRollUpStatus is not 3, the monitors is marked as down.
+If the result of the virtualDiskRollUpStatus is not 3, the monitor is marked as down.
 
 .Possible result of virtual disk rollup status
 [options="header, autowidth"]
@@ -27,7 +27,7 @@ If the result of the virtualDiskRollUpStatus is not 3, the monitors is marked as
 |===
 
 IMPORTANT: You need to know the maximum number of possible logical disks you have in your environment.
-           For example, if you have 3 RAID arrays, you need a service poller for each logical disk array.
+           For example, if you have three RAID arrays, you need a service poller for each logical disk array.
 
 To give more detailed information in case of a disk array error, the monitor tries to identify the problem using the other OIDs.
 These values enrich the error reason in the service down event.
@@ -75,8 +75,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-Sample configuration on how to configure the monitor in the poller-configuration.xml.
-The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and can look like this:
+Sample configuration on how to configure the monitor in `poller-configuration.xml`.
+The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and may look like this:
 
 [source, xml]
 ----

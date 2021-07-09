@@ -17,7 +17,7 @@ With the JCifsMonitor, you can run tests for the following use cases:
 
 By testing on files and folders, you can use a regular expression to ignore specific file and folder names from the test.
 
-A network resource in SMB like a file or folder is addressed as a link:https://en.wikipedia.org/wiki/Path_%28computing%29#Uniform_Naming_Convention[UNC Path].
+A network resource in SMB like a file or folder is addressed as a UNC Path.
 
  \\server\share\folder\file.txt
 
@@ -26,7 +26,7 @@ The same resource as in our example would look like this as an link:http://www.i
 
  smb://workgroup;user:password@server/share/folder/file.txt
 
-The JCifsMonitor *cannot* test:
+The JCifsMonitor cannot test the following:
 
 * if a file contains specific content
 * a specific number of files in a folder; for example, folder should contain exactly/more or less than x files
@@ -61,31 +61,31 @@ The JCifsMonitor *cannot* test:
                         local user accounts.                                                                            | empty string 
 | username
 
-*{}*          | Username to access the resource over a network                                                  | empty string 
+*{}*          | Username to access the resource over a network.                                                  | empty string 
 | password
 
 *{}*
        | Password for the user                                                                           | empty string 
 
 | mode             | The test mode which has the following options: +
-                        path_exist: Service is up if the resource is accessible +
-                        path_not_exist: Service is up if the resource is *not* accessible +
-                        folder_empty: Service is up if the folder is empty (0 files) +
-                        folder_not_empty: Service is up if the folder has at least one file                         |path_exist 
+                        `path_exist`: Service is up if the resource is accessible +
+                        `path_not_exist`: Service is up if the resource is not accessible +
+                        `folder_empty`: Service is up if the folder is empty (0 files) +
+                        `qwafolder_not_empty`: Service is up if the folder has at least one file                         |path_exist 
 | smbHost           | Override the IP address of the SMB URL to check shares on different file servers.               | empty string
 | folderIgnoreFiles | Ignore specific files in folder with regular expression. This parameter be applied only on
-                        folder_empty and folder_not_empty; otherwise, it will be ignored.                            |n/a
+                        folder_empty and folder_not_empty; otherwise, it is ignored.                            |n/a
 |===
 
 CAUTION: Due to limitations in the JCifs library, only global timeouts can be used reliably.
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-TIP: It makes little sense to have retries higher than 1, as it is a waste of resources during the monitoring. +
-If you access shares with Mac OSX, you may have some side effects with the hidden file '.DS_Store.'
-If it gives you false positives in monitoring, you can use then the folderIgnoreFiles parameter.
+TIP: It makes little sense to have retries higher than 1, as it is a waste of resources during monitoring. +
+If you access shares with Mac OSX, you may have some side effects with the hidden file `.DS_Store.`
+If it gives you false positives in monitoring, use the folderIgnoreFiles parameter.
 
-== Example test existence of a file
+== Example test: existence of a file
 
 This example shows how to configure the JCifsMonitor to test if a file share is available over a network.
 For this example, we have access to a share for error logs and we want to get an outage if we have any error log files in our folder.

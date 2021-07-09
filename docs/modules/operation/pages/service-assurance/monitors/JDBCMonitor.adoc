@@ -1,7 +1,7 @@
 
 = JDBCMonitor
 
-The JDBCMonitor checks that it is able to connect to a database and checks if it is able to get the database catalog from that database management system (DBMS).
+The JDBCMonitor checks that it is able to connect to a database and if it can get the database catalog from that database management system (DBMS).
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -24,7 +24,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | driver   | JDBC driver class to use. | org.postgresql.Driver
 | url 
 
-*{}*     | JDBC Url to connect to. |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+*{}*     | JDBC URL to connect to. |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
 | user 
 
 *{}*  
@@ -46,11 +46,11 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 The JDBCMonitor is based on JDBC and requires a JDBC driver to communicate with any database.
 Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
-For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a jar-file.
-To provide a JDBC driver place the driver-jar in the opennms/lib folder of your {page-component-title}.
+For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
+To provide a JDBC driver,  place the driver-jar in your {page-component-title} opennms/lib folder.
 
 
-== Example
+== Examples
 
 The following example checks if the PostgreSQL database that {page-component-title} uses is available.
 
