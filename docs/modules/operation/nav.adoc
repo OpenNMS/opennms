@@ -15,7 +15,6 @@
 ** xref:provisioning/auto-discovery.adoc[]
 ** xref:provisioning/integration.adoc[]
 ** xref:provisioning/import-handler.adoc[]
-** xref:provisioning/examples.adoc[]
 ** xref:provisioning/fine-grained.adoc[]
 ** xref:provisioning/api-examples.adoc[]
 ** xref:provisioning/snmp-profile.adoc[]
