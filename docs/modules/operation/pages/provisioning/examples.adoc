@@ -15,7 +15,7 @@ Clicking the `Add Requisition` button will prompt for a name.
 For this example, we are using "Laboratory"
 
 .Creating a new requisition
-image:provisioning/00006.png[]
+image:provisioning/new_requisition.png[]
 
 Clicking the `Edit` button (pencil icon) will bring you to the screen where you can begin the process of defining node entities that will be imported into {page-component-title}.
 Clicking the `Add Node` button will begin the node entity creation process.
@@ -25,14 +25,14 @@ NOTE: Only use the `Location` field if you have defined Monitoring Locations and
 If not, leave that field blank or `Default`.
 
 .Creating a new node definition in the requisition
-image:provisioning/00026.png[]
+image:provisioning/new_node_requisition.png[]
 
 At this point, the requisition contains the basic structure of a node entity but it is not complete until the interface(s) and interface service(s) have been defined.
 After having clicked the `Save` button, we can continue to populate node data in the `Path Outage`, `Interfaces`, `Assets`, `Categories`, and `Meta-Data` tabs as necessary.
 Click the `Interfaces` tab and then the `Add Interface` button to add an interface entity to the node.
 
 .Adding an interface to the node definition
-image:provisioning/00009.png[]
+image:provisioning/new_ip_interface.png[]
 
 Type the IP address for this interface entity, an optional description, and specify the SNMP Primary attribute as `P` (Primary), `S` (Secondary), or `N` (Not eligible) and click the save button.
 Only one interface on a node can be set as Primary, and this determines which IP will be used for collecting SNMP metrics.
@@ -42,7 +42,7 @@ For this example, add `ICMP` and then click the `Add Service` button again to ad
 Finally, click the `Save` button to save the interface, then the `Save` and `Return` buttons on the node page.
 
 .A complete node definition with all required elements defined
-image:provisioning/00007.png[]
+image:provisioning/complete_interface.png[]
 
 Now the node entity definition contains all the required elements necessary for importing this requisition into {page-component-title}.
 At this point, any additional the interfaces that are required for the node should be added.
@@ -51,7 +51,7 @@ For example, NAT interfaces should be specified if there are services that they 
 Two more nodes will be added for the benefit of this example.
 
 .The completed requisition for the Laboratory example
-image:provisioning/00021.png[]
+image:provisioning/requisition_nodes_preimport.png[]
 
 This set of nodes represents an import requisition for our demo Laboratory requisition.
 As this requisition is being edited via the Web UI, changes are being persisted into the {page-component-title} configuration directory `$OPENNMS_HOME/etc/imports/pending` as an XML file having the name `Laboratory.xml`.
@@ -64,7 +64,7 @@ The details of the Laboratory requisition now indicate that there are three node
 Additionally, you can see that time the requisition was last modified and the time it last imported are given (the time stamps are stored as attributes inside the requisition and are not the file system time stamps).
 These details are indicative of how well the database represents what is in the requisition.
 
-image:provisioning/00013.png[]
+image:provisioning/requisition_preimport.png[]
 
 NOTE: You can tell this requisition is in a pending state because the number of nodes defined does not match the number in the database and the requisition has been modified since the last import (in this case `never`).
 
@@ -85,7 +85,7 @@ A couple pings and SNMP packets are sent and received to get the SNMP details of
 Upon receipt of these packets, or not, each node is inserted as a database transaction.
 
 .The nodes are now added to {page-component-title} and are under management
-image:provisioning/000014.png[]
+image:provisioning/node_list.png[]
 
 NOTE: There is a link at the bottom of the node list that will show/hide the interfaces on each node.
 By default, the IP addresses are hidden from this view.
@@ -103,12 +103,12 @@ For example, to change the IP address of the Primary SNMP interface for the node
 Once edited, the Web UI will return you to the Provisioning Requisitions screen where you will see that there are the time stamp showing that the requisition’s last modification is more recent that the last import time.
 
 .The Requisition must be re-imported to apply changes
-image:provisioning/000012.png[]
+image:provisioning/modified_requisition.png[]
 
 Once the import is complete, you can see the updated interface(s) on the node.
 
 .The updated IP interface for bob.opennms.com can be seen added to the node
-image:provisioning/000008.png[]
+image:provisioning/updated_node_list.png[]
 
 === Deleting a node
 
@@ -116,12 +116,12 @@ _Bob_ has not been behaving, so it is time to remove it from the system.
 Edit the requisition, click the delete button (trash icon) next to the node _bob.opennms.com_ and click Ok to confirm.
 
 .The Delete button will remove a node from the requisition
-image:provisioning/000010.png[]
+image:provisioning/delete_node.png[]
 
 Click the Synchronize button for the requisition, and the Bob node and its interfaces, services, and any other related data will be immediately deleted from the {page-component-title} system.
 
 .Bob has been deleted
-image:provisioning/000011.png[]
+image:provisioning/removed_node_list.png[]
 
 === Deleting all the nodes
 
@@ -132,84 +132,90 @@ It is very important to note that once this is done, it cannot be undone!
 (Unless you have a backup of the requisition file)
 
 .`Remove All Nodes` option is available from the `...` menu on the requisition entry
-image:provisioning/000019.png[]
+image:provisioning/requisition_menu.png[]
 
 Make sure to click the Synchronize button to tell the database to purge the nodes from the system to apply the deletion.
 If you no longer want the requisition in your system, you can select the `Delete Requisition` option from the `...` menu.
 You can only delete a requisition if there are no nodes in the database for the requisition.
 
-== Advanced provisioning example
+== Advanced provisioning examples
 
 In the previous example, we provisioned three nodes and let Provisiond complete all of its import phases using a default foreign source definition.
-Each Requisition can have a separate foreign source definition that controls:
+Each requisition can have a separate foreign source definition that controls:
 
 * The rescan interval
 * The services to be detected
 * The policies to be applied
 
-This example will demonstrate how to create a foreign source definition and how it is used to control the behavior of Provisiond when importing a requisition.
+This example will demonstrate how to create a foreign source definition, and how it is used to control the behavior of Provisiond when importing a requisition.
 
 First let’s simply provision the node and let the default foreign source definition apply.
+We will configure the node the same way as above, however we will not specify any services on the IP interface.
 
-.The node definition used for the Advanced Provisioning Example
-image:provisioning/00025.jpeg[]
+.A basic node definition
+image:provisioning/bare_bone_node.png[]
 
-Following the import, All the IP and SNMP interfaces, in addition to the interface specified in the requisition, have been discovered and added to the node entity.
-The default foreign source definition has no polices for controlling which interfaces that are discovered either get persisted or managed by {page-component-title}.
+Following the import, all the IP and SNMP interfaces, in addition to the interface specified in the requisition, will be discovered and added to the node entity.
+The default foreign source definition has no polices for controlling which interfaces that are discovered will be persisted or managed by {page-component-title}.
 
-image:provisioning/000005.png[]
+.IP interfaces discovered on node Kevin
+image:provisioning/node_ip_interfaces.png[]
 
-.Logical and Physical interface and Service entities directed and discovered by Provisiond.
-image:provisioning/000002.png[]
+.SNMP interfaces discovered on node Kevin
+image:provisioning/node_snmp_interfaces.png[]
 
-image:provisioning/000018.png[]
+.Services discovered on node Kevin
+image:provisioning/node_services.png[]
 
 === Service detection
 
 As IP interfaces are found during the node scan process, service detection tasks are scheduled for each IP interface.
-The service detections defined in the foreign source determines which services are to be detected and how.
-The values of the parameters control how the service is detected, port, timeout, and so forth.
+The detectors defined in the foreign source definition determines which services are to be detected.
+Parameters can be defined to control how the service is detected.
+This includes customizing ports, timeouts, and and injecting meta-data for per-node customizations.
 
 ==== Applying a new foreign source definition
 
 This example node has been provisioned using the Default foreign source definition.
-By navigating to the Requisitions screen in the {page-component-title} Web UI and clicking the Edit Foreign Source link of a group, you can create a new foreign source definition that defines service detection and policies.
+By navigating to the Requisitions screen, clicking the Edit button for our requisition, and then clicking the `Edit Definition` button at the top, you can create a new foreign source definition that defines service detection and policies.
 The policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behaviors.
 
-.When creating a new foreign source definition, the default definition is used as a template
-image:provisioning/000017.png[]
+.Default foreign source definition
+image:provisioning/default_fs_services.png[]
 
-In this UI, new Detectors can be added, changed, and removed.
-For this example, we will remove detection of all services accept ICMP and DNS, change the timeout of ICMP detection, and a new Service detection for {page-component-title} Web UI.
+In this area, Detectors and Policies can be added, changed, and removed.
+For this example, we will remove detection of all services accept ICMP and SNMP, change the timeout of ICMP detection, and a new Service detection for the {page-component-title} Web UI.
 
 .Custom foreign source definition
-image:provisioning/00022.jpeg[]
+image:provisioning/custom_fs_services.jpeg[]
 
-Click the Done button and re-import the NMS Requisition.
-During this and any subsequent re-imports or re- scans, the {page-component-title} detector will be active, and the detectors that have been removed will no longer test for the related services for the interfaces on nodes managed in the requisition, however, the currently detected services will not be removed.
-There are 2 ways to delete the previously detected services:
+IMPORTANT: In order for monitoring to properly function, any service name added to a foreign source definition must also be configured in either the `collectd-configuration.xml` or `pollerd-configuration.xml` for any action to be taken after provisioning.
 
-. Delete the node in the requisition, re-import, define it again, and finally re-import again.
-. Use the ReST API to delete unwanted services.
-Use this command to remove each unwanted service from each interface, iteratively:
+Click the `Save` button and re-synchronize the NMS Requisition.
+During this and any subsequent synchronizations, the detectors defined will be active, and any detectors that have been removed will no longer test for the related services on the interfaces managed in the requisition.
+Any previously detected services will not be removed.
+There are three ways to delete the previously detected services that have been removed from a foreign source definition:
+
+* Delete the node in the requisition, synchronize, define it again, and resynchronize again.
+* Select the server on the node's page in web UI and click the `Delete` link at the top of the page.
+* Use the ReST API to delete unwanted service(s).
+Example command to remove a service from a node:
 
 [source, bash]
 ----
 curl -X DELETE -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/nodes/6/ipinterfaces/172.16.1.1/services/DNS
 ----
 
-TIP: There is a sneaky way to do #1.
-Edit the requisition and just change the foreign ID.
-That will make Provisiond think that a node was deleted and a new node was added in the same requisition!
-Use this hint with caution and an full understanding of the impact of deleting an existing node.
+Replace your desired node ID, IP address, and service name as appropriate.
+This endpoint accepts one interface's service per request.
 
 ==== Provisioning with policies
 
-The Policy API in Provisiond allow you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.
+The Policy API in Provisiond allows you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.
 
 ==== Matching IP interface policy
 
-The Matching IP Interface policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
+The `Matching IP Interface` policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
 
 Continuing with this example Requisition, we are going to define a few policies that:
 
