@@ -121,7 +121,7 @@ The log message also provides the following additional information:
 
 == Debugging
 
-If you cannot detect or monitor the BGP session, use the following command to determine the problem.
+If you cannot detect or monitor the BGP session, use the following command to check that the device is providing BGP data via SNMP.
 
 [source, bash]
 ----
