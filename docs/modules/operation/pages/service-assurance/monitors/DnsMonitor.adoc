@@ -2,7 +2,7 @@
 = DnsMonitor
 
 This monitor tests the availability of the DNS service on remote IP interfaces.
-The monitor tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
+A DNS query is sent to check for a response of either an A or AAAA resource record.
 
 The monitor is marked as up if the DNS Server can send a valid response to the monitor.
 For multiple records it is possible to test if the number of responses are within a given boundary.
