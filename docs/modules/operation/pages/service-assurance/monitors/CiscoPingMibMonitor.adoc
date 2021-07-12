@@ -117,7 +117,6 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 |===
 | Variable        | Description
 | $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service appears.
-                    appears.
 |===
 
 == Example: Ping the same non-routable address from all routers of customer Foo
