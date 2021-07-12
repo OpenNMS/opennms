@@ -2,7 +2,7 @@
 [[poller-dns-resolution-monitor]]
 = DNSResolutionMonitor
 
-The DNS resolution monitor tests if the node label of a {page-component-title} node can be resolved.
+The DNS resolution monitor tests if the node label of a node can be resolved via a DNS lookup.
 This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running.
 Use it to test client behavior for a given host name.
 
