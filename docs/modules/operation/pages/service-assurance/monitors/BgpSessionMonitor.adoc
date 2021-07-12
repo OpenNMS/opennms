@@ -18,7 +18,7 @@ The service states for {page-component-title} are mapped as follows:
 [options="header, autowidth"]
 |===
 | Result | State description | Monitor state in {page-component-title}
-| `1`    | Idle            | DOWN
+| 1      | Idle            | DOWN
 | `2`    | Connect         | DOWN
 | `3`    | Active          | DOWN
 | `4`    | OpenSent        | DOWN
