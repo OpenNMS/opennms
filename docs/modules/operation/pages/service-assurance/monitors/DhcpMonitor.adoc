@@ -6,7 +6,6 @@ The DhcpMonitor is run by Pollerd and opens a background process to listen for i
 A DHCP server is tested by sending a DISCOVER message.
 If the DHCP server responds with an OFFER, the service is marked as up.
 The background listening process is started only if the DhcpMonitor is used.
-You can modify the behavior for testing the DHCP server in `poller-configuration.xml`.
 
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
