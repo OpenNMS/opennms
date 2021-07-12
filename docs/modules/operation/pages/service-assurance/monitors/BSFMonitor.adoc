@@ -218,7 +218,7 @@ if (testFile.exists()) {
 
 == Jython exmaple
 
-To use the Jython (Java implementation of Python) language requires an additional library.
+The use of the Jython (Java implementation of Python) language requires an additional library.
 Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart {page-component-title} to make Jython available for the BSFMonitor.
 
 .Jython example `poller-configuration.xml` with `run-type` `exec`
