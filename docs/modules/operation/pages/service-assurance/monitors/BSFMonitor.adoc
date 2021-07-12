@@ -132,7 +132,7 @@ The following table provides the required setup for commonly used languages.
 |===
 | Language                            | lang-class  | bsf-engine                                    | required library
 | http://www.beanshell.org[BeanShell] | beanshell | `bsh.util.BeanShellBSFEngine`                 | supported by default
-| https://groovy-lang.org/[Groovy]  | groovy    | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
+| https://groovy-lang.org/[Groovy]  | groovy    | `org.codehaus.groovy.bsf.GroovyEngine`        | `groovy-all-[version].jar`
 | http://www.jython.org[Jython]       | jython    | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
 |===
 
