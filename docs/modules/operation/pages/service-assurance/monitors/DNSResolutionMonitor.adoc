@@ -148,5 +148,6 @@ You can use it in combination with the
 <<service-assurance/monitors/PageSequenceMonitor.adoc#pagesequencemonitor, PageSequenceMonitor>> to provide a hint if a website is not available for DNS reasons.
 
 The DnsMonitor is a test against a specific DNS server.
+Use this service to determine if the monitored node provides DNS resolution of requests sent to it.
 In {page-component-title}, the DNS server is the node and the DnsMonitor sends a lookup request for a given A record to the DNS server IP address.
 The service goes down if the DNS server doesn't have a valid A record in its zone database or has other issues resolving A records.
