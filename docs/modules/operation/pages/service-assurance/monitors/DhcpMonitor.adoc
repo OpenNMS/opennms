@@ -36,7 +36,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
                        back to the IP address specified by myIpAddress rather than broadcasting its responses.
                        This lets DHCP servers be polled even though they are not on the
                        same subnet as the {page-component-title} server, and without the aid of an external relay.  | 127.0.0.1
-| extendedMode     | When extendedMode is false, the DHCP poller sends a DISCOVER and expects an
+| extendedMode     | When extendedMode is false, the DHCP poller sends a DISCOVER and expects an OFFER in return. 
                        OFFER in return. When extendedMode is true, the DHCP poller first sends a
                        DISCOVER. If it receives no valid response it sends an INFORM. If it receives no valid
                        response it then sends a REQUEST. OFFER, ACK, and NAK are all
