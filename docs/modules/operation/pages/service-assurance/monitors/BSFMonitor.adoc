@@ -86,7 +86,7 @@ The following status codes are defined:
 == Response time tracking
 
 By default, the BSFMonitor tracks the duration of the script runtime as the response time.
-If the response time should be persisted, the response time adds the following parameters:
+If the response time should be persisted, add the following parameters:
 
 .RRD response time tracking for this service in `poller-configuration.xml`
 [source, xml]
