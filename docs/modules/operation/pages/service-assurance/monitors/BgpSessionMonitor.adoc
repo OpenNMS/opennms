@@ -71,7 +71,7 @@ For example:
 == Error code mapping
 
 The BGP_PEER_LAST_ERROR_OID gives an error in hex code.
-A code-mapping table makes it human-readable:
+The error codes returned are listed in the table below.
 
 [options="header, autowidth"]
 |===
