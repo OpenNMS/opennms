@@ -4,12 +4,12 @@
 This monitor creates conceptual rows (entries) in the ciscoPingTable on Cisco IOS devices that support the http://www.circitor.fr/Mibs/Html/C/CISCO-PING-MIB.php[CISCO-PING-MIB].
 These entries direct the remote IOS device to ping an IPv4 or IPv6 address with a configurable set of parameters.
 
-After the IOS device completes the requested ping operations, the poller monitor queries the IOS device to determine the results.
+After the IOS device completes the requested ping operations, the monitor queries the IOS device to determine the results.
 If the results indicate success according to the configured parameters in the service configuration, then the monitored service is reported as available and the results are available for optional time-series (RRD) storage.
 If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
 If something goes wrong during the setup of the entry or the subsequent querying of its status, the monitored service is reported to be in an unknown state.
 
-Unlike most poller monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
+Unlike most monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
 The packet-count and packet-timeout parameters instead serve this purpose from the perspective of the remote IOS device.
 
 .Supported MIB OIDs from CISCO_PING_MIB
@@ -116,8 +116,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [cols="1,3"]
 |===
 | Variable        | Description
-| $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service
-                    appears.
+| $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service appears.
 |===
 
 == Example: Ping the same non-routable address from all routers of customer Foo

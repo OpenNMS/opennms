@@ -1,9 +1,11 @@
 
 = AvailabilityMonitor
 
+== Note: This monitor has been superseded by the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>>.
+
 This monitor uses the isReachable method of the InetAddress Java class to test the reachability of a node.
 The service is considered available if isReachable returns true.
-See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
+See link:https://docs.w3cub.com/openjdk~11/java.base/java/net/inetaddress.html#isReachable(int)[Oracle's documentation] for more details.
 
 Note that under most configurations the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>> supercedes the AvailabilityMonitor. 
 The AvailabilityMonitor was developed when the ImpMonitor was not remote enabled, to circumvent this limitation.
@@ -32,4 +34,3 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 <monitor service="AVAIL" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
 ----
-

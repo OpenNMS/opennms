@@ -18,12 +18,12 @@ The service states for {page-component-title} are mapped as follows:
 [options="header, autowidth"]
 |===
 | Result | State description | Monitor state in {page-component-title}
-| `1`    | Idle            | DOWN
-| `2`    | Connect         | DOWN
-| `3`    | Active          | DOWN
-| `4`    | OpenSent        | DOWN
-| `5`    | OpenConfirm     | DOWN
-| `6`    | Established     |  UP
+| 1      | Idle            | DOWN
+| 2      | Connect         | DOWN
+| 3      | Active          | DOWN
+| 4      | OpenSent        | DOWN
+| 5      | OpenConfirm     | DOWN
+| 6      | Established     | UP
 |===
 
 == Monitor facts
@@ -71,7 +71,7 @@ For example:
 == Error code mapping
 
 The BGP_PEER_LAST_ERROR_OID gives an error in hex code.
-A code-mapping table makes it human-readable:
+The error codes returned are listed in the table below.
 
 [options="header, autowidth"]
 |===
@@ -112,7 +112,7 @@ A code-mapping table makes it human-readable:
 | 0608     | Cease - Out of Resources
 |===
 
-Instead of hex code, the error message will be displayed in the service-down log message.
+The error message text will be displayed in the service down log message.
 The log message also provides the following additional information:
 
  BGP-Peer Adminstate
@@ -121,7 +121,7 @@ The log message also provides the following additional information:
 
 == Debugging
 
-If you cannot detect or monitor the BGP session, use the following command to determine the problem.
+If you cannot detect or monitor the BGP session, use the following command to check that the device is providing BGP data via SNMP.
 
 [source, bash]
 ----

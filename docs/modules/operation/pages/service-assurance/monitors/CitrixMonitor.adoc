@@ -19,7 +19,7 @@ The monitor opens a TCP socket and tests the greeting banner returns with ICA; o
 [cols="1,3,2"]
 |===
 | *Parameter* | *Description* | *Default* 
-| port    | TCP port where the ICA protocol listens.                                                         |1494
+| port    | TCP port where the ICA protocol listens.                                                         | 1494
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

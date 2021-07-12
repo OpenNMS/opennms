@@ -2,11 +2,10 @@
 = DhcpMonitor
 
 Use this monitor to check the availability and functionality of [DHCP servers.
-The monitor class DhcpMonitor is run by Pollerd and opens the background process listening for incoming DHCP responses.
+The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.
 A DHCP server is tested by sending a DISCOVER message.
 If the DHCP server responds with an OFFER, the service is marked as up.
 The background listening process is started only if the DhcpMonitor is used.
-You can modify the behavior for testing the DHCP server in `poller-configuration.xml`.
 
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
@@ -34,14 +33,14 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | myIpAddress      | This parameter will usually be set to the IP address of the {page-component-title} server,
                        if relayMode is set to true.
                        In relay mode, the DHCP server being polled will unicast its responses directly
-                       back to the IP address specified by myIpAddress rather than broadcasting its
-                       responses. This lets DHCP servers be polled even though they are not on the
+                       back to the IP address specified by myIpAddress rather than broadcasting its responses.
+                       This lets DHCP servers be polled even though they are not on the
                        same subnet as the {page-component-title} server, and without the aid of an external relay.  | 127.0.0.1
-| extendedMode     | When extendedMode is false, the DHCP poller sends a DISCOVER and expects an
-                       OFFER in return. When extendedMode is true, the DHCP poller first sends a
-                       DISCOVER. If it receives no valid response it sends an INFORM. If it receives no valid
-                       response it then sends a REQUEST. OFFER, ACK, and NAK are all
-                       considered valid responses in extendedMode.                                                  | false
+| extendedMode     | When extendedMode is false, the DHCP poller sends a DISCOVER and expects an OFFER in return. 
+                       When extendedMode is true, the DHCP poller first sends a DISCOVER.
+                       If it receives no valid response it sends an INFORM.
+                       If that returns no valid response, a REQUEST is then sent.
+                       OFFER, ACK, and NAK are all considered valid responses in extendedMode.  | false
 | requestIpAddress | This parameter applies only to REQUEST queries sent to the DHCP server when
                        extendedMode is true. The query requests the specified IP address.  | `127.0.0.1`
 

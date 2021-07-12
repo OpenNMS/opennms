@@ -2,13 +2,14 @@
 [[poller-dns-resolution-monitor]]
 = DNSResolutionMonitor
 
-The DNS resolution monitor tests if the node label of a {page-component-title} node can be resolved.
+The DNS resolution monitor tests if the node label of a node can be resolved via a DNS lookup.
 This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running.
 Use it to test client behavior for a given host name.
 
 For example, create a node with the node label www.google.com and an IP interface.
-Assigning the DNS resolution monitor on the IP interface tests if www.google.com can be resolved using the DNS configuration defined by the poller.
-The response from the A record lookup can be any address; it is not verified with the IP address on the {page-component-title} IP interface where the monitor is assigned.
+Assigning the DNS resolution monitor on the IP interface tests if `www.google.com` can be resolved using the DNS configuration defined by the poller.
+If the DNS server responds with either an A or AAAA record, the service is determined to be up.
+The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assgined.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -140,10 +141,11 @@ To have response time graphs for the name resolution you have to configure RRD g
 == DNSResolutionMonitor vs. DnsMonitor
 
 The DNSResolutionMonitor measures the availability and record outages of a name resolution from a client perspective.
-Use the service mainly for websites or similar publicly available resources.
+Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
 You can use it in combination with the 
 <<service-assurance/monitors/PageSequenceMonitor.adoc#pagesequencemonitor, PageSequenceMonitor>> to provide a hint if a website is not available for DNS reasons.
 
 The DnsMonitor is a test against a specific DNS server.
+Use this service to determine if the monitored node provides DNS resolution of requests sent to it.
 In {page-component-title}, the DNS server is the node and the DnsMonitor sends a lookup request for a given A record to the DNS server IP address.
 The service goes down if the DNS server doesn't have a valid A record in its zone database or has other issues resolving A records.

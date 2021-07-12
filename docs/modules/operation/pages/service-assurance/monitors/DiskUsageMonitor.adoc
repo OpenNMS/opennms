@@ -1,11 +1,11 @@
 
 = DiskUsageMonitor
 
-The DiskUsageMonitor tests the amount of free space available on certain node storage.
+The DiskUsageMonitor tests the amount of free space available on the specified storage disk of a monitored node.
 The monitor inspects the http://tools.ietf.org/html/rfc1514[HOST-RESOURCES-MIB] hrStorageTable to get information about the available free storage space.
 
-A storage's description (as found in the corresponding hrStorageDescr object) must match the criteria the `disk` and `match-type` parameters specify to be monitored.
-A storage's available free space is calculated using the corresponding hrStorageSize and hrStorageUsed objects.
+A disk's description (as found in the corresponding hrStorageDescr object) must match the criteria the `disk` and `match-type` parameters specify to be monitored.
+The available free space is calculated using the corresponding hrStorageSize and hrStorageUsed objects.
 
 CAUTION: The hrStorageUsed does not account for filesystem reserved blocks (for example, for the super-user), so DiskUsageMonitor will report the service as 
          unavailable only when the amount of free disk space is actually lower than `free` minus the percentage of reserved filesystem blocks.
@@ -72,3 +72,4 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 == DiskUsageMonitor vs. thresholds
 
 You can also use thresholds to monitor a storage's available free space if you are already collecting these data.
+The difference between thresholds and this monitor is that while both can trigger notifications, using this monitor will put the node into a service down state and trigger an outage.
