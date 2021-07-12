@@ -4,7 +4,7 @@
 This monitor creates conceptual rows (entries) in the ciscoPingTable on Cisco IOS devices that support the http://www.circitor.fr/Mibs/Html/C/CISCO-PING-MIB.php[CISCO-PING-MIB].
 These entries direct the remote IOS device to ping an IPv4 or IPv6 address with a configurable set of parameters.
 
-After the IOS device completes the requested ping operations, the poller monitor queries the IOS device to determine the results.
+After the IOS device completes the requested ping operations, the monitor queries the IOS device to determine the results.
 If the results indicate success according to the configured parameters in the service configuration, then the monitored service is reported as available and the results are available for optional time-series (RRD) storage.
 If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
 If something goes wrong during the setup of the entry or the subsequent querying of its status, the monitored service is reported to be in an unknown state.
