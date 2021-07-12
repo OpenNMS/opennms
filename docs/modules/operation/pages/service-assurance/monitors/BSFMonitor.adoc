@@ -35,7 +35,7 @@ The BSFMonitor also grants access to a selection of {page-component-title} inter
                       Jython: org.apache.bsf.engines.jython.JythonEngine         | n/a
 
 3+|*Optional*                      
-| run-type       | one of eval or exec                                        |  eval
+| run-type       | One of eval or exec                                        |  eval
 | lang-class      | The BSF language class, like `groovy` or `beanshell`.          | filename extension is interpreted by default
 | file-extensions | comma-separated list                                           | n/a
 |===
