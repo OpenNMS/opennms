@@ -101,5 +101,5 @@ To monitor both of the entries, the configuration in `poller-configuration.xml` 
 <monitor service="IP-SLA-WEB-Google" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
 <monitor service="IP-SLA-PING-OpenNMS" class-name="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
 ----
-<1> Service is up if the IP SLA state is `ok(1)``.
+<1> Service is up if the IP SLA state is `ok(1)`.
 <2> Service is down if the IP SLA state is `overThreshold(3)`.
