@@ -55,7 +55,6 @@ if [ -e "${opennms_home}/bin/_lib.sh" ]; then
 	myuser="$(id -u -n)"
 	if [ "$myuser" != "$RUNAS" ]; then
 	        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
-	                echo "WARNING: relaunching as $RUNAS" >&2
 	                _cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
 	                exec "${_cmd[@]}"
 	        fi
