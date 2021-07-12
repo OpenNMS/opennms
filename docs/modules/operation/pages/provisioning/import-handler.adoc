@@ -143,7 +143,6 @@ TIP: You can use online tools like https://www.urlencoder.org to encode your par
 === DNS setup
 
 The DNS server must be configured to allow a zone transfer from the {page-component-title} server.
-// Question: Is this still recommended to setup a local DNS secondary?
 One suggestion is to setup a secondary DNS server on your {page-component-title} and point the DNS handler to `localhost`.
 A quick way to test if zone transfers are working is:
 
