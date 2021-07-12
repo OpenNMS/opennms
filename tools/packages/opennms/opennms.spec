@@ -1,6 +1,3 @@
-#
-#  $Id$
-#
 # The version used to be passed from build.xml. It's hardcoded here
 # the build system generally passes --define "version X" to rpmbuild.
 %{!?version:%define version 1.3.10}
@@ -8,7 +5,7 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $OPENMS_HOME in the finished package
 %{!?instprefix:%define instprefix /opt/opennms}
-# This is where the OPENNMS_HOME variable will be set on the remote 
+# This is where the OPENNMS_HOME variable will be set on the remote
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
 # This is where the "share" directory will link on RPM-based systems
@@ -229,7 +226,7 @@ Group:		Applications/System
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-northbounder-jms
-This northbounder allows you to send OpenNMS alarms to an 
+This northbounder allows you to send OpenNMS alarms to an
 external JMS listener.
 
 %{extrainfo}
@@ -333,7 +330,7 @@ Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-snmp-hardware-inventory
-The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating
 hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
 
 %{extrainfo}
