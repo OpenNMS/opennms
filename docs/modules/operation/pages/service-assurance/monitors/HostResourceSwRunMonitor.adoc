@@ -27,8 +27,8 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 
 | Parameter           | Description | Default
 3+| *Required*
-| service-name       | The name of the process to be monitored. This parameter's value is case-sensitive and is
-                         evaluated as an exact match.                                                                   | n/a
+| service-name       | The name of the process to be monitored.
+                       This parameter's value is case-sensitive and is evaluated as an exact match.                          | n/a
 3+|*Optional*
 
 | port              | The port of the server's SNMP agent to test.                                            | from `snmp-config.xml`

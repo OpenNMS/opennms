@@ -68,7 +68,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Example
 
-The example shows how to monitor whether the IP interface from a given DNS server resolves a DNS request.
+This example shows how to monitor whether the IP interface from a given DNS server resolves a DNS request.
 This service should be bound to a DNS server which should be able to give a valid DNS respone for DNS request _www.google.com_.
 The service is up if the DNS server gives between one and 10 A record responses.
 

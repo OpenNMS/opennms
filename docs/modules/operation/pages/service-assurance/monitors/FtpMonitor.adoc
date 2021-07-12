@@ -1,7 +1,7 @@
 
 = FtpMonitor
 
-The FtpMonitor validates FTP connection dial-up processes.
+The FtpMonitor validates an FTP connection's login processes.
 The monitor can test the FTP server on multiple ports with specific login data.
 
 The service using the FtpMonitor is up if the FTP server responds with return codes between 200 and 299.
@@ -29,13 +29,13 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | port                 | A list of TCP ports to which connection shall be tried.                                     | 20, 21 
 | password
 
-*{}*             | Specifies the password to use. Use this parameter with the userid parameter to perform
-                           authentication.                         | empty string 
+*{}*             | Specifies the password to use.
+                   Use this parameter with the userid parameter to perform authentication.                         | empty string
 | userid  
 
 *{}*
-          | Specifies the user ID to use. Use this parameter with the password parameter to perform
-                           authentication.                            |n/a 
+          | Specifies the user ID to use.
+            Use this parameter with the password parameter to perform authentication.   |n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
