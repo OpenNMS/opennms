@@ -50,7 +50,37 @@ In order to isolate multiple instances on the same broker, you can customize the
 echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.d/instance-id.properties"
 ----
 
-CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
+Update the Minion's instance ID accordingly to match the {page-component-title} instance.
+The same ID instance property should be present in `${MINION_HOME}/etc/custom.system.properties`.
+
+[source, sh]
+----
+echo 'org.opennms.instance.id=MyNMS' > "$\{MINION_HOME}/etc/custom.system.properties"
+----
+CAUTION: If you change the instance ID setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
+The configuration can be modified with the file `${OPENNMS_HOME}/etc/opennms-activemq.xml`:
+
+[source, xml]
+----
+<authorizationPlugin>
+  <map>
+    <authorizationMap>
+      <authorizationEntries>
+        <!-- Users in the admin role can read/write/create any queue/topic -->
+        <authorizationEntry queue=">" read="admin" write="admin" admin="admin" />
+        <authorizationEntry topic=">" read="admin" write="admin" admin="admin"/>
+        <!-- Users in the minion role can write/create queues that are not keyed by location -->
+        <authorizationEntry queue="<YOUR INSTANCE ID>.*.*" write="minion" admin="minion" />
+        <!-- Users in the minion role can read/create from queues that are keyed by location -->
+        <authorizationEntry queue="<YOUR INSTANCE ID>.*.*.*" read="minion" admin="minion" />
+        <!-- Users in the minion role can read/write/create advisory topics -->
+        <authorizationEntry topic="ActiveMQ.Advisory.>" read="minion" write="minion" admin="minion"/>
+      </authorizationEntries>
+      <!-- Allow all users to read/write/create temporary destinations (by omitting a <tempDestinationAuthorizationEntry>) -->
+    </authorizationMap>
+  </map>
+</authorizationPlugin>
+----
 
 == Tuning the RPC client in OpenNMS
 
