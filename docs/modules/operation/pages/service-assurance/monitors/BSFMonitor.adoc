@@ -3,7 +3,8 @@
 
 This monitor runs a Bean Scripting Framework (http://commons.apache.org/proper/commons-bsf/[BSF])-compatible script to determine the status of a service.
 Users can write scripts to perform highly customized service checks.
-This monitor is not optimized for scale.
+
+IMPORTANT: This monitor is not optimized for scale.
 It is intended for a small number of custom checks or prototyping of monitors.
 
 == BSFMonitor vs. SystemExecuteMonitor
