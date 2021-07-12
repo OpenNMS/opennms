@@ -165,7 +165,7 @@ if (testFile.exists()) {
 == Groovy example
 
 The use of the Groovy language requires an additional library.
-Copy a compatible `groovy-all.jar` into the `opennms/lib` folder and restart {page-component-title} to make Groovy available for the BSFMonitor.
+Copy a compatible `groovy-all.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Groovy available for the BSFMonitor.
 
 .Groovy example `poller-configuration.xml` with default `run-type` set to `eval`
 [source, xml]
