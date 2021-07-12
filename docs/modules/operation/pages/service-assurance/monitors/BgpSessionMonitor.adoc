@@ -112,7 +112,7 @@ The error codes returned are listed in the table below.
 | 0608     | Cease - Out of Resources
 |===
 
-Instead of hex code, the error message will be displayed in the service-down log message.
+The error message text will be displayed in the service down log message.
 The log message also provides the following additional information:
 
  BGP-Peer Adminstate
