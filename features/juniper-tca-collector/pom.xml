@@ -170,5 +170,11 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.in-memory</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

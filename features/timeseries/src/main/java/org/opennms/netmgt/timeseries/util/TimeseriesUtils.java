@@ -38,9 +38,6 @@ import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao;
-import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
-import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 
 
 /**
@@ -50,72 +47,44 @@ import org.opennms.newts.cassandra.search.ResourceIdSplitter;
  */
 public final class TimeseriesUtils {
 
+    public static final String PREFIX_EXTERNAL_TAG =  "_ext_";
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
-    public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "w";
-
-    private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 
     /**
-     * Extends the attribute map with indices used by the {@link TimeseriesResourceStorageDao}.
-     *
-     * A resource path of the form [a, b, c, d] will be indexed with:
-     * <ul>
-     * <li> _idx1: (a, 4)
-     * <li> _idx2: (a:b, 4)
-     * <li> _idx2w=(a:b,*) // wildcard index to query for all resources under that resource
-     * <li> _idx3: (a:b:c, 4)
-     */
-    public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
-        final List<String> elements = Arrays.asList(path.elements());
-        final int n = elements.size();
-        for (int i = 0; i < n; i++) {
-            final String id = s_splitter.joinElementsToId(elements.subList(0, i+1));
-            attributes.put("_idx" + i, String.format("(%s,%d)", id, n));
-        }
-        if(elements.size() >= WILDCARD_INDEX_NO) {
-            final String id = s_splitter.joinElementsToId(elements.subList(0, WILDCARD_INDEX_NO));
-            attributes.put(String.format("_idx%sw", WILDCARD_INDEX_NO), String.format("(%s,*)", id));
-        }
-    }
-
-    /**
-     * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a Newts resource id.
-     *
-     * @param path path to convert
-     * @return Newts resource id
+     * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a String.
+     * The elements are separated by a slash ('/').
+     * No escaping is done.
+     * Reverse function to toResourcePath()
      */
     public static String toResourceId(ResourcePath path) {
-        return s_splitter.joinElementsToId(Arrays.asList(path.elements()));
+        return String.join("/", path.elements());
     }
 
     /**
-     * Converts a Newts resource id to a {@link org.opennms.netmgt.model.ResourcePath}.
-     *
-     * @param resourceId Newts resource id
-     * @return path
+     * Converts a String to a {@link org.opennms.netmgt.model.ResourcePath}.
+     * The last element is treated as the resource name and not returned.
+     * @param resourceId String with elements separated by a slash ('/').
      */
     public static ResourcePath toResourcePath(String resourceId) {
         if (resourceId == null) {
             return null;
         }
 
-        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        List<String> els = Arrays.asList(resourceId.split("/"));
         return ResourcePath.get(els.subList(0, els.size() - 1));
     }
 
     /**
      * Extracts the metric name from the resource id.
-     *
-     * @param resourceId Newts resource id
-     * @return metric name
+     * The last path element is used as the name.
      */
     public static String toMetricName(String resourceId) {
         if (resourceId == null) {
             return null;
         }
 
-        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        List<String> els = Arrays.asList(resourceId.split("/"));
         return els.get(els.size() - 1);
     }
 
@@ -135,6 +104,14 @@ public final class TimeseriesUtils {
                 .value(0.0)
                 .metric(metric.build())
                 .build();
+    }
+
+    public static String toSearchRegex(ResourcePath path, int depth) {
+        // we have the guarantee that no forward slash (/) is part of the elements of a ResourcePath
+        return "^" + // start string
+               toResourceId(path) + // exact match
+               "/[^./]*".repeat(depth) + // slash (/) plus any chars except slash (/), repeated 'depth' times
+                "$"; // end of String
     }
 
 }

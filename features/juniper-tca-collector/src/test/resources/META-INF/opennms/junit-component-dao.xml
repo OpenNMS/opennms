@@ -11,5 +11,5 @@
   <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="tcaDataCollectionConfigDao">
     <constructor-arg value="org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao" />
   </bean>
-  
+  <bean class="org.opennms.features.distributed.kvstore.blob.inmemory.InMemoryMapBlobStore" factory-method="withDefaultTicks" primary="true" id="blobStore" />
 </beans>

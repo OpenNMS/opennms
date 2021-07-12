@@ -128,6 +128,11 @@
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
     </dependency>
@@ -227,6 +232,12 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.test-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.in-memory</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

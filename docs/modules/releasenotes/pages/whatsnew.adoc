@@ -1,3 +1,4 @@
+
 [[releasenotes-29]]
 
 = What's New in OpenNMS Horizon 29
@@ -20,6 +21,12 @@ we decided _not_ to change ownership automatically upon package upgrade.
 
 The OpenNMS installer will detect if you need to fix the ownership of your files and warn you to run the script to fix permissions
 (`$OPENNMS_HOME/bin/fix-permissions`) in this case.
+
+=== Timeseries Integration Layer
+* Time series plugins need to be compatible with OIA 0.6.x.
+* Resource level string attributes are now also stored via the plugin in the respective time series database.
+  The so far used database tables in PostgreSQL have been removed.
+  There is no migration support.
 
 === Your Change Here
 

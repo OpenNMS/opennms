@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.sampleread;
+package org.opennms.netmgt.timeseries.stats;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 
 /**
- * Wrapper class for a {@link java.util.List} of {@link Sample} objects.
- *
- * Instances of this class are preallocated by the {@link com.lmax.disruptor.dsl.Disruptor}.
- *
- * @author jwhite
+ * We record statistics to answer the following questions:
+ * <ul>
+ *     <li>What metrics series have the highest tag cardinality?
+ *         What does the set tags for the top 10 look like?</li>
+ *     <li>Which string properties have the most unique values?</li>
+ * </ul>
  */
-public class SampleBatchEvent {
-    private List<Sample> samples;
-    private boolean metadata;
 
-    public void setSamples(List<Sample> samples) {
-        this.samples = samples;
-    }
+public interface StatisticsCollector {
 
-    public List<Sample> getSamples() {
-        return samples;
-    }
+    void record(Collection<Sample> samples);
 
-    public void setMetadata(boolean metadata) {
-        this.metadata = metadata;
-    }
+    /**
+     * List.get(0) => has most tags (top n)
+     */
+    List<Metric> getTopNMetricsWithMostTags();
 
-    public boolean isMetadata() {
-        return metadata;
-    }
+    List<String> getTopNTags();
 }

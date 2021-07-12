@@ -52,6 +52,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollection;
@@ -158,6 +159,9 @@ public class TcaCollectorIT implements InitializingBean {
     private LocationAwareSnmpClient m_client;
 
     private ResourceTypesDao m_resourceTypesDao;
+
+	@Autowired
+    private BlobStore m_blobStore;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -268,6 +272,7 @@ public class TcaCollectorIT implements InitializingBean {
 		collector.setResourceStorageDao(m_resourceStorageDao);
 		collector.setResourceTypesDao(m_resourceTypesDao);
 		collector.setLocationAwareSnmpClient(m_client);
+		collector.setBlobStore(m_blobStore);
 
 		CollectionSetVisitor persister = m_persisterFactory.createOneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), false, false);
 

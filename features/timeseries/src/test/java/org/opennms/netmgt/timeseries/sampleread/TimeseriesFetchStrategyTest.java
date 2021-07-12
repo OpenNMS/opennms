@@ -68,7 +68,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results.Row;
@@ -86,7 +86,7 @@ public class TimeseriesFetchStrategyTest {
     private final static long STEP = (300 * 1000);
 
     private ResourceDao resourceDao;
-    private TimeseriesStorageManager storageManager;
+    private TimeseriesStorageManagerImpl storageManager;
     private TimeSeriesStorage timeSeriesStorage;
 
     private TimeseriesFetchStrategy fetchStrategy;
@@ -99,7 +99,7 @@ public class TimeseriesFetchStrategyTest {
         resourceDao = EasyMock.createNiceMock(ResourceDao.class);
         this.timeSeriesStorage = Mockito.mock(TimeSeriesStorage.class);
         when(timeSeriesStorage.supportsAggregation(Aggregation.AVERAGE)).thenReturn(true);
-        storageManager = Mockito.mock(TimeseriesStorageManager.class);
+        storageManager = Mockito.mock(TimeseriesStorageManagerImpl.class);
         when(storageManager.get()).thenReturn(this.timeSeriesStorage);
         storageManager.onBind(this.timeSeriesStorage, new HashMap<String, String>());
 

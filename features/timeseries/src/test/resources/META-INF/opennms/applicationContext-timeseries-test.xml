@@ -50,11 +50,9 @@
 
   <bean id="timeseriesWriter" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesWriter" />
 
-  <bean id="timeSeriesMetaDataDao" class="org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao" />
+  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManagerImpl"/>
 
-  <bean id="timeseriesStorageManager" class="org.opennms.netmgt.timeseries.TimeseriesStorageManager"/>
-
-  <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.memory.InMemoryStorage" />
+  <bean id="timeseriesStorageImpl" class="org.opennms.integration.api.v1.timeseries.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
   <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>
@@ -65,6 +63,8 @@
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.samplewrite.TimeseriesPersisterFactory" />
 
   <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
+
+  <bean id="timeseriesResourceStorageDao" class="org.opennms.netmgt.timeseries.resource.TimeseriesResourceStorageDao" />
 
   <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
     <constructor-arg index="0" ref="timeseriesPersisterFactory"/>

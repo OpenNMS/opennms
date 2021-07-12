@@ -37,8 +37,6 @@ package org.opennms.netmgt.timeseries;
  * - Metric: Identifies a unique timeseries. For details, see {@link org.opennms.integration.api.v1.timeseries.Metric}
  * - Sample: Describes a single value at a given point in time for a Metric, see @{@link org.opennms.integration.api.v1.timeseries.Sample
  *           It is stored in the timeseries database
- * - Resource meta data: Stored internally in OpenNMS. It contains key value pairs attached to a Resource.
- *           This data is not passed on the the timeseries database, see {@link org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao}.
  * - meta data tags: additional data that can be exported to the timeseries database as meta tags in the Metric. Configured via opennms.properties,
  *           see {@link org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader}
  */
