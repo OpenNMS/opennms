@@ -60,7 +60,6 @@ To monitor the DNS resolution of some of your nodes from a client's perspective,
                            present in the server's response.
                            Default value is 2 and corresponds to `Server Failed`.
                            See http://tools.ietf.org/html/rfc2929[RFC 2929] for a list of codes and their meanings.  | 2
-                           list of codes and their meanings.  | 2
 | min-answers          | Minimum number of records in the DNS server respone for the given lookup.                      | n/a
 | max-answers          | Maximum number of records in the DNS server respone for the given lookup.                     | n/a
 |===
