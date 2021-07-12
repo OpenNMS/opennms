@@ -120,7 +120,7 @@ Scripts running in `eval` mode have to return a string that matches one of the s
 
 If your script is more than a one-liner, a `run-type` of `exec` is required.
 Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the results object.
-Additionally, the results object can also carry a "reason":"message" entry that is used in non-OK states.
+Additionally, the results object can also carry a `"reason":"message"` entry that is used in non-OK states.
 
 == Commonly used language settings
 
