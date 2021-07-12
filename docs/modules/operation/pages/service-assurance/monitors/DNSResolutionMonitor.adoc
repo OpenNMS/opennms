@@ -143,7 +143,7 @@ To have response time graphs for the name resolution you have to configure RRD g
 == DNSResolutionMonitor vs. DnsMonitor
 
 The DNSResolutionMonitor measures the availability and record outages of a name resolution from a client perspective.
-Use the service mainly for websites or similar publicly available resources.
+Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
 You can use it in combination with the 
 <<service-assurance/monitors/PageSequenceMonitor.adoc#pagesequencemonitor, PageSequenceMonitor>> to provide a hint if a website is not available for DNS reasons.
 
