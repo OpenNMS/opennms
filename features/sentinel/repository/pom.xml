@@ -386,11 +386,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry</groupId>
-            <artifactId>org.opennms.features.telemetry.shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.jdbc-collector</artifactId>
         </dependency>

@@ -36,7 +36,6 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -123,11 +122,6 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
                     .add("remoteAddress", remoteAddress)
                     .add("localAddress", localAddress)
                     .toString();
-        }
-
-        @Override
-        public String getDescription() {
-            return InetAddressUtils.str(this.remoteAddress);
         }
 
         @Override

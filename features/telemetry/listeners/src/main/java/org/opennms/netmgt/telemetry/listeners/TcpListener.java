@@ -29,14 +29,11 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,16 +198,6 @@ public class TcpListener implements Listener {
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public String getDescription() {
-        return String.format("TCP %s:%s",  this.host != null ? this.host : "*", this.port);
-    }
-
-    @Override
-    public Collection<? extends Parser> getParsers() {
-        return Collections.singleton(this.parser);
     }
 
     public String getHost() {

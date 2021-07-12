@@ -57,16 +57,6 @@ public class ForwardParser implements UdpParser {
     }
 
     @Override
-    public String getDescription() {
-        return "Forward";
-    }
-
-    @Override
-    public Object dumpInternalState() {
-        return null;
-    }
-
-    @Override
     public void start(final ScheduledExecutorService executorService) {
     }
 

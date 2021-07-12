@@ -36,7 +36,6 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.telemetry.api.TelemetryManager;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -66,7 +65,7 @@ import org.springframework.context.ApplicationContext;
  * @author jwhite
  */
 @EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
-public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
+public class Telemetryd implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
 
     public static final String NAME = "Telemetryd";
@@ -231,15 +230,4 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
         DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 
-    @Override
-    public List<Listener> getListeners() {
-        return this.listeners;
-    }
-
-    @Override
-    public List<Adapter> getAdapters() {
-        return this.consumers.stream()
-                .flatMap(consumer -> consumer.getAdapters().stream())
-                .collect(Collectors.toList());
-    }
 }

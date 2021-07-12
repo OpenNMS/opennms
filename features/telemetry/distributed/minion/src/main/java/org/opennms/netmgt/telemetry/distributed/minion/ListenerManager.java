@@ -29,22 +29,17 @@
 package org.opennms.netmgt.telemetry.distributed.minion;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.telemetry.api.TelemetryManager;
-import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
@@ -66,7 +61,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class ListenerManager implements ManagedServiceFactory, TelemetryManager {
+public class ListenerManager implements ManagedServiceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ListenerManager.class);
 
     private MessageDispatcherFactory messageDispatcherFactory;
@@ -212,15 +207,4 @@ public class ListenerManager implements ManagedServiceFactory, TelemetryManager 
         }
     }
 
-    @Override
-    public List<Listener> getListeners() {
-        return this.entities.values().stream()
-                .map(e -> e.listener)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Adapter> getAdapters() {
-        return Collections.emptyList();
-    }
 }
