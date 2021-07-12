@@ -1,6 +1,8 @@
 
 = AvailabilityMonitor
 
+== Note: This monitor has been superseded by the <<service-assurance/monitors/IcmpMonitor.adoc#poller-icmp-monitor, IcmpMonitor>>.
+
 This monitor uses the isReachable method of the InetAddress Java class to test the reachability of a node.
 The service is considered available if isReachable returns true.
 See link:https://docs.w3cub.com/openjdk~11/java.base/java/net/inetaddress.html#isReachable(int)[Oracle's documentation] for more details.
