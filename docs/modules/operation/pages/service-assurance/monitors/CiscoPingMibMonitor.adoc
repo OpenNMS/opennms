@@ -9,7 +9,7 @@ If the results indicate success according to the configured parameters in the se
 If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
 If something goes wrong during the setup of the entry or the subsequent querying of its status, the monitored service is reported to be in an unknown state.
 
-Unlike most poller monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
+Unlike most monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
 The packet-count and packet-timeout parameters instead serve this purpose from the perspective of the remote IOS device.
 
 .Supported MIB OIDs from CISCO_PING_MIB
