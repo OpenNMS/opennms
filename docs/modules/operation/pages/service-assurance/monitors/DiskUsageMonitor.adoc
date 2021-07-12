@@ -72,3 +72,4 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 == DiskUsageMonitor vs. thresholds
 
 You can also use thresholds to monitor a storage's available free space if you are already collecting these data.
+The difference between thresholds and this monitor is that while both can trigger notifications, using this monitor will put the node into a service down state and trigger an outage.
