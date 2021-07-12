@@ -40,7 +40,6 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
                        When extendedMode is true, the DHCP poller first sends a DISCOVER.
                        If it receives no valid response it sends an INFORM.
                        If that returns no valid response, a REQUEST is then sent.
-                       response it then sends a REQUEST. OFFER, ACK, and NAK are all
                        considered valid responses in extendedMode.                                                  | false
 | requestIpAddress | This parameter applies only to REQUEST queries sent to the DHCP server when
                        extendedMode is true. The query requests the specified IP address.  | `127.0.0.1`
