@@ -22,7 +22,7 @@ The service states for {page-component-title} are mapped as follows:
 | 2      | Connect         | DOWN
 | 3      | Active          | DOWN
 | 4      | OpenSent        | DOWN
-| `5`    | OpenConfirm     | DOWN
+| 5      | OpenConfirm     | DOWN
 | `6`    | Established     |  UP
 |===
 
