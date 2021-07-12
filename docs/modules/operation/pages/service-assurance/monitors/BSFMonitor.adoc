@@ -56,7 +56,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | bsf_monitor | BSFMonitor                    | The instance of the BSFMonitor object calling the script.
                                                     Useful for logging via its +log(String sev, String fmt, Object... args)+ method.
 | results     | HashMap<String, String>       | The script is expected to put its results into this object.
-                                                    You should  set the status indication into the entry with key `status`.
+                                                    You should set the status indication into the entry with key `status`.
                                                     If the status is not OK, a key `reason` should contain a description of the problem.
 | times       | LinkedHashMap<String, Number> | The script is expected to put one or more response times into this object.
 |===
