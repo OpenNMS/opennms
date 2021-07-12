@@ -24,20 +24,14 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 3+| *Required*
 | payload     | The body of the POST; for example, properly escaped XML.               | n/a 
 3+|*Optional*
-| auth-password
-
-*{}*
+| auth-password kbd:[{}]
 | The password to use for HTTP BASIC auth.                              | n/a 
-| auth-username
-
-*{}*
+| auth-username kbd:[{}]
 | The username to use for HTTP BASIC auth.                              | n/a 
 | header[0-9]+ | Additional headers to send with the request. Example of valid
                    parameter names are header0, header1, and header180. +
                    `header` is not a valid parameter name.                             | n/a 
-| banner       
-
-*{}*
+| banner kbd:[{}]
 | A string that is matched against the response of the HTTP POST.
                    If the output contains the banner, the service is determined as up.
                    Specify a regex by starting with `~`.                                 | n/a 
@@ -46,13 +40,13 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | port         | The port for the web server to send the POST.                | 80 
 | scheme       | The connection scheme to use.                                         | http 
 | usesslfilter | Enables or disables the SSL ceritificate validation. (Options: true - false)   | false 
-| uri        
-
-*{}*
+| uri kbd:[{}]
   | The uri to use during the POST.                                       | n/a 
 | use-system-proxy | Should the system-wide proxy settings be used? The system proxy
                    settings can be configured in <<system-properties/introduction.adoc#system-properties[system properties] | false 
 |===
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
+
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

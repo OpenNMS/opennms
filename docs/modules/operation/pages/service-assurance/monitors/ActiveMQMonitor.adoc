@@ -38,6 +38,10 @@ Sample configuration on how to configure the monitor in `poller-configuration.xm
 
 [source, xml]
 ----
-<parameter key="broker-url" value="failover://auto+ssl://192.168.1.1:61616/"/>
-<parameter key="use-nodelabel" value="true"/>
+<service name="ActiveMQ" interval="300000" user-defined="false" status="on">
+   <parameter key="broker-url" value="failover://auto+ssl://192.168.1.1:61616/"/>
+   <parameter key="use-nodelabel" value="true"/>
+</service>
+
+<monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
 ----

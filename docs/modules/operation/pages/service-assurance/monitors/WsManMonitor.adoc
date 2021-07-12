@@ -22,14 +22,14 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 3+|*Required*
 
 | resource-uri | Resource URI                                                                | n/a
-| rule
-
-*{}*
+| rule kbd:[{}]
       | SPEL expression applied against the result of the GET.                  | n/a
 3+|*Optional*
 
 | selector.    | Used to filter the result set. All selectors must prefixed with `selector.` | `(None)`
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

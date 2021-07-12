@@ -52,33 +52,25 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | retry          | Placeholder for the second optional monitor parameter description.                      | 0
 | authport       | RADIUS authentication port.                                                                     |1812
 | acctport      | RADIUS accounting port.                                                                         | 1813
-| user
-
-*{}*
+| user kbd:[{}]
            | Username to test the authentication.                                                               | OpenNMS
-| password
-
-*{}*
+| password kbd:[{}]
        | Password to test the authentication.                                                               | OpenNMS
-| secret
-
-*{}*
+| secret kbd:[{}]
          | The RADIUS shared secret used for communication between the client/NAS
                      and the RADIUS server.                                                                          | secret
 | authtype       | RADIUS authentication type. The following authentication types are supported:
                      chap, pap, mschapv1, mschapv2, eapmd5, eapmschapv2, eapttls.                         | pap
-| nasid
-
-*{}*
+| nasid kbd:[{}]
          | The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier]
                      originating the Access-Request.                                                                 | opennms
 | inner-protocol | When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
                      Only pap is currently supported.                                                                | pap
-| inner-user
-
-*{}*
+| inner-user kbd:[{}]
     | Username for the tunnelled pap authentication when using EAP-TTLS.                              | Inner-OpenNMS
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

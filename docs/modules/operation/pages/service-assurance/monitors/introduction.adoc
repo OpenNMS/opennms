@@ -60,4 +60,4 @@ The supported properties are:
 * ipAddr (or ipAddress)
 * all node asset record fields (for example: username, password)
 
-Parameters that support placeholder substitution have a *{}* icon below them in the *Configuaration and use* section of the monitor documentation.
+Parameters that support placeholder substitution have a kbd:[{}] icon beside them in the *Configuration and use* section of the monitor documentation.

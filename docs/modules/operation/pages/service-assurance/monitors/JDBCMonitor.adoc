@@ -22,21 +22,17 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 |Parameter  | Description  |Default value
 3+|*Required*
 | driver   | JDBC driver class to use. | org.postgresql.Driver
-| url 
-
-*{}*     | JDBC URL to connect to. |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
-| user 
-
-*{}*  
+| url kbd:[{}]   | JDBC URL to connect to. |jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+| user kbd:[{}]
     | Database user                                                      | postgres
-| password 
-
-*{}*  
+| password kbd:[{}]
 | Database password | empty string
 3+|*Optional*
 
 | retries | How many retries to perform before failing the test.       | 0
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
 
 NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 

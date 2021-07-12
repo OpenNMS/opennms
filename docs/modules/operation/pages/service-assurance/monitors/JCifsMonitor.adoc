@@ -54,17 +54,11 @@ The JCifsMonitor cannot test the following:
 3+|*Optional*
 
 | retry             | Number of retries before the service is marked as down.                                       | 0
-| domain        
-
-*{}*
+| domain kbd:[{}]
 | Windows domain where the user is located. You don't have to use the domain parameter if you use
                         local user accounts.                                                                            | empty string 
-| username
-
-*{}*          | Username to access the resource over a network.                                                  | empty string 
-| password
-
-*{}*
+| username kbd:[{}]        | Username to access the resource over a network.                                                  | empty string 
+| password kbd:[{}]
        | Password for the user                                                                           | empty string 
 
 | mode             | The test mode which has the following options: +
@@ -76,6 +70,8 @@ The JCifsMonitor cannot test the following:
 | folderIgnoreFiles | Ignore specific files in folder with regular expression. This parameter be applied only on
                         folder_empty and folder_not_empty; otherwise, it is ignored.                            |n/a
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
 
 CAUTION: Due to limitations in the JCifs library, only global timeouts can be used reliably.
 

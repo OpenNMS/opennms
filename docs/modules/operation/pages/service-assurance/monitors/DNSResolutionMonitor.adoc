@@ -38,15 +38,13 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                       The comma-separated list can contain A, +
                       AAAA, CNAME, NS, MX, PTR, SOA, +
                       SRV, or TXT.                                  | n/a 
-| lookup 
-
-*{}*        | Alternate DNS record to lookup.                    | The node label. 
-| nameserver
-
-*{}*     | The DNS server to query for the records. +
+| lookup kbd:[{}]        | Alternate DNS record to lookup.                    | The node label. 
+| nameserver kbd:[{}]     | The DNS server to query for the records. +
                       The string can be in the form of hostname, +
                       hostname:port, or [ipv6address]:port.             | Use name server from host system running {page-component-title}. 
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

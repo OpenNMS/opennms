@@ -27,9 +27,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 |===
 | Parameter              | Description                                                  | Default 
-| basic-authentication
-
-*{}*
+| basic-authentication kbd:[{}]
  | Authentication credentials to perform basic authentication. +
                            Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945], section
                            11.1, without the Base64 encoding part and be a string made of the concatenation of: +
@@ -45,9 +43,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                            then {page-component-title} uses the node's label to set the Host header's value if
                            this parameter is set to true. Otherwise, {page-component-title} falls back using
                            the node interface's IP address as Host header value.                                     | false 
-| password      
-
-*{}*
+| password kbd:[{}]
        | Specifies the password to use. Use this parameter with the user parameter to perform basic +
                            authentication. The user and password parameters are ignored when the basic-authentication parameter is defined.                | empty string
 | port              | A list of TCP ports to try connection on.                                     | 80,8080,8888 
@@ -66,24 +62,20 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                            otherwise, the match will be a substring match. The regular expression match is anchored at
                            the beginning and end of the line, so you will likely need to put a `.*` on both sides of
                            your pattern unless you are going to match on the entire line.                        | n/a 
-| url     
-
-*{}*
+| url kbd:[{}]
              | URL to retrieve via the HTTP GET command.                                              | `/` 
-| user    
-
-*{}*
+| user kbd:[{}]
             | Specifies the user ID to use. Use this parameter with the password parameter to perform
                            basic authentication. The user and
                            password parameters are ignored when the basic-authentication parameter is defined.     | n/a 
-| user-agent   
-
-*{}*
+| user-agent kbd:[{}]
         | Specifies the user-agent HTTP header. (Also see
                            http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616], section 14.43.)                          | OpenNMS HttpMonitor 
 | verbose              | When set to true, full communication between client and the webserver will be logged
                            (with a log level of `DEBUG`).                                                              | n/a 
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
