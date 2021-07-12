@@ -246,7 +246,7 @@ else:
         results.put("status", "NOK")
 ----
 
-NOTE: We have to use `run-type` `exec` here because Jython chokes on the import keyword in `eval` mode.
+NOTE: The use of a `run-type` of `exec` is required here because Jython chokes on the `import` keyword in `eval` mode.
 
 As proof that this is really Python, notice the substitution of Python's `None` value for Java's `null` in the log call.
 
