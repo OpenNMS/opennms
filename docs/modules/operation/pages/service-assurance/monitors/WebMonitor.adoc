@@ -18,9 +18,7 @@ WebMonitor uses Apache HttpClient, which acts more like a real browser (follows 
 [cols="1,3,2"]
 |===
 | Parameter | Description | Default
-| use-system-proxy 
-
-*{}*
+| use-system-proxy kbd:[{}]
 | Specifies that system-wide proxy settings be used.                                                 | false
 
 | scheme | Protocol/scheme to use. | http, https
@@ -40,3 +38,5 @@ WebMonitor uses Apache HttpClient, which acts more like a real browser (follows 
 |response-text| The response text to look for. | n/a
 |response-range | What HTTP status ranges are considered success. |100-399
 |===
+
+kbd:[{}] _indicates the parameter supports placeholder substitution._ 
