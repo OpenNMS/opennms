@@ -20,7 +20,7 @@ telnet mail.opennms.org 110
  quit
  +OK
  Connection closed by foreign host.
- ----
+----
 
 == Monitor facts
 
