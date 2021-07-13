@@ -1,15 +1,14 @@
 
 = HostResourceSwRunMonitor
 
-This monitor test the running state of one or more processes.
-It does this via SNMP by inspecting the _hrSwRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
-The test is done by matching a given process as _hrSwRunName_ against the numeric value of the _hrSwRunState_.
+This monitor tests the running state of one or more processes.
+It does this via SNMP by inspecting the _hrSWRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
+A given service name is matched to a _hrSWRunName_ value, then the monitor checks the run level of the matching _hrSWRunState_.
 
-This monitor uses _SNMP_ to accomplish its work.
-Therefore systems against which it is to be used must have an SNMP agent installed and configured.
-Furthermore, the _SNMP agent_ on the system must support the _HOST-RESOURCES-MIB_.
-Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
-Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
+Your OpenNMS instance must be able to successfully collect SNMP metrics from your node(s) for this monitor to work.
+Furthermore, the SNMP agent on the system must support the HOST-RESOURCES-MIB.
+Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ships with Microsoft Windows, support this MIB.
+Out-of-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be somewhat spotty.
 
 == Monitor Facts
 
@@ -25,10 +24,10 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 [options="header, autowidth"]
 |===
 | Parameter            | Description                                                                                    | Required | Default value
-| `port`               | The port of the _SNMP agent_ of the server to test.                                            | optional | `from snmp-config.xml`
 | `service-name`       | The name of the process to be monitored. This parameter's value is case-sensitive and is
                          evaluated as an exact match.                                                                   | required | `-`
-| `match-all`          | If the process name appears multiple times in the _hrSwRunTable_, and this parameter is set to
+| `port`               | The port of the SNMP agent of the server to test.                                              | optional | `from snmp-config.xml`
+| `match-all`          | If the process name appears multiple times in the _hrSWRunTable_, and this parameter is set to
                          `true`, then all instances of the named process must match the value specified for
                          `run-level`.                                                                                   | optional | `false`
 | `run-level`          | The maximum allowable value of _hrSWRunStatus_ among +
@@ -36,13 +35,12 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
                          _runnable(2)_ = waiting for resource +
                          _notRunnable(3)_ = loaded but waiting for event +
                          _invalid(4)_ = not loaded                                                                      | optional | `2`
-| `service-name-oid`   | The numeric object identifier (OID) from which process names are queried. Defaults to
-                         _hrSwRunName_ and should never be changed under normal
-                         circumstances. That said, changing it to _hrSwRunParameters_ (`.1.3.6.1.2.1.25.4.2.1.5`) is
-                         often helpful when dealing with processes running under _Java Virtual Machines_ which all have
-                         the same process name _java_.                                                                  | optional | `.1.3.6.1.2.1.25.4.2.1.2`
-| `service-status-oid` | The numeric object identifier (OID) from which run status is queried. Defaults to
-                         _hrSwRunStatus_ and should never be changed under normal circumstances.                        | optional | `.1.3.6.1.2.1.25.4.2.1.7`
+| `service-name-oid`   | The numeric object identifier (OID) from which process names are queried.
+                         Defaults to _hrSWRunName_ and should not be changed under normal circumstances.
+                         However, changing it to _hrSWRunParameters_ (`.1.3.6.1.2.1.25.4.2.1.5`) is helpful when dealing
+                         with processes running in Java Virtual Machines which all have the same process name _java_.   | optional | `.1.3.6.1.2.1.25.4.2.1.2`
+| `service-status-oid` | The numeric object identifier (OID) from which run status is queried.
+                         Defaults to _hrSWRunStatus_ and should not be changed under normal circumstances.              | optional | `.1.3.6.1.2.1.25.4.2.1.7`
 
 |===
 

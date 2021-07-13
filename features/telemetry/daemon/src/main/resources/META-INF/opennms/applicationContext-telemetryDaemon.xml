@@ -29,4 +29,6 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="daemon" />
+
 </beans>

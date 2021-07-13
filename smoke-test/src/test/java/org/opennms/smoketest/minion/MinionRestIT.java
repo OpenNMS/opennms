@@ -33,7 +33,9 @@ import static io.restassured.RestAssured.preemptive;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
+import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -44,6 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.restassured.RestAssured;
+
+import java.util.Arrays;
+import java.util.List;
+
 
 @Category(MinionTests.class)
 public class MinionRestIT {
@@ -77,12 +83,31 @@ public class MinionRestIT {
     @Test
     public void testRestHealthServiceOnMinion() throws Exception {
 
+        LOG.info("testing /minion/rest/health .........");
         given().get("/minion/rest/health")
-                .then().assertThat()
+                .then().log().ifStatusCodeIsEqualTo(200)
                 .statusCode(200);
+
+        LOG.info("testing /minion/rest/health?tag=local .........");
+        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)");
+        List<String> descriptions = given().get("/minion/rest/health?tag=local")
+                .then()
+                .log().ifStatusCodeIsEqualTo(200)
+                .statusCode(200)
+                .body("healthy", Matchers.notNullValue())
+                .extract()
+                .body()
+                .jsonPath().getList("responses.description",String.class);
+
+        LOG.info("descriptions in tag 'local' is: {}", Arrays.toString(descriptions.toArray()));
+        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d) || d.contains("Verifying Listener")));
+
+        LOG.info("testing /minion/rest/health/probe?tag=local  .......");
+        given().get("/minion/rest/health/probe?tag=local")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.TEXT)
+                .body(Matchers.anyOf(Matchers.equalTo("Everything is awesome"), Matchers.equalTo("Oh no, something is wrong")));
     }
-
-
-
-
 }

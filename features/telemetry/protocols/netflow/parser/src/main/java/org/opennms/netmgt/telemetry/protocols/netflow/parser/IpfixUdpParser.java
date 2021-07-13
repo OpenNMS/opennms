@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -122,6 +123,11 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
                     .add("remoteAddress", remoteAddress)
                     .add("localAddress", localAddress)
                     .toString();
+        }
+
+        @Override
+        public String getDescription() {
+            return String.format("%s:%s", InetAddressUtils.str(this.remoteAddress.getAddress()), this.remoteAddress.getPort());
         }
 
         @Override

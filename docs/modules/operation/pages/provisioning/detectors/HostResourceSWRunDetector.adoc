@@ -1,4 +1,4 @@
-=== HostResourceSWRunDetector
+= HostResourceSWRunDetector
 
 Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
 Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.

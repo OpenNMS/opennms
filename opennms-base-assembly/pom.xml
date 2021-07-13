@@ -1127,6 +1127,11 @@
       <artifactId>org.opennms.features.telemetry.daemon</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Topologies -->
     <dependency>
       <groupId>org.opennms.features.topologies</groupId>

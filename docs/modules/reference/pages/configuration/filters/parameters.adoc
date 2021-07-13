@@ -1,0 +1,230 @@
+
+[[filter-parameters]]
+= Parameters
+
+This is a partial list of rule parameters, grouped by component.
+You can add parameters not available in `database-schema.xml` for use in filter expressions as long as you follow the existing database table hierarchy.
+
+[frame=none, grid=none]
+|===
+| *Applications*
+
+| name
+
+(Use to alert on user-defined applications that span multiple systems and services.)
+|===
+
+[grid=none, frame=none]
+|===
+|*Assets* | |
+
+| address1
+
+address2
+
+assetnumber
+
+building
+
+category
+
+circuitid
+
+city
+
+comment
+
+department
+
+description
+
+displayCategory
+
+division
+
+floor
+
+| lease
+
+leaseexpires
+
+maintcontract
+
+maintcontractexpires
+
+managedobjectinstance
+
+managedobjecttype
+
+manufacturer
+
+modelnumber
+
+notifyCategory
+
+operatingsystem
+
+pollerCategory
+
+port
+
+rack
+
+| region
+
+room
+
+serialnumber
+
+slot
+
+state
+
+supportphone
+
+thresholdCategory
+
+vendor
+
+vendorassetnumber
+
+vendorfax
+
+vendorphone
+
+zip
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Distributed pollers/Minions* | |
+
+| dpAdminState
+
+dpComment
+
+dpDiscLimit
+
+| dpIP
+
+dpName
+
+dpNumber
+
+| dpRunState
+|===
+
+
+[frame=none, grid=none]
+|===
+| *ifServices* | |
+
+| lastGood | lastFail | serviceID
+|===
+
+
+[frame=none, grid=none]
+|===
+| *IpInterface* | |
+
+| ipAddr
+
+ipLastCapsdPoll
+
+| ipHostname
+
+ipStatus
+
+| isManaged
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Nodes* | |
+
+| dpName
+
+foreignID
+
+foreignSource
+
+location
+
+nodeCreateTime
+
+| nodeID
+
+nodeLabel
+
+nodeParentID
+
+nodeSysContact
+
+nodeSysDescription
+
+|nodeSysLocation
+
+nodeSysOID
+
+nodeSysName
+
+nodeType
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Server Map*
+
+| serverName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Services*
+
+| serviceName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *Service map*
+
+| serviceMapName
+|===
+
+
+[frame=none, grid=none]
+|===
+| *SNMP interface* | |
+
+| snmpIfAdminStatus
+
+snmpIfAlias
+
+snmpIfDescr
+
+| snmpIfIndex
+
+snmpIfOperStatus
+
+| snmpIfSpeed
+
+snmpIfType
+
+|snmpIpAdEntNetMask
+
+snmpPhysAddr
+|===
+
+
+[frame=none, grid=none]
+|===
+|*Surveillance categories* | |
+
+| categoryDescription | categoryID | categoryName
+|===

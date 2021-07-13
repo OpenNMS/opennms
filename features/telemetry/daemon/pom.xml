@@ -46,7 +46,6 @@
       <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>
