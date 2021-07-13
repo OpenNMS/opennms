@@ -1,5 +1,58 @@
 [[release-28-changelog]]
+
 = Changelog
+
+[[releasenotes-changelog-28.0.1]]
+
+== Release 28.0.1
+
+Release 28.0.1 contains a bunch of bug fixes and enhancements, plus a few security updates.
+
+The codename for Horizon 28.0.1 is $$https://wikipedia.org/wiki/Optimus_Prime$$[_Optimus Prime_].
+
+=== Bug
+
+* SNMP collection failing for "interface label is null or blank" (Issue http://issues.opennms.org/browse/NMS-11764[NMS-11764])
+* Typo in Graphs: "File Descritors" (Issue http://issues.opennms.org/browse/NMS-12876[NMS-12876])
+* Problems in Helm documentation (Issue http://issues.opennms.org/browse/NMS-12900[NMS-12900])
+* minion-config-schema.yml java agent example as a string (Issue http://issues.opennms.org/browse/NMS-13272[NMS-13272])
+* Minion container v28.0.0 refuse to start (Issue http://issues.opennms.org/browse/NMS-13347[NMS-13347])
+* Release notes display issues (Issue http://issues.opennms.org/browse/NMS-13351[NMS-13351])
+* Default Debian instructions don't work on a minimal install (Issue http://issues.opennms.org/browse/NMS-13355[NMS-13355])
+* CVE-2020-13956: Update commons-httpclient to 4.5.13 (Issue http://issues.opennms.org/browse/NMS-13360[NMS-13360])
+* CVE-2017-5929: bump logback-classic version to latest (Issue http://issues.opennms.org/browse/NMS-13361[NMS-13361])
+* Update images chapter in docs remove two chapters (Issue http://issues.opennms.org/browse/NMS-13371[NMS-13371])
+* Package diffutils is missing in Docker image (Issue http://issues.opennms.org/browse/NMS-13429[NMS-13429])
+
+=== Enhancement
+
+* Add Node ID reference to noticeWizard (Issue http://issues.opennms.org/browse/NMS-11790[NMS-11790])
+* Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
+* Create BSFDetector documenation (Issue http://issues.opennms.org/browse/NMS-13073[NMS-13073])
+* Add operator instructions for graphInvalidated (Issue http://issues.opennms.org/browse/NMS-13173[NMS-13173])
+* Nephron: add benchmark launcher (Issue http://issues.opennms.org/browse/NMS-13176[NMS-13176])
+* Enhance Availability (RTC) data via REST with current service status (Issue http://issues.opennms.org/browse/NMS-13238[NMS-13238])
+* PageSequenceMonitor not accepting metadata in <page/> element (Issue http://issues.opennms.org/browse/NMS-13257[NMS-13257])
+* Expand PageSequenceMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-13260[NMS-13260])
+* Publish minion config schema (Issue http://issues.opennms.org/browse/NMS-13285[NMS-13285])
+* Health-check: provide restful api to query health for different tags (Issue http://issues.opennms.org/browse/NMS-13312[NMS-13312])
+* Check if Docker Content Trust and Docker Registry Proxies play together nicely (Issue http://issues.opennms.org/browse/NMS-13315[NMS-13315])
+* Use DCT to secure the Minion image (Issue http://issues.opennms.org/browse/NMS-13318[NMS-13318])
+* Provide OpenAPI doc to health-check REST API (Issue http://issues.opennms.org/browse/NMS-13319[NMS-13319])
+* update WMI dependencies (Issue http://issues.opennms.org/browse/NMS-13320[NMS-13320])
+* Add out-of-band monitoring content to main user documentation (Issue http://issues.opennms.org/browse/NMS-13330[NMS-13330])
+* Create DnsDetector docs (Issue http://issues.opennms.org/browse/NMS-13338[NMS-13338])
+* Create FtpDetector docs (Issue http://issues.opennms.org/browse/NMS-13339[NMS-13339])
+* Create HostResourceSWRunDetector docs (Issue http://issues.opennms.org/browse/NMS-13340[NMS-13340])
+* Documentation Typos (Issue http://issues.opennms.org/browse/NMS-13344[NMS-13344])
+* Setup DCT keys for the OpenNMS and OpenNMS-Forge organizations (Issue http://issues.opennms.org/browse/NMS-13345[NMS-13345])
+* Implement Kafka Consumer for events (protobuf) (Issue http://issues.opennms.org/browse/NMS-13362[NMS-13362])
+* Add info icon with a tooltip for effective meta-data values (Issue http://issues.opennms.org/browse/NMS-13365[NMS-13365])
+* Allow setting java heap minimum and maximum values in opennms.conf (Issue http://issues.opennms.org/browse/NMS-13367[NMS-13367])
+* Add tags as query params to /health/probe  Rest API (Issue http://issues.opennms.org/browse/NMS-13369[NMS-13369])
+* Add custom Meta-data in search results (Issue http://issues.opennms.org/browse/NMS-13378[NMS-13378])
+* Misc documentation fixes (Issue http://issues.opennms.org/browse/NMS-13426[NMS-13426])
+
 
 [[releasenotes-changelog-28.0.0]]
 
@@ -8,7 +61,7 @@
 Release 28.0.0 is the first in the Horizon 28 series, introducing a requirement of Java 11,
 enhancements to flow aggregation to support DSCP ToS/QoS, and more.
 
-The codename for Horizon 28.0.0 is $$https://en.wikipedia.org/wiki/Jazz_(Transformers)$$[_Jazz_].
+The codename for Horizon 28.0.0 is $$https://wikipedia.org/wiki/Jazz_(Transformers)$$[_Jazz_].
 
 === Bug
 
