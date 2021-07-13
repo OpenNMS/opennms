@@ -1,7 +1,10 @@
 
 = DhcpMonitor
 
-Use this monitor to check the availability and functionality of [DHCP servers.
+
+IMPORTANT: The use of the DhcpMonitor requires the installation of the `opennms-plugin-protocol-dhcp` package before polling will start.
+
+Use this monitor to check the availability and functionality of DHCP servers.
 The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.
 A DHCP server is tested by sending a DISCOVER message.
 If the DHCP server responds with an OFFER, the service is marked as up.
