@@ -67,7 +67,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -117,8 +116,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     private ResourceStorageDao m_resourceStorageDao;
 
-    private BlobStore m_blobStore;
-
     public ResourceStorageDao getResourceStorageDao() {
         if (m_resourceStorageDao == null) {
             m_resourceStorageDao = BeanUtils.getBean("daoContext", "resourceStorageDao", ResourceStorageDao.class);
@@ -128,17 +125,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
         m_resourceStorageDao = resourceStorageDao;
-    }
-
-    public BlobStore getBlobStore() {
-        if (m_blobStore == null) {
-            m_blobStore = BeanUtils.getBean("daoContext", "blobStore", BlobStore.class);
-        }
-        return m_blobStore;
-    }
-
-    public void setBlobStore(BlobStore blobStore) {
-        m_blobStore = blobStore;
     }
 
     /* (non-Javadoc)

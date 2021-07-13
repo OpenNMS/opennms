@@ -60,6 +60,7 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
+import org.opennms.newts.api.Resource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -118,11 +119,11 @@ public class TimeseriesPersisterIT {
         Thread.sleep(5 * 1000);
 
         // Fetch the (persisted) sample
-        String resourceId = "snmp/1/metrics";
+        Resource resource = new Resource("snmp:1:metrics");
         Instant end = Instant.now();
 
         ImmutableMetric metric = ImmutableMetric.builder()
-                .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
+                .intrinsicTag(IntrinsicTagNames.resourceId, resource.getId())
                 .intrinsicTag(IntrinsicTagNames.name, "metric")
                 .build();
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()

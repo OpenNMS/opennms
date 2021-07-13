@@ -112,7 +112,6 @@
 
     <!-- timeseries -->
     <module>timeseries</module>
-    <module>timeseries-shell</module>
 
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
