@@ -142,8 +142,17 @@ TIP: You can use online tools like https://www.urlencoder.org to encode your par
 
 === DNS setup
 
-The DNS server must be configured to allow a zone transfer from the {page-component-title} server.
-One suggestion is to setup a secondary DNS server on your {page-component-title} and point the DNS handler to `localhost`.
+The DNS import handler performs an AXFR zone transfer request to collect DNS resource records for use in provisioning nodes.
+Zone transfers are designed for zone replication between DNS servers.
+You may want to provide additional security mechanisms to protect your DNS infrastructure.
+At the minimum, you should always restrict AXFR requests to only trusted IP addresses and/or use a hidden, read-only secondary DNS servers for {page-component-title}.
+
+One suggestion is to setup a secondary DNS server on your {page-component-title} and configure the rest of the DNS servers to allow transfers to your {page-component-title} server.
+This will allow you to point the DNS import handler to `localhost`.
+
+NOTE: There is no encryption or authentication available for AXFR transfer requests.
+Transaction signatures (TSIG) to prevent IP spoofing attempts are currently not supported by {page-component-title}.
+
 A quick way to test if zone transfers are working is:
 
 [source]
