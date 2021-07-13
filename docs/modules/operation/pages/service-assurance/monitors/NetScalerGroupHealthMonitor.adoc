@@ -6,7 +6,6 @@ It checks if more than x percent of the servers assigned to a specific group on 
 The required data is gathered via SNMP from the NetScaler.
 The status of the servers is determined by the NetScaler.
 The provided service itself is not part of the check.
-The basis of this monitor is the SnmpMonitorStrategy.
 A valid SNMP configuration in {page-component-title} for the NetScaler is required.
 
 A NetScaler can manage several groups of servers per application.
