@@ -4,8 +4,16 @@
 
 This monitor lets you to test a file-sharing service based on the CIFS/SMB protocol.
 
-WARNING: This monitor is not installed by default.
-You have to install `opennmms-plugin-protocol-cifs` from your {page-component-title} installation repository.
+IMPORTANT: The use of the JCifsMonitor requires the installation of the `opennms-plugin-protocol-cifs` package before polling will start.
+
+****
+To install the opennms-plugin-protocol-cifspackage:
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-protocol-cifs`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-protocol-cifs`
+****
 
 With the JCifsMonitor, you can run tests for the following use cases:
 

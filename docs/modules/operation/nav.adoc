@@ -116,6 +116,7 @@
 *** xref:service-assurance/monitors/SmtpMonitor.adoc[]
 *** xref:service-assurance/monitors/SnmpMonitor.adoc[]
 *** xref:service-assurance/monitors/SshMonitor.adoc[]
+*** xref:service-assurance/monitors/SSLCertMonitor.adoc[]
 *** xref:service-assurance/monitors/StrafePingMonitor.adoc[]
 *** xref:service-assurance/monitors/SystemExecuteMonitor.adoc[]
 *** xref:service-assurance/monitors/TcpMonitor.adoc[]

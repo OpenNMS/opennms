@@ -2,7 +2,7 @@
 = SSLCertMonitor
 
 This monitor tests if an SSL certificate a remote network server presents is valid.
-A certificate is invalid if its initial time is prior to the current time, or if the current time is prior to seven days (configurable) before the expiration time.
+A certificate is invalid if its initial time is prior to the current time, if the current time is within the configured number of days before the expiration time, or if the common name is valid.
 
 Run a command like this to simulate the behavior:
 
@@ -40,7 +40,7 @@ An additional preliminary message and response regular expression pair is availa
 
 | retry                      | Number of attempts to get the certificate state.                                   | 0
 | days                       | Number of days before the certificate expires that we mark the service as failed. | 7 
-| server-name               | This is the DNS hostname to send as part of the TLS negotiation, known as
+| server-name kbd:[{}]      | This is the DNS hostname to send as part of the TLS negotiation, known as
                                  server name indication (SNI)
                                  (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.)             | n/a
 | starttls-preamble kbd:[{}]
@@ -50,7 +50,7 @@ An additional preliminary message and response regular expression pair is availa
                                  server prior to STARTTLS command.                                                 | n/a
 | starttls-start kbd:[{}]
            | STARTTLS command.                                                                 | n/a
-| starttls-start-response    | Regular expression that must match response to STARTTLS command sent to server. | n/a
+| starttls-start-response kbd:[{}] | Regular expression that must match response to STARTTLS command sent to server. | n/a
 |===
 
 kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
