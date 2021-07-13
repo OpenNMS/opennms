@@ -47,7 +47,7 @@ The disk array state is resolved to a human-readable value as in the following s
 | 15    | Resynching
 | 24    | Rebuilding
 | 25    | noMedia
-| 26    | Formating
+| 26    | Formatting
 | 28    | Running Diagnostics
 | 35    | Initializing
 |===

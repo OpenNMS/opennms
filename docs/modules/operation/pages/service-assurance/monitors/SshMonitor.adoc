@@ -27,7 +27,7 @@ Optionally, the banner line the service generates may be parsed and compared aga
                     Deprecated, please use the banner parameter instead. +
                     Note that this parameter does take precedence over the banner parameter.            | n/a
 | port          | TCP port to which SSH connection is tried.                                      | 22
-| retry         | Number of attempts to establish the SSH connnection.                                    | 0
+| retry         | Number of attempts to establish the SSH connection.                                    | 0
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

@@ -104,8 +104,8 @@ If the response time should be persisted, add the following parameters:
 
 It is also possible to return one or many response times directly from the script.
 To add custom response times or override the default one, add entries to the _times_ object.
-The entries are keyed with a string that names the datasource and have as values a number that represents the response time.
-To override the default response time datasource, add an entry into `times` named `response-time`.
+The entries are keyed with a string that names the data source and have as values a number that represents the response time.
+To override the default response time data source, add an entry into `times` named `response-time`.
 
 == Timeout and retry
 
@@ -216,7 +216,7 @@ if (testFile.exists()) {
 }
 ----
 
-== Jython exmaple
+== Jython example
 
 The use of the Jython (Java implementation of Python) language requires an additional library.
 Copy a compatible `jython-x.y.z.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Jython available for the BSFMonitor.

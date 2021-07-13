@@ -83,7 +83,7 @@ It will not store the time spent during the last successful attempt.
                       Keep in mind that you need to escape all < and > characters as XML entities (`&amp;lt;` and `&amp;gt;`
                       respectively).                                                                                    | n/a
 | port            | Destination port where the SNMP requests are sent.                                          | from `snmp-config.xml`
-| reason-template | A user-provided template used for the monitor's reason code if the service is unvailable.
+| reason-template | A user-provided template used for the monitor's reason code if the service is unavailable.
                       Defaults to a reasonable value if unset.
                       See below for an explanation of the possible template parameters.                                | depends on operation mode
 

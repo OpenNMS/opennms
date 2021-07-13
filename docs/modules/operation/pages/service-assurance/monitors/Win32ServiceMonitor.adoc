@@ -35,7 +35,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 === Non-English Windows
 The service-name is sometimes encoded in languages other than English.
 For example, in French the Task Scheduler service is _Planificateur de tâche_.
-Because of the "â" (non-English character), the OID value is encoded in hexa (0x50 6C 61 6E 69 66 69 63 61 74 65 75 72 20 64 65 20 74 C3 A2 63 68 65 73).
+Because of the "â" (non-English character), the OID value is encoded in hexadecimal (0x50 6C 61 6E 69 66 69 63 61 74 65 75 72 20 64 65 20 74 C3 A2 63 68 65 73).
 
 == Troubleshooting
 If you have created a Win32ServiceMonitor poller and are having difficulties with it not being monitored properly on your hosts, chances are there is a difference in the name of the service you have created, and the actual name in the registry.

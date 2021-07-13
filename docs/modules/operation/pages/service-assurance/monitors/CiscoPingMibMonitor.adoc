@@ -103,7 +103,7 @@ IOS seems to clean up entries in this table within minutes after their ping oper
                                   then set this parameter's value to 20.                                              | 100
 | rrd-repository              | Base directory of an RRD repository in which to store this service monitor's
                                   response-time samples.            |n/a
-| ds-name                     | Name of the RRD datasource (DS) name in which to store this service monitor's
+| ds-name                     | Name of the RRD data source (DS) name in which to store this service monitor's
                                   response-time samples. The rrd-base-name Base name of the RRD file (minus the `.rrd` or
                                   `.jrb` file extension) within the specified rrd-repository path in which this service
                                   monitor's response-time samples will be persisted                                     | n/a

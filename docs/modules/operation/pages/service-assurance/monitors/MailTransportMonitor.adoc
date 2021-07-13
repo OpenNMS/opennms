@@ -4,6 +4,34 @@
 The MailTransportMonitor runs a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
 It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.
 
+== Tests
+There are four basic tests that this monitor can perform.
+
+=== Sending mail
+
+The most basic test, the sendmail-test is highly configurable.
+An exception thrown during the sending of the configured email message causes the poll to fail.
+
+=== Access of mail store and folder
+
+Configure a readmail-test and don't configure a subject-match attribute. 
+This tests only the ability to open the default mail store and the configured mail folder (INBOX) by default. 
+Folders are given by `INBOX<separator>Foldername`.
+The separator character might vary between IMAP implementations. 
+Exchange uses `/` as a separator, for example.
+
+=== Specific message in folder
+
+Configure a readmail-test and a matching subject. 
+Optionally, configure the test to delete all read mail. 
+Do not do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
+
+=== Sending and receipt (end-to-end test) of a message
+
+Test your infrastructure's ability to send and receive email. 
+It tests sending and receiving of an mail message via one or two separate mail servers. 
+For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
+
 == Monitor facts
 
 [options="autowidth"]
@@ -176,30 +204,3 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 </service>
 ----
 
-== Tests
-There are four basic tests that this monitor can perform.
-
-=== Sending mail
-
-The most basic test, the sendmail-test is highly configurable.
-An exception thrown during the sending of the configured email message causes the poll to fail.
-
-=== Access of mail store and folder
-
-Configure a readmail-test and don't configure a subject-match attribute. 
-This tests only the ability to open the default mail store and the configured mail folder (INBOX) by default. 
-Folders are given by `INBOX<separator>Foldername`.
-The separator character might vary between IMAP implementations. 
-Exchange uses `/` as a separator, for example.
-
-=== Specific message in folder
-
-Configure a readmail-test and a matching subject. 
-Optionally, configure the test to delete all read mail. 
-Do not do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
-
-=== Sending and receipt (end-to-end test) of a message
-
-Test your infrastructure's ability to send and receive email. 
-It tests sending and receiving of an mail message via one or two separate mail servers. 
-For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.

@@ -9,7 +9,7 @@ Use it to test client behavior for a given host name.
 For example, create a node with the node label www.google.com and an IP interface.
 Assigning the DNS resolution monitor on the IP interface tests if `www.google.com` can be resolved using the DNS configuration defined by the poller.
 If the DNS server responds with either an A or AAAA record, the service is determined to be up.
-The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assgined.
+The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assigned.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 

@@ -48,7 +48,7 @@ Additionally, it is possible to configure a page sequence that contains a path t
                      Used only if at least one (1) retry is configured.
                      If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller daemon
                      waits `NOW - InitialAttempt ms + Timeout ms`.
-                     With `strict-timout = false` the next attempt starts right after a failure.                      | false
+                     With `strict-timeout = false` the next attempt starts right after a failure.                      | false
 
 | sequence-retry | The retry parameter for the entire page sequence.                                                    | 0
 | use-system-proxy | Should the system-wide proxy settings be used? Configure the system proxy settings via
@@ -119,9 +119,9 @@ Use the session-variable parameter to assign the captured values to variable nam
 == Per-page response times
 
 To collect response times for individual pages in a sequence, add a ds-name attribute to each page whose load time should be tracked.
-The response time for each page will be stored in the same RRD file specified for the service via the rrd-base-name parameter under the specified datasource name.
+The response time for each page will be stored in the same RRD file specified for the service via the rrd-base-name parameter under the specified data source name.
 
-WARNING: You need to delete existing RRD files and let them be recreated with the new list of datasources when you add a ds-name attribute to a page in a sequence that is already storing response-time data.
+WARNING: You need to delete existing RRD files and let them be recreated with the new list of data sources when you add a ds-name attribute to a page in a sequence that is already storing response-time data.
 
 == Examples
 

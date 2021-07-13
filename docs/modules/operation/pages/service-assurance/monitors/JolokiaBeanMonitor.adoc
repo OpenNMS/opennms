@@ -46,9 +46,9 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
         | Method input                                                                                        | n/a
 | methodname kbd:[{}]
   | The name of the bean method to execute. Output will be compared to banner.                          | n/a
-| port          | The port of the jolokia agent.                                                                      | 8080
+| port          | The port of the Jolokia agent.                                                                      | 8080
 | url kbd:[{}]
-           | The jolokia agent URL.                                 | http://<ipaddr>:<port>/jolokia
+           | The Jolokia agent URL.                                 | http://<ipaddr>:<port>/jolokia
 |===
 
 kbd:[{}] _indicates the parameter supports placeholder substitution._

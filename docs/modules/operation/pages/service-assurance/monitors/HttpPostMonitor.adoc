@@ -39,7 +39,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | mimetype     | Set the mimetype for the POST.                                        | text/xml
 | port         | The port for the web server to send the POST.                | 80 
 | scheme       | The connection scheme to use.                                         | http 
-| usesslfilter | Enables or disables the SSL ceritificate validation. (Options: true - false)   | false 
+| usesslfilter | Enables or disables the SSL certificate validation. (Options: true - false)   | false 
 | uri kbd:[{}]
   | The uri to use during the POST.                                       | n/a 
 | use-system-proxy | Specifies if the system-wide proxy settings be used. The system proxy
