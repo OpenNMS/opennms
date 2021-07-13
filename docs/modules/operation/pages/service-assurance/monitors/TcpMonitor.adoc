@@ -1,9 +1,9 @@
 
 = TcpMonitor
 
-This monitor uses TCP to test IP Layer 4 connectivity.
+This monitor uses TCP to test OSI Layer 4 connectivity.
 The monitor establishes a TCP connection to a specific port.
-To test the availability of the service, the greetings banner of the application is evaluated.
+The greetings banner of the application is evaluated to check the availability of the service.
 The behavior is similar to a simple test using the telnet command as shown in the example.
 
 .Simulating monitor behavior with telnet
@@ -44,7 +44,7 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-This example shows how to test if the Independent_Computing_Architecture(ICA) service is available on TCP port 1494.
+This example shows how to test if the Independent Computing Architecture (ICA) service is available on TCP port 1494.
 The test evaluates the connection banner starting with `ICA`.
 
 [source, xml]

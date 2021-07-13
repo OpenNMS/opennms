@@ -2,9 +2,9 @@
 = SshMonitor
 
 The SshMonitor tests the availability of an SSH service.
-During the poll it attempts to connect on the specified port.
+During the poll, it attempts to connect on the specified port.
 If the connection request is successful, then the service is considered up.
-Optionally, the banner line the service generates may be parsed and compared against a pattern before the service is considered up.
+Optionally, the banner line the node provides may be parsed and compared against a pattern before the service is considered up.
 
 == Monitor facts
 
@@ -22,7 +22,7 @@ Optionally, the banner line the service generates may be parsed and compared aga
 |===
 | Parameter       | Description                                                                               | Default
 | banner        | Regular expression to be matched against the service's banner.                            | n/a
-| client-banner | The client banner that {page-component-title} uses to identify itself on the service. | SSH-1.99-OpenNMS_1.5
+| client-banner | The client banner that {page-component-title} uses to identify itself to the node. | SSH-1.99-OpenNMS_1.5
 | match        | Regular expression to match against the service's banner. +
                     Deprecated, please use the banner parameter instead. +
                     Note that this parameter does take precedence over the banner parameter.            | n/a
