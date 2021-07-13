@@ -11,6 +11,8 @@ The service is considered available if the service's answer to the HELO command 
 
 Simulate the behavior with telnet or netcat:
 
+[source,console]
+
  $ nc -v gmail-smtp-in.l.google.com 25
  Ncat: Version 7.60 ( https://nmap.org/ncat )
  Ncat: Connected to 2607:f8b0:4002:c06::1a:25.

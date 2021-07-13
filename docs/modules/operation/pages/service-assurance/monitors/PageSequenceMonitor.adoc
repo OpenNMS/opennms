@@ -102,14 +102,6 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
 
-.Variables that can be passed in the configuration
-[options="header"]
-[cols="1,3"]
-|===
-| Variable       | Description
-| $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
-|===
-
 == Session variables
 
 It is possible to assign strings from a retrieved page to variables that can be used in page parameters later in the same sequence.

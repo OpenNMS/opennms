@@ -57,16 +57,6 @@ kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduc
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-.Variables that can be passed in the configuration for `server-name`
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| $\{ipaddr}     | The node's IP address.
-| ${\nodeidl}     | The node ID.
-| $\{nodelabel}  | Label of the node the monitor is associated with.
-| $\{svcname}    | The service name.
-|===
-
 WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer.
 The STARTTLS support has been tested only with a single XMPP server.
 It is not known if the same approach will prove useful for other use cases, like sending a host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP, or NNTP.
