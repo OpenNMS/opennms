@@ -1,15 +1,16 @@
 
 = VmwareCimMonitor
 
-This monitor is part of the VMware integration that Provisiond provides.
+This monitor is part of the VMware integration provided by Provisiond.
 The monitor is specialized to test the health status provided from all host system (host) sensor data.
 
-This monitor runs only if the host is in power state "on".
+This monitor only runs on VMware hosts and only if the power state "on".
+It does not apply to virtual machines.
 
 This monitor requires hosts be imported with Provisiond and the VMware import. 
-{page-component-title} requires network access to VMware vCenter and the hosts. 
-It uses the credentials from `vmware-config.xml` for the responsible vCenter to get the sensor data. 
-The following asset fields are filled from Provisiond and provided by the VMware import feature:
+{page-component-title} requires network access to VMware vCenter server and each of the monitored hosts.
+The credentials for accessing the status of a VMware entity are collected from the responsible VMware vCenter using the settings from `$OPENNMS_HOME/etc/vmware-config.xml`.
+The VMware integration populates the following via Provisiond:
 
 * VMware Management Server
 * VMware Managed Entity Type
@@ -32,9 +33,8 @@ The monitor error reason contains a list of all sensors that do not return statu
 
 When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), the standBy state forces a service down. 
 The health status is gathered with a direct connection to the host and in standby this connection is unavailable and the service is down.
-
-To deal with standby states, use the ignoreStandBy parameter.
-In case of a standby state, the service is considered as up. See the ignoreStandBy parameter on how to change the state. 
+To deal with standby states, use the ignoreStandBy parameter to consider the service as up when using distributed power management. 
+See the ignoreStandBy parameter below on how to change the state. 
 
 == Monitor facts
 

@@ -12,7 +12,7 @@ A test path through an web application can look like this:
 . Run an action while logged in.
 . Log off.
 
-The service is considered as up if all of this works.
+The service is considered as up if all the steps in the sequence return valid responses.
 If there is an error somewhere, your application will need attention and the service changes the state to down.
 
 == Monitor facts
@@ -32,8 +32,8 @@ These parameters are global for the whole path throughout the web application.
 .Configuration overview of the PageSequenceMonitor
 image::service-assurance/monitors/03_page-sequence-monitor-config.png[]
 
-The overall layout of the monitor configuration is more complex.
-Additionally, it is possible to configure a page sequence that contains a path through a web application.
+The overall layout of the monitor configuration is more complex than other service monitors.
+It is possible to configure a page sequence that contains a path through a web application by checking multiple pages in succession.
 
 .Monitor-specific parameters for the PageSequenceMonitor
 [options="header"]
@@ -44,10 +44,10 @@ Additionally, it is possible to configure a page sequence that contains a path t
 | page-sequence  | Definition of the page sequence to run. See table below with page sequence parameters.              | n/a
 3+|*Optional*
 | retry          | The number of retries per page.                                                                     | 0
-| strict-timeout | Defines how long to wait before retrying.
-                     Used only if at least one (1) retry is configured.
+| strict-timeout | Number of milliseconds to wait before retrying.
+                     Used only if the retry parameter is not set to zero. +
                      If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller daemon
-                     waits `NOW - InitialAttempt ms + Timeout ms`.
+                     waits `NOW - InitialAttempt ms + Timeout ms`. +
                      With `strict-timeout = false` the next attempt starts right after a failure.                      | false
 
 | sequence-retry | The retry parameter for the entire page sequence.                                                   | 0
@@ -119,7 +119,7 @@ WARNING: You need to delete existing RRD files and let them be recreated with th
 
 The following example shows how to monitor the OpenNMS web application using several mechanisms.
 
-It first does an HTTP GET of `$\{ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
+It first does an HTTP GET of `http://$\{ipaddr}:8980/opennms/login.jsp` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
 Next, it uses HTTP POST to attempt a login to the relative URL for submitting form data (usually the URL that the form action points to).
 The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to submit.
 Furthermore, it sets a custom header (`foo`) for demonstration purposes.
