@@ -6,7 +6,7 @@ The HTTP monitor tests the response of an HTTP server on a specific HTTP GET com
 During the poll, the monitor attempts to connect on the specified port(s).
 The monitor can test web servers on multiple ports.
 By default, it makes the test against ports 80, 8080, and 8888.
-If the connection request is successful, an HTTP GET command is sent to the interface.
+If the connection is successful, an HTTP GET request is sent to the interface.
 The response is parsed and a return code extracted and verified.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
