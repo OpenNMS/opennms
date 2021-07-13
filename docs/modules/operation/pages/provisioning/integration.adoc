@@ -23,7 +23,7 @@ The steps are:
 To define the policies for this group of nodes you need to create a foreign source for the group.
 You can do so using the xref:development:rest/foreign_sources.adoc[foreign sources] ReST API:
 
-NOTE: The XML can be imbedded in the curl command option `-d` or be referenced from a file if the `@` prefix is used with the file name as in this case.
+NOTE: You can embed the XML in the curl command with option `-d` or reference it from a file if you use `@` prefix with the file name, as in this case.
 
 Sample XML file `customer-a.foreign-source.xml`:
 
@@ -46,7 +46,7 @@ Sample XML file `customer-a.foreign-source.xml`:
 </foreign-source>
 ----
 
-Here is an example curl command used to create the foreign source with the above foreign source specification above:
+Here is an example curl command used to create the foreign source with the above foreign source specification:
 
 [source, bash]
 ----
@@ -77,14 +77,14 @@ In the following example, the xref:development:rest/requisitions.adoc[requisitio
 curl -v -u admin:admin -X POST -H "Content-Type: application/xml" -d '<?xml version="1.0" encoding="UTF-8"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2009-03-07T17:56:53.123-05:00" last-import="2009-03-07T17:56:53.117-05:00" foreign-source="customer-a"><node node-label="p-brane" foreign-id="1" ><interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node><node node-label="m-brane" foreign-id="2" ><interface ip-addr="10.0.1.4" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node></model-import>' http://localhost:8980/opennms/rest/requisitions
 ----
 
-A requisition file called `etc/imports/customer-a.xml` will be found on the {page-component-title} system following the successful completion of this curl command and will also be visible via the WebUI.
+A requisition file called `etc/imports/customer-a.xml` will be found on the {page-component-title} system following the successful completion of this curl command and will also be visible via the Web UI.
 
 Before the requisition's nodes are populated into the database, Provisiond needs to perform an import (also referred to as synchronization).
-Here an the example using the curl command to import the requisition:
+Here is an example using the curl command to import the requisition:
 
 [source, bash]
 ----
 curl -v -u admin:admin -X PUT http://localhost:8980/opennms/rest/requisitions/customer-a/import
 ----
 
-NOTE: Add, Update, and Delete operations handled via the ReST API in the same manner as described in the xref:development:rest/rest-api.adoc[ReST API documentation].
+NOTE: Add, Update, and Delete operations are handled via the ReST API in the same manner as described in the xref:development:rest/rest-api.adoc[ReST API documentation].

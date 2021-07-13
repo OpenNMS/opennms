@@ -14,20 +14,20 @@ In addition to the standard protocols supported by Java, we provide a series of 
 
 The generic handler is made available using URLs of the form: `requisition://type?param=1;param=2`
 
-Using these URLs, various type handlers can be invoked, both locally and via a Minion.
+Using these URLs, various types of handlers can be invoked, both locally and via a Minion.
 In addition to the type-specific parameters, the following parameters are supported by all handlers:
 
 .Common parameters
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
-| `location`             | The name of location at which the handler should be run                        | optional | Default
-| `ttl`                  | The maximum number of milliseconds to wait for the handler when ran remotely   | optional | 20000
+| `location`             | The name of location at which the handler should run.                        | optional | Default
+| `ttl`                  | The maximum number of milliseconds to wait for the handler when run remotely.  | optional | 20000
 |===
 
 See the relevant sections below for additional details on the supported types.
 
-The `opennms:show-import` command available via the Karaf Shell can be used to show the results of an import without persisting or triggering the import:
+Use the `opennms:show-import` command available via the Karaf Shell to show the results of an import without persisting or triggering the import:
 
 [source]
 ----
@@ -99,7 +99,7 @@ dns://my-dns-server/myzone.com
 ----
 
 This URL will import all A and AAAA records from the zone `myzone.com` on the host `my-dns-server` via port 53 (default DNS port).
-Since the foreign source is not specified it will add to the default requisition.
+Since the foreign source is not specified, it will be added to the default requisition.
 
 == Using a regular expression filter
 

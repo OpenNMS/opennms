@@ -34,7 +34,7 @@ In the above config,
 1. `profile1` doesn't have a filter expression.
 This profile will be tried for every interface.
 
-2. `profile2` has a filter expression that compares `iphostname` (the hostname resulting from a reverse DNS lookup of the IP address being fitted) against a pre-configured value.
+2. `profile2` has a filter expression that compares `iphostname` (the hostname resulting from a reverse DNS lookup of the IP address being fitted) against a preconfigured value.
 This profile's SNMP parameters will be fitted only against IP addresses whose hostname contains the string `opennms`.
 
 3. `profile3` has an IPLIKE expression that matches all interfaces in the range specified in the filter.
@@ -79,4 +79,5 @@ This command might be useful when an IP address formerly assigned to an SNMPv2c-
 
 == Using SNMP profiles with the SNMP detector
 
-By default SnmpDetector doesn't use SNMP profiles. Add property `useSnmpProfiles` and set it to `true` in order to use SNMP Profiles.
+By default, SnmpDetector doesn't use SNMP profiles. 
+Add property `useSnmpProfiles` and set it to `true` to use SNMP profiles.
