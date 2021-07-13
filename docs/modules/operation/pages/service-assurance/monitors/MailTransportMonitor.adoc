@@ -79,7 +79,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | Attribute          | Description                                                                                      | Default
 | debug           | Show additional debug output.                                                                     | true
 | mail-folder      | The folder or IMAP label to check for mail.                                                       | INBOX
-| subject-match    | Substring match in email subjects when looking for a specific email.                              | `no default`
+| subject-match    | Substring match in email subjects when looking for a specific email.                              | no default
 | attempt-interval | Attempt to read email after this many milliseconds have passed; also used for retry interval.     | 1000
 | delete-all-mail  | Delete all read mail after a successful match.                                                    | false
 |===
