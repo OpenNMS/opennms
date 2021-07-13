@@ -39,20 +39,20 @@ Additionally, it is possible to configure a page sequence that contains a path t
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter        | Description                                                     | Default
+| Parameter        | Description                                                                                       | Default
 3+|*Required*
-| page-sequence  | Definition of the page sequence to run. See table below with page sequence parameters.                 | n/a
+| page-sequence  | Definition of the page sequence to run. See table below with page sequence parameters.              | n/a
 3+|*Optional*
-| retry          | The number of retries per page.                                                                      | 0
+| retry          | The number of retries per page.                                                                     | 0
 | strict-timeout | Defines how long to wait before retrying.
                      Used only if at least one (1) retry is configured.
                      If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller daemon
                      waits `NOW - InitialAttempt ms + Timeout ms`.
                      With `strict-timeout = false` the next attempt starts right after a failure.                      | false
 
-| sequence-retry | The retry parameter for the entire page sequence.                                                    | 0
+| sequence-retry | The retry parameter for the entire page sequence.                                                   | 0
 | use-system-proxy | Should the system-wide proxy settings be used? Configure the system proxy settings via
-                     <<system-properties/introduction.adoc#system-properties, system properties>>                                                | false
+                     <<system-properties/introduction.adoc#system-properties, system properties>>                      | false
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -61,43 +61,43 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter                  | Description                                                     | Default
+| Parameter                  | Description                                                                                                          | Default
 3+|*Required*
 | path                     | The relative URL to call in the request. Any query string content after a `?` should be part of the query parameter.   | n/a
 3+|*Optional*
-| name                     | The name of the page-sequence.                                                             | n/a
-| method                   | HTTP method (GET or POST)                                                              | n/a
-| http-version             | HTTP protocol version (0.9, 1.0, or 1.1)                                                    | HTTP/1.1
-| user-agent               | Set the user agent field in the HTTP header to identify the OpenNMS monitor.                 | OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")
+| name                     | The name of the page-sequence.                                                                                         | n/a
+| method                   | HTTP method (GET or POST)                                                                                              | n/a
+| http-version             | HTTP protocol version (0.9, 1.0, or 1.1)                                                                               | HTTP/1.1
+| user-agent               | Set the user agent field in the HTTP header to identify the OpenNMS monitor.                                           | OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")
 | virtual-host             | Set the virtual host field in the HTTP header.
                                In case of an HTTPS request, this is also the virtual domain to send as part of the TLS
                                negotiation, known as server name indication (SNI)
-                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.)                     | n/a
+                               (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.)                                              | n/a
 
-| scheme                   | Define the URL scheme as http or https.                                                | http
-| user-info                | Set user info field in the HTTP header. Colon-separated credentials such as USERNAME:PASSWORD.                     | n/a
-| host                     | Set host field in HTTP header.                                                           | IP interface address of the service
-| requireIPv6              | Communication requires a connection to an IPv6 address (true or false).                | n/a
-| requireIPv4              | Communication requires a connection to an IPv4 address (true or false)                | n/a
+| scheme                   | Define the URL scheme as http or https.                                                                                | http
+| user-info                | Set user info field in the HTTP header. Colon-separated credentials such as USERNAME:PASSWORD.                         | n/a
+| host                     | Set host field in HTTP header.                                                                                         | IP interface address of the service
+| requireIPv6              | Communication requires a connection to an IPv6 address (true or false).                                                | n/a
+| requireIPv4              | Communication requires a connection to an IPv4 address (true or false)                                                 | n/a
 | disable-ssl-verification | Enable or disable SSL certificate verification for HTTPS tests.
                                Use this option carefully, since self-signed certificates import the CA certificate
-                               in the JVM and do not just disable it.                                                      | false
-| port                     | Host port number to use when connecting.                                                   | 80
-| query                    | Value to concatenate with a `?` after the path parameter.                                | n/a
+                               in the JVM and do not just disable it.                                                                               | false
+| port                     | Host port number to use when connecting.                                                                               | 80
+| query                    | Value to concatenate with a `?` after the path parameter.                                                              | n/a
 | failureMatch             | Text to look for in the response body.
                                This is a regular expression matched against every line, is considered a
-                               failure at the first match, and sets the service with this monitor as Down.                  | n/a
+                               failure at the first match, and sets the service with this monitor as Down.                                          | n/a
 | failureMessage           | The failure message constructs the reason code.
                                Use `${\n}` values to pull information from matching groups in the failureMatch
-                               regular expression.                                                                        | n/a
+                               regular expression.                                                                                                  | n/a
 | successMatch             | Text to look for in the response body.
                                This is a regular expression matched against every line, is considered a
-                               success at the first match, and sets the service with this monitor  as Up.                    | n/a
-| locationMatch            | The relative URL that must be located for the request to be successful.         | n/a
-| response-range           | Range for allowed HTTP error codes from the response.                                      | n/a
+                               success at the first match, and sets the service with this monitor  as Up.                                           | n/a
+| locationMatch            | The relative URL that must be located for the request to be successful.                                                | n/a
+| response-range           | Range for allowed HTTP error codes from the response.                                                                  | n/a
 | session-variable         | Assign the value of a regex match group to a session variable with a user-defined name.
-                               The match group is identified by number and must be zero or greater.                       | n/a
-| response-range           | A comma-separated list of acceptable HTTP response code ranges (200-202,299).            |100-399
+                               The match group is identified by number and must be zero or greater.                                                 | n/a
+| response-range           | A comma-separated list of acceptable HTTP response code ranges (200-202,299).                                          | 100-399
 |===
 
 TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
@@ -106,7 +106,7 @@ TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for c
 [options="header"]
 [cols="1,3"]
 |===
-| Variable        | Description
+| Variable       | Description
 | $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
 |===
 
