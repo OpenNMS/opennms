@@ -1,7 +1,7 @@
 
 = HttpPostMonitor
 
-If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a SOAP endpoint), use the HttpPostMonitor.
+If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a web API endpoint), use the HttpPostMonitor.
 
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
@@ -22,7 +22,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 | Parameter |Description | Default 
 3+| *Required*
-| payload     | The body of the POST; for example, properly escaped XML.               | n/a 
+| payload     | The body of the POST; for example, properly escaped XML or JSON.       | n/a 
 3+|*Optional*
 | auth-password kbd:[{}]
 | The password to use for HTTP BASIC auth.                              | n/a 
@@ -42,7 +42,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | usesslfilter | Enables or disables the SSL ceritificate validation. (Options: true - false)   | false 
 | uri kbd:[{}]
   | The uri to use during the POST.                                       | n/a 
-| use-system-proxy | Should the system-wide proxy settings be used? The system proxy
+| use-system-proxy | Specifies if the system-wide proxy settings be used. The system proxy
                    settings can be configured in <<system-properties/introduction.adoc#system-properties[system properties] | false 
 |===
 kbd:[{}] _indicates the parameter supports placeholder substitution._ 

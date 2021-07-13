@@ -38,12 +38,12 @@ NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or 
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-== Provide the database driver
+== Database driver
 
 The JDBCMonitor is based on JDBC and requires a JDBC driver to communicate with any database.
 Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
 For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
-To provide a JDBC driver,  place the driver-jar in your {page-component-title} opennms/lib folder.
+To provide a JDBC driver,  place the driver-jar in your `$OPENNMS_HOME/lib` folder.
 
 
 == Examples

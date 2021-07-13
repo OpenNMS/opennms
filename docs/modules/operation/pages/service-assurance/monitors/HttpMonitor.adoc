@@ -30,7 +30,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | basic-authentication kbd:[{}]
  | Authentication credentials to perform basic authentication. +
                            Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945], section
-                           11.1, without the Base64 encoding part and be a string made of the concatenation of: +
+                           11.1, without the Base64 encoding part, and be a string made of the concatenation of: +
                            1- the user ID; +
                            2- a colon; +
                            3- the password. +
@@ -38,11 +38,11 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | header[0-9]+         | Additional headers to send with the request. +
                            Example of valid parameter names are +
                            header0, header1, and header180. `header`is not a valid parameter name.             | n/a 
-| host-name            | Specify the Host header's value. | n/a 
+| host-name            | Specify the `host` header value to include in the request. | n/a 
 | nodelabel-host-name | If the host-name parameter isn't set and the resolve-ip parameter is set to false, 
-                           then {page-component-title} uses the node's label to set the Host header's value if
+                           then {page-component-title} uses the node's label to set the `host` header value if
                            this parameter is set to true. Otherwise, {page-component-title} falls back using
-                           the node interface's IP address as Host header value.                                     | false 
+                           the node interface's IP address as `host` header value.                                   | false 
 | password kbd:[{}]
        | Specifies the password to use. Use this parameter with the user parameter to perform basic +
                            authentication. The user and password parameters are ignored when the basic-authentication parameter is defined.                | empty string

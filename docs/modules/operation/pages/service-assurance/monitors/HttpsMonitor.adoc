@@ -23,7 +23,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 
 |===
 | Parameter              | Description                                             | Default
-| port                | A list of TCP ports to which to try connection. |  443
+| port                   | A list of TCP ports to which to try to connect. |  443
 |===
 
 == Example

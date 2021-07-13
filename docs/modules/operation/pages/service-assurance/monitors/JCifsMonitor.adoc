@@ -17,7 +17,7 @@ With the JCifsMonitor, you can run tests for the following use cases:
 
 By testing on files and folders, you can use a regular expression to ignore specific file and folder names from the test.
 
-A network resource in SMB like a file or folder is addressed as a UNC Path.
+A network resource in SMB is a file or folder addressed as a UNC Path.
 
  \\server\share\folder\file.txt
 
@@ -49,7 +49,7 @@ The JCifsMonitor cannot test the following:
 |===
 | Parameter           | Description                                                                                     | Default
 3+|*Required*
-| path              | Path to the resource you want to test                                                           | empty string 
+| path              | Path to the resource you want to test.                                                          | empty string 
 
 3+|*Optional*
 
