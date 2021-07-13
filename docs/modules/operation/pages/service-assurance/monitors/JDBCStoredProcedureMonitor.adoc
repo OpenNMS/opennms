@@ -5,7 +5,6 @@ The JDBCStoredProcedureMonitor checks the result of a stored procedure in a remo
 The result of the stored procedure has to be a boolean value (representing true or false).
 The service associated with this monitor is marked as up if the stored procedure returns true and marked as down in all other cases.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
 
@@ -37,7 +36,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | schema           | Name of the database schema where the stored procedure is.       | test
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 

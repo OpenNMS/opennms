@@ -5,8 +5,6 @@ This monitor lets you test the functionality of the link:http://freeradius.org/r
 The availability is tested by sending an AUTH packet to the RADIUS server.
 If a valid ACCEPT response is received, the RADIUS service is up and considered available.
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 IMPORTANT: You must install the RADIUS protocol for {page-component-title} to use this monitor. 
 
 For RPM-based distributions:
@@ -69,8 +67,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | inner-user kbd:[{}]
     | Username for the tunnelled pap authentication when using EAP-TTLS.                              | Inner-OpenNMS
 |===
-
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

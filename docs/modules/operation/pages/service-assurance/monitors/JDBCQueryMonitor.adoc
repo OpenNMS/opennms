@@ -4,7 +4,6 @@
 The JDBCQueryMonitor runs an SQL query against a database and is able to verify the result of the query.
 A read-only connection is made, preventing the monitor from being able to alter data.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
 
@@ -42,7 +41,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | retries  | How many retries to perform before failing the test.           | 0
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
@@ -81,7 +80,7 @@ The JDBCQueryMonitor is based on JDBC and requires a JDBC driver to communicate 
 Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
 For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
 To provide a JDBC driver, place the driver-jar in your `$OPENNMS_HOME/lib` folder.
-For instructions on how to provide JDBC drivers on Minion, see <<deployment/minion/installing-jdbc-driver.adoc, Installing JDBC driver>>.
+For instructions on how to provide JDBC drivers on Minion, see xref:deployment:minion/installing-jdbc-driver.adoc#install-jdbc-driver [Install JDBC driver].
 
 == Examples
 

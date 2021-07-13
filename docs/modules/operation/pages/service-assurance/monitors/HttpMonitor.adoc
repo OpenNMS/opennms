@@ -9,8 +9,6 @@ By default, it makes the test against ports 80, 8080, and 8888.
 If the connection is successful, an HTTP GET request is sent to the interface.
 The response is parsed and a return code extracted and verified.
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 == Monitor facts
 
 [options="autowidth"]
@@ -52,10 +50,10 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                            {page-component-title} uses DNS to resolve the node interface's IP address, and uses
                            the result to set the Host header's value. When set to false and the host-name
                            parameter is not set, {page-component-title} tries to use the nodelabel-host-name
-                           parameter to set the Host header's value.                                                 | false 
+                           parameter to set the Host header's value.                                                 | false
 | response             | A comma-separated list of acceptable HTTP response code ranges.
                            Example: 200-202,299                                                                      | If the url parameter is set to `/`, the default +
-                           value for this parameter is 100-499; otherwise, it is 100-399. 
+                           value for this parameter is 100-499; otherwise, it is 100-399.
 | response-text        | Text to look for in the response body. This will be matched against every line, and it will
                            be considered a success at the first match. If there is a `~` at the beginning of the
                            parameter, the rest of the string is used as a regular expression pattern match;
@@ -72,10 +70,10 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
         | Specifies the user-agent HTTP header. (Also see
                            http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616], section 14.43.)                          | OpenNMS HttpMonitor 
 | verbose              | When set to true, full communication between client and the webserver will be logged
-                           (with a log level of `DEBUG`).                                                              | n/a 
+                           (with a log level of `DEBUG`).                                                              | n/a
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._ 
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

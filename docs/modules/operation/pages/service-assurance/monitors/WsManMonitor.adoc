@@ -2,7 +2,6 @@
 = WsManMonitor
 
 Use this monitor to issue a WS-Man GET command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
 
@@ -29,7 +28,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | selector.    | Used to filter the result set. All selectors must prefixed with `selector.` | `(None)`
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

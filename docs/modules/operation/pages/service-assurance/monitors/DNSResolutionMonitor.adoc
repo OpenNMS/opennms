@@ -11,8 +11,6 @@ Assigning the DNS resolution monitor on the IP interface tests if `www.google.co
 If the DNS server responds with either an A or AAAA record, the service is determined to be up.
 The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assigned.
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 == Monitor facts
 
 [options="autowidth"]
@@ -45,7 +43,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                       hostname:port, or [ipv6address]:port.             | Use name server from host system running {page-component-title}. 
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._ 
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

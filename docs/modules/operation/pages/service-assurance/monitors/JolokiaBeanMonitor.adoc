@@ -9,7 +9,6 @@ If required, you can provide attribute names, paths, and method parameters as ad
 To determine the status of the service, the JolokiaBeanMonitor relies on the output to be matched against a banner. 
 If the banner is part of the output, the status is interpreted as up; otherwise, it is considered down. 
 Banner matching supports regular expression and substring match.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 == Monitor facts
 
@@ -51,7 +50,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
            | The Jolokia agent URL.                                 | http://<ipaddr>:<port>/jolokia
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 NOTE: The attrname and methodname parameters are optional but one of them must be set. 
 

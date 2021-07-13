@@ -3,8 +3,6 @@
 
 If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a web API endpoint), use the HttpPostMonitor.
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 == Monitor facts
 
 [options="autowidth"]
@@ -45,8 +43,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | use-system-proxy | Specifies if the system-wide proxy settings be used. The system proxy
                    settings can be configured in <<system-properties/introduction.adoc#system-properties[system properties] | false 
 |===
-kbd:[{}] _indicates the parameter supports placeholder substitution._ 
-
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

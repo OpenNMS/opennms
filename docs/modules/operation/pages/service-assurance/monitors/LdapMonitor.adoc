@@ -10,8 +10,6 @@ The scope of the LDAP search is limited to the immediate subordinates of the bas
 The LDAP search is anonymous by default.
 The LDAP monitor uses the com.novell.ldap.LDAPConnection class, and supports most LDAP-compatible directory systems, including Active Directory.
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 == Monitor facts
 
 [options="autowidth"]
@@ -39,7 +37,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
                     Note: Only LDAPv3 is supported.                     | 3
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

@@ -19,8 +19,6 @@ While the monitor is mainly useful for plain SSL sockets, it does provide limite
 Users can specify a STARTTLS message be sent prior to the SSL negotiation and a regular expression to match to the response received from the server.
 An additional preliminary message and response regular expression pair is available for protocols that require it (such as XMPP).
 
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
-
 == Monitor facts
 
 [options="autowidth"]
@@ -55,7 +53,7 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | starttls-start-response    | Regular expression that must match response to STARTTLS command sent to server. | n/a
 |===
 
-kbd:[{}] _indicates the parameter supports placeholder substitution._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
