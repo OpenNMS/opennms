@@ -20,7 +20,7 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.DiskUsageMonitor`
-| Remote Enabled | false, relies on SNMP configuration
+| Remote Enabled | true
 |===
 
 == Configuration and use
