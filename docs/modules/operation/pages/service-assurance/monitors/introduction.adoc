@@ -1,10 +1,13 @@
 
-= Service monitors
+= Service Monitors
 
-To support several specific applications and management agents, Pollerd runs service monitors.
+The Pollerd service uses service monitors to check the status of services running on nodes.
+These monitors will track if services are up or down and generate outages if the desired service state is not met.
+Monitoring is a separate process from our performance management component that collects metrics from nodes to generate graphs and threshold alerts.
+
 This section describes all available built-in service monitors.
-You can configure them to allow complex monitoring.
-For information on how to extend these monitors, see the xref:development:overview/overview.adoc#overview[Development section].
+You can configure them to allow complex monitoring to meet the needs of your environment.
+For information on how to extend the functionality of these monitors, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.
 
 [[ga-service-assurance-monitors-common-parameters]]
 == Common configuration parameters
@@ -28,7 +31,7 @@ TIP: If the monitor uses SNMP, the default configuration for timeout and retry a
 === Minion configuration parameters
 
 When nodes are configured with a non-default location, the associated service monitors run on a Minion configured with that same location.
-If a given location has many Minions, the service monitor may run on any of the Minions that are currently available.
+If a given location has multiple Minions, the service monitor may run on any of the Minions that are currently available.
 To run a service monitor on a specific Minion, specify the System ID of the Minion.
 Use this mechanism to monitor the Minions individually.
 
