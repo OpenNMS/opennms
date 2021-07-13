@@ -29,12 +29,11 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -42,8 +41,6 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.Scope;
-import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -59,7 +56,7 @@ import com.google.common.collect.Maps;
 
 /** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
  * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
-public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>> {
+public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<String, String>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetaTagDataLoader.class);
 
@@ -81,10 +78,10 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
         this.config = config;
     }
 
-    public Set<Tag> load(final CollectionResource resource) {
+    public Map<String, String> load(final CollectionResource resource) {
         return sessionUtils.withReadOnlyTransaction(() -> {
 
-            final Set<Tag> tags = new HashSet<>();
+            final Map<String, String> tags = new HashMap<>();
             List<Scope> scopes = new ArrayList<>();
 
             // node related scopes
@@ -114,7 +111,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                 if (Strings.isNullOrEmpty(value)) {
                     continue;
                 }
-                tags.add(new ImmutableTag(entry.getKey(), value));
+                tags.put(entry.getKey(), value);
             }
 
             // create tags for categories
@@ -123,12 +120,12 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
         });
     }
 
-    private void mapCategories(final Set<Tag> tags, final OnmsNode node) {
+    private void mapCategories(final Map<String, String> tags, final OnmsNode node) {
         Objects.requireNonNull(node);
         if(config.isCategoriesEnabled()) {
             node.getCategories().stream()
                     .map(OnmsCategory::getName)
-                    .forEach(catName -> tags.add(new ImmutableTag("cat_" + catName, catName)));
+                    .forEach(catName -> tags.put("cat_" + catName, catName));
         }
     }
 

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,7 +35,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -48,6 +46,7 @@ import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -103,11 +102,11 @@ public class TcaCollectionHandler {
 
 	private final RrdRepository m_repository;
 
+	private final ResourceStorageDao m_resourceStorageDao;
+
     private final ResourceType m_resourceType;
 
     private final LocationAwareSnmpClient m_locationAwareSnmpClient;
-
-	private final BlobStore m_blobStore;
 
 	/**
 	 * Instantiates a new TCA collection set.
@@ -115,16 +114,16 @@ public class TcaCollectionHandler {
 	 * @param agent the agent
 	 * @param repository the repository
 	 */
-	public TcaCollectionHandler(SnmpCollectionAgent agent, RrdRepository repository,
-	        ResourceTypesDao resourceTypesDao, LocationAwareSnmpClient locationAwareSnmpClient, BlobStore blobStore) {
+	public TcaCollectionHandler(SnmpCollectionAgent agent, RrdRepository repository, ResourceStorageDao resourceStorageDao,
+	        ResourceTypesDao resourceTypesDao, LocationAwareSnmpClient locationAwareSnmpClient) {
 		m_agent = Objects.requireNonNull(agent);
 		m_repository = Objects.requireNonNull(repository);
+		m_resourceStorageDao = Objects.requireNonNull(resourceStorageDao);
 		m_resourceType = Objects.requireNonNull(resourceTypesDao).getResourceTypeByName(RESOURCE_TYPE_NAME);
 		if (m_resourceType == null) {
 		    throw new IllegalArgumentException("No resource of type juniperTcaEntry is defined.");
 		}
 		m_locationAwareSnmpClient = Objects.requireNonNull(locationAwareSnmpClient);
-		m_blobStore = Objects.requireNonNull(blobStore);
 	}
 
 	/**
@@ -226,29 +225,36 @@ public class TcaCollectionHandler {
 		}
 	}
 
-	long getLastTimestamp(CollectionResource resource) {
+	/**
+	 * Gets the last timestamp.
+	 *
+	 * @param resource the TCA resource
+	 * @return the last timestamp
+	 */
+	private long getLastTimestamp(CollectionResource resource) {
 		long timestamp = 0;
 		ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, resource.getPath());
 		try {
 			LOG.debug("Retrieving timestamp from path {}", path);
-			timestamp = this.m_blobStore.get(toKvStoreKey(path), this.getClass().getName())
-					.filter(a -> a.length>0)
-					.map(String::new)
-					.map(Long::parseLong)
-					.orElse(0L);
+			String ts = m_resourceStorageDao.getStringAttribute(path, LAST_TIMESTAMP);
+			if (ts != null) {
+				timestamp = Long.parseLong(ts);
+			}
 		} catch (Exception e) {
 			LOG.error("Failed to retrieve timestamp from path {}", path, e);
 		}
 		return timestamp;
 	}
 
-	void setLastTimestamp(CollectionResource resource, long timestamp) {
+	/**
+	 * Sets the last timestamp.
+	 *
+	 * @param resource the resource
+	 * @param timestamp the timestamp
+	 */
+	private void setLastTimestamp(CollectionResource resource, long timestamp) {
 		ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, resource.getPath());
 		LOG.debug("Setting timestamp to {} at path {}", timestamp, path);
-		this.m_blobStore.put(toKvStoreKey(path), Long.toString(timestamp).getBytes(StandardCharsets.UTF_8), this.getClass().getName());
-	}
-
-	private String toKvStoreKey(ResourcePath path) {
-		return LAST_TIMESTAMP + String.join("/", path.elements());
+		m_resourceStorageDao.setStringAttribute(path, LAST_TIMESTAMP, Long.toString(timestamp));
 	}
 }
