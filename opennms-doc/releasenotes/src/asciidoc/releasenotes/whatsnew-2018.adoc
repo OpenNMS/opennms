@@ -86,6 +86,19 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[[releasenotes-changelog-Meridian-2018.1.30]]
+
+=== Release Meridian-2018.1.30
+
+Release 2018.1.30 is a small update with a few dependency security updates.
+
+The codename for 2018.1.30 is https://wikipedia.org/wiki/Landslide[_Landslide_].
+
+==== Bug
+
+* CVE-2020-13956: Update commons-httpclient to 4.5.13 (Issue http://issues.opennms.org/browse/NMS-13360[NMS-13360])
+* CVE-2017-5929: bump logback-classic version to latest (Issue http://issues.opennms.org/browse/NMS-13361[NMS-13361])
+
 [[releasenotes-changelog-Meridian-2018.1.29]]
 
 === Release Meridian-2018.1.29
