@@ -2,6 +2,40 @@
 
 = Changelog
 
+[[releasenotes-changelog-Meridian-2021.1.2]]
+
+== Release Meridian-2021.1.2
+
+Release 2021.1.2 contains a bunch of bug fixes and enhancements, plus a few security updates.
+
+The codename for 2021.1.2 is link:$$https://wikipedia.org/wiki/Ulysses_probe$$[_Ulysses_].
+
+=== Bug
+
+* SNMP collection failing for "interface label is null or blank" (Issue http://issues.opennms.org/browse/NMS-11764[NMS-11764])
+* Meridian installation guide is incomplete (Issue http://issues.opennms.org/browse/NMS-13294[NMS-13294])
+* Default Debian instructions don't work on a minimal install (Issue http://issues.opennms.org/browse/NMS-13355[NMS-13355])
+* CVE-2020-13956: Update commons-httpclient to 4.5.13 (Issue http://issues.opennms.org/browse/NMS-13360[NMS-13360])
+* CVE-2017-5929: bump logback-classic version to latest (Issue http://issues.opennms.org/browse/NMS-13361[NMS-13361])
+* Update images chapter in docs remove two chapters (Issue http://issues.opennms.org/browse/NMS-13371[NMS-13371])
+* Package diffutils is missing in Docker image (Issue http://issues.opennms.org/browse/NMS-13429[NMS-13429])
+
+=== Enhancement
+
+* Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
+* Expand PageSequenceMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-13260[NMS-13260])
+* Publish minion config schema (Issue http://issues.opennms.org/browse/NMS-13285[NMS-13285])
+* update WMI dependencies (Issue http://issues.opennms.org/browse/NMS-13320[NMS-13320])
+* Expand Sink API Documentation (Issue http://issues.opennms.org/browse/NMS-13328[NMS-13328])
+* Add out-of-band monitoring content to main user documentation (Issue http://issues.opennms.org/browse/NMS-13330[NMS-13330])
+* Create DnsDetector docs (Issue http://issues.opennms.org/browse/NMS-13338[NMS-13338])
+* Create FtpDetector docs (Issue http://issues.opennms.org/browse/NMS-13339[NMS-13339])
+* Create HostResourceSWRunDetector docs (Issue http://issues.opennms.org/browse/NMS-13340[NMS-13340])
+* Setup DCT keys for the OpenNMS and OpenNMS-Forge organizations (Issue http://issues.opennms.org/browse/NMS-13345[NMS-13345])
+* Implement Kafka Consumer for events (protobuf) (Issue http://issues.opennms.org/browse/NMS-13362[NMS-13362])
+* Allow setting java heap minimum and maximum values in opennms.conf (Issue http://issues.opennms.org/browse/NMS-13367[NMS-13367])
+* Misc documentation fixes (Issue http://issues.opennms.org/browse/NMS-13426[NMS-13426])
+
 [[releasenotes-changelog-Meridian-2021.1.1]]
 
 == Release Meridian-2021.1.1
