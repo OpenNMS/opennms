@@ -12,7 +12,7 @@ A NetScaler can manage several groups of servers per application.
 This monitor just covers one group at a time.
 To check multiple groups, define one monitor per group.
 
-IMPORTANT: This monitor does not check the load-balanced service itself.
+IMPORTANT: This monitor does not check the status of the load-balanced service itself.
 
 == Monitor facts
 

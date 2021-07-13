@@ -10,7 +10,9 @@ The service is considered available if the service's answer to the QUIT command 
 
 Simulate the behavior with telnet:
 
- $ telnet mail.opennms.org 110
+[source, console]
+----
+telnet mail.opennms.org 110
  Trying 192.168.0.100
  Connected to mail.opennms.org.
  Escape character is '^]'.
@@ -18,6 +20,7 @@ Simulate the behavior with telnet:
  quit
  +OK
  Connection closed by foreign host.
+ ----
 
 == Monitor facts
 

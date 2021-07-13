@@ -11,7 +11,7 @@ This monitor supports the following OIDs from the https://www.dell.com/support/m
  arrayDiskLogicalConnectionArrayDiskNumber   .1.3.6.1.4.1.674.10893.1.20.140.3.1.3
  arrayDiskState                              .1.3.6.1.4.1.674.10893.1.20.130.4.1.4
 
-Use virtualDiskRollUpStatus to test the status of the disk array.
+The virtualDiskRollUpStatus value checks the status of the disk array.
 If the result of the virtualDiskRollUpStatus is not 3, the monitor is marked as down.
 
 .Possible result of virtual disk rollup status
