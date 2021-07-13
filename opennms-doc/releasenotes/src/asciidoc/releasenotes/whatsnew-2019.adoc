@@ -313,6 +313,23 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[[releasenotes-changelog-Meridian-2019.1.21]]
+
+==== Release Meridian-2019.1.21
+
+Release 2019.1.21 contains a few dependency security updates and an enhancement to the Kafka producer.
+
+The codename for 2019.1.21 is link:$$https://wikipedia.org/wiki/PSR_B1257%2B12_C$$[_Phobetor_].
+
+===== Enhancement
+
+* Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
+
+===== Bug
+
+* CVE-2020-13956: Update commons-httpclient to 4.5.13 (Issue http://issues.opennms.org/browse/NMS-13360[NMS-13360])
+* CVE-2017-5929: bump logback-classic version to latest (Issue http://issues.opennms.org/browse/NMS-13361[NMS-13361])
+
 [[releasenotes-changelog-Meridian-2019.1.20]]
 
 ==== Release Meridian-2019.1.20
