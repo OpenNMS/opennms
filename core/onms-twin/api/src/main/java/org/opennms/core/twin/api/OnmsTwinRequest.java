@@ -28,6 +28,9 @@
 
 package org.opennms.core.twin.api;
 
+/*
+   Request object with specific key that represents module.
+ */
 public interface OnmsTwinRequest {
 
     String getKey();

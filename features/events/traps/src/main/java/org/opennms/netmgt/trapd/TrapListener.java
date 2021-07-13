@@ -33,10 +33,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.twin.api.OnmsTwin;
+import org.opennms.core.twin.subscriber.api.OnmsTwinSubscriber;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
@@ -64,6 +67,8 @@ public class TrapListener implements TrapNotificationListener {
     private TrapdConfig m_config;
 
     private AsyncDispatcher<TrapInformationWrapper> m_dispatcher;
+
+    private OnmsTwinSubscriber onmsTwinSubscriber;
 
     public TrapListener(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
@@ -94,6 +99,17 @@ public class TrapListener implements TrapNotificationListener {
     }
 
     public void start() {
+        CompletableFuture<OnmsTwin> future = onmsTwinSubscriber.getObject("trapd-config", new OnmsTwinSubscriber.SinkCallback() {
+            @Override
+            public void sinkUpdate(OnmsTwin onmsTwin) {
+                // Unmarshal and call setSnmpV3Users
+            }
+        });
+        future.whenComplete((response, ex) -> {
+           if(response != null) {
+               // Unmarshal and call setSnmpV3Users
+           }
+        });
         final int m_snmpTrapPort = m_config.getSnmpTrapPort();
         final InetAddress address = getInetAddress();
         try {
@@ -223,5 +239,9 @@ public class TrapListener implements TrapNotificationListener {
             return false;
         }
         return !newConfig.getSnmpV3Users().equals(m_config.getSnmpV3Users());
+    }
+
+    public void setOnmsTwinSubscriber(OnmsTwinSubscriber onmsTwinSubscriber) {
+        this.onmsTwinSubscriber = onmsTwinSubscriber;
     }
 }

@@ -28,9 +28,16 @@
 
 package org.opennms.core.twin.api;
 
+/**
+ * Base element for all the objects that need to replicate.
+ *
+ */
 public interface OnmsTwin extends OnmsTwinRequest {
 
     int getVersion();
 
+    /*
+       Marshalled object.
+     */
     byte[] getObjectValue();
 }
