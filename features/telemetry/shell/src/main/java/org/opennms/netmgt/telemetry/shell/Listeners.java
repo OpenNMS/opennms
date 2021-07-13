@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.telemetry.api.TelemetryManager;
 
 import com.google.gson.JsonArray;
@@ -53,6 +55,7 @@ public class Listeners implements Action {
     public String listenerFilter = ".*";
 
     @Option(name = "-f", aliases = "--format", description = "Dump data in given format", required = false, multiValued = false)
+    @Completion(value = StringsCompleter.class, values = {"PLAIN", "JSON" })
     public Format format = Format.PLAIN;
 
     @Override
