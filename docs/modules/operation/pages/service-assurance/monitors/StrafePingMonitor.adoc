@@ -3,8 +3,12 @@
 
 This monitor uses ICMP to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint.
 The main use case is to monitor a WAN endpoint and visualize packet loss and ICMP packet round-trip time deviation.
-The StrafePingMonitor performs multiple ICMP echo requests (pings) and stores the response time of each as well as the packet loss in an RRD file.
-Credit to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
+The StrafePingMonitor performs multiple ICMP echo requests (pings) and stores the response time of each as well as the packet loss.
+
+This monitor is typically used on WAN connections and not activated for every ICMP-enabled device in your network.
+Since StrafePingMonitor requires many more I/O requests than a single IcmpMonitor poll, use this monitor only where necessary to check packet loss.
+
+Credit to Tobias Oetiker, as graphing of this feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
 
 .Visualization of a graph from the StrafePingMonitor
 image::service-assurance/monitors/01_strafeping.png[]
@@ -43,15 +47,11 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-The StrafePingMonitor is typically used on WAN connections and not activated for every ICMP-enabled device in your network.
-This monitor is much I/O heavier than just a simple RRD graph with a single ICMP response time measurement.
 By default, you can find a separate poller package in `poller-configuration.xml` called `strafer`.
 Configure the include-range or a filter to enable monitoring for devices with the service StrafePing.
 
-TIP: Don't forget to assign the StrafePing service on the IP interface to be activated.
-
 The following example enables the monitoring for the StrafePing service on IP interfaces in the range 10.0.0.1 to 10.0.0.20.
-Additionally, the nodes have to be in a surveillance category named `Latency`.
+Additionally, you must assign the nodes to a surveillance category named `Latency`.
 
 [source, xml]
 ----
