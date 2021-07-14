@@ -1,7 +1,7 @@
 
 = SnmpMonitor
 
-The SNMP monitor gives a generic possibility to monitor states and results from SNMP agents.
+The SNMP monitor provides a common platform to monitor states and results from SNMP agents.
 This monitor has two basic operation modes:
 
 * Test the response value of one specific OID (scalar object identifier)
@@ -34,7 +34,7 @@ The _Operating mode selection_ and _Monitor specific parameters for the SnmpMoni
 |===
 
 When the monitor is configured to persist the response time, it counts the total amount of time spent until it obtains a successful one, including the retries.
-It will not store the time spent during the last successful attempt.
+It stores the entire poll time, not just the time spent during the last successful attempt.
 
 == Configuration and use
 
@@ -76,7 +76,7 @@ It will not store the time spent during the last successful attempt.
                       `=`: Equal to. Applied in numeric context if both operand and observed object value are numeric,
                            otherwise in string context as a case-sensitive exact match. +
                       `!=`: Not equal to. Applied in numeric context if both operand and observed object value are
-                            numeric, otherwise in string context as a case-sensitive exact match. +
+                            numeric, otherwise in string context as a case-sensitive exact non-match. +
                       `~`:  Regular expression match. Always applied in string context. +
                       Note: Comparison will always succeed if either the operand or operator parameter isn't set
                             and the monitored value is non-null.
@@ -118,7 +118,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | $\{walk}          | Value of the `walk` parameter.
 |===
 
-== Example for monitoring scalar object
+== Example: monitoring a scalar object
 
 As a working example, we want to monitor the thermal system fan status which is provided as a scalar object ID.
 
@@ -242,7 +242,7 @@ The configuration in our monitor tests all physical drives for status `ok(2)`.
 <5> Test in walk mode has to pass for every entry in the table.
 <6> Encode MIB status in the reason code to give more detailed information if the service goes down.
 
-== Example: test SNMP table with all matching values
+== Example: test SNMP table with some matching values
 
 This example shows how to use the SnmpMonitor to test if the number of static routes are within a given boundary.
 The service is marked as up if at least three and at maximum of 10 static routes are set on a network device.
