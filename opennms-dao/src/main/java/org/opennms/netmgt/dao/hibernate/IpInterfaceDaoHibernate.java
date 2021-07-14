@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -132,7 +132,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all primary addresses first
         @SuppressWarnings("unchecked")
-        List<Object[]> l = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
+        List<Object[]> l = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.snmpPrimary = 'P'");
         for (Object[] tuple : l) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -141,7 +141,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all non-primary addresses only if those addresses doesn't exist on the map.
         @SuppressWarnings("unchecked")
-        List<Object[]> s = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
+        List<Object[]> s = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.snmpPrimary != 'P'");
         for (Object[] tuple : s) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -182,7 +182,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         Assert.notNull(nodeId, "nodeId cannot be null");
         // SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
 
-        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
+        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.snmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
         if (primaryInterfaces.size() < 1) {
             return null;
         } else {

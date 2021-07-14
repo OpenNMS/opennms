@@ -801,7 +801,7 @@ public class Provisioner implements SpringServiceDaemon {
 
         OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddr), node);
         iface.setIsManaged("M");
-        iface.setPrimaryString("N");
+        iface.setSnmpPrimary("N");
 
         m_provisionService.insertNode(node);
 
