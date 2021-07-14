@@ -586,8 +586,8 @@ workflows:
               only:
                 - ranger/backport-dct
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -597,8 +597,8 @@ workflows:
               only:
                 - ranger/backport-dct
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - horizon-rpm-build:
           requires:
             - build
