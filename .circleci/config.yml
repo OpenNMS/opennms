@@ -586,8 +586,8 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -596,8 +596,8 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - horizon-rpm-build:
           requires:
             - build
