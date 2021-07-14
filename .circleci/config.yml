@@ -995,6 +995,8 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
+      - attach_workspace:
+          at: ~/
       - dockerhub-login
       - run: *setup_dct_env
       - run: *setup_dct_key
