@@ -129,7 +129,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 If a filtering proxy server is set up to allow retrieval of some URLs but deny others, the HttpMonitor can verify this behavior.
 
-As an example, a proxy server runs on TCP port 3128 and serves http://www.opennms.org/ but never http://www.myspace.com/.
+As an example, a proxy server runs on TCP port 3128 and serves http://www.opennms.org/ but never http://www.tiktok.com/.
 To test this behavior, configure the HttpMonitor as follows:
 
 [source, xml]
@@ -142,14 +142,14 @@ To test this behavior, configure the HttpMonitor as follows:
   <parameter key="response" value="200-399"/>
 </service>
 
-<service name="HTTP-Block-myspace.com" interval="300000" user-defined="false" status="on">
+<service name="HTTP-Block-tiktok.com" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
   <parameter key="port" value="3128"/>
-  <parameter key="url" value="http://www.myspace.com/"/>
+  <parameter key="url" value="http://www.tiktok.com/"/>
   <parameter key="response" value="400-599"/>
 </service>
 
 <monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-<monitor service="HTTP-Block-myspace.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+<monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 ----
