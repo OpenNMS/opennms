@@ -18,7 +18,7 @@ asciidoc:
     compatible-oia: '0.2.x'
     compatible-cassandra: '3.11.x'
     compatible-elasticsearch: '6.7.0 - 7.6.2'
-    compatible-javajdk: 'OpenJDK 8, OpenJDK 11'
+    compatible-javajdk: 'OpenJDK 11'
     compatible-kafka: '1.x - 2.x'
     compatible-postgresql: '10.x - 13.x'
     compatible-rrdtool: '1.7.x'
