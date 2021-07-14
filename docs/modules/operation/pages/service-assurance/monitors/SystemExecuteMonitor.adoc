@@ -2,9 +2,7 @@
 = SystemExecuteMonitor
 
 If you need to run a system call or a script to determine a service status, use the SystemExecuteMonitor.
-The monitor calls a script or system command. 
-If required, it provides additional arguments to the call.
-To determine the status of the service, the SystemExecuteMonitor can rely on 0 or a non-0 exit code system call.
+The monitor calls a script or system command and determines service status based on the return of a `0` or a `non-0` exit code.
 As an alternative, the output of the system call can be matched against a banner.
 If the banner is part of the output, the status is interpreted as up.
 If the banner is not available in the output, the status is determined as down.
