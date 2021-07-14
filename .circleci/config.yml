@@ -585,7 +585,6 @@ workflows:
           filters:
             branches:
               only:
-                - ranger/backport-dct
                 - develop
                 - /^master-/
                 - /^release-/
@@ -596,7 +595,6 @@ workflows:
           filters:
             branches:
               only:
-                - ranger/backport-dct
                 - develop
                 - /^master-/
                 - /^release-/
