@@ -118,22 +118,3 @@ else
   echo "FAILED"
 fi
 ----
-
-== SystemExecuteMonitor vs. GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. 
-The main differences are:
-
-* Variable replacement for the parameter arguments
-* No fixed arguments handed to the system call
-
-To migrate services from the GpMonitor to the SystemExecuteMonitor, you must alter the parameter arguments
-to match `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The arguments string that matches the GpMonitor call looks like this:
-
-[source, xml]
-----
-<parameter key="args" value="--hostname $\{ipaddr} --timeout $\{timeoutsec}" />
-----
-
-To migrate the GpMonitor parameters hoption and toption, replace the `--hostname` and `--timeout` directly in the `args` key.
