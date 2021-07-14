@@ -8,7 +8,7 @@ The monitor offers the following functionalities:
 * existence of management beans
 * test the status of a single or multiple management bean, and evaluate its value(s)
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,29 +16,30 @@ The monitor offers the following functionalities:
 | Remote Enabled | `true`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the JmxMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the JmxMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter               | Description                                                 | Required | Default value
-| `retry`                 | Number of attempts to get a response                        | optional | `3`
-| `timeout`               | Time in milliseconds to wait for a response                 | optional | `?`
-| `port`                  | Destination port where the _JMX_ requests shall be sent     | optional | from `jmx-config.xml`
-| `factory`               | Set this to `PASSWORD-CLEAR` if credentials are required    | optional | `STANDARD`
-| `protocol`              | Protocol used in the _JMX_ connection string                | optional | `rmi`
-| `urlPath`               | Path used in _JMX_ connection string                        | optional | `/jmxrmi`
-| `rmiServerPort`         | _RMI_ port                                                  | optional | `45444`
-| `remoteJMX`             | Use an alternative _JMX_ URL scheme                         | optional | `false`
-| `beans.<variable>`      | Defines a _mbeans_ objectname to access.
-                            The ´<variable>´ name is arbitrary.                         | optional | `-`
-| `tests.<variable>`      | Tests a _mbeans_ attribute value.
-                            The ´<variable>´ name is arbitrary.                         | optional | `-`
+| Parameter               | Description                                                 | Default
+| retry                 | Number of attempts to get a response.                        | 3
+| timeout               | Time in milliseconds to wait for a response.                 | ?
+| port                  | Destination port where the JMX requests will be sent.     | from jmx-config.xml
+| factory               | Set this to PASSWORD-CLEAR if credentials are required.    | STANDARD
+| protocol              | Protocol used in the JMX connection string.                | rmi
+| urlPath               | Path used in JMX connection string.                        | /jmxrmi
+| rmiServerPort         | RMI port.                                                  | 45444
+| remoteJMX             | Use an alternative JMX URL scheme.                         | false
+| beans.<variable>      | Defines an MBeans objectname to access.
+                            The <variable> name is arbitrary.                         | n/a
+| tests.<variable>      | Tests an MBeans attribute value.
+                            The <variable> name is arbitrary.                         | n/a
 |===
 
 == Examples
 
-.Test if a _JMX_ connection can be established
+.Test if a JMX connection can be established
 [source, xml]
 ----
 <service name="JMX-Connection-Test" interval="300000" user-defined="false" status="on">
@@ -62,4 +63,4 @@ The monitor offers the following functionalities:
 <monitor service="JMX-BeanValue-Test" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
 ----
 
-CAUTION: Reserved _XML_ characters like *>*, *<*, *"* need to be escaped.
+CAUTION: You must escape reserved XML characters like *>*, *<*, *"*.

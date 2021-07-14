@@ -1,17 +1,18 @@
 
 = BSFMonitor
 
-This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF]-compatible script to determine the status of a service.
-Users can write scripts to perform highly custom service checks.
-This monitor is not optimised for scale.
-It's intended for a small number of custom checks or prototyping of monitors.
+This monitor runs a Bean Scripting Framework (http://commons.apache.org/proper/commons-bsf/[BSF])-compatible script to determine the status of a service.
+Users can write scripts to perform highly customized service checks.
 
-== BSFMonitor vs SystemExecuteMonitor
+IMPORTANT: This monitor is not optimized for scale.
+It is intended for a small number of custom checks or prototyping of monitors.
 
-The _BSFMonitor_ avoids the overhead of _fork(2)_ that is used by the _SystemExecuteMonitor_.
-_BSFMonitor_ also grants access to a selection of {page-component-title} internal methods and classes that can be used in the script.
+== BSFMonitor vs. SystemExecuteMonitor
 
-== Monitor Facts
+The BSFMonitor avoids the overhead of fork(2) that the SystemExecuteMonitor uses.
+The BSFMonitor also grants access to a selection of {page-component-title} internal methods and classes that the script can use.
+
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -19,50 +20,55 @@ _BSFMonitor_ also grants access to a selection of {page-component-title} interna
 | Remote Enabled | false
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the _BSFMonitor_
-[options="header, autowidth"]
+.Monitor-specific parameters for the BSFMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter         | Description                                                    | Required | Default value
-| `file-name`       | Path to the script file.                                       | required | `-`
-| `bsf-engine`      | The BSF Engine to run the script in different languages like +
-                      _Bean Shell_: `bsh.util.BeanShellBSFEngine` +
-                      _Groovy_: `org.codehaus.groovy.bsf.GroovyEngine`  +
-                      _Jython_: `org.apache.bsf.engines.jython.JythonEngine`         | required | `-`
-| `run-type`        | one of `eval` or `exec`                                        | optional | `eval`
-| `lang-class`      | The BSF language class, like `groovy` or `beanshell`.          | optional | file-name extension is interpreted by default
-| `file-extensions` | comma-separated list                                           | optional | `-`
+| Parameter | Description | Default 
+3+|*Required*
+| file-name      | Path to the script file. | n/a
+| bsf-engine      | The BSF Engine to run the script in different languages like +
+                      Bean Shell: bsh.util.BeanShellBSFEngine +
+                      Groovy: org.codehaus.groovy.bsf.GroovyEngine  +
+                      Jython: org.apache.bsf.engines.jython.JythonEngine         | n/a
+
+3+|*Optional*                      
+| run-type       | One of eval or exec                                        |  eval
+| lang-class      | The BSF language class, like `groovy` or `beanshell`.          | filename extension is interpreted by default
+| file-extensions | Comma-separated list of extensions                             | n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-.Beans which can be used in the script
-[options="header, autowidth"]
+.Beans available for the script
+[options="header"]
+[cols="1,2,3"]
 |===
 | Variable      | Type                            | Description
-| `map`         | _Map<String, Object>_           | The _map_ contains all various parameters passed to the monitor
-                                                    from the service definition it the `poller-configuration.xml` file.
-| `ip_addr`     | _String_                        | The IP address that is currently being polled.
-| `node_id`     | _int_                           | The Node ID of the node the `ip_addr` belongs to.
-| `node_label`  | _String_                        | The Node Label of the node the `ip_addr` and service belongs to.
-| `svc_name`    | _String_                        | The name of the service that is being polled.
-| `bsf_monitor` | _BSFMonitor_                    | The instance of the _BSFMonitor_ object calling the script.
+| map       | Map<String, Object>           | The map contains all parameters passed to the monitor
+                                                    from the service definition in `poller-configuration.xml`.
+| ip_addr     | String                        | The IP address currently being polled.
+| node_id     | int                           | The node ID of the node the `ip_addr` belongs to.
+| node_label  | String                        | The node label of the node the `ip_addr` and service belong to.
+| svc_name    | String                        | The name of the service being polled.
+| bsf_monitor | BSFMonitor                    | The instance of the BSFMonitor object calling the script.
                                                     Useful for logging via its +log(String sev, String fmt, Object... args)+ method.
-| `results`     | _HashMap<String, String>_       | The script is expected to put its results into this object.
-                                                    The status indication should be set into the entry with key `status`.
-                                                    If the status is not `OK`, a key `reason` should contain a description of the problem.
-| `times`       | _LinkedHashMap<String, Number>_ | The script is expected to put one or more response times into this object.
+| results     | HashMap<String, String>       | The script is expected to put its results into this object.
+                                                    You should set the status indication into the entry with key `status`.
+                                                    If the status is not OK, a key `reason` should contain a description of the problem.
+| times       | LinkedHashMap<String, Number> | The script is expected to put one or more response times into this object.
 |===
 
-Additionally every parameter added to the service definition in `poller-configuration.xml` is available as a _String_ object in the script.
-The key attribute of the parameter represents the name of the _String_ object and the value attribute represents the value of the _String_ object.
+Additionally, every parameter added to the service definition in `poller-configuration.xml` is available as a string object in the script.
+The key attribute of the parameter represents the name of the string object and the value attribute represents the value of the string object.
 
-NOTE: Please keep in mind, that these parameters are also accessible via the _map_ bean.
+NOTE: Please keep in mind that these parameters are also accessible via the map bean.
 
 CAUTION: Avoid non-character names for parameters to avoid problems in the script languages.
 
-== Response Codes
+== Response codes
 
 The script has to provide a status code that represents the status of the associated service.
 The following status codes are defined:
@@ -71,16 +77,18 @@ The following status codes are defined:
 [options="header, autowidth"]
 |===
 | Code  | Description
-| _OK_  | Service is available
-| _UNK_ | Service status unknown
-| _UNR_ | Service is unresponsive
-| _NOK_ | Service is unavailable
+| OK  | Service is available.
+| UNK | Service status is unknown.
+| UNR | Service is unresponsive.
+| NOK | Service is unavailable.
 |===
 
 == Response time tracking
 
-By default the _BSFMonitor_ tracks the whole time the script file consumes as the response time.
-If the response time should be persisted the response time add the following parameters:
+NOTE: Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.  
+
+By default, the BSFMonitor tracks the duration of the script runtime as the response time.
+If the response time should be persisted, add the following parameters:
 
 .RRD response time tracking for this service in `poller-configuration.xml`
 [source, xml]
@@ -96,40 +104,43 @@ If the response time should be persisted the response time add the following par
 <parameter key="ds-name" value="myResponseTime" />
 ----
 
+
+
 It is also possible to return one or many response times directly from the script.
 To add custom response times or override the default one, add entries to the _times_ object.
-The entries are keyed with a _String_ that names the datasource and have as values a number that represents the response time.
-To override the default response time datasource add an entry into `times` named `response-time`.
+The entries are keyed with a string that names the data source and have as values a number that represents the response time.
+To override the default response time data source, add an entry into `times` named `response-time`.
 
-== Timeout and Retry
+== Timeout and retry
 
-The _BSFMonitor_ does not perform any timeout or retry processing on its own.
-If retry and or timeout behaviour is required, it has to be implemented in the script itself.
+The BSFMonitor does not perform any timeout or retry processing on its own.
+If you require retry and/or timeout behavior, you must implement it in the script itself.
 
-== Requirements for the script (run-types)
+== Requirements for the script (run types)
 
-Depending on the `run-type` the script has to provide its results in different ways.
-For minimal scripts with very simple logic `run-type` `eval` is the simple option.
-Scripts running in `eval` mode have to return a _String_ matching one of the `status codes`.
+Depending on the run type, the script has to provide its results in different ways.
+For minimal scripts with simple logic, a `run-type` of `eval` is the best option.
+Scripts running in `eval` mode have to return a string that matches one of the status codes.
 
-If your script is more than a one-liner, `run-type` `exec` is essentially required.
-Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the _results_ object.
-Additionally, the _results_ object can also carry a "reason":"message" entry that is used in non `OK` states.
+If your script is more than a one-liner, a `run-type` of `exec` is required.
+Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the results object.
+Additionally, the results object can also carry a `"reason":"message"` entry that is used in non-OK states.
 
 == Commonly used language settings
 
-The _BSF_ supports many languages, the following table provides the required setup for commonly used languages.
+The BSF supports many languages. 
+The following table provides the required setup for commonly used languages.
 
-._BSF_ language setups
+.BSF language setups
 [options="header, autowidth"]
 |===
 | Language                            | lang-class  | bsf-engine                                    | required library
-| http://www.beanshell.org[BeanShell] | _beanshell_ | `bsh.util.BeanShellBSFEngine`                 | supported by default
-| https://groovy-lang.org/[Groovy]  | _groovy_    | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
-| http://www.jython.org[Jython]       | _jython_    | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
+| http://www.beanshell.org[BeanShell] | beanshell | `bsh.util.BeanShellBSFEngine`                 | supported by default
+| https://groovy-lang.org/[Groovy]  | groovy    | `org.codehaus.groovy.bsf.GroovyEngine`        | `groovy-all-[version].jar`
+| http://www.jython.org[Jython]       | jython    | `org.apache.bsf.engines.jython.JythonEngine`  | `jython-[version].jar`
 |===
 
-== Example Bean Shell
+== BeanShell example
 
 ._BeanShell_ example `poller-configuration.xml`
 [source, xml]
@@ -155,13 +166,12 @@ if (testFile.exists()) {
 }
 ----
 
-== Example Groovy
+== Groovy example
 
-To use the Groovy language an additional library is required.
-Copy a compatible +groovy-all.jar+ into to `opennms/lib` folder and restart {page-component-title}.
-That makes _Groovy_ available for the _BSFMonitor_.
+The use of the Groovy language requires an additional library.
+Copy a compatible `groovy-all.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Groovy available for the BSFMonitor.
 
-._Groovy_ example `poller-configuration.xml` with default `run-type` set to `eval`
+.Groovy example `poller-configuration.xml` with default `run-type` set to `eval`
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="300000" user-defined="true" status="on">
@@ -172,7 +182,7 @@ That makes _Groovy_ available for the _BSFMonitor_.
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Groovy_ example `MinimalGroovy.groovy` script file for `run-type` `eval`
+.Groovy example `MinimalGroovy.groovy` script file for `run-type` `eval`
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
@@ -197,7 +207,7 @@ if (testFile.exists()) {
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Groovy_ example `MinimalGroovy.groovy` script file for `run-type` set to `exec`
+.Groovy example `MinimalGroovy.groovy` script file for `run-type` set to `exec`
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
@@ -210,11 +220,10 @@ if (testFile.exists()) {
 }
 ----
 
-== Example Jython
+== Jython example
 
-To use the _Jython_ (_Java_ implementation of _Python_) language an additional library is required.
-Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart {page-component-title}.
-That makes _Jython_ available for the _BSFMonitor_.
+The use of the Jython (Java implementation of Python) language requires an additional library.
+Copy a compatible `jython-x.y.z.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Jython available for the BSFMonitor.
 
 .Jython example `poller-configuration.xml` with `run-type` `exec`
 [source, xml]
@@ -228,7 +237,7 @@ That makes _Jython_ available for the _BSFMonitor_.
 <monitor service="MinimalJython" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Jython_ example `MinimalJython.py` script file for `run-type` set to `exec`
+.Jython example `MinimalJython.py` script file for `run-type` set to `exec`
 [source, python]
 ----
 from java.io import File
@@ -241,15 +250,19 @@ else:
         results.put("status", "NOK")
 ----
 
-NOTE: We have to use `run-type` `exec` here because _Jython_ chokes on the +import+ keyword in `eval` mode.
+NOTE: The use of a `run-type` of `exec` is required here because Jython chokes on the `import` keyword in `eval` mode.
 
-NOTE: As proof that this is really _Python_, notice the substitution of _Python's_ +None+ value for Java's +null+ in the log call.
+As proof that this is really Python, notice the substitution of Python's `None` value for Java's `null` in the log call.
 
 == Advanced examples
 
 The following example references all beans that are exposed to the script, including a custom parameter.
 
-._Groovy_ example `poller-configuration.xml`
+.Groovy example `poller-configuration.xml`
+
+Example uses CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="30000" user-defined="true" status="on">
@@ -268,7 +281,7 @@ The following example references all beans that are exposed to the script, inclu
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Groovy_ example _Bean_ referencing script file
+.Groovy example Bean referencing script file
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
