@@ -89,7 +89,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="url" value="/"/>
 </service>
 
-<!-- Test for virtual host opennms.com running -->
+<!-- Test for virtual host opennms.com -->
 <service name="OpenNMSdotCom" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
@@ -100,7 +100,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="response-text" value="~.*[Cc]onsulting.*"/>
 </service>
 
-<!-- Test for instance of OpenNMS 1.2.9 running -->
+<!-- Test for instance of OpenNMS running -->
 <service name="OpenNMS-129" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
@@ -110,13 +110,13 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="response" value="200"/>
 </service>
 
-<!-- Test for instance of OpenNMS 1.2.9 with parameter substitution in basic-authentication parameter -->
+<!-- Test for instance of OpenNMS with parameter substitution in basic-authentication parameter -->
 <service name="OpenNMS-22" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
   <parameter key="port" value="8080"/>
   <parameter key="url" value="/opennms/event/list"/>
-  <parameter key="basic-authentication" value="\{username\}:{password}"/>
+  <parameter key="basic-authentication" value="{username}:{password}"/>
   <parameter key="response" value="200"/>
 </service>
 <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
