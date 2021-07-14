@@ -691,12 +691,21 @@ public abstract class ElementUtil {
                                                     requiredParameters);
             }
 
-            try {
-                nodeId = Integer.parseInt(nodeIdString);
-            } catch (NumberFormatException e) {
-                throw new ElementIdNotFoundException("Wrong data type for \""
-                        + nodeIdParam + "\", should be integer",
-                        nodeIdString, "node");
+            if (nodeIdString.contains(":")) {
+                final OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeIdString);
+                if (node != null) {
+                    nodeId = node.getId();
+                } else {
+                    throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
+                }
+            } else {
+                try {
+                    nodeId = Integer.parseInt(nodeIdString);
+                } catch (NumberFormatException e) {
+                    throw new ElementIdNotFoundException("Wrong data type for \""
+                            + nodeIdParam + "\", should be integer",
+                            nodeIdString, "node");
+                }
             }
 
             intf = NetworkElementFactory.getInstance(servletContext).getInterface(nodeId, ipAddr);

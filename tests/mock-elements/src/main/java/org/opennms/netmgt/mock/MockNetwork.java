@@ -507,7 +507,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     /**
      * <p>createStandardNetwork</p>
      */
-    public void createStandardNetwork() {
+    public MockNetwork createStandardNetwork() {
         setCriticalService("ICMP");
         addNode(1, "Router");
         addInterface("192.168.1.1");
@@ -532,6 +532,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addService("SMTP");
         addService("HTTP");
         //addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+
+        return this;
     }
 
 }

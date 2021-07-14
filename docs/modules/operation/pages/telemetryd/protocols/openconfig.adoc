@@ -3,7 +3,7 @@
 
 https://www.openconfig.net/[OpenConfig] is an open-source initiative by network operators to develop vendor-neutral data models, programmatic interfaces, and tools for managing networks.   
 
-The OpenConfig client allows you to stream OpenConfig telemetry data over gRPC to {page-component-title}. 
+The OpenConfig client lets you stream OpenConfig telemetry data over gRPC to {page-component-title}. 
 Some vendors currently using OpenConfig telemetry include Juniper, Arista, and Cisco.   
 
 To enable support for OpenConfig, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `OpenConfig` protocol.

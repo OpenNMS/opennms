@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.listeners;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -158,6 +159,15 @@ public class UdpListener implements Listener {
         return name;
     }
 
+    @Override
+    public String getDescription() {
+        return String.format("UDP %s:%s",  this.host != null ? this.host : "*", this.port);
+    }
+
+    @Override
+    public Collection<? extends Parser> getParsers() {
+        return this.parsers;
+    }
 
     private class DefaultChannelInitializer extends ChannelInitializer<DatagramChannel> {
 

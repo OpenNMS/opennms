@@ -1,5 +1,5 @@
 name: horizon
-version: '27.1.1-SNAPSHOT'
+version: '29.0.0-SNAPSHOT'
 title: Horizon
 prerelease: true
 asciidoc:
@@ -22,6 +22,7 @@ asciidoc:
     compatible-kafka: '1.x - 2.x'
     compatible-postgresql: '10.x - 13.x'
     compatible-rrdtool: '1.7.x'
+    jasperreportsversion: '6.3.0'
     postgresql-version: '13'
 nav:
 - modules/ROOT/index.adoc

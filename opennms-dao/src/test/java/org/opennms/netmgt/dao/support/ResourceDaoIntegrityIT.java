@@ -256,7 +256,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         String[] resourceTreeFiles = fileAsString.split("\\r?\\n");
 
         // This should match the number of lines in the file
-        assertEquals(31838, resourceTreeFiles.length);
+        assertEquals(31850, resourceTreeFiles.length);
 
         for (String resourceTreeFile : resourceTreeFiles) {
             // Create the file and its parent directories in the temporary folder

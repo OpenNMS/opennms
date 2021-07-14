@@ -49,6 +49,7 @@ config:update
 ----
 config:edit org.opennms.core.ipc.sink.kafka<1>
 config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>
+config:update
 ----
 
 <1> Edit the configuration to send generated events from Sentinel via Kafka

@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -125,6 +126,11 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
         }
 
         @Override
+        public String getDescription() {
+            return String.format("%s:%s", InetAddressUtils.str(this.remoteAddress.getAddress()), this.remoteAddress.getPort());
+        }
+
+        @Override
         public InetAddress getRemoteAddress() {
             return this.remoteAddress.getAddress();
         }
@@ -145,5 +151,13 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
 
     public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
         this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
     }
 }

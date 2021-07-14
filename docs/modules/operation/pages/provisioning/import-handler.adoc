@@ -24,10 +24,10 @@ In addition to the type specific parameters, the following parameters are suppor
 |===
 | Parameter              | Description                                                                    | Required | Default value
 | `location`             | The name of location at which the handler should be run                        | optional | Default
-| `ttl`                  | The maximum number of miliseconds to wait for the handler when ran remotely    | optional | 20000
+| `ttl`                  | The maximum number of milliseconds to wait for the handler when ran remotely    | optional | 20000
 |===
 
-See the relevant sections bellow for additional details on the support types.
+See the relevant sections below for additional details on the support types.
 
 The `opennms:show-import` command available via the _Karaf Shell_ can be used to show the results of an import (without persisting or triggering the import):
 

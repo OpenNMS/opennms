@@ -67,8 +67,11 @@ STATUS_WAIT=5
 # attempt we sleep for STATUS_WAIT seconds.
 STOP_TIMEOUT=10
 
-# Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=2048
+# Initial heap size (-Xms) in megabytes
+JAVA_INITIAL_HEAP_SIZE=""
+
+# Maximum heap size (-Xmx) in megabytes
+JAVA_HEAP_SIZE="2048"
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -93,7 +96,7 @@ RUNJAVA_OPTIONS=""
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
-RUNAS="root"
+RUNAS=opennms
 
 # Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
@@ -700,8 +703,16 @@ MANAGER_OPTIONS=()
 #MANAGER_OPTIONS+=("-DOPENNMSLAUNCH")
 MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
-MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+fi
+
+if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+fi
+
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 
@@ -893,12 +904,20 @@ if [ "$VERBOSE_GC" != "" ]; then
 	MANAGER_OPTIONS+=("-verbose:gc")
 fi
 
+SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
-if [ "$myuser" = "$RUNAS" ]; then
-	true # all is well
-else
-	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-	exit 4	# According to LSB: 4 - user had insufficient privileges
+if [ "$myuser" != "$RUNAS" ]; then
+	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
+		echo "WARNING: relaunching as $RUNAS" >&2
+		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
+		exec "${_cmd[@]}"
+	fi
+	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
+	echo "       Create or edit ${OPENNMS_HOME}/etc/opennms.conf and set 'RUNAS=${myuser}'" >&2
+	echo "       if you wish for OpenNMS to run as ${myuser} instead." >&2
+	echo "       If you have already edited opennms.conf, make sure that 'User=' is also set" >&2
+	echo "       in the OpenNMS systemd service." >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
 if [ -e "${OPENNMS_PIDFILE}" ]; then

@@ -15,7 +15,7 @@ The _translator-configuration.xml_ file contains elements and attributes that cr
 
 The following example associates an event with a different node.
 The typical case for this would be an SNMP manager that proxies informational messages from non-SNMP entities to OpenNMS via an SNMP trap.
-This allows the user to associate the traps with a node other than the SNMP manager (typically a passive node) making correlation much easier.
+This lets the user associate the traps with a node other than the SNMP manager (typically a passive node) making correlation much easier.
 
 *translator-configuration.xml*
 

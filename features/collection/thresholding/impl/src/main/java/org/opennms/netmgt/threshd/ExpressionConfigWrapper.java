@@ -192,7 +192,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
     private String interpolateExpression(String expression, Scope scope) {
         if (Interpolator.containsMateData(expression)) {
-            String interpolatedExpression = Interpolator.interpolate(expression, scope);
+            String interpolatedExpression = Interpolator.interpolate(expression, scope).output;
             LOG.debug("Expression {} was interpolated to {}", expression, interpolatedExpression);
             return interpolatedExpression;
         }

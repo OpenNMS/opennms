@@ -58,14 +58,7 @@
           </documentation>
         </annotation>
       </attribute>
-      <attribute name="port" use="optional" default="80">
-        <simpleType>
-          <restriction base="int">
-            <minInclusive value="1"/>
-            <maxInclusive value="65535"/>
-          </restriction>
-        </simpleType>
-      </attribute>
+      <attribute name="port" type="string" use="optional" default="80"/>
       <attribute name="path" type="string" use="required" />
       <attribute name="query" type="string" use="optional" />
       <attribute name="fragment" type="string" use="optional" />

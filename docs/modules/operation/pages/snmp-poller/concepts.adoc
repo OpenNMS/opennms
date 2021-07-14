@@ -172,7 +172,7 @@ interface:: Controls how, when, and (sometimes) which kinds of SNMP interfaces w
 It is generally advisable to make the name representative of the criteria filter of the interface. Required.
 * criteria: Criteria added to the SQL query performed on the SNMP interfaces available for polling on an interface node.
 Can have more than one.
-Allows you to specify different settings for different types of interfaces.
+Lets you specify different settings for different types of interfaces.
 As noted above, if `useCriteriaFilters` is `true` on the top-level element, any interface that does not match the criteria filter on one of the interface elements will not be polled.
 * interval: polling interval for interfaces matching this element's criteria, in milliseconds.
 Overrides the global setting in the top-level element for interfaces that match this element's criteria filter.

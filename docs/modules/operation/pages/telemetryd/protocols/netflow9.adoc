@@ -30,6 +30,9 @@ The Netflow v9 UDP parser supports protocol detection.
 | `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                                        | no       | true
 | `sequenceNumberPatience` | A value > 1 enables checking for seuqence number completeness.
                             The value gives the size of the history buffer allowing flows to be processed out of order. | no       | 32
+| `flowActiveTimeoutFallback`   | Fallback value for active flow timeout if setting value is not included in exported flows | no | null
+| `flowInactiveTimeoutFallback`   | Fallback value for inactive flow timeout if setting value is not included in exported flows | no | null
+| `flowSamplingIntervalFallback`   | Fallback value for sampling interval if setting value is not included in exported flows | no | null
 |===
 
 [[telemetryd-netflow9-adapter]]

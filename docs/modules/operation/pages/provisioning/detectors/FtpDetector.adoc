@@ -1,0 +1,29 @@
+= FTP Service Detector
+
+This detector lets you find FTP services for monitoring in your network.
+It finds the FTP server on multiple ports and can also use login credentials for service detection.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.FtpDetector`
+|===
+
+== Configuration and Use
+
+.Parameters for the FTP Service Detector
+[options="header, %autowidth"]
+|===
+| Parameter            | Description   | Required | Default value
+| `port`               | Port to query | optional | `21`
+|===
+
+== Example Configuration
+
+[source,xml]
+----
+<detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector">
+  <parameter key="port" value="21"/>
+</detector>
+----

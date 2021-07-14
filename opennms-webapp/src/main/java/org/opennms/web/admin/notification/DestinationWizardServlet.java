@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -163,7 +163,7 @@ public class DestinationWizardServlet extends HttpServlet {
                     redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
                 } else if (action.equals("finish")) {
                     String oldName = (String) user.getAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
-                    path.setName(request.getParameter("name"));
+                    path.setName(WebSecurityUtils.sanitizeString(request.getParameter("name")));
                     path.setInitialDelay(request.getParameter("initialDelay"));
 
                     try {
@@ -369,7 +369,7 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     private static void saveOutlineForm(Path path, HttpServletRequest request) {
-        path.setName(request.getParameter("name"));
+        path.setName(WebSecurityUtils.sanitizeString(request.getParameter("name")));
         Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
         for (int i = 0; i < escalations.length; i++) {

@@ -1,22 +1,39 @@
-[[releasenotes-28]]
 
-== What's New in OpenNMS Horizon 28
+[[releasenotes-29]]
 
-=== System Requirements
+= What's New in OpenNMS Horizon 29
 
-* *Java 8 through 11*: OpenNMS Horizon 28 runs on JDK 8 through 11.
-  We recommend the most recent version of OpenJDK 11.
-* *PostgreSQL 10 or higher*: Horizon 28 requires any supported version of PostgreSQL from 10 up to (and including) 13.
+== System Requirements
 
-=== Breaking Changes
+* *Java 11*: OpenNMS Horizon 29 runs on JDK 11.
+* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 13.
 
-==== Kafka RPC Enables single topic configuration by default.
+== Breaking Changes
 
-Enables single topic by default for Kafka RPC which would reduce number of topics on Kafka.
-Both Minion and OpenNMS need to be updated to OpenNMS Horizon 28.
-Make sure that Kafka Lag on Sink topics be minimal before upgrading otherwise there may be loss of those sink messages.
+=== OpenNMS Runs As Non-Root By Default
 
-==== Situation Feedback Persistence Configuration
+By default, OpenNMS runs as the `opennms` user rather than `root`.
 
-The configuration file `etc/org.opennms.features.situation-feedback.persistence.elastic.cfg` is renamed to `etc/org.opennms.features.situationfeedback.persistence.elastic.cfg`, i.e. the minus sign is removed from the filename.
+WARNING: If you are upgrading from a version of OpenNMS Horizon older than 29, you will have to fix the ownership of your files.
 
+Since many OpenNMS instances are very large with thousands or even millions of RRD and similar data files in `$OPENNMS_HOME/share`,
+we decided _not_ to change ownership automatically upon package upgrade.
+
+The OpenNMS installer will detect if you need to fix the ownership of your files and warn you to run the script to fix permissions
+(`$OPENNMS_HOME/bin/fix-permissions`) in this case.
+
+=== Timeseries Integration Layer
+* Time series plugins need to be compatible with OIA 0.6.x.
+* Resource level string attributes are now also stored via the plugin in the respective time series database.
+  The so far used database tables in PostgreSQL have been removed.
+  There is no migration support.
+
+=== Your Change Here
+
+== New Features and Improvements
+
+=== Your Feature Here
+
+== Important Internal Changes
+
+* Dependency Change Here

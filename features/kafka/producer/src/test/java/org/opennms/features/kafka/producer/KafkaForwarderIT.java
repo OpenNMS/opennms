@@ -111,6 +111,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.base.Strings;
+
 /**
  * Verifies events/alarms/nodes forwarded to Kafka.
  *
@@ -313,16 +315,26 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Ensure that we have some events with a fs:fid
 
         List<OpennmsModelProtos.Event> eventsWithFsAndFid = kafkaConsumer.getEvents().stream()
-                .filter(e -> e.getNodeCriteria() != null
-                        && e.getNodeCriteria().getForeignId() != null
-                        && e.getNodeCriteria().getForeignSource() != null)
+                .filter(e -> !Strings.isNullOrEmpty(e.getNodeCriteria().getForeignId())
+                        && !Strings.isNullOrEmpty(e.getNodeCriteria().getForeignSource()))
                 .collect(Collectors.toList());
         assertThat(eventsWithFsAndFid, hasSize(greaterThanOrEqualTo(2)));
         assertThat(eventsWithFsAndFid.get(0).getCreateTime(), greaterThan(0L));
 
+        List<OpennmsModelProtos.Event> eventsWithNodeLabel = kafkaConsumer.getEvents().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getNodeCriteria().getNodeLabel()))
+                .collect(Collectors.toList());
+        List<OpennmsModelProtos.Event> eventsWithNodeLocation = kafkaConsumer.getEvents().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getNodeCriteria().getLocation()))
+                .collect(Collectors.toList());
+        List<OpennmsModelProtos.Event> eventsWithDistPoller = kafkaConsumer.getEvents().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getDistPoller()))
+                .collect(Collectors.toList());
+        assertThat(eventsWithNodeLabel, hasSize(greaterThanOrEqualTo(1)));
+        assertThat(eventsWithNodeLocation, hasSize(greaterThanOrEqualTo(1)));
+        assertThat(eventsWithDistPoller, hasSize(greaterThanOrEqualTo(1)));
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
-
         // Verify the consumed Node objects
         List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
         assertThat(nodes.size(), equalTo(2));
@@ -596,6 +608,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         public List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
             return collectionSetValues;
+        }
+        public void clearCollectionSetValues() {
+            collectionSetValues.clear();
         }
 
     }

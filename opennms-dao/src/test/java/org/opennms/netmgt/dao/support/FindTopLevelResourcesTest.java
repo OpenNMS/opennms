@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -170,10 +171,10 @@ public class FindTopLevelResourcesTest {
         Collections.sort(resources);
         Assert.assertEquals(1, resources.size());
         List<OnmsResource> children = resources.get(0).getChildResources();
-        Collections.sort(children);
+        Collections.sort(children, Comparator.comparing(OnmsResource::getName));
         Assert.assertEquals(2, children.size());
-        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(0).getId().toString());
-        Assert.assertEquals("node[1].nodeSnmp[]", children.get(1).getId().toString());
+        Assert.assertEquals("node[1].nodeSnmp[]", children.get(0).getId().toString());
+        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children.get(1).getId().toString());
 
         m_easyMockUtils.verifyAll();
     }
@@ -255,14 +256,14 @@ public class FindTopLevelResourcesTest {
 
         // Node 1
         List<OnmsResource> children = resources.get(0).getChildResources();
-        Collections.sort(children);
+        Collections.sort(children, Comparator.comparing(OnmsResource::getName));
         Assert.assertEquals(2, children.size());
-        Assert.assertEquals("node[Junit:node1].responseTime[10.0.0.1]", children.get(0).getId().toString());
-        Assert.assertEquals("node[Junit:node1].nodeSnmp[]", children.get(1).getId().toString());
+        Assert.assertEquals("node[Junit:node1].nodeSnmp[]", children.get(0).getId().toString());
+        Assert.assertEquals("node[Junit:node1].responseTime[10.0.0.1]", children.get(1).getId().toString());
 
         // Node 2
         children = resources.get(1).getChildResources();
-        Collections.sort(children);
+        Collections.sort(children, Comparator.comparing(OnmsResource::getName));
         Assert.assertEquals(1, children.size());
         Assert.assertEquals("node[Junit:node2].nodeSnmp[]", children.get(0).getId().toString());
 
@@ -355,17 +356,17 @@ public class FindTopLevelResourcesTest {
         OnmsResource r1 = resources.get(0); // parent resource for the discovered node
         Assert.assertEquals("node[1]", r1.getId().toString());
         List<OnmsResource> children2 = r1.getChildResources();
-        Collections.sort(children2);
+        Collections.sort(children2, Comparator.comparing(OnmsResource::getName));
         Assert.assertEquals(2, children2.size());
-        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(0).getId().toString());
-        Assert.assertEquals("node[1].nodeSnmp[]", children2.get(1).getId().toString());
+        Assert.assertEquals("node[1].nodeSnmp[]", children2.get(0).getId().toString());
+        Assert.assertEquals("node[1].responseTime[10.0.0.1]", children2.get(1).getId().toString());
 
         OnmsResource r2 = resources.get(1); // parent resource for the provisioned node 
         List<OnmsResource> children1 = r2.getChildResources();
-        Collections.sort(children1);
+        Collections.sort(children1, Comparator.comparing(OnmsResource::getName));
         Assert.assertEquals("node[Junit:node2]", r2.getId().toString());
-        Assert.assertEquals("node[Junit:node2].responseTime[10.0.0.2]", children1.get(0).getId().toString());
-        Assert.assertEquals("node[Junit:node2].nodeSnmp[]", children1.get(1).getId().toString());
+        Assert.assertEquals("node[Junit:node2].nodeSnmp[]", children1.get(0).getId().toString());
+        Assert.assertEquals("node[Junit:node2].responseTime[10.0.0.2]", children1.get(1).getId().toString());
 
         m_easyMockUtils.verifyAll();
     }

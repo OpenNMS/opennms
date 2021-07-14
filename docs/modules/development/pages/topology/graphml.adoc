@@ -111,12 +111,12 @@ ____
 | `vertex-status-provider`  | no       | Graph        | `string`  | -         | Defines which <<gd-topology-graphml-vertex-status-provider>> to use, e.g., `default`, `script`, or `propagate`
 | `iconKey`                 | no       | Node         | `string`  | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
 | `label`                   | no       | Graph, Node  | `string`  | -         | Defines a custom label. If not defined, the `id` is used instead.
-| `nodeID`                  | no       | Node         | `int`     | -         | Allows referencing the vertex to an OpenNMS node.
-| `foreignSource`           | no       | Node         | `string`  | -         | Allows referencing the vertex to an OpenNMS node identified by foreign source and foreign id.
+| `nodeID`                  | no       | Node         | `int`     | -         | Lets you specify the vertex to an OpenNMS node.
+| `foreignSource`           | no       | Node         | `string`  | -         | Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign id.
                                                                                 Can be used only in combination with `foreignID`. Please note that this attribute will not be
                                                                                 used when the attribute `nodeID` is set.
-| `foreignID`               | no       | Node         | `string`  | -         | Allows referencing the Vertex to an OpenNMS node identified by foreign source and foreign id.
-                                                                                Can be used only in combination with `foreignSource`. Please note that this attribute will not be
+| `foreignID`               | no       | Node         | `string`  | -         | Lets you specify the vertex to an OpenNMS node identified by foreign source and foreign id.
+                                                                                Use only in combination with `foreignSource`. Please note that this attribute will not be
                                                                                 used when the attribute `nodeID` is set.
 | `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
 | `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e., `Hierarchical Layout` and `Grid Layout`.

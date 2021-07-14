@@ -53,6 +53,7 @@ public class SnmpIfCollectorIT extends SnmpCollectorITCase {
 
 	public SnmpIfCollectorIT(int config) {
 		setVersion(config);
+		m_allowWarnings = true; // warnings are expected when we are unable to compute the resource index for SNMP interfaces
 	}
 
     private final class IfInfoVisitor extends ResourceVisitor {
@@ -192,6 +193,25 @@ public class SnmpIfCollectorIT extends SnmpCollectorITCase {
         waitForSignal();
         
         assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 3);
+    }
+
+    /**
+     * See NMS-11764. Verify that the interface is ignored and not included in the collection set
+     * if the interface name is null.
+     */
+    @Test
+    public void testNullIfName() throws Exception {
+        addIfTable();
+
+        assertFalse(getAttributeList().isEmpty());
+
+        createSnmpInterface(1, 24, null, true);
+
+        SnmpIfCollector collector = createSnmpIfCollector();
+        waitForSignal();
+
+        // The interface should be skipped, and the results are not expected to be added to the CollectionSet
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet(), 0);
     }
 
     // TODO: add test for very large v2 request

@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -43,15 +44,19 @@ import org.opennms.netmgt.telemetry.listeners.TcpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ParserState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Sets;
 
 import io.netty.buffer.ByteBuf;
 
 public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+
+    private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
@@ -99,10 +104,14 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
             }
 
             @Override
-            public void active() {}
+            public void active() {
+                sessions.add(session);
+            }
 
             @Override
-            public void inactive() {}
+            public void inactive() {
+                sessions.remove(session);
+            }
         };
     }
 
@@ -120,5 +129,24 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
         this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.messageBuilder.getFlowSamplingIntervalFallback();
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
+    }
+
+    @Override
+    public Object dumpInternalState() {
+        final ParserState.Builder parser = ParserState.builder();
+
+        this.sessions.stream()
+                     .flatMap(TcpSession::dumpInternalState)
+                     .forEach(parser::withExporter);
+
+        return parser.build();
     }
 }

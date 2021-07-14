@@ -4,7 +4,7 @@
 
 = AMQP Integration
 
-The AMQP Integration allows external systems to communicate with the event bus of {page-component-title} and receive alarms via the AMQP protocol.
+The AMQP Integration lets external systems to communicate with the event bus of {page-component-title} and receive alarms via the AMQP protocol.
 
 NOTE: AMQP is standard messaging protocol supported by a number of brokers including ActiveMQ and QPID.
 

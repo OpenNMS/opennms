@@ -23,9 +23,9 @@ NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for pro
 === Provisioning Policies
 
 Just because you can, doesn’t mean you should!
-Because the massively parallel operations being created for _Provisiond_ allows tremendous numbers of nodes, interfaces, and services to be very rapidly discovered and persisted, doesn’t mean it should.
-A _policy API_ was created for _Provisiond_ that allows implementations to be developed that can be applied to control the behavior of _Provisiond_.
-The 1.8 release includes a set of flexible provisioning policies that control the persistence of entities and their attributes constrain monitoring behavior.
+Because the massively parallel operations Provisiond creates allow rapid discovery and persistence of tremendous numbers of nodes, interfaces, and servicices, doesn’t mean it should.
+A policy API for Provisiond lets you develop implementations that can control the behavior of Provisiond.
+This includes a set of flexible provisioning policies that control the persistence of entities with attributes that constrain monitoring behavior.
 
 When nodes are imported or re-scanned, there is, potentially, a set of zero or more provisioning policies that are applied.
 The policies are defined in the foreign source’s definition.

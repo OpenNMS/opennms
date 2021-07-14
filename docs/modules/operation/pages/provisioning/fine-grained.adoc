@@ -24,7 +24,7 @@ $\{OPENNMS_HOME}/bin/provision.pl requisition customer1
 This command will create a new, empty (containing no nodes) requisition in {page-component-title}.
 
 The new requisition starts life in the `pending` state.
-This allows you to iteratively build the requisition and then later actually import the nodes in the requisition into {page-component-title}.
+This lets you iteratively build the requisition and then later actually import the nodes in the requisition into {page-component-title}.
 This handles all adds/changes/deletes at once.
 So, you could be making changes all day and then at night either have a schedule in {page-component-title} that imports the group automatically or you can send a command through the REST service from an outside system to have the pending requisition imported/reimported.
 

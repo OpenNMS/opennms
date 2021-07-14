@@ -98,7 +98,7 @@ public class Page implements Serializable {
     private String m_disableSslVerification = "true";
 
     @XmlAttribute(name="port")
-    private Integer m_port = 80;
+    private String m_port = "80";
 
     @XmlAttribute(name="path")
     private String m_path;
@@ -241,12 +241,16 @@ public class Page implements Serializable {
         m_disableSslVerification = disableSslVerification;
     }
 
-    public Integer getPort() {
-        return m_port == null? 80 : m_port;
+    public String getPort() {
+        return m_port == null? "80" : m_port;
     }
 
-    public void setPort(final Integer port) {
+    public void setPort(final String port) {
         m_port = port;
+    }
+
+    public void setPort(final int port) {
+        m_port = String.valueOf(port);
     }
 
     public String getPath() {

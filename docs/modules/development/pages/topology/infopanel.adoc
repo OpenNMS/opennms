@@ -10,7 +10,7 @@ However, they are conceptionally correct and should point in the right direction
 An `InfoPanelItem` object defines dach element in the Info Panel.
 
 All available `InfoPanelItem` objects are sorted by the order.
-This allows you to arrange the items in a custom order.
+This lets you arrange the items in a custom order.
 After ordering the elements, they are put below the SearchBox and the Vertices in Focus list.
 
 == Programmatic

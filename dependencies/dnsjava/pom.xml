@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>28.0.0-SNAPSHOT</version>
+    <version>29.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -34,7 +34,7 @@
       <releases><enabled>true</enabled></releases>
       <id>sonatype-public-repo</id>
       <name>Sonatype Public Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
+      <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
     </repository>
   </repositories>
 </project>

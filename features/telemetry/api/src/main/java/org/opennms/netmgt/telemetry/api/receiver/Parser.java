@@ -41,6 +41,9 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
  */
 public interface Parser {
     String getName();
+    String getDescription();
+
+    Object dumpInternalState();
 
     void start(final ScheduledExecutorService executorService);
     void stop();

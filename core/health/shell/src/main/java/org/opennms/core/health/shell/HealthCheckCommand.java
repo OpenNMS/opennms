@@ -113,7 +113,8 @@ public class HealthCheckCommand implements Action {
                                 System.out.print(" => " + response.getMessage());
                             }
                             System.out.println();
-                        });
+                        },
+                        null);
         return future;
     }
 

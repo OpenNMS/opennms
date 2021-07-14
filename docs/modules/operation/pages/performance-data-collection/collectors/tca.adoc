@@ -9,7 +9,7 @@ The TcaCollector collects special SNMP data from Juniper TCA Devices.
 |===
 | Class Name          | `org.opennms.netmgt.collectd.tca.TcaCollector`
 | Package             | opennms-plugin-collector-juniper-tca
-| Supported on Minion | `Yes`
+| Supported on Minion | `No`
 |===
 
 == Collector Parameters

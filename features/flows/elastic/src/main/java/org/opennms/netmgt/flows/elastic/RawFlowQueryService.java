@@ -224,7 +224,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     @Override
     public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
-        return searchAsync(searchQueryProvider.getAllValues(field.fieldName, filters), timeRangeFilter)
+        return searchAsync(searchQueryProvider.getAllValues(field.fieldName, field.size, filters), timeRangeFilter)
                 .thenApply(res -> {
                     List<String> fieldValues = compositeKeyValuesPath(field.fieldName, GPath.string()).eval(res.getJsonObject());
                     return fieldValues != null ? fieldValues : Collections.emptyList();

@@ -13,14 +13,14 @@ config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:property-set broker-url failover:tcp://core-instance-ip:61616<4>
 config:update<5>
 ----
-<1> Edit the minion configuration
-<2> Replace `my-location` with a location name representing your remote location the Minion is running
-<3> Replace the REST endpoint URL which goes to your {page-component-title} Core instance
-<4> Replace the Broker URL which goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running replace `tcp` with `ssl`.
-<5> Save the configuration
+<1> Edit the Minion configuration.
+<2> Replace `my-location` with a location name that represents the remote location where the Minion is running.
+<3> Replace the REST endpoint URL that goes to your {page-component-title} Core instance.
+<4> Replace the broker URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
+<5> Save the configuration.
 
-TIP: By default the Minion generates a unique id.
-     If you want to provide a human readable Minion identifier yourself with `config:property-set id my-minion-name`
+By default, the Minion generates a unique ID.
+Provide a human-readable Minion identifier yourself with `config:property-set id my-minion-name`
 
 .Configure the credentials and exit Karaf shell
 [source, karaf]
@@ -28,12 +28,12 @@ TIP: By default the Minion generates a unique id.
 opennms:scv-set opennms.http my-minion-user my-minion-password<1>
 opennms:scv-set opennms.broker my-minion-user my-minion-password<2>
 ----
-<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance
-<2> Set the credentials for the ActiveMQ message broker
+<1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
+<2> Set the credentials for the ActiveMQ message broker.
 
-NOTE: The credentials are encrypted on disk in `etc/scv.jce`.
+The credentials are encrypted on disk in `etc/scv.jce`.
 
-Exit the Karaf Shell with kbd:[Ctrl+d]
+Exit the Karaf shell with kbd:[Ctrl+d]
 
 .Restart the Minion to apply the configuration
 [source,console]
@@ -41,7 +41,7 @@ Exit the Karaf Shell with kbd:[Ctrl+d]
 sudo systemctl restart minion
 ----
 
-.Verify the configuration using the health check in the Karaf Shell
+.Verify the configuration using the health check in the Karaf shell
 [source,console]
 ----
 ssh -p 8201 admin@localhost
@@ -53,7 +53,7 @@ ssh -p 8201 admin@localhost
 opennms:health-check
 ----
 
-.The result should show Success for each component
+.The result should show success for each component
 [source,output]
 ----
 Connecting to OpenNMS ReST API   [ Success  ]

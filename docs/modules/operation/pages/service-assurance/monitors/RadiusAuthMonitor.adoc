@@ -1,12 +1,12 @@
 
 = RadiusAuthMonitor
 
-This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
-The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
-If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
+This monitor lets you test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
+The availability is tested by sending an AUTH packet to the RADIUS server.
+If a valid ACCEPT response is received, the RADIUS service is up and considered available.
 This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {page-component-title}.
+IMPORTANT: To use this monitor it is required to install the RADIUS protocol for {page-component-title}.
 
 For RPM-based distributions:
 ====

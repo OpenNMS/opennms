@@ -14,7 +14,7 @@ The topology map supports the following properties, which can be influenced by c
 | `showHeader`                              | `Boolean`    | `true`              | Defines if the _{page-component-title}_ header is shown.
 | `autoRefresh.enabled`                     | `Boolean`    | `false`             | If enabled, auto refresh is enabled by default.
 | `autoRefresh.interval`                    | `Integer`    | `60`                | Defines the auto refresh interval in seconds.
-| `hiddenCategoryPrefix`                    | `String`     | _empty String_      | A String which allows hiding categories. For example a value of `server` will hide all categories starting with `server`.
+| `hiddenCategoryPrefix`                    | `String`     | _empty String_      | A String that enables hiding categories. For example a value of `server` will hide all categories starting with `server`.
                                                                                    Be aware, that this setting is case-sensistive, so `Servers` will be shown.
                                                                                    The resolution is only enabled if no longitude/latitude information is available.
 |===
@@ -105,8 +105,8 @@ The Linkd Topology Provider uses the `Enterprise OID` from each node to determin
 
 The easiest way to change an icon representation of an existing Vertex is to use the Icon Selection Dialog from the Vertex' context menu in the topology map.
 This will create a custom `icon key` to `icon id` mapping in the topology provider specific icon mapping file.
-As `icon key` the Vertex id is used.
-This allows each Vertex to have it's own icon.
+As `icon key` the vertex id is used.
+This lets each vertex have its own icon.
 
 If a more generic approach is preferred the icon mapping file can be modified manually.
 

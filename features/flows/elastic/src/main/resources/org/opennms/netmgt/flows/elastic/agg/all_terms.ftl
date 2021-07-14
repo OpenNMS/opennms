@@ -13,6 +13,7 @@
   "aggs": {
     "my_buckets": {
       "composite": {
+        "size": ${fieldSize?long?c},
         "sources": [
            { "term": { "terms": { "field": "${groupedByField?json_string}" } } }
         ]

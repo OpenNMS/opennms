@@ -40,8 +40,8 @@ jmx     readonly
 
 The possible types of access are:
 
-readwrite:: Allows retrieving JMX metrics as well as executing MBeans.
-readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
+readwrite:: Lets you retrieve JMX metrics as well as executing MBeans.
+readonly:: Lets you retrieve JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
 
 == Enabling SSL
 

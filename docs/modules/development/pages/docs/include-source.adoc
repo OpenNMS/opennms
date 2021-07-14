@@ -1,18 +1,18 @@
 
-= Code Snippets
+= Code snippets
 
-You can include code snippets, configuration- or source code files in the documentation.
-You can enable syntax highlighting by providing the given language parameter. 
-This will work on source code or configuration.
+You can include code snippets, configuration, or source code files in the documentation.
+Provide the given language parameter to enable syntax highlighting. 
+This works on source code or configuration.
 
-== Explicitly Defined in the Document
+== Explicitly defined in the document
 
-WARNING: Be careful to use this kind of code snippet as sparsely as possible.
+WARNING: Use this kind of code snippet as sparsely as possible.
 Code becomes obsolete very quickly; archaic usage practices are detrimental.
 
-If you do wish to include snippets, use the following method:
+To include snippets, use the following method:
 
-.This is a sample configuration explicitly in the documentation
+.Sample configuration explicitly in the documentation
 [source,xml]
 ----
 <service name="DNS" interval="300000" user-defined="false" status="on">
@@ -27,9 +27,9 @@ If you do wish to include snippets, use the following method:
 </service>
 ----
 
-If there's no suitable syntax highlighter for the code used just omit the language: +[source]+.
+If there is no suitable syntax highlighter for the code used, just omit the language: +[source]+.
 
-Currently the following syntax highlighters are enabled:
+The following syntax highlighters are enabled:
 
 * Bash
 * Groovy
@@ -37,5 +37,3 @@ Currently the following syntax highlighters are enabled:
 * JavaScript
 * Python
 * XML
-
-For other highlighters that could be added see https://code.google.com/p/google-code-prettify/.

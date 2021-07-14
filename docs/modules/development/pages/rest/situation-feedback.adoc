@@ -3,9 +3,9 @@
 
 = Situation Feedback
 
-Situation feedback is an optional feature that allows for the management of user-ontributed feedback regarding correlation of alarms.
+Situation feedback is an optional feature for the management of user-ontributed feedback regarding correlation of alarms.
 
-It is a simple API that allows for the submission and retrieval of correlation feedback.
+It is a simple API for the submission and retrieval of correlation feedback.
 
 == GETs (Reading Data)
 

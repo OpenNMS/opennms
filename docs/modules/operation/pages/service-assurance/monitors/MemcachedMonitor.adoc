@@ -1,8 +1,8 @@
 
 = MemcachedMonitor
 
-This monitor allows to monitor link:http://memcached.org[Memcached], a distributed memory object caching system.
-To monitor the service availability the monitor tests if the _Memcached_ statistics can be requested.
+Monitors link:http://memcached.org[Memcached], a distributed memory object caching system.
+To monitor the service availability, the monitor tests if the Memcached statistics can be requested.
 The statistics are processed and stored in RRD files.
 The following metrics are collected:
 

@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -56,9 +57,11 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Snmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Enums;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -87,17 +90,18 @@ public class ProtobufMapper {
                 public OpennmsModelProtos.NodeCriteria load(Long nodeId)  {
                     return sessionUtils.withReadOnlyTransaction(() -> {
                         final OnmsNode node = nodeDao.get(nodeId.intValue());
-                        if (node != null && node.getForeignId() != null && node.getForeignSource() != null) {
-                            return OpennmsModelProtos.NodeCriteria.newBuilder()
-                                    .setId(nodeId)
-                                    .setForeignId(node.getForeignId())
-                                    .setForeignSource(node.getForeignSource())
-                                    .build();
-                        } else {
-                            return OpennmsModelProtos.NodeCriteria.newBuilder()
-                                    .setId(nodeId)
-                                    .build();
+                        OpennmsModelProtos.NodeCriteria.Builder builder = OpennmsModelProtos.NodeCriteria.newBuilder();
+                        if (node == null) {
+                            return builder.setId(nodeId).build();
                         }
+                        builder.setId(node.getId().longValue());
+                        getString(node.getForeignId()).ifPresent(builder::setForeignId);
+                        getString(node.getForeignSource()).ifPresent(builder::setForeignSource);
+                        getString(node.getLabel()).ifPresent(builder::setNodeLabel);
+                        if(node.getLocation() != null) {
+                            getString(node.getLocation().getLocationName()).ifPresent(builder::setLocation);
+                        }
+                        return builder.build();
                     });
                 }
             });
@@ -211,7 +215,7 @@ public class ProtobufMapper {
 
         getString(eventConfDao.getEventLabel(event.getUei())).ifPresent(builder::setLabel);
         getString(event.getDescr()).ifPresent(builder::setDescription);
-
+        getString(event.getDistPoller()).ifPresent(builder::setDistPoller);
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
         }
@@ -244,8 +248,24 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(event.getTime(), builder::setTime);
         setTimeIfNotNull(event.getCreationTime(), builder::setCreateTime);
-
+        if (event.getSnmp() != null) {
+            builder.setSnmpInfo(buildSnmpInfo(event.getSnmp()));
+        }
         return builder;
+    }
+
+    private OpennmsModelProtos.SnmpInfo.Builder buildSnmpInfo(Snmp snmp) {
+        OpennmsModelProtos.SnmpInfo.Builder snmpInfoBuilder = OpennmsModelProtos.SnmpInfo.newBuilder();
+        getString(snmp.getId()).ifPresent(snmpInfoBuilder::setId);
+        getString(snmp.getVersion()).ifPresent(snmpInfoBuilder::setVersion);
+        if (snmp.hasSpecific()) {
+            snmpInfoBuilder.setSpecific(snmp.getSpecific());
+        }
+        if (snmp.hasGeneric()) {
+            snmpInfoBuilder.setGeneric(snmp.getGeneric());
+        }
+        getString(snmp.getCommunity()).ifPresent(snmpInfoBuilder::setCommunity);
+        return snmpInfoBuilder;
     }
 
     public OpennmsModelProtos.Event.Builder toEvent(OnmsEvent event) {
@@ -287,9 +307,17 @@ public class ProtobufMapper {
                         .setName(param.getName())
                         .setValue(param.getValue()));
             }
-
             setTimeIfNotNull(event.getEventTime(), builder::setTime);
             setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
+            if(event.getDistPoller() != null) {
+                getString(event.getDistPoller().getId()).ifPresent(builder::setDistPoller);
+            }
+            if(!Strings.isNullOrEmpty(event.getEventSnmp())) {
+                Snmp snmp = SnmpInfo.createSnmp(event.getEventSnmp());
+                if(snmp != null) {
+                    builder.setSnmpInfo(buildSnmpInfo(snmp));
+                }
+            }
             return builder;
         } catch (RuntimeException e) {
             // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
@@ -376,7 +404,7 @@ public class ProtobufMapper {
         setTimeIfNotNull(alarm.getFirstEventTime(), builder::setFirstEventTime);
         setTimeIfNotNull(alarm.getLastEventTime(), builder::setLastEventTime);
         setTimeIfNotNull(alarm.getAckTime(), builder::setAckTime);
-
+        setTimeIfNotNull(alarm.getLastUpdateTime(), builder::setLastUpdateTime);
         return builder;
     }
 
@@ -611,4 +639,8 @@ public class ProtobufMapper {
         return Optional.empty();
     }
 
+    @VisibleForTesting
+    LoadingCache<Long, OpennmsModelProtos.NodeCriteria> getNodeIdToCriteriaCache() {
+        return nodeIdToCriteriaCache;
+    }
 }

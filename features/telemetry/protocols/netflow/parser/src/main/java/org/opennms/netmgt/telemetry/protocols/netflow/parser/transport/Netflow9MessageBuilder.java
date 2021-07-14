@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getLongValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getUInt32Value;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getUInt64Value;
+import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setDoubleValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setIntValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setLongValue;
 
@@ -51,6 +52,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
     private Long flowActiveTimeoutFallback;
     private Long flowInactiveTimeoutFallback;
+    private Long flowSamplingIntervalFallback;
 
     public Netflow9MessageBuilder() {
     }
@@ -81,6 +83,10 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long lastSwitched = null;
         Long flowStartMilliseconds = null;
         Long flowEndMilliseconds = null;
+
+	if (this.flowSamplingIntervalFallback != null) {
+	    builder.setSamplingInterval(setDoubleValue(this.flowSamplingIntervalFallback));
+	}
 
         for (Value<?> value : values) {
             switch (value.getName()) {
@@ -311,5 +317,13 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
     public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
         this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.flowSamplingIntervalFallback;
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.flowSamplingIntervalFallback = flowSamplingIntervalFallback;
     }
 }

@@ -1,7 +1,7 @@
 
 = Trend
 
-The Trend feature allows to display small inline charts of database-based statistics.
+The Trend feature lets you display small inline charts of database-based statistics.
 These chart are accessible in the Status menu of the OpenNMS web application.
 Furthermore it is also possible to configure these charts to be displayed on the OpenNMS landing page.
 To achieve this alter the `org.opennms.web.console.centerUrl` property to also include the entry `/trend/trend-box.htm`.

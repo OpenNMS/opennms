@@ -68,8 +68,8 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
     public static final Logger LOG = LoggerFactory.getLogger(JDBCMonitor.class);
     
 	/**
-	 * Number of miliseconds to wait before timing out a database login using
-	 * JDBC Hint: 1 minute is 6000 miliseconds.
+	 * Number of milliseconds to wait before timing out a database login
+	 * JDBC Hint: 1 minute is 60000 milliseconds.
 	 */
 	public static final int DEFAULT_TIMEOUT = 3000;
 

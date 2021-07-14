@@ -61,7 +61,7 @@ public class ExpressionConfigWrapperTest {
         MockLogAppender.setupLogging(true, "TRACE"); 
         Expression exp = new Expression();
         exp.setExpression(FORMULA);
-        when(scope.get(new ContextKey("requisition", "testMultiplier"))).thenReturn(Optional.of("100"));
+        when(scope.get(new ContextKey("requisition", "testMultiplier"))).thenReturn(Optional.of(new Scope.ScopeValue(Scope.ScopeName.DEFAULT, "100")));
         wrapper = new ExpressionConfigWrapper(exp);
         Assert.assertEquals(4, wrapper.getRequiredDatasources().size());
     }

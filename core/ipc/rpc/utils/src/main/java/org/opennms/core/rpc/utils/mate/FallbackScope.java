@@ -47,7 +47,7 @@ public class FallbackScope implements Scope {
     }
 
     @Override
-    public Optional<String> get(final ContextKey contextKey) {
+    public Optional<ScopeValue> get(final ContextKey contextKey) {
         return this.scopes.stream()
                 .map(scope -> scope.get(contextKey))
                 .filter(Optional::isPresent)

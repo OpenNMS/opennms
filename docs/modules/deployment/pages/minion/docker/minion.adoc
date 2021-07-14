@@ -3,7 +3,7 @@ ifeval::["{prerelease}" == "false"]
 :docker-version-tag: {page-component-version}
 endif::[]
 
-.Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
+.Create a project directory for {page-component-title} core and create a `docker-compose.yml` file.
 [source, console]
 ----
 mkdir minion
@@ -40,21 +40,21 @@ services:
       - '8201:8201/tcp'
 ----
 <1> Friendly container name
-<2> Set the time zone and the Minion configuration via environment variables. To list all available time zones you can use `timedatectl list-timezones`
-<3> This is optional and can be used to control the minimal Java heap size
-<4> This is optional and can be used to control the maximum Java heap size
+<2> Set the time zone and the Minion configuration via environment variables. To list all available time zones, use `timedatectl list-timezones`.
+<3> Optional. Use to control the minimal Java heap size.
+<4> Optional. Use to control the maximum Java heap size.
 <5> Configuration file for connectivity and features
 <6> Keystore file with enrypted credentials for authenticating REST and Broker endpoints
-<7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf
-<8> Publish ports for Syslog, SNMP trap listener and the SSH access to the Karaf Shell
+<7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
+<8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the Karaf shell.
 
-NOTE: The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
-      We open the listener for privileged (514/udp, 162/udp) and don't have to give the Minion process in the container additional permissions.
+The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
+We open the listener for privileged (514/udp, 162/udp) and don't have to give additional permissions to the Minion process in the container.
 
-CAUTION: In some environments it is not allowed to use ICMP (ping) for non-root users.
+CAUTION: Some environments do not allow the use of ICMP (ping) for non-root users.
          {page-component-title} Minion runs as a non-privileged user in the container with `userid=10001, groupid=10001`.
          You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in the allowed group range.
-         If not you can add the following lines in your service definition in the `docker-compose.yml` file.
+         If not, add the following lines in your service definition in the `docker-compose.yml` file.
 
 [source, docker-compose.yml]
 ----
@@ -81,14 +81,14 @@ netmgt:
     trapd.listen.port: 1162
 ----
 
-<1> Replace the REST endpoint URL which goes to your {page-component-title} Core instance
-<2> Replace the Broker endpoint URL which goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running replace `tcp` with `ssl`.
-<3> Replace `my-location` with a location name representing your remote location the Minion is running
-<4> This optional, you can set a unique human readable Minion identifier, if not set a unique identifier is generated
-<5> Enable the Syslog listener on the Minion on port 1514/udp
-<6> Enable the SNMP trap listener on the Minion on port 1162/udp
+<1> Replace the REST endpoint URL that goes to your {page-component-title} Core instance.
+<2> Replace the broker endpoint URL that goes to your {page-component-title} Core instance. If you have ActiveMQ with SSL running, replace `tcp` with `ssl`.
+<3> Replace `my-location` with a location name that represents the remote location where the Minion is running.
+<4> Optional. You can set a unique human-readable Minion identifier; if not set, a unique identifier is generated.
+<5> Enable the Syslog listener on the Minion on port 1514/udp.
+<6> Enable the SNMP trap listener on the Minion on port 1162/udp.
 
-TIP: If want to run with Apache Kafka or configure flow listeners you can find the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
+TIP: To run with Apache Kafka or configure flow listeners, see the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
 
 .Initialize the keystore with credentials
 [source, console]

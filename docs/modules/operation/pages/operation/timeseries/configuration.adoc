@@ -95,7 +95,7 @@ The configuration of the tags has the following form:
 
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
 * The tagKey can by an arbitrary string as long as it doesn't break the java property file https://en.wikipedia.org/wiki/.properties[syntax].
-* The query expression allows to query the value. Hereby we can make use of the link:#ga-meta-data-dsl[Meta-Data-DSL]
+* The query expression lets you query the value. Supports use of the link:#ga-meta-data-dsl[Meta-Data-DSL]
 
 Examples:
 `org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`

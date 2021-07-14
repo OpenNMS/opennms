@@ -36,6 +36,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Contexts;
@@ -53,9 +54,11 @@ import com.google.common.collect.Lists;
 public class NodeLabelSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public NodeLabelSearchProvider(final NodeDao nodeDao) {
+    public NodeLabelSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -85,7 +88,7 @@ public class NodeLabelSearchProvider implements SearchProvider {
         final Criteria criteria = criteriaBuilder.orderBy("label").limit(query.getMaxResults()).toCriteria();
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResultItem> searchResultItems = matchingNodes.stream().map(node -> {
-            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node).build();
+            final SearchResultItem searchResultItem = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
             if (QueryUtils.equals(node.getId(), input)) {
                 searchResultItem.addMatch(new Match("id", "Node ID", node.getId().toString()));
             }

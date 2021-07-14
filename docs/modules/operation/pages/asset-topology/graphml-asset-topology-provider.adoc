@@ -1,13 +1,13 @@
 
 = Asset Toplogy Provider
 
-{page-component-title} allows users to define arbitrarily complex layered topologies using GraphML (see http://graphml.graphdrawing.org/).
+{page-component-title} lets users define arbitrarily complex layered topologies using GraphML (see http://graphml.graphdrawing.org/).
 Refer to the GraphML section of the {page-component-title} developers guide for details of how {page-component-title} interprets GraphML.
 The ability to display complex layered topologies is a great feature, but creating a usable GraphML topology for a large network can be a complex task.
 
 The Asset Topology Provider avoids the need for users to work directly with GraphML, by directly generating a layered GraphML topology based on node parameters and the contents of the node asset table.
-The Asset Topology Provider greatly simplifies the task for many use cases by allowing users to define fields in the node asset table, which will enable nodes to be positioned correctly in a complex topology.
-This allows a physical and logical ordering of nodes which makes it easier for users to represent and navigate their infrastructure.
+The Asset Topology Provider greatly simplifies the task for many use cases by allowing users to define fields in the node asset table, which will let nodes be positioned correctly in a complex topology.
+This lets you order nodes physically and logically, which makes it easier for users to represent and navigate their infrastructure.
 
 The structure of the generated topology is determined by the `assetLayers` configuration constant that can be set by a user.
 To illustrate how this works, we will consider the following configuration:
@@ -71,7 +71,7 @@ Keys beginning with `asset-`  come from the corresponding asset table entry for 
 | asset-vendor | asset-modelnumber | asset-description | asset-operatingsystem | asset-country
 |===
 
-This allows arbitrary topologies to be generated including physical fields (room, rack, etc.) and logical fields such as asset node categories.
+This lets you generate arbitrary topologies, including physical fields (room, rack) and logical fields (asset node categories).
 Please note you should not put any spaces in the comma-separated `assetLayers` list.
 If the `assetLayers` property is defined as empty, then a single graph layer will be generated containing all OpenNMS nodes.
 
@@ -95,9 +95,9 @@ Thus the following configuration means include only nodes with region `north` or
 ----
 filter=asset-region=north,south;asset-building=!23
 ----
-The filters are designed to treat all selected text key entries as comma-separated values (csv).
-This allows OpenNMS node-categories that are many-to-many entries to be dealt with as a comma-separated list of values: routers, servers, web, etc.
+The filters are designed to treat comma-separated key values as an OR search. 
 Thus we can select based on multiple separate node categories.
+
 The following configuration means show routers and servers on all buildings except building 23.
 
 [source]

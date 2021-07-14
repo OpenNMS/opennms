@@ -244,10 +244,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getAllValues(String field, List<Filter> filters) {
+    public String getAllValues(String field, int fieldSize, List<Filter> filters) {
         return render("field_values_for_all.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("field", field)
+                .put("fieldSize", fieldSize)
                 .build());
     }
 }

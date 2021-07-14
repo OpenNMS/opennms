@@ -17,12 +17,12 @@ org.opennms.activemq.client.max-connections=8<5>
 org.opennms.activemq.client.concurrent-consumers=10<6>
 ----
 
-<1> Disable embedded ActiveMQ in {page-component-title} Core instance
-<2> Set the URL endpoint to your dedicated ActiveMQ instance. Replace `my-active-mq:61616` accordingly. If you use ActiveMQ with SSL replace `tcp` with `ssl`.
-<3> Set a user name for ActiveMQ authentication
-<4> Set the password for ActiveMQ authentication
-<5> As a sane default we allow maximum 8 connections. Depending on your size it might be increases.
-<6> As a sane default we allow maximum 10 concurrent consumers. Depending on your size it might be increases.
+<1> Disable embedded ActiveMQ in {page-component-title} Core instance.
+<2> Set the URL endpoint to your dedicated ActiveMQ instance. Replace `my-active-mq:61616` accordingly. If you use ActiveMQ with SSL, replace `tcp` with `ssl`.
+<3> Set a user name for ActiveMQ authentication.
+<4> Set the password for ActiveMQ authentication.
+<5> By default we allow a maximum of 8 connections. Increase it depending on your size.
+<6> By default we allow a maximum of 10 concurrent consumers. Increase it depending on your size.
 
 .Restart {page-component-title} Core instance to apply the changes
 [source, console]

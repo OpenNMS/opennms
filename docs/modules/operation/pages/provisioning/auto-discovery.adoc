@@ -16,8 +16,8 @@ Configuring discovery specifies the parameters {page-component-title} uses when 
 NOTE: To configure a discovery scan to run once, select *Run Single Discovery Scan*.
 
 . In the *General Settings* area, accept the default scheduling options (sleeptime, retries,timeout, etc.), or set your own.
-. From the *Foreign Source* drop-down, select the requisition to which you want to add the discovered nodes.
-. If you have installed Minions, select one from the *Location* drop-down.
+. From the *Foreign Source* list, choose the requisition to which you want to add the discovered nodes.
+. If you have installed Minions, select one from the *Location* list.
 . Click *Add New* to add the following:
 
 +
