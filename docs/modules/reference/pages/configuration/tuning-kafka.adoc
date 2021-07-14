@@ -40,7 +40,7 @@ Disabling Single topic must be configured on both Minion and OpenNMS.
 .Disable single topic on Minion
 [source, shell]
 ----
-echo 'single-topic=false' >> "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+echo 'single-topic=false' >> "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
 ----
 
 On OpenNMS, disable single topic by setting the `org.opennms.core.ipc.rpc.kafka.single-topic` system property to false.
