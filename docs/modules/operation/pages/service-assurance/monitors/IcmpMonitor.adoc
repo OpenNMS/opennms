@@ -10,7 +10,6 @@ The service is considered available when the node sends back an echo-reply ICMP 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
-| Remote Enabled | true with some restrictions (see below)
 |===
 
 == Configuration and use
@@ -32,12 +31,15 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
+Examples use CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="ICMP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>
@@ -53,7 +55,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="dscp" value="0x1C"/> <!-- AF32: Class 3, Medium drop probability -->
   <parameter key="allow-fragmentation" value="false"/>
   <parameter key="packet-size" value="2048"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>

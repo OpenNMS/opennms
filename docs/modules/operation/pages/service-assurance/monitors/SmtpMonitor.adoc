@@ -44,13 +44,16 @@ Simulate the behavior with telnet or netcat:
 
 == Examples
 
+The following example uses CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="SMTP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1" />
   <parameter key="timeout" value="3000" />
   <parameter key="port" value="25" />
-  <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
   <parameter key="rrd-base-name" value="smtp" />
   <parameter key="ds-name" value="smtp" />
 </service>

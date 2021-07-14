@@ -43,6 +43,9 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <!-- OpenNMS.org -->
@@ -53,7 +56,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="searchfilter" value="uid=ulf"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="ldap"/>
   <parameter key="ds-name" value="ldap"/>
 </service>

@@ -56,6 +56,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 The following example shows a configuration in `poller-configuration.xml`.
 
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="Memcached" interval="300000" user-defined="false" status="on">

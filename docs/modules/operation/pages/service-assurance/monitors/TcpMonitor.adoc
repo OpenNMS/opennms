@@ -47,6 +47,9 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 This example shows how to test if the Independent Computing Architecture (ICA) service is available on TCP port 1494.
 The test evaluates the connection banner starting with `ICA`.
 
+The example uses a CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="TCP-Citrix-ICA" interval="300000" user-defined="false" status="on">
@@ -54,7 +57,7 @@ The test evaluates the connection banner starting with `ICA`.
   <parameter key="banner" value="ICA" />
   <parameter key="port" value="1494" />
   <parameter key="timeout" value="3000" />
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
   <parameter key="rrd-base-name" value="tcpCitrixIca" />
   <parameter key="ds-name" value="tcpCitrixIca" />
 </service>

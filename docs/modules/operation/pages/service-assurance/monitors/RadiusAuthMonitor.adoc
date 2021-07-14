@@ -75,6 +75,9 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 == Examples
 Sample configuration shows how to configure the monitor in `poller-configuration.xml`.
 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="Radius-Authentication" interval="300000" user-defined="false" status="on">
@@ -83,7 +86,7 @@ Sample configuration shows how to configure the monitor in `poller-configuration
   <parameter key="user" value="John Doe" />
   <parameter key="password" value="hello" />
   <parameter key="secret" value="radiuspassword" />
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
   <parameter key="ds-name" value="radiusauth" />
 </service>
 

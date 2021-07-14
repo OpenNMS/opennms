@@ -16,7 +16,7 @@ Optionally, the banner line the node provides may be parsed and compared against
 
 == Configuration and Use
 
-.Monitor-specific parameters for the SshMonitor
+.Optional monitor-specific parameters for the SshMonitor
 [options="header"]
 [cols="1,3,2"]
 |===
@@ -34,6 +34,9 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="SSH" interval="300000" user-defined="false" status="on">
@@ -41,7 +44,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="banner" value="SSH"/>
   <parameter key="client-banner" value="OpenNMS poller"/>
   <parameter key="timeout" value="5000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="ssh"/>
   <parameter key="ds-name" value="ssh"/>
 </service>

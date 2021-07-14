@@ -154,6 +154,8 @@ For example, you can send email via SMTPS to one server outside of your organiza
 
 Test for an end-to-end email transaction.
 
+Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="MTM" interval="300000" user-defined="false" status="on">

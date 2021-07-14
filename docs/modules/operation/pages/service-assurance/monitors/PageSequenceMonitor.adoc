@@ -135,6 +135,8 @@ Using the locationMatch parameter verifies that the logout was successful and a 
 
 Each page is checked to ensure its HTTP response code fits into the response-range, before the failureMatch, successMatch, and locationMatch expressions are evaluated.
 
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 .Configuration to test the login to the OpenNMS Web application
 [source, xml]
 ----

@@ -68,7 +68,7 @@ The disk array state is resolved to a human-readable value as in the following s
 |===
 | Parameter           | Description                                                     | Default
 | virtualDiskNumber | The disk index of your RAID array.                                                               | 1
-| port              | The TCP port where OpenManage listens.                                                            | from snmp-config.xml
+| port              | The TCP port where OpenManage listens.                                                            | From snmp-config.xml
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

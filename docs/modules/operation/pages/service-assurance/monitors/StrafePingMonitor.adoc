@@ -53,6 +53,8 @@ Configure the include-range or a filter to enable monitoring for devices with th
 The following example enables the monitoring for the StrafePing service on IP interfaces in the range 10.0.0.1 to 10.0.0.20.
 Additionally, you must assign the nodes to a surveillance category named `Latency`.
 
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <package name="strafer" >

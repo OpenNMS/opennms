@@ -27,6 +27,9 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <!-- IMAPS service at OpenNMS.org is on port 9993 -->
@@ -35,7 +38,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="version" value="3"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="imaps"/>
   <parameter key="ds-name" value="imaps"/>
 </service>

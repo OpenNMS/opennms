@@ -85,6 +85,8 @@ The following status codes are defined:
 
 == Response time tracking
 
+NOTE: Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.  
+
 By default, the BSFMonitor tracks the duration of the script runtime as the response time.
 If the response time should be persisted, add the following parameters:
 
@@ -101,6 +103,8 @@ If the response time should be persisted, add the following parameters:
 <!-- by default "response-time" is used as ds-name -->
 <parameter key="ds-name" value="myResponseTime" />
 ----
+
+
 
 It is also possible to return one or many response times directly from the script.
 To add custom response times or override the default one, add entries to the _times_ object.
@@ -255,6 +259,10 @@ As proof that this is really Python, notice the substitution of Python's `None` 
 The following example references all beans that are exposed to the script, including a custom parameter.
 
 .Groovy example `poller-configuration.xml`
+
+Example uses CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="30000" user-defined="true" status="on">

@@ -33,7 +33,11 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == Examples
 
-.Add entry in collectd-configuration.xml
+Example uses CentOS/RHEL path name. 
+
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`. 
+
+.Add entry in poller-configuration.xml
 [source, xml]
 ----
 <service name="XMP" interval="300000" user-defined="false" status="on">

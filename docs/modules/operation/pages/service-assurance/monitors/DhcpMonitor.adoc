@@ -69,6 +69,8 @@ image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 Example configuration on how to configure the monitor in `poller-configuration.xml`.
 The monitor tries to send a maximum of three DISCOVER messages and waits three seconds for the DHCP server OFFER message.
 
+Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 .Configure a DHCP service in `poller-configuration.xml`
 [source, xml]
 ----

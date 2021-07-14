@@ -46,10 +46,10 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
                  `startswith`: The disk parameter's value is evaluated as a string that storage's description
                                 must start with. +
                  Note that comparisons are case-sensitive.                                                               | exact
-| port       | Destination port where the SNMP requests are sent.                                            |from snmp-config.xml
+| port       | Destination port where the SNMP requests are sent.                                            |From snmp-config.xml
 | retries    | Deprecated.
                  Same as `retry`.
-                 Parameter retry takes precedence when both are set.                                              |from snmp-config.xml
+                 Parameter retry takes precedence when both are set.                                              |From snmp-config.xml
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

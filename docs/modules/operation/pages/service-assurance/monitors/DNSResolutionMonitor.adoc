@@ -47,9 +47,11 @@ kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduc
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-== Example
+== Examples
 
-The following example shows the possibilities for monitoring IPv4 and/or IPv6 for the service configuration:
+The following example shows the possibilities for monitoring IPv4 and/or IPv6 for the service configuration.
+
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
