@@ -93,6 +93,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.agkn</groupId>
+      <artifactId>hll</artifactId>
+      <version>1.6.0</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
@@ -113,6 +118,12 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>tss-tests</artifactId>
+      <version>${opennmsApiVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
