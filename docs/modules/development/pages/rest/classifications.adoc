@@ -43,13 +43,13 @@ NOTE: The given filters are combined using a logical `AND`.
 [options="header", cols="1,1,2"]
 |===
 
-|Name 
-|Default 
+|Name
+|Default
 |Comment
 
-| groupFilter 
-| (none) 
-| The group by which to filter the rules. 
+| groupFilter
+| (none)
+| The group by which to filter the rules.
 Should be the `id` retrieved by `/classifications/groups`.
 It is not possible to retrieve the rules for a disabled group.
 

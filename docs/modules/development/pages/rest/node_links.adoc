@@ -5,7 +5,7 @@ NOTE: This API is v2-only
 
 [options="header", cols="5,10"]
 |===
-| Resource                                | Description
+| Resource                                 | Description
 | `/enlinkd/\{node_criteria}`              | Retrieve all types of links for a given node.
 | `/enlinkd/lldp_links/\{node_criteria}`   | Retrieve LLDP link for a given node.
 | `/enlinkd/bridge_links/\{node_criteria}` | Retrieve bridge link for a given node.
