@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,8 +59,8 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
                                                                   "iface",
                                                                   JoinType.LEFT_JOIN) }));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
-        criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary",
-                                                  PrimaryType.PRIMARY));
+        criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
+                                                  PrimaryType.PRIMARY.getCharCode()));
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
             nodes.add(new Node(node.getId(), node.getLabel(),
                                node.getPrimaryInterface().getIpAddress(),
@@ -78,8 +78,8 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
                                                                   "iface",
                                                                   JoinType.LEFT_JOIN) }));
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
-        criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary",
-                                                  PrimaryType.PRIMARY));
+        criteria.addRestriction(new EqRestriction("iface.snmpPrimary",
+                                                  PrimaryType.PRIMARY.getCharCode()));
         criteria.addRestriction(new EqRestriction("id", nodeid));
         final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
 

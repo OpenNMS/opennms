@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -321,7 +321,7 @@ public class DefaultPollingContext implements PollingContext {
         OnmsIpInterfaceList ifaces = new OnmsIpInterfaceList();
         // Only poll the primary interface
         final Criteria criteria = new Criteria(OnmsIpInterface.class);
-        criteria.addRestriction(new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
+        criteria.addRestriction(new EqRestriction("snmpPrimary", PrimaryType.PRIMARY));
 
         List<OnmsIpInterface> allValidIfaces = getIpInterfaceDao().findMatching(criteria);
         for (OnmsIpInterface iface : allValidIfaces) {
