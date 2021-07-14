@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -229,7 +229,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public String getIpPrimaryAddress(int nodeId) {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class);
-        cb.and(new EqRestriction("node.id", nodeId), new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
+        cb.and(new EqRestriction("node.id", nodeId), new EqRestriction("snmpPrimary", PrimaryType.PRIMARY.getCharCode()));
         
         final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
         
