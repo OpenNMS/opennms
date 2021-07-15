@@ -6,7 +6,7 @@ ARG BASE_IMAGE_VERSION="11.0.9.11-b5706"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
-ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
+ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq diffutils"
 
 ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
 ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"

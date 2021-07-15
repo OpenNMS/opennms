@@ -101,7 +101,7 @@ To do so, right click in the `Project Explorer` and select `Configure Buildpath`
 image::database-reports/1_configure-build-path-1.png[]
 
 . Switch to the `Libraries` tab.
-. Click `Add External JARs` and select the `opennms-jasperstudio-extension-{\opennms-version}-jar-with-dependencies.jar` file located in `$\{OPENNMS_HOME}/contrib/jasperstudio-extension`.
+. Click `Add External JARs` and select the `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` file located in `$\{OPENNMS_HOME}/contrib/jasperstudio-extension`.
 . Close the file selection dialog.
 
 +
@@ -133,8 +133,8 @@ To receive data from the Measurements API simply create a query as follows:
 [source, xml]
 ------
 <query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"> <1>
-  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
-  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
 </query-request>
 ------
 <1> The query language. In our case, `measurement`, but `JasperReports` supports a lot out of the box, such as `sql`, `xpath`, etc.
@@ -227,7 +227,7 @@ The following example shows the use of that helper.
 [source, xml]
 ------
 <parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{\nodeidl}), $P\{foreignsource\}, $P\{foreignid\})]]></defaultValueExpression>
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P\{nodeid}), $P\{foreignsource}, $P\{foreignid})]]></defaultValueExpression>
 </parameter>
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
@@ -253,8 +253,8 @@ The following example shows the use of that helper.
 </parameter>
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
-<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
-<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
 ------
 

@@ -14,5 +14,5 @@ To activate the ticketing integration, set the following properties in `$\{OPENN
                                                                        The `NullTicketerPlugin` does nothing when attempting to create/update/delete tickets.
 | `opennms.alarmTroubleTicketEnabled`    | `false`                   | Defines if the integration is enabled.
                                                                        If enabled, various links to control the issue state appear on the alarm details page.
-| opennms.alarmTroubleTicketLinkTemplate | `${\id}`                   | A template to generate a link to the issue, e.g., `\http://issues.opennms.org/browse/${\id}`
+| opennms.alarmTroubleTicketLinkTemplate | `$\{id}`                   | A template to generate a link to the issue; for example, `\http://issues.opennms.org/browse/$\{id}`
 |===
