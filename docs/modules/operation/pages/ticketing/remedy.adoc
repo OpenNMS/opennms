@@ -53,7 +53,7 @@ Now configure the plugin itself by setting the following properties in `$\{OPENN
 | `remedy.portname`                            | required | The Port name of the HPD web service
 | `remedy.createendpoint`                      | required | The endpoint location of the Create-HPD web service
 | `remedy.createportname`                      | required | The Port name of the Create-HPD web service
-| `remedy.targetgroups`                        | optional | Colon-separated list of Remedy groups to which created tickets may be assigned (`\{group}` below refers to values from this list)
+| `remedy.targetgroups`                        | optional | Colon-separated list of Remedy groups to which created tickets may be assigned (`\{group}` below refers to values from this list).
 | `remedy.assignedgroup.\{group}`               | optional | Assigned group for the target group `\{group}`
 | `remedy.assignedsupportcompany.\{group}`      | optional | Assigned support company for the target group `\{group}`
 | `remedy.assignedsupportorganization.\{group}` | optional | Assigned support organization for the target group `\{group}`

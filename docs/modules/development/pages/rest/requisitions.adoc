@@ -61,7 +61,7 @@ NOTE: Expects form-urlencoded.
 | Resource                                                              | Description
 | `/requisitions/\{name}/import`                                        | Performs an import/synchronize on the specified requisition.
                                                                           This turns the "active" requisition into the "deployed" requisition.
-| `/requisitions/\{name}/import?rescanExisting=false`                   | Similar to the above import command, but existing nodes will not be scanned until the next rescan interval, only newly added/removed nodes will be updated.
+| `/requisitions/\{name}/import?rescanExisting=false`                   | Similar to the above import command, but existing nodes are not scanned until the next rescan interval. Only newly added/removed nodes are updated.
                                                                           Useful when applying changes to a subset of nodes in a requisition.
 | `/requisitions/\{name}`                                               | Update the specified requisition.
 | `/requisitions/\{name}/nodes/\{foreignid}`                            | Update the specified node for the given requisition.

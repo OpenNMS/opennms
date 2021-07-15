@@ -1,7 +1,8 @@
 [[nodes-rest]]
 = Nodes
 
-NOTE: The default offset is 0, the default limit is 10 results.
+NOTE: The default offset is 0.
+The default limit is 10 results.
 To get all results, use limit=0 as a parameter on the URL (i.e., GET /nodes?limit=0).
 
 Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (e.g., GET /nodes/fs:fid).

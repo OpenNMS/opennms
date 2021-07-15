@@ -1,6 +1,6 @@
 = Tuning ActiveMQ
 
-The settings for the embedded _ActiveMQ_ broker are found in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
+The settings for the embedded ActiveMQ broker are found in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
 Memory and storage limits are conservative by default and should be tuned to accommodate your workload.
 Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, assuming you have enough heap available.
 

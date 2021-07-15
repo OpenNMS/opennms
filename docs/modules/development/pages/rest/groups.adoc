@@ -27,7 +27,7 @@ Like users, groups have a simplified interface.
 [options="header", cols="5,10"]
 |===
 | Resource                                          | Description
-| `/groups/\{groupname}`                            | Update the metadata of a group (e.g., change the `comments` field).
+| `/groups/\{groupname}`                            | Update the metadata of a group (for example, change the `comments` field).
 | `/groups/\{groupname}/users/\{username}`          | Add a user to the group, given a group name and username.
 | `/groups/\{groupname}/categories/\{categoryname}` | Associate a category with the group, given a group name and category name.
 |===

@@ -27,7 +27,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Resource        | Description
 | `/config/javamail/readmails` | Adds a new or overrides an existing readmail configuration.
 | `/config/javamail/sendmails` | Adds a new or overrides an existing sendmail configuration.
-| `/config/javamail/end2ends`  | Adds a new or overrides an existing end2ends mail configuration.
+| `/config/javamail/end2ends`  | Adds a new or overrides an existing end2end mail configuration.
 |===
 
 == PUTs (Update defaults)
