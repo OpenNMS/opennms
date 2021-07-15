@@ -79,5 +79,5 @@ This command might be useful when an IP address formerly assigned to an SNMPv2c-
 
 == Using SNMP profiles with the SNMP detector
 
-By default, SnmpDetector doesn't use SNMP profiles. 
+By default, SnmpDetector does not use SNMP profiles. 
 Add property `useSnmpProfiles` and set it to `true` to use SNMP profiles.

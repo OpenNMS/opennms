@@ -1,20 +1,20 @@
 = Addressing scalability
 
-The explosive growth and density of the IT systems being deployed today to support non-traditional IP services is impacting management systems like never before, and is demanding tremendous amounts of scalability.
-The scalability of a management system is defined by its capacity for managing large numbers of entities coupled with its efficiency of managing the entities.
+The explosive growth and density of the IT systems being deployed today to support non-traditional IP services impacts management systems like never before, and demands tremendous amounts of scalability.
+The scalability of a management system is defined by its capacity to manage large numbers of entities coupled with its efficiency for managing the entities.
 
 Today, it is not uncommon for {page-component-title} deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, and/or networks).
-A monitoring system must be capable of using the full capacity every resource of its computing platform as effectively as possible.
-The days of writing scripts or single threaded applications no longer is sufficient to do the work required by a monitoring system at the scale of most networks today.
+A monitoring system must be able to use the full capacity of every resource of its computing platform as effectively as possible.
+Writing scripts or single-threaded applications is no longer sufficient to do the work required by a monitoring system at the scale of most networks today.
 
 == Parallelization and non-blocking I/O
 
 Squeezing out every ounce of power from a management system’s platform is absolutely required to complete all the work of a fully functional monitoring system such as {page-component-title}.
-Fortunately, the hardware architecture of a modern computing platforms provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
-Because of scalability demands of complex IT environments, multi-threaded monitoring solutions are now essential and this has fully exposed the complex issues of concurrency in software development.
+Fortunately, the hardware architecture of modern computing platforms provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
+Because of scalability demands of complex IT environments, multi-threaded monitoring solutions are now essential.
 
 OpenNMS has stepped up to this challenge with its concurrency strategy.
-This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations, traditionally used by most effectively by single threaded applications, with the power of a fully current, non-blocking, multi-threaded design.
+This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations, traditionally used most effectively by single-threaded applications, with the power of a fully current, non-blocking, multi-threaded design.
 The non-blocking component of this concurrency strategy adds greater complexity, but gives {page-component-title} substantially increased scalability.
 
 NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor-based atomic operations, and is the basis for {page-component-title}’s non-blocking concurrency algorithms.
@@ -33,7 +33,7 @@ Auto-discovered nodes, or nodes from requisitions that don’t have a foreign so
 === The default foreign source definition
 
 The default foreign source template is contained in the libraries of the Provisioning service.
-The template stored in the library is used until the {page-component-title} admin user alters the default from the Requisition WebUI.
+The template stored in the library is used until the {page-component-title} admin user alters the default from the Requisition Web UI.
 Upon edit, this template is exported to the {page-component-title} `etc/` directory with the file name: `default-foreign-source.xml`.
 
 Example default foreign source file:
@@ -65,7 +65,7 @@ Example default foreign source file:
 
 === Automatic rescanning
 
-The default foreign source defines a `scan-interval` of `1d`, which will cause all nodes in the requisition to be scanned daily.
+The default foreign source defines a `scan-interval` of `1d`, which causes all nodes in the requisition to be scanned daily.
 You may set the scan interval using any combination of the following signifiers:
 
 * w: Weeks
@@ -82,4 +82,4 @@ Don't forget, for the new scan interval to take effect, you will need to import/
 === Disabling rescan
 
 For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.
-{page-component-title} will not attempt to rescan the nodes in the requisition unless you trigger a manual rescan through the web UI or Provisioning ReST API.
+{page-component-title} will not attempt to rescan the nodes in the requisition unless you trigger a manual rescan through the web UI or Provisioning REST API.

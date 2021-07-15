@@ -1,10 +1,10 @@
 
 [[provisiond-integration]]
-= Integrating with provisiond
+= Integrating with Provisiond
 
 If you have another inventory system to keep track of nodes on your network, you can define a requisition to group nodes within {page-component-title}.
 There are multiple ways you can add nodes to a requisition.
-One way is to use the ReST API to automate syncing nodes from your inventory system.
+One way is to use the REST API to automate syncing nodes from your inventory system.
 The ReST API provides an endpoint for defining foreign sources and requisitions.
 
 == Provisioning a group of nodes
@@ -16,12 +16,12 @@ The steps are:
 * Update the SNMP configuration for each node in the group as needed.
 * Create/update the group of nodes.
 
-== Example provisioning via ReST API
+== Example provisioning via REST API
 
 === Step 1 - Create a foreign source
 
-To define the policies for this group of nodes you need to create a foreign source for the group.
-You can do so using the xref:development:rest/foreign_sources.adoc[foreign sources] ReST API:
+To define the policies for this group of nodes, you need to create a foreign source for the group.
+Use the xref:development:rest/foreign_sources.adoc[foreign sources] REST API to do so:
 
 NOTE: You can embed the XML in the curl command with option `-d` or reference it from a file if you use `@` prefix with the file name, as in this case.
 
@@ -46,7 +46,7 @@ Sample XML file `customer-a.foreign-source.xml`:
 </foreign-source>
 ----
 
-Here is an example curl command used to create the foreign source with the above foreign source specification:
+Here is an example curl command to create the foreign source with the above foreign source specification:
 
 [source, bash]
 ----
@@ -69,8 +69,8 @@ curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" -H "Accept: app
 === Step 3 - Create/Update the Requisition
 
 This example adds 2 nodes to the requisition `customer-a`.
-The foreign-source must match the name of the requisition.
-In the following example, the xref:development:rest/requisitions.adoc[requisitions] ReST API will automatically create a requisition based on the value of the foreign-source attribute specified in the XML requisition.
+The foreign source must match the name of the requisition.
+In the following example, the xref:development:rest/requisitions.adoc[requisitions] REST API automatically creates a requisition based on the value of the foreign-source attribute specified in the XML requisition.
 
 [source, bash]
 ----
@@ -87,4 +87,4 @@ Here is an example using the curl command to import the requisition:
 curl -v -u admin:admin -X PUT http://localhost:8980/opennms/rest/requisitions/customer-a/import
 ----
 
-NOTE: Add, Update, and Delete operations are handled via the ReST API in the same manner as described in the xref:development:rest/rest-api.adoc[ReST API documentation].
+NOTE: The REST API handles Add, Update, and Delete operations in the same manner as described in the xref:development:rest/rest-api.adoc[REST API documentation].
