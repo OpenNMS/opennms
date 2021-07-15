@@ -6,8 +6,8 @@ Use this endpoint to trigger a one-time discovery scan.
 
 [options="header", cols="5,10"]
 |===
-| Resource        | Description
-| `/opennms/api/v2/discovery`    | Submits an one-time scan configuration.
+| Resource                       | Description
+| `/opennms/api/v2/discovery`    | Submits a one-time scan configuration.
 |===
 
 The following XML structure is used to define a scan job.
@@ -60,4 +60,3 @@ Trigger the scan itself by posting the configuration to the REST endpoint as fol
 ----
 curl -H "Content-Type: application/xml" -u admin:admin -X POST -d @discovery.xml http://localhost:8980/opennms/api/v2/discovery
 ----
-

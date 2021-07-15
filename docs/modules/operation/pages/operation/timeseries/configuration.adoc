@@ -91,7 +91,7 @@ This might not be sufficient if the data is used outside of {page-component-titl
 Configure additional meta tags via `$\{OPENNMS_HOME}/etc/opennms.properties`.
 
 The configuration of the tags has the following form:
-`prefix.tagKey=${\query expression}`
+`prefix.tagKey=$\{query expression}`
 
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
 * The tagKey can by an arbitrary string as long as it doesn't break the java property file https://en.wikipedia.org/wiki/.properties[syntax].

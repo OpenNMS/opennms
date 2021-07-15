@@ -88,7 +88,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
                                This is a regular expression matched against every line, is considered a
                                failure at the first match, and sets the service with this monitor as Down.                                          | n/a
 | failureMessage           | The failure message constructs the reason code.
-                               Use `${\n}` values to pull information from matching groups in the failureMatch
+                               Use `$\{n}` values to pull information from matching groups in the failureMatch
                                regular expression.                                                                                                  | n/a
 | successMatch             | Text to look for in the response body.
                                This is a regular expression matched against every line, is considered a
@@ -245,7 +245,7 @@ Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd
             failureMatch="(?s)Your log-in attempt failed.*Reason: ([^<]*)"
             failureMessage="Login Failed: ${1}"
             successMatch="Log out">"
-        <parameter key="j_username" value="$\{username\}" />
+        <parameter key="j_username" value="${username}" />
         <parameter key="j_password" value="${password}" />
       </page>
       <page path="/opennms/event/index.jsp"
@@ -281,7 +281,7 @@ Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd
             virtual-host="demo.opennms.org"
             method="POST"
             successMatch="Log out">"
-        <parameter key="j_username" value="$\{username\}" />
+        <parameter key="j_username" value="${username}" />
         <parameter key="j_password" value="${password}" />
       </page>
       <page path="/opennms/j_acegi_logout"

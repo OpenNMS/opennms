@@ -1,3 +1,4 @@
+
 = Flow API
 
 Use the Flow API to retrieve summary statistics and time series data derived from persisted flows.
@@ -11,7 +12,7 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 | Resource                            | Description
 | `/flows/count`                      | Retrieve the number of flows available.
 | `/flows/exporters`                  | Retrieve basic information for the exporter nodes that have flows available.
-| `/flows/exporters/\{nodecriteria\}` | Retrieve detailed information about a specific exporter node.
+| `/flows/exporters/\{nodecriteria}`  | Retrieve detailed information about a specific exporter node.
 | `/flows/applications`               | Retrieve traffic summary statistics for the top N applications or specific applications.
 | `/flows/applications/enumerate`     | Retrieve a list of the applications with flows.
 | `/flows/applications/series`        | Retrieve time series metrics for the top N applications or specific applications.
