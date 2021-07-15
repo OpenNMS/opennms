@@ -13,7 +13,7 @@
     <name>OpenNMS :: Features :: Distributed :: Coordination :: Zookeeper</name>
     <properties>
         <guava16.version>16.0.1</guava16.version>
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.12.4</jackson.version>
         <curator.version>2.9.1</curator.version>
     </properties>
     <build>
