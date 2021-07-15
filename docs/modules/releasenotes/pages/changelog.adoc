@@ -8,7 +8,7 @@
 
 Release 28.0.1 contains a bunch of bug fixes and enhancements, plus a few security updates.
 
-The codename for Horizon 28.0.1 is $$https://wikipedia.org/wiki/Optimus_Prime$$[_Optimus Prime_].
+The codename for Horizon 28.0.1 is https://wikipedia.org/wiki/$$Optimus_Prime$$[_Optimus Prime_].
 
 === Bug
 
@@ -61,7 +61,7 @@ The codename for Horizon 28.0.1 is $$https://wikipedia.org/wiki/Optimus_Prime$$[
 Release 28.0.0 is the first in the Horizon 28 series, introducing a requirement of Java 11,
 enhancements to flow aggregation to support DSCP ToS/QoS, and more.
 
-The codename for Horizon 28.0.0 is $$https://wikipedia.org/wiki/Jazz_(Transformers)$$[_Jazz_].
+The codename for Horizon 28.0.0 is https://wikipedia.org/wiki/$$Jazz_(Transformers)$$[_Jazz_].
 
 === Bug
 
