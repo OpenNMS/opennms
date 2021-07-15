@@ -127,3 +127,16 @@ Here's another excerpt where we extract metrics grouped by CPU:
 ----
 
 This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.
+
+
+== Prometheus Node Exporter Collectd Service Configuration Example
+
+[source, xml]
+----
+<service name="Prometheus-Node-Exporter" interval="300000" user-defined="false" status="on"> 
+ <parameter key="collection" value="node_exporter" />
+ <parameter key="thresholding-enabled" value="true" />
+ <parameter key="url" value="http://${interface:address}:9100/metrics" />
+ </service>
+<collector service="Prometheus-Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
+----
