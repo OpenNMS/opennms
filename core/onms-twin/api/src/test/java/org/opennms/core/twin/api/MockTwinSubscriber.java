@@ -35,20 +35,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.twin.subscriber.api.TwinBrokerOnMinion;
 import org.opennms.core.twin.subscriber.api.OnmsTwinSubscriber;
+import org.opennms.core.twin.subscriber.api.TwinSubscriberModule;
 
 public class MockTwinSubscriber implements OnmsTwinSubscriber {
 
     private TwinBrokerOnMinion twinBrokerOnMinion;
-    private Map<String, SinkCallback> moduleCallbacks = new ConcurrentHashMap<>();
+    private Map<String, TwinSubscriberModule<?>> modules = new ConcurrentHashMap<>();
+    private Map<String, Class<?>> classMap = new ConcurrentHashMap<>();
 
     public void init() {
-        twinBrokerOnMinion.registerSinkUpdate(new Subscriber() {
-            @Override
-            public void subscribe(OnmsTwin onmsTwin) {
-                SinkCallback sinkCallback = moduleCallbacks.get(onmsTwin.getKey());
-                sinkCallback.sinkUpdate(onmsTwin);
-            }
-        });
+        twinBrokerOnMinion.registerSinkUpdate(this);
+    }
+
+    @Override
+    public void subscribe(OnmsTwin onmsTwin) {
+        TwinSubscriberModule<?> module = modules.get(onmsTwin.getKey());
+        unmarshalResponse(onmsTwin, module);
     }
 
     public MockTwinSubscriber(TwinBrokerOnMinion twinBrokerOnMinion) {
@@ -56,9 +58,9 @@ public class MockTwinSubscriber implements OnmsTwinSubscriber {
     }
 
     @Override
-    public CompletableFuture<OnmsTwin> getObject(String key, SinkCallback sinkCallback) {
-        moduleCallbacks.put(key, sinkCallback);
-        OnmsTwin onmsTwin = new OnmsTwin() {
+    public <T> CompletableFuture<T> getObject(String key, TwinSubscriberModule<T> module) {
+        modules.put(key, module);
+        OnmsTwinRequest request = new OnmsTwinRequest() {
             @Override
             public String getKey() {
                 return key;
@@ -70,15 +72,32 @@ public class MockTwinSubscriber implements OnmsTwinSubscriber {
             }
 
             @Override
-            public int getVersion() {
-                return 0;
+            public int getTTL() {
+                return 30;
             }
 
-            @Override
-            public byte[] getObjectValue() {
-                return "onms-twin-request".getBytes(StandardCharsets.UTF_8);
-            }
         };
-        return twinBrokerOnMinion.sendRpcRequest(onmsTwin);
+        CompletableFuture<T> response = new CompletableFuture<>();
+        CompletableFuture<OnmsTwin> future = twinBrokerOnMinion.sendRpcRequest(request);
+        future.whenComplete((res, ex) -> {
+            if(res != null) {
+                T value = unmarshalResponse(res);
+                response.complete(value);
+            }
+        });
+        return response;
     }
+
+    <T> T unmarshalResponse(OnmsTwin onmsTwin) {
+       Class<?> clazz = classMap.get(onmsTwin.getKey());
+       return (T) new String(onmsTwin.getObjectValue(), StandardCharsets.UTF_8);
+    }
+
+    <T> void unmarshalResponse(OnmsTwin onmsTwin, TwinSubscriberModule<T> module) {
+        if (module != null) {
+            T response = unmarshalResponse(onmsTwin);
+            module.update(response);
+        }
+    }
+
 }

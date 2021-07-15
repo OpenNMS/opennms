@@ -40,6 +40,7 @@ import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.twin.api.OnmsTwin;
 import org.opennms.core.twin.subscriber.api.OnmsTwinSubscriber;
+import org.opennms.core.twin.subscriber.api.TwinSubscriberModule;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
@@ -53,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TrapListener implements TrapNotificationListener {
+public class TrapListener implements TrapNotificationListener, TwinSubscriberModule<TrapdConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
 
     @Autowired
@@ -99,12 +100,7 @@ public class TrapListener implements TrapNotificationListener {
     }
 
     public void start() {
-        CompletableFuture<OnmsTwin> future = onmsTwinSubscriber.getObject("trapd-config", new OnmsTwinSubscriber.SinkCallback() {
-            @Override
-            public void sinkUpdate(OnmsTwin onmsTwin) {
-                // Unmarshal and call setSnmpV3Users
-            }
-        });
+        CompletableFuture<TrapdConfig> future = onmsTwinSubscriber.getObject("trapd-config", this);
         future.whenComplete((response, ex) -> {
            if(response != null) {
                // Unmarshal and call setSnmpV3Users
@@ -243,5 +239,16 @@ public class TrapListener implements TrapNotificationListener {
 
     public void setOnmsTwinSubscriber(OnmsTwinSubscriber onmsTwinSubscriber) {
         this.onmsTwinSubscriber = onmsTwinSubscriber;
+    }
+
+    @Override
+    public void update(TrapdConfig onmsTwin) {
+
+    }
+
+
+    @Override
+    public Class<TrapdConfig> getClazz() {
+        return TrapdConfig.class;
     }
 }

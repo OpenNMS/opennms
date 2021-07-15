@@ -36,4 +36,6 @@ public interface OnmsTwinRequest {
     String getKey();
 
     String getLocation();
+
+    int getTTL();
 }

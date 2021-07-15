@@ -45,7 +45,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.twin.publisher.api.OnmsTwinPublisher;
+import org.opennms.core.twin.publisher.api.TwinPublisherModule;
 import org.opennms.core.twin.subscriber.api.OnmsTwinSubscriber;
+import org.opennms.core.twin.subscriber.api.TwinSubscriberModule;
 
 public class OnmsTwinApiIT {
 
@@ -81,16 +83,16 @@ public class OnmsTwinApiIT {
         mockTwinSubscriber.init();
         MockTwinModuleMinion moduleMinion = new MockTwinModuleMinion(mockTwinSubscriber);
         String valueToReplicate = "mock-object-value";
-        MockTwinModuleOnOpenNMS moduleOnOpenNMS = new MockTwinModuleOnOpenNMS(mockTwinPublisher, new MockOnmsTwinBean(valueToReplicate));
+        MockTwinModuleOnOpenNMS moduleOnOpenNMS = new MockTwinModuleOnOpenNMS(mockTwinPublisher, valueToReplicate);
         moduleOnOpenNMS.init();
         moduleMinion.init();
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS)
-                .until(moduleMinion::getOnmsTwin, Matchers.notNullValue());
-        Assert.assertThat(moduleMinion.getOnmsTwin().getObjectValue(), Matchers.is(valueToReplicate.getBytes(StandardCharsets.UTF_8)));
+                .until(moduleMinion::getResponse, Matchers.notNullValue());
+        Assert.assertThat(moduleMinion.getResponse(), Matchers.is(valueToReplicate));
         String updatedValue = "updated-object-value";
         moduleOnOpenNMS.updateTwin(new MockOnmsTwinBean(updatedValue));
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> moduleMinion.getOnmsTwin().getObjectValue(),
-                Matchers.is(updatedValue.getBytes(StandardCharsets.UTF_8)));
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> moduleMinion.getResponse(),
+                Matchers.is(updatedValue));
     }
 
     @After
@@ -100,9 +102,9 @@ public class OnmsTwinApiIT {
     }
 
 
-    public class MockTwinModuleMinion {
+    public class MockTwinModuleMinion implements TwinSubscriberModule<String> {
 
-        private OnmsTwin onmsTwin;
+        private String response;
         private final OnmsTwinSubscriber twinProvider;
 
         public MockTwinModuleMinion(OnmsTwinSubscriber twinProvider) {
@@ -111,46 +113,61 @@ public class OnmsTwinApiIT {
 
         public void init() throws ExecutionException, InterruptedException {
             // Initiate RPC call providing a subscriber that can get updates through reverse-sink
-               CompletableFuture<OnmsTwin> future = twinProvider.getObject(moduleName, new OnmsTwinSubscriber.SinkCallback() {
-                   @Override
-                   public void sinkUpdate(OnmsTwin onmsTwin) {
-                        // Partial updates.
-                        setOnmsTwin(onmsTwin);
-                   }
-               });
-               future.whenComplete((response, ex) -> {
-                   if(response != null) {
-                       setOnmsTwin(response);
+               CompletableFuture<String> future = twinProvider.getObject(moduleName,  this);
+
+               future.whenComplete((object, ex) -> {
+                   if(object != null) {
+                       setResponse(object);
                    }
                });
         }
 
-        public OnmsTwin getOnmsTwin() {
-            return onmsTwin;
+        public String getResponse() {
+            return response;
         }
 
-        public void setOnmsTwin(OnmsTwin onmsTwin) {
-            this.onmsTwin = onmsTwin;
+        public void setResponse(String response) {
+            this.response = response;
+        }
+
+        @Override
+        public void update(String onmsTwin) {
+            setResponse(onmsTwin);
+        }
+
+        @Override
+        public Class<String> getClazz() {
+            return String.class;
         }
     }
 
-    public class MockTwinModuleOnOpenNMS {
+    public class MockTwinModuleOnOpenNMS implements TwinPublisherModule<String> {
 
-        private OnmsTwin onmsTwin;
         private final OnmsTwinPublisher twinProvider;
         private OnmsTwinPublisher.Callback callback;
+        private String objValue;
 
-        public MockTwinModuleOnOpenNMS(OnmsTwinPublisher twinProvider, OnmsTwin onmsTwin) {
+        public MockTwinModuleOnOpenNMS(OnmsTwinPublisher twinProvider, String objValue) {
             this.twinProvider = twinProvider;
-            this.onmsTwin = onmsTwin;
+            this.objValue = objValue;
         }
 
         public void init() {
-            callback = twinProvider.register(onmsTwin);
+            callback = twinProvider.register(objValue, this);
         }
 
         public void updateTwin(OnmsTwin onmsTwin) {
             callback.onUpdate(onmsTwin);
+        }
+
+        @Override
+        public Class<String> getClazz() {
+            return String.class;
+        }
+
+        @Override
+        public String getKey() {
+            return moduleName;
         }
     }
 
@@ -170,6 +187,11 @@ public class OnmsTwinApiIT {
         @Override
         public String getLocation() {
             return "MINION";
+        }
+
+        @Override
+        public int getTTL() {
+            return 0;
         }
 
         @Override

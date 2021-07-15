@@ -1960,6 +1960,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core.onms-twin</groupId>
+        <artifactId>org.opennms.core.onms-twin.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.runtime</artifactId>
         <version>${project.version}</version>

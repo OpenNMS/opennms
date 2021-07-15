@@ -28,42 +28,75 @@
 
 package org.opennms.core.twin.api;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.twin.publisher.api.OnmsTwinPublisher;
 import org.opennms.core.twin.publisher.api.TwinBrokerOnOpennms;
+import org.opennms.core.twin.publisher.api.TwinPublisherModule;
 
 public class MockTwinPublisher implements OnmsTwinPublisher {
 
     private TwinBrokerOnOpennms twinBrokerOnOpennms;
-    private Map<String, OnmsTwin> objects = new ConcurrentHashMap<>();
+    private Map<String, byte[]> objects = new ConcurrentHashMap<>();
 
     public MockTwinPublisher(TwinBrokerOnOpennms twinBrokerOnOpennms) {
         this.twinBrokerOnOpennms = twinBrokerOnOpennms;
     }
 
     public void init() {
-        twinBrokerOnOpennms.register(new RpcReceiver() {
+        twinBrokerOnOpennms.register(this);
+    }
+
+    public CompletableFuture<OnmsTwin> rpcCallback(OnmsTwinRequest request) {
+        byte[] response = objects.get(request.getKey());
+        OnmsTwin onmsTwin = new OnmsTwin() {
             @Override
-            public CompletableFuture<OnmsTwin> rpcCallback(OnmsTwinRequest request) {
-                OnmsTwin response = objects.get(request.getKey());
-                CompletableFuture<OnmsTwin> future = new CompletableFuture<>();
-                future.complete(response);
-                return future;
+            public int getVersion() {
+                return 0;
             }
-        });
+
+            @Override
+            public byte[] getObjectValue() {
+                return response;
+            }
+
+            @Override
+            public String getKey() {
+                return request.getKey();
+            }
+
+            @Override
+            public String getLocation() {
+                return null;
+            }
+
+            @Override
+            public int getTTL() {
+                return 0;
+            }
+        };
+        CompletableFuture<OnmsTwin> future = new CompletableFuture<>();
+        future.complete(onmsTwin);
+        return future;
     }
 
     @Override
-    public Callback register(OnmsTwin onmsTwin) {
-        objects.put(onmsTwin.getKey(), onmsTwin);
+    public <T> Callback register(T obj, TwinPublisherModule<T> twinPublisherModule) {
+        byte[] value = marshalObject(obj, twinPublisherModule);
+        objects.put(twinPublisherModule.getKey(), value);
         return new Callback() {
             @Override
             public void onUpdate(OnmsTwin update) {
                 twinBrokerOnOpennms.send(update);
             }
         };
+    }
+
+    public <T> byte[] marshalObject(T obj, TwinPublisherModule<T> twinPublisherModule) {
+
+        return ((String)obj).getBytes(StandardCharsets.UTF_8);
     }
 }

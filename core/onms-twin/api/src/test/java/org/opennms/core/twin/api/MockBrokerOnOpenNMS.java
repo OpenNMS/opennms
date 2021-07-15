@@ -52,7 +52,7 @@ import org.opennms.core.twin.publisher.api.TwinBrokerOnOpennms;
 
 public class MockBrokerOnOpenNMS implements TwinBrokerOnOpennms {
 
-    private OnmsTwinPublisher.RpcReceiver rpcReceiver;
+    private OnmsTwinPublisher rpcReceiver;
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
     private KafkaProducer<String, byte[]> rpcResponseProducer;
     private KafkaConsumerRunner kafkaConsumerRunner;
@@ -84,7 +84,7 @@ public class MockBrokerOnOpenNMS implements TwinBrokerOnOpennms {
     }
 
     @Override
-    public void register(OnmsTwinPublisher.RpcReceiver rpcReceiver) {
+    public void register(OnmsTwinPublisher rpcReceiver) {
         this.rpcReceiver = rpcReceiver;
     }
 
@@ -142,6 +142,11 @@ public class MockBrokerOnOpenNMS implements TwinBrokerOnOpennms {
                 }
 
                 @Override
+                public int getTTL() {
+                    return 0;
+                }
+
+                @Override
                 public int getVersion() {
                     return 0;
                 }
@@ -166,6 +171,11 @@ public class MockBrokerOnOpenNMS implements TwinBrokerOnOpennms {
                 @Override
                 public String getLocation() {
                     return new String(value, StandardCharsets.UTF_8);
+                }
+
+                @Override
+                public int getTTL() {
+                    return 0;
                 }
             };
         }

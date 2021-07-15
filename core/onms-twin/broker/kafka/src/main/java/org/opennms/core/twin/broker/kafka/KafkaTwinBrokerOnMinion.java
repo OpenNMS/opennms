@@ -37,7 +37,7 @@ import org.opennms.core.twin.subscriber.api.TwinBrokerOnMinion;
 
 public class KafkaTwinBrokerOnMinion implements TwinBrokerOnMinion {
 
-    private OnmsTwinSubscriber.Subscriber subscriber;
+    private OnmsTwinSubscriber subscriber;
 
     @Override
     public CompletableFuture<OnmsTwin> sendRpcRequest(OnmsTwinRequest request) {
@@ -45,7 +45,9 @@ public class KafkaTwinBrokerOnMinion implements TwinBrokerOnMinion {
     }
 
     @Override
-    public void registerSinkUpdate(OnmsTwinSubscriber.Subscriber callback) {
-       this.subscriber = callback;
+    public void registerSinkUpdate(OnmsTwinSubscriber subscriber) {
+        this.subscriber = subscriber;
     }
+
+
 }

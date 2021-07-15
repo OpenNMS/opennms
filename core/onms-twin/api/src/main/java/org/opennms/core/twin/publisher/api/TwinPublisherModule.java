@@ -28,14 +28,9 @@
 
 package org.opennms.core.twin.publisher.api;
 
-import org.opennms.core.twin.api.OnmsTwin;
+public interface TwinPublisherModule<T> {
 
-// Broker will only communicate with publisher.
-public interface TwinBrokerOnOpennms {
+    Class<T> getClazz();
 
-    // Register a callback to receive RPC requests.
-    void register(OnmsTwinPublisher rpcReceiver);
-
-    // Get Sink updates from TwinPublisher.
-    void send(OnmsTwin sinkUpdate);
+    String getKey();
 }

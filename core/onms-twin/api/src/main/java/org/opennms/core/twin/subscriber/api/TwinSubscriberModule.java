@@ -26,16 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.twin.publisher.api;
+package org.opennms.core.twin.subscriber.api;
 
-import org.opennms.core.twin.api.OnmsTwin;
+/**
+ * Module that makes a RPC request and also gets updates whenever Twin object updates.
+ *
+ * @param <T>
+ */
+public interface TwinSubscriberModule<T> {
+    
+    void update(T onmsTwin);
 
-// Broker will only communicate with publisher.
-public interface TwinBrokerOnOpennms {
-
-    // Register a callback to receive RPC requests.
-    void register(OnmsTwinPublisher rpcReceiver);
-
-    // Get Sink updates from TwinPublisher.
-    void send(OnmsTwin sinkUpdate);
+    Class<T> getClazz();
 }

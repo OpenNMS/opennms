@@ -34,10 +34,10 @@ import org.opennms.core.twin.publisher.api.TwinBrokerOnOpennms;
 
 public class KafkaTwinBrokerOnOpenNMS implements TwinBrokerOnOpennms {
 
-    private OnmsTwinPublisher.RpcReceiver rpcReceiver;
+    private OnmsTwinPublisher rpcReceiver;
 
     @Override
-    public void register(OnmsTwinPublisher.RpcReceiver rpcReceiver) {
+    public void register(OnmsTwinPublisher rpcReceiver) {
         this.rpcReceiver = rpcReceiver;
     }
 

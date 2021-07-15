@@ -30,9 +30,10 @@ package org.opennms.netmgt.trapd;
 
 import org.opennms.core.twin.api.OnmsTwin;
 import org.opennms.core.twin.publisher.api.OnmsTwinPublisher;
+import org.opennms.core.twin.publisher.api.TwinPublisherModule;
 import org.opennms.netmgt.config.TrapdConfig;
 
-public class TrapdConfigWrapper {
+public class TrapdConfigWrapper implements TwinPublisherModule<TrapdConfig> {
 
     private final TrapdConfig trapdConfig;
 
@@ -43,31 +44,10 @@ public class TrapdConfigWrapper {
     }
 
     public void init() {
-        // Marshal trapdconfig and convert it to byte array.
-        byte[] marshalledConfig = marshalTrapdConfig(trapdConfig);
-        OnmsTwin onmsTwin = new OnmsTwin() {
-            @Override
-            public int getVersion() {
-                return 0;
-            }
 
-            @Override
-            public byte[] getObjectValue() {
-                return marshalledConfig;
-            }
-
-            @Override
-            public String getKey() {
-                return "trapd-config";
-            }
-
-            @Override
-            public String getLocation() {
-                return null;
-            }
-        };
-        OnmsTwinPublisher.Callback callback = twinPublisher.register(onmsTwin);
-        // Register this callback that gets updates to TrapdConfig.
+        OnmsTwinPublisher.Callback callback = twinPublisher.register(trapdConfig, this);
+        // Update callback whenever there are updates to TrapdConfig.
+        //callback.onUpdate(onmstwin);
     }
 
     public void setTwinPublisher(OnmsTwinPublisher twinPublisher) {
@@ -76,5 +56,15 @@ public class TrapdConfigWrapper {
 
     public byte[] marshalTrapdConfig(TrapdConfig trapdConfig) {
         return null;
+    }
+
+    @Override
+    public Class<TrapdConfig> getClazz() {
+        return TrapdConfig.class;
+    }
+
+    @Override
+    public String getKey() {
+        return "trapd-config";
     }
 }

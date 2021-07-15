@@ -39,7 +39,6 @@ public interface TwinBrokerOnMinion {
     CompletableFuture<OnmsTwin> sendRpcRequest(OnmsTwinRequest request);
 
     // TwinSubscriber will register callback to get Sink updates.
-    void registerSinkUpdate(OnmsTwinSubscriber.Subscriber callback);
-
+    void registerSinkUpdate(OnmsTwinSubscriber subscriber);
 
 }

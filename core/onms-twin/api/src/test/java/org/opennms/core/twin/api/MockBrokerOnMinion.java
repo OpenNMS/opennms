@@ -57,7 +57,7 @@ public class MockBrokerOnMinion implements TwinBrokerOnMinion {
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
     private KafkaProducer<String, byte[]> producer;
     private Map<String, CompletableFuture<OnmsTwin>> futureMap = new ConcurrentHashMap<>();
-    private OnmsTwinSubscriber.Subscriber subscriber;
+    private OnmsTwinSubscriber subscriber;
     private KafkaSinkConsumerRunner kafkaSinkConsumerRunner;
     private KafkaConsumerRunner kafkaConsumerRunner;
     static String rpcRequestTopic = "OpenNMS-MINION-RPC-Request-onms-twin";
@@ -95,7 +95,7 @@ public class MockBrokerOnMinion implements TwinBrokerOnMinion {
     }
 
     @Override
-    public void registerSinkUpdate(OnmsTwinSubscriber.Subscriber callback) {
+    public void registerSinkUpdate(OnmsTwinSubscriber callback) {
         subscriber = callback;
     }
 

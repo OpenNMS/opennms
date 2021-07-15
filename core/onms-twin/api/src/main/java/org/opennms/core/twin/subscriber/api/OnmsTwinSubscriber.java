@@ -33,14 +33,11 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.core.twin.api.OnmsTwin;
 
 public interface OnmsTwinSubscriber {
-    // Minion modules will get updates for OnmsTwin through callback.
-    public interface SinkCallback {
-        void sinkUpdate(OnmsTwin onmsTwin);
-    }
-    // Gets OnmsTwin through RPC  and get updates from broker through callback.
-    CompletableFuture<OnmsTwin> getObject(String key, SinkCallback callback);
 
-    interface Subscriber {
-        void subscribe(OnmsTwin onmsTwin);
-    }
+    // RPC request for the module.
+    <T> CompletableFuture<T> getObject(String key, TwinSubscriberModule<T> twinSubscriberModule);
+
+    // Subscribes to updates from Broker.
+    void subscribe(OnmsTwin onmsTwin);
+
 }

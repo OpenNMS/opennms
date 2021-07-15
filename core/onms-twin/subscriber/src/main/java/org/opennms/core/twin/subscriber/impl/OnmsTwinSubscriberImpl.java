@@ -36,24 +36,25 @@ import org.opennms.core.twin.api.OnmsTwin;
 import org.opennms.core.twin.api.OnmsTwinRequest;
 import org.opennms.core.twin.subscriber.api.OnmsTwinSubscriber;
 import org.opennms.core.twin.subscriber.api.TwinBrokerOnMinion;
+import org.opennms.core.twin.subscriber.api.TwinSubscriberModule;
 import org.opennms.distributed.core.api.MinionIdentity;
 
 public class OnmsTwinSubscriberImpl implements OnmsTwinSubscriber {
 
     private final TwinBrokerOnMinion twinBrokerOnMinion;
     private final MinionIdentity minionIdentity;
-    private final Map<String, SinkCallback> moduleCallbacks = new ConcurrentHashMap<>();
+    private final Map<String, TwinSubscriberModule<?>> modules = new ConcurrentHashMap<>();
 
     public OnmsTwinSubscriberImpl(TwinBrokerOnMinion twinBrokerOnMinion, MinionIdentity minionIdentity) {
         this.twinBrokerOnMinion = twinBrokerOnMinion;
         this.minionIdentity = minionIdentity;
-        twinBrokerOnMinion.registerSinkUpdate(new SubscriberImpl());
+        twinBrokerOnMinion.registerSinkUpdate(this);
     }
 
     @Override
-    public CompletableFuture<OnmsTwin> getObject(String key, SinkCallback sinkUpdate) {
-        moduleCallbacks.put(key, sinkUpdate);
-        return twinBrokerOnMinion.sendRpcRequest(new OnmsTwinRequest() {
+    public <T> CompletableFuture<T> getObject(String key, TwinSubscriberModule<T> twinSubscriberModule) {
+        modules.put(key, twinSubscriberModule);
+        CompletableFuture<OnmsTwin> future = twinBrokerOnMinion.sendRpcRequest(new OnmsTwinRequest() {
             @Override
             public String getKey() {
                 return key;
@@ -63,17 +64,34 @@ public class OnmsTwinSubscriberImpl implements OnmsTwinSubscriber {
             public String getLocation() {
                 return minionIdentity.getLocation();
             }
+
+            @Override
+            public int getTTL() {
+                return 0;
+            }
         });
+        CompletableFuture<T> response = new CompletableFuture<>();
+        future.whenComplete((res, ex) -> {
+            if(res != null) {
+                T obj = unmarshalResponse(res);
+                response.complete(obj);
+            }
+        });
+        return response;
     }
 
-    private class SubscriberImpl implements Subscriber {
-        @Override
-        public void subscribe(OnmsTwin onmsTwin) {
-            SinkCallback sinkCallback = moduleCallbacks.get(onmsTwin.getKey());
-            if (sinkCallback != null) {
-                sinkCallback.sinkUpdate(onmsTwin);
+    public void subscribe(OnmsTwin onmsTwin) {
+            TwinSubscriberModule<?> module = modules.get(onmsTwin.getKey());
+            if (module != null) {
+                module.update(unmarshalResponse(onmsTwin));
             }
-        }
+    }
+
+
+    <T> T unmarshalResponse(OnmsTwin onmsTwin) {
+        TwinSubscriberModule<?> module = modules.get(onmsTwin.getKey());
+        // Unmarshal with specific class and return
+        return null;
     }
 
 }

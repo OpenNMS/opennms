@@ -41,10 +41,8 @@ public interface OnmsTwinPublisher {
     }
 
     // Register if you are provider of updates on OnmsTwin and provide partial updates through callback.
-    Callback register(OnmsTwin onmsTwin);
+    <T> Callback register(T obj, TwinPublisherModule<T> twinPublisherModule);
 
-    // OnmsTwinPublisher will register this interface with Broker to receive RPC requests
-    interface RpcReceiver {
-        CompletableFuture<OnmsTwin> rpcCallback(OnmsTwinRequest request);
-    }
+    // RPC callback from Broker.
+    CompletableFuture<OnmsTwin> rpcCallback(OnmsTwinRequest request);
 }
