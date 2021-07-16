@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -66,7 +67,7 @@ public class ConfigStoreImplTest {
     private ConfigStoreDao configStoreDao;
 
     @Test
-    public void testData() {
+    public void testData() throws IOException {
         ConfigData<Map<String, String>> configData = new ConfigData<Map<String, String>>(serviceName, "1.0", Object.class);
         Map<String, String> config = new HashMap<>();
         config.put("test", "test");
