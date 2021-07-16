@@ -6,6 +6,5 @@
   ">
 
   <bean name="configStoreDao" class="org.opennms.features.config.dao.impl.ConfigStoreDaoImpl">
-    <constructor-arg ref="dataSource"/>
   </bean>
 </beans>
