@@ -129,7 +129,7 @@ Here's another excerpt where we extract metrics grouped by CPU:
 This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.
 
 
-== Prometheus Node Exporter Collectd Service Configuration Example
+== Prometheus Node Exporter Collectd service configuration example
 
 [source, xml]
 ----
