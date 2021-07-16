@@ -11,7 +11,56 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Configuration Manager</name>
   <modules>
-    <module>api</module>
-    <module>srv</module>
+    <module>service</module>
+    <module>dao</module>
+    <module>rest</module>
   </modules>
+  <properties>
+    <cxf.version>3.3.5</cxf.version>
+    <guava.version>30.1-jre</guava.version>
+    <grpc.version>1.36.0</grpc.version>
+    <grpc.netty.version>4.1.52.Final</grpc.netty.version>
+    <hamcrest.version>1.3</hamcrest.version>
+    <jackson.version>2.12.1</jackson.version>
+    <jaxrs.version>2.1</jaxrs.version>
+    <json.version>20201115</json.version>
+    <junit.version>4.13.2</junit.version>
+    <karaf.version>4.3.0</karaf.version>
+    <kotlin.version>1.4.30</kotlin.version>
+    <log4j.version>2.14.0</log4j.version>
+    <slf4j-api.version>1.7.30</slf4j-api.version>
+    <serialization.version>1.1.0</serialization.version>
+    <servicemix-spec.version>2.9.0</servicemix-spec.version>
+    <swagger.version>2.1.5</swagger.version>
+    <testcontainers.version>1.15.2</testcontainers.version>
+
+    <!-- Kotlin options -->
+    <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+    <!-- Misc. -->
+    <skipITs>true</skipITs>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
