@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,8 +58,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Search", null, "element/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Search for Nodes']");
 
+        // when there's only one node in the database, the "node list" takes you right to that node
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']");
+        findElementByXpath("//div[@class='NPnode']/span[@title='Location: Default']");
 
         clickMenuItem("Info", "Assets", "asset/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Search Asset Information']");

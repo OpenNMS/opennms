@@ -893,7 +893,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         public void send() throws InterruptedException, IOException {
             final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
             builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-            OpenNMSSeleniumIT.stack.opennms().getRestClient().sendEvent(builder.getEvent());
+            stack.opennms().getRestClient().sendEvent(builder.getEvent());
             Thread.sleep(5000); // Wait to allow the event to be processed
         }
     }

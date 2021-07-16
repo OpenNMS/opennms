@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,7 +61,13 @@ import org.testcontainers.containers.Network;
  */
 public final class OpenNMSStack implements TestRule {
 
-    public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder().build());
+	public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder()
+			.withOpenNMS(OpenNMSProfile.newBuilder()
+					.withFile("empty-discovery-configuration.xml", "etc/discovery-configuration.xml")
+					.build())
+			.build());
+
+	public static final OpenNMSStack MINIMAL_WITH_DEFAULT_LOCALHOST = OpenNMSStack.withModel(StackModel.newBuilder().build());
 
     public static final OpenNMSStack MINION = OpenNMSStack.withModel(StackModel.newBuilder()
             .withMinion()

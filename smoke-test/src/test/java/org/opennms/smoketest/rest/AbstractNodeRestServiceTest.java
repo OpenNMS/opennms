@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,11 +37,9 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 
 import io.restassured.RestAssured;
@@ -50,9 +48,6 @@ import io.restassured.http.ContentType;
 public abstract class AbstractNodeRestServiceTest {
 
     private final String endpoint;
-
-    @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void setUp() {

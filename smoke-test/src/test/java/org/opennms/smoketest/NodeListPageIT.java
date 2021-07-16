@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,9 +37,11 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -48,6 +50,9 @@ import com.google.common.collect.Iterables;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumIT {
     public final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss.SSSXXX");
+
+    @ClassRule
+    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
 
     @Before
     public void setUp() throws Exception {
@@ -110,7 +115,7 @@ public class NodeListPageIT extends OpenNMSSeleniumIT {
     public void testNodesWithoutFlows() {
         driver.get(this.getBaseUrlInternal() + "opennms/element/nodeList.htm?flows=false");
         assertThat(Iterables.transform(driver.findElements(By.xpath("//div[@class='NLnode']//a")), WebElement::getText),
-                containsInAnyOrder("TestMachine loc1node1", "TestMachine loc2node1"));
+                containsInAnyOrder("TestMachine loc1node1", "TestMachine loc2node1", "localhost"));
     }
 
     @Test
