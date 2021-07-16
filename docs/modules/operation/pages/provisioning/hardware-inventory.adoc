@@ -1,0 +1,347 @@
+[[hardware-inventory-plugin]]
+= Hardware Inventory Plugin
+
+== Introduction
+
+{page-component-title} is able to import Entity-MIB information from SNMP agents to enrich node data.
+There are two types of Entity-MIBS.
+The first one is https://tools.ietf.org/html/rfc4133[RFC 4133 ENTITY-MIB] as a generic implementation.
+The second type are vendor specific Entity-MIB which are extended by manufacturers.
+
+These Entity-MIBs provide dynamically attributes for describing device components, e.g. model number, description, serial number.
+{page-component-title} supports to enrich a node with this type of information.
+
+It is implemented as an provisioning adapter and is part of the provisioning process based on Provisiond.
+
+== Installation and Configuration
+
+IMPORTANT: To use this feature you have to install the SNMP hardware inventory plugin from the repository.
+
+****
+To install the opennms-plugin-protocol-radius package:
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-provisioning-snmp-hardware-inventory`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
+****
+
+The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml` which defines the support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
+
+[source, xml]
+----
+<hw-extension name="CISCO-ENTITY-ASSET-MIB" sysOidMask=".1.3.6.1.4.1.9.">
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.1"  type="string" alias="ceAssetOEMString" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.2"  type="string" alias="ceAssetSerialNumber" replace="entPhysicalSerialNum" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.3"  type="string" alias="ceAssetOrderablePartNumber" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.4"  type="string" alias="ceAssetHardwareRevision" replace="entPhysicalHardwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.5"  type="string" alias="ceAssetMfgAssyNumber" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.6"  type="string" alias="ceAssetMfgAssyRevision" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.7"  type="string" alias="ceAssetFirmwareID" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.8"  type="string" alias="ceAssetFirmwareRevision" replace="entPhysicalFirmwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.9"  type="string" alias="ceAssetSoftwareID" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.10" type="string" alias="ceAssetSoftwareRevision" replace="entPhysicalSoftwareRev" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.11" type="string" alias="ceAssetCLEI" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.12" type="string" alias="ceAssetAlias" />
+</hw-extension>
+----
+
+Any MIB Column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
+The `<hw-extension>` element lets you group a list of Entity-MIB extensions defined in `<mibObj>` elements based on a sysOidMask of a node.
+
+If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObjs` inside are candidates for populating the inventory.
+In case a vendor provides the standard objects on a different table rather than `entPhysicalTable`, it is possible to override one of the base attributes by specifying on the `mibObj` the attribute that must be overridden.
+
+Only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (i.e. Cisco Devices) are candidates to discover the `mibObj` defined on the extension group.
+The second definition `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum`.
+In this particular case, the adapter will override the base attribute instead of creating a new custom attribute entry.
+
+== Usage
+
+In order to view the data in {page-component-title}, it is recommended to create a requisition, add some Cisco Devices and synchronize it.
+After synchronizing the requisition, the operator should be able to see an event with a message like the  following on the events table for each node with hardware inventory:
+
+REMOVED PIC
+
+The `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event is going to be sent every time the provisioning adapter updates the hardware inventory for a node.
+If the requisition is re-imported and the hardware inventory remains intact, the event is not going to be sent.
+In other words, every time {page-component-title} sends the above event, the hardware inventory of an existing node have been updated.
+
+If for some reason, there is a problem retrieving or storing the inventory data, an `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
+
+== Visualization
+
+The node’s page contains a new link called “Hardware Info”, if the node has hardware inventory {page-component-title} is going to show it after clicking on this link.
+If the node doesn’t have hardware inventory data on the database, the page is going to show a message saying the node doesn’t have hardware data.
+Otherwise, the hierarchical structure of the inventory data is going to be displayed (this feature uses jQuery and a plugin called TreeGrid). Here is an example:
+
+REMOVED PIC
+
+Clicking on the arrows, will expand/collapse the section of the hierarchical tree of data.
+The left side shows the entity name and the internal physical index `entPhysicalIndex` which is the most important OID for Entity-MIB structures and the best way to uniquely identify a specific hardware entity for a given node.
+
+The right side, shows the standard attributes and the vendor attributes that contains a non null value on the database.
+
+== ReST API
+
+See the xref:development:rest/nodes.adoc#nodes-rest[REST docs] for managing nodes.
+
+A new ReST end point has been created in order to expose the hierarchical structure of the hardware inventory as an `XML` or `JSON`.
+Because the hardware inventory is part of a node in {page-component-title}, the inventory is available from the node’s end point, in other words:
+
+  GET /opennms/rest/nodes/{nodeSource}/hardwareInventory
+
+`\{nodeSource}` can be either `nodeid` or the `foreignSource` plus `:` and the `foreignId` of the node, for example:
+
+  GET /opennms/rest/nodes/1/hardwareInventory
+
+Or,
+
+  GET /opennms/rest/nodes/Cisco:HQ/hardwareInventory
+
+In this case, the `foreignId` of the node is `HQ` and it belongs to the requisition (a.k.a `foreignSource`) called `Cisco`.
+The XML structure of the hardware inventory looks like the following example:
+
+[source, xml]
+----
+<hwEntity entPhysicalIndex="1" nodeId="1" entityId="14">
+    <children>
+        <hwEntity entPhysicalIndex="2" nodeId="1" entityId="15" parentPhysicalIndex="1">
+        <children>
+            <hwEntity entPhysicalIndex="9" nodeId="1" entityId="16" parentPhysicalIndex="2">
+            <children>
+            ...
+            </children>
+            <entPhysicalClass>module</entPhysicalClass>
+            <entPhysicalDescr>Cisco 7200VXR Network Processing Engine NPE-400</entPhysicalDescr>
+            <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+            <entPhysicalIsFRU>true</entPhysicalIsFRU>
+            <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+            <entPhysicalModelName>NPE-400</entPhysicalModelName>
+            <entPhysicalName>NPE400 0</entPhysicalName>
+            <entPhysicalParentRelPos>1</entPhysicalParentRelPos>
+            <entPhysicalSerialNum>11111111</entPhysicalSerialNum>
+            <entPhysicalSoftwareRev>12.4(4)T1</entPhysicalSoftwareRev>
+            <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.5.39</entPhysicalVendorType>
+            <vendorAttributes>
+                <hwEntityAttribute class="integer" name="ceExtNVRAMUsed" oid=".1.3.6.1.4.1.9.9.195.1.1.1.3" value="8605"/>
+                <hwEntityAttribute class="integer" name="ceExtNVRAMSize" oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" value="129016"/>
+                <hwEntityAttribute class="integer" name="ceExtProcessorRam" oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" value="268435456"/>
+            </vendorAttributes>
+            </hwEntity>
+            ... 
+        </children>
+        ...
+        </hwEntity>
+    </children>
+    <entPhysicalClass>chassis</entPhysicalClass>
+    <entPhysicalDescr>Cisco 7206VXR, 6-slot chassis</entPhysicalDescr>
+    <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+    <entPhysicalIsFRU>true</entPhysicalIsFRU>
+    <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+    <entPhysicalModelName>CISCO7206VXR</entPhysicalModelName>
+    <entPhysicalName>Chassis</entPhysicalName>
+    <entPhysicalParentRelPos>-1</entPhysicalParentRelPos>
+    <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+    <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.3.74</entPhysicalVendorType>
+    <vendorAttributes/>
+</hwEntity>
+----
+
+All the base attributes are named exactly like in `ENTITY-MIB::entPhysicalTable`.
+The vendor attributes are contained under the `ventorAttributes` tags, and contain the name of the attribute, the source `OID` and the value.
+Each entity has a children tag on which are listed all the child entities.
+Each entity tag contains three attributes:
+
+* entPhysicalIndex
+* parentPhysicalIndex (which is the `entPhysicalIndex` of the parent for reference purpose)
+* nodeId (the ID of the container node for reference purpose)
+
+It is also possible to perform the following operations through REST:
+Get a specific entity
+
+  GET /opennms/rest/nodes/{nodeSource}/hardwareInventory/{entPhysicalIndex}
+
+To retrieve a specific node. If it is not specified the root entity is going to be returned.
+Save a new hardware inventory structure:
+
+  POST /opennms/rest/nodes/{nodeSource}/hardwareInventory
+
+This will override completely the content of the database if exist.
+Add a child entity to an existing entity:
+
+  POST /opennms/rest/nodes/{nodeSource}/hardwareInventory/{entPhysicalIndex}
+
+If the given entity has the `entPhysicalIndex` of an existing child, this child will be overridden, otherwise the child will be appended to the parent.
+Delete an existing entity:
+
+  DELETE /opennms/rest/nodes/{nodeSource}/hardwareInventory/{entPhysicalIndex}
+
+If you provide the `entPhysicalIndex` of the root entity, all the hardware inventory is going to be removed.
+Modify an existing entity:
+
+  PUT /opennms/rest/nodes/{nodeSource}/hardwareInventory/{entPhysicalIndex}
+
+This request expects a form-url-encoded list of fields that need to be modified.
+It is also possible to add new custom attributes using this form.
+
+== Enhancement for Events and Notifications
+
+A set of placeholders are available in {page-component-title} to enrich the content of the events, alarms, and notifications.
+Because of the hierarchical nature of the hardware entities, it you must provide two fields in order to obtain the value of the required attribute.
+This two fields are either the `entPhysicalIndex` or the `entPhysicalName` and the name of the attribute, which could be either one of the base attributes or a vendor attribute.
+
+The `entPhysicalIndex` guarantees that you are going to get always the same entity.
+Using `entPhysicalName` is not a unique way to identify an entity, depending on the device manufacturer.
+When using the name, the first entity that match the given `entPhysicalName` will be used.
+
+It is possible to specify a regular expression to validate against the `entPhysicalName`, and the first match will be used.
+To identify a regular expression, the field should start with `~`.
+
+Possible structure of the placeholders:
+
+* %hardware[\{entPhysicalIndex}:\{attributeName}]%
+* %hardware[\{entPhysicalName}:\{attributeName}]%
+* %hardware[~\{regexOverEntPhysicalName}:\{attributeName}]%
+
+Examples:
+
+[source, xml]
+----
+<event>
+    <uei>uei.opennms.org/hardware/nodeStatus</uei>
+    <event-label>Hardware Information</event-label>
+    <descr>
+        &lt;p&gt;Hardware information for %nodelabel%.&lt;/p&gt;
+        &lt;p&gt;Model Name: %hardware[Chassis:entPhysicalModelName]% &lt;/p&gt;
+        &lt;p&gt;Description: %hardware[9:entPhysicalDescr]% &lt;/p&gt;
+        &lt;p&gt;Memory Used: %hardware[~^NPE.*:ceExtNVRAMUsed]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>&lt;p&gt;Hardware information for %nodelabel%.&lt;/p&gt;</logmsg>
+    <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" />
+</event>
+----
+
+The above event definition is using the following place holders:
+
+* %hardware[9:entPhysicalDescr]%
+* %hardware[Chassis:entPhysicalModelName]%
+* %hardware[~^NPE.*:ceExtNVRAMUsed]%
+
+The first one is for obtaining the base description of the entity identified with an `entPhysicalIndex` of `9`.
+The second one is for obtaining the model name of the Chassis entity based on the `entPhysicalName`.
+The third one is for obtaining the vendor attribute called `ceExtNVRAMUsed` for the entity which its entPhysicalName starts with NPE.
+
+This event looks like the following on the WebUI:
+
+REMOVED PIC
+
+The placeholders can be used also on notifications using the same structure.
+
+=== Juniper MX series hardware information
+
+Make sure that you have compiled the Juniper chassis mib and imported it in {page-component-title} and all other Juniper relevant mibs are part of data collection.
+
+[source, xml]
+----
+<hardware-inventory-adapter-configuration>
+    <hw-extension name="JUNIPER-CHASSIS-MIB" sysOidMask=".1.3.6.1.4.1.2636.">
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.6" instance="jnxContentsEntry" type="string" alias="jnxContentsDescr" replace="entPhysicalDescr"/>
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.7" instance="jnxContentsEntry" type="string" alias="jnxContentsSerialNo" replace="entPhysicalSerialNum" />
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.8" instance="jnxContentsEntry" type="string" alias="jnxContentsRevision" />
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.10" instance="jnxContentsEntry" type="string" alias="jnxContentsPartNo" />
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.11" instance="jnxContentsEntry" type="string" alias="jnxContentChassisId" />
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.12" instance="jnxContentsEntry" type="string" alias="jnxConteChassiDescr" />
+            <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.13" instance="jnxContentsEntry" type="string" alias="jnxContChasCleiCode" />
+    </hw-extension>
+
+    <hw-extension name="JUNIPER-CHASSIS-MIB" sysOidMask=".1.3.6.1.4.1.2636.">
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.6.1.1" instance="jnxContainersEntry" alias="jnxContainersIndex" type="integer32" replace="entPhysicalIndex" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.6.1.3" instance="jnxContainersEntry" alias="jnxContainersLevel" type="integer32"  />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.6.1.4" instance="jnxContainersEntry" alias="jnxContainersWithin" type="integer32" replace="entPhysicalContainedIn"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.6.1.5" instance="jnxContainersEntry" alias="jnxContainersType" type="integer32" replace="entPhysicalIsFru"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.6.1.6" instance="jnxContainersEntry" alias="jnxContainersDescr" type="string" replace ="entPhysicalDescr"/>
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.1" instance="jnxContentsEntry" alias="jnxContentsContainersIndex" type="integer32" replace="entPhysicalContainedIn" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.2" instance="jnxContentsEntry" alias="jnxContentsL1Index" type="integer32" replace="entPhysicalParentRelPos"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.3" instance="jnxContentsEntry" alias="jnxContentsL2Index" type="integer32" replace="entPhysicalParentRelPos"/>
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.5" instance="jnxContentsEntry" alias="jnxContentsType" type="string" replace="entPhysicalIsFru"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.6" instance="jnxContentsEntry" alias="jnxContentsDescr" type="string" replace="entPhysicalDescr"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.7" instance="jnxContentsEntry" alias="jnxContentsSerialNo" type="string" replace="entPhysicalSerialNum"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.8" instance="jnxContentsEntry" alias="jnxContentsRevision" type="string" replace="entPhysicalHardwareRev"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.9" instance="jnxContentsEntry" alias="jnxContentsInstalle" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.10" instance="jnxContentsEntry" alias="jnxContentsPartNo" type="string" replace="entPhysicalModelName"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.11" instance="jnxContentsEntry" alias="jnxContentChassisId" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.12" instance="jnxContentsEntry" alias="jnxConteChassisDescr" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.8.1.13" instance="jnxContentsEntry" alias="jnxContChassisCleiCode" type="string"/>
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.12.1.1" instance="jnxFilledEntry" alias="jnxFilledContainerIndex" type="integer32" replace="entPhysicalContainedIn" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.12.1.5" instance="jnxFilledEntry" alias="jnxFilledDescr" type="string" replace="entPhysicalDescr" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.12.1.6" instance="jnxFilledEntry" alias="jnxFilledState" type="integer" />
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.1" instance="jnxOperatingEntry" alias="jnxOperaContenIndex" type="integer32" replace="entPhysicalContainedIn"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.5" instance="jnxOperatingEntry" alias="jnxOperatingDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.6" instance="jnxOperatingEntry" alias="jnxOperatingState" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7" instance="jnxOperatingEntry" alias="jnxOperatingTemp" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8" instance="jnxOperatingEntry" alias="jnxOperatingCPU" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.9" instance="jnxOperatingEntry" alias="jnxOperatingISR" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.10" instance="jnxOperatingEntry" alias="jnxOperatinDRAMSize" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11" instance="jnxOperatingEntry" alias="jnxOperatingBuffer" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.12" instance="jnxOperatingEntry" alias="jnxOperatingHeap" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.13" instance="jnxOperatingEntry" alias="jnxOperatingUpTime" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.14" instance="jnxOperatingEntry" alias="jnxOperatLastRestar" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.15" instance="jnxOperatingEntry" alias="jnxOperatingMemory" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.16" instance="jnxOperatingEntry" alias="jnxOperaStateOrdere" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.19" instance="jnxOperatingEntry" alias="jnxOperatRestarTime" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.20" instance="jnxOperatingEntry" alias="jnxOpera1MinLoadAvg" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.21" instance="jnxOperatingEntry" alias="jnxOpera5MinLoadAvg" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.22" instance="jnxOperatingEntry" alias="jnxOper15MinLoadAvg" type="gauge32"/>
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.1" instance="jnxRedundancyEntry" alias="jnxRedunContenIndex" type="integer32" replace="entPhysicalContainedIn"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.5" instance="jnxRedundancyEntry" alias="jnxRedundancyDescr" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.6" instance="jnxRedundancyEntry" alias="jnxRedundancyConfig" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.7" instance="jnxRedundancyEntry" alias="jnxRedundancyState" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.8" instance="jnxRedundancyEntry" alias="jnxRedunSwitchCount" type="counter32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.9" instance="jnxRedundancyEntry" alias="jnxRedundSwitchTime" type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.14.1.10" instance="jnxRedundancyEntry" alias="jnxRedunSwitcReason" type="string"/>
+
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.1" instance="jnxFruEntry" alias="jnxFruContentsIndex" type="integer32" replace="entPhysicalContainedIn"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.5" instance="jnxFruEntry" alias="jnxFruName" type="string" replace="entPhysicalName"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.6" instance="jnxFruEntry" alias="jnxFruType" type="string" replace="entPhysicalIsFru"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.7" instance="jnxFruEntry" alias="jnxFruSlot" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.8" instance="jnxFruEntry" alias="jnxFruState" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.9" instance="jnxFruEntry" alias="jnxFruTemp" type="gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.10" instance="jnxFruEntry" alias="jnxFruOfflineReason" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.11" instance="jnxFruEntry" alias="jnxFruLastPowerOff" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.12" instance="jnxFruEntry" alias="jnxFruLastPowerOn" type="integer32"/>
+        <mibObj oid=".1.3.6.1.4.1.2636.3.1.15.1.13" instance="jnxFruEntry" alias="jnxFruPowerUpTime" type="integer"/>
+    </hw-extension>
+</hardware-inventory-adapter-configuration>
+----
+
+You can confirm the data is available on your device by doing a snmpwalk against the OID tree.
+
+[source, console]
+----
+snmpwalk -c Public -v 2c <IP-Address> .1.3.6.1.4.1.2636.3.1.8.1.6
+
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.1.1.0.0 = STRING: "midplane"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.2.1.0.0 = STRING: "PEM 0"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.2.2.0.0 = STRING: "PEM 1"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.4.1.0.0 = STRING: "Left Fan Tray"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.4.1.1.0 = STRING: "Front Fan"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.4.1.2.0 = STRING: "Middle Fan"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.4.1.3.0 = STRING: "Rear Fan"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.7.2.0.0 = STRING: "FPC: MPCE Type 3 3D @ 1/*/*"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.8.2.1.0 = STRING: "PIC: 10x 1GE(LAN) -E  SFP @ 1/0/*"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.8.2.2.0 = STRING: "PIC: 10x 1GE(LAN) -E  SFP @ 1/1/*"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.8.2.3.0 = STRING: "PIC: 10X10GE SFPP @ 1/2/*"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.9.1.0.0 = STRING: "Routing Engine 0"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.9.2.0.0 = STRING: "Routing Engine 1"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.10.1.1.0 = STRING: "FPM Board"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.12.1.0.0 = STRING: "CB 0"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.12.2.0.0 = STRING: "CB 1"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.20.2.1.0 = STRING: "MIC: 3D 20x 1GE(LAN)-E,SFP @ 1/0/*"
+SNMPv2-SMI::enterprises.2636.3.1.8.1.6.20.2.2.0 = STRING: "MIC: 10X10GE SFPP @ 1/1/*"
+----

@@ -23,6 +23,7 @@ Additionally, anywhere you use "id" in the queries below, you can use the foreig
 | `/nodes/\{id}/categories`                                     | Get the list of categories associated with the given node.
 | `/nodes/\{id}/categories/\{categoryname}`                     | Get the category associated with the given node and category name.
 | `/nodes/\{id}/assetRecord`                                    | Get the asset record associated with the given node.
+| `/nodes/\{id}/hardwareInventory`                              | Get the hardware inventory information collected by the xref:operation:provisioning/hardware-inventory.adoc#hardware-inventory-plugin[hardware inventory plugin].
 |===
 
 == POSTs (Adding Data)
@@ -31,10 +32,10 @@ POST requires XML using application/xml as its Content-Type.
 
 [options="header", cols="5,10"]
 |===
-| Resource                                            | Description
-| `/nodes`                                            | Add a node.
+| Resource                                           | Description
+| `/nodes`                                           | Add a node.
 | `/nodes/\{id}/ipinterfaces`                        | Add an IP interface to the node.
-| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services` | Add a service to the interface for the given node.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`  | Add a service to the interface for the given node.
 | `/nodes/\{id}/snmpinterfaces`                      | Add an SNMP interface to the node.
 | `/nodes/\{id}/categories`                          | Add a category association to the node.
 |===
