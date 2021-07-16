@@ -8,14 +8,14 @@ Most modern _SNMP agents_, e.g. _Net-SNMP agent_ and the _Microsoft SNMP service
 
 NOTE: This detector implements the configuration parameters inherited from the <<provisioning/detectors/SnmpDetector.adoc>>.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the HostResourceSwRunDetector
 [options="header, %autowidth"]
@@ -25,7 +25,7 @@ NOTE: This detector implements the configuration parameters inherited from the <
 |===
 
 
-==== Examples
+== Examples
 
 [source,xml]
 ----
