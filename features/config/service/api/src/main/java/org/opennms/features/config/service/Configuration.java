@@ -26,8 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.api;
+package org.opennms.features.config.service;
 
-public interface ConfigurationManager {
+public final class Configuration {
+    private String configId;
+    private String schemaId;
+    private String content;
+
+    public Configuration() {}
+
+    public Configuration(String configId, String schemaId) {
+        this.configId = configId;
+        this.schemaId = schemaId;
+    }
+
+    public String getConfigId() {
+        return configId;
+    }
+
+
+    public String getSchemaId() {
+        return schemaId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
+    }
+
+    public void setSchemaId(String schemaId) {
+        this.schemaId = schemaId;
+    }
+
+
 }
-

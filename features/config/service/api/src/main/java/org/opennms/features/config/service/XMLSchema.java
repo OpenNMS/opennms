@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.features.config.service;
 
-package org.opennms.features.config.dao.api;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.HashMap;
-import java.util.Map;
+public class XMLSchema {
 
-/**
- * This class include meta-data of the config
- */
-public class ConfigData<CONFIG_DATATYPE> {
-    // reserve for later notification use
-    private Class notificationClass;
-    // it should be fileName <> config pair
-    private Map<String, CONFIG_DATATYPE> configs;
+    private final String xsdContent;
+    private final String namespace;
+    private final String topLevelObject;
 
-    public ConfigData() {
-        configs = new HashMap<>();
+    @JsonCreator
+    public XMLSchema(@JsonProperty("xsdContent") String xsdContent,
+                     @JsonProperty("namespace") String namespace,
+                     @JsonProperty("topLevelObject") String topLevelObject) {
+        this.xsdContent = xsdContent;
+        this.namespace = namespace;
+        this.topLevelObject = topLevelObject;
     }
 
-    public Map<String, CONFIG_DATATYPE> getConfigs() {
-        return configs;
+    public String getXsdContent() {
+        return xsdContent;
     }
 
-    public void setConfigs(Map<String, CONFIG_DATATYPE> configs) {
-        this.configs = configs;
+    public String getNamespace() {
+        return namespace;
     }
 
-    public Class getNotificationClass() {
-        return notificationClass;
+    public String getTopLevelObject() {
+        return topLevelObject;
     }
 
-    public void setNotificationClass(Class notificationClass) {
-        this.notificationClass = notificationClass;
-    }
 }
