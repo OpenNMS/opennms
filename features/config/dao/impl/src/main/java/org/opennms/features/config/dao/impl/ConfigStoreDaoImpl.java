@@ -29,8 +29,6 @@
 package org.opennms.features.config.dao.impl;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,66 +37,46 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.features.config.dao.api.ConfigData;
 
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.distributed.kvstore.pgshared.AbstractPostgresKeyValueStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.sql.DataSource;
-
-public class ConfigStoreDaoImpl<T> extends AbstractPostgresKeyValueStore<String,String> implements ConfigStoreDao<T> {
-	private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
+public class ConfigStoreDaoImpl<T> implements ConfigStoreDao<T> {
+	//private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
 	public static final String CONTEXT = "config";
 	private final ObjectMapper mapper;
-	public ConfigStoreDaoImpl(DataSource dataSource) {
-		super(dataSource);
+
+	@Autowired
+	private JsonStore jsonStore;
+
+	public ConfigStoreDaoImpl() {
 		mapper = new ObjectMapper();
 	}
 
 	@Override
-	public boolean register(ConfigData configData) {
-		try {
-			long timestamp = this.put(configData.getName(), mapper.writeValueAsString(configData), CONTEXT);
-			return timestamp > 0;
-		} catch (IOException e) {
-			LOG.error("FAIL TO REGISTER: " + e.getMessage());
-			return false;
-		}
-	}
-
-	private boolean put(ConfigData configData) {
-		try {
-			long timestamp = this.put(configData.getName(), mapper.writeValueAsString(configData), CONTEXT);
-			return timestamp > 0;
-		} catch (IOException e) {
-			LOG.error("FAIL TO REGISTER: " + e.getMessage());
-			return false;
-		}
+	public boolean register(ConfigData configData) throws IOException{
+		long timestamp = jsonStore.put(configData.getName(), mapper.writeValueAsString(configData), CONTEXT);
+		return timestamp > 0;
 	}
 
 	@Override
-	public Optional<ConfigData<T>> getConfigData(String serviceName) {
-		Optional<String> json = this.get(serviceName, CONTEXT);
+	public Optional<ConfigData<T>> getConfigData(String serviceName) throws IOException{
+		Optional<String> json = jsonStore.get(serviceName, CONTEXT);
 		if(json.isEmpty()){
 			return Optional.empty();
 		}
-		try {
-			ConfigData d = mapper.readValue(json.get(), ConfigData.class);
-			return Optional.of(d);
-		} catch (IOException e) {
-			LOG.error("FAIL TO CONVERT JSON TO ConfigData. " + e.getMessage());
-			return Optional.empty();
-		}
+		ConfigData d = mapper.readValue(json.get(), ConfigData.class);
+		return Optional.of(d);
 	}
 
 	@Override
-	public boolean addOrUpdateConfig(String serviceName, String filename, T config) {
+	public boolean addOrUpdateConfig(String serviceName, String filename, T config) throws IOException{
 		Optional<ConfigData<T>> configData = this.getConfigData(serviceName);
 		if(configData.isEmpty()){
 			return false;
 		}
 		Map<String,T> configs = configData.get().getConfigs();
 		if(configs == null){
-			configs = new HashMap<String, T>();
+			configs = new HashMap<>();
 			configData.get().setConfigs(configs);
 		}
 		configs.put(filename, config);
@@ -106,7 +84,7 @@ public class ConfigStoreDaoImpl<T> extends AbstractPostgresKeyValueStore<String,
 	}
 
 	@Override
-	public boolean updateConfigs(String serviceName, Map<String, T> configs) {
+	public boolean updateConfigs(String serviceName, Map<String, T> configs) throws IOException{
 		Optional<ConfigData<T>> configData = this.getConfigData(serviceName);
 		if(configData.isEmpty()){
 			return false;
@@ -116,7 +94,7 @@ public class ConfigStoreDaoImpl<T> extends AbstractPostgresKeyValueStore<String,
 	}
 
 	@Override
-	public boolean deleteConfig(String serviceName, String filename) {
+	public boolean deleteConfig(String serviceName, String filename) throws IOException{
 		Optional<ConfigData<T>> configData = this.getConfigData(serviceName);
 		if(configData.isEmpty()){
 			return false;
@@ -128,12 +106,12 @@ public class ConfigStoreDaoImpl<T> extends AbstractPostgresKeyValueStore<String,
 	}
 
 	@Override
-	public void deregister(String serviceName) {
-		this.delete(serviceName,CONTEXT);
+	public void deregister(String serviceName){
+		jsonStore.delete(serviceName,CONTEXT);
 	}
 
 	@Override
-	public Optional<Map<String, T>> getConfigs(String serviceName) {
+	public Optional<Map<String, T>> getConfigs(String serviceName) throws IOException{
 		Optional<ConfigData<T>> configData = this.getConfigData(serviceName);
 		if(configData.isEmpty()){
 			return Optional.empty();
@@ -141,23 +119,8 @@ public class ConfigStoreDaoImpl<T> extends AbstractPostgresKeyValueStore<String,
 		return Optional.of(configData.get().getConfigs());
 	}
 
-	@Override
-	protected String getTableName() {
-		return "kvstore_jsonb";
-	}
-
-	@Override
-	protected String getValueStatementPlaceholder() {
-		return super.getValueStatementPlaceholder() + "::JSON";
-	}
-
-	@Override
-	protected String getValueTypeFromSQLType(ResultSet resultSet, String columnName) throws SQLException {
-		return resultSet.getString(columnName);
-	}
-
-	@Override
-	protected String getPkConstraintName() {
-		return "pk_kvstore_jsonb";
+	private boolean put(ConfigData configData) throws IOException{
+		long timestamp = jsonStore.put(configData.getName(), mapper.writeValueAsString(configData), CONTEXT);
+		return timestamp > 0;
 	}
 }
