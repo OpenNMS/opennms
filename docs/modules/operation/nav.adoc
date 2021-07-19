@@ -229,6 +229,8 @@
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
 
+* xref:search/search.adoc[]
+
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/jira.adoc[]
 ** xref:ticketing/remedy.adoc[]
