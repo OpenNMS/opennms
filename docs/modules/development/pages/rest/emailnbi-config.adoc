@@ -9,7 +9,7 @@
 | `/config/email-nbi`                       | Gets full content of the configuration.
 | `/config/email-nbi/status`                | Gets the status of the Email NBI (returns either true or false).
 | `/config/email-nbi/destinations`          | Gets the name of all the existing destinations.
-| `/config/email-nbi/destinations/\{name\}` | Gets the content of the destination named \{name\}
+| `/config/email-nbi/destinations/\{name}`  | Gets the content of the destination named \{name}
 |===
 
 == PUTs (Update defaults)
@@ -43,7 +43,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 [options="header", cols="5,10"]
 |===
 | Resource                                  | Description
-| `/config/email-nbi/destinations/\{name\}` | Updates the content of the destination named \{name\}
+| `/config/email-nbi/destinations/\{name}`  | Updates the content of the destination named \{name}
 |===
 
 == DELETEs (Remove Data)
@@ -53,5 +53,5 @@ On a successful request, the Email NBI will be notified about the configuration 
 [options="header", cols="5,10"]
 |===
 | Resource                                  | Description
-| `/config/email-nbi/destinations/\{name\}` | Updates the content of the destination named \{name\}
+| `/config/email-nbi/destinations/\{name}`  | Updates the content of the destination named \{name}
 |===

@@ -1,3 +1,5 @@
+
+[[install-jdbc-driver]]
 = Install JDBC driver
 
 To detect/poll/collect any JDBC service, you must install the corresponding JDBC driver in Minion.

@@ -1,10 +1,10 @@
 
 = CitrixMonitor
 
-This monitor is used to test if a Citrix(R) Server or XenApp Server(R) is providing the _Independent Computing Architecture_ (_ICA_) protocol on TCP 1494.
-The monitor opens a TCP socket and tests the greeting banner returns with `ICA`, otherwise the service is unavailable.
+This monitor tests if a Citrix(R) Server or XenApp Server(R) is providing the Independent Computing Architecture (ICA) protocol on TCP 1494.
+The monitor opens a TCP socket and tests the greeting banner returns with ICA; otherwise, the service is unavailable.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -12,24 +12,25 @@ The monitor opens a TCP socket and tests the greeting banner returns with `ICA`,
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the CitrixMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameter for the CitrixMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter | Description                                                                                             | Required | Default value
-| `port`    | TCP port where the _ICA_ protocol is listening.                                                         | optional | `1494`
+| *Parameter* | *Description* | *Default* 
+| port    | TCP port where the ICA protocol listens.                                                         | 1494
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-WARNING: If you have configure the _Metaframe Presentation Server Client_ using _Session Reliability_, the TCP port is 2598 instead of 1494.
-         You can find additional information on http://support.citrix.com/article/CTX104147[CTX104147].
+WARNING: If you use session reliability to configure the MetaFrame Presentation Server Client, the TCP port is 2598 instead of 1494.
+         Find more information on http://support.citrix.com/article/CTX104147[CTX104147].
         It is not verified if the monitor works in this case.
 
 == Examples
 
-The following example configures {page-component-title} to monitor the ICA protocol on TCP 1494 with 2 retries and waiting 5 seconds for each retry.
+The following example configures {page-component-title} to monitor the ICA protocol on TCP 1494 with two retries and waiting five seconds for each retry.
 [source, xml]
 ----
 <service name="Citrix-TCP-ICA" interval="300000" user-defined="false" status="on">

@@ -1,5 +1,0 @@
-
-= Detectors
-
-Service detectors allow {page-component-title} to bind a service to an interface automatically if it is detected during provisioning of a requisition.
-

@@ -18,7 +18,7 @@ By default you will not receive a challenge, so you must configure your REST cli
 == Data Format
 
 Jersey lets REST calls to be made using either XML or JSON.
-By default, a request to the API is returned in XML. 
+By default, returns a request to the API in XML.
 XML is delivered without namespaces.
 
 NOTE: If a namespace is added manually, in order to use a XML tool to validate against the XSD (like xmllint) it won't be preserved when OpenNMS updates that file.
