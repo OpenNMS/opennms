@@ -1,51 +1,55 @@
 
 = DiskUsageMonitor
 
-The DiskUsageMonitor monitor can be used to test the amount of free space available on certain storages of a node.
-The monitor gets information about the available free storage spaces available by inspecting the _hrStorageTable_ of the link:http://tools.ietf.org/html/rfc1514[HOST-RESOURCES-MIB].
-A storage's description (as found in the corresponding _hrStorageDescr_ object) must match the criteria specified by the `disk` and `match-type` parameters to be monitored.
-A storage's available free space is calculated using the corresponding _hrStorageSize_ and _hrStorageUsed_ objects.
+The DiskUsageMonitor tests the amount of free space available on the specified storage disk of a monitored node.
+The monitor inspects the http://tools.ietf.org/html/rfc1514[HOST-RESOURCES-MIB] hrStorageTable to get information about the available free storage space.
 
-CAUTION: The _hrStorageUsed_ doesn't account for filesystem reserved blocks (i.e., for the super-user), so DiskUsageMonitor will report the service as 
+A disk's description (as found in the corresponding hrStorageDescr object) must match the criteria the `disk` and `match-type` parameters specify to be monitored.
+The available free space is calculated using the corresponding hrStorageSize and hrStorageUsed objects.
+
+CAUTION: The hrStorageUsed does not account for filesystem reserved blocks (for example, for the super-user), so DiskUsageMonitor will report the service as 
          unavailable only when the amount of free disk space is actually lower than `free` minus the percentage of reserved filesystem blocks.
 
-This monitor uses _SNMP_ to accomplish its work.
-Therefore systems against which it is to be used must have an SNMP agent supporting the _HOST-RESOURCES-MIB_ installed and configured.
-Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
-Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
+This monitor uses SNMP to accomplish its work.
+Therefore, systems against which you use it must have an SNMP agent supporting the HOST-RESOURCES-MIB installed and configured.
+Most modern SNMP agents, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with Microsoft Windows, support this MIB.
+Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be spotty.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.DiskUsageMonitor`
-| Remote Enabled | false, relies on SNMP configuration.
+| Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the DiskUsageMonitor
-[options="header, autowidth"]
+.Monitor-specific parameters for the DiskUsageMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter    | Description                                                                                        | Required | Default value
-| `disk`       | A pattern that a storage's description (_hrStorageDescr_) must match to be taken into account.     | required | `-`
-| `free`       | The minimum amount of free space that storages matching the criteria must have available.
-                 This parameter is evaluated as a percent of the storage's reported maximum capacity.               | optional | `15`
-| `match-type` | The way how the pattern specified by the `disk` parameter must be compared to storages description
+| Parameter    | Description                                           |Default
+3+|*Required*
+| disk      | A pattern that a storage's description (hrStorageDescr) must match to be taken into account.     |n/a
+3+|*Optional*
+| free       | The minimum amount of free space that storage matching the criteria must have available.
+                 This parameter is evaluated as a percent of the storage's reported maximum capacity. |15
+| match-type | The way the pattern specified by the disk parameter must be compared to the storage's description.
                  Must be one of the following symbolic operators: +
-                 `endswith`   : The `disk` parameter's value is evaluated as a string that storages' description
+                 `endswith`: The disk parameter's value is evaluated as a string that the storage's description
                                 must end with; +
-                 `exact`      : The `disk` parameter's value is evaluated as a string that storages" description
+                 `exact`: The disk parameter's value is evaluated as a string that the storage's description
                                 must exactly match; +
-                 `regex`      : The `disk` parameter's value is evaluated as a regular expression that storages'
+                 `regex`: The disk parameter's value is evaluated as a regular expression that the storage's
                                 description must match; +
-                 `startswith` : The `disk` parameter's value is evaluated as a string that storages' description
+                 `startswith`: The disk parameter's value is evaluated as a string that storage's description
                                 must start with. +
-                 Note: Comparisons are case-sensitive                                                               | optional | `exact`
-| `port`       | Destination port where the SNMP requests shall be sent.                                            | optional | `from snmp-config.xml`
-| `retries`    | Deprecated.
+                 Note that comparisons are case-sensitive.                                                               | exact
+| port       | Destination port where the SNMP requests are sent.                                            |From snmp-config.xml
+| retries    | Deprecated.
                  Same as `retry`.
-                 Parameter `retry` takes precedence when both are set.                                              | optional | `from snmp-config.xml`
+                 Parameter retry takes precedence when both are set.                                              |From snmp-config.xml
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -67,4 +71,5 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == DiskUsageMonitor vs. thresholds
 
-Storages' available free space can also be monitored using thresholds if you are already collecting these data.
+You can also use thresholds to monitor a storage's available free space if you are already collecting these data.
+The difference between thresholds and this monitor is that while both can trigger notifications, using this monitor will put the node into a service down state and trigger an outage.

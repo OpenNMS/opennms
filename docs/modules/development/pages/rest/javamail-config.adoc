@@ -11,9 +11,9 @@
 | `/config/javamail/readmails`          | Get the name of all the existing readmail configurations.
 | `/config/javamail/sendmails`          | Get the name of all the existing sendmail configurations.
 | `/config/javamail/end2ends`           | Get the name of all the existing end2end mail configurations.
-| `/config/javamail/readmails/\{name\}` | Get the content of the readmail configuration named \{name\}
-| `/config/javamail/sendmails/\{name\}` | Get the content of the sendmail configuration named \{name\}
-| `/config/javamail/end2ends/\{name\}`  | Get the content of the end2end mail configuration named \{name\}
+| `/config/javamail/readmails/\{name}`  | Get the content of the readmail configuration named \{name}
+| `/config/javamail/sendmails/\{name}`  | Get the content of the sendmail configuration named \{name}
+| `/config/javamail/end2ends/\{name}`   | Get the content of the end2end mail configuration named \{name}
 |===
 
 == POSTs (Adding/Updating Data)
@@ -27,7 +27,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 | Resource        | Description
 | `/config/javamail/readmails` | Adds a new or overrides an existing readmail configuration.
 | `/config/javamail/sendmails` | Adds a new or overrides an existing sendmail configuration.
-| `/config/javamail/end2ends` | Adds a new or overrides an existing end2ends mail configuration.
+| `/config/javamail/end2ends`  | Adds a new or overrides an existing end2end mail configuration.
 |===
 
 == PUTs (Update defaults)
@@ -37,8 +37,8 @@ On a successful request, the Email NBI will be notified about the configuration 
 [options="header", cols="5,10"]
 |===
 | Resource                                    | Description
-| `config/javamail/default/readmail/\{name\}` | Sets the readmail named \{name\} as the new default.
-| `config/javamail/default/sendmail/\{name\}` | Sets the sendmail named \{name\} as the new default.
+| `config/javamail/default/readmail/\{name}`  | Sets the readmail named \{name} as the new default.
+| `config/javamail/default/sendmail/\{name}`  | Sets the sendmail named \{name} as the new default.
 |===
 
 == PUTs (Modifying Data)
@@ -50,9 +50,9 @@ On a successful request, the Email NBI will be notified about the configuration 
 [options="header", cols="5,10"]
 |===
 | Resource                              | Description
-| `/config/javamail/readmails/\{name\}` | Updates the content of the readmail configuration named \{name\}
-| `/config/javamail/sendmails/\{name\}` | Updates the content of the sendmail configuration named \{name\}
-| `/config/javamail/end2ends/\{name\}`  | Updates the content of the end2end mail configuration named \{name\}
+| `/config/javamail/readmails/\{name}`  | Updates the content of the readmail configuration named \{name}
+| `/config/javamail/sendmails/\{name}`  | Updates the content of the sendmail configuration named \{name}
+| `/config/javamail/end2ends/\{name}`   | Updates the content of the end2end mail configuration named \{name}
 |===
 
 == DELETEs (Remove Data)
@@ -62,7 +62,7 @@ On a successful request, the Email NBI will be notified about the configuration 
 [options="header", cols="5,10"]
 |===
 | Resource                              | Description
-| `/config/javamail/readmails/\{name\}` | Removes the readmail configuration named \{name\}
-| `/config/javamail/sendmails/\{name\}` | Removes the sendmail configuration named \{name\}
-| `/config/javamail/end2ends/\{name\}`  | Removes the end2end mail configuration named \{name\}
+| `/config/javamail/readmails/\{name}`  | Removes the readmail configuration named \{name}
+| `/config/javamail/sendmails/\{name}`  | Removes the sendmail configuration named \{name}
+| `/config/javamail/end2ends/\{name}`   | Removes the end2end mail configuration named \{name}
 |===

@@ -3,10 +3,10 @@
 
 The LDAPS monitor tests the response of an SSL-enabled LDAP server.
 The LDAPS monitor is an SSL-enabled extension of the LDAP monitor with a default TCP port value of 636.
-All LdapMonitor parameters apply, so please refer to <<service-assurance/monitors/LdapMonitor.adoc#poller-ldap-monitor, LdapMonitor>> for more information.
+All LdapMonitor parameters apply, so refer to <<service-assurance/monitors/LdapMonitor.adoc#poller-ldap-monitor, LdapMonitor>> for more information.
 This monitor implements the same <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>> as LdapMonitor.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -14,18 +14,22 @@ This monitor implements the same <<service-assurance/monitors/introduction.adoc#
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the LdapsMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameter for the LdapsMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter              | Description                                                | Required | Default value
-| `port`                 | The destination port where connections shall be attempted. | optional | `636`
+| Parameter              | Description                                                |Default
+| port                 | The destination port where connections are attempted. | 636
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -37,7 +41,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="searchfilter" value="uid=ulf"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="ldaps"/>
   <parameter key="ds-name" value="ldaps"/>
 </service>

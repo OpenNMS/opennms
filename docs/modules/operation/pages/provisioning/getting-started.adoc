@@ -1,10 +1,10 @@
 
 [[provision-getting-started]]
-= Getting Started
+= Getting started
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 
-{page-component-title} has three methods of provisioining:
+{page-component-title} has three methods of provisioning:
 
 * xref:provisioning/auto-discovery.adoc[]
 * xref:provisioning/directed-discovery.adoc[]
@@ -16,11 +16,11 @@ Be aware that auto discovery can generate too much information, including entiti
 Directed discovery is effective if you know your inventory, particularly with smaller networks (i.e., 100–200 nodes).
 It is also useful for areas of your network that you cannot auto discover.
 
-See the link:#provisioning-works[how it works] section of the introdution for more information on the provisioning process.
+See the link:#provisioning-works[how it works] section of the introduction for more information on the provisioning process.
 
 Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
 
-== Before You Begin
+== Before you begin
 
 If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must xref:provision-snmp-configuration [configure SNMP for provisioning] before using auto or directed discovery.
 This ensures that {page-component-title} can immediately scan newly discovered devices for entities.
@@ -29,7 +29,7 @@ It also makes reporting and thresholding available for these devices.
 In addition, you may want to xref:foreign-source-definition[edit the default foreign source definition] to specify the services to detect and policies to apply during discovery.
 
 [[provision-snmp-configuration]]
-== Configuring SNMP for Provisioning
+== Configuring SNMP for provisioning
 
 Proper SNMP configuration lets {page-component-title} understand network/node topology and automatically enables performance data collection.
 {page-component-title} updates network topology as it provisions nodes.
@@ -43,7 +43,7 @@ image:provisioning/SNMP_Config.png[]
 This screen sets up SNMP within {page-component-title} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
 
-For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml[Configuring SNMP community names].
+For an example of the resulting XML configuration, see link:#SNMP-community-xml[Configuring SNMP community names].
 
 [[foreign-source-definition]]
 == Edit Default Foreign Source Definition
@@ -51,7 +51,7 @@ For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, etc.), the scan interval for discovery, and the policies to use when provisioning.
 
 Policies determine entity persistence and/or set attributes on the discovered entities that control {page-component-title} management behavior.
-Provisiond applies the existing default foreign source definintion unless you choose to modify it.
+Provisiond applies the existing default foreign source definition unless you choose to modify it.
 
 .Edit detectors and set scan interval
 
@@ -94,7 +94,7 @@ Specify `0` to disable automatic scanning.
 . Click the *Policies* tab in the *Default Foreign Source Definition* screen.
 . Specify a name for the policy, select the class from the drop down, and fill out any information associated with that class.
 .. Use the space bar to see the options for the fields.
-. (optional) Click *Add Parameter* to add additional paramters to the class, or *Save*.
+. (optional) Click *Add Parameter* to add additional parameters to the class, or *Save*.
 . Click *Save*.
 . Repeat for any additional policies you want to add.
 . Click *Save* at the top right to save the FS definition.
@@ -102,7 +102,7 @@ Specify `0` to disable automatic scanning.
 NOTE: To return to the default foreign source definition, click *Reset to Default*.
 
 [[requisition-create]]
-== Create a Requisition
+== Create a requisition
 
 A requisition is a set of nodes (networked devices) that you want to import into {page-component-title} for monitoring and management.
 You can iteratively build a requisition and later actually import the nodes in the requisition into {page-component-title}.
@@ -110,7 +110,7 @@ Doing so processes all of the adds/changes/deletes at once.
 
 TIP: Organize nodes with a similar network monitoring profile into a requisition, so that you can assign the same services, detectors, and policies to model the network monitoring behavior (e.g., routers, switches).
 
-This procedure desribes how to create an empty requisition.
+This procedure describes how to create an empty requisition.
 Links to additional information on customizing a requisition appear at the end of the procedure.
 
 . In the web UI, click the gear icon in the top right.
