@@ -67,7 +67,7 @@ case "$1" in
 	echo -n "Stopping $DESC: $NAME"
 	DAEMON_MESSAGES="$($DAEMON stop)"
 	__ret="$?"
-	rm -f /run/opennms/$NAME.pid
+	rm -f /var/run/$NAME.pid
 	echo "."
 	exit "$__ret"
 	;;

@@ -35,9 +35,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
-import org.opennms.integration.api.v1.timeseries.InMemoryStorage;
+import org.opennms.netmgt.timeseries.memory.InMemoryStorage;
 
-public class TimeseriesStorageManagerImplTest {
+public class TimeseriesStorageManagerTest {
 
     @Test
     public void shouldBindAndUnbindProperly() {
@@ -46,7 +46,7 @@ public class TimeseriesStorageManagerImplTest {
         TimeSeriesStorage storage2 = new InMemoryStorage();
 
         // test for null values
-        TimeseriesStorageManagerImpl manager = new TimeseriesStorageManagerImpl(lookup);
+        TimeseriesStorageManager manager = new TimeseriesStorageManager(lookup);
         manager.onUnbind(null, null); // should be ignored
         assertNull(manager.get());
         manager.onUnbind(storage1, null); // should be ignored

@@ -30,7 +30,6 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,9 +38,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
 import org.slf4j.Logger;
@@ -75,13 +74,10 @@ public abstract class Sftp3gppUtils {
      * @return the last filename
      * @throws Exception the exception
      */
-    public static String getLastFilename(BlobStore blobStore, String serviceName, ResourcePath path, String targetPath) throws Exception {
+    public static String getLastFilename(ResourceStorageDao resourceStorageDao, String serviceName, ResourcePath path, String targetPath) throws Exception {
         String filename = null;
         try {
-            String key = getCacheId(path, serviceName, targetPath);
-            filename = blobStore.get(key, Sftp3gppUtils.class.getName())
-                    .map(String::new)
-                    .orElse(null);
+            filename = resourceStorageDao.getStringAttribute(path,  getCacheId(serviceName, targetPath));
         } catch (Throwable e) {
             LOG.info("getLastFilename: creating a new filename tracker on {}", path);
         }
@@ -97,9 +93,8 @@ public abstract class Sftp3gppUtils {
      * @param filename the filename
      * @throws Exception the exception
      */
-    public static void setLastFilename(BlobStore blobStore, String serviceName, ResourcePath path, String targetPath, String filename) throws Exception {
-        String key = getCacheId(path, serviceName, targetPath);
-        blobStore.put(key, filename.getBytes(StandardCharsets.UTF_8), Sftp3gppUtils.class.getName());
+    public static void setLastFilename(ResourceStorageDao resourceStorageDao, String serviceName, ResourcePath path, String targetPath, String filename) throws Exception {
+        resourceStorageDao.setStringAttribute(path, getCacheId(serviceName, targetPath), filename);
     }
 
     /**
@@ -109,8 +104,8 @@ public abstract class Sftp3gppUtils {
      * @param targetPath the target path
      * @return the cache id
      */
-    public static String getCacheId(ResourcePath path, String serviceName, String targetPath) {
-        return String.join("/", path.elements()) + XML_LAST_FILENAME + '.' + serviceName + targetPath.replaceAll("/", "_");
+    public static String getCacheId(String serviceName, String targetPath) {
+        return XML_LAST_FILENAME + '.' + serviceName + targetPath.replaceAll("/", "_");
     }
 
     /**

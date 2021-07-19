@@ -3,5 +3,9 @@ src = "newts.properties.tpl"
 dest = "/opt/opennms/etc/opennms.properties.d/_confd.newts.properties"
 keys = [
     "replication/factor",
-    "opennms/cassandra",
+    "opennms/cassandra/hostnames",
+    "opennms/cassandra/keyspace",
+    "opennms/cassandra/port",
+    "opennms/cassandra/username",
+    "opennms/cassandra/password"
 ]

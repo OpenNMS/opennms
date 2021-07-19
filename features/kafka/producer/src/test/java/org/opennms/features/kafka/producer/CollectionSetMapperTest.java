@@ -48,7 +48,6 @@ import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 
 public class CollectionSetMapperTest {
@@ -57,7 +56,7 @@ public class CollectionSetMapperTest {
     @Test
     public void testCollectionSetForInterfaceResource() throws UnknownHostException {
 
-        CollectionSetMapper collectionSetMapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
+        CollectionSetMapper collectionSetMapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class));
 
         CollectionAgent agent = new MockCollectionAgent(1, "test", InetAddress.getLocalHost());
         NodeLevelResource nodeResource = new NodeLevelResource(1);

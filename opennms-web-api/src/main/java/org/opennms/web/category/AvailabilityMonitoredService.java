@@ -49,21 +49,16 @@ public class AvailabilityMonitoredService {
     @XmlAttribute(name="availability")
     private final double m_availability;
 
-    @XmlAttribute(name="up")
-    private final boolean up;
-
     public AvailabilityMonitoredService() {
         m_id = -1;
         m_name = "";
         m_availability = -1d;
-        this.up = false;
     }
 
-    public AvailabilityMonitoredService(final OnmsMonitoredService svc, final double availability, final boolean up) {
+    public AvailabilityMonitoredService(final OnmsMonitoredService svc, final double availability) {
         m_id = svc.getId();
         m_name = svc.getServiceName();
         m_availability = availability;
-        this.up = up;
     }
 
     public Integer getId() {
@@ -72,10 +67,6 @@ public class AvailabilityMonitoredService {
 
     public double getAvailability() {
         return m_availability;
-    }
-
-    public boolean isUp() {
-        return this.up;
     }
 
     public String getName() {
@@ -87,7 +78,6 @@ public class AvailabilityMonitoredService {
         return new ToStringBuilder(this)
             .append("id", this.getId())
             .append("availability", this.getAvailability())
-            .append("up", this.isUp())
             .append("name", this.getName())
             .toString();
     }
@@ -99,7 +89,6 @@ public class AvailabilityMonitoredService {
         return new EqualsBuilder()
             .append(this.getId(), that.getId())
             .append(this.getAvailability(), that.getAvailability())
-            .append(this.isUp(), that.isUp())
             .append(this.getName(), that.getName())
             .isEquals();
     }
