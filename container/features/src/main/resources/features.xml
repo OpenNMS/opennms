@@ -838,6 +838,7 @@
         <bundle dependency="true">wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
         <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-provisioning-detectors" version="${project.version}" description="OpenNMS :: Provisioning :: Detectors">
         <feature>bsf</feature>
@@ -1766,5 +1767,8 @@
     </feature>
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
+        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
 </features>

@@ -125,6 +125,52 @@ include::docker/initialize.adoc[]
 endif::[]
 ====
 
+== Receive SNMP Traps/Informs
+
+OpenNMS {page-component-title} core lets you receive and process SNMP Traps/Informs out of the box.
+The OpenNMS {page-component-title} core services run as an unprivileged user and can't bind on port numbers < 1024 without escalated privileges.
+For this reason, the default port for the SNMP Trap/Inform listener is set to port number 10162/udp instead of the IANA registered port number 162/udp.
+The following example shows how to configure the local firewall daemon to forward port 162/udp to 10162/udp.
+
+TIP: If you need SNMP Trap listener on port 162/udp directly, you can add the Linux `CAP_NET_BIND_SERVICE` capability to the Java binary using `setcap`.
+     Be aware: this method allows any Java program run on your system to bind to privileged ports < 1024.
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/firewall-core.adoc[]
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/firewall-core.adoc[]
+--
+endif::[]
+====
+
+You can verify your firewall and port forwarding configuration by sending an SNMP trap from a remote system to your OpenNMS {page-component-title} core instance with the following command:
+
+[source, console]
+----
+snmptrap -v 2c -c public opennms-core-host '' 1.3.6.1.4.1.2021.991.17 .1.3.6.1.2.1.1.6.0 s "Milky Way"<1><2>
+----
+<1> By default, OpenNMS uses the community string `public`. 
+If you changed the community string in OpenNMS, use that name here.
+<2> Replace `opennms-core-host` with the IP or FQDN of your OpenNMS {page-component-title} core instance.
+
+On RHEL/CentOS the `snmptrap` command line tool is part of the `net-snmp-utils`. 
+When you run on Debian/Ubuntu, you have to install the `snmp-utils` package.
+
+Your configuration works as expected when you see an SNMP trap event in the web UI.
+
+. Log in to the web UI.
+. Click menu:Status[Events > All events].
+. Verify you received a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
+
 == First login
 
 After you start the {page-component-title} Core services, access the web application at +
@@ -139,3 +185,7 @@ IMPORTANT: Immediately change the password to a secure one.
 . Use *admin* as the current password then type and confirm a new password in the appropriate boxes.
 . Click btn:[Submit].
 . Log out, then log in with your new password.
+
+== First monitored node
+The default configuration will discover a single node with an interface 127.0.0.1 and detect services exposed on the loopback interface, including the OpenNMS-JVM service.
+Nodes with this service have JMX-based data collection performed on Java JVM statistics such as heap memory and open file handles.

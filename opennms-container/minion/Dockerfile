@@ -4,24 +4,15 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as addtional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b88"
+ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b105"
 
 FROM ${BASE_IMAGE} as minion-base
-
-ARG PROM_JMX_EXPORTER_VERSION="0.15.0"
-ARG PROM_JMX_EXPORTER_URL="https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${PROM_JMX_EXPORTER_VERSION}/jmx_prometheus_javaagent-${PROM_JMX_EXPORTER_VERSION}.jar"
 
 ADD ./tarball/minion.tar.gz /opt/
 
 # Organize files based on the build home dir /opt/minion
 RUN mv /opt/minion-* /opt/minion
-
-# Install wget and update certificates for arm/v7 otherwise SSL
-# ERROR: cannot verify repo1.maven.org's certificate, issued by 'CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US':
-# To connect to repo1.maven.org insecurely, use `--no-check-certificate'.
-RUN apt-get update && apt-get -y install wget ca-certificates && update-ca-certificates -f && apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /opt/prom-jmx-exporter && \
-    wget "${PROM_JMX_EXPORTER_URL}" --output-document=/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
+RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
 
 # We set the correct permissions in this stage, so we don't have this as an addtional
 # layer in our deploy image.

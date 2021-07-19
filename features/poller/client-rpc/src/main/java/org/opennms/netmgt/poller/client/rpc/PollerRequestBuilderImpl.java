@@ -183,7 +183,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             // Invoke the adapters in the same order as which they were added
             for (ServiceMonitorAdaptor adaptor : adaptors) {
                 // The adapters may update the status
-                pollStatus = adaptor.handlePollResult(service, interpolatedAttributes, pollStatus);
+                pollStatus = adaptor.handlePollResult(service, new HashMap<>(interpolatedAttributes), pollStatus);
             }
             results.setPollStatus(pollStatus);
             return results;

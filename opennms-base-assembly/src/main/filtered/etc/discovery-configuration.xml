@@ -6,4 +6,5 @@
       <end>192.168.0.254</end>
    </include-range>
    -->
+    <specific retries="1" timeout="2000" foreign-source="selfmonitor">127.0.0.1</specific>
 </discovery-configuration>

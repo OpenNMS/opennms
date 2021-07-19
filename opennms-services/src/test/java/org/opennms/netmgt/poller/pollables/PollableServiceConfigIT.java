@@ -197,6 +197,7 @@ public class PollableServiceConfigIT {
                     .withAttributes(any())
                     .withAdaptor(any())
                     .withAdaptor(any())
+                    .withAdaptor(any())
                     .withPatternVariables(any())
                     .execute()
         ).thenReturn(future);
@@ -212,7 +213,7 @@ public class PollableServiceConfigIT {
 
         PollerConfig pollerConfig = mock(PollerConfig.class);
         Timer timer = mock(Timer.class);
-        PersisterFactory persisterFactory = mock(PersisterFactory.class);
+        PersisterFactory persisterFactory = new MockPersisterFactory();
         ThresholdingService thresholdingService = mock(ThresholdingService.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,

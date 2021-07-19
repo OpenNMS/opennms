@@ -91,14 +91,14 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                 final String urlStr = source.getUrl();
                 final Request request = source.getRequest();
                 URL url = UrlFactory.getUrl(source.getUrl(), source.getRequest());
-                String lastFile = Sftp3gppUtils.getLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath());
+                String lastFile = Sftp3gppUtils.getLastFilename(getBlobStore(), getServiceName(), resourcePath, url.getPath());
                 connection = (Sftp3gppUrlConnection) url.openConnection();
                 if (lastFile == null) {
                     lastFile = connection.get3gppFileName();
                     LOG.debug("collect(single): retrieving file from {}{}{} from {}", url.getPath(), File.separatorChar, lastFile, agent.getHostAddress());
                     VTDNav doc = getVTDXmlDocument(urlStr, request);
                     fillCollectionSet(agent, builder, source, doc);
-                    Sftp3gppUtils.setLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath(), lastFile);
+                    Sftp3gppUtils.setLastFilename(getBlobStore(), getServiceName(), resourcePath, url.getPath(), lastFile);
                     Sftp3gppUtils.deleteFile(connection, lastFile);
                 } else {
                     connection.connect();
@@ -115,7 +115,7 @@ public class Sftp3gppVTDXmlCollectionHandler extends AbstractVTDXmlCollectionHan
                             } finally {
                                 IOUtils.closeQuietly(is);
                             }
-                            Sftp3gppUtils.setLastFilename(getResourceStorageDao(), getServiceName(), resourcePath, url.getPath(), fileName);
+                            Sftp3gppUtils.setLastFilename(getBlobStore(), getServiceName(), resourcePath, url.getPath(), fileName);
                             Sftp3gppUtils.deleteFile(connection, fileName);
                             collected = true;
                         }

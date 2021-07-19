@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.timeseries.sampleread;
+package org.opennms.bootstrap;
 
-import java.util.List;
+import java.nio.file.Path;
 
-import org.opennms.integration.api.v1.timeseries.Sample;
+public class FilesystemPermissionException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-/**
- * Wrapper class for a {@link java.util.List} of {@link Sample} objects.
- *
- * Instances of this class are preallocated by the {@link com.lmax.disruptor.dsl.Disruptor}.
- *
- * @author jwhite
- */
-public class SampleBatchEvent {
-    private List<Sample> samples;
-    private boolean metadata;
+    public Path path;
+    public String user;
 
-    public void setSamples(List<Sample> samples) {
-        this.samples = samples;
+    public FilesystemPermissionException(final Path path, final String user) {
+        this(path, user, null);
     }
 
-    public List<Sample> getSamples() {
-        return samples;
-    }
-
-    public void setMetadata(boolean metadata) {
-        this.metadata = metadata;
-    }
-
-    public boolean isMetadata() {
-        return metadata;
+    public FilesystemPermissionException(final Path path, final String user, final Exception e) {
+        super("Failed to validate " + path + " (or its contents) for ownership by " + user, e);
+        this.path = path;
+        this.user = user;
     }
 }

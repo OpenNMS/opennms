@@ -75,6 +75,23 @@ WARNING: The RRD configuration and the service polling interval must be aligned.
 
 IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
 
+[[ga-pollerd-packages-service-status-persistence]]
+== Service Status Persistence
+
+You can configure each service monitor to store the current status of the service in RRD files.
+This allows you to query the current status and the status history.
+
+This feature is disabled by default.
+You must enable it individually for each service.
+To do so, add a service parameter to the appropriate services in `poller-configuration.xml`:
+
+[source, xml]
+----
+<service name="EXAMPLE" ...>
+  <parameter key="rrd-status" value="true"/>
+</service>
+----
+
 [[ga-pollerd-packages-overlapping-service]]
 == Overlapping Services
 
