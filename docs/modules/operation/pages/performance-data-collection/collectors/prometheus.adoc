@@ -2,36 +2,39 @@
 [[ga-performance-mgmt-collectors-prometheus-collector]]
 = PrometheusCollector
 
-The _PrometheusCollector_ collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
+The PrometheusCollector collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
 This has been adopted by many applications and is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
 
 This collector provides tools for parsing and mapping the metrics to the collection model used by {page-component-title}.
 
-== Collector Facts
+== Collector facts
 
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.collectd.prometheus.PrometheusCollector`
 | Package             | core
-| Supported on Minion | `Yes`
+| Supported on Minion | Yes
 |===
 
-== Collector Parameters
+== Collector parameters
 
 .Collector-specific parameters for the PrometheusCollector
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter       | Description                                    | Required | Default value
-| `collection`    | The name of the _Prometheus Collection_ to use | required |
-| `url`           | HTTP URL to query for the metrics              | required |
-| `timeout`       | HTTP socket and read timeout in milliseconds   | optional | 10000 (10 seconds)
-| `retry`         | Number of retries before failing               | optional | 2
-| `header-*       | Optional headers to pass in the HTTP request   | optional | (none)
+| Parameter       | Description                                    | Default
+3+|*Required*
+| collection    | The name of the Prometheus Collection to use. |
+| url           | HTTP URL to query for the metrics.              |
+3+|*Optional*
+| timeout       | HTTP socket and read timeout in milliseconds   | 10000 (10 seconds)
+| retry         | Number of retries before failing               | 2
+| header-*       | Optional headers to pass in the HTTP request   | (none)
 |===
 
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
-== Prometheus Collector Usage
+== Prometheus collector use
 
 Let's demonstrate the usage of the collector with an example running against https://github.com/prometheus/node_exporter[node_exporter].
 
@@ -75,10 +78,10 @@ NOTE: Some collectors require a database node and IP interface.
                 Attribute[Active_file_bytes:1.2694765568E10]
 ----
 
-> Update the IP addresses in the command as necessary.
+Update the IP addresses in the command as necessary.
 
 [[ga-performance-mgmt-collectors-prometheus-collector-configuration]]
-== Prometheus Collector Configuration
+== Prometheus collector configuration
 
 Prometheus collection definitions are maintained in `etc/prometheus-datacollection.d/`.
 

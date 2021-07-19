@@ -3,7 +3,7 @@
 
 The XmlCollector collects and extracts metrics from XML and JSON documents.
 
-== Collector Facts
+== Collector facts
 
 [options="autowidth"]
 |===
@@ -20,16 +20,17 @@ The following handlers are not currently supported on Minion:
 * Sftp3gppXmlCollectionHandler
 * Sftp3gppVTDXmlCollectionHandler
 
-== Collector Parameters
+== Collector parameters
 
 Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmlCollector
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter              | Description                              | Required | Default value
-| `collection`           | The name of the XML Collection to use.  | required | `-`
-| `handler-class`        | Class that performs the collection.     | optional | `org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler`
+| Parameter              | Description                              | Default
+| collection           | The name of the XML Collection to use.  | -
+| handler-class        | Class that performs the collection.     | org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler
 |===
 
 The available handlers include:
