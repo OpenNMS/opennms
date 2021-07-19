@@ -51,14 +51,14 @@ echo 'org.opennms.instance.id=MyNMS' > "$\{OPENNMS_HOME}/etc/opennms.properties.
 ----
 
 Update the Minion's instance ID accordingly to match the {page-component-title} instance.
-The same ID instance property should be present in `${MINION_HOME}/etc/custom.system.properties`.
+The same ID instance property should be present in `$\{MINION_HOME}/etc/custom.system.properties`.
 
 [source, sh]
 ----
 echo 'org.opennms.instance.id=MyNMS' > "$\{MINION_HOME}/etc/custom.system.properties"
 ----
 CAUTION: If you change the instance ID setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
-The configuration can be modified with the file `${OPENNMS_HOME}/etc/opennms-activemq.xml`:
+The configuration can be modified with the file `$\{OPENNMS_HOME}/etc/opennms-activemq.xml`:
 
 [source, xml]
 ----
