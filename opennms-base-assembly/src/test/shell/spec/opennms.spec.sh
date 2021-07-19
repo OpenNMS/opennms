@@ -3,6 +3,8 @@
 # shellcheck disable=SC1090,SC1091
 . "$SHUNITDIR/init.sh"
 
+RUNAS="$(id -u -n)"; export RUNAS
+
 oneTimeSetUp() {
 	MYUSER="$(id -u -n)"
 	TESTDIR="$(get_testdir opennms)"

@@ -3,7 +3,7 @@
 JAVA_OPTIONS="-Xmx512m"
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
-RUNAS=opennms
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"

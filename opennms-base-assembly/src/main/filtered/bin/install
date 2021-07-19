@@ -4,7 +4,7 @@
 OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
-RUNAS=opennms
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 # if we have ulimit, attempt to raise it
 # shellcheck disable=SC3045

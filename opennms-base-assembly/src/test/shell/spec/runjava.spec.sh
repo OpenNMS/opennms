@@ -8,6 +8,8 @@ FAKE_JAVA_HOME="$TESTDIR/java_home"
 FAKE_OPENNMS_HOME="$TESTDIR/opennms_home"
 find "$TESTDIR" -type f \( -name \*.sh -o -name runjava\* \) -exec chmod a+x {} \;
 
+RUNAS="$(id -u -n)"; export RUNAS
+
 runRunjava() {
   runCommand runjava "$RUNJAVA" "$@"
 }
