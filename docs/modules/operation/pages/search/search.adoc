@@ -6,7 +6,7 @@
 == Search bar
 
 The search bar uses keywords to return both nodes that match the keyword(s) and a list of actions you can perform that relate to the keyword.
-Press the [shift] key twice or click in the search bar to activate it for typing.
+Press the btn:[Shift] key twice or click in the search bar to activate it for typing.
 
 image::search/search-sample.png[]
 
