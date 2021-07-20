@@ -3,22 +3,21 @@
 
 == Introduction
 
-{page-component-title} is able to import Entity-MIB information from SNMP agents to enrich node data.
-There are two types of Entity-MIBS.
-The first one is https://tools.ietf.org/html/rfc4133[RFC 4133 ENTITY-MIB] as a generic implementation.
-The second type are vendor specific Entity-MIB which are extended by manufacturers.
+{page-component-title} can be extended to import Entity-MIB information from SNMP agents to enrich node data.
+There are two types of Entity-MIBs.
+The first type is a generic implementation of https://tools.ietf.org/html/rfc4133[RFC 4133 ENTITY-MIB].
+The second type are vendor specific Entity-MIBs, which are provided by some manufacturers.
 
-These Entity-MIBs provide dynamically attributes for describing device components, e.g. model number, description, serial number.
-{page-component-title} supports to enrich a node with this type of information.
-
-It is implemented as an provisioning adapter and is part of the provisioning process based on Provisiond.
+These Entity-MIBs provide dynamic attributes for describing device components.
+This includes information such as model number, description, serial number, and more.
+These fields can be added to nodes in {page-component-title} using a provisioning adapter extension of the Provisiond service.
 
 == Installation and Configuration
 
 IMPORTANT: To use this feature you have to install the SNMP hardware inventory plugin from the repository.
 
 ****
-To install the opennms-plugin-protocol-radius package:
+To install the opennms-plugin-provisioning-snmp-hardware-inventory package:
 
 * For RPM-based distributions:
 ** `yum install opennms-plugin-provisioning-snmp-hardware-inventory`
@@ -27,6 +26,12 @@ To install the opennms-plugin-protocol-radius package:
 ****
 
 The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml` which defines the support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
+
+Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
+The `<hw-extension>` element lets you group a list of Entity-MIB extensions defined in `<mibObj>` elements based on a sysOidMask of a node.
+If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
+In case a vendor provides the standard objects on a different table rather than `entPhysicalTable`, it is possible to override one of the base attributes by specifying on the `mibObj` that the attribute that must be overridden.
+
 
 [source, xml]
 ----
@@ -46,27 +51,12 @@ The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inve
 </hw-extension>
 ----
 
-Any MIB Column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
-The `<hw-extension>` element lets you group a list of Entity-MIB extensions defined in `<mibObj>` elements based on a sysOidMask of a node.
+In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (i.e. Cisco Devices) are candidates to discover the `mibObj` entities defined on the extension group.
+The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic ENTITY-MIB attribute instead of creating a new custom attribute entry.
 
-If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObjs` inside are candidates for populating the inventory.
-In case a vendor provides the standard objects on a different table rather than `entPhysicalTable`, it is possible to override one of the base attributes by specifying on the `mibObj` the attribute that must be overridden.
-
-Only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (i.e. Cisco Devices) are candidates to discover the `mibObj` defined on the extension group.
-The second definition `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum`.
-In this particular case, the adapter will override the base attribute instead of creating a new custom attribute entry.
-
-== Usage
-
-In order to view the data in {page-component-title}, it is recommended to create a requisition, add some Cisco Devices and synchronize it.
-After synchronizing the requisition, the operator should be able to see an event with a message like the  following on the events table for each node with hardware inventory:
-
-REMOVED PIC
-
-The `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event is going to be sent every time the provisioning adapter updates the hardware inventory for a node.
-If the requisition is re-imported and the hardware inventory remains intact, the event is not going to be sent.
-In other words, every time {page-component-title} sends the above event, the hardware inventory of an existing node have been updated.
-
+Once your `snmp-hardware-inventory-adapter-configuration.xml` file has been configured, the Provisiond service will start attempting to collect hardware inventory data when refreshing requisitions.
+After synchronizing the requisition, you should be able to see an `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event to confirm inventory was collected.
+This event will be triggered only when the provisioning adapter detects changed hardware inventory for a node.
 If for some reason, there is a problem retrieving or storing the inventory data, an `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
 
 == Visualization
