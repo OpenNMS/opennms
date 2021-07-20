@@ -170,13 +170,13 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
         try {
             String newId = UUID.randomUUID().toString();
+            futureMap.put(newId, sendFuture);
             atomicResultQueue.enqueue(message, newId, result -> {
                 LOG.trace("Result of enqueueing for Id {} was {}", newId, result);
 
                 if (result == DispatchQueue.EnqueueResult.DEFERRED) {
+                    futureMap.remove(newId);
                     sendFuture.complete(DispatchStatus.QUEUED);
-                } else {
-                    futureMap.put(newId, sendFuture);
                 }
             });
         } catch (WriteFailedException e) {
