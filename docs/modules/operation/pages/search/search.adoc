@@ -10,7 +10,10 @@ Press the [shift] key twice or click in the search bar to activate it for typing
 
 image::search/search-sample.png[]
 
-Note that the search results for nodes also display any xref:meta-data.adoc#metadata-overview[metadata] associated with the node, such as a label, location, admin user, and so on.
+Note that the search results for nodes also displays any nodes with xref:meta-data.adoc#metadata-overview[metadata] that match the keyword, such as a label, location, admin user, and so on.
+For example, if you search for 'foo' and get a node match of 'foobar', the result displays no metadata.
+However, if you search for 'foo' and a match is found in a node's metadata customkey='somefoo' (even if the node name does not contain 'foo'), the result displays the name of the node (for example, 'node1') and the 'foo' metadata associated with it.
+See xref:search-customize[Customize search results] below for more information.
 
 Click on a node to navigate to the node's page.
 Click on one of the actions to navigate to the screen that lets you complete the specified action.
@@ -85,10 +88,11 @@ The field search is case-insensitive and inclusive.
 Use the underscore character as a single-character wildcard.
 Use the percent character as a multiple-character wildcard.
 
-== Customizing search results
+[[search-customize]]
+== Customize search results
 
 It is possible to customize the search results to show additional metadata in the search results pop up.
-By creating a new file in `$OPENNMS_HOME/etc/opennms.properties.d/` and specifying a value for `org.opennms.netmgt.search.info`, you can pick additional metadata fields to display.
+Create a new file in `$OPENNMS_HOME/etc/opennms.properties.d/` and specify a value for `org.opennms.netmgt.search.info`, to pick additional metadata fields to display.
 
 This example displays the node's sys-contact and the associated department:
 
