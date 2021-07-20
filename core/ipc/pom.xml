@@ -16,5 +16,6 @@
     <module>sink</module>
     <module>grpc</module>
     <module>osgi</module>
+    <module>twin</module>
   </modules>
 </project>
