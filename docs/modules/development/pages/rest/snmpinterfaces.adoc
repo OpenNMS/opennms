@@ -14,7 +14,7 @@ Examples:
 
 [options="header, autowidth", cols="5,10"]
 |===
-| Resource        | Description
+| Resource            | Description
 | `/snmpinterfaces`   | Get all SNMP interfaces for the given search criteria.
 |===
 
@@ -29,5 +29,5 @@ curl -u admin:admin "http://localhost:8980/opennms/api/v2/snmpinterfaces?_s=node
 
 == PUTs/POSTs (Modifying Data)
 
-The `/snmpinterfaces` REST API is read only. 
+The `/snmpinterfaces` REST API is read-only.
 To create new SNMP interfaces, use the `snmpinterfaces` resources under the xref:rest/nodes.adoc#nodes-rest[nodes endpoint].

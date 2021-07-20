@@ -1,10 +1,10 @@
 
 = XmpMonitor
 
-The #https://www.opennms.org/wiki/XMP[XMP]# monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.
-The service is considered available when the session attempt succeeds and the agent returns its _sysObjectID_ without error.
+The XMP monitor tests for XMP service/agent availability by establishing an XMP session and querying the target agent's sysObjectID variable contained in the Core MIB.
+The service is considered available when the session attempt succeeds and the agent returns its sysObjectID without error.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -12,27 +12,32 @@ The service is considered available when the session attempt succeeds and the ag
 | Remote Enabled | false
 |===
 
-== Configuration and Use
+== Configuration and use
 
-These parameters can be set in the _XMP_ service entry in _collectd-configuration.xml_ and will override settings from _xmp-config.xml_.
-Also, don't forget to add an entry in _response-graph.properties_ so that response values will be graphed.
+You can set these parameters in the XMP service entry in `collectd-configuration.xml` and will override settings from `xmp-config.xml`.
+Don't forget to add an entry in response-graph.properties so that response values will be graphed.
 
-.Monitor specific parameters for the XmpMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the XmpMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter     | Description                                            | Required | Default value
-| `timeout`     | Time in milliseconds to wait for a successful session. | optional | `5000`
-| `authenUser`  | The authenUser parameter for use with the XMP session. | optional | `xmpUser`
-| `port`        | TCP port to connect to for XMP session establishment   | optional | `5270`
-| `mib`         | Name of MIB to query                                   | optional | `core`
-| `object`      | Name of MIB object to query                            | optional | `sysObjectID`
+| Parameter     | Description                                            | Default
+| timeout     | Time in milliseconds to wait for a successful session. | 5000
+| authenUser  | The authenUser parameter for use with the XMP session. | xmpUser
+| port        | TCP port to connect to for XMP session establishment.   | 5270
+| mib         | Name of MIB to query.                                   | core
+| object      | Name of MIB object to query.                            | sysObjectID
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-.Adding entry in collectd-configuration.xml
+Example uses CentOS/RHEL path name. 
+
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`. 
+
+.Add entry in poller-configuration.xml
 [source, xml]
 ----
 <service name="XMP" interval="300000" user-defined="false" status="on">

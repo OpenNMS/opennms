@@ -9,7 +9,7 @@ NOTE: Unless otherwise specified, all units of time are expressed in millisecond
 [options="header", cols="5,10"]
 |===
 | Resource                                     | Description
-| `/measurements/\{resourceid\}/\{attribute\}` | Retrieve the measurements for a single attribute.
+| `/measurements/\{resourceid}/\{attribute}`   | Retrieve the measurements for a single attribute.
 |===
 
 The following table shows all supported query string parameters and their default values.
@@ -201,15 +201,15 @@ The JEXL 2.1.x library is used to parse the expression string and this also lets
 JEXL uses a context that is pre-populated by OpenNMS with the results of the query.
 Several constants and arrays are also predefined as references in the context by OpenNMS.
 
-[%header,cols=2*] 
+[%header,cols=2*]
 |===
 |Constant or Prefix
 |Description
 
-|__inf 
+|__inf
 |Double.POSITIVE_INFINITY
 
-|__neg_inf 
+|__neg_inf
 |Double.NEGATIVE_INFINITY
 
 |NaN
@@ -238,14 +238,14 @@ OpenNMS predefines a number of functions for use in expressions that are referen
 All of these functions return a Java double value.
 
 Pre defined functions
-[%header,cols=3*] 
+[%header,cols=3*]
 |===
 |Function
 |Description
 |Example
 
 |jexl:evaluate("_formula"):
-|Passes a string to the JEXL engine to be evaluated as if it were entered as a normal expression. 
+|Passes a string to the JEXL engine to be evaluated as if it were entered as a normal expression.
 Like normal expressions, expressions evaluated through this function will return a Java double value.
 This makes it possible to reference and evaluate a formula that has been stored in OpenNMS as a string variable.
 The use case for this capability is that it gives us the ability to define and store a per-node and per-value correction formula that can normalize samples from different sample sources.
@@ -260,7 +260,7 @@ The use case for this capability is that it gives us the ability to define and s
 |math:cos(20)
 
 |fn:
-|References the class org.opennms.netmgt.measurements.impl.SampleArrayFunctions. 
+|References the class org.opennms.netmgt.measurements.impl.SampleArrayFunctions.
 This contains several functions that can reference previous samples in the time series.
 |
 

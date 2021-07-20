@@ -1,9 +1,10 @@
 
-= Yet Other API Examples
+= Other API examples
 
-.List the Nodes in a Provisioning Group
+.List the nodes in a requisition
 
-The `provision.pl` script doesn't supply this feature but you can get it via the REST API. Here is an example using `curl`:
+The `provision.pl` script doesn't supply this feature but you can get it via the REST API.
+Here is an example using `curl`:
 
 [source, bash]
 ----

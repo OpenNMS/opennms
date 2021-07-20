@@ -13,8 +13,8 @@ The following operations are supported:
 [options="header, %autowidth"]
 |===
 | Parameter                                         | Description
-| `/snmpConfig/\{ipaddress\}`                       | Get the SNMP configuration for a given IP address.
-| `/snmpConfig/\{ipaddress\}?location=\{location\}` | Get the SNMP configuration for a given IP address at a given location.
+| `/snmpConfig/\{ipaddress}`                        | Get the SNMP configuration for a given IP address.
+| `/snmpConfig/\{ipaddress}?location=\{location}`   | Get the SNMP configuration for a given IP address at a given location.
 |===
 
 == PUTs (Modifying Data)
@@ -22,7 +22,7 @@ The following operations are supported:
 [options="header, %autowidth"]
 |===
 | Parameter                   | Description
-| `/snmpConfig/\{ipaddress\}` | Add or update the SNMP configuration for a given IP address.
+| `/snmpConfig/\{ipaddress}`  | Add or update the SNMP configuration for a given IP address.
 |===
 
 == Determine API version

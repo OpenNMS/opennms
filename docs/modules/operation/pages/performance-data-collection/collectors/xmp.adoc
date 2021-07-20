@@ -9,7 +9,7 @@ The XmpCollector collects peformance metrics via the X/Open Management Protocol 
 |===
 | Class Name          | `org.opennms.netmgt.protocols.xmp.collector.XmpCollector`
 | Package             | opennms-plugin-protocol-xmp
-| Supported on Minion | `No`
+| Supported on Minion | No
 |===
 
 == Collector Parameters
