@@ -26,33 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.api;
+package org.opennms.core.ipc.twin.common;
 
 import static com.jayway.awaitility.Awaitility.await;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 
 public class TwinApiIT {
+
+    static String rpcRequestTopic = "OpenNMS-MINION-RPC-Request-onms-twin";
+    static String rpcResponseTopic = "OpenNMS-MINION-RPC-Response-onms-twin";
+    static String sinkTopic = "OpenNMS-MINION-Sink-onms-twin";
 
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
@@ -61,23 +68,27 @@ public class TwinApiIT {
 
     private MockTwinSubscriber mockTwinSubscriber;
 
+
     @Before
     public void setup() {
         Hashtable<String, Object> kafkaConfig = new Hashtable<>();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        MockTwinSubscriberBroker mockBrokerOnMinion = new MockTwinSubscriberBroker(kafkaConfig);
-        MockTwinPublisherBroker mockBrokerOnOpenNMS = new MockTwinPublisherBroker(kafkaConfig);
-        mockBrokerOnMinion.init();
-        mockBrokerOnOpenNMS.init();
-        mockTwinPublisher = new MockTwinPublisher(mockBrokerOnOpenNMS);
-        mockTwinSubscriber = new MockTwinSubscriber(mockBrokerOnMinion);
+        kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+        kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
+        mockTwinPublisher = new MockTwinPublisher(kafkaConfig);
+        mockTwinSubscriber = new MockTwinSubscriber(kafkaConfig, new MockMinionIdentityImpl());
+        mockTwinPublisher.init();
+        mockTwinSubscriber.init();
     }
 
     @Test
     public void testTwinApiWithMocks() throws IOException {
         MinionInfoBean minionInfoBean = new MinionInfoBean(3, "minion1");
-        TwinPublisher.Session<MinionInfoBean> session = mockTwinPublisher.register(minionInfoBean, "minion-bean");
+        TwinPublisher.Session<MinionInfoBean> session = mockTwinPublisher.register(minionInfoBean, "minion-bean", null);
         Map<String, MinionInfoBean> minionBeans = new HashMap<>();
         Closeable closeable = mockTwinSubscriber.getObject("minion-bean", MinionInfoBean.class, new Consumer<MinionInfoBean>() {
             @Override
@@ -87,7 +98,7 @@ public class TwinApiIT {
         });
         await().atMost(15, TimeUnit.SECONDS).until(minionBeans::size, Matchers.is(1));
         minionBeans.clear();
-        session.publish(new MinionInfoBean(4, "minion2"));
+        session.publish(new MinionInfoBean(4, "minion2"), null);
         await().atMost(15, TimeUnit.SECONDS).until(minionBeans::size, Matchers.is(1));
         MinionInfoBean response = minionBeans.get("minion-bean");
         Assert.assertThat(response.getNodeId(), Matchers.is(4));
@@ -95,16 +106,28 @@ public class TwinApiIT {
         session.close();
     }
 
-    @Test
-    public void testObjectMapperWithMocks() throws IOException {
-        MinionInfoBean minionInfoBean = new MinionInfoBean(3, "minion1");
-        ObjectMapper objectMapper = new ObjectMapper();
-        byte[] value = objectMapper.writeValueAsBytes(minionInfoBean);
-        MinionInfoBean bean = objectMapper.readValue(value, MinionInfoBean.class);
-        Assert.assertThat(bean.getNodeId(), Matchers.is(3));
-        MockTwinResponse mockTwinResponse = new MockTwinResponse("mock", "minion".getBytes(StandardCharsets.UTF_8));
-        byte[] response = objectMapper.writeValueAsBytes(mockTwinResponse);
-        MockTwinResponse twinResponse = objectMapper.readValue(response, MockTwinResponse.class);
-        Assert.assertThat(twinResponse.getKey(), Matchers.is("mock"));
+    private static class MockMinionIdentityImpl implements MinionIdentity {
+
+        @Override
+        public String getId() {
+            return "mock-id";
+        }
+
+        @Override
+        public String getLocation() {
+            return "mock-location";
+        }
+
+        @Override
+        public String getType() {
+            return SystemType.Minion.name();
+        }
     }
+
+    @After
+    public void destroy() {
+        mockTwinSubscriber.destroy();
+        mockTwinPublisher.destroy();
+    }
+
 }

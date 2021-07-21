@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.api;
+package org.opennms.core.ipc.twin.common;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -34,42 +34,27 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.MinionIdentity;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MockTwinSubscriber implements TwinSubscriber {
-
-    private final TwinSubscriberBroker twinSubscriberBroker;
+public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private final Map<String, Class<?>> classesByKey = new ConcurrentHashMap<>();
     private final Map<String, Consumer<?>> consumerMap = new ConcurrentHashMap<>();
     private final Map<Closeable, String> closableMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MinionIdentity minionIdentity;
 
-    public MockTwinSubscriber(TwinSubscriberBroker twinSubscriberBroker) {
-        this.twinSubscriberBroker = twinSubscriberBroker;
-        twinSubscriberBroker.registerProvider(new Consumer<TwinResponse>() {
-            @Override
-            public void accept(TwinResponse twinResponse) {
-                String key = twinResponse.getKey();
-                if (key != null) {
-                    Consumer<?> consumer = consumerMap.get(key);
-                    if(consumer != null) {
-                        consumer.accept(unmarshalResponse(key, twinResponse.getObject()));
-                    }
-                }
-            }
-        });
+    protected AbstractTwinSubscriber(MinionIdentity minionIdentity) {
+        this.minionIdentity = minionIdentity;
     }
 
-    private <T> T unmarshalResponse(String key, byte[] value) {
-        Class<?> clazz = classesByKey.get(key);
-        try {
-            return (T) objectMapper.readValue(value, clazz);
-        } catch (IOException e) {
-            // Ignore
-        }
-        return null;
-    }
+    /**
+     * @param twinRequest Handle RpcRequest from @{@link AbstractTwinSubscriber}
+     */
+    abstract void handleRpcRequest(TwinRequestBean twinRequest);
 
 
     @Override
@@ -85,8 +70,29 @@ public class MockTwinSubscriber implements TwinSubscriber {
             }
         };
         closableMap.put(closeable, key);
-        TwinRequest twinRequest = new MockTwinRequest(key, "MINION");
-        twinSubscriberBroker.sendRequest(twinRequest);
+        TwinRequestBean twinRequestBean = new TwinRequestBean(key, minionIdentity.getLocation());
+        handleRpcRequest(twinRequestBean);
         return closeable;
+    }
+
+    protected void accept(TwinResponseBean twinResponse) {
+        String key = twinResponse.getKey();
+        if (key != null) {
+            Consumer<?> consumer = consumerMap.get(key);
+            if (consumer != null) {
+                consumer.accept(unmarshalResponse(key, twinResponse.getObject()));
+            }
+        }
+    }
+
+
+    private <T> T unmarshalResponse(String key, byte[] value) {
+        Class<?> clazz = classesByKey.get(key);
+        try {
+            return (T) objectMapper.readValue(value, clazz);
+        } catch (IOException e) {
+            // Ignore
+        }
+        return null;
     }
 }

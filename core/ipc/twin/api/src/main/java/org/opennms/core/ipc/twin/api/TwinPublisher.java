@@ -29,10 +29,11 @@
 package org.opennms.core.ipc.twin.api;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * TwinPublisher lives on OpenNMS that handles all the Objects that need to be replicated.
- * At boot up, modules that need replication publish their specific objects to TwinPublisher.
+ * At boot up, modules that register objects with TwinPublisher.
  * Modules also publish any subsequent updates to TwinPublisher.
  */
 
@@ -41,20 +42,22 @@ public interface TwinPublisher {
     /**
      * Session that can publish updates to T
      *
-     * @param <T> an object that needs replication.
+     * @param <T> type of object that needs replication.
      */
     interface Session<T> extends Closeable {
         /**
-         * @param obj an object that needs replication on Minion
+         * @param obj      an object that needs replication on Minion
+         * @param location targeted Minion location for the object, set null for all locations.
          */
-        void publish(T obj);
+        void publish(T obj, String location) throws IOException;
     }
 
     /**
-     * @param obj an Object that needs replication.
-     * @param key unique key for the object.
-     * @param <T> type of object for replication
+     * @param obj      an Object that needs replication.
+     * @param key      unique key for the object.
+     * @param location targeted Minion location for the object, set null for all locations.
+     * @param <T>      type of object for replication
      * @return Session which provides updates to object.
      */
-    <T> Session<T> register(T obj, String key);
+    <T> Session<T> register(T obj, String key, String location) throws IOException;
 }

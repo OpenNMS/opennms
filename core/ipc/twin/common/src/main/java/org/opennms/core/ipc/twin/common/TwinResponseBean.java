@@ -26,11 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.api;
+package org.opennms.core.ipc.twin.common;
 
-public interface TwinRequest {
+public class TwinResponseBean extends TwinRequestBean {
 
-    String getKey();
 
-    String getLocation();
+    public TwinResponseBean() {
+    }
+
+    public TwinResponseBean(String key, String location, byte[] object) {
+        super(key, location);
+        this.object = object;
+    }
+
+    private byte[] object;
+
+    public byte[] getObject() {
+        return object;
+    }
+
+    public void setObject(byte[] object) {
+        this.object = object;
+    }
 }

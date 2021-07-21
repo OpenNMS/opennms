@@ -14,5 +14,6 @@
     <name>OpenNMS :: Core :: IPC :: Twin</name>
     <modules>
         <module>api</module>
+        <module>common</module>
     </modules>
 </project>

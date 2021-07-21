@@ -26,39 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.api;
+package org.opennms.core.ipc.twin.common;
 
-public class MockTwinResponse implements TwinResponse {
+public class TwinRequestBean {
 
     private String key;
+
     private String location;
-    private byte[] object;
 
-    public MockTwinResponse(String key, byte[] object) {
+    public TwinRequestBean(String key, String location) {
         this.key = key;
-        this.object = object;
-    }
-
-    public MockTwinResponse() {
-    }
-
-    public MockTwinResponse(String key, String location, byte[] value) {
-        this(key, value);
         this.location = location;
     }
 
-    @Override
+    public TwinRequestBean() {
+    }
+
     public String getKey() {
         return key;
     }
 
-    @Override
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public String getLocation() {
         return location;
     }
 
-    @Override
-    public byte[] getObject() {
-        return object;
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

@@ -26,28 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.api;
+package org.opennms.core.ipc.twin.common;
 
-public class MockTwinRequest implements TwinRequest {
+public class MinionInfoBean {
 
-    private String key;
-    private String location;
+    private Integer nodeId;
 
-    public MockTwinRequest(String key, String location) {
-        this.key = key;
-        this.location = location;
+    private String nodeLabel;
+
+    public MinionInfoBean(Integer nodeId, String nodeLabel) {
+        this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
     }
 
-    public MockTwinRequest() {
+    public MinionInfoBean() {
     }
 
-    @Override
-    public String getKey() {
-        return this.key;
+    public Integer getNodeId() {
+        return nodeId;
     }
 
-    @Override
-    public String getLocation() {
-        return this.location;
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeLabel() {
+        return nodeLabel;
+    }
+
+    public void setNodeLabel(String nodeLabel) {
+        this.nodeLabel = nodeLabel;
     }
 }
