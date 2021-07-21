@@ -29,26 +29,27 @@
 package org.opennms.features.config.dao.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.opennms.features.config.dao.api.ConfigData;
 
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ConfigStoreDaoImpl<T> implements ConfigStoreDao<T> {
 	//private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
-	public static final String CONTEXT = "config";
+	public static final String CONTEXT = "config_manager";
 	private final ObjectMapper mapper;
 
-	@Autowired
 	private JsonStore jsonStore;
 
-	public ConfigStoreDaoImpl() {
+	public ConfigStoreDaoImpl(JsonStore jsonStore) {
+		this.jsonStore = jsonStore;
 		mapper = new ObjectMapper();
 	}
 
@@ -59,8 +60,28 @@ public class ConfigStoreDaoImpl<T> implements ConfigStoreDao<T> {
 	}
 
 	@Override
+	public Optional<List<ConfigData>> getServices() throws IOException{
+		//not working
+		Map<String, String> allServicesMap = jsonStore.enumerateContext(CONTEXT);
+		if(allServicesMap == null || allServicesMap.isEmpty()){
+			return Optional.empty();
+		}
+		List<ConfigData> data = new ArrayList<>(allServicesMap.size());
+		allServicesMap.forEach((k, v) ->{
+			try {
+				ConfigData d = mapper.readValue(v, ConfigData.class);
+				data.add(d);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		return Optional.of(data);
+	}
+
+	@Override
 	public Optional<ConfigData<T>> getConfigData(String serviceName) throws IOException{
 		Optional<String> json = jsonStore.get(serviceName, CONTEXT);
+
 		if(json.isEmpty()){
 			return Optional.empty();
 		}
