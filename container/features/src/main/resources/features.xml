@@ -1770,4 +1770,11 @@
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
+    <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
+        <feature>org.json</feature>
+        <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.api/29.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/29.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/29.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/29.0.0-SNAPSHOT</bundle>
+    </feature>
 </features>
