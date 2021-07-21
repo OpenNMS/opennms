@@ -6,13 +6,13 @@
 {page-component-title} can be extended to import Entity-MIB information from SNMP agents to enrich node data.
 There are two types of Entity-MIBs.
 The first type is a generic implementation of https://tools.ietf.org/html/rfc4133[RFC 4133 ENTITY-MIB].
-The second type are vendor specific Entity-MIBs, which are provided by some manufacturers.
+The second type are vendor-specific Entity-MIBs, which some manufacturers provide.
 
-These Entity-MIBs provide dynamic attributes for describing device components.
+These Entity-MIBs provide dynamic attributes to describe device components.
 This includes information such as model number, description, serial number, and more.
 These fields can be added to nodes in {page-component-title} using a provisioning adapter extension of the Provisiond service.
 
-== Installation and Configuration
+== Installation and configuration
 
 IMPORTANT: To use this feature you have to install the SNMP hardware inventory plugin from the repository.
 
@@ -30,7 +30,7 @@ The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inve
 Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
 The `<hw-extension>` element lets you group a list of Entity-MIB extensions defined in `<mibObj>` elements based on a sysOidMask of a node.
 If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
-In case a vendor provides the standard objects on a different table rather than `entPhysicalTable`, it is possible to override one of the base attributes by specifying on the `mibObj` that the attribute that must be overridden.
+When a vendor provides the standard objects on a different table rather than `entPhysicalTable`, you can override one of the base attributes by specifying on the `mibObj` that the attribute that must be overridden.
 
 
 [source, xml]
@@ -51,18 +51,18 @@ In case a vendor provides the standard objects on a different table rather than 
 </hw-extension>
 ----
 
-In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisco Devices) are candidates to discover the `mibObj` entities defined on the extension group.
-The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic ENTITY-MIB attribute instead of creating a new custom attribute entry.
+In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisco devices) are candidates to discover the `mibObj` entities defined on the extension group.
+The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic Entity-MIB attribute instead of creating a new custom attribute entry.
 
-Once your `snmp-hardware-inventory-adapter-configuration.xml` file has been configured, the Provisiond service will start attempting to collect hardware inventory data when refreshing requisitions.
+Once you have configured your `snmp-hardware-inventory-adapter-configuration.xml`, the Provisiond service attempts to collect hardware inventory data when it refreshes requisitions.
 After synchronizing the requisition, you should be able to see a `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event to confirm inventory was collected.
-This event will be triggered only when the provisioning adapter detects changed hardware inventory for a node.
-If for some reason, there is a problem retrieving or storing the inventory data, a `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
+This event is triggered only when the provisioning adapter detects changed hardware inventory for a node.
+If there is a problem retrieving or storing the inventory data, a `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
 
 == Viewing collected hardware inventory information
 
 To view inventory information collected for a node, click the "Hardware Info" link on the node's page in the Web UI.
-If the node has hardware inventory, {page-component-title} will display all collected fields.
+If the node has hardware inventory, {page-component-title} displays all collected fields.
 
 TIP: It is also possible to retrieve and update hardware inventory information via the xref:development:rest/nodes.adoc#nodes-rest[Nodes REST endpoint].
 See the REST documentation for more information.
@@ -70,15 +70,15 @@ See the REST documentation for more information.
 == Using hardware information in events and notifications
 
 A set of placeholders are available in {page-component-title} to enrich the content of the events, alarms, and notifications.
-Because of the hierarchical nature of the hardware entities, you must provide two fields in order to obtain the value of the required attribute.
-This two fields are either the `entPhysicalIndex` or the `entPhysicalName` and the name of the attribute to use.
+Because of the hierarchical nature of the hardware entities, you must provide two fields to obtain the value of the required attribute.
+These two fields are either the `entPhysicalIndex` or the `entPhysicalName` and the name of the attribute to use.
 
-The `entPhysicalIndex` guarantees that you are going to get always the same entity.
+The `entPhysicalIndex` guarantees that you always get the same entity.
 Using `entPhysicalName` is not always a unique way to identify an entity, depending on the device manufacturer.
-When using the name, the first entity that matches the given `entPhysicalName` will be used.
+When using the name, the first entity that matches the given `entPhysicalName` is used.
 
-It is possible to specify a regular expression to validate against the `entPhysicalName` by prefixing the field with a `~`.
-When using regular expression matching, the first attribute matched will be used.
+Specify a regular expression to validate against the `entPhysicalName` by prefixing the field with a `~`.
+When using regular expression matching, the first attribute matched is used.
 
 Sample placeholders naming structure:
 
@@ -104,7 +104,7 @@ Example event definition:
 </event>
 ----
 
-The event definition above is using the following placeholders:
+The event definition above uses the following placeholders:
 
 * `%hardware[Chassis:entPhysicalModelName]%` to obtain the model name of the Chassis entity based on the `entPhysicalName`.
 * `%hardware[9:entPhysicalDescr]%` to obtain the base description of the entity identified with an `entPhysicalIndex` of `9`.

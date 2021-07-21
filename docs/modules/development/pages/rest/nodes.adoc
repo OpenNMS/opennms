@@ -46,7 +46,7 @@ POST requires XML using application/xml as its Content-Type.
 [[rest-api-nodes-put]]
 == PUTs (Modifying Data)
 
-PUT requires form data using `application/x-www-form-urlencoded` as a Content-Type.
+PUT requires form data using `application/x-www-form-urlencoded` as a content-type.
 
 [options="header", cols="5,10"]
 |===
@@ -57,7 +57,7 @@ PUT requires form data using `application/x-www-form-urlencoded` as a Content-Ty
 | `/nodes/\{id}/snmpinterfaces/\{ifindex}`                     | Modify the SNMP interface with the given node ID and ifIndex.
 | `/nodes/\{id}/categories/\{categoryname}`                    | Modify the category with the given node ID and name.
 | `/nodes/\{id}/hardwareInventory/\{entPhysicalIndex}`         | Modify the hardware inventory entity for given node ID and index.
-                                                                 It is possible to add custom attributes using this endpoint.
+                                                                 It is possible to use this endpoint to add custom attributes.
 |===
 
 == DELETEs (Removing Data)
