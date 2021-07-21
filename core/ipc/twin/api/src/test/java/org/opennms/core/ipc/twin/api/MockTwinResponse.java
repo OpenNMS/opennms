@@ -28,13 +28,37 @@
 
 package org.opennms.core.ipc.twin.api;
 
-import java.util.function.Function;
+public class MockTwinResponse implements TwinResponse {
 
-public interface TwinPublisherBroker {
+    private String key;
+    private String location;
+    private byte[] object;
 
-    interface SinkUpdate {
-        void update(TwinResponse twinResponse);
+    public MockTwinResponse(String key, byte[] object) {
+        this.key = key;
+        this.object = object;
     }
 
-    SinkUpdate register(Function<TwinRequest, TwinResponse> twinProvider);
+    public MockTwinResponse() {
+    }
+
+    public MockTwinResponse(String key, String location, byte[] value) {
+        this(key, value);
+        this.location = location;
+    }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public byte[] getObject() {
+        return object;
+    }
 }

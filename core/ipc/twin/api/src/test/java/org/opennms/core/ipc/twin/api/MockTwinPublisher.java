@@ -28,28 +28,62 @@
 
 package org.opennms.core.ipc.twin.api;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MockTwinPublisher implements TwinPublisher {
 
     private final TwinPublisherBroker twinPublisherBroker;
-    private final TwinPublisherBroker.Publisher publisher;
+    private final TwinPublisherBroker.SinkUpdate sinkUpdate;
+    private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
+    private final Map<Session<?>, String> keySessionMap = new ConcurrentHashMap<>();
 
     public MockTwinPublisher(TwinPublisherBroker twinPublisherBroker) {
         this.twinPublisherBroker = twinPublisherBroker;
-        publisher = twinPublisherBroker.register(new Function<TwinRequest, TwinResponse>() {
-            @Override
-            public TwinResponse apply(TwinRequest twinRequest) {
-                return null;
-            }
-        });
+        sinkUpdate = twinPublisherBroker.register(this::apply);
     }
 
     @Override
     public <T> Session<T> register(T obj, String key) {
+        // Marshal obj to byte array.
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            byte[] value = objectMapper.writeValueAsBytes(obj);
+            objMap.put(key, value);
+        } catch (JsonProcessingException e) {
+            //Ignore
+        }
+        Session<T> session = new Session<T>() {
+            @Override
+            public void publish(Object obj) {
+                try {
+                    byte[] value = objectMapper.writeValueAsBytes(obj);
+                    objMap.put(key, value);
+                    sinkUpdate.update(new MockTwinResponse(key, value));
+                } catch (JsonProcessingException e) {
+                    // Ignore
+                }
+            }
 
-        return null;
+            @Override
+            public void close() throws IOException {
+                String key = keySessionMap.remove(this);
+                objMap.remove(key);
+            }
+        };
+        keySessionMap.put(session, key);
+        return session;
+
+    }
+
+    TwinResponse apply(TwinRequest twinRequest) {
+        String key = twinRequest.getKey();
+        byte[] value = objMap.get(key);
+        return new MockTwinResponse(key, value);
     }
 
 

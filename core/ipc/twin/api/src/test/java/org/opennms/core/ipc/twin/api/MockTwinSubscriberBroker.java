@@ -35,7 +35,7 @@ import java.util.Hashtable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -52,47 +52,53 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MockTwinPublisherBroker implements TwinPublisherBroker {
+public class MockTwinSubscriberBroker implements TwinSubscriberBroker {
 
-    private Function<TwinRequest, TwinResponse> twinProvider;
-    private final Hashtable<String, Object> kafkaConfig = new Hashtable<>();
-    private KafkaProducer<String, byte[]> rpcResponseProducer;
+    private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
+    private KafkaProducer<String, byte[]> producer;
+    private KafkaSinkConsumerRunner kafkaSinkConsumerRunner;
     private KafkaConsumerRunner kafkaConsumerRunner;
+    private Consumer<TwinResponse> consumer;
+    static String rpcRequestTopic = "OpenNMS-MINION-RPC-Request-onms-twin";
+    static String rpcResponseTopic = "OpenNMS-MINION-RPC-Response-onms-twin";
+    static String sinkTopic = "OpenNMS-MINION-Sink-onms-twin";
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MockTwinPublisherBroker(Hashtable<String, Object> config) {
+    public void init() {
+        // Listens to response from OpenNMS.
+        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+        kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
+        Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
+        KafkaConsumer<String, byte[]> kafkaConsumer2 = new KafkaConsumer<>(kafkaConfig);
+        kafkaSinkConsumerRunner = new KafkaSinkConsumerRunner(kafkaConsumer2);
+        Executors.newSingleThreadExecutor().execute(kafkaSinkConsumerRunner);
+    }
+
+    public MockTwinSubscriberBroker(Hashtable<String, Object> config) {
         kafkaConfig.putAll(config);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
-        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "OpenNMS");
-    }
-
-    public void init() {
-        rpcResponseProducer = new KafkaProducer<String, byte[]>(kafkaConfig);
-        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-        kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
-        Executors.newSingleThreadExecutor().execute(kafkaConsumerRunner);
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "MINION");
+        producer = new KafkaProducer<>(kafkaConfig);
     }
 
     @Override
-    public SinkUpdate register(Function<TwinRequest, TwinResponse> twinProvider) {
-        this.twinProvider = twinProvider;
-        return this::update;
-    }
-
-    public void update(TwinResponse twinResponse) {
-        KafkaProducer<String, byte[]> producer = new KafkaProducer<>(kafkaConfig);
+    public void sendRequest(TwinRequest twinRequest) {
         try {
-            byte[] value = objectMapper.writeValueAsBytes(twinResponse);
-            ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(MockTwinSubscriberBroker.sinkTopic, twinResponse.getKey(), value);
+            byte[] value = objectMapper.writeValueAsBytes(twinRequest);
+            ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(rpcRequestTopic, twinRequest.getKey(), value);
             producer.send(producerRecord);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            //Ignore
         }
+    }
 
+    @Override
+    public void registerProvider(Consumer<TwinResponse> twinResponseConsumer) {
+        this.consumer = twinResponseConsumer;
     }
 
     private class KafkaConsumerRunner implements Runnable {
@@ -107,19 +113,50 @@ public class MockTwinPublisherBroker implements TwinPublisherBroker {
         @Override
         public void run() {
             try {
-                kafkaConsumer.subscribe(Arrays.asList(MockTwinSubscriberBroker.rpcRequestTopic));
+                kafkaConsumer.subscribe(Arrays.asList(rpcResponseTopic));
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofMillis(Long.MAX_VALUE));
                     for (ConsumerRecord<String, byte[]> record : records) {
 
+                        try {
+                            TwinResponse twinResponse = objectMapper.readValue(record.value(), MockTwinResponse.class);
+                            consumer.accept(twinResponse);
+                        } catch (IOException e) {
+                            // Ignore
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                //Ignore
+            }
+        }
+
+        public void close() {
+            closed.set(true);
+        }
+    }
+
+    private class KafkaSinkConsumerRunner implements Runnable {
+
+        private final KafkaConsumer<String, byte[]> kafkaConsumer;
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+
+        public KafkaSinkConsumerRunner(KafkaConsumer<String, byte[]> kafkaConsumer) {
+            this.kafkaConsumer = kafkaConsumer;
+        }
+
+        @Override
+        public void run() {
+            try {
+
+                kafkaConsumer.subscribe(Arrays.asList(sinkTopic));
+                while (!closed.get()) {
+                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+                    for (ConsumerRecord<String, byte[]> record : records) {
                         CompletableFuture.runAsync(() -> {
                             try {
-                                MockTwinRequest twinRequest = objectMapper.readValue(record.value(), MockTwinRequest.class);
-                                TwinResponse twinResponse = twinProvider.apply(twinRequest);
-                                byte[] response = objectMapper.writeValueAsBytes(twinResponse);
-                                ProducerRecord<String, byte[]> producerRecord =
-                                        new ProducerRecord<>(MockTwinSubscriberBroker.rpcResponseTopic, twinResponse.getKey(), response);
-                                rpcResponseProducer.send(producerRecord);
+                                TwinResponse twinResponse = objectMapper.readValue(record.value(), MockTwinResponse.class);
+                                consumer.accept(twinResponse);
                             } catch (IOException e) {
                                 // Ignore
                             }
@@ -137,8 +174,7 @@ public class MockTwinPublisherBroker implements TwinPublisherBroker {
     }
 
     public void destroy() {
-        if (kafkaConsumerRunner != null) {
-            kafkaConsumerRunner.close();
-        }
+        kafkaConsumerRunner.close();
+        kafkaSinkConsumerRunner.close();
     }
 }

@@ -34,16 +34,41 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class MockTwinSubscriber implements TwinSubscriber {
 
     private final TwinSubscriberBroker twinSubscriberBroker;
 
     private final Map<String, Class<?>> classesByKey = new ConcurrentHashMap<>();
     private final Map<String, Consumer<?>> consumerMap = new ConcurrentHashMap<>();
-    private final Map<Closeable, String> closeableStringMap = new ConcurrentHashMap<>();
+    private final Map<Closeable, String> closableMap = new ConcurrentHashMap<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public MockTwinSubscriber(TwinSubscriberBroker twinSubscriberBroker) {
         this.twinSubscriberBroker = twinSubscriberBroker;
+        twinSubscriberBroker.registerProvider(new Consumer<TwinResponse>() {
+            @Override
+            public void accept(TwinResponse twinResponse) {
+                String key = twinResponse.getKey();
+                if (key != null) {
+                    Consumer<?> consumer = consumerMap.get(key);
+                    if(consumer != null) {
+                        consumer.accept(unmarshalResponse(key, twinResponse.getObject()));
+                    }
+                }
+            }
+        });
+    }
+
+    private <T> T unmarshalResponse(String key, byte[] value) {
+        Class<?> clazz = classesByKey.get(key);
+        try {
+            return (T) objectMapper.readValue(value, clazz);
+        } catch (IOException e) {
+            // Ignore
+        }
+        return null;
     }
 
 
@@ -54,19 +79,14 @@ public class MockTwinSubscriber implements TwinSubscriber {
         Closeable closeable = new Closeable() {
             @Override
             public void close() throws IOException {
-                 String key = closeableStringMap.get(this);
-                 consumerMap.remove(key);
-                 classesByKey.remove(key);
+                String key = closableMap.get(this);
+                consumerMap.remove(key);
+                classesByKey.remove(key);
             }
         };
-        closeableStringMap.put(closeable, key);
-        twinSubscriberBroker.getObject(key, new Consumer<TwinResponse>() {
-            @Override
-            public void accept(TwinResponse twinResponse) {
-                Consumer<?> consumer = consumerMap.get(twinResponse.getKey());
-                // Unmarshal and call consumer accept.
-            }
-        });
+        closableMap.put(closeable, key);
+        TwinRequest twinRequest = new MockTwinRequest(key, "MINION");
+        twinSubscriberBroker.sendRequest(twinRequest);
         return closeable;
     }
 }

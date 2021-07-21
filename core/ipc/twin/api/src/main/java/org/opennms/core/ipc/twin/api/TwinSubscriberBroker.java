@@ -32,5 +32,7 @@ import java.util.function.Consumer;
 
 public interface TwinSubscriberBroker {
 
-    void getObject(String key, Consumer<TwinResponse> consumer);
+    void sendRequest(TwinRequest twinRequest);
+
+    void registerProvider(Consumer<TwinResponse> twinResponse);
 }

@@ -28,5 +28,26 @@
 
 package org.opennms.core.ipc.twin.api;
 
-public class TwinApiTest {
+public class MockTwinRequest implements TwinRequest {
+
+    private String key;
+    private String location;
+
+    public MockTwinRequest(String key, String location) {
+        this.key = key;
+        this.location = location;
+    }
+
+    public MockTwinRequest() {
+    }
+
+    @Override
+    public String getKey() {
+        return this.key;
+    }
+
+    @Override
+    public String getLocation() {
+        return this.location;
+    }
 }

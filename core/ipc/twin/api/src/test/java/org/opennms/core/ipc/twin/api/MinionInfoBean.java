@@ -28,13 +28,33 @@
 
 package org.opennms.core.ipc.twin.api;
 
-import java.util.function.Function;
+public class MinionInfoBean {
 
-public interface TwinPublisherBroker {
+    private Integer nodeId;
 
-    interface SinkUpdate {
-        void update(TwinResponse twinResponse);
+    private String nodeLabel;
+
+    public MinionInfoBean(Integer nodeId, String nodeLabel) {
+        this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
     }
 
-    SinkUpdate register(Function<TwinRequest, TwinResponse> twinProvider);
+    public MinionInfoBean() {
+    }
+
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public String getNodeLabel() {
+        return nodeLabel;
+    }
+
+    public void setNodeLabel(String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
 }
