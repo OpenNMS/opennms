@@ -72,6 +72,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException;
 
+    Optional<List<ConfigData>> getServices() throws IOException;
     /**
      * get configs data by configName and configId
      *
@@ -123,7 +124,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configId
      * @throws IOException
      */
-    void deleteConfig(String configName, String configId) throws IOException;
+    boolean deleteConfig(String serviceName, String filename) throws IOException;
 
     /**
      * deregister a service from config manager
