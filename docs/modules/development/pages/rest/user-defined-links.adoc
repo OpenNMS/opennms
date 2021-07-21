@@ -8,7 +8,7 @@ User-defined links (UDLs) for the Enlinkd topology can be be queried, added, mod
 |===
 | Resource                         | Description
 | `api/v2/userdefinedlinks`        | Get the list of UDLs.
-| `api/v2/userdefinedlinks/\{id\}` | Retrieve a specific UDL by database ID.
+| `api/v2/userdefinedlinks/\{id}`  | Retrieve a specific UDL by database ID.
 |===
 
 == POSTs (Creating UDLs)
@@ -32,5 +32,5 @@ curl -v -X POST -u admin:admin -H "Content-Type: application/json" -d '{"node-id
 [options="header", cols="5,10"]
 |===
 | Resource                         | Description
-| `api/v2/userdefinedlinks/\{id\}` | Delete a UDL by database ID.
+| `api/v2/userdefinedlinks/\{id}`  | Delete a UDL by database ID.
 |===

@@ -1,13 +1,13 @@
 
 = OpenManageChassisMonitor
 
-The _OpenManageChassis_ monitor tests the status of a _Dell_ chassis by querying its _SNMP_ agent.
-The monitor polls the value of the node's _SNMP OID_ .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
-If the value is _OK_ (3), the service is considered available.
+The OpenManageChassis monitor tests the status of a Dell chassis by querying its SNMP agent.
+The monitor polls the value of the node's SNMP OID .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
+If the value is OK (3), the service is considered available.
 
-As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configuration in _snmp-config.xml_.
+As this monitor uses SNMP, the queried nodes must have proper SNMP configuration in `snmp-config.xml`.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -15,13 +15,14 @@ As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configura
 | Remote Enabled | false
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the OpenManageChassisMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameter for the OpenManageChassisMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter | Description                                                        | Required | Default value
-| `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
+| Parameter | Description                                                        | Default value
+| port    | The port to which to try to connect.                       | From snmp-config.xml
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#https://drive.google.com/drive/u/1/folders/1TuQQVg2zCUwa8cZ0-TqGpplJSKJ0Q3pega-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -41,6 +42,6 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#https
 
 == Dell MIBs
 
-_Dell MIBs_ can be found link:ftp://ftp.us.dell.com/sysman[here].
-Download the _DCMIB<version>.zip_ or _DCMIB<version>.exe_ file corresponding to the version of your _OpenManage_ agents.
-The latest one should be good enough for all previous version though.
+Find Dell MIBs link:https://www.dell.com/support/kbdoc/en-ca/000177052/how-to-find-dell-management-information-base-mib-files[here].
+Download the `DCMIB<version>.zip` or `DCMIB<version>.exe` file that corresponds to the version of your OpenManage agents.
+The latest one should be sufficient for all previous versions.

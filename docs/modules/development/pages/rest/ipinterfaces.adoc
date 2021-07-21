@@ -14,8 +14,8 @@ Examples:
 
 [options="header", cols="5,10"]
 |===
-| Resource        | Description
-| `/ipinterfaces`   | Get all IP interfaces for the given search criteria.
+| Resource         | Description
+| `/ipinterfaces`  | Get all IP interfaces for the given search criteria.
 |===
 
 Example:
@@ -29,5 +29,5 @@ curl -u admin:admin "http://localhost:8980/opennms/api/v2/ipinterfaces?_s=node.f
 
 == PUTs/POSTs (Modifying Data)
 
-The `/ipinterfaces` ReST API is read-only.  
+The `/ipinterfaces` REST API is read-only.
 To create new IP interfaces, use the `ipinterfaces` resources under the xref:rest/nodes.adoc#nodes-rest[nodes endpoint].

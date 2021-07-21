@@ -1,7 +1,8 @@
 [[nodes-rest]]
 = Nodes
 
-NOTE: The default offset is 0, the default limit is 10 results.  
+NOTE: The default offset is 0.
+The default limit is 10 results.
 To get all results, use limit=0 as a parameter on the URL (i.e., GET /nodes?limit=0).
 
 Additionally, anywhere you use "id" in the queries below, you can use the foreign source and foreign ID separated by a colon instead (e.g., GET /nodes/fs:fid).
@@ -10,18 +11,18 @@ Additionally, anywhere you use "id" in the queries below, you can use the foreig
 
 [options="header", cols="5,10"]
 |===
-| Resource                                                        | Description
-| `/nodes`                                                        | Get a list of nodes. This includes the ID and node label.
-| `/nodes/\{id\}`                                                 | Get a specific node, by ID.
-| `/nodes/\{id\}/ipinterfaces`                                    | Get the list of IP interfaces associated with the given node.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}`                      | Get the IP interface for the given node and IP address.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}/services`             | Get the list of services associated with the given node and IP interface.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}/services/\{service\}` | Get the requested service associated with the given node, IP interface, and service name.
-| `/nodes/\{id\}/snmpinterfaces`                                  | Get the list of SNMP interfaces associated with the given node.
-| `/nodes/\{id\}/snmpinterfaces/\{ifindex\}`                      | Get the specific interface associated with the given node and ifIndex.
-| `/nodes/\{id\}/categories`                                      | Get the list of categories associated with the given node.
-| `/nodes/\{id\}/categories/\{categoryname\}`                     | Get the category associated with the given node and category name.
-| `/nodes/\{id\}/assetRecord`                                     | Get the asset record associated with the given node.
+| Resource                                                      | Description
+| `/nodes`                                                      | Get a list of nodes. This includes the ID and node label.
+| `/nodes/\{id}`                                                | Get a specific node, by ID.
+| `/nodes/\{id}/ipinterfaces`                                   | Get the list of IP interfaces associated with the given node.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                      | Get the IP interface for the given node and IP address.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services`             | Get the list of services associated with the given node and IP interface.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}`  | Get the requested service associated with the given node, IP interface, and service name.
+| `/nodes/\{id}/snmpinterfaces`                                 | Get the list of SNMP interfaces associated with the given node.
+| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                      | Get the specific interface associated with the given node and ifIndex.
+| `/nodes/\{id}/categories`                                     | Get the list of categories associated with the given node.
+| `/nodes/\{id}/categories/\{categoryname}`                     | Get the category associated with the given node and category name.
+| `/nodes/\{id}/assetRecord`                                    | Get the asset record associated with the given node.
 |===
 
 == POSTs (Adding Data)
@@ -32,10 +33,10 @@ POST requires XML using application/xml as its Content-Type.
 |===
 | Resource                                            | Description
 | `/nodes`                                            | Add a node.
-| `/nodes/\{id\}/ipinterfaces`                        | Add an IP interface to the node.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}/services` | Add a service to the interface for the given node.
-| `/nodes/\{id\}/snmpinterfaces`                      | Add an SNMP interface to the node.
-| `/nodes/\{id\}/categories`                          | Add a category association to the node.
+| `/nodes/\{id}/ipinterfaces`                        | Add an IP interface to the node.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services` | Add a service to the interface for the given node.
+| `/nodes/\{id}/snmpinterfaces`                      | Add an SNMP interface to the node.
+| `/nodes/\{id}/categories`                          | Add a category association to the node.
 |===
 
 [[rest-api-nodes-put]]
@@ -45,17 +46,17 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 
 [options="header", cols="5,10"]
 |===
-| Resource                                                        | Description
-| `/nodes/\{id\}`                                                 | Modify a node with the given ID.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}`                      | Modify the IP interface with the given node ID and IP address.
-| `/nodes/\{id\}/ipinterfaces/\{ipaddress\}/services/\{service\}` | Modify the service with the given node ID, IP address, and service name.
-| `/nodes/\{id\}/snmpinterfaces/\{ifindex\}`                      | Modify the SNMP interface with the given node ID and ifIndex.
-| `/nodes/\{id\}/categories/\{categoryname\}`                     | Modify the category with the given node ID and name.
+| Resource                                                     | Description
+| `/nodes/\{id}`                                               | Modify a node with the given ID.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}`                     | Modify the IP interface with the given node ID and IP address.
+| `/nodes/\{id}/ipinterfaces/\{ipaddress}/services/\{service}` | Modify the service with the given node ID, IP address, and service name.
+| `/nodes/\{id}/snmpinterfaces/\{ifindex}`                     | Modify the SNMP interface with the given node ID and ifIndex.
+| `/nodes/\{id}/categories/\{categoryname}`                    | Modify the category with the given node ID and name.
 |===
 
 == DELETEs (Removing Data)
 
 Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
 
-NOTE: Deletion of nodes, ipinterfaces, and services is asynchronous so it will return 202 (ACCEPTED). 
+NOTE: Deletion of nodes, ipinterfaces, and services is asynchronous so it will return 202 (ACCEPTED).
 Deletion of snmpinterfaces and categories is synchronous calls so will return 204 (NO_CONTENT) on success.

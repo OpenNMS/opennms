@@ -2,15 +2,14 @@
 [[poller-http-monitor]]
 = HttpMonitor
 
-The HTTP monitor tests the response of an HTTP server on a specific HTTP 'GET' command.
-During the poll, an attempt is made to connect on the specified port(s).
-The monitor can test web server on multiple ports.
-By default the test is made against port 80, 8080 and 8888.
-If the connection request is successful, an HTTP 'GET' command is sent to the interface.
+The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
+During the poll, the monitor attempts to connect on the specified port(s).
+The monitor can test web servers on multiple ports.
+By default, it makes the test against ports 80, 8080, and 8888.
+If the connection is successful, an HTTP GET request is sent to the interface.
 The response is parsed and a return code extracted and verified.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -18,55 +17,63 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the HttpMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the HttpMonitor
+[options="header"]
+[cols="1,3,2"]
+
 |===
-| Parameter              | Description                                                                                 | Required | Default value | Placeholder substitution
-| `basic-authentication` | Authentication credentials to perform basic authentication. +
-                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945] section
-                           11.1, without the Base64 encoding part. That's: be a string made of the concatenation of: +
+| Parameter              | Description                                                  | Default
+| basic-authentication kbd:[{}]
+ | Authentication credentials to perform basic authentication. +
+                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945], section
+                           11.1, without the Base64 encoding part, and be a string made of the concatenation of: +
                            1- the user ID; +
                            2- a colon; +
                            3- the password. +
-                          `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-` | Yes
-| `header[0-9]+`         | Additional headers to be sent along with the request. +
-                           Example of valid parameter's names are +
-                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-` | No
-| `host-name`            | Specify the _Host_ header's value. | optional | `-` | No
-| `nodelabel-host-name`  | If the `host-name` parameter isn't set and the `resolve-ip` parameter is set to `false`, 
-                           then {page-component-title} will use the node's label to set the _Host_ header's value if
-                           this parameter is set to `true`. Otherwise, {page-component-title} will fall back using
-                           the node interface's IP address as _Host_ header value.                                     | optional | `false` | No
-| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic +
-                           authentication. This parameter specifies the password to be used. The `user` and `password` +
-                           parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string` | Yes
-| `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `80`,`8080`,`8888` | No
-| `retry`                | Number of attempts to get a valid _HTTP_ response/response-text                             | optional | `0` | No
-| `resolve-ip`           | If the `host-name` parameter isn't set and this parameter is set to `true`,
-                           {page-component-title} will use _DNS_ to resolve the node interface's IP address, and use
-                           the result to set the _Host_ header's value. When set to `false` and the `host-name`
-                           parameter isn't set, {page-component-title} will try to use the `nodelabel-host-name`
-                           parameter to set the _Host_ header's value.                                                 | optional | `false` | No
-| `response`             | A comma-separated list of acceptable _HTTP_ response code ranges.
-                           Example: `200-202,299`                                                                      | optional | If the `url` parameter is set to `/`, the default +
-                           value for this parameter is `100-499`, otherwise it's `100-399`. | No
-| `response-text`        | Text to look for in the response body. This will be matched against every line, and it will
+                          `basic-authentication` takes precedence over the user and password parameters.           |n/a
+| header[0-9]+         | Additional headers to send with the request. +
+                           Example of valid parameter names are +
+                           header0, header1, and header180. `header`is not a valid parameter name.             | n/a
+| host-name            | Specify the `host` header value to include in the request. | n/a
+| nodelabel-host-name | If the host-name parameter isn't set and the resolve-ip parameter is set to false,
+                           then {page-component-title} uses the node's label to set the `host` header value if
+                           this parameter is set to true. Otherwise, {page-component-title} falls back using
+                           the node interface's IP address as `host` header value.                                   | false
+| password kbd:[{}]
+       | Specifies the password to use. Use this parameter with the user parameter to perform basic +
+                           authentication. The user and password parameters are ignored when the basic-authentication parameter is defined.                | empty string
+| port              | A list of TCP ports to try to connect to.                                    | 80,8080,8888
+| retry                | Number of attempts to get a valid HTTP response/response-text.                             | 0
+| resolve-ip           | If the host-name parameter is not set and this parameter is set to true,
+                           {page-component-title} uses DNS to resolve the node interface's IP address, and uses
+                           the result to set the Host header's value. When set to false and the host-name
+                           parameter is not set, {page-component-title} tries to use the nodelabel-host-name
+                           parameter to set the Host header's value.                                                 | false
+| response             | A comma-separated list of acceptable HTTP response code ranges.
+                           Example: 200-202,299                                                                      | If the url parameter is set to `/`, the default +
+                           value for this parameter is 100-499; otherwise, it is 100-399.
+| response-text        | Text to look for in the response body. This will be matched against every line, and it will
                            be considered a success at the first match. If there is a `~` at the beginning of the
-                           parameter, the rest of the string will be used as a regular expression pattern match,
-                           otherwise the match will be a substring match. The regular expression match is anchored at
+                           parameter, the rest of the string is used as a regular expression pattern match;
+                           otherwise, the match will be a substring match. The regular expression match is anchored at
                            the beginning and end of the line, so you will likely need to put a `.*` on both sides of
-                           your pattern unless you are going to be matching on the entire line.                        | optional | `-` | No
-| `url`                  | URL to be retrieved via the HTTP 'GET' command                                              | optional | `/` | Yes
-| `user`                 | This parameter is meant to be used together with the `password` parameter to perform
-                           basic authentication. This parameter specifies the user ID to be used. The `user` and
-                           `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-` | Yes
-| `user-agent`           | Specifies the User-Agent HTTP header. (Also see
-                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616] section 14.43.)                          | optional | `OpenNMS HttpMonitor` | Yes
-| `verbose`              | When set to _true_, full communication between client and the webserver will be logged
-                           (with a log level of `DEBUG`).                                                              | optional | `-` | No
+                           your pattern unless you are going to match on the entire line.                        | n/a
+| url kbd:[{}]
+             | URL to retrieve via the HTTP GET command.                                              | `/`
+| user kbd:[{}]
+            | Specifies the user ID to use. Use this parameter with the password parameter to perform
+                           basic authentication. The user and
+                           password parameters are ignored when the basic-authentication parameter is defined.     | n/a
+| user-agent kbd:[{}]
+        | Specifies the user-agent HTTP header. (Also see
+                           http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616], section 14.43.)                          | OpenNMS HttpMonitor
+| verbose              | When set to true, full communication between client and the webserver will be logged
+                           (with a log level of `DEBUG`).                                                              | n/a
 |===
+
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
@@ -82,7 +89,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="url" value="/"/>
 </service>
 
-<!-- Test for virtual host opennms.com running -->
+<!-- Test for virtual host opennms.com -->
 <service name="OpenNMSdotCom" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
@@ -93,7 +100,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="response-text" value="~.*[Cc]onsulting.*"/>
 </service>
 
-<!-- Test for instance of OpenNMS 1.2.9 running -->
+<!-- Test for instance of OpenNMS running -->
 <service name="OpenNMS-129" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
@@ -103,13 +110,13 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="response" value="200"/>
 </service>
 
-<!-- Test for instance of OpenNMS 1.2.9 with parameter substitution in basic-authentication parameter -->
+<!-- Test for instance of OpenNMS with parameter substitution in basic-authentication parameter -->
 <service name="OpenNMS-22" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
   <parameter key="port" value="8080"/>
   <parameter key="url" value="/opennms/event/list"/>
-  <parameter key="basic-authentication" value="\{username\}:{password}"/>
+  <parameter key="basic-authentication" value="{username}:{password}"/>
   <parameter key="response" value="200"/>
 </service>
 <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
@@ -118,12 +125,12 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 <monitor service="OpenNMS-22" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
 ----
 
-== Testing filtering proxies with HttpMonitor
+== Test filtering proxies with HttpMonitor
 
-In case a filtering proxy server is set up to allow retrieval of some URLs but deny others, the HttpMonitor can be used to verify this behavior.
+If a filtering proxy server is set up to allow retrieval of some URLs but deny others, the HttpMonitor can verify this behavior.
 
-As an example a proxy server is running on TCP port 3128, and serves http://www.opennms.org/ but never http://www.myspace.com/.
-To test this behaviour, the _HttpMonitor_ can be configured as the following:
+As an example, a proxy server runs on TCP port 3128 and serves http://www.opennms.org/ but never http://www.tiktok.com/.
+To test this behavior, configure the HttpMonitor as follows:
 
 [source, xml]
 ----
@@ -135,14 +142,14 @@ To test this behaviour, the _HttpMonitor_ can be configured as the following:
   <parameter key="response" value="200-399"/>
 </service>
 
-<service name="HTTP-Block-myspace.com" interval="300000" user-defined="false" status="on">
+<service name="HTTP-Block-tiktok.com" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="1"/>
   <parameter key="timeout" value="3000"/>
   <parameter key="port" value="3128"/>
-  <parameter key="url" value="http://www.myspace.com/"/>
+  <parameter key="url" value="http://www.tiktok.com/"/>
   <parameter key="response" value="400-599"/>
 </service>
 
 <monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-<monitor service="HTTP-Block-myspace.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+<monitor service="HTTP-Block-tiktok.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 ----
