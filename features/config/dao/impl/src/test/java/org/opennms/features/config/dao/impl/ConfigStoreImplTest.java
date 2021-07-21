@@ -28,10 +28,7 @@
 package org.opennms.features.config.dao.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -79,6 +76,10 @@ public class ConfigStoreImplTest {
         //get
         Optional<ConfigData> result = configStoreDao.getConfigData(serviceName);
         Assert.assertTrue("FAIL TO getConfig", result.isPresent());
+
+        //list all
+        Optional<List<ConfigData>> all = configStoreDao.getServices();
+        Assert.assertEquals("FAIL TO getConfig", all.get().size(), 1 );
 
         // update
         Map<String, String> config2 = new HashMap<>();

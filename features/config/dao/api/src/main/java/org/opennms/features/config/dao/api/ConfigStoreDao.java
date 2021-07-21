@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.opennms.features.distributed.kvstore.api.KeyValueStore;
-
 public interface ConfigStoreDao<T>{
 
     /**
@@ -42,14 +40,21 @@ public interface ConfigStoreDao<T>{
      * @param configData
      * @return status
      */
-    public boolean register(ConfigData<T> configData) throws IOException;
+    boolean register(ConfigData<T> configData) throws IOException;
 
+    /**
+     * get all services managing by config manager
+     * @return list of configdata
+     * @throws IOException
+     */
+
+    Optional<List<ConfigData>> getServices() throws IOException;
     /**
      * get config data by serviceName
      * @param serviceName
      * @return ConfigData
      */
-    public Optional<ConfigData<T>> getConfigData(String serviceName) throws IOException;
+    Optional<ConfigData<T>> getConfigData(String serviceName) throws IOException;
 
     /**
      * add new config to a registered service name
@@ -58,7 +63,7 @@ public interface ConfigStoreDao<T>{
      * @param config
      * @return status
      */
-    public boolean addOrUpdateConfig(String serviceName, String filename, T config) throws IOException;
+    boolean addOrUpdateConfig(String serviceName, String filename, T config) throws IOException;
 
     /**
      * replace all configs for the registered service name
@@ -66,7 +71,7 @@ public interface ConfigStoreDao<T>{
      * @param configs
      * @return status
      */
-    public boolean updateConfigs(String serviceName, Map<String, T> configs) throws IOException;
+    boolean updateConfigs(String serviceName, Map<String, T> configs) throws IOException;
 
     /**
      * delete one config from registered service name
@@ -74,18 +79,18 @@ public interface ConfigStoreDao<T>{
      * @param filename
      * @return status
      */
-    public boolean deleteConfig(String serviceName, String filename) throws IOException;
+    boolean deleteConfig(String serviceName, String filename) throws IOException;
 
     /**
      * deregister a service from config manager
      * @param serviceName
      */
-    public void deregister(String serviceName) throws IOException;
+    void deregister(String serviceName) throws IOException;
 
     /**
      * get all configs by registered service name
      * @param serviceName
      * @return configs
      */
-    public Optional<Map<String, T>> getConfigs(String serviceName) throws IOException;
+    Optional<Map<String, T>> getConfigs(String serviceName) throws IOException;
 }

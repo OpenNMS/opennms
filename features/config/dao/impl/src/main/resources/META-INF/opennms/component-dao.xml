@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
   ">
 
   <bean name="configStoreDao" class="org.opennms.features.config.dao.impl.ConfigStoreDaoImpl">
+    <constructor-arg name="jsonStore" ref="jsonStore" />
   </bean>
+  <onmsgi:service interface="org.opennms.features.config.dao.api.ConfigStoreDao" ref="configStoreDao" />
+
 </beans>
