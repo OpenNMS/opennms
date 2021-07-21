@@ -10,7 +10,7 @@ The second type are vendor-specific Entity-MIBs, which some manufacturers provid
 
 These Entity-MIBs provide dynamic attributes to describe device components.
 This includes information such as model number, description, serial number, and more.
-These fields can be added to nodes in {page-component-title} using a provisioning adapter extension of the Provisiond service.
+The optional hardware inventory extension of the Provisiond service will add these fields to nodes in {page-component-title}.
 
 == Installation and configuration
 
@@ -28,7 +28,7 @@ To install the opennms-plugin-provisioning-snmp-hardware-inventory package:
 The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml` which defines the support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
 
 Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
-The `<hw-extension>` element lets you group a list of Entity-MIB extensions defined in `<mibObj>` elements based on a sysOidMask of a node.
+The `hw-extension` element lets you group a list of Entity-MIB extensions defined in `mibObj` elements based on a sysOidMask of a node.
 If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
 When a vendor provides the standard objects on a different table rather than `entPhysicalTable`, you can override one of the base attributes by specifying on the `mibObj` that the attribute that must be overridden.
 
