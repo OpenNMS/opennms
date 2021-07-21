@@ -30,6 +30,7 @@ package org.opennms.core.ipc.twin.api;
 
 import static com.jayway.awaitility.Awaitility.await;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -74,11 +75,11 @@ public class TwinApiIT {
     }
 
     @Test
-    public void testTwinApiWithMocks() throws JsonProcessingException {
+    public void testTwinApiWithMocks() throws IOException {
         MinionInfoBean minionInfoBean = new MinionInfoBean(3, "minion1");
         TwinPublisher.Session<MinionInfoBean> session = mockTwinPublisher.register(minionInfoBean, "minion-bean");
         Map<String, MinionInfoBean> minionBeans = new HashMap<>();
-        mockTwinSubscriber.getObject("minion-bean", MinionInfoBean.class, new Consumer<MinionInfoBean>() {
+        Closeable closeable = mockTwinSubscriber.getObject("minion-bean", MinionInfoBean.class, new Consumer<MinionInfoBean>() {
             @Override
             public void accept(MinionInfoBean minionInfoBean) {
                 minionBeans.put("minion-bean", minionInfoBean);
@@ -90,6 +91,8 @@ public class TwinApiIT {
         await().atMost(15, TimeUnit.SECONDS).until(minionBeans::size, Matchers.is(1));
         MinionInfoBean response = minionBeans.get("minion-bean");
         Assert.assertThat(response.getNodeId(), Matchers.is(4));
+        closeable.close();
+        session.close();
     }
 
     @Test

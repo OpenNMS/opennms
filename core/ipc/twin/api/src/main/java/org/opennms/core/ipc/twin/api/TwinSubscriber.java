@@ -31,7 +31,19 @@ package org.opennms.core.ipc.twin.api;
 import java.io.Closeable;
 import java.util.function.Consumer;
 
+/**
+ * TwinSubscriber lives on Minion that handles all the Object subscriptions on Minion.
+ * At boot up, a module that lives on Minion issues an RPC from Minion to OpenNMS to get an object.
+ * Subsequent updates of the object will come as reverse sink messages from OpenNMS to Minion
+ */
 public interface TwinSubscriber {
 
+    /**
+     * @param key      Unique key for the object.
+     * @param clazz    Specific bean class of T to marshal/unmarshal T to byte array.
+     * @param consumer Consumer of T for subsequent updates to T.
+     * @param <T>      T is an object type that needs to be replicated from OpenNMS to Minion.
+     * @return Closeable to close the subscription of T.
+     */
     <T> Closeable getObject(String key, Class<T> clazz, Consumer<T> consumer);
 }
