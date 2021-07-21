@@ -12,9 +12,7 @@ The NSClientCollector collects performance data over HTTP from NSClient.
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Optional collector-specific parameters for the NSClientCollector
 [options="header"]

@@ -13,9 +13,7 @@ Configure access to the SNMP agent through the SNMP configuration in the Web UI 
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
-
-Use these parameters used in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the SnmpCollector
 [options="header"]
@@ -33,7 +31,7 @@ Use these parameters used in the <<ga-collectd-packages,_collectd-configuration.
 
 == SNMP collection configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 Define SNMP collection in `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml`.
 
@@ -58,10 +56,10 @@ Define SNMP collection in `etc/datacollection-config.xml` and `etc/datacollectio
     </snmp-collection>
 </datacollection-config>
 ----
-<1> Directory to persist RRD files on the file system, ignored if you are using Newts as time-series storage.
+<1> Directory to persist RRD files on the file system. Ignored if you are using Newts as time-series storage.
 <2> Name of the SNMP data collection referenced in the collection package in `collectd-configuration.xml`.
-<3> Configure SNMP MIB-II interface metric collection behavior: *all* means collect metrics from all interfaces, *primary* only from interface provisioned as  primary interface, *select* only from manually selected interfaces from the Web UI.
-<4> RRD archive configuration for this set of performance metrics, ignored when using Newts as time series storage.
+<3> Configure SNMP MIB-II interface metric collection behavior: *all* means collect metrics from all interfaces; *primary* only from interface provisioned as  primary interface; *select* only from manually selected interfaces from the Web UI.
+<4> RRD archive configuration for this set of performance metrics. Ignored when using Newts as time series storage.
 <5> Include device- or application-specific performance metric OIDS to collect.
 
 [[ga-performance-management-collectors-snmp-datacollection-configuration]]
@@ -72,21 +70,21 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 
 This section relates to the SNMP collector, since `datacollection-config.xml` builds snmp-collections.
 
-*Scenario* 
+*Scenario*
 
-a) Node A belongs to categories CatA and CatB, and it has a sysObjectID of .1.100.1.1
+a) Node A belongs to categories CatA and CatB, and has a sysObjectID of .1.100.1.1
 
-b) Node B belongs to category CatB, and it has a sysObjectID of .1.100.1.2
+b) Node B belongs to category CatB, and has a sysObjectID of .1.100.1.2
 
-Be aware of the distinction between the following two concepts:
+Be aware of the distinction between the following concepts:
 
 . Build the effective snmp-collection based on the systemDef list associated with a given list of datacollection-groups.
 . Build the effective list of mibObj to collect from a given node using its sysObjectID.
 
-The first process starts when the spring context initializes.
+The first process starts when the Spring context initializes.
 It also happens during runtime when a change in `datacollection-config.xml` is detected (not the files in the `datacollection` directory).
 
-The second process starts every time the SNMP collector will collect data from the node.
+The second process starts every time the SNMP collector collects data from the node.
 
 Categories and filters require different Collectd packages in `collectd-configuration.xml`:
 
@@ -126,7 +124,7 @@ The following in `datacollection-config.xml`:
 </snmp-collection>
 ----
 
-Then, inside the datacollection directory are three files; for example, `unique-a.xml`, `unique-b.xml`, and `unique-c.xml`, with the following content, respectively:
+Then, inside the datacollection directory are three files: `unique-a.xml`, `unique-b.xml`, and `unique-c.xml`, with the following content, respectively:
 
 [source, xml]
 ----
@@ -217,7 +215,7 @@ The idea is to extract the list of systemDefs that match the sysObjectID, to get
 Because it matches one collectd package for the SNMP service, the collector uses one collection (group2).
 It will check Collect-D through Collect-I.
 
-Now, as the node’s sysObjectID is .1.100.1.2, only the systemDefs Collect-D, Collect-F, and Collect-G will be included.
+Since the node’s sysObjectID is .1.100.1.2, only the systemDefs Collect-D, Collect-F, and Collect-G will be included.
 
 === SnmpCollectorNG
 

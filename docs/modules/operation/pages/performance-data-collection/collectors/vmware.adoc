@@ -11,9 +11,7 @@ The VmwareCollector collects performance metrics for managed entities from vCent
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the VmwareCollector
 [options="header"]
@@ -23,5 +21,5 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 3+|*Required*
 | collection           | The name of the VMWare Collection to use.  | n/a
 3+|*Optional*
-| `timeout`              | Connection timeout in milliseconds          |
+| `timeout`              | Connection timeout in milliseconds          | 3000
 |===

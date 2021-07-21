@@ -15,15 +15,13 @@ Attributes are retrieved using SQL queries.
 
 === Limitations on Minion
 
-When running on Minion the data sources in `opennms-datasources.xml` cannot be referenced.
+When running on Minion, the data sources in `opennms-datasources.xml` cannot be referenced.
 Instead, you must set the JDBC connection settings using the service parameters.
 
-Also, the JDBC driver must be properly loaded in the Minion container (see <<minion/jdbc-driver.adoc, Install JDBC drivers in Minion>>)
+Also, the JDBC driver must be properly loaded in the Minion container (see xref:deployment:minion/installing-jdbc-driver.adoc#install-jdbc-driver [Install JDBC drivers on Minion]).
 By default, only the JDBC driver for PostgreSQL is available.
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the JdbcCollector
 [options="header"]
@@ -31,7 +29,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 |===
 | Parameter              | Description                                                     | Default
 3+|*Required*
-| collection           | The name of the JDBC Collection to use.                         | (empty)
+| collection           | The name of the JDBC Collection to use.                         | n/a
 3+|*Optional*
 | data-source          | Use an existing datasource defined in `opennms-datasources.xml`. | NO_DATASOURCE_FOUND
 
@@ -43,7 +41,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 
 == JDBC collection configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 Define JDBC Collections in `etc/jdbc-datacollection-config.xml`.
 
@@ -72,14 +70,14 @@ This snippet provided a collection definition named `opennms-stats`:
 </jdbc-collection>
 ----
 
-Once added to `etc/jdbc-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
+Once added to `etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command available in the Karaf Shell:
 
 [source]
 ----
 opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats data-source=opennms
 ----
 
-To test this same collection on Minion you must specify the JDBC settings as service attributes, for example:
+To test this same collection on Minion, you must specify the JDBC settings as service attributes, for example:
 
 [source]
 ----

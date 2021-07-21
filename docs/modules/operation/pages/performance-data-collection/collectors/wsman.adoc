@@ -4,7 +4,7 @@
 
 The WsManCollector collects performance metrics using the Web Services-Management (WS-Management) protocol.
 
-WS-Management is a DMTF open standard defining a SOAP-based protocol for the management of servers, devices, applications, and web services.
+WS-Management is a Distributed Management Task Force (DMTF) open standard that defines a SOAP-based protocol for the management of servers, devices, applications, and web services.
 Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
 
 == Collector facts
@@ -16,12 +16,11 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
+== Configuration and use
 
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
-
-.Required collector-specific parameter for the WsManCollector
-[options="header, autowidth"]
+.Required collector-specific parameters for the WsManCollector
+[options="header"]
+[cols="1,3,2"]
 |===
 | Parameter              | Description                              | Default
 | collection           | The name of the WS-Man Collection to use.  | n/a
@@ -51,7 +50,7 @@ Once validated, add the agent-specific details to the {page-component-title} con
 
 === Troubleshooting and commands
 
-For troubleshooting, there is a set of commands you can use in Powershell verified on Microsoft Windows Server 2012.
+For troubleshooting, there is a set of commands you can use in Powershell, verified on Microsoft Windows Server 2012.
 
 .Enable WinRM in PowerShell
 [source, shell]
@@ -103,18 +102,18 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 ----
 
 [[ga-performance-mgmt-collectors-wsman-agent-config]]
-== WS-Management Agent Configuration
+== WS-Management agent configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 The agent-specific configuration details are maintained in `etc/wsman-config.xml`.
-This file has a similar structure as `etc/snmp-config.xml`, which the reader may already be familiar with.
+This file has a similar structure as `etc/snmp-config.xml`, which you may already be familiar with.
 
 This file is consulted when a connection to a WS-Man Agent is made.
-If the IP address of the agent is matched by the `range`, `specific` or `ip-match` elements of a definition, then the attributes on that definition are used to connect to the agent.
+If the IP address of the agent is matched by the `range`, `specific`, or `ip-match` elements of a definition, then the attributes on that definition are used to connect to the agent.
 Otherwise, the attributes on the outer `wsman-config` definition are used.
 
-This `etc/wsman-config.xml` files automatically reload when modified.
+The `etc/wsman-config.xml` files automatically reload when modified.
 
 Here is an example with several definitions:
 
@@ -133,34 +132,35 @@ Here is an example with several definitions:
 ----
 
 .Collector configuration attributes
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
 | Attribute         | Description                                                                                   | Default
 | timeout         | HTTP Connection and response timeout in milliseconds.                                       | HTTP client default
 | retry           | Number of retries on connection failure.                                                      | 0
-| username        | Username for basic authentication.                                                            | none
-| password        | Password used for basic authentication.                                                       | none
+| username        | Username for basic authentication.                                                            | n/a
+| password        | Password for basic authentication.                                                       | n/a
 | port            | HTTP/S port                                                                                 | Default for protocol
 | max-elements    | Maximum number of elements to retrieve in a single request.                                   | no limit
 | ssl             | Enable SSL                                                                                  | False
 | strict-ssl      | Enforce SSL certificate verification.                                                       | True
 | path            | Path in the URL to the WS-Management service.                                                 | /
-| product-vendor  | Used to overwrite the detected product vendor.                                                | none
-| product-version | Used to overwrite the detected product version.                                               | none
+| product-vendor  | Used to overwrite the detected product vendor.                                                | n/a
+| product-version | Used to overwrite the detected product version.                                               | n/a
 | gss-auth        | Enables GSS authentication.
-                      When enabled a reverse lookup is performed on the target IP address in order to determine the
+                      When enabled, a reverse lookup is performed on the target IP address to determine the
                       canonical host name.                                                                          | False
 |===
 
-NOTE: If you try to connect against Microsoft Windows Server make sure to set specific ports for WinRM connections.
-      By default Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
+NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.
+      By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
 
 == WS-Management collection configuration
 
 Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 
 NOTE: The contents of these files are automatically merged and reloaded when changed.
-      The `default` WS-Management collection looks as follows:
+      The following shows the `default` WS-Management collection:
 
 [source, xml]
 ----
@@ -183,13 +183,13 @@ NOTE: The contents of these files are automatically merged and reloaded when cha
 </wsman-datacollection-config>
 ----
 
-The magic happens with the `<include-all-system-definitions/>` element which automatically includes all of the system definitions into the collection group.
+The magic happens with the `<include-all-system-definitions/>` element that automatically includes all of the system definitions into the collection group.
 
 NOTE: If required, you can include a specific system-definition with `<include-system-definition>sys-def-name</include-system-definition>`.
 
-System definitions and related groups can be defined in the root `etc/wsman-datacollection-config.xml` file, but it is preferred that be added to a device specific configuration files in `etc/wsman-datacollection-config.d/*.xml`.
+You can define system definitions and related groups in the root `etc/wsman-datacollection-config.xml` file, but it is preferable to add them to device-specific configuration files in `etc/wsman-datacollection-config.d/*.xml`.
 
-TIP: Avoid modifying any of the distribution configuration files and create new ones to store you specific details instead.
+TIP: Avoid modifying any of the distribution configuration files. Create new ones to store your specific details instead.
 
 Here is an example configuration file for a Dell iDRAC:
 
@@ -239,24 +239,25 @@ The expression has access to the following variables in its evaluation context:
 | productVersion | java.lang.String
 |===
 
-If a particular agent is matched by any of the rules, then the collector will attempt to collect the referenced groups from the agent.
+If a particular agent is matched by any of the rules, then the collector attempts to collect the referenced groups from the agent.
 
 [[ga-performance-mgmt-collectors-wsman-group-definitions]]
 === Group definitions
 
 Groups are retrieved by issuing an Enumerate command against a particular `Resource URI` and parsing the results.
-The Enumerate commands can include an optional `filter` in order to filter the records and attributes that are returned.
+The Enumerate commands can include an optional `filter` to filter the records and attributes that are returned.
 
-NOTE: When configuring a filter, you must also specify the dialect.
+When you configure a filter, you must also specify the dialect.
 
-The resource type used by the group must of be of type `node` or a generic resource type.
-Interface level resources are not supported.
+The resource type the group uses must of be of type `node` or a generic resource type.
+Interface-level resources are not supported.
 
-When using a generic resource type, the `IndexStorageStrategy` cannot be used since records have no implicit index.
+With a generic resource type, you cannot use the `IndexStorageStrategy` since records have no implicit index.
 Instead, you must use an alternative such as the `SiblingColumnStorageStrategy`.
 
 If a record includes a multi-valued key, you can collect the value at a specific index with an `index-of` expression.
-This is best demonstrated with an example. Let`s assume we wanted to collect the `ServiceTag` from the following record:
+This is best demonstrated with an example. 
+Assume we want to collect the `ServiceTag` from the following record:
 
 [source, xml]
 ----
@@ -268,10 +269,10 @@ This is best demonstrated with an example. Let`s assume we wanted to collect the
 <OtherIdentifyingInfo>C8BBBP1</OtherIdentifyingInfo>
 ----
 
-Specifying, the attribute name `OtherIdentifyingInfo` would not be sufficient, since there are multiple values for that key.
+Specifying the attribute name `OtherIdentifyingInfo` would not be sufficient, since there are multiple values for that key.
 Instead, we want to retrieve the value for the `OtherIdentifyingInfo` key at the same index where `IdentifyingDescriptions` is set to `DCIM:ServiceTag`.
 
-This can be achieved using the following attribute definition:
+Use the following attribute definition to achieve this:
 
 [source, xml]
 ----
@@ -281,8 +282,8 @@ This can be achieved using the following attribute definition:
 [[ga-performance-mgmt-collectors-wsman-special-attributes]]
 === Special attributes
 
-A group can contain the placeholder attribute `##ElementCount##` that, during collection, will be populated with the total number of results returned for that group. 
-This can be used to threshold on the number results returned by an enumeration.
+A group can contain the placeholder attribute `ElementCount` that, during collection, will be populated with the total number of results returned for that group.
+Use this to threshold on the number results returned by an enumeration.
 [source, xml]
 ----
     <group name="Event-1234"

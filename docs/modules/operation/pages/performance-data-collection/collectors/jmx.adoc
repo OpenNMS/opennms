@@ -13,9 +13,7 @@ Attributes are extracted from the available MBeans.
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the Jsr160Collector
 [options="header"]
@@ -23,7 +21,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 |===
 | Parameter              | Description                                                                          | Default
 3+|*Required*
-| collection           | The name of the JMX Collection to use.                                               | (none)
+| collection           | The name of the JMX Collection to use.                                               | n/a
 3+|
 *Optional*
 | thresholding-enabled | Whether collected performance data should be tested against thresholds.               | true
@@ -35,9 +33,9 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
                                                                                                                 | STANDARD
 | url                  | The connection url; for example,  `service:jmx:rmi:localhost:18980`.
                            Use `$\{ipaddr}` to substitute the IP address (for example,
-                           `service:jmx:rmi:$\{ipaddr}:18980`                                                   | (none)
-| username             | The username if authentication is required.                                          | (none)
-| password             | The password if authentication is required.                                          |(none)
+                           `service:jmx:rmi:$\{ipaddr}:18980`).                                                   | n/a
+| username             | The username if authentication is required.                                          | n/a
+| password             | The password if authentication is required.                                          | n/a
 | port                 | *Deprecated*. JMX port.                                                              | 1099
 | protocol             | *Deprecated*. Protocol used in the JMX connection string.                          | rmi
 | urlPath              | *Deprecated*. Path used in JMX connection string.                                  | /jmxrmi
@@ -45,14 +43,14 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 | remoteJMX            | *Deprecated*. Use an alternative JMX URL scheme.                                   | false
 |===
 
-NOTE: Replace the deprecated parameters port, protocol, urlPath, rmiServerPort, and remoteJMX with the url parameter.
-If url is not defined, the collector falls back to legacy mode and the deprecated parameters are used instead to build the connection url.
+NOTES: Replace the deprecated parameters port, protocol, urlPath, rmiServerPort, and remoteJMX with the url parameter.
+If url is not defined, the collector falls back to legacy mode and uses the deprecated parameters to build the connection url.
 
-NOTE: If a service requires different configuration, an entry in `$\{OPENNMS_HOME}/etc/jmx-config.xml` can overwrite it.
+If a service requires different configuration, use an entry in `$\{OPENNMS_HOME}/etc/jmx-config.xml` to overwrite it.
 
 == JMX collection configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 Define JMX Collections in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
 
@@ -76,7 +74,7 @@ This snippet provides a collection definition named 'opennms-poller':
 </jmx-collection>
 ----
 
-Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
+Once added to `etc/jmx-datacollection-config.xml` you can use the `collect` command available in the Karaf Shell to test it:
 
 ----
 opennms:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
@@ -111,14 +109,14 @@ JMX configuration requires two changes for this to work:
 ----
 === Resource definition
 
-JMX objectname is the full name of MBean in form of `( domain:key=value, key=value, ..)`.
+JMX objectname is the full name of MBean in the form of `( domain:key=value, key=value, ..)`.
 Wildcard `(*)` can exist anywhere in the objectname.
 
-Depending on wildcard definition, use `SiblingColumnStorageStrategy` to extract resource label.
+Depending on wildcard definition, use `SiblingColumnStorageStrategy` to extract the resource label.
 If wildcard exists in the value (usual case), use corresponding `key` as the `sibling-column-name` parameter. For example:
 `org.apache.activemq:BrokerName=*,Type=Queue,Destination=com.mycompany.myqueue`
 
-Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
+This defines `BrokerName` as a parameter for SiblingColumnStorageStrategy:
 ----
    <parameter key="sibling-column-name" value="BrokerName" />
 ----
@@ -136,9 +134,9 @@ To use the `objectname` itself as a resource label, use `IndexStorageStrategy` a
 Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath; for example, the Java application server Wildfly.
 To successfully collect data, you may need to do the following:
 
-  * Place the jmx client lib to the $\{OPENNMS_HOME}/lib folder (for example, jboss-cli-client.jar)
+  * Place the jmx client lib in the $\{OPENNMS_HOME}/lib folder (for example, jboss-cli-client.jar)
   * Configure the collection accordingly (see above)
-  * Configure the JMX-Collector in `collectd-configuration.xml` (see below)
+  * Configure the JmxCollector in `collectd-configuration.xml` (see below)
 
 .Example
 [source, xml]

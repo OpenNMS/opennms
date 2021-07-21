@@ -13,9 +13,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the HttpCollector
 [options="header"]
@@ -24,7 +22,7 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 | Parameter              | Description                                                                                | Default
 3+|*Required*
 
-| collection           | The name of the HTTP Collection to use.                                                    | (none)
+| collection           | The name of the HTTP Collection to use.                                                    | n/a
 3+|*Optional*
 
 | thresholding-enabled | Whether collected performance data should be tested against thresholds.                    | true
@@ -32,12 +30,12 @@ Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ 
 | timeout              | Connection and socket timeout in milliseconds                                              | 3000
 | retry                | Number of retries                                                                          | 2
 | use-system-proxy     | Should the system-wide proxy settings be used? Configure system proxy settings
-                           via <<operation:system-properties/introduction.adoc#system-properties, system properties>> | false
+                           via <<operation:system-properties/introduction.adoc#system-properties, system properties>>. | false
 |===
 
 == HTTP collection configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 Define HTTP Collections in `etc/http-datacollection-config.xml`.
 
@@ -66,7 +64,7 @@ This snippet provides a collection definition named `opennms-copyright`:
 </http-collection>
 ----
 
-Once added to `etc/http-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
+Once added to `etc/http-datacollection-config.xml`, you can use the `collect` command available in the Karaf Shell to test it:
 
 [source]
 ----

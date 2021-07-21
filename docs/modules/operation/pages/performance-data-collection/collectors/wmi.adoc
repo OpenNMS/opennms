@@ -12,12 +12,11 @@ The WmiCollector collects performance metrics from Windows systems using Windows
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
+== Configuration and use
 
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
-
-.Required collector-specific parameter for the WmiCollector
-[options="header, autowidth"]
+.Required collector-specific parameters for the WmiCollector
+[options="header"]
+[cols="1,3,2"]
 |===
 | Parameter              | Description                              | Default
 | collection          | The name of the WMI Collection to use.  | n/a

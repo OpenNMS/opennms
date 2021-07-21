@@ -3,7 +3,7 @@
 = PrometheusCollector
 
 The PrometheusCollector collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
-This has been adopted by many applications and is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
+Many applications have adopted it and it is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
 
 This collector provides tools for parsing and mapping the metrics to the collection model used by {page-component-title}.
 
@@ -16,7 +16,7 @@ This collector provides tools for parsing and mapping the metrics to the collect
 | Supported on Minion | Yes
 |===
 
-== Collector parameters
+== Configuration and use
 
 .Collector-specific parameters for the PrometheusCollector
 [options="header"]
@@ -24,19 +24,18 @@ This collector provides tools for parsing and mapping the metrics to the collect
 |===
 | Parameter       | Description                                    | Default
 3+|*Required*
-| collection    | The name of the Prometheus Collection to use. |
-| url           | HTTP URL to query for the metrics.              |
+| collection    | The name of the Prometheus Collection to use. | n/a
+| url           | HTTP URL to query for the metrics.              | n/a
 3+|*Optional*
 | timeout       | HTTP socket and read timeout in milliseconds   | 10000 (10 seconds)
 | retry         | Number of retries before failing               | 2
-| header-*       | Optional headers to pass in the HTTP request   | (none)
+| header-*       | Optional headers to pass in the HTTP request   | n/a
 |===
-
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
 == Prometheus collector use
 
-Let's demonstrate the usage of the collector with an example running against https://github.com/prometheus/node_exporter[node_exporter].
+This example runs against https://github.com/prometheus/node_exporter[node_exporter] to demonstrate the use of the collector.
 
 Obtain a copy of the appropriate release binary from the https://github.com/prometheus/node_exporter/releases[node_exporter release page].
 
@@ -85,7 +84,7 @@ Update the IP addresses in the command as necessary.
 
 Prometheus collection definitions are maintained in `etc/prometheus-datacollection.d/`.
 
-Let's look at an excerpt of the `node_exporter` collection:
+Excerpt of the `node_exporter` collection:
 [source]
 ----
 <!--
@@ -104,13 +103,12 @@ Let's look at an excerpt of the `node_exporter` collection:
 </group>
 ----
 
-This group definition matches metrics that start the `node_memory_` prefix, extracts the suffix as the metric name and associates these metrics with the `node_exporter_memory` group in the node-level resource.
+This group definition matches metrics that start the `node_memory_` prefix, extracts the suffix as the metric name, and associates these metrics with the `node_exporter_memory` group in the node-level resource.
 
-Expression are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
+Expressions are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/expressions.html[Spring Expression Language (SpEL)].
 The metric instances are used as the expression context, which means you have access to the `name` and `label` properties.
 
-
-Here's another excerpt where we extract metrics grouped by CPU:
+Another excerpt where we extract metrics grouped by CPU:
 [source]
 ----
 <!--
@@ -129,4 +127,4 @@ Here's another excerpt where we extract metrics grouped by CPU:
 </group>
 ----
 
-This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label and extracts the name of the `mode` for the name of the numeric attributes.
+This group definition matches metrics called 'node_cpu', groups them by the value of the `cpu` label, and extracts the name of the `mode` for the name of the numeric attributes.

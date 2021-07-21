@@ -3,7 +3,7 @@
 
 The XmlCollector collects and extracts metrics from XML and JSON documents.
 
-== Collector facts
+== Configuration and use
 
 [options="autowidth"]
 |===
@@ -20,16 +20,16 @@ The following handlers are not currently supported on Minion:
 * Sftp3gppXmlCollectionHandler
 * Sftp3gppVTDXmlCollectionHandler
 
-== Collector parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the XmlCollector
 [options="header"]
 [cols="1,3,2"]
 |===
 | Parameter              | Description                              | Default
-| collection           | The name of the XML Collection to use.  | -
+3+|*Required*
+| collection           | The name of the XML Collection to use.  | n/a
+3+|*Optional*
 | handler-class        | Class that performs the collection.     | org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler
 |===
 
@@ -42,9 +42,9 @@ The available handlers include:
 * `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler`
 * `org.opennms.protocols.http.collector.HttpCollectionHandler`
 
-== XML Collection Configuration
+== XML collection configuration
 
-NOTE: Understanding link:#resource-types[resource types] helps when editing collector-specific configuration files. 
+Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 
@@ -69,15 +69,17 @@ This snippet provides a collection definition named `xml-opennms-nodes`:
 </xml-collection
 ----
 
-The request element can have the following child elements:
+The request element can have the following optional child elements:
 
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter               | Description                                                           | Required | Default value
-| `timeout`               | The connection and socket timeout in milliseconds                     | optional |
-| `retries`               | How often should the request be repeated in case of an error?         | optional | 0
-| `use-system-proxy`      | Should the system-wide proxy settings be used? Configure the system proxy
+| Parameter               | Description                                                           | Default
+| timeout               | The connection and socket timeout in milliseconds.                     | n/a
+| retries               | How often to repeat the request in case of an error.         | 0
+| use-system-proxy      | Should the system-wide proxy settings be used? Configure the system proxy
                             settings
-                            via <<system-properties/introduction.adoc#system-properties, system properties>>             | optional | false
+                            via <<system-properties/introduction.adoc#system-properties, system properties>>.           | false
 |===
 
 The referenced `opennms-nodes.xml` file contains:
@@ -100,5 +102,5 @@ opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 
 
 == Caveats
 
-The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be single element of type object to make xpath query work.
+The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be a single element of type `object` to make xpath query work.
 If the root element is an array, it will be wrapped in an object, whereas the original array is accessible as `/elements`.
