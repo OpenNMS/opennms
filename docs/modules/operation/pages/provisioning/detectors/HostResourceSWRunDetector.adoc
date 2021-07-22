@@ -1,21 +1,20 @@
 = HostResourceSWRunDetector
 
 Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
-Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
 
 You must configure the SNMP protocol, and the SNMP agent must support HOST-RESOURCES-MIB.
 Most modern _SNMP agents_, e.g. _Net-SNMP agent_ and the _Microsoft SNMP service_, support the _HOST-RESOURCES-MIB_.
 
 NOTE: This detector implements the configuration parameters inherited from the <<provisioning/detectors/SnmpDetector.adoc>>.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the HostResourceSwRunDetector
 [options="header, %autowidth"]
@@ -25,7 +24,7 @@ NOTE: This detector implements the configuration parameters inherited from the <
 |===
 
 
-==== Examples
+== Examples
 
 [source,xml]
 ----

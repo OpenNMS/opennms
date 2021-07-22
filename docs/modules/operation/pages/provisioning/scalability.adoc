@@ -1,42 +1,43 @@
+
 = Addressing Scalability
 
-The explosive growth and density of the IT systems being deployed today to support not traditional IP services is impacting management systems like never before and is demanding from them tremendous amounts of scalability.
-The scalability of a management system is defined by its capacity for maintaining large numbers of managing entities coupled with its efficiency of managing the entities.
+The explosive growth and density of the IT systems being deployed today to support non-traditional IP services impacts management systems like never before, and demands tremendous amounts of scalability.
+The scalability of a management system is defined by its capacity to manage large numbers of entities coupled with its efficiency for managing the entities.
 
-Today, It is not uncommon for {page-component-title} deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, as well as networks).
-An NMS must be capable of using the full capacity every resource of its computing platform (hardware and OS) as effectively as possible in order to manage these environments.
-The days of writing scripts or single threaded applications will just no longer be able to do the work required an NMS when dealing with the scalability challenges facing systems and systems administrators working in this domain.
+Today, it is not uncommon for {page-component-title} deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, and/or networks).
+A monitoring system must be able to use the full capacity of every resource of its computing platform as effectively as possible.
+Writing scripts or single-threaded applications is no longer sufficient to do the work required by a monitoring system at the scale of most networks today.
 
-== Parallelization and Non-Blocking I/O
+== Parallelization and non-blocking I/O
 
-Squeezing out every ounce of power from a management system’s platform (hardware and OS) is absolutely required to complete all the work of a fully functional NMS such as {page-component-title}.
-Fortunately, the hardware and CPU architecture of a modern computing platform provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
-While these very powerful resources are being provided by commodity systems, it makes the complexity of developing applications to use them vs. not using them, orders of magnitude more complex.
-However, because of scalability demands of our complex IT environments, multi-threaded NMS applications are now essential and this has fully exposed the complex issues of concurrency in software development.
+Squeezing out every ounce of power from a management system’s platform is absolutely required to complete all the work of a fully functional monitoring system such as {page-component-title}.
+Fortunately, the hardware architecture of modern computing platforms provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
+Because of scalability demands of complex IT environments, multi-threaded monitoring solutions are now essential.
 
-{page-component-title} has stepped up to this challenge with its new concurrency strategy.
-This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations (traditionally used by most effectively by single threaded applications) with the power of a fully current, non-blocking, multi-threaded design.
-The non-blocking component of this new concurrency strategy added greater complexity but {page-component-title} gained orders of magnitude in increased scalability.
+OpenNMS has stepped up to this challenge with its concurrency strategy.
+This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations, traditionally used most effectively by single-threaded applications, with the power of a fully current, non-blocking, multi-threaded design.
+The non-blocking component of this concurrency strategy adds greater complexity, but gives {page-component-title} substantially increased scalability.
 
-NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor based atomic operations and is the basis for {page-component-title}’ non-blocking concurrency algorithms.
+NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor-based atomic operations, and is the basis for {page-component-title}’s non-blocking concurrency algorithms.
 
-=== Provisioning Policies
+=== Provisioning policies
 
-Just because you can, doesn’t mean you should!
-Because the massively parallel operations Provisiond creates allow rapid discovery and persistence of tremendous numbers of nodes, interfaces, and servicices, doesn’t mean it should.
-A policy API for Provisiond lets you develop implementations that can control the behavior of Provisiond.
-This includes a set of flexible provisioning policies that control the persistence of entities with attributes that constrain monitoring behavior.
+When Provisiond scans nodes to add to the database, it may potentially spawn dozens of parallel operations to discover what services and interfaces are available.
+Multiplied by the number of nodes in your environment, this can cause huge bursts in outgoing traffic from your {page-component-title} server.
+To limit this impacting your network, you can define requisition policies that can control the behavior of Provisiond.
+This will let you control the persistence of entity attributes to constrain monitoring behavior.
 
 When nodes are imported or re-scanned, there is, potentially, a set of zero or more provisioning policies that are applied.
-The policies are defined in the foreign source’s definition.
-The policies for an auto-discovered node or nodes from provisioning groups that don’t have a foreign source definition, are the policies defined in the default foreign source definition.
+The policies are configured in the foreign source’s definition.
+Auto-discovered nodes, or nodes from requisitions that don’t have a foreign source definition, use the policies configured in the default foreign source definition.
 
-=== The Default Foreign Source Definition
+=== The default foreign source definition
 
-Contained in the libraries of the Provisioning service is the "template" or default foreign source.
-The template stored in the library is used until the {page-component-title} admin user alters the default from the _Provisioning Groups_ WebUI.
+The default foreign source template is contained in the libraries of the Provisioning service.
+The template stored in the library is used until the {page-component-title} admin user alters the default from the Requisition Web UI.
 Upon edit, this template is exported to the {page-component-title} `etc/` directory with the file name: `default-foreign-source.xml`.
 
+Example default foreign source file:
 [source, xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -63,9 +64,10 @@ Upon edit, this template is exported to the {page-component-title} `etc/` direct
 </foreign-source>
 ----
 
-=== Automatic Rescanning
+=== Automatic rescanning
 
-The default foreign source defines a `scan-interval` of `1d`, which will cause all nodes in the requisition to be scanned daily.  You may set the scan interval using any combination of the following signifiers:
+The default foreign source defines a `scan-interval` of `1d`, which causes all nodes in the requisition to be scanned daily.
+You may set the scan interval using any combination of the following signifiers:
 
 * w: Weeks
 * d: Days
@@ -76,8 +78,9 @@ The default foreign source defines a `scan-interval` of `1d`, which will cause a
 
 For example, to rescan every 6 days and 53 minutes, you would set the `scan-interval` to `6d 53m`.
 
-Don't forget, for the new scan interval to take effect, you will need to import the requisition one more time so that the foreign source becomes active.
+Don't forget, for the new scan interval to take effect, you will need to import/synchronize the requisition one more time so that the change becomes active.
 
-=== Disabling Rescan
+=== Disabling rescan
 
-For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.  {page-component-title} will not attempt to rescan the nodes in the requisition unless you trigger a manual (forced) rescan through the web UI or Provisioning ReST API.
+For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.
+{page-component-title} will not attempt to rescan the nodes in the requisition unless you trigger a manual rescan through the web UI or Provisioning REST API.

@@ -8,8 +8,8 @@ This is the interface for doing that.
 
 [options="header", cols="5,10"]
 |===
-| Resource                 | Description
-| `/maps`                  | Get the list of maps.
+| Resource                  | Description
+| `/maps`                   | Get the list of maps.
 | `/maps/\{id}`             | Get the map with the given _ID_.
 | `/maps/\{id}/mapElements` | Get the elements (_nodes_, _links_, _etc_.) for the map with the given _ID_.
 |===
@@ -26,7 +26,7 @@ This is the interface for doing that.
 
 [options="header", cols="5,10"]
 |===
-| Resource     | Description
+| Resource      | Description
 | `/maps/\{id}` | Update the properties of the map with the given _ID_.
 |===
 
@@ -34,6 +34,6 @@ This is the interface for doing that.
 
 [options="header", cols="5,10"]
 |===
-| Resource     | Description
+| Resource      | Description
 | `/maps/\{id}` | Delete the map with the given _ID_.
 |===

@@ -1,6 +1,6 @@
 [[ga-provisioning-meta-data]]
-= MetaData assigned to Nodes
-A requisition can contain arbitrary link:#ga-meta-data[metadata] for each node, interface and service it contains.
+= MetaData assigned to nodes
+A requisition can contain arbitrary link:#ga-meta-data[metadata] for each node, interface, and service it contains.
 During provisioning, the metadata is copied to the model and persisted in the database.
 
 The Requisition UI lets you edit the metadata defined in a requisition.

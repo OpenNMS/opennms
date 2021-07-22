@@ -4,14 +4,13 @@
 
 The LDAP monitor tests for LDAP service availability.
 The LDAP monitor first tries to establish a TCP connection on the specified port.
-Then, if it succeeds, it will attempt to establish an LDAP connection and do a simple search.
+If it succeeds, it attempts to establish an LDAP connection and do a simple search.
 If the search returns a result within the specified timeout and attempts, the service will be considered available.
 The scope of the LDAP search is limited to the immediate subordinates of the base object.
 The LDAP search is anonymous by default.
-The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+The LDAP monitor uses the com.novell.ldap.LDAPConnection class, and supports most LDAP-compatible directory systems, including Active Directory.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -19,25 +18,33 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the LdapMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the LdapMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter       | Description                                                       | Required | Default value | Placeholder substitution
-| `dn`            | The distinguished name to use if authenticated search is needed.  | optional | `-` | Yes
-| `password`      | The password to use if authenticated search is needed.            | optional | `-` | Yes
-| `port`          | The destination port where connection shall be attempted.         | optional | `389` | No
-| `retry`         | Number of attempts to get a search result.                        | optional | `1` | No
-| `searchbase`    | The base distinguished name to search from.                       | optional | `base` | No
-| `searchfilter`  | The LDAP search's filter.                                         | optional | `(objectclass=*)` | No
-| `version`       | The version of the LDAP protocol to use, specified as an integer.
-                    Note: Only LDAPv3 is supported at the moment.                     | optional | `3` | No
+| Parameter       | Description                                                    | Default value
+| dn kbd:[{}]
+            | The distinguished name to use if authenticated search is needed.  | n/a
+| password kbd:[{}]
+  | The password to use if authenticated search is needed.            | n/a
+| port          | The destination port to attempt connection at.         | 389
+| retry       | Number of attempts to get a search result.                        | 1
+| searchbase    | The base distinguished name to search from.                       | base
+| searchfilter  | The LDAP search's filter.                                         | (objectclass=*)
+| version      | The version of the LDAP protocol to use, specified as an integer. +
+                    Note: Only LDAPv3 is supported.                     | 3
 |===
+
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -49,7 +56,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="searchfilter" value="uid=ulf"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="ldap"/>
   <parameter key="ds-name" value="ldap"/>
 </service>

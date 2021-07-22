@@ -12,7 +12,7 @@ It is a simple API for the submission and retrieval of correlation feedback.
 [options="header, autowidth", cols="1,10"]
 |===
 | Parameter                             | Description
-| `/situation-feedback/\{situationid\}` | Get situation feedback for the situation with AlarmId = \{situationid\}.
+| `/situation-feedback/\{situationid}`  | Get situation feedback for the situation with AlarmId = \{situationid}.
 |===
 
 NOTE: situationId is the same as the AlarmId for the situation.
@@ -61,7 +61,7 @@ On a successful request, the feedback will be persisted.
 [options="header, autowidth", cols="5,10"]
 |===
 | Resource                              | Description
-| `/situation-feedback/\{situationid\}` | Submits feedback for the situation identitified with AlarmId = \{situationid\}.
+| `/situation-feedback/\{situationid}`  | Submits feedback for the situation identitified with AlarmId = \{situationid}.
 |===
 
 == Use examples with cURL
