@@ -30,7 +30,7 @@ The SnmpCollector collects performance data through SNMP.
 == SNMP collection configuration
 
 You can configure which MIB objects to collect from devices by creating a datacollection XML configuration file in `etc/datacollection/`.
-After creating a new datacollection config file, it will need to be added to `etc/datacollection-config.xml` for inclusion in polling.
+After creating a new datacollection config file, you need to add it to `etc/datacollection-config.xml` for inclusion in polling.
 The `datacollection-config.xml` is reloaded automatically whenever the file is modified.
 The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metics from a node.
 This allows you to modify which metrics are collected without needing to restart services, once the Collectd collector service has been defined.
@@ -76,12 +76,12 @@ image::performance-management/collectors/01_snmp-datacollection-configuration.pn
 
 === SNMP data collection example
 
-The following scenario steps through creating a new datacollection definition and assumes the following facts:
+The following scenario steps through creating a new datacollection definition and assumes the following:
 
 * Node A belongs to categories CatA and CatB, and has a sysObjectID of `.1.100.1.1`.
 * Node B belongs to category CatB, and has a sysObjectID of `.1.100.1.2`.
 
-If you want to collect different OIDs based on a categories filter, this requires you to define separate Collectd packages.
+If you want to collect different OIDs based on a categories filter, you must define separate Collectd packages.
 
 NOTE: The examples included below are partial files to provide an example of how datacollection files are structured.
 
@@ -212,8 +212,8 @@ Even though UniqueB is referenced twice, it will only be included once.
 
 Since the node’s sysObjectID is .1.100.1.1, only the systemDefs Collect-A, Collect-C, Collect-D, Collect-F, and Collect-G will be included, as those are the only ones with a sysoid or sysoidMask that matches the sysObjectID.
 
-The mibObj groups will be added in the order they appear.
-If one systemDef references a group name that already included, it won’t be added again.
+The mibObj groups are added in the order they appear.
+If one systemDef references a group name that is already included, it won’t be added again.
 
 *For node B*
 
