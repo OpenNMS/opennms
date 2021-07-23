@@ -14,6 +14,8 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 | Class Name          | `org.opennms.netmgt.collectd.WsManCollector`
 | Package             | core
 | Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/wsman-datacollection-config.xml and $OPENNMS_HOME/etc/wsman-datacollection.d/*.xml
+
 |===
 
 == Configuration and use
@@ -22,7 +24,7 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                              | Default
+| Parameter            | Description                                | Default
 | collection           | The name of the WS-Man Collection to use.  | n/a
 |===
 
@@ -135,32 +137,32 @@ Here is an example with several definitions:
 [options="header"]
 [cols="1,3,2"]
 |===
-| Attribute         | Description                                                                                   | Default
+| Attribute       | Description                                                                                 | Default
 | timeout         | HTTP Connection and response timeout in milliseconds.                                       | HTTP client default
-| retry           | Number of retries on connection failure.                                                      | 0
-| username        | Username for basic authentication.                                                            | n/a
-| password        | Password for basic authentication.                                                       | n/a
+| retry           | Number of retries on connection failure.                                                    | 0
+| username        | Username for basic authentication.                                                          | n/a
+| password        | Password for basic authentication.                                                          | n/a
 | port            | HTTP/S port                                                                                 | Default for protocol
-| max-elements    | Maximum number of elements to retrieve in a single request.                                   | no limit
+| max-elements    | Maximum number of elements to retrieve in a single request.                                 | no limit
 | ssl             | Enable SSL                                                                                  | False
 | strict-ssl      | Enforce SSL certificate verification.                                                       | True
-| path            | Path in the URL to the WS-Management service.                                                 | /
-| product-vendor  | Used to overwrite the detected product vendor.                                                | n/a
-| product-version | Used to overwrite the detected product version.                                               | n/a
+| path            | Path in the URL to the WS-Management service.                                               | /
+| product-vendor  | Used to overwrite the detected product vendor.                                              | n/a
+| product-version | Used to overwrite the detected product version.                                             | n/a
 | gss-auth        | Enables GSS authentication.
-                      When enabled, a reverse lookup is performed on the target IP address to determine the
-                      canonical host name.                                                                          | False
+                    When enabled, a reverse lookup is performed on the target IP address to determine the
+                    canonical host name.                                                                          | False
 |===
 
 NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.
-      By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
+By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
 
 == WS-Management collection configuration
 
 Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 
 NOTE: The contents of these files are automatically merged and reloaded when changed.
-      The following shows the `default` WS-Management collection:
+The following shows the `default` WS-Management collection:
 
 [source, xml]
 ----
@@ -176,8 +178,8 @@ NOTE: The contents of these files are automatically merged and reloaded when cha
         </rrd>
 
         <!--
-             Include all of the available system definitions
-         -->
+            Include all of the available system definitions
+        -->
         <include-all-system-definitions/>
     </collection>
 </wsman-datacollection-config>
@@ -198,16 +200,16 @@ Here is an example configuration file for a Dell iDRAC:
 <?xml version="1.0"?>
 <wsman-datacollection-config>
     <group name="drac-system"
-           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
-           resource-type="node">
+            resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
+            resource-type="node">
         <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
     </group>
 
     <group name="drac-power-supply"
-           resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
-           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
-           filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
-           resource-type="dracPowerSupplyIndex">
+            resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+            dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+            filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
+            resource-type="dracPowerSupplyIndex">
         <attrib name="InputVoltage" alias="inputVoltage" type="Gauge"/>
         <attrib name="InstanceID" alias="instanceId" type="String"/>
         <attrib name="PrimaryStatus" alias="primaryStatus" type="Gauge"/>
@@ -256,7 +258,7 @@ With a generic resource type, you cannot use the `IndexStorageStrategy` since re
 Instead, you must use an alternative such as the `SiblingColumnStorageStrategy`.
 
 If a record includes a multi-valued key, you can collect the value at a specific index with an `index-of` expression.
-This is best demonstrated with an example. 
+This is best demonstrated with an example.
 Assume we want to collect the `ServiceTag` from the following record:
 
 [source, xml]
@@ -284,13 +286,14 @@ Use the following attribute definition to achieve this:
 
 A group can contain the placeholder attribute `ElementCount` that, during collection, will be populated with the total number of results returned for that group.
 Use this to threshold on the number results returned by an enumeration.
+
 [source, xml]
 ----
-    <group name="Event-1234"
-           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
-           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
-           filter="select * from Win32_NTLogEvent where LogFile = 'Some-Application-Specific-Logfile/Operational' AND EventCode = '1234'"
-           resource-type="node">
-        <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
-    </group>
+<group name="Event-1234"
+        resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
+        dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+        filter="select * from Win32_NTLogEvent where LogFile = 'Some-Application-Specific-Logfile/Operational' AND EventCode = '1234'"
+        resource-type="node">
+    <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
+</group>
 ----

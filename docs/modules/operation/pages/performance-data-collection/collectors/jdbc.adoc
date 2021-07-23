@@ -13,6 +13,7 @@ Any other JDBC driver must be manually loaded to collect from other types of dat
 | Class Name            | `org.opennms.netmgt.collectd.JdbcCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
+| Configuration Files   | $OPENNMS_HOME/etc/jdbc-datacollection-config.xml
 |===
 
 === Limitations on Minion
