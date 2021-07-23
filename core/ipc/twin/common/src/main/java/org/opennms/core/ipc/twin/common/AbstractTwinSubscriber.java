@@ -30,69 +30,106 @@ package org.opennms.core.ipc.twin.common;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
-    private final Map<String, Class<?>> classesByKey = new ConcurrentHashMap<>();
-    private final Map<String, Consumer<?>> consumerMap = new ConcurrentHashMap<>();
-    private final Map<Closeable, String> closableMap = new ConcurrentHashMap<>();
+    private final Map<String, SessionImpl<?>> sessionMap = new ConcurrentHashMap<>();
+    private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MinionIdentity minionIdentity;
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
 
     protected AbstractTwinSubscriber(MinionIdentity minionIdentity) {
         this.minionIdentity = minionIdentity;
     }
 
     /**
-     * @param twinRequest Handle RpcRequest from @{@link AbstractTwinSubscriber}
+     * @param twinRequest Send RpcRequest from @{@link AbstractTwinSubscriber}
      */
-    abstract void handleRpcRequest(TwinRequestBean twinRequest);
+    abstract void sendRpcRequest(TwinRequestBean twinRequest);
 
 
     @Override
-    public <T> Closeable getObject(String key, Class<T> clazz, Consumer<T> consumer) {
-        classesByKey.put(key, clazz);
-        consumerMap.put(key, consumer);
-        Closeable closeable = new Closeable() {
-            @Override
-            public void close() throws IOException {
-                String key = closableMap.get(this);
-                consumerMap.remove(key);
-                classesByKey.remove(key);
-            }
-        };
-        closableMap.put(closeable, key);
+    public <T> Closeable subscribe(String key, Class<T> clazz, Consumer<T> consumer) {
+        SessionImpl<T> session = new SessionImpl<T>(key, clazz, consumer);
+        sessionMap.put(key, session);
         TwinRequestBean twinRequestBean = new TwinRequestBean(key, minionIdentity.getLocation());
-        handleRpcRequest(twinRequestBean);
-        return closeable;
+        sendRpcRequest(twinRequestBean);
+        LOG.info("Subscribed to object updates with key {}", key);
+        return session;
     }
 
-    protected void accept(TwinResponseBean twinResponse) {
-        String key = twinResponse.getKey();
-        if (key != null) {
-            Consumer<?> consumer = consumerMap.get(key);
-            if (consumer != null) {
-                consumer.accept(unmarshalResponse(key, twinResponse.getObject()));
+    protected void accept(TwinResponseBean twinResponse) throws IOException {
+        LOG.info("Received object update with key {}", twinResponse.getKey());
+        SessionImpl<?> session = sessionMap.get(twinResponse.getKey());
+        if (session == null) {
+            LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
+            sessionMap.keySet().forEach(LOG::info);
+        }
+        if (session != null) {
+            session.accept(twinResponse);
+        }
+    }
+
+    private class SessionImpl<T> implements Closeable {
+
+        private final String key;
+        private final Consumer<T> consumer;
+        private final Class<T> clazz;
+
+        public SessionImpl(String key, Class<T> clazz, Consumer<T> consumer) {
+            this.key = key;
+            this.clazz = clazz;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void close() throws IOException {
+            LOG.info("Closed session with key {} ", key);
+            sessionMap.remove(key);
+        }
+
+        public void accept(TwinResponseBean twinResponseBean) throws IOException {
+            if (twinResponseBean.getObject() != null && isObjectUpdated(twinResponseBean.getObject())) {
+                objMap.put(twinResponseBean.getKey(), twinResponseBean.getObject());
+                final T value = objectMapper.readValue(twinResponseBean.getObject(), clazz);
+                LOG.debug("Update consumer with key {}", key);
+                consumer.accept(value);
             }
         }
-    }
 
-
-    private <T> T unmarshalResponse(String key, byte[] value) {
-        Class<?> clazz = classesByKey.get(key);
-        try {
-            return (T) objectMapper.readValue(value, clazz);
-        } catch (IOException e) {
-            // Ignore
+        boolean isObjectUpdated(byte[] updatedObject) {
+            byte[] objInBytes = objMap.get(key);
+            if (objInBytes == null) {
+                return true;
+            }
+            return !Arrays.equals(objInBytes, updatedObject);
         }
-        return null;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SessionImpl<?> session = (SessionImpl<?>) o;
+            return Objects.equals(key, session.key) && Objects.equals(consumer, session.consumer) && Objects.equals(clazz, session.clazz);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, consumer, clazz);
+        }
     }
 }

@@ -32,9 +32,9 @@ import static com.jayway.awaitility.Awaitility.await;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -54,9 +54,12 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TwinApiIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TwinApiIT.class);
     static String rpcRequestTopic = "OpenNMS-MINION-RPC-Request-onms-twin";
     static String rpcResponseTopic = "OpenNMS-MINION-RPC-Response-onms-twin";
     static String sinkTopic = "OpenNMS-MINION-Sink-onms-twin";
@@ -67,6 +70,8 @@ public class TwinApiIT {
     private MockTwinPublisher mockTwinPublisher;
 
     private MockTwinSubscriber mockTwinSubscriber;
+
+    private final List<MinionInfoBean> minionInfoBeans = new ArrayList<>();
 
 
     @Before
@@ -88,19 +93,15 @@ public class TwinApiIT {
     @Test
     public void testTwinApiWithMocks() throws IOException {
         MinionInfoBean minionInfoBean = new MinionInfoBean(3, "minion1");
-        TwinPublisher.Session<MinionInfoBean> session = mockTwinPublisher.register(minionInfoBean, "minion-bean", null);
-        Map<String, MinionInfoBean> minionBeans = new HashMap<>();
-        Closeable closeable = mockTwinSubscriber.getObject("minion-bean", MinionInfoBean.class, new Consumer<MinionInfoBean>() {
-            @Override
-            public void accept(MinionInfoBean minionInfoBean) {
-                minionBeans.put("minion-bean", minionInfoBean);
-            }
-        });
-        await().atMost(15, TimeUnit.SECONDS).until(minionBeans::size, Matchers.is(1));
-        minionBeans.clear();
-        session.publish(new MinionInfoBean(4, "minion2"), null);
-        await().atMost(15, TimeUnit.SECONDS).until(minionBeans::size, Matchers.is(1));
-        MinionInfoBean response = minionBeans.get("minion-bean");
+        String key = "minion-bean-module";
+        TwinPublisher.Session<MinionInfoBean> session = mockTwinPublisher.register(key, MinionInfoBean.class);
+        session.publish(minionInfoBean);
+        Closeable closeable = mockTwinSubscriber.subscribe(key, MinionInfoBean.class, new ConsumerImpl());
+        await().atMost(20, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(minionInfoBeans::size, Matchers.greaterThan(0));
+        minionInfoBeans.clear();
+        session.publish(new MinionInfoBean(4, "minion2"));
+        await().atMost(20, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(minionInfoBeans::size, Matchers.greaterThan(0));
+        MinionInfoBean response = minionInfoBeans.get(0);
         Assert.assertThat(response.getNodeId(), Matchers.is(4));
         closeable.close();
         session.close();
@@ -128,6 +129,15 @@ public class TwinApiIT {
     public void destroy() {
         mockTwinSubscriber.destroy();
         mockTwinPublisher.destroy();
+    }
+
+    private class ConsumerImpl implements Consumer<MinionInfoBean> {
+
+        @Override
+        public void accept(MinionInfoBean minionInfoBean) {
+            minionInfoBeans.add(minionInfoBean);
+            LOG.info("received minion bean {}", minionInfoBean);
+        }
     }
 
 }

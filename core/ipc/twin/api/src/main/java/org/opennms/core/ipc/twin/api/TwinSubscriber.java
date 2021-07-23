@@ -40,10 +40,10 @@ public interface TwinSubscriber {
 
     /**
      * @param key      Unique key for the object.
-     * @param clazz    Specific bean class of T to marshal/unmarshal T to byte array.
+     * @param clazz    Specific bean class of T to marshal/unmarshal.
      * @param consumer Consumer of T for subsequent updates to T.
      * @param <T>      T is an object type that needs to be replicated from OpenNMS to Minion.
      * @return Closeable to close the subscription of T.
      */
-    <T> Closeable getObject(String key, Class<T> clazz, Consumer<T> consumer);
+    <T> Closeable subscribe(String key, Class<T> clazz, Consumer<T> consumer);
 }

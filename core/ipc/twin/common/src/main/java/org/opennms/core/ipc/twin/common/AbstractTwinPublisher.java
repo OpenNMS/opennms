@@ -30,18 +30,20 @@ package org.opennms.core.ipc.twin.common;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractTwinPublisher implements TwinPublisher {
 
-    private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
-    private final Map<Session<?>, String> keySessionMap = new ConcurrentHashMap<>();
+    private final Map<SessionKey, byte[]> objMap = new ConcurrentHashMap<>();
     protected final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinPublisher.class);
 
     /**
      * @param sinkUpdate Handle sink Update from @{@link AbstractTwinPublisher}.
@@ -49,65 +51,72 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     abstract void handleSinkUpdate(TwinResponseBean sinkUpdate);
 
     @Override
-    public <T> Session<T> register(T obj, String key, String location) throws IOException {
-        // Marshal obj to byte array.
-        byte[] value = marshalObject(obj);
-        if (location == null) {
-            location = "";
-        }
-        objMap.put(key + location, value);
-        Session<T> session = new SessionImpl<T>(key);
-        // TODO: Better way to mapping to location.
-        keySessionMap.put(session, key + location);
-        return session;
+    public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
+        SessionKey sessionKey = new SessionKey(key, location);
+        LOG.info("Registered a session with key {}", sessionKey);
+        return new SessionImpl<>(sessionKey);
     }
-
 
     protected TwinResponseBean getTwin(TwinRequestBean twinRequest) {
-        byte[] value = objMap.get(twinRequest.getKey() + twinRequest.getLocation());
+        byte[] value = objMap.get(new SessionKey(twinRequest.getKey(), twinRequest.getLocation()));
         if (value == null) {
-            value = objMap.get(twinRequest.getKey());
+            value = objMap.get(new SessionKey(twinRequest.getKey(), null));
         }
-        // TODO: What if there is no value exist here ?
         return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
-    }
-
-    private <T> byte[] marshalObject(T obj) throws IOException {
-        try {
-            return objectMapper.writeValueAsBytes(obj);
-        } catch (JsonProcessingException e) {
-            throw e;
-        }
     }
 
     private class SessionImpl<T> implements Session<T> {
 
-        private final String key;
+        private final SessionKey sessionKey;
 
-        public SessionImpl(String key) {
-            this.key = key;
+        public SessionImpl(SessionKey sessionKey) {
+            this.sessionKey = sessionKey;
         }
 
         @Override
-        public void publish(T obj, String location) throws IOException {
-            try {
-                byte[] value = objectMapper.writeValueAsBytes(obj);
-                if (location == null) {
-                    location = "";
-                }
-                objMap.put(key + location, value);
-                handleSinkUpdate(new TwinResponseBean(key, location, value));
-            } catch (JsonProcessingException e) {
-                throw e;
-            }
+        public void publish(T obj) throws IOException {
+            LOG.info("Published an object update for the session with key {}", sessionKey.toString());
+            byte[] value = objectMapper.writeValueAsBytes(obj);
+            objMap.put(sessionKey, value);
+            handleSinkUpdate(new TwinResponseBean(sessionKey.key, sessionKey.location, value));
         }
 
         @Override
         public void close() throws IOException {
-            String key = keySessionMap.remove(this);
-            if (key != null) {
-                objMap.remove(key);
-            }
+            LOG.info("Closed session with key {} ", sessionKey);
+            objMap.remove(sessionKey);
+        }
+    }
+
+    public static class SessionKey {
+
+        public final String key;
+        public final String location;
+
+        private SessionKey(String key, String location) {
+            this.key = key;
+            this.location = location;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SessionKey that = (SessionKey) o;
+            return Objects.equals(key, that.key) && Objects.equals(location, that.location);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, location);
+        }
+
+        @Override
+        public String toString() {
+            return "SessionKey{" +
+                    "key='" + key + '\'' +
+                    ", location='" + location + '\'' +
+                    '}';
         }
     }
 

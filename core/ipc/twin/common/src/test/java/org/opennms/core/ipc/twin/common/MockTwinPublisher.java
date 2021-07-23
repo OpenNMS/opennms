@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,6 +51,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
     private final Hashtable<String, Object> kafkaConfig = new Hashtable<>();
     private KafkaProducer<String, byte[]> rpcResponseProducer;
     private KafkaConsumerRunner kafkaConsumerRunner;
+    private final Executor executor = Executors.newCachedThreadPool();
 
     public MockTwinPublisher(Hashtable<String, Object> config) {
         kafkaConfig.putAll(config);
@@ -103,7 +105,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
                             } catch (IOException e) {
                                 // Ignore
                             }
-                        });
+                        }, executor);
                     }
                 }
             } catch (Exception e) {

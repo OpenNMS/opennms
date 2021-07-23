@@ -33,31 +33,35 @@ import java.io.IOException;
 
 /**
  * TwinPublisher lives on OpenNMS that handles all the Objects that need to be replicated.
- * At boot up, modules that register objects with TwinPublisher.
- * Modules also publish any subsequent updates to TwinPublisher.
+ * At boot up, modules register module specific key with TwinPublisher.
+ * Modules publish initial objects/updated objects on the session.
  */
 
 public interface TwinPublisher {
 
     /**
-     * Session that can publish updates to T
+     * Session that can publish initial objects and updates to T.
      *
-     * @param <T> type of object that needs replication.
+     * @param <T> type of object that is getting replicated.
      */
     interface Session<T> extends Closeable {
         /**
-         * @param obj      an object that needs replication on Minion
-         * @param location targeted Minion location for the object, set null for all locations.
+         * @param obj an object that needs replication on Minion
          */
-        void publish(T obj, String location) throws IOException;
+        void publish(T obj) throws IOException;
     }
 
     /**
-     * @param obj      an Object that needs replication.
-     * @param key      unique key for the object.
-     * @param location targeted Minion location for the object, set null for all locations.
      * @param <T>      type of object for replication
+     * @param key      unique key for the object.
+     * @param clazz    a class used for serialization.
+     * @param location targeted Minion location for the object, set null for all locations.
      * @return Session which provides updates to object.
      */
-    <T> Session<T> register(T obj, String key, String location) throws IOException;
+    <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException;
+
+    default <T> Session<T> register(String key, Class<T> clazz) throws IOException {
+        return register(key, clazz, null);
+    }
 }
+

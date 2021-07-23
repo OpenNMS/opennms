@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,6 +58,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
     private KafkaSinkConsumerRunner kafkaSinkConsumerRunner;
     private KafkaConsumerRunner kafkaConsumerRunner;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Executor executor = Executors.newCachedThreadPool();
 
     public void init() {
         // Listens to response from OpenNMS.
@@ -76,7 +78,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    void handleRpcRequest(TwinRequestBean twinRequest) {
+    void sendRpcRequest(TwinRequestBean twinRequest) {
         try {
             byte[] value = objectMapper.writeValueAsBytes(twinRequest);
             ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(TwinApiIT.rpcRequestTopic, twinRequest.getKey(), value);
@@ -145,7 +147,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
                             } catch (IOException e) {
                                 // Ignore
                             }
-                        });
+                        }, executor);
                     }
                 }
             } catch (Exception e) {
