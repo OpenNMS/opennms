@@ -33,11 +33,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
-import org.opennms.netmgt.config.wsman.WsmanConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.WSManVersion;
-import org.opennms.netmgt.config.wsman.Definition;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 
 public interface WSManConfigDao {
     static final String DEFAULT_PROTOCOL = "http";

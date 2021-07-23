@@ -45,7 +45,7 @@ import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.core.wsman.exceptions.WSManException;
 import org.opennms.core.wsman.utils.ResponseHandlingUtils;
 import org.opennms.core.wsman.utils.RetryNTimesLoop;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;

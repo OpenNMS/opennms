@@ -37,7 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.wsman.Collection;
-import org.opennms.netmgt.config.wsman.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.Rrd;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;

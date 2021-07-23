@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.xml.ValidateUsing;
 
 /**
  * <p>Java class for anonymous complex type.
@@ -73,6 +74,7 @@ import javax.xml.bind.annotation.XmlType;
     "definition"
 })
 @XmlRootElement(name = "wsman-config")
+@ValidateUsing("wsman-config.xsd")
 public class WsmanConfig implements WsmanAgentConfig {
 
     @XmlElement

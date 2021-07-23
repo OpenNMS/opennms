@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.config.wsman.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.SystemDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 public interface WsmanAgentConfig {
     String getUsername();

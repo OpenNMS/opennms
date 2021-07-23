@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wsman.Attrib;
 import org.opennms.netmgt.config.wsman.Collection;
-import org.opennms.netmgt.config.wsman.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.config.wsman.Group;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;

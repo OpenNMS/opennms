@@ -37,7 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.config.wsman.Collection;
 import org.opennms.netmgt.config.wsman.Group;
 import org.opennms.netmgt.config.wsman.SystemDefinition;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.model.OnmsNode;

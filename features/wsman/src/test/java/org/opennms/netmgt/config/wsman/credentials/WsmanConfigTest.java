@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 import java.io.File;
 import java.util.Arrays;
@@ -47,7 +47,7 @@ public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
                 {
                     getWsmanConfig(),
                     new File("src/test/resources/wsman-config.xml"),
-                    null
+                    "target/classes/xsds/wsman-config.xsd"
                 }
         });
     }

@@ -40,7 +40,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.netmgt.config.wsman.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
