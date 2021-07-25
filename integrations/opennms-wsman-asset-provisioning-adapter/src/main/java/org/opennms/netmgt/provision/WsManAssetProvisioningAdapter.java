@@ -47,7 +47,7 @@ import org.opennms.core.wsman.WSManConstants;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.wsman.cxf.CXFWSManClientFactory;
 import org.opennms.netmgt.config.WsManAssetAdapterConfig;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
+import org.opennms.netmgt.config.wsman.credentials.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.AssetField;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WqlObj;
 import org.opennms.netmgt.daemon.DaemonTools;
