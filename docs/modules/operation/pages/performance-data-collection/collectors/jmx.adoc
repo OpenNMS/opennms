@@ -26,9 +26,9 @@ Attributes are extracted from the available MBeans.
 | collection           | The name of the JMX Collection to use.                                                 | n/a
 3+|
 *Optional*
-| thresholding-enabled | Whether to test collected performance data against thresholds.                | true
+| thresholding-enabled | Whether to test collected performance data against thresholds.                         | true
 | retry                | Number of retries before failing.                                                      | 3
-| friendlyName         | Name of the path to store the metrics.                                | Value of the port, or `jsr160` if no port is set.
+| friendlyName         | Name of the path to store the metrics.                                                 | Value of the port, or `jsr160` if no port is set.
 | factory              | The password strategy to use.
                             Supported values are: +
                             STANDARD (for authentication) +

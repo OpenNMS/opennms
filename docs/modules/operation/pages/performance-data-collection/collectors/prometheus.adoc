@@ -30,8 +30,8 @@ This collector provides tools for parsing and mapping the metrics to the collect
 | url             | HTTP URL to query for the metrics.             | n/a
 3+| *Optional*
 | timeout         | HTTP socket and read timeout in milliseconds   | 10000 (10 seconds)
-| retry           | Number of retries before failing.               | 2
-| header-*        | Optional headers to pass in the HTTP request.   | n/a
+| retry           | Number of retries before failing.              | 2
+| header-*        | Optional headers to pass in the HTTP request.  | n/a
 |===
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
