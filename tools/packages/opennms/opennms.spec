@@ -984,7 +984,9 @@ echo "done"
 if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
 	"$ROOT_INST/bin/runjava" "-s"
 fi
-"${ROOT_INST}/bin/fix-permissions" -R "${ROOT_INST}/etc/java.conf"
+if [ -e "${ROOT_INST}/etc/java.conf" ]; then
+	"${ROOT_INST}/bin/fix-permissions" -R "${ROOT_INST}/etc/java.conf"
+fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
