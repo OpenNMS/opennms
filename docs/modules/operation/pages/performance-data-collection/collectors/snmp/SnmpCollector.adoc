@@ -11,7 +11,8 @@ Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP
 | Class Name          | `org.opennms.netmgt.collectd.SnmpCollector`
 | Package             | core
 | Supported on Minion | Yes
-| Configuration Files | $OPENNMS_HOME/etc/datacollection-config.xml and $OPENNMS_HOME/etc/datacollection/*.xml
+| Configuration Files | $OPENNMS_HOME/etc/datacollection-config.xml +
+                        $OPENNMS_HOME/etc/datacollection/*.xml
 |===
 
 == Configuration and use

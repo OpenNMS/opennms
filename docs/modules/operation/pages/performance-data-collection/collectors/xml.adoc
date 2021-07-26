@@ -10,7 +10,8 @@ The XmlCollector collects and extracts metrics from XML and JSON documents.
 | Class Name            | `org.opennms.protocols.xml.collector.XmlCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration Files   | $OPENNMS_HOME/etc/xml-datacollection-config.xml and $OPENNMS_HOME/etc/xml-datacollection.d/*.xml
+| Configuration Files   | $OPENNMS_HOME/etc/xml-datacollection-config.xml +
+                          $OPENNMS_HOME/etc/xml-datacollection.d/*.xml
 |===
 
 === Limitations on Minion

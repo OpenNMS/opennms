@@ -14,7 +14,8 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 | Class Name          | `org.opennms.netmgt.collectd.WsManCollector`
 | Package             | core
 | Supported on Minion | Yes
-| Configuration Files | $OPENNMS_HOME/etc/wsman-datacollection-config.xml and $OPENNMS_HOME/etc/wsman-datacollection.d/*.xml
+| Configuration Files | $OPENNMS_HOME/etc/wsman-datacollection-config.xml +
+                        $OPENNMS_HOME/etc/wsman-datacollection.d/*.xml
 
 |===
 
