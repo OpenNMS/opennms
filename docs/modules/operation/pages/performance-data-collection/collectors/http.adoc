@@ -11,6 +11,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | Class Name          | `org.opennms.netmgt.collectd.HttpCollector`
 | Package             | core
 | Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/http-datacollection-config.xml
 |===
 
 == Configuration and use
@@ -19,11 +20,11 @@ Attributes are extracted from the HTTP responses using a regular expression.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                                                                                | Default
-3+|*Required*
+| Parameter            | Description                                                                                | Default
+3+| *Required*
 
 | collection           | The name of the HTTP Collection to use.                                                    | n/a
-3+|*Optional*
+3+| *Optional*
 
 | thresholding-enabled | Whether collected performance data should be tested against thresholds.                    | true
 | port                 | Override the default port in all of the URIs                                               | 80
@@ -53,8 +54,7 @@ This snippet provides a collection definition named `opennms-copyright`:
   </rrd>
   <uris>
     <uri name="login-page">
-      <url path="/opennms/login.jsp"
-           matches=".*2002\-([0-9]+).*" response-range="100-399" dotall="true" >
+      <url path="/opennms/login.jsp" matches=".*2002\-([0-9]+).*" response-range="100-399" dotall="true" >
       </url>
       <attributes>
         <attrib alias="copyrightYear" match-group="1" type="gauge"/>

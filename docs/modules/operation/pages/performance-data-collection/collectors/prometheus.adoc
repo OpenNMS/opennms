@@ -14,6 +14,8 @@ This collector provides tools for parsing and mapping the metrics to the collect
 | Class Name          | `org.opennms.netmgt.collectd.prometheus.PrometheusCollector`
 | Package             | core
 | Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/prometheus-datacollection-config.xml +
+                        $OPENNMS_HOME/etc/prometheus-datacollection.d/*.xml
 |===
 
 == Configuration and use
@@ -23,13 +25,13 @@ This collector provides tools for parsing and mapping the metrics to the collect
 [cols="1,3,2"]
 |===
 | Parameter       | Description                                    | Default
-3+|*Required*
-| collection    | The name of the Prometheus Collection to use. | n/a
-| url           | HTTP URL to query for the metrics.              | n/a
-3+|*Optional*
-| timeout       | HTTP socket and read timeout in milliseconds   | 10000 (10 seconds)
-| retry         | Number of retries before failing               | 2
-| header-*       | Optional headers to pass in the HTTP request   | n/a
+3+| *Required*
+| collection      | The name of the Prometheus Collection to use.  | n/a
+| url             | HTTP URL to query for the metrics.             | n/a
+3+| *Optional*
+| timeout         | HTTP socket and read timeout in milliseconds   | 10000 (10 seconds)
+| retry           | Number of retries before failing.              | 2
+| header-*        | Optional headers to pass in the HTTP request.  | n/a
 |===
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
@@ -40,7 +42,7 @@ This example runs against https://github.com/prometheus/node_exporter[node_expor
 Obtain a copy of the appropriate release binary from the https://github.com/prometheus/node_exporter/releases[node_exporter release page].
 
 Extract and start the service:
-[source]
+[source, console]
 ----
 $ tar xvf node_exporter-0.18.1.linux-amd64.tar.gz
 $ ./node_exporter-0.18.1.linux-amd64/node_exporter
@@ -62,7 +64,7 @@ INFO[0000] Listening on :9100                            source="node_exporter.g
 ----
 
 From the Karaf Shell, you can now issue an ad hoc collection request against the `node_exporter` process
-[source]
+[source, console]
 ----
 admin@opennms> opennms:collect org.opennms.netmgt.collectd.prometheus.PrometheusCollector 127.0.0.1 collection=node_exporter url='http://127.0.0.1:9100/metrics'
 NOTE: Some collectors require a database node and IP interface.
@@ -85,7 +87,7 @@ Update the IP addresses in the command as necessary.
 Prometheus collection definitions are maintained in `etc/prometheus-datacollection.d/`.
 
 Excerpt of the `node_exporter` collection:
-[source]
+[source, xml]
 ----
 <!--
     node_memory_Active 1.3626548224e+10
@@ -109,7 +111,7 @@ Expressions are written in link:https://docs.spring.io/spring/docs/4.2.x/spring-
 The metric instances are used as the expression context, which means you have access to the `name` and `label` properties.
 
 Another excerpt where we extract metrics grouped by CPU:
-[source]
+[source, xml]
 ----
 <!--
     node_cpu{cpu="cpu0",mode="guest"} 0
