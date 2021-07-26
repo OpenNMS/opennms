@@ -127,7 +127,7 @@
 ** xref:application-perspective-monitoring/application-perspective-monitoring.adoc[]
 
 * xref:performance-data-collection/introduction.adoc[]
-** xref:performance-data-collection/collection-packages.adoc[]
+** xref:performance-data-collection/collectd/collection-packages.adoc[]
 ** xref:performance-data-collection/collectd/configuration.adoc[]
 ** xref:performance-data-collection/resource-types.adoc[]
 ** xref:performance-data-collection/collectors/collectors.adoc[]
@@ -144,6 +144,7 @@
 *** xref:performance-data-collection/collectors/wsman.adoc[]
 *** xref:performance-data-collection/collectors/xml.adoc[]
 *** xref:performance-data-collection/collectors/xmp.adoc[]
+** xref:performance-data-collection/property-extenders.adoc[]
 ** xref:performance-data-collection/collectd/collect-admin.adoc[]
 *** xref:performance-data-collection/shell/introduction.adoc[]
 **** xref:performance-data-collection/shell/adhoc-collection.adoc[]
