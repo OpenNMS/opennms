@@ -553,6 +553,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         }
 
         public TopologyUIPage setSzl(int szl) {
+            testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             Preconditions.checkArgument(szl >= 0, "The semantic zoom level must be >= 0");
             int currentSzl = Integer.valueOf(testCase.findElementById("szlInputLabel").getText()).intValue();
             if (szl != currentSzl) {
