@@ -2,7 +2,7 @@
 = SnmpCollector
 
 The SnmpCollector collects performance data through SNMP.
-Configure credentials for accessing SNMP agents in the Web UI (*Admin>Configure SNMP Community Names by IP Address*).
+Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP Community Names by IP Address*).
 
 == Collector facts
 
@@ -30,8 +30,8 @@ Configure credentials for accessing SNMP agents in the Web UI (*Admin>Configure 
 
 == SNMP collection configuration
 
-You can configure which MIB objects to collect from devices by creating a datacollection XML configuration file in `etc/datacollection/`.
-After creating a new datacollection config file, you need to add it to `etc/datacollection-config.xml` for inclusion in polling.
+To configure which MIB objects to collect from devices, create a datacollection XML configuration file in `etc/datacollection/`.
+After creating a new datacollection config file, add it to `etc/datacollection-config.xml` for inclusion in polling.
 The `datacollection-config.xml` is reloaded automatically whenever the file is modified.
 The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metics from a node.
 This allows you to modify which metrics are collected without needing to restart services, once the Collectd collector service has been defined.
@@ -65,10 +65,10 @@ Ignored if you are using Newts as time-series storage.
 <2> Name of the SNMP data collection referenced in the collection package in `collectd-configuration.xml`.
 <3> Configure SNMP MIB-II interface metric collection behavior: +
 *all* means collect metrics from all interfaces +
-*primary* only from interface provisioned as  primary interface +
+*primary* only from interface provisioned as primary interface +
 *select* only from manually selected interfaces from the Web UI.
 <4> RRD archive configuration for this set of performance metrics.
-Ignored when using Newts as time series storage.
+Ignored when using Newts as time-series storage.
 <5> Name of collection group from a file within the `etc/datacollection/` subfolder to include in the collection cycle.
 
 [[ga-performance-management-collectors-snmp-datacollection-configuration]]
@@ -82,7 +82,7 @@ The following scenario steps through creating a new datacollection definition an
 * Node A belongs to categories CatA and CatB, and has a sysObjectID of `.1.100.1.1`.
 * Node B belongs to category CatB, and has a sysObjectID of `.1.100.1.2`.
 
-If you want to collect different OIDs based on a categories filter, you must define separate Collectd packages.
+To collect different OIDs based on a categories filter, you must define separate Collectd packages.
 
 NOTE: The examples included below are partial files to provide an example of how datacollection files are structured.
 
@@ -209,7 +209,7 @@ Regardless of the sysoid and sysoidMasks inside the systemDef, what matters at t
 *For node A*
 
 Because this node matches two collectd packages for the SNMP service, the collector uses both collections (group1 and group2) and will check Collect-A through Collect-I.
-Even though UniqueB is referenced twice, it will only be included once.
+Even though UniqueB is referenced twice, it will be included only once.
 
 Since the node’s sysObjectID is .1.100.1.1, only the systemDefs Collect-A, Collect-C, Collect-D, Collect-F, and Collect-G will be included, as those are the only ones with a sysoid or sysoidMask that matches the sysObjectID.
 
@@ -226,7 +226,7 @@ Since the node’s sysObjectID is .1.100.1.2, only the systemDefs Collect-D, Col
 
 IMPORTANT: The SnmpCollectorNG is currently provided as a beta version and is still under development.
 
-The SnmpCollectorNG provides an alternate implementation to the SnmpCollector that takes advantages of new APIs in the {page-component-title} platform.
+The SnmpCollectorNG provides an alternate implementation to the SnmpCollector that takes advantage of new APIs in the {page-component-title} platform.
 It is provided as a separate collector while we work to validate its functionality and run-time characteristics, with the goal of eventually having it replace the SnmpCollector.
 
 Use this new collector by updating existing references from `org.opennms.netmgt.collectd.SnmpCollector` to `org.opennms.netmgt.collectd.SnmpCollectorNG`.

@@ -22,5 +22,5 @@ The VmwareCimCollector collects ESXi host and sensor metrics from vCenter.
 3+| *Required*
 |  collection           | The name of the VMWare CIM Collection to use.   | n/a
 3+| *Optional*
-|   timeout             | Connection timeout in milliseconds.             | 3000
+|   timeout             | Connection timeout in milliseconds            | 3000
 |===

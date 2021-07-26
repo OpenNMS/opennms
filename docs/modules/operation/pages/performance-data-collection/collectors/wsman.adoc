@@ -162,7 +162,7 @@ By default, Microsoft Windows Server uses port `TCP/5985` for plain text and por
 Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 
 NOTE: The contents of these files are automatically merged and reloaded when changed.
-The following shows the `default` WS-Management collection:
+The following shows the default WS-Management collection:
 
 [source, xml]
 ----

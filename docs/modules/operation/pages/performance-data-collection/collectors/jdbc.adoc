@@ -21,8 +21,8 @@ Any other JDBC driver must be manually loaded to collect from other types of dat
 No JDBC drivers are included with Minion.
 See xref:deployment:minion/installing-jdbc-driver.adoc#install-jdbc-driver [install JDBC drivers on Minion] for instructions.
 
-Aslo, when running on Minion, the data sources in `opennms-datasources.xml` cannot be referenced.
-Instead, you must set the JDBC connection settings using the service parameters.
+Also, when running on Minion, you cannot reference the data sources in `opennms-datasources.xml`.
+Instead, you must use the service parameters to set the JDBC connection settings.
 
 == Configuration and use
 
