@@ -60,12 +60,7 @@ public class IpInterfaceTopologyEntity {
     public IpInterfaceTopologyEntity(Integer id,
             InetAddress ipAddress, String isManaged, Character snmpPrimary, Integer nodeId,
             Integer snmpInterfaceId){
-        this.id = id;
-        this.ipAddress = ipAddress;
-        this.isManaged = isManaged;
-        this.isSnmpPrimary = PrimaryType.get(snmpPrimary);
-        this.nodeId = nodeId;
-        this.snmpInterfaceId = snmpInterfaceId;
+        this(id, ipAddress, isManaged, PrimaryType.get(snmpPrimary), nodeId, snmpInterfaceId);
     }
 
     public static IpInterfaceTopologyEntity create(OnmsIpInterface ipInterface) {
