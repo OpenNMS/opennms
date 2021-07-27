@@ -15,7 +15,7 @@ A collector package has two categories of information to edit or specify:
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services, collector package services>>
 
 [[ga-coll-pack-attribute]]
-.Collector package attributes
+== Collector package attributes
 At a minimum, collector package attributes include a package name and a filter that specifies the interfaces to include in the collector package:
 
 [source, xml]
