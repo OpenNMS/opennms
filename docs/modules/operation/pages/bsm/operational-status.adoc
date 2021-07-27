@@ -1,24 +1,25 @@
 
 [[gu-bsm-op-status]]
-= Operational status
+= Operational Status
 
 Every business service maintains an operational status that represents the overall status calculated by the map and reduce functions from the edges.
 The operational status uses the severities known from events and alarms.
 
-.Operational Status representation
-[options="header, autowidth"]
+.Operational status representation
+[options="header"]
+[cols="1,1,1,3"]
 |===
 | Name            | Numerical code | Color       / Code   | Description
-| `Critical`      | 7              | Purple      / `#c00` | This event means that a severe service affecting event has occurred.
-| `Major`         | 6              | Red         / `#f30` | Indicates serious disruption or malfunction of a service or system.
-| `Minor`         | 5              | Orange      / `#f90` | Used for troubles that have no immediate effect on service or system performance.
-| `Warning`       | 4              | Yellow      / `#fc0` | An event has occurred that may require action.
+| Critical      | 7              | Purple      / #c00 | Indicates a severe service-affecting event has occurred.
+| Major         | 6              | Red         / #f30 | Indicates serious disruption or malfunction of a service or system.
+| Minor         | 5              | Orange      / #f90 | Used for troubles that have no immediate effect on service or system performance.
+| Warning       | 4              | Yellow      / #fc0 | An event has occurred that may require action.
                                                             Use this severity to indicate a condition that should be noted (logged) but does not require immediate action.
-| `Normal`        | 3              | Dark green  / `#360` | Informational message. No action required.
-| `Cleared`       | 2              | Grey        / `#eee` | This severity is reserved for use in alarms to indicate that an alarm describes a self-clearing error condition that has been corrected and service is restored.
+| Normal        | 3              | Dark green  / #360 | Informational message. No action required.
+| Cleared       | 2              | Grey        / #eee | This severity is reserved for use in alarms to indicate that an alarm describes a self-clearing error condition that has been corrected and service is restored.
                                                             Never use this severity in event definitions.
-                                                            Please use "Normal" severity for events that clear an alarm.
-| `Indeterminate` | 1              | Light green / `#990` | No severity could be associated with this event.
+                                                            Use "Normal" severity for events that clear an alarm.
+| Indeterminate | 1              | Light green / #990 | No severity could be associated with this event.
 |===
 
 If a business service changes its operational status, an OpenNMS event of the type `uei.opennms.org/bsm/serviceOperationalStatusChanged` is generated and sent to the OpenNMS event bus.

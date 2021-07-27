@@ -9,9 +9,9 @@ Available map functions:
 [options="header, autowidth"]
 |===
 | Name       | Description
-| `Identity` | Use the same severity as operational status of the BS
-| `Increase` | Increase the severity by one level and use it as operational status of the BS
-| `Decrease` | Decrease the severity by one level and use it as operational status of the BS
-| `SetTo`    | Set the operational status to a constant severity value
-| `Ignore`   | The input of the edge is ignored for operational status calculation
+| Identity | Use the same severity as operational status of the business service.
+| Increase | Increase the severity by one level and use it as operational status of the business service.
+| Decrease | Decrease the severity by one level and use it as operational status of the business service.
+| SetTo    | Set the operational status to a constant severity value.
+| Ignore   | Ignore the input of the edge for operational status calculation.
 |===
