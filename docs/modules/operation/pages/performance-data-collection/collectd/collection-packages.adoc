@@ -39,7 +39,7 @@ The following tags are also available for an interface filter:
 | include-range | Specify a range of IP addresses to include in a package.         | `<include-range begin="192.168.0.1" end="192.168.0.254"/>`
 |exclude-range| Specify a range of IP addresses to exclude in a package.
                   This overrides an `include-range` tag.                           | `<exclude-range begin="192.168.0.100" end="192.168.0.104"/>`
-|include-url|Specify a file that contains a list of IP addresses to include.|`<include-url>file:/opt/OpenNMS/etc/include</include-url>``
+| include-url    | Specify a file that contains a list of IP addresses to include.  | `<include-url>file:/opt/OpenNMS/etc/include</include-url>`
 |===
 
 The following example illustrates collector package attributes that use some of these additional tags:
