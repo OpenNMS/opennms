@@ -57,7 +57,7 @@ The following example illustrates collector package attributes that use some of 
 
 
 [[ga-collectd-packages-services]]
-.Service configuration attributes
+== Service configuration attributes
 
 Service configuration attributes define the collector to use and the performance metrics to collect.
 Each service is associated with a specific collector; the collector and its related Java class must appear at the bottom of the _collectd-configuration.xml_ file:
