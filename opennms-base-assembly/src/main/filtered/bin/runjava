@@ -31,6 +31,8 @@
 #
 # put an '@' here so we don't break maven substition
 
+INCOMING_ARGS=("$@")
+
 # shellcheck disable=SC2016
 opennms_home='${install.dir}'
 if [ ! -d "${opennms_home}" ]; then
@@ -55,7 +57,7 @@ if [ -e "${opennms_home}/bin/_lib.sh" ]; then
 	myuser="$(id -u -n)"
 	if [ "$myuser" != "$RUNAS" ]; then
 	        if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
-	                _cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
+	                _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 	                exec "${_cmd[@]}"
 	        fi
 	        echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2
