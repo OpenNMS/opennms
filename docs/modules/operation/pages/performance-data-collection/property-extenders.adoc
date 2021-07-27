@@ -6,7 +6,7 @@ These properties can be used in the `resourceLabel` attribute of the `resourceTy
 When the string property exists as a column in the same table that contains the numeric metrics, it's easy to associate the string to the correct resource by adding a `mibObj` with the same `instance` attribute and a type of `string`.
 
 For example, the Cisco ENVMON MIB's temperature status table contains both a numeric gauge for the temperature value and a string describing the associated temperature sensor.
-A partial walk-through of this table illustrates this very direct relationship:
+A partial snmpwalk of this table illustrates this direct relationship:
 
 [options="header, autowidth"]
 |===
