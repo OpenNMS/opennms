@@ -70,7 +70,7 @@ public class CharacterUserType implements UserType {
     @SuppressWarnings("deprecation")
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
         final Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0]);
-        return c == null? null : String.valueOf(c);
+        return c == null ? null : String.valueOf(c);
     }
 
     @Override
