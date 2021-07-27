@@ -35,7 +35,7 @@ The following tags are also available for an interface filter:
 [cols="1,3,2"]
 |===
 |Tag|Description|Example
-|specific| Specify an actual IP address to include in the package.|`<specific>192.168.1.59</specific>``
+| specific      | Specify an actual IP address to include in the package.          | `<specific>192.168.1.59</specific>`
 | include-range | Specify a range of IP addresses to include in a package.         | `<include-range begin="192.168.0.1" end="192.168.0.254"/>`
 |exclude-range| Specify a range of IP addresses to exclude in a package.
 This overrides an `include-range` tag.| `<exclude-range begin="192.168.0.100" end="192.168.0.104"/>``
