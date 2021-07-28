@@ -164,7 +164,6 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
 //    //TODO: CHECK WHAT IS THAT FOR
 //    @Override
-<<<<<<< HEAD
 //    public Optional<ConfigData<JSONObject>> getConfigurationMetaData(String configName) {
 //        Objects.requireNonNull(serviceId);
 //        return configStoreDao.getConfigData(configName).get();
@@ -173,25 +172,11 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public ConfigData getSchemaForConfiguration(String configName) {
         return configStoreDao.getConfigSchema()
-=======
-//    public Optional<ConfigData<JSONObject>> getConfigurationMetaData(String serviceName) {
-//        Objects.requireNonNull(serviceId);
-//        return configStoreDao.getConfigData(serviceName).get();
-//    }
-/*
-    @Override
-    public ConfigData getSchemaForConfiguration(String serviceName) {
-        return configStoreDao.getConfigMeta()
->>>>>>> commit for PE-10 & PE-6
     }
 */
 //    //TODO: CHECK later
 //    @Override
-<<<<<<< HEAD
 //    public ConfigData<JSONObject> getSchemaForConfiguration(String configName) {
-=======
-//    public ConfigData<JSONObject> getSchemaForConfiguration(String serviceName) {
->>>>>>> commit for PE-10 & PE-6
 //        return null;
 //    }
 
