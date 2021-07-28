@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,14 +34,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -89,7 +93,7 @@ public class IpInterfaceDaoHibernateIT implements InitializingBean {
 
         // Adding the test address as a secondary address (unmanaged) to Node1
         OnmsNode n1 = m_databasePopulator.getNode1();
-        OnmsIpInterface iface = new OnmsIpInterface(m_testAddress.getHostAddress(), n1);
+        OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(m_testAddress.getHostAddress()), n1);
         iface.setIsManaged("U");
         iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
         OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(n1, 1001);
@@ -97,6 +101,24 @@ public class IpInterfaceDaoHibernateIT implements InitializingBean {
         snmpIf.getIpInterfaces().add(iface);
         n1.addIpInterface(iface);
         m_databasePopulator.getNodeDao().save(n1);
+    }
+
+    @Test
+    @Transactional
+    public void testPrimaryType() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.PRIMARY.getCharCode());
+        List<OnmsIpInterface> ifaces = new ArrayList<>(m_ipInterfaceDao.findMatching(cb.toCriteria()));
+        assertEquals(Integer.valueOf(1), ifaces.get(0).getIfIndex());
+
+        cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.NOT_ELIGIBLE.getCharCode());
+        ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(Integer.valueOf(3), ifaces.get(0).getIfIndex());
+
+        cb = new CriteriaBuilder(OnmsIpInterface.class).eq("snmpPrimary", PrimaryType.SECONDARY.getCharCode()).eq("isManaged", "U");
+        ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
+        assertEquals(1, ifaces.size());
+
+        assertEquals(Integer.valueOf(1001), ifaces.iterator().next().getIfIndex());
     }
 
     @Test
