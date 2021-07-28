@@ -278,7 +278,7 @@ The following is a sample of how the threshold appears in the `thresholds.xml` f
 
 -----
 <1> The name of the group and the directory of the stored data.
-<2>  The details of the threshold including type, data source type, threshold value, rearm value, and so on.
+<2> The details of the threshold including type, data source type, threshold value, rearm value, and so on.
 
 [[threshold-notification]]
 === Create a notification on a threshold event
