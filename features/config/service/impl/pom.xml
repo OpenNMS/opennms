@@ -11,17 +11,17 @@
     <name>OpenNMS :: Features :: Config Manager :: Service :: Impl</name>
     <packaging>bundle</packaging>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <extensions>true</extensions>
+          <configuration>
+            <instructions>
+            </instructions>
+          </configuration>
+        </plugin>
+      </plugins>
     </build>
     <dependencies>
       <!-- APIs we implement -->
@@ -42,6 +42,96 @@
       </dependency>
       <!-- Dependencies used -->
       <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.ws.xmlschema</groupId>
+          <artifactId>xmlschema-core</artifactId>
+          <version>2.2.5</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>javax.xml.bind</groupId>
+                  <artifactId>jaxb-api</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.sun.xml.bind</groupId>
+                  <artifactId>jaxb-impl</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.ws.xmlschema</groupId>
+          <artifactId>xmlschema-walker</artifactId>
+          <version>2.2.5</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>javax.xml.bind</groupId>
+                  <artifactId>jaxb-api</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.sun.xml.bind</groupId>
+                  <artifactId>jaxb-impl</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <!--dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>org.eclipse.persistence.moxy</artifactId>
+          <version>2.7.8</version>
+      </dependency-->
+      <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>eclipselink</artifactId>
+          <version>${eclipselinkVersion}</version>
+      </dependency>
+      <!--dependency>
+          <groupId>jakarta.xml.bind</groupId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
+          <version>2.3.3</version>
+      </dependency-->
+      <dependency>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-xjc</artifactId>
+          <version>2.2.11</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>javax.xml.bind</groupId>
+                  <artifactId>jaxb-api</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.sun.xml.bind</groupId>
+                  <artifactId>jaxb-impl</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jaxb-dependencies</artifactId>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
         <version>${project.version}</version>
@@ -49,8 +139,66 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>${json.version}</version>
+        <version>${jsonVersion}</version>
       </dependency>
       <!-- Testing -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-all</artifactId>
+          <version>1.3</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.skyscreamer</groupId>
+          <artifactId>jsonassert</artifactId>
+          <version>1.5.0</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-jrobin</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.collection</groupId>
+        <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.services</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.db</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-dao-mock</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
 </project>

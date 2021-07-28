@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ *     http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,38 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.features.config.service.config;
 
-package org.opennms.features.config.dao.api;
+import org.opennms.core.xml.ValidateUsing;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
- * This class include meta-data of the config
+ * The top-level element of the users.xml configuration
+ *  file.
  */
-public class ConfigData<CONFIG_DATATYPE> {
-    // reserve for later notification use
-    private Class notificationClass;
-    // it should be fileName <> config pair
-    private Map<String, CONFIG_DATATYPE> configs;
-
-    public ConfigData() {
-        configs = new HashMap<>();
-    }
-
-    public Map<String, CONFIG_DATATYPE> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(Map<String, CONFIG_DATATYPE> configs) {
-        this.configs = configs;
-    }
-
-    public Class getNotificationClass() {
-        return notificationClass;
-    }
-
-    public void setNotificationClass(Class notificationClass) {
-        this.notificationClass = notificationClass;
-    }
+@XmlRootElement(name = "package")
+@XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("FakeXsdForTest.xsd")
+public class FakeXsdForTest implements Serializable {
+    private static final long serialVersionUID = 1L;
 }
