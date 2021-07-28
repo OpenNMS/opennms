@@ -120,7 +120,6 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(final String configName) throws IOException {
         Optional<String> configDataJsonStr = jsonStore.get(configName, CONTEXT_CONFIG);
-
         if (configDataJsonStr.isEmpty()) {
             return Optional.empty();
         }

@@ -31,8 +31,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

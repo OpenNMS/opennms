@@ -65,6 +65,7 @@ import java.util.Optional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
+@FixMethodOrder(MethodSorters.JVM)
 public class ConfigurationManagerServiceImplTest {
     private static final String SERVICE_NAME = "provisiond";
     private static final String CONFIG_ID = "test1";
