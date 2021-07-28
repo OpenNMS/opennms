@@ -31,7 +31,7 @@ opennms:activemq-purge-queue OpenNMS.Sink.Trap
 
 == Authentication and authorization with ActiveMQ
 
-The embedded ActiveMQ broker is preconfigured to authenticate clients using the same authentication mechanisms (JAAS) as the _{page-component-title}_ web application.
+The embedded ActiveMQ broker is preconfigured to authenticate clients using the same authentication mechanisms (JAAS) as the {page-component-title} web application.
 
 Users associated with the `ADMIN` role can read, write or create any queue or topic.
 

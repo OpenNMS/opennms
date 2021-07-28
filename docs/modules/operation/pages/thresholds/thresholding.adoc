@@ -287,16 +287,14 @@ A custom UEI for each threshold makes it easier to <<notifications/introduction.
 == Thresholding Service
 
 The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).
-
-The thresholding service listens for and visits performance metrics after they are persisted to the time-series database.
-
+The service listens for and compares performance metrics after they are persisted to the time-series database.
 The state of the thresholds are held in memory and pushed to persistent storage only when they are changed.
 
 === Distributed thresholding with Sentinel
 
 Thresholding for streaming telemetry with <<telemetryd/introduction#ga-telemetryd, telemetryd>> is supported on Sentinel when using <<operation/newts/introduction.adoc#ga-opennms-operation-newts, Newts>>.
 When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
-Given that Newts already requires Cassandra, we recommend using Cassandra in order to help minimize the load on PostgreSQL.
+Given that Newts already requires Cassandra, we recommend using Cassandra to minimize the load on PostgreSQL.
 
 Thresholding on Sentinel uses the same configuration files as {page-component-title} and operates similarly.
 When a thresholding changes to/from trigger or cleared, an event is published which is processed by {page-component-title} and the alarm is created or updated.
