@@ -40,10 +40,10 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     /**
      * register service to config manager
      *
-     * @param configMeta
+     * @param configSchema
      * @return status
      */
-    boolean register(ConfigMeta<?> configMeta) throws IOException;
+    boolean register(ConfigSchema<?> configSchema) throws IOException;
 
     /**
      * get all services managing by config manager
@@ -60,17 +60,17 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * get configs meta by serviceName
      *
      * @param serviceName
-     * @return ConfigMeta
+     * @return status
      */
-    Optional<ConfigMeta<?>> getConfigMeta(String serviceName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getConfigSchema(String serviceName) throws IOException, ClassNotFoundException;
 
     /**
      * update configs meta by serviceName
      *
-     * @param configMeta
-     * @return ConfigMeta
+     * @param configSchema
+     * @return update status
      */
-    boolean updateConfigMeta(ConfigMeta<?> configMeta) throws IOException, ClassNotFoundException;
+    boolean updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException;
 
     /**
      * get configs data by serviceName and configId

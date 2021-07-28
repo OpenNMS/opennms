@@ -39,7 +39,7 @@ import java.lang.reflect.Constructor;
 /**
  * This class include meta-data of the config
  */
-public class ConfigMeta<T extends XmlConfigConverter> implements Serializable {
+public class ConfigSchema<T extends XmlConfigConverter> implements Serializable {
     private String name;
     private int majorVersion;
     private int minorVersion;
@@ -49,9 +49,9 @@ public class ConfigMeta<T extends XmlConfigConverter> implements Serializable {
 
 
     @JsonCreator
-    public ConfigMeta(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
-                      @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,
-                      @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
+    public ConfigSchema(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
+                        @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,
+                        @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
         this.name = name;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;

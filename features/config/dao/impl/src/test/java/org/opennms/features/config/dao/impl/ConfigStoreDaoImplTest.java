@@ -117,30 +117,30 @@ public class ConfigStoreDaoImplTest {
 
     @Test
     public void testData() throws IOException, ClassNotFoundException {
-        ConfigMeta<FakeConvert> configMeta = new ConfigMeta<>(serviceName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        ConfigSchema<FakeConvert> configSchema = new ConfigSchema<>(serviceName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
         JSONObject config = new JSONObject();
         config.put("test", "test");
         ConfigData configData = new ConfigData();
         configData.getConfigs().put(filename, config);
         // register
-        boolean status = configStoreDao.register(configMeta);
+        boolean status = configStoreDao.register(configSchema);
         Assert.assertTrue("FAIL TO WRITE CONFIG", status);
         configStoreDao.addConfigs(serviceName, configData);
         Optional<ConfigData> configsInDb = configStoreDao.getConfigData(serviceName);
         Assert.assertTrue("FAIL TO getConfigData", configsInDb.isPresent());
 
         // get
-        Optional<ConfigMeta> result = configStoreDao.getConfigMeta(serviceName);
-        Assert.assertTrue("FAIL TO getConfigMeta", result.isPresent());
+        Optional<ConfigSchema> result = configStoreDao.getConfigSchema(serviceName);
+        Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
         String serviceName2 = serviceName + "_2";
-        ConfigMeta<FakeConvert> configMeta2 = new ConfigMeta<>(serviceName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
-        configStoreDao.register(configMeta2);
-        configMeta2.setMajorVersion(30);
-        configStoreDao.updateConfigMeta(configMeta2);
-        Optional<ConfigMeta> tmpConfigMeta2 = configStoreDao.getConfigMeta(serviceName2);
-        Assert.assertEquals("FAIL TO updateConfigMeta", tmpConfigMeta2.get().getVersion(), "30.0.0");
+        ConfigSchema<FakeConvert> configSchema2 = new ConfigSchema<>(serviceName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        configStoreDao.register(configSchema2);
+        configSchema2.setMajorVersion(30);
+        configStoreDao.updateConfigSchema(configSchema2);
+        Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(serviceName2);
+        Assert.assertEquals("FAIL TO updateConfigSchema", tmpConfigSchema2.get().getVersion(), "30.0.0");
 
         // list all
         Optional<Set<String>> all = configStoreDao.getServiceIds();
@@ -168,9 +168,9 @@ public class ConfigStoreDaoImplTest {
 
         // deregister
         configStoreDao.unregister(serviceName);
-        Optional<ConfigMeta<?>> metaAfterDeregister = configStoreDao.getConfigMeta(serviceName);
+        Optional<ConfigSchema<?>> schemaAfterDeregister = configStoreDao.getConfigSchema(serviceName);
         Optional<ConfigData> configAfterDeregister = configStoreDao.getConfigData(serviceName);
-        Assert.assertTrue("FAIL TO deregister schema", metaAfterDeregister.isEmpty());
+        Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());
     }
 }

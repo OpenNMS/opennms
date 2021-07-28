@@ -31,7 +31,7 @@ package org.opennms.features.config.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigMeta;
+import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.api.XmlConfigConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -75,15 +75,15 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", serviceName));
         }
 
-        final ConfigMeta configMeta = new ConfigMeta(serviceName, majorVersion, minorVersion, patchVersion,
+        final ConfigSchema configSchema = new ConfigSchema(serviceName, majorVersion, minorVersion, patchVersion,
                 converter.getClass(), converter);
-        configStoreDao.register(configMeta);
+        configStoreDao.register(configSchema);
     }
 
     @Override
-    public Optional<ConfigMeta<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException {
+    public Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException {
         Objects.requireNonNull(serviceName);
-        return configStoreDao.getConfigMeta(serviceName);
+        return configStoreDao.getConfigSchema(serviceName);
     }
 
     private String readFile(final String xmlPath) throws IOException {
@@ -98,7 +98,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         Objects.requireNonNull(serviceName);
         Objects.requireNonNull(xmlPath);
 
-        Optional<ConfigMeta<?>> meta = this.getRegisteredSchema(serviceName);
+        Optional<ConfigSchema<?>> meta = this.getRegisteredSchema(serviceName);
         if (meta.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", serviceName));
         }
@@ -164,7 +164,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 /*
     @Override
     public ConfigData getSchemaForConfiguration(String serviceName) {
-        return configStoreDao.getConfigMeta()
+        return configStoreDao.getConfigSchema()
     }
 */
 //    //TODO: CHECK later

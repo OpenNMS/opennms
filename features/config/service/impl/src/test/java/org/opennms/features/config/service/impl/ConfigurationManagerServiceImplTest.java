@@ -37,7 +37,7 @@ import org.junit.runners.MethodSorters;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigMeta;
+import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ValidateUsingConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -72,15 +72,15 @@ public class ConfigurationManagerServiceImplTest {
     @Test
     public void testRegisterSchema() throws IOException, ClassNotFoundException {
         configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
-        Optional<ConfigMeta<?>> configMeta = configManagerService.getRegisteredSchema(SERVICE_NAME);
-        Assert.assertTrue(SERVICE_NAME + " fail to register", configMeta.isPresent());
-        Assert.assertTrue(SERVICE_NAME + " fail to register", "29.0.0".equals(configMeta.get().getVersion()));
-        Assert.assertTrue("Wrong converter", configMeta.get().getConverter() instanceof ValidateUsingConverter);
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
+        Assert.assertTrue(SERVICE_NAME + " fail to register", configSchema.isPresent());
+        Assert.assertTrue(SERVICE_NAME + " fail to register", "29.0.0".equals(configSchema.get().getVersion()));
+        Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof ValidateUsingConverter);
     }
 
     @Test
     public void testRegisterConfiguration() throws IOException, ClassNotFoundException {
-        Optional<ConfigMeta<?>> configMeta = configManagerService.getRegisteredSchema(SERVICE_NAME);
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
@@ -105,9 +105,9 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
         configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, new JSONObject());
         configManagerService.unregisterSchema(SERVICE_NAME);
-        Optional<ConfigMeta<?>> metaAfterDeregister = configManagerService.getRegisteredSchema(SERVICE_NAME);
+        Optional<ConfigSchema<?>> schemaAfterDeregister = configManagerService.getRegisteredSchema(SERVICE_NAME);
         Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(SERVICE_NAME);
-        Assert.assertTrue("FAIL TO deregister schema", metaAfterDeregister.isEmpty());
+        Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());
     }
 }
