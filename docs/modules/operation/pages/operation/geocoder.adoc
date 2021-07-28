@@ -83,9 +83,9 @@ The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are
 | `url`
 | `String`
 | `yes`
-| `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key={\apikey}&amp;maxResults=1&location={\query}`
+| `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}`
 | The url template for the MapQuest Geocoder API.
-  The `{\apikey}` and `{\query}` strings are substituted before making the request.
+  The `\{apikey}` and `\{query}` strings are substituted before making the request.
 
 | `useSystemProxy`
 | `Boolean`
@@ -118,9 +118,9 @@ The following properties in `etc/org.opennms.features.geocoder.nominatim.cfg` ar
 | `url`
 | `String`
 | `yes`
-| `\https://nominatim.openstreetmap.org/search?format=json&amp;email={\email}&limit=1&q={\query}`
+| `\https://nominatim.openstreetmap.org/search?format=json&amp;email=\{email}&limit=1&q=\{query}`
 | The url template for the Nominatim Geocoder API.
-  The `{\email}` and `{\query}` strings are substituted before making the request.
+  The `\{email}` and `\{query}` strings are substituted before making the request.
 
 | `email`
 | `String`

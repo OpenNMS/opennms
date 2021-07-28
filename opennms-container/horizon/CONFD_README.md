@@ -42,3 +42,19 @@ opennms:
 ```
 
 Config specified will be written to `etc/opennms.properties.d/_confd.mattermost.properties`. Check the docs for detailed information about the Mattermost configuration parameters.
+
+
+### Newts
+
+```
+---
+opennms:
+  cassandra: 
+    hostname: localhost 
+    keyspace: newts
+    port: 9042
+    username: cassandra
+    password: cassandra
+```
+
+Config specified will be written to `etc/opennms.properties.d/_confd.newts.properties`. 

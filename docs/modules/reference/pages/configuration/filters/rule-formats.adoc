@@ -1,0 +1,47 @@
+
+[[filter-rule-format]]
+= Rule formats 
+
+There are at least two formats for these rules in xml (GUI format follows).
+
+== CDATA construct
+
+In this example, the entire rule is wrapped in `<![CDATA[...]]>` so that you do not have to escape ampersands ("&"). 
+The CDATA bits are in bold:
+
+[source]
+[subs=+quotes]
+----
+<rule> *<![CDATA[*(IPADDR != '0.0.0.0') & (IPADDR IPLIKE 192.168.1.1-154) & (isSMTP | isPOP3 ) & (categoryName == 'Production') *]]>*</rule>
+----
+
+In this example, instead of using the CDATA construct above, we escape the ampersands as "&amp;amp;" (in bold):
+
+[source]
+[subs=+quotes]
+----
+
+<rule>(IPADDR != '0.0.0.0' *&amp;* (IPADDR IPLIKE 192.168.1.1-154) *&amp;* (isSMTP | isPOP3 ) *&amp;* (categoryName == 'Production'))</rule>
+----
+
+== GUI construct
+
+For the GUI, drop the unescaped value into the text field:
+
+[source]
+(IPADDR != '0.0.0.0' & (IPADDR IPLIKE 192.168.1.1-154) & (isSMTP | isPOP3 ) & (categoryName == 'Production'))
+
+== catinc
+
+Sometimes you need to include hosts that belong to more than one category, via an AND operator. 
+For example, you need to include all hosts that belong to BOTH production and Linux groups. 
+
+You cannot do this using any variation of, for example, (categoryName == 'Production') & (categoryName == 'Linux').
+
+Use the `catinc` function as follows: 
+
+[source]
+<rule> <![CDATA[((IPADDR != '0.0.0.0') & catincProduction & catincLinux)]]> </rule>
+
+
+Note that category names cannot have spaces.

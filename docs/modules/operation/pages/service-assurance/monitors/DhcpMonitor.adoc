@@ -1,18 +1,29 @@
 
 = DhcpMonitor
 
-Use this monitor to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
-The monitor class DhcpMonitor is executed by Pollerd and opens the background process listening for incoming DHCP responses.
+
+IMPORTANT: The use of the DhcpMonitor requires the installation of the `opennms-plugin-protocol-dhcp` package before polling will start.
+
+****
+To install the opennms-plugin-protocol-dhcp package:
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-protocol-dhcp`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-protocol-dhcp`
+****
+
+Use this monitor to check the availability and functionality of DHCP servers.
+The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.
 A DHCP server is tested by sending a DISCOVER message.
 If the DHCP server responds with an OFFER, the service is marked as up.
 The background listening process is started only if the DhcpMonitor is used.
-You can modify the behavior for testing the DHCP server in the `poller-configuration.xml` configuration file.
 
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
          You can test if a process is listening on UDP/68 with `sudo ss -lnpu sport = :68`.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -24,28 +35,27 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == DhcpMonitor configuration
 
-.DhcpMonitor parameters in `poller-configuration.xml`.
-[options="autowidth"]
+.Optional DhcpMonitor parameters in poller-configuration.xml.
+[options="header"]
+[cols="2,3,2"]
 |===
-| Parameter          | Description                                                                                  | Required | Default value
-| `macAddress`       | The MAC address which {page-component-title} uses for a DHCP request                         | optional | `00:06:0D:BE:9C:B2`
-| `relayMode`        | Puts the poller in `relay` mode                                                              | optional | `false`
-| `myIpAddress`      | This parameter will usually be set to the IP address of the {page-component-title} server,
-                       If `relayMode` is set to `true`.
-                       In `relay` mode, the DHCP server being polled will unicast its responses directly
-                       back to the IP address specified by `myIpAddress` rather than broadcasting its
-                       responses. This lets DHCP servers be polled even though they are not on the
-                       same subnet as the {page-component-title} server, and without the aid of an external relay.  | optional | `127.0.0.1`
-| `extendedMode`     | When extendedMode is false, the DHCP poller will send a DISCOVER and expect an
-                       OFFER in return. When extendedMode is true, the DHCP poller will first send a
-                       DISCOVER. If no valid response is received it will send an INFORM. If no valid
-                       response is received it will then send a REQUEST. OFFER, ACK, and NAK are all
-                       considered valid responses in extendedMode.                                                  | optional | `false`
-| `requestIpAddress` | This parameter applies only to REQUEST queries sent to the DHCP server when
-                       extendedMode is true. The IP address  specified will be requested in the query.              | optional | `127.0.0.1`
-| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from the default.  | required | `$\{OPENNMS_HOME}/share/rrd/response`
-| `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | required | `dhcp`
-| `ds-name`        | This is the name as reference for this particular data source in the RRD file.                 | required | `dhcp`
+| Parameter          | Description  | Default
+| macAddress      | The MAC address that {page-component-title} uses for a DHCP request.                         | 00:06:0D:BE:9C:B2
+| relayMode        | Puts the poller in relay mode.                                                             | false
+| myIpAddress      | This parameter will usually be set to the IP address of the {page-component-title} server,
+                       if relayMode is set to true.
+                       In relay mode, the DHCP server being polled will unicast its responses directly
+                       back to the IP address specified by myIpAddress rather than broadcasting its responses.
+                       This lets DHCP servers be polled even though they are not on the
+                       same subnet as the {page-component-title} server, and without the aid of an external relay.  | 127.0.0.1
+| extendedMode     | When extendedMode is false, the DHCP poller sends a DISCOVER and expects an OFFER in return. 
+                       When extendedMode is true, the DHCP poller first sends a DISCOVER.
+                       If it receives no valid response it sends an INFORM.
+                       If that returns no valid response, it sends a REQUEST.
+                       OFFER, ACK, and NAK are all considered valid responses in extendedMode.  | false
+| requestIpAddress | This parameter applies only to REQUEST queries sent to the DHCP server when
+                       extendedMode is true. The query requests the specified IP address.  | `127.0.0.1`
+
 |===
 
 .Visualization of DHCP message flow in broadcast mode
@@ -54,10 +64,12 @@ image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
 .Visualization of DHCP message flow in relay mode
 image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 
-== Example testing DHCP server in the same subnet
+== Example: testing DHCP server in the same subnet
 
-Example configuration on how to configure the monitor in the `poller-configuration.xml`.
-The monitor will try to send a maximum of 3 DISCOVER messages and waits 3 seconds for the DHCP server OFFER message.
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
+The monitor tries to send a maximum of three DISCOVER messages and waits three seconds for the DHCP server OFFER message.
+
+Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 .Configure a DHCP service in `poller-configuration.xml`
 [source, xml]
@@ -75,11 +87,11 @@ The monitor will try to send a maximum of 3 DISCOVER messages and waits 3 second
 <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
 
-== Example testing DHCP server in a different subnet in extended mode
+== Example: testing DHCP server in a different subnet in extended mode
 
-You can use the same monitor in `poller-configuration.xml` as in the example above.
+You can use the same monitor in `poller-configuration.xml` as in the above example.
 
-.Configure DhcpMonitor to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
+.Configure DhcpMonitor to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to myIpAddress.
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">
@@ -96,5 +108,5 @@ You can use the same monitor in `poller-configuration.xml` as in the example abo
 <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
 
-NOTE: If in `extendedMode`, the time required to complete the poll for an unresponsive node is increased by a factor of 3.
-      Thus it is a good idea to limit the number of retries to a small number.
+NOTE: If in extendedMode, the time required to complete the poll for an unresponsive node increases by a factor of three.
+      It is a good idea to limit the number of retries to a small number.

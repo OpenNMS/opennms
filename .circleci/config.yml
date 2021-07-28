@@ -59,7 +59,7 @@ aliases:
     command: |
       case "${CIRCLE_BRANCH}" in
         "master-"*)
-           MINION_IMAGE_VERSION="$(../pom2version.py ../../pom.xml)"
+           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
           ;;
         "release-"*)
            MINION_IMAGE_VERSION="release-candidate"
@@ -581,12 +581,13 @@ workflows:
           context: "docker-content-trust"
           requires:
             - tarball-assembly
+            - smoke-test-minion
           filters:
             branches:
               only:
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -595,8 +596,8 @@ workflows:
             branches:
               only:
                 - develop
-                - /^master-/
-                - /^release-/
+                - /^master-.*/
+                - /^release-.*/
       - horizon-rpm-build:
           requires:
             - build
@@ -975,6 +976,8 @@ jobs:
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
+      - attach_workspace:
+          at: ~/
       - dockerhub-login
       - run: *setup_dct_env
       - run: *setup_dct_key

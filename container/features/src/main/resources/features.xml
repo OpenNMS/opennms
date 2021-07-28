@@ -838,6 +838,7 @@
         <bundle dependency="true">wrap:mvn:com.jcraft/jsch/0.1.51</bundle>
         <bundle dependency="true">wrap:mvn:org.jsoup/jsoup/${jsoupVersion}</bundle>
         <bundle>mvn:org.opennms.protocols/org.opennms.protocols.xml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-provisioning-detectors" version="${project.version}" description="OpenNMS :: Provisioning :: Detectors">
         <feature>bsf</feature>
@@ -993,12 +994,14 @@
         <feature>opennms-thresholding-api</feature>
         <feature>opennms-osgi-jsr223</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-telemetry-daemon" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
@@ -1771,5 +1774,8 @@
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/29.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/29.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/29.0.0-SNAPSHOT</bundle>
+    </feature>
+    <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
+        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
 </features>

@@ -66,4 +66,12 @@
       </storageStrategy>
     </resourceType>
 
+    <!-- Queue Metrics -->
+    <resourceType name="queueMetrics" label="Queue Metrics" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="destinationName" />
+      </storageStrategy>
+    </resourceType>
+
 </resource-types>

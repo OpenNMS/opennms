@@ -1,7 +1,7 @@
 
 = PrTableMonitor
 
-The _PrTableMonitor_ monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a _Net-SNMP_ agent.
+The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a Net-SNMP agent.
 
 .prTable definition
 [quote,,UCD-SNMP-MIB]
@@ -10,8 +10,8 @@ A table containing information on running programs/daemons configured for monito
 Processes violating the number of running processes required by the agent's configuration file are flagged with numerical and textual errors.
 ____
 
-The monitor looks up the _prErrorFlag_ entries of this table.
-If the value of a _prErrorFlag_ entry in this table is set to "1" the service is considered unavailable.
+The monitor looks up the prErrorFlag entries of this table.
+If the value of a prErrorFlag entry in this table is set to 1, the service is considered unavailable.
 
 .prErrorFlag definition
 [quote,,UCD-SNMP-MIB]
@@ -20,7 +20,7 @@ An Error flag to indicate trouble with a process.
 It goes to 1 if there is an error, 0 if no error.
 ____
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -28,16 +28,17 @@ ____
 | Remote Enabled | false
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the PrTableMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the PrTableMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter | Description                                                        | Required | Default value
-| `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
-| `retries` | *Deprecated*.
-              Same as `retry`.
-              Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
+| Parameter | Description                                                        | Default
+| port    | The port to which to try connection.                       |From `snmp-config.xml`
+| retries | *Deprecated*.
+              Same as retry.
+              Parameter retry takes precedence if both are set.                | From `snmp-config.xml`
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -57,4 +58,4 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 == UCD-SNMP-MIB
 
-The UCD-SNMP-MIB may be found link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].
+Find the UCD-SNMP-MIB link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
+INCOMING_ARGS=("$@")
+
 JAVA_OPTIONS="-Xmx512m"
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
-RUNAS=opennms
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 SUDO="$(command -v sudo 2>/dev/null || which sudo 2>/dev/null || :)"
 myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
 	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
 	        echo "WARNING: relaunching as $RUNAS" >&2
-	        _cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
+	        _cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 	        exec "${_cmd[@]}"
 	fi
 	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2

@@ -36,6 +36,8 @@
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 
+INCOMING_ARGS=("$@")
+
 # Home directory for OpenNMS.
 # shellcheck disable=SC2154
 OPENNMS_HOME="${install.dir}"
@@ -96,7 +98,7 @@ RUNJAVA_OPTIONS=""
 JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
-RUNAS=opennms
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 # Maximum file Descriptors to be setted by ulimit -n
 MAXIMUM_FILE_DESCRIPTORS=20480
@@ -715,6 +717,9 @@ fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+if [ -z "$JAVA_SHORT_VERSION" ]; then
+	JAVA_SHORT_VERSION=0
+fi
 
 JAVA_MODULES=(
 	java.base \
@@ -909,7 +914,7 @@ myuser="$(id -u -n)"
 if [ "$myuser" != "$RUNAS" ]; then
 	if [ "$myuser" = "root" ] && [ -n "$SUDO" ] && [ -x "$SUDO" ]; then
 		echo "WARNING: relaunching as $RUNAS" >&2
-		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "$@");
+		_cmd=("$SUDO" "-u" "$RUNAS" "$0" "${INCOMING_ARGS[@]}");
 		exec "${_cmd[@]}"
 	fi
 	echo "ERROR: you must run this script as ${RUNAS}, not '${myuser}'." >&2

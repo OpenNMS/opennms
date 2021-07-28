@@ -2,15 +2,16 @@
 [[poller-dns-resolution-monitor]]
 = DNSResolutionMonitor
 
-The DNS resolution monitor, tests if the node label of an {page-component-title} node can be resolved.
-This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running on.
-It can be used to test a client behavior for a given host name.
-For example: Create a node with the node label www.google.com and an IP interface.
-Assigning the DNS resolution monitor on the IP interface will test if www.google.com can be resolved using the DNS configuration defined by the poller.
-The response from the A record lookup can be any address, it is not verified with the IP address on the {page-component-title} IP interface where the monitor is assigned to.
-This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+The DNS resolution monitor tests if the node label of a node can be resolved via a DNS lookup.
+This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running.
+Use it to test client behavior for a given host name.
 
-== Monitor Facts
+For example, create a node with the node label www.google.com and an IP interface.
+Assigning the DNS resolution monitor on the IP interface tests if `www.google.com` can be resolved using the DNS configuration defined by the poller.
+If the DNS server responds with either an A or AAAA record, the service is determined to be up.
+The poller does not check if the IP address on the record matches the IP address of the service where the monitor is assigned.
+
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -18,33 +19,39 @@ This monitor implements <<service-assurance/monitors/introduction.adoc#ga-servic
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
 .Monitor specific parameters for the DNSResolutionMonitor
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
+
 |===
-| Parameter         | Description                                       | Required | Default value | Placeholder substitution
-| `resolution-type` | Type of record for the node label test. +
+| Parameter         | Description |               Default 
+| resolution-type| Type of record for the node label test. +
                       Allowed values +
-                      `v4` for _A records_, +
-                      `v6` for _AAAA record_, +
-                      `both` _A_ and _AAAA record_ must be available, +
-                      `either` _A_ or _AAAA record_ must be available.  | optional | `either` | No
-| `record-types`    | Alternate DNS record types to search for. +
-                      The comma separated list can contain `A`, +
-                      `AAAA`, `CNAME`, `NS`, `MX`, `PTR`, `SOA`, +
-                      `SRV`, or `TXT`.                                  | optional | `` | No
-| `lookup`          | Alternate DNS record to lookup                    | optional | The node label. | Yes
-| `nameserver`      | The DNS server to query for the records. +
+                      `v4` for A records, +
+                      `v6` for AAAA records, +
+                      `both` A and AAAA records must be available, +
+                      `either` A or AAAA records must be available.  | either 
+| record-types   | Alternate DNS record types to search for. +
+                      The comma-separated list can contain A, +
+                      AAAA, CNAME, NS, MX, PTR, SOA, +
+                      SRV, or TXT.                                  | n/a 
+| lookup kbd:[{}]        | Alternate DNS record to lookup.                    | The node label. 
+| nameserver kbd:[{}]     | The DNS server to query for the records. +
                       The string can be in the form of hostname, +
-                      hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running {page-component-title} | Yes
+                      hostname:port, or [ipv6address]:port.             | Use name server from host system running {page-component-title}. 
 |===
+
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-The following example shows the possibilities monitoring IPv4 and/or IPv6 for the service configuration:
+The following example shows the possibilities for monitoring IPv4 and/or IPv6 for the service configuration.
+
+Example uses CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -129,14 +136,16 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
 <monitor service="DNS-Resolution-CNAME-and-MX" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
 ----
 
-To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in '$\{OPENNMS_HOME}/etc/response-graph.properties'.
+To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (dns-res-v4, dns-res-v6, dns-res-both, dns-res-either, dns-res-cname-mx) in $\{OPENNMS_HOME}/etc/response-graph.properties.
 
 == DNSResolutionMonitor vs. DnsMonitor
 
-The DNSResolutionMonitor is used to measure the availability and record outages of a name resolution from client perspective.
-The service is mainly used for websites or similar public available resources.
-It can be used in combination with the Page Sequence Monitor to give a hint if a website isn't available for DNS reasons.
+The DNSResolutionMonitor measures the availability and record outages of a name resolution from a client perspective.
+Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
+You can use it in combination with the 
+<<service-assurance/monitors/PageSequenceMonitor.adoc#pagesequencemonitor, PageSequenceMonitor>> to provide a hint if a website is not available for DNS reasons.
 
-The DnsMonitor on the other hand is a test against a specific DNS server.
-In {page-component-title} the DNS server is the node and the DnsMonitor will send a lookup request for a given A record to the DNS server IP address.
-The service goes down if the DNS server doesn't have a valid A record in his zone database or as some other issues resolving A records.
+The DnsMonitor is a test against a specific DNS server.
+Use this service to determine if the monitored node provides DNS resolution of requests sent to it.
+In {page-component-title}, the DNS server is the node and the DnsMonitor sends a lookup request for a given A record to the DNS server IP address.
+The service goes down if the DNS server doesn't have a valid A record in its zone database or has other issues resolving A records.

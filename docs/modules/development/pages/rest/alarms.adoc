@@ -9,7 +9,7 @@ NOTE: the default offset is 0, the default limit is 10 results. To get all resul
 | Resource        | Description
 | `/alarms`       | Get a list of alarms.
 | `/alarms/count` | Get the number of alarms. (Returns plaintext, rather than XML or JSON.)
-| `/alarms/\{id\}`  | Get the alarms specified by the given ID.
+| `/alarms/\{id}` | Get the alarms specified by the given ID.
 |===
 
 Note that you can also query by severity, like so:
@@ -27,12 +27,12 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 [options="header", cols="5,10"]
 |===
 | Resource                               | Description
-| `/alarms/\{id\}?ack=''(true;false)''`    | Acknowledges (or unacknowledges) an alarm.
+| `/alarms/\{id}?ack=''(true;false)''`   | Acknowledges (or unacknowledges) an alarm.
 | `/alarms?x=y&...&ack=''(true;false)''` | Acknowledges (or unacknowledges) alarms matching the additional query parameters. e.g., `/alarms?node.id=4&ack=true`
-| `/alarms/\{id\}?clear=true`       | Clears an alarm.
-| `/alarms/\{id\}?escalate=true`    | Escalates an alarm (e.g., NORMAL -> MINOR, MAJOR -> CRITICAL, etc.
-| `/alarms?x=y&...&clear=true`    | Clears alarms matching the additional query parameters.
-| `/alarms?x=y&...&escalate=true` | Escalates alarms matching the additional query parameters.
+| `/alarms/\{id}?clear=true`             | Clears an alarm.
+| `/alarms/\{id}?escalate=true`          | Escalates an alarm (for example, NORMAL -> MINOR, MAJOR -> CRITICAL)
+| `/alarms?x=y&...&clear=true`           | Clears alarms matching the additional query parameters.
+| `/alarms?x=y&...&escalate=true`        | Escalates alarms matching the additional query parameters.
 |===
 
 Additionally, when acknowledging alarms (ack=true) you can specify an `ackUser` parameter.
@@ -49,7 +49,7 @@ Examples:
 * `/api/v2/alarms?_s=alarm.ipAddr==127.0.0.1`
 * `/api/v2/alarms?_s=node.label==localhost`
 
-NOTE: If your query string includes a FIQL reserved character like a comma (,) or a semicolon (;) you need to double percent-escape it. 
+NOTE: If your query string includes a FIQL reserved character like a comma (,) or a semicolon (;) you need to double percent-escape it.
 
-Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure. 
+Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure.
 Your query would look like `/api/v2/alarms?_s=alarm.reductionKey==uei.opennms.org/nodes/nodeLostService::*:COMMA%252CSERVICE`.

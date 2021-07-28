@@ -221,6 +221,11 @@ public abstract class ParserBase implements Parser {
         return this.name;
     }
 
+    @Override
+    public String getDescription() {
+        return this.protocol.description;
+    }
+
     public void setMaxClockSkew(final long maxClockSkew) {
         this.maxClockSkew = maxClockSkew;
     }

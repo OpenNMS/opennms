@@ -1,16 +1,18 @@
 
 = Pop3Monitor
 
-The _POP3_ monitor tests for _POP3_ service availability on a node.
-The monitor first tries to establish a _TCP_ connection on the specified port.
-If a connection is established, a service banner should have been received.
-The monitor makes sure the service banner is a valid _POP3_ banner (ie: starts with `+OK`).
-If the banner is valid, the monitor sends a `QUIT` _POP3_ command and makes sure the service answers with a valid response (ie: a response that starts with `+OK`).
-The service is considered available if the service's answer to the `QUIT` command is valid.
+The POP3 monitor tests for POP3 service availability on a node.
+The monitor first tries to establish a TCP connection on the specified port.
+If it establishes a connection, a service banner should have been received.
+The monitor makes sure the service banner is a valid POP3 banner (in other words, starts with +OK).
+If the banner is valid, the monitor sends a QUIT POP3 command and makes sure the service answers with a valid response (a response that starts with +OK).
+The service is considered available if the service's answer to the QUIT command is valid.
 
-The behavior can be simulated with `telnet`:
+Simulate the behavior with telnet:
 
- $ telnet mail.opennms.org 110
+[source, console]
+----
+telnet mail.opennms.org 110
  Trying 192.168.0.100
  Connected to mail.opennms.org.
  Escape character is '^]'.
@@ -18,8 +20,9 @@ The behavior can be simulated with `telnet`:
  quit
  +OK
  Connection closed by foreign host.
+----
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -27,28 +30,32 @@ The behavior can be simulated with `telnet`:
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the Pop3Monitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the Pop3Monitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter            | Description                                                                           | Required | Default value
-| `port`               | TCP port to connect to.                                                               | optional | `110`
-| `retry`              | Number of attempts to find the service available.                                     | optional | `0`
-| `strict-timeout`     | If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
-                         attempts.                                                                             | optional | `false`
+| Parameter            | Description                                                               | Default value
+| port               | TCP port to connect to.                                                               | 110
+| retry              | Number of attempts to find the service as available.                                     | 0
+| strict-timeout     | If set to true, makes sure that at least timeout milliseconds elapse between
+                         attempts.                                                                             | false
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="POP3" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="pop3"/>
   <parameter key="ds-name" value="pop3"/>
 </service>

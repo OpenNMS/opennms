@@ -10,8 +10,8 @@ NOTE: This API is v2-only.
 [options="header", cols="5,10"]
 |===
 | Resource                                                     | Description
-| `perspectivepoller/\{applicationid\}`                        | Get the list of aggregated percentage availability per location for the application specified by applicationId.
-| `perspectivepoller/\{applicationid\}/\{monitoredserviceid\}` | Get the list of aggregated percentage availability per location for an application service specified by applicationId and monitoredServiceId.
+| `perspectivepoller/\{applicationid}`                         | Get the list of aggregated percentage availability per location for the application specified by applicationId.
+| `perspectivepoller/\{applicationid}/\{monitoredserviceid}`   | Get the list of aggregated percentage availability per location for an application service specified by applicationId and monitoredServiceId.
 |===
 
 == Use examples with cURL
