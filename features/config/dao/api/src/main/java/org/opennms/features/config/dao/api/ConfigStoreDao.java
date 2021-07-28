@@ -124,7 +124,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configId
      * @throws IOException
      */
-    boolean deleteConfig(String serviceName, String filename) throws IOException;
+    boolean deleteConfig(String serviceName, String configId) throws IOException;
 
     /**
      * deregister a service from config manager
