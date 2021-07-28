@@ -67,11 +67,11 @@ public interface ConfigurationManagerService {
     /**
      * Get the registered Schema
      *
-     * @param configName
+     * @param serviceName
      * @return ConfigSchema
      * @throws IOException
      */
-    Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException;
 
     /**
      * register a new configuration by JSONObject

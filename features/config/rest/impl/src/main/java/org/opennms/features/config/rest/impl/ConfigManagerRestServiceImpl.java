@@ -91,7 +91,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public ConfigData getView(String configName, String filename, Map<String, Object> inputParameters) {
+    public ConfigData getView(String serviceName, String filename, Map<String, Object> inputParameters) {
         return null;
     }
 }
