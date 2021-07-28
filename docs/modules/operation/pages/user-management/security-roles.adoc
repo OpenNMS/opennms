@@ -34,9 +34,9 @@ endif::opennms-prime[]
 
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right.
-. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
 . Click the modify icon next to the user you want to update.
-. Select the role from *Available Roles* in the *Security Roles* section.
+. Select the role from menu:Security Roles[Available Roles].
 . Click *Add* to assign the security role to the user.
 . Click *Finish* to apply the changes.
 . Log out and log in to apply the new security role settings.
