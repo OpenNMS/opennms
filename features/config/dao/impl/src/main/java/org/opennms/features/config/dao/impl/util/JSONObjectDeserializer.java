@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service;
+package org.opennms.features.config.dao.impl.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.json.JSONObject;
 
-public class XMLSchema {
+import java.io.IOException;
 
-    private final String xsdContent;
-    private final String namespace;
-    private final String topLevelObject;
-
-    @JsonCreator
-    public XMLSchema(@JsonProperty("xsdContent") String xsdContent,
-                     @JsonProperty("namespace") String namespace,
-                     @JsonProperty("topLevelObject") String topLevelObject) {
-        this.xsdContent = xsdContent;
-        this.namespace = namespace;
-        this.topLevelObject = topLevelObject;
+public class JSONObjectDeserializer extends StdDeserializer<JSONObject> {
+    public JSONObjectDeserializer() {
+        this(null);
     }
 
-    public String getXsdContent() {
-        return xsdContent;
+    protected JSONObjectDeserializer(Class<?> vc) {
+        super(vc);
     }
 
-    public String getNamespace() {
-        return namespace;
+    @Override
+    public JSONObject deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException {
+        JsonNode node = jp.getCodec().readTree(jp);
+        return new JSONObject(node.toString());
     }
-
-    public String getTopLevelObject() {
-        return topLevelObject;
-    }
-
 }

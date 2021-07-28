@@ -28,69 +28,120 @@
 
 package org.opennms.features.config.dao.api;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-public interface ConfigStoreDao<T>{
+public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * register service to config manager
-     * @param configData
+     *
+     * @param configMeta
      * @return status
      */
-    boolean register(ConfigData<T> configData) throws IOException;
+    boolean register(ConfigMeta<?> configMeta) throws IOException;
 
     /**
      * get all services managing by config manager
+     *
      * @return list of configdata
      * @throws IOException
      */
 
-    Optional<List<ConfigData>> getServices() throws IOException;
+    Optional<Set<String>> getServiceIds();
+
+    Optional<Set<String>> getConfigIds();
+
     /**
-     * get config data by serviceName
+     * get configs meta by serviceName
+     *
      * @param serviceName
-     * @return ConfigData
+     * @return ConfigMeta
      */
-    Optional<ConfigData<T>> getConfigData(String serviceName) throws IOException;
+    Optional<ConfigMeta<?>> getConfigMeta(String serviceName) throws IOException, ClassNotFoundException;
+
+    /**
+     * update configs meta by serviceName
+     *
+     * @param configMeta
+     * @return ConfigMeta
+     */
+    boolean updateConfigMeta(ConfigMeta<?> configMeta) throws IOException, ClassNotFoundException;
+
+    /**
+     * get configs data by serviceName and configId
+     *
+     * @param serviceName
+     * @return config object
+     * @throws IOException
+     */
+    Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(final String serviceName) throws IOException;
+
+    /**
+     * add configs for the registered service name, return false is config already exist
+     *
+     * @param serviceName
+     * @param configData
+     * @return status
+     */
+    boolean addConfigs(String serviceName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
 
     /**
      * add new config to a registered service name
+     *
      * @param serviceName
-     * @param filename
+     * @param configId
      * @param config
      * @return status
      */
-    boolean addOrUpdateConfig(String serviceName, String filename, T config) throws IOException;
+    boolean addConfig(String serviceName, String configId, JSONObject config) throws IOException;
+
+    Optional<CONFIG_DATATYPE> getConfig(String serviceName, String configId) throws IOException;
 
     /**
-     * replace all configs for the registered service name
+     * update config to a registered service name
+     *
      * @param serviceName
-     * @param configs
+     * @param configId
+     * @param config
      * @return status
      */
-    boolean updateConfigs(String serviceName, Map<String, T> configs) throws IOException;
+    boolean updateConfig(String serviceName, String configId, JSONObject config) throws IOException;
+
+    /**
+     * **replace** all configs for the registered service name
+     *
+     * @param serviceName
+     * @param configData
+     * @return status
+     */
+    boolean updateConfigs(String serviceName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
 
     /**
      * delete one config from registered service name
+     *
      * @param serviceName
-     * @param filename
+     * @param configId
      * @return status
      */
-    boolean deleteConfig(String serviceName, String filename) throws IOException;
+    boolean deleteConfig(String serviceName, String configId) throws IOException;
 
     /**
      * deregister a service from config manager
+     *
      * @param serviceName
      */
-    void deregister(String serviceName) throws IOException;
+    void unregister(String serviceName) throws IOException;
 
     /**
      * get all configs by registered service name
+     *
      * @param serviceName
      * @return configs
      */
-    Optional<Map<String, T>> getConfigs(String serviceName) throws IOException;
+    Optional<Map<String, CONFIG_DATATYPE>> getConfigs(String serviceName) throws IOException;
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.features.config.dao.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * This class include meta-data of the config
- */
-public class ConfigData<CONFIG_DATATYPE> {
-    // reserve for later notification use
-    private Class notificationClass;
-    // it should be fileName <> config pair
-    private Map<String, CONFIG_DATATYPE> configs;
+import java.util.Objects;
 
-    public ConfigData() {
-        configs = new HashMap<>();
+public final class ServiceSchema {
+    private final XMLSchema xmlSchema;
+    private final ConfigItem configItem;
+
+    @JsonCreator
+    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema, @JsonProperty("configItem") final ConfigItem configItem) {
+        this.xmlSchema = Objects.requireNonNull(xmlSchema);
+        this.configItem = Objects.requireNonNull(configItem);
     }
 
-    public Map<String, CONFIG_DATATYPE> getConfigs() {
-        return configs;
+    public XMLSchema getXmlSchema() {
+        return xmlSchema;
     }
 
-    public void setConfigs(Map<String, CONFIG_DATATYPE> configs) {
-        this.configs = configs;
+    public ConfigItem getConfigItem() {
+        return configItem;
     }
 
-    public Class getNotificationClass() {
-        return notificationClass;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceSchema that = (ServiceSchema) o;
+        return Objects.equals(xmlSchema, that.xmlSchema) && Objects.equals(configItem, that.configItem);
     }
 
-    public void setNotificationClass(Class notificationClass) {
-        this.notificationClass = notificationClass;
+    @Override
+    public int hashCode() {
+        return Objects.hash(xmlSchema, configItem);
     }
 }

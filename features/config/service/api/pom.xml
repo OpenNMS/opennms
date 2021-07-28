@@ -25,27 +25,16 @@
     </build>
     <dependencies>
       <!-- APIs we implement -->
-
+      <dependency>
+        <groupId>org.opennms.features.config.dao</groupId>
+        <artifactId>org.opennms.features.config.dao.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Dependencies used -->
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson2Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson2Version}</version>
-      </dependency>
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>${json.version}</version>
+        <version>${jsonVersion}</version>
       </dependency>
 
       <!-- Testing -->

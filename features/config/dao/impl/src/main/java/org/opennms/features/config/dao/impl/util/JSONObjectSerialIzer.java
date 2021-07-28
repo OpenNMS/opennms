@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,45 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.config.dao.impl.util;
 
-package org.opennms.features.config.service;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.json.JSONObject;
 
-public final class Configuration {
-    private String configId;
-    private String schemaId;
-    private String content;
+import java.io.IOException;
 
-    public Configuration() {}
-
-    public Configuration(String configId, String schemaId) {
-        this.configId = configId;
-        this.schemaId = schemaId;
+public class JSONObjectSerialIzer extends StdSerializer<JSONObject> {
+    public JSONObjectSerialIzer() {
+        this(null);
     }
 
-    public String getConfigId() {
-        return configId;
+    public JSONObjectSerialIzer(Class<JSONObject> t) {
+        super(t);
     }
 
-
-    public String getSchemaId() {
-        return schemaId;
+    @Override
+    public void serialize(
+            JSONObject value, JsonGenerator jgen, SerializerProvider provider)
+            throws IOException {
+        jgen.writeStartObject();
+        String tmp = value.toString();
+        jgen.writeRaw(tmp.substring(1, tmp.length() - 1));
+        jgen.writeEndObject();
     }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setConfigId(String configId) {
-        this.configId = configId;
-    }
-
-    public void setSchemaId(String schemaId) {
-        this.schemaId = schemaId;
-    }
-
-
 }

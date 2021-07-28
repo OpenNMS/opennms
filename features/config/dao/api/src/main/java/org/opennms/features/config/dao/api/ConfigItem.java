@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service;
+package org.opennms.features.config.dao.api;
 
 import java.util.LinkedList;
 import java.util.List;

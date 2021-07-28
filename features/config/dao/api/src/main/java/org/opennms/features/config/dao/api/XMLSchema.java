@@ -26,41 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service;
-
-import java.util.Objects;
+package org.opennms.features.config.dao.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public final class ServiceSchema {
-    private final XMLSchema xmlSchema;
-    private final ConfigItem configItem;
+public class XMLSchema {
+
+    private final String xsdContent;
+    private final String namespace;
+    private final String topLevelObject;
 
     @JsonCreator
-    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema, @JsonProperty("configItem") final ConfigItem configItem) {
-        this.xmlSchema = Objects.requireNonNull(xmlSchema);
-        this.configItem = Objects.requireNonNull(configItem);
+    public XMLSchema(@JsonProperty("xsdContent") String xsdContent,
+                     @JsonProperty("namespace") String namespace,
+                     @JsonProperty("topLevelObject") String topLevelObject) {
+        this.xsdContent = xsdContent;
+        this.namespace = namespace;
+        this.topLevelObject = topLevelObject;
     }
 
-    public XMLSchema getXmlSchema() {
-        return xmlSchema;
+    public String getXsdContent() {
+        return xsdContent;
     }
 
-    public ConfigItem getConfigItem() {
-        return configItem;
+    public String getNamespace() {
+        return namespace;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ServiceSchema that = (ServiceSchema) o;
-        return Objects.equals(xmlSchema, that.xmlSchema) && Objects.equals(configItem, that.configItem);
+    public String getTopLevelObject() {
+        return topLevelObject;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(xmlSchema, configItem);
-    }
 }

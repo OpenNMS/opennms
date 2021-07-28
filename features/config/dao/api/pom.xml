@@ -24,10 +24,32 @@
   </build>
 
   <dependencies>
+    <!-- Dependencies used -->
     <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${jsonVersion}</version>
+    </dependency>
+
   </dependencies>
 </project>

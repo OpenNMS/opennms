@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/snmpasset/adapter"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  xmlns:sa="http://xmlns.opennms.org/xsd/config/snmpasset/adapter"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the snmp-asset-adapter-configuration.xml configuration file.</documentation>
+  </annotation>
+
+  <element name="snmp-asset-adapter-configuration">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="sa:package"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="package">
+    <complexType>
+      <sequence>
+        <choice>
+          <element maxOccurs="1" minOccurs="1" ref="sa:sysoid">
+            <annotation>
+              <documentation>System object identifier (sysoid) which uniquely
+              identifies the system.</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="1" minOccurs="1" ref="sa:sysoidMask">
+            <annotation>
+              <documentation>Sysoid mask which can be used to match multiple
+              systems if their sysoid begins with the mask</documentation>
+            </annotation>
+          </element>
+        </choice>
+        <element maxOccurs="unbounded" minOccurs="1" ref="sa:assetField"/>
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+  
+  <element name="sysoid" type="string"/>
+  <element name="sysoidMask" type="string"/>
+
+  <element name="assetField">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="sa:mibObjs"/>
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="formatString" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="mibObjs">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="sa:mibObj"/>
+      </sequence>
+    </complexType>
+  </element>
+
+<!--
+  <element name="sysoid" type="string"/>
+  <element name="sysoidMask" type="string"/>
+-->
+
+  <element name="mibObj">
+    <annotation>
+      <documentation>a MIB object</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="oid" type="string" use="required">
+        <annotation>
+          <documentation>object identifier</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="alias" type="string" use="required">
+        <annotation>
+          <documentation>a human readable name for the object (such as
+          "ifOctetsIn"). NOTE: This value is used as the RRD file name and
+          data source name. RRD only supports data source names up to 19 chars
+          in length. If the SNMP data collector encounters an alias which
+          exceeds 19 characters it will be truncated.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+</schema>

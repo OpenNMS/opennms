@@ -7,9 +7,9 @@
     http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
   ">
 
-  <bean name="jsonConfigStoreDao" class="org.opennms.features.config.dao.impl.JsonConfigStoreDaoImpl">
-    <constructor-arg name="jsonStore" ref="jsonStore" />
+  <bean name="configurationManagerService" class="org.opennms.features.config.service.impl.ConfigurationManagerServiceImpl">
+    <constructor-arg name="configStoreDao" ref="jsonConfigStoreDao" />
   </bean>
-  <onmsgi:service interface="org.opennms.features.config.dao.api.ConfigStoreDao" ref="jsonConfigStoreDao" />
+  <onmsgi:service interface="org.opennms.features.config.service.api.ConfigurationManagerService" ref="configurationManagerService" />
 
 </beans>
