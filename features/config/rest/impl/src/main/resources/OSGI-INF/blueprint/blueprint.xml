@@ -1,0 +1,24 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+    <reference id="jsonConfigStoreDao" interface="org.opennms.features.config.dao.api.ConfigStoreDao" availability="mandatory" />
+    <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory" />
+
+    <bean id="configManagerRestService" class="org.opennms.features.config.rest.impl.ConfigManagerRestServiceImpl">
+      <property name="configStoreDao" ref="jsonConfigStoreDao" />
+      <property name="configurationManagerService" ref="configurationManagerService" />
+    </bean>
+    <service interface="org.opennms.features.config.rest.api.ConfigManagerRestService" ref="configManagerRestService" >
+        <service-properties>
+          <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+</blueprint>
+

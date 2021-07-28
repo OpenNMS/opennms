@@ -29,7 +29,7 @@
 package org.opennms.features.config.service.api;
 
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigMeta;
+import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.XmlConfigConverter;
 
 import java.io.IOException;
@@ -65,10 +65,10 @@ public interface ConfigurationManagerService<CONFIG_STORE_TYPE> {
      * Get the registered Schema
      *
      * @param serviceName
-     * @return ConfigMeta
+     * @return ConfigSchema
      * @throws IOException
      */
-    Optional<ConfigMeta<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException;
 
     /**
      * register a new configuration by xml

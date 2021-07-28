@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigMeta;
+import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.JSONObjectDeserializer;
 import org.opennms.features.config.dao.impl.util.JSONObjectSerialIzer;
@@ -64,8 +64,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public boolean register(ConfigMeta<?> configMeta) throws IOException {
-        long timestamp = jsonStore.put(configMeta.getName(), mapper.writeValueAsString(configMeta), CONTEXT_META);
+    public boolean register(ConfigSchema<?> configSchema) throws IOException {
+        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
         return timestamp > 0;
     }
 
@@ -88,7 +88,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<ConfigMeta<?>> getConfigMeta(String serviceName) throws IOException, ClassNotFoundException {
+    public Optional<ConfigSchema<?>> getConfigSchema(String serviceName) throws IOException, ClassNotFoundException {
         Optional<String> jsonStr = jsonStore.get(serviceName, CONTEXT_META);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
@@ -96,19 +96,19 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         JSONObject json = new JSONObject(jsonStr.get());
         String className = (String) json.get("converterClass");
         Class<?> converterClass = Class.forName(className);
-        JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigMeta.class, converterClass);
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
         System.out.println(javaType);
-        ConfigMeta<?> meta = (ConfigMeta) mapper.readValue(jsonStr.get(), javaType);
-        return Optional.ofNullable(meta);
+        ConfigSchema<?> schema = (ConfigSchema) mapper.readValue(jsonStr.get(), javaType);
+        return Optional.ofNullable(schema);
     }
 
     @Override
-    public boolean updateConfigMeta(ConfigMeta<?> configMeta) throws IOException, ClassNotFoundException {
-        Optional<ConfigMeta<?>> meta = this.getConfigMeta(configMeta.getName());
-        if (meta.isEmpty()) {
+    public boolean updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(configSchema.getName());
+        if (schema.isEmpty()) {
             return false;
         }
-        return this.putMeta(configMeta);
+        return this.putSchema(configSchema);
     }
 
     @Override
@@ -200,8 +200,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         return Optional.of(configData.get().getConfigs());
     }
 
-    private boolean putMeta(ConfigMeta<?> configMeta) throws IOException {
-        long timestamp = jsonStore.put(configMeta.getName(), mapper.writeValueAsString(configMeta), CONTEXT_META);
+    private boolean putSchema(ConfigSchema<?> configSchema) throws IOException {
+        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
         return timestamp > 0;
     }
 
