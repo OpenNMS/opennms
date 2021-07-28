@@ -2,7 +2,7 @@
 [[ga-events-sources-snmp-traps]]
 = SNMP Traps
 
-If SNMP-capable devices in the network are configured to send *traps* to {page-component-title}, these traps are transformed into events according to pre-configured rules.
+If SNMP-capable devices in the network are configured to send *traps* to {page-component-title}, these traps are transformed into events according to preconfigured rules.
 The `Trapd` service daemon, which lets {page-component-title} receive SNMP traps, is enabled by default.
 
 IMPORTANT: Disabling the `Trapd` service daemon will render {page-component-title} *incapable* of receiving SNMP traps.
