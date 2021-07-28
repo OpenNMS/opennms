@@ -51,9 +51,6 @@ To create a custom security role you need to define the name and specify the sec
 ```
 roles=operator,stage
 ```
-The new custom security roles appear in the web UI:
-
-image:users/custom-roles.png[]
 
 To define permissions associated with the custom security role, manually update the application context of the Spring security here:
 ```
