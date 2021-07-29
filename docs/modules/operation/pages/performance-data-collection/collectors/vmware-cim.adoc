@@ -3,23 +3,24 @@
 
 The VmwareCimCollector collects ESXi host and sensor metrics from vCenter.
 
-== Collector Facts
+== Collector facts
 
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.collectd.VmwareCimCollector`
 | Package             | core
-| Supported on Minion | `Yes`
+| Supported on Minion | Yes
+| Configuration Files | $OPENNMS_HOME/etc/vmware-cim-datacollection-config.xml
 |===
 
-== Collector Parameters
-
-Use these parameters in the <<ga-collectd-packages,_collectd-configuration.xml_ file>>.
+== Configuration and use
 
 .Collector-specific parameters for the VmwareCimCollector
 [options="header, autowidth"]
 |===
-| Parameter              | Description                                     | Required | Default value
-| `collection`           | The name of the VMWare CIM Collection to use.  | required |
-| `timeout`              | Connection timeout in milliseconds              | optional |
+| Parameter             | Description                                     | Default
+3+| *Required*
+|  collection           | The name of the VMWare CIM Collection to use.   | n/a
+3+| *Optional*
+|   timeout             | Connection timeout in milliseconds              | 3000
 |===

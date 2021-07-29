@@ -74,7 +74,7 @@ public class JUnitServer {
             server = new Server();
 
             // SSL context configuration
-            SslContextFactory sslContextFactory = new SslContextFactory();
+            SslContextFactory sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setKeyStorePath(config.keystore());
             sslContextFactory.setKeyStorePassword(config.keystorePassword());
             sslContextFactory.setKeyManagerPassword(config.keyPassword());
