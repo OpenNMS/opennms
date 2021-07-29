@@ -43,7 +43,7 @@ TIP: Always providing a script output with a more detailed test error makes it e
 | $\{retry}      | Amount of retries based on service configuration.
 | $\{svcname}    | Service name based on service configuration.
 | $\{ipaddr}     | IP-address of the interface the service is bound to.
-| ${\nodeidl}     | Nodeid of the node the monitor is associated with.
+| $\{nodeid}     | Nodeid of the node the monitor is associated with.
 | $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
 |===
 
