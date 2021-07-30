@@ -84,16 +84,35 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         return configStoreDao.getConfigSchema(configName);
     }
 
+    /**
+     * it read xml and write to database
+     * @see this#registerConfiguration(String, String, JSONObject)
+     * @param serviceName
+     * @param configId
+     * @param xmlPath
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void registerConfiguration(final String configName, final String configId, Object configEntity)
             throws IOException, ClassNotFoundException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configEntity);
-        //TODO: validation logic here
-        Optional<ConfigSchema<?>> schema = configStoreDao.getConfigSchema(configName);
-        if (schema.isEmpty()) {
-            throw new IllegalArgumentException("ConfigName not found: " + configName);
+        Optional<ConfigSchema<?>> configSchema = this.getRegisteredSchema(serviceName);
+        if (configSchema.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", serviceName));
+        }
+        if (this.getConfiguration(serviceName, configId).isPresent()) {
+            throw new IllegalArgumentException(String.format("Configuration with service=%s, id=%s is already registered, update instead.", serviceName, configId));
+        }
+        try {
+            final String xmlStr = this.readFile(xmlPath);
+            String jsonStr = configSchema.get().getConverter().xmlTOJson(xmlStr);
+            JSONObject configJson = new JSONObject(jsonStr);
+            this.registerConfiguration(serviceName, configId, configJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
         String jsonStr = schema.get().getConverter().jaxbObjectToJson(configEntity);
 
@@ -101,6 +120,37 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, jsonStr);
     }
 
+    /**
+     * it is a preprocess of config data
+     * @see this#registerConfiguration(String, String, JSONObject)
+     * @param serviceName
+     * @param configId
+     * @param object
+     * @param configClass
+     * @param <ENTITY>
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @Override
+    public <ENTITY> void registerConfiguration(String serviceName, String configId, ENTITY object, Class<ENTITY> configClass)
+            throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = configStoreDao.getConfigSchema(serviceName);
+        if(schema.isEmpty()){
+            LOG.error("Schema not found! name: " + serviceName);
+            throw new RuntimeException("Schema not found");
+        }
+        String json = schema.get().getConverter().jaxbObjectToJson(object);
+        this.registerConfiguration(serviceName, configId, new JSONObject(json));
+    }
+
+    /**
+     * This is the real configuration register
+     * @param serviceName
+     * @param configId
+     * @param jsonObj
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
     public void unregisterConfiguration(final String configName, final String configId) throws IOException {
         this.configStoreDao.deleteConfig(configName, configId);

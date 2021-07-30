@@ -117,7 +117,6 @@ public interface ConfigurationManagerService {
      */
     Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
 
-
     /**
      * get config as xml by configName, configId
      * @param configName

@@ -70,7 +70,9 @@ public class ConfigStoreDaoImplTest {
         public FakeConvert() {}
 
         @Override
-        public void validate(Object obj) {}
+        public boolean validate(Object obj) {
+            return false;
+        }
 
         @Override
         public Object xmlToJaxbObject(String xml) {

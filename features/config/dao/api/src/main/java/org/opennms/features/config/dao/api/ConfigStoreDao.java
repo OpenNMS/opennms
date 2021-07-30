@@ -35,12 +35,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * It handles storing config data in database by generic datatype
+ * It also expects to do any validation before persist.
+ * @param <CONFIG_DATATYPE> data type store in database
+ */
 public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * register service to config manager
      *
-     * @param configSchema
+     * @param configSchema schema object
      * @return status
      */
     void register(ConfigSchema<?> configSchema) throws IOException;
@@ -127,7 +132,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     boolean deleteConfig(String serviceName, String configId) throws IOException;
 
     /**
-     * deregister a service from config manager
+     * unregister a service from config manager, it will remove both schema and configs
      *
      * @param configName
      */

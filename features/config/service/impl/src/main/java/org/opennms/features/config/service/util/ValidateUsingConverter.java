@@ -156,8 +156,8 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public void validate(CONFIG_CLASS obj) throws RuntimeException{
-        xmlMapper.validate(obj);
+    public boolean validate(CONFIG_CLASS obj) throws RuntimeException{
+        return xmlMapper.validate(obj);
     }
 
     @Override

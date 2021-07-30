@@ -29,11 +29,11 @@
 package org.opennms.features.config.service.impl;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.FixMethodOrder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -65,16 +65,28 @@ import java.util.Optional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-@FixMethodOrder(MethodSorters.JVM)
 public class ConfigurationManagerServiceImplTest {
     private static final String SERVICE_NAME = "provisiond";
     private static final String CONFIG_ID = "test1";
     @Autowired
     private ConfigurationManagerService configManagerService;
 
+    @Before
+    public void init() throws IOException, ClassNotFoundException, JAXBException {
+        configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
+        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
+        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
+    }
+    @After
+    public void after(){
+        try {
+            configManagerService.unregisterSchema(SERVICE_NAME);
+        } catch (IOException e) {
+        }
+    }
+
     @Test
     public void testRegisterSchema() throws IOException, ClassNotFoundException, JAXBException {
-        configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
         Assert.assertTrue(SERVICE_NAME + " fail to register", configSchema.isPresent());
         Assert.assertTrue(SERVICE_NAME + " fail to register", "29.0.0".equals(configSchema.get().getVersion()));
@@ -99,6 +111,15 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertTrue("Cannot get XML config", entityFromDb.get().getImportThreads() == 11);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void testRegisterInvalidConfiguration() throws IOException, ClassNotFoundException {
+        ProvisiondConfiguration config = new ProvisiondConfiguration();
+        config.setImportThreads(-1L);
+        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID + "_2", config, ProvisiondConfiguration.class);
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+        Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
+    }
+
     @Test
     public void testUpdateConfiguration() throws IOException, ClassNotFoundException {
         JSONObject json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID).get();
@@ -108,8 +129,17 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
     }
 
+    @Test(expected = RuntimeException.class)
+    public void testUpdateInvalidateConfiguration() throws IOException, ClassNotFoundException {
+        JSONObject json = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID).get();
+        json.put("importThreads", -1);
+        configManagerService.updateConfiguration(SERVICE_NAME, CONFIG_ID, json);
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+        Assert.assertTrue("Config not found", configData.isPresent());
+    }
+
     @Test
-    public void testRemoveConfiguration() throws IOException, ClassNotFoundException {
+    public void testRemoveEverything() throws IOException, ClassNotFoundException {
         configManagerService.unregisterConfiguration(SERVICE_NAME, CONFIG_ID);
         Optional<JSONObject> json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());

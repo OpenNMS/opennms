@@ -32,12 +32,15 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.JSONObjectDeserializer;
 import org.opennms.features.config.dao.impl.util.JSONObjectSerialIzer;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -47,6 +50,7 @@ import java.util.Set;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
     public static final String CONTEXT_META = "CM_META";
     private final ObjectMapper mapper;
@@ -137,12 +141,13 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void addConfig(String configName, String configId, JSONObject config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            configData = Optional.of(new ConfigData<JSONObject>());
+            configData = Optional.of(new ConfigData<>());
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (configs.containsKey(configId)) {
             throw new IllegalArgumentException("Duplicate config found for configId: " + configId);
         }
+        this.validateConfig(serviceName, config);
         configs.put(configId, config);
         this.putConfig(configName, configData.get());
     }
@@ -162,6 +167,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (configData.isEmpty()) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
+        this.validateConfig(serviceName, config);
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
@@ -213,6 +219,38 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
         if(timestamp < 0){
             throw new RuntimeException("Fail to put data in JsonStore!");
+        }
+    }
+
+    private void validateConfig(final String serviceName, final JSONObject config)
+            throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
+        this.validateConfig(schema, config);
+    }
+
+    private void validateConfig(final String serviceName, final ConfigData<JSONObject> configData)
+            throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
+        configData.getConfigs().forEach((key, config) -> {
+            this.validateConfig(schema, config);
+        });
+    }
+
+    private void validateConfig(final Optional<ConfigSchema<?>> schema, final JSONObject json) {
+        try {
+            if (schema.isEmpty()) {
+                LOG.error("Schema not found! ", json);
+                throw new RuntimeException("Schema not found!");
+            }
+            ConfigConverter converter = schema.get().getConverter();
+            Object obj = converter.jsonToJaxbObject(json.toString());
+            if (!converter.validate(obj)) {
+                LOG.error("Config validation error! ", json);
+                throw new RuntimeException("Fail to validate xml! May be schema issue.");
+            }
+        } catch (Exception e) {
+            LOG.error("Config validation fail! ", json);
+            throw new RuntimeException(e);
         }
     }
 }
