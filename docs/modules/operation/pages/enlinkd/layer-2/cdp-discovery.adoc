@@ -2,7 +2,7 @@
 = CDP Discovery
 
 The Cisco Discovery Protocol (CDP) is a proprietary link layer protocol from Cisco.
-It is used by network devices to advertise identity, capabilities and neighbors.
+Network devices use it to advertise their identity, capabilities, and neighbors.
 CDP performs functions similar to several proprietary protocols, such as the Link Layer Discovery Protocol (LLDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD).
 The CDP discovery uses information provided by the http://www.circitor.fr/Mibs/Html/C/CISCO-CDP-MIB.php[CISCO-CDP-MIB] and link:http://www.circitor.fr/Mibs/Html/C/CISCO-VTP-MIB.php[CISCO-VTP-MIB].
 
@@ -18,7 +18,7 @@ The following OIDs are supported to discover and build the CDP network topology 
 |===
 | Name                      | OID                             | Description
 | ifDescr                 | .1.3.6.1.2.1.2.2.1.2          | A text string that contains information about the interface.
-                                                                This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.
+                                                                This string should include the name of the manufacturer, the product name, and the version of the interface hardware/software.
 |===
 
 .Supported OIDS from the CISCO-CDP-MIB to discover links
@@ -33,28 +33,28 @@ The following OIDs are supported to discover and build the CDP network topology 
 | cdpCacheAddressType     | .1.3.6.1.4.1.9.9.23.1.2.1.1.3 | An indication of the type of address contained in the corresponding instance of cdpCacheAddress.
 | cdpCacheAddress         | .1.3.6.1.4.1.9.9.23.1.2.1.1.4 | The (first) network-layer address of the device's SNMP-agent as reported in the Address TLV of the most recently received CDP message.
                                                                 For example, if the corresponding instance of cacheAddressType had the value `ip(1)`, then this object would be an IP-address.
-| cdpCacheVersion         | .1.3.6.1.4.1.9.9.23.1.2.1.1.5 | The version string as reported in the most recent CDP message.
+| cdpCacheVersion         | .1.3.6.1.4.1.9.9.23.1.2.1.1.5 | The version string reported in the most recent CDP message.
                                                                 The zero-length string indicates no version field (TLV) was reported in the most recent CDP message.
-| cdpCacheDeviceId_       | .1.3.6.1.4.1.9.9.23.1.2.1.1.6 | The device-ID string as reported in the most recent CDP message.
+| cdpCacheDeviceId       | .1.3.6.1.4.1.9.9.23.1.2.1.1.6 | The device-ID string reported in the most recent CDP message.
                                                                 The zero-length string indicates no device-ID field (TLV) was reported in the most recent CDP message.
-| cdpCacheDevicePort      | .1.3.6.1.4.1.9.9.23.1.2.1.1.7 | The port-ID string as reported in the most recent CDP message.
+| cdpCacheDevicePort      | .1.3.6.1.4.1.9.9.23.1.2.1.1.7 | The port-ID string reported in the most recent CDP message.
                                                                 This will typically be the value of the ifName object (for example, `Ethernet0`).
                                                                 The zero-length string indicates no port-ID field (TLV) was reported in the most recent CDP message.
-| cdpCachePlatform        | .1.3.6.1.4.1.9.9.23.1.2.1.1.8 | The device's hardware platform as reported in the most recent CDP message.
+| cdpCachePlatform        | .1.3.6.1.4.1.9.9.23.1.2.1.1.8 | The device's hardware platform reported in the most recent CDP message.
                                                                 The zero-length string indicates that no platform field (TLV) was reported in the most recent CDP message.
 | cdpGlobalRun            | .1.3.6.1.4.1.9.9.23.1.3.1.0   | An indication of whether the Cisco Discovery Protocol is currently running.
                                                                 Entries in cdpCacheTable are deleted when CDP is disabled.
 | cdpGlobalDeviceId       | .1.3.6.1.4.1.9.9.23.1.3.4.0   | The device ID advertised by this device.
                                                                 The format of this device ID is characterized by the value of cdpGlobalDeviceIdFormat object.
-| cdpGlobalDeviceIdFormat | .1.3.6.1.4.1.9.9.23.1.3.7.0   | An indication of the format of device-Id contained in the corresponding instance of cdpGlobalDeviceId.
-                                                                Users can only specify the formats that the device is capable of as denoted in cdpGlobalDeviceIdFormatCpb object. +
+| cdpGlobalDeviceIdFormat | .1.3.6.1.4.1.9.9.23.1.3.7.0   | An indication of the device-Id format contained in the corresponding instance of cdpGlobalDeviceId.
+                                                                Users can specify only the formats that the device is capable of as denoted in cdpGlobalDeviceIdFormatCpb object. +
                                                                 *serialNumber(1):* indicates that the value of cdpGlobalDeviceId object is in the form of an ASCII string that contains the device serial number. +
                                                                 *macAddress(2):* indicates that the value of cdpGlobalDeviceId object is in the form of Layer 2 MAC address. +
-                                                                *other(3):* indicates that the value of cdpGlobalDeviceId object is in the form of a platform-specific ASCII string contain info that identifies the device.
+                                                                *other(3):* indicates that the value of cdpGlobalDeviceId object is in the form of a platform-specific ASCII string that contains information that identifies the device.
                                                                 For example: ASCII string contains serialNumber appended/prepended with system name.
 |===
 
-.Supported OIDS from the CISCO-VTP-MIB.
+.Supported OIDS from the CISCO-VTP-MIB
 [options="header"]
 [cols="1,1,3"]
 |===
@@ -68,7 +68,7 @@ The following OIDs are supported to discover and build the CDP network topology 
 | ciscoVtpVlanType        | .1.3.6.1.4.1.9.9.46.1.3.1.1.3 | The type of this VLAN. +
                                                                 ethernet(1), fddi(2), tokenRing(3), fddiNet(4), trNet(5), deprecated(6)
 | ciscoVtpVlanName        | .1.3.6.1.4.1.9.9.46.1.3.1.1.4 | The name of this VLAN.
-                                                                This name is used as the ELAN-name for an ATM LAN-Emulation segment of this VLAN.
+                                                                Used as the ELAN-name for an ATM LAN-Emulation segment of this VLAN.
 |===
 
 Find generic information about the CDP process in the CDP Information box on the Node Detail Page of the device.
@@ -77,5 +77,6 @@ Information gathered from these OIDs will be stored in the following database ta
 .Database tables related to CDP discovery
 image::enlinkd/cdp-database.png[]
 
-CDP Topology Updater provides CDP OnmsTopology consolidating CDP data collected by CDP Collector only full bidirectional connections between two CDP supported devices become edges.
-Node A and Node B are connected by an CDP edge if and only if there is a CDP MIB port connection in Node A to Node B and vice versa.
+The CDP Topology Updater provides CDP OnmsTopology consolidating CDP data the CDP Collector collects.
+Only full bidirectional connections between two CDP supported devices become edges.
+Node A and Node B are connected by a CDP edge if and only if there is a CDP MIB port connection in Node A to Node B and vice versa.

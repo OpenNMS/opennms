@@ -2,8 +2,8 @@
 = LLDP Discovery
 
 The Link Layer Discovery Protocol (LLDP) is a vendor-neutral link layer protocol.
-It is used by network devices for advertising their identity, capabilities, and neighbors.
-LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD)footnote:[Wikipedia LLDP: https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol]_.
+Network devices use it to advertise their identity, capabilities, and neighbors.
+LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD)footnote:[Wikipedia LLDP: https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol].
 
 
 NOTE: Only nodes with a running LLDP process can be part of the link discovery.
@@ -27,11 +27,11 @@ The following OIDs are supported to discover and build the LLDP network topology
                                                             local(7)
 | lldpLocChassisId        | .1.0.8802.1.1.2.1.3.2.0   | The string value used to identify the chassis component associated with the local system.
 | lldpLocSysName         | .1.0.8802.1.1.2.1.3.3.0   | The string value used to identify the system name of the local system.
-                                                            If the local agent supports link:http://tools.ietf.org/html/rfc3418[IETF RFC 3418], lldpLocSysName object should have the same value of sysName object.
+                                                            If the local agent supports link:http://tools.ietf.org/html/rfc3418[IETF RFC 3418], lldpLocSysName object should have the same value as sysName object.
 | lldpLocPortIdSubtype    | .1.0.8802.1.1.2.1.3.7.1.2 | The type of port identifier encoding used in the associated lldpLocPortId object.
 | lldpLocPortId           | .1.0.8802.1.1.2.1.3.7.1.3 | The string value used to identify the port component associated with a given port in the local system.
 | lldpLocPortDesc        | .1.0.8802.1.1.2.1.3.7.1.4 | The string value used to identify the 802 LAN station's port description associated with the local system.
-                                                            If the local agent supports IETF RFC 2863, lldpLocPortDesc object should have the same value of ifDescr zobject.
+                                                            If the local agent supports IETF RFC 2863, lldpLocPortDesc object should have the same value of ifDescr object.
 | lldpRemChassisIdSubtype | .1.0.8802.1.1.2.1.4.1.1.4 | The type of encoding used to identify the chassis associated with the local system. Possible values can be: +
                                                             chassisComponent(1) +
                                                             interfaceAlias(2) +
@@ -44,7 +44,7 @@ The following OIDs are supported to discover and build the LLDP network topology
 | lldpRemPortIdSubtype    | .1.0.8802.1.1.2.1.4.1.1.6 | The type of port identifier encoding used in the associated lldpRemPortId object. +
                                                             +
                                                             interfaceAlias(1) +
-                                                            the octet string identifies a particular instance of the ifAlias object (defined in IETF RFC 2863). If the particular ifAlias object does not contain any values, another port identifier type should be used. +
+                                                            the octet string identifies a particular instance of the ifAlias object (defined in IETF RFC 2863). If the particular ifAlias object does not contain any values, use another port identifier type. +
                                                             +
                                                             portComponent(2) +
                                                             the octet string identifies a particular instance of the entPhysicalAlias object (defined in IETF RFC 2737) for a port or backplane component. +
@@ -58,10 +58,10 @@ The following OIDs are supported to discover and build the LLDP network topology
                                                             +
                                                             interfaceName(5) +
                                                             the octet string identifies a particular instance of the ifName object (defined in IETF RFC 2863).
-                                                            If the particular ifName object does not contain any values, another port identifier type should be used. +
+                                                            If the particular ifName object does not contain any values, use another port identifier type. +
                                                             +
                                                             agentCircuitId(6) +
-                                                            this string identifies a agent-local identifier of the circuit (defined in RFC 3046) +
+                                                            this string identifies an agent-local identifier of the circuit (defined in RFC 3046). +
                                                             +
                                                             local(7) +
                                                             this string identifies a locally assigned port ID.
@@ -77,6 +77,7 @@ Information gathered from these OIDs is stored in the following database table:
 image::enlinkd/lldp-database.png[]
 
 
-The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector only full bidirectional connections between two LLDP supported devices become Edges.
+The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector.
+Only full bidirectional connections between two LLDP supported devices become edges.
 Node A and Node B are connected by an LLDP edge if and only if there is an LLDP MIB port connection in Node A to Node B and vice versa.
 
