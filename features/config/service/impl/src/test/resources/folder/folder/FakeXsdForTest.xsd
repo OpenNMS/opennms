@@ -142,6 +142,13 @@
         <annotation>
           <documentation>SNMPv3 Security Name (User Name)</documentation>
         </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1" />
+            <maxInclusive value="3" />
+          </restriction>
+        </simpleType>
       </attribute>
 
       <attribute name="security-level" use="optional">
@@ -195,4 +202,5 @@
 
     </complexType>
   </element>
+
 </schema>

@@ -38,10 +38,13 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.api.ServiceSchema;
 import org.opennms.features.config.dao.api.XMLSchema;
-import org.opennms.features.config.dao.api.XmlConfigConverter;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -51,9 +54,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 
-public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
-    private Class<T> configurationClass;
-    private XmlMapper<T> xmlMapper;
+public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CONFIG_CLASS> {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
+
+    private Class<CONFIG_CLASS> configurationClass;
+    private XmlMapper<CONFIG_CLASS> xmlMapper;
     private String xsdName;
     private String rootElement;
     private XmlAccessType xmlAccessorType;
@@ -67,8 +72,8 @@ public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
      * @throws IllegalArgumentException if you provide invalid config entity class
      */
     @JsonCreator
-    public ValidateUsingConverter(@JsonProperty("configurationClass") Class<T> configurationClass)
-            throws IllegalArgumentException, IOException {
+    public ValidateUsingConverter(@JsonProperty("configurationClass") Class<CONFIG_CLASS> configurationClass)
+            throws IllegalArgumentException, IOException, JAXBException {
         if (!configurationClass.isAnnotationPresent(ValidateUsing.class)) {
             throw new IllegalArgumentException("It need annotation ValidateUsing!");
         }
@@ -83,7 +88,7 @@ public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
         this.xmlAccessorType = configurationClass.getAnnotation(XmlAccessorType.class).value();
         this.configurationClass = configurationClass;
         this.serviceSchema = this.readXmlSchema();
-        this.xmlMapper = new XmlMapper<T>(serviceSchema.getXmlSchema(), configurationClass);
+        this.xmlMapper = new XmlMapper<CONFIG_CLASS>(serviceSchema.getXmlSchema(), configurationClass);
     }
 
     /**
@@ -141,7 +146,22 @@ public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
     }
 
     @Override
-    public T xmlToJaxbObject(final String xml) {
+    public String jaxbObjectToJson(final CONFIG_CLASS obj) {
+        return xmlMapper.jaxbObjectToJson(obj);
+    }
+
+    @Override
+    public String jaxbObjectToXml(CONFIG_CLASS obj) {
+        return xmlMapper.jaxbObjectToXml(obj);
+    }
+
+    @Override
+    public void validate(CONFIG_CLASS obj) throws RuntimeException{
+        xmlMapper.validate(obj);
+    }
+
+    @Override
+    public CONFIG_CLASS xmlToJaxbObject(final String xml) {
         return xmlMapper.xmlToJaxbObject(xml);
     }
 
@@ -156,11 +176,11 @@ public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
     }
 
     @Override
-    public T jsonToJaxbObject(final String jsonStr) {
+    public CONFIG_CLASS jsonToJaxbObject(final String jsonStr) {
         return xmlMapper.jsonToJaxbObject(jsonStr);
     }
 
-    public Class<T> getConfigurationClass() {
+    public Class<CONFIG_CLASS> getConfigurationClass() {
         return configurationClass;
     }
 

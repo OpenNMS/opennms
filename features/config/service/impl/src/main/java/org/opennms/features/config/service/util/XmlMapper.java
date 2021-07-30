@@ -28,123 +28,145 @@
 
 package org.opennms.features.config.service.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.sax.SAXSource;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.MediaType;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.XMLSchema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
+import org.xml.sax.helpers.DefaultHandler;
 
-import com.google.common.base.Strings;
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
+public class XmlMapper<CONFIG_CLASS> {
+    private static final Logger LOG = LoggerFactory.getLogger(XmlMapper.class);
 
-public class XmlMapper<T> {
-    private XMLSchema xmlSchema;
-    private Class<T> configurationClass;
+    private final XMLSchema xmlSchema;
+    private final Class<CONFIG_CLASS> configurationClass;
+    private final JAXBContext jc;
+    private final Unmarshaller unmarshaller;
+    private final Marshaller marshaller;
 
-    public XmlMapper(XMLSchema xmlSchema, Class<T> configurationClass) throws NullPointerException {
+    public XmlMapper(XMLSchema xmlSchema, Class<CONFIG_CLASS> configurationClass)
+            throws NullPointerException, JAXBException {
         Objects.requireNonNull(xmlSchema);
         Objects.requireNonNull(configurationClass);
         this.xmlSchema = xmlSchema;
         this.configurationClass = configurationClass;
+        jc = JaxbUtils.getContextFor(configurationClass);
+        //Schema schema = this.getValidatorFor(configurationClass);
+        unmarshaller = jc.createUnmarshaller();
+        //unmarshaller.setSchema(schema);
+        marshaller = jc.createMarshaller();
+        //marshaller.setSchema(schema);
+        //new ValidatingMarshalRecord((MarshalRecord)marshalRecord, this);
+    }
+
+    public boolean validate(CONFIG_CLASS obj) throws RuntimeException{
+        if (xmlSchema == null || xmlSchema.getXsdContent() == null){
+            return false;
+        }
+        final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try {
+            Schema schema = factory.newSchema(new StreamSource(new StringReader(this.xmlSchema.getXsdContent())));
+            if(schema == null){
+                return false;
+            }
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setSchema(schema);
+            marshaller.marshal(obj, new DefaultHandler());
+            return true;
+        } catch (Exception e) {
+            LOG.warn("an error occurred while attempting to load schema validation files for class {}",
+                    this.configurationClass, e);
+            throw new RuntimeException(e.getCause());
+        }
     }
 
     public String jsonToXml(String json) {
-        T obj = this.jsonToJaxbObject(json);
-        return JaxbUtils.marshal(obj);
-    }
-
-    private DynamicJAXBContext getDynamicJAXBContextForService() {
-        final String xsd = xmlSchema.getXsdContent();
-        if (xsd == null) {
-            throw new IllegalArgumentException("No XSD found for service: " + xmlSchema.getClass() + ". Cannot perform XML related operations.");
-        }
-
-        try (InputStream is = new ByteArrayInputStream(xsd.getBytes(StandardCharsets.UTF_8))) {
-            return DynamicJAXBContextFactory.createContextFromXSD(is, null, null, null);
-        } catch (JAXBException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        CONFIG_CLASS obj = this.jsonToJaxbObject(json);
+        return this.jaxbObjectToXml(obj);
     }
 
     public String xmlToJson(String sourceXml) {
-        try {
-            DynamicJAXBContext jc = getDynamicJAXBContextForService();
-            final XMLFilter filter = JaxbUtils.getXMLFilterForClass(configurationClass);
-            final InputSource inputSource = new InputSource(new StringReader(sourceXml));
-            final SAXSource source = new SAXSource(filter, inputSource);
-
-            final Unmarshaller u = jc.createUnmarshaller();
-            DynamicEntity entity = (DynamicEntity) u.unmarshal(source);
-
-            final Marshaller m = jc.createMarshaller();
-            m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-            m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-
-            final StringWriter writer = new StringWriter();
-            m.marshal(entity, writer);
-            return writer.toString();
-        } catch (JAXBException | SAXException e) {
-            throw new RuntimeException(e);
-        }
+        CONFIG_CLASS obj = this.xmlToJaxbObject(sourceXml);
+        return this.jaxbObjectToJson(obj);
     }
 
-    public T jsonToJaxbObject(String json) {
+    public CONFIG_CLASS jsonToJaxbObject(String json) {
         try {
-            final JAXBContext jc = JaxbUtils.getContextFor(configurationClass);
-            final Unmarshaller u = jc.createUnmarshaller();
-            u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-            u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-
+            unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
             ByteArraySource source = new ByteArraySource(json.getBytes(StandardCharsets.UTF_8));
-            JAXBElement<T> jaxbElement = u.unmarshal(source, configurationClass);
+            JAXBElement<CONFIG_CLASS> jaxbElement = unmarshaller.unmarshal(source, configurationClass);
             return jaxbElement.getValue();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String jaxbObjectToJson(Object obj) {
+    /**
+     * Convert config object to json (it will not validate)
+     * @param config object matching the Generic type
+     * @return xml string
+     */
+    public String jaxbObjectToJson(CONFIG_CLASS config) {
         try {
-            final JAXBContext jc = JaxbUtils.getContextFor(obj.getClass());
-            final Marshaller m = jc.createMarshaller();
-            m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-            m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-
+            marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
             final StringWriter writer = new StringWriter();
-            m.marshal(obj, writer);
+            marshaller.marshal(config, writer);
             return writer.toString();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public T xmlToJaxbObject(String sourceXml) {
-        return JaxbUtils.unmarshal(configurationClass, sourceXml);
+    /**
+     * Convert config object to xml (it will not validate)
+     * @param config object matching the Generic type
+     * @return xml string
+     */
+    public String jaxbObjectToXml(CONFIG_CLASS config) {
+        try {
+            marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
+            final StringWriter writer = new StringWriter();
+            marshaller.marshal(config, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Convert xml to config object (it will not validate)
+     * @param sourceXml xml in string format
+     * @return config object
+     */
+    public CONFIG_CLASS xmlToJaxbObject(String sourceXml) {
+        final XMLFilter filter;
+        try {
+            filter = JaxbUtils.getXMLFilterForClass(configurationClass);
+            final InputSource inputSource = new InputSource(new StringReader(sourceXml));
+            final SAXSource source = new SAXSource(filter, inputSource);
+
+            final Unmarshaller u = jc.createUnmarshaller();
+            return u.unmarshal(source, configurationClass).getValue();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getCause());
+        }
     }
 }

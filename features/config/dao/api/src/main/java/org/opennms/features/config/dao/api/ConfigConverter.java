@@ -38,7 +38,6 @@ public interface ConfigConverter<CONFIG_CLASS> {
 
     void validate(CONFIG_CLASS obj);
 
-    boolean validate(CONFIG_CLASS obj) throws RuntimeException;
     /**
      * convert xml into config object
      *
