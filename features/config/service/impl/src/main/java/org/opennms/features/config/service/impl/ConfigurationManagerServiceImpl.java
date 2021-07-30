@@ -96,9 +96,6 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void registerConfiguration(final String configName, final String configId, Object configEntity)
             throws IOException, ClassNotFoundException {
-        Objects.requireNonNull(configId);
-        Objects.requireNonNull(configName);
-        Objects.requireNonNull(configEntity);
         Optional<ConfigSchema<?>> configSchema = this.getRegisteredSchema(serviceName);
         if (configSchema.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", serviceName));
@@ -151,6 +148,16 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @Override
+    public void registerConfiguration(String serviceName, String configId, JSONObject jsonObj)
+            throws IOException, ClassNotFoundException {
+        Objects.requireNonNull(configId);
+        Objects.requireNonNull(serviceName);
+        Objects.requireNonNull(jsonObj);
+        configStoreDao.addConfig(serviceName, configId, jsonObj);
+        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", serviceName, configId, jsonObj);
+    }
+
     @Override
     public void unregisterConfiguration(final String configName, final String configId) throws IOException {
         this.configStoreDao.deleteConfig(configName, configId);

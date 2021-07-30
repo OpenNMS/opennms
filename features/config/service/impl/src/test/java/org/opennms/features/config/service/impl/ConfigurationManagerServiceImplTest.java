@@ -65,12 +65,25 @@ import java.util.Optional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-@FixMethodOrder(MethodSorters.JVM)
 public class ConfigurationManagerServiceImplTest {
     private static final String SERVICE_NAME = "provisiond";
     private static final String CONFIG_ID = "test1";
     @Autowired
     private ConfigurationManagerService configManagerService;
+
+    @Before
+    public void init() throws IOException, ClassNotFoundException, JAXBException {
+        configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
+        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
+        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
+    }
+    @After
+    public void after(){
+        try {
+            configManagerService.unregisterSchema(SERVICE_NAME);
+        } catch (IOException e) {
+        }
+    }
 
     @Before
     public void init() throws IOException, ClassNotFoundException, JAXBException {
@@ -110,6 +123,15 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ProvisiondConfiguration> entityFromDb = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID,
                 ProvisiondConfiguration.class);
         Assert.assertTrue("Cannot get XML config", entityFromDb.get().getImportThreads() == 11);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testRegisterInvalidConfiguration() throws IOException, ClassNotFoundException {
+        ProvisiondConfiguration config = new ProvisiondConfiguration();
+        config.setImportThreads(-1L);
+        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID + "_2", config, ProvisiondConfiguration.class);
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+        Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
     }
 
     @Test(expected = RuntimeException.class)

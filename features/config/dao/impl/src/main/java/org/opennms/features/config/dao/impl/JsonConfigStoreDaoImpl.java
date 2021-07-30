@@ -252,4 +252,36 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new RuntimeException(e);
         }
     }
+
+    private void validateConfig(final String serviceName, final JSONObject config)
+            throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
+        this.validateConfig(schema, config);
+    }
+
+    private void validateConfig(final String serviceName, final ConfigData<JSONObject> configData)
+            throws IOException, ClassNotFoundException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
+        configData.getConfigs().forEach((key, config) -> {
+            this.validateConfig(schema, config);
+        });
+    }
+
+    private void validateConfig(final Optional<ConfigSchema<?>> schema, final JSONObject json) {
+        try {
+            if (schema.isEmpty()) {
+                LOG.error("Schema not found! ", json);
+                throw new RuntimeException("Schema not found!");
+            }
+            ConfigConverter converter = schema.get().getConverter();
+            Object obj = converter.jsonToJaxbObject(json.toString());
+            if (!converter.validate(obj)) {
+                LOG.error("Config validation error! ", json);
+                throw new RuntimeException("Fail to validate xml! May be schema issue.");
+            }
+        } catch (Exception e) {
+            LOG.error("Config validation fail! ", json);
+            throw new RuntimeException(e);
+        }
+    }
 }
