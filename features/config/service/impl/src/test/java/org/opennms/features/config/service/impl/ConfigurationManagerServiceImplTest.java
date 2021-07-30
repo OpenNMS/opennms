@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -72,7 +73,7 @@ public class ConfigurationManagerServiceImplTest {
     private ConfigurationManagerService configManagerService;
 
     @Test
-    public void testRegisterSchema() throws IOException, ClassNotFoundException {
+    public void testRegisterSchema() throws IOException, ClassNotFoundException, JAXBException {
         configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
         Assert.assertTrue(SERVICE_NAME + " fail to register", configSchema.isPresent());

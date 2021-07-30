@@ -36,6 +36,8 @@ import java.net.URL;
 public interface ConfigConverter<CONFIG_CLASS> {
     enum SCHEMA_TYPE {XML, JSON, PROPERTY};
 
+    void validate(CONFIG_CLASS obj);
+
     /**
      * convert xml into config object
      *

@@ -33,12 +33,14 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ValidateUsingConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +58,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
                                         final int patchVersion, Class<ENTITY> entityClass)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, JAXBException {
         ValidateUsingConverter<ENTITY> converter = new ValidateUsingConverter<>(entityClass);
         this.registerSchema(configName, majorVersion, minorVersion, patchVersion, converter);
     }

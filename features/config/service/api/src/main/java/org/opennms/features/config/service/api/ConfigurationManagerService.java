@@ -32,7 +32,9 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigConverter;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
