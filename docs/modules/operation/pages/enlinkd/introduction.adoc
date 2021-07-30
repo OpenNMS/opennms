@@ -74,7 +74,7 @@ During the EnLink discovery process, informational and error output is logged to
 | rescan_interval      | Interval in milliseconds for collectors. | 86400000
 | topology_interval    | Interval in milliseconds for updater. | 30000
 | bridge_topology_interval    | Interval in milliseconds for discovery. | 300000
-| max_bft              | The maximum number of bft stored in memory for discovery. | 100
+| max_bft              | The maximum number of bridge forwarding tables (BFTs) stored in memory for discovery. | 100
 | discovery-bridge-threads | The number of threads used for discovery. | 1
 3+| *Boolean*
 | use-cdp-discovery    | Enable or disable discovery based on CDP information. | true
