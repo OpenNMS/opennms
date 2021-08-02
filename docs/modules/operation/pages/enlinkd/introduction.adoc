@@ -29,7 +29,7 @@ Essentially, each Enlinkd-Collector asks each device the following question: "Wh
 
 The Enlinkd-Discovery does attempt to discover bridge domain links with the data coming from all collected Bridge Forwarding Tables.
 
-The Enlinkd-Updaters does attempt to discover global OnmsTopology doing correlation with the data coming from all node discovered links.
+The Enlinkd-Updaters correlate all collected topology data to generate a global topology layout of your network.
 
 For large environments, you can configure the behavior of Enlinkd.
 During the EnLink discovery process, informational and error output is logged to a global log file.
