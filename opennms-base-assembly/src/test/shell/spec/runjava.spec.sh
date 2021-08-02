@@ -16,7 +16,7 @@ runRunjava() {
 
 oneTimeSetUp() {
   rm -rf "$TESTDIR"
-  makeFakeJava "$FAKE_JAVA_HOME" false "1.8.0_69" "420-b42"
+  makeFakeJava "$FAKE_JAVA_HOME" false "11.0.11" "9"
 
   mkdir -p "$FAKE_OPENNMS_HOME"/{bin,data,lib}
   install -m 755 "$PROJECTDIR/target/classes/bin/_lib.sh" "$FAKE_OPENNMS_HOME/bin/"
@@ -82,11 +82,11 @@ testPrint() {
   assertTrue $?
 
   output="$(runRunjava -j "$javaconf_dir" -q -p)"
-  assertEquals "8.0.69" "$output"
+  assertEquals "11.0.11" "$output"
 
-  makeFakeJava "$FAKE_JAVA_HOME" true "1.8.0_215" "25.215-b09"
+  makeFakeJava "$FAKE_JAVA_HOME" true "11.0.12" "25.215-b09"
   output="$(runRunjava -j "$javaconf_dir" -q -p)"
-  assertEquals "8.0.215" "$output"
+  assertEquals "11.0.12" "$output"
 }
 
 # shellcheck disable=SC1090,SC1091
