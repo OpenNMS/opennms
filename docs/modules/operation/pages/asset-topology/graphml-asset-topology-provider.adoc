@@ -144,7 +144,7 @@ The asset graph definitions for the Asset Topology Provider are persisted to the
 
 [source]
 ----
-<opennms home>/etc/org.opennms.features.topology.plugins.topo.asset.xml
+$OPENNMS_HOME/etc/org.opennms.features.topology.plugins.topo.asset.xml
 ----
 
 Normally you should not edit this file directly but use the Karaf console or events to define new graphs.
@@ -235,7 +235,7 @@ The Asset Topology Provider events are defined in the file:
 
 [source]
 ----
-<opennms home>/etc/events/GraphMLAssetPluginEvents.xml
+$OPENNMS_HOME/etc/events/GraphMLAssetPluginEvents.xml
 ----
 
 These events use the default parameters if parameters are not supplied.
