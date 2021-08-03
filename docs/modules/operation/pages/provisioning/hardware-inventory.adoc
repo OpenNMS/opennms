@@ -25,7 +25,9 @@ To install the opennms-plugin-provisioning-snmp-hardware-inventory package:
 ** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
 ****
 
-The package creates the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml` which defines the support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
+Once enabled, the hardware inventory plugin will collection the ENTITY-MIB::entPhysicalTable of all devices without any configuration.
+If you want to collect inventory from devices that provide additional fields, you can specify which OIDs to use in the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml`.
+This file includes support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
 
 Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
 The `hw-extension` element lets you group a list of Entity-MIB extensions defined in `mibObj` elements based on a sysOidMask of a node.
@@ -51,7 +53,7 @@ When a vendor provides the standard objects on a different table rather than `en
 </hw-extension>
 ----
 
-In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisco devices) are candidates to discover the `mibObj` entities defined on the extension group.
+In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisco devices) are candidates to discover the custom `mibObj` entities defined on the extension group.
 The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic Entity-MIB attribute instead of creating a new custom attribute entry.
 
 Once you have configured your `snmp-hardware-inventory-adapter-configuration.xml`, the Provisiond service attempts to collect hardware inventory data when it refreshes requisitions.
