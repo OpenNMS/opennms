@@ -10,7 +10,7 @@ NOTE: Only nodes with a running LLDP process can be part of the link discovery.
       Linux and Windows servers don't have an LLDP process running by default and will not be part of the link discovery unless an LLDP agent is manually installed and configured.
 
 The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector.
-Only full bidirectional connections between two LLDP supported devices become edges.
+Only full bidirectional connections between two LLDP-supported devices become edges.
 Node A and Node B are connected by an LLDP edge if and only if there is an LLDP MIB port connection in Node A to Node B and vice versa.
 
 The following OIDs are supported to discover and build the LLDP network topology and are collected by the LLDP Discovery Collector.

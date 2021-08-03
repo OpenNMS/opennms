@@ -105,17 +105,18 @@ If you encounter issues while using HTTPS it might be useful to enable debugging
 
 .Java built-in System Properties (link:https://access.redhat.com/documentation/en-us/red_hat_amq/6.3/html/security_guide/ssl-sysprops[Source])
 [options="header"]
+[cols="1,3"]
 |===
 |System Property Name                |Description
-| `javax.net.ssl.keyStore`           | Location of the Java keystore file containing an application process's own certificate and private key.
-| `javax.net.ssl.keyStorePassword`   | Password to access the private key from the keystore file specified by `javax.net.ssl.keyStore`.
+| javax.net.ssl.keyStore           | Location of the Java keystore file that contains an application process's own certificate and private key.
+| javax.net.ssl.keyStorePassword   | Password to access the private key from the keystore file javax.net.ssl.keyStore specifies.
                                        This password is used twice: to unlock the keystore file (store password) and to decrypt the private key stored in the keystore (key password).
-                                       In other words, the JSSE framework requires these passwords to be identical.
-| `javax.net.ssl.keyStoreType`       | (Optional) For Java keystore file format, this property has the value `jks` (or `JKS`). You do not normally specify this property, because its default value is already `jks`.
-| `javax.net.ssl.trustStore`         | Location of the Java keystore file containing the collection of CA certificates trusted by this application process (truststore).
+                                       The JSSE framework requires these passwords to be identical.
+| javax.net.ssl.keyStoreType       | (Optional) For Java keystore file format, this property has the value `jks` (or `JKS`). You do not normally specify this property, because its default value is already `jks`.
+| javax.net.ssl.trustStore         | Location of the Java keystore file that contains the collection of CA certificates this application process (truststore) trusts.
                                        If a truststore location is not specified using this property, the Sun JSSE implementation searches for and uses a keystore file in the following locations (in order):
-                                       `$JAVA_HOME/lib/security/jssecacerts` and `$JAVA_HOME/lib/security/cacerts`
-| `javax.net.ssl.trustStorePassword` | Password to unlock the keystore file (store password) specified by `javax.net.ssl.trustStore`.
-| `javax.net.ssl.trustStoreType`     | (Optional) For Java keystore file format, this property has the value `jks` (or `JKS`). You do not normally specify this property, because its default value is already `jks`.
-| `javax.net.debug`                  | To switch on logging for the SSL/TLS layer, set this property to ssl. More details about possible values can be found link:http://docs.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#Debug[here].
+                                       `$JAVA_HOME/lib/security/jssecacerts` and `$JAVA_HOME/lib/security/cacerts`.
+| javax.net.ssl.trustStorePassword | Password to unlock the keystore file (store password) javax.net.ssl.trustStore specifies.
+| javax.net.ssl.trustStoreType     | (Optional) For Java keystore file format, this property has the value `jks` (or `JKS`). You do not normally specify this property, because its default value is already `jks`.
+| javax.net.debug                  | To switch on logging for the SSL/TLS layer, set this property to ssl. For more details about possible values, see link:http://docs.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#Debug[debugging utilities].
 |===
