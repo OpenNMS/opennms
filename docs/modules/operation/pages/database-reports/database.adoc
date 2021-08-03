@@ -259,7 +259,7 @@ The following example shows the use of that helper.
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
 <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$Pnodeid].interfaceSnmp[$P{interface}]"/>
-<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$Pnodeid].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
 ------
 
