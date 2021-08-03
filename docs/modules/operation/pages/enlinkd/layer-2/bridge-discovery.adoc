@@ -23,7 +23,7 @@ To discover a bridge topology the algorithm has to be run against every bridge a
 Actually the discovery is run only against the main VLAN.
 
 Bridge domains provide no information about layer 3; only a layer 2 map of the broadcast domains.
-While bridge/switch is identified by the fact that are OpenNMS nodes to map MAC to Nodes where possible the IpNetToMedia table is needed.
+You can determine which layer 3 interfaces map to layer 2 if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
 In this manner we can associate a MAC address with the corresponding IP address and then the associated node.
 The Bridge Topology Updater combines the information stored in bridge domains with the ipnettomedia data and provided Bridge OnmsTopology.
 
