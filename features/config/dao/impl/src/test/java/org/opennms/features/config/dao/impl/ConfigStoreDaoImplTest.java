@@ -81,6 +81,7 @@ public class ConfigStoreDaoImplTest {
         config.put("importThreads", 11);
         ConfigData configData = new ConfigData();
         configData.getConfigs().put(filename, config);
+
         // register
         configStoreDao.register(configSchema);
         configStoreDao.addConfigs(configName, configData);
