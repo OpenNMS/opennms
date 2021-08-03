@@ -63,6 +63,10 @@ During the EnLink discovery process, informational and error output is logged to
                      />
 ----
 
+NOTE: If multiple protocols are enabled, the links will be discovered for each enabled discovery protocol.
+      The topology Web UI visualizes links for each discovery protocol.
+      For example, if you start CDP and LLDP discovery, the Web UI visualizes a CDP link and an LLDP link.
+
 .Description for global configuration parameter
 [options="header"]
 [cols="1,3,1"]
@@ -97,8 +101,3 @@ Send an event on the CLI or the Web UI.
 cd $\{OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Enlinkd'
 ----
-
-
-NOTE: If multiple protocols are enabled, the links will be discovered for each enabled discovery protocol.
-      The topology Web UI visualizes links for each discovery protocol.
-      For example, if you start CDP and LLDP discovery, the Web UI visualizes a CDP link and an LLDP link.

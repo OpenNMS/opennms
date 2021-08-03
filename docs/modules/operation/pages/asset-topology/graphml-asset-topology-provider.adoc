@@ -1,7 +1,7 @@
 
 = Asset Topology Provider
 
-{page-component-title} lets users define arbitrarily complex layered topologies using GraphML (see http://graphml.graphdrawing.org/).
+{page-component-title} lets users define arbitrarily complex layered topologies using http://graphml.graphdrawing.org/[GraphML].
 Refer to the GraphML section of the {page-component-title} developers guide for details of how {page-component-title} interprets GraphML.
 The ability to display complex layered topologies is a great feature, but creating a usable GraphML topology for a large network can be a complex task.
 

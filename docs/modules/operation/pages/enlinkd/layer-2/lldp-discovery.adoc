@@ -3,12 +3,15 @@
 
 The Link Layer Discovery Protocol (LLDP) is a vendor-neutral link layer protocol.
 Network devices use it to advertise their identity, capabilities, and neighbors.
-LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD)footnote:[Wikipedia LLDP: https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol].
-
+LLDP performs functions similar to several proprietary protocols, such as the Cisco Discovery Protocol (CDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol] (LLDP).
 
 NOTE: Only nodes with a running LLDP process can be part of the link discovery.
       The data is similar to running a `show lldp neighbor` command on the device.
-      Linux and Windows servers don't have an LLDP process running by default and will not be part of the link discovery.
+      Linux and Windows servers don't have an LLDP process running by default and will not be part of the link discovery unless an LLDP agent is manually installed and configured.
+
+The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector.
+Only full bidirectional connections between two LLDP supported devices become edges.
+Node A and Node B are connected by an LLDP edge if and only if there is an LLDP MIB port connection in Node A to Node B and vice versa.
 
 The following OIDs are supported to discover and build the LLDP network topology and are collected by the LLDP Discovery Collector.
 
@@ -61,8 +64,3 @@ Information gathered from these OIDs is stored in the following database table:
 
 .Database tables related to LLDP discovery
 image::enlinkd/lldp-database.png[]
-
-
-The LLDP Topology Updater provides LLDP OnmsTopology consolidating LLDP data collected by LLDP Collector.
-Only full bidirectional connections between two LLDP supported devices become edges.
-Node A and Node B are connected by an LLDP edge if and only if there is an LLDP MIB port connection in Node A to Node B and vice versa.

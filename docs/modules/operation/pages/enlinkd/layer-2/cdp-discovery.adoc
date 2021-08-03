@@ -6,6 +6,10 @@ Network devices use it to advertise their identity, capabilities, and neighbors.
 CDP performs functions similar to several proprietary protocols, such as the Link Layer Discovery Protocol (LLDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD).
 The CDP discovery uses information provided by the http://www.circitor.fr/Mibs/Html/C/CISCO-CDP-MIB.php[CISCO-CDP-MIB] and link:http://www.circitor.fr/Mibs/Html/C/CISCO-VTP-MIB.php[CISCO-VTP-MIB].
 
+The CDP Topology Updater provides CDP OnmsTopology consolidating CDP data the CDP Collector collects.
+Only full bidirectional connections between two CDP supported devices become edges.
+Node A and Node B are connected by a CDP edge if and only if there is a CDP MIB port connection in Node A to Node B and vice versa.
+
 NOTE: Only nodes with a running CDP process can be part of the link discovery.
       The data is similar to running a `show cdp neighbor` command on the IOS CLI of the device.
       Linux and Windows servers don't have a CDP process running by default and will not be part of the link discovery.
@@ -77,6 +81,3 @@ Information gathered from these OIDs will be stored in the following database ta
 .Database tables related to CDP discovery
 image::enlinkd/cdp-database.png[]
 
-The CDP Topology Updater provides CDP OnmsTopology consolidating CDP data the CDP Collector collects.
-Only full bidirectional connections between two CDP supported devices become edges.
-Node A and Node B are connected by a CDP edge if and only if there is a CDP MIB port connection in Node A to Node B and vice versa.
