@@ -61,9 +61,12 @@ Keys beginning with `asset-`  come from the corresponding asset table entry for 
 
 [options="autowidth"]
 |===
+5+| *Node fields*
 | node-nodelabel | node-nodeid | node-foreignsource | node-foreignid | node-nodesysname
 | node-nodesyslocation | node-operatingsystem | node-categories| |
+5+| *Parent node fields*
 | parent-nodelabel | parent-nodeid | parent-foreignsource | parent-foreignid |
+5+| *Node asset fields*
 | asset-address1 | asset-address2| asset-city | asset-zip| asset-state
 | asset-latitude | asset-longitude| asset-region | asset-division| asset-department
 | asset-building | asset-floor| asset-room | asset-rack | asset-slot
@@ -135,7 +138,7 @@ The Asset Topology Provider persists GraphML graphs alongside any other GraphML 
 
 [source]
 ----
-<opennms home>/etc/graphml
+$OPENNMS_HOME/etc/graphml
 ----
 
 Note that if you use REST or any other means to generate other GraphML graphs, you should ensure that the providerIds and labels are distinct from those the Asset Topology Provider uses.

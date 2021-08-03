@@ -11,10 +11,12 @@ This operation can use the following reduce functions:
 |===
 | Name                      | Description
 | Highest Severity        | Uses the value of the highest severity; ignores weight.
-| Threshold               | Uses the highest severity found more often than the given threshold; for example, 0.26 can also be seen as 26%, which means at least 2 of 4 alarms need to be raised to change the business service.
+| Threshold               | Uses the highest severity found more often than the given threshold.
+                            Value should be a percentage as a decimal so that .26 means 26%.
+                            This means at least 2 of 4 alarms need to be raised to change the business service.
 | Highest Severity Above  | Uses the highest severity greater than the given threshold severity.
-| Exponential Propagation | This reduce function computes the sum of the given child severities based on a base number. For this computation, the severities are mapped to
-                              numbers:
+| Exponential Propagation | This reduce function computes the sum of the given child severities based on a base number.
+                              For this computation, the severities are mapped to numbers:
 
                               asciimath:[WARNING=0, MINOR=1, MAJOR=2, CRITICAL=3]
 

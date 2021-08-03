@@ -17,21 +17,19 @@ The BTF is not persisted into database and is maintained in memory to be process
 BridgeDomainDiscovery runs the specified algorithm over collected BFT and will produce a bridge domain or several bridge domains depending on the broadcast set of MAC addresses found.
 A bridge domains is a collection of shared segments based on common set of MAC addresses.
 
-BridgeDomainDiscovery does not support multi vlan, the bridge network model identifies a bridge for every VLAN.
+BridgeDomainDiscovery does not support multi VLAN, the bridge network model identifies a bridge for every VLAN.
 Each VLAN has its own bridge forwarding table and its own spanning tree.
 To discover a bridge topology the algorithm has to be run against every bridge and every vlan.
 Actually the discovery is run only against the main VLAN.
 
-Bridge domains provide no information about layer 3 but only a layer 2 map of the broadcast domains.
+Bridge domains provide no information about layer 3; only a layer 2 map of the broadcast domains.
 While bridge/switch is identified by the fact that are OpenNMS nodes to map MAC to Nodes where possible the IpNetToMedia table is needed.
 In this manner we can associate a MAC address with the corresponding IP address and then the associated node.
-The Bridge Topology Updater combines the information stored into bridge domains with the ipnettomedia data and provided Bridge OnmsTopology.
+The Bridge Topology Updater combines the information stored in bridge domains with the ipnettomedia data and provided Bridge OnmsTopology.
 
 Whenever possible, the Bridge Topology Updater tries to associate a MAC address to an IP address and then to a node.
 It can happen that the specified MAC address and the IP address are not associated with a single node (for example, because there are duplicate nodes or because the nodes support a protocol like LACP).
-In this case, we do not resolve the node but leave the association found mac:ip into a specific vertex.
-
-The Bridge Topology Updater does not support LACP and other similar aggregation protocols.
+As the Bridge Topology Updater does not support LACP, and other similar aggregation protocols, we do not resolve the node and record the association found as a mac:ip relationship for a specific vertex.
 
 Transparent bridging is not loop free, so if you have loops you must enable the spanning tree protocol that detects loops and will put some ports in a blocking state to avoid loops.
 To get links it is necessary to perform some calculations that let us define the links.
@@ -57,7 +55,7 @@ The SNMP agent must support the following MIBS to allow Transparent Bridge Disco
 | ipNetToMediaPhysAddress       | .1.3.6.1.2.1.4.22.1.2       | The media-dependent physical address.
 | ipNetToMediaNetAddress        | .1.3.6.1.2.1.4.22.1.3       | The IpAddress corresponding to the media-dependent physical address.
 | ipNetToMediaType              | .1.3.6.1.2.1.4.22.1.4       | The type of mapping. Setting this object to the value `invalid(2)` invalidates the corresponding entry in the ipNetToMediaTable.
-                                                                    That is, it effectively disassociates the interface identified with said entry from the mapping identified with said entry.
+                                                                    That effectively disassociates the interface identified with said entry from the mapping identified with said entry.
                                                                     It is an implementation-specific matter whether the agent removes an invalidated entry from the table.
                                                                     Accordingly, management stations must be prepared to receive tabular information from agents that correspond to entries not currently in use.
                                                                     Proper interpretation of such entries requires examination of the relevant ipNetToMediaType object.
@@ -79,7 +77,7 @@ The SNMP agent must support the following MIBS to allow Transparent Bridge Disco
 | dot1dPortIfIndex              | .1.3.6.1.2.1.17.1.4.1.2     | The value of the instance of the ifIndex object, defined in MIB-II, for the interface corresponding to this port.
 | dot1dStpProtocolSpecification | .1.3.6.1.2.1.17.2.1.0       | An indication of what version of the Spanning Tree Protocol is being run.
                                                                     The value `decLb100(2)` indicates the DEC LANbridge 100 Spanning Tree protocol.
-                                                                    `IEEE 802.1d` implementations will return `ieee8021d(3)`.
+                                                                    IEEE 802.1d implementations will return `ieee8021d(3)`.
                                                                     If future versions of the IEEE Spanning Tree Protocol are released that are incompatible with the current version, a new value will be defined.
 | dot1dStpPriority              | .1.3.6.1.2.1.17.2.2         | The value of the writeable portion of the bridge ID; for example, the first two octets of the (8 octet long) bridge ID.
                                                                     The value of dot1dBaseBridgeAddressother provides the (last) 6 octets of the bridge ID.
