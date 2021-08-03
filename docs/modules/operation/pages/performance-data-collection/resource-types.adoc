@@ -15,7 +15,7 @@ There are two special resource types that do not have a resource-type definition
 
 Define resource types inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific to SNMP.
 
-Here is the diskIOIndex resource type definition from `${OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
+Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
 
 [source, xml]
 ----
