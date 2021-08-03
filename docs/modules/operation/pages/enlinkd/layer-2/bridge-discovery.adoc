@@ -24,7 +24,7 @@ Actually the discovery is run only against the main VLAN.
 
 Bridge domains provide no information about layer 3; only a layer 2 map of the broadcast domains.
 You can determine which layer 3 interfaces map to layer 2 if your device supports the https://oidref.com/1.3.6.1.2.1.4.22[IpNetToMedia table].
-In this manner we can associate a MAC address with the corresponding IP address and then the associated node.
+In this manner, we can associate a MAC address with the corresponding IP address and then the associated node.
 The Bridge Topology Updater combines the information stored in bridge domains with the ipnettomedia data and provided Bridge OnmsTopology.
 
 Whenever possible, the Bridge Topology Updater tries to associate a MAC address to an IP address and then to a node.
