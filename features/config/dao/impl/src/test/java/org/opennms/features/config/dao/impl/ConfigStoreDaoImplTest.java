@@ -34,11 +34,13 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.*;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.annotation.XmlAccessType;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -63,15 +65,17 @@ public class ConfigStoreDaoImplTest {
     @Autowired
     private ConfigStoreDao configStoreDao;
 
-    public static class FakeConvert<T> implements ConfigConverter {
-        private Class<T> configurationClass;
+    public static class FakeConvert implements ConfigConverter {
+        private Class<ProvisiondConfiguration> configurationClass;
+        private String xsdName;
+        private String rootElement;
         private ServiceSchema serviceSchema;
         private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
         public FakeConvert() {}
 
         @Override
         public boolean validate(Object obj) {
-            return false;
+            return true;
         }
 
         @Override
@@ -101,12 +105,12 @@ public class ConfigStoreDaoImplTest {
 
         @Override
         public Class getConfigurationClass() {
-            return null;
+            return ProvisiondConfiguration.class;
         }
 
         @Override
         public ServiceSchema getServiceSchema() {
-            return null;
+            return new ServiceSchema(new XMLSchema("","",""), new ConfigItem());
         }
 
         @Override
