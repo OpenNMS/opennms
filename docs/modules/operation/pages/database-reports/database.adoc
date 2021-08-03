@@ -220,7 +220,7 @@ These helpers come with the Measurement Datasource.
 A node is addressed by a node source descriptor.
 The node source descriptor references the node either via the foreign source and foreign id or by the node id.
 
-If `store by foreign source` is enabled, is is possible to address the node only via `foreign source` and `foreign id`.
+If `storeByForeignSource` is enabled, it is only possible to address the node via foreign source and foreign id.
 
 To make report creation easier, there is a helper method to create the node source descriptor.
 
