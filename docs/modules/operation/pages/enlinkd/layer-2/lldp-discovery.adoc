@@ -21,7 +21,7 @@ The following OIDs are supported to discover and build the LLDP network topology
                                                             chassisComponent(1) +
                                                             interfaceAlias(2) +
                                                             portComponent(3) +
-                                                            macAddress(4)+
+                                                            macAddress(4) +
                                                             networkAddress(5) +
                                                             interfaceName(6) +
                                                             local(7)
