@@ -29,18 +29,23 @@
 package org.opennms.features.config.dao.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.opennms.features.config.dao.api.util.XsdModelConverter;
 
 import java.util.Objects;
 
 public final class ServiceSchema {
     private final XMLSchema xmlSchema;
-    private final ConfigItem configItem;
+
+    // reduce duplicated data store in database
+    @JsonIgnore
+    private ConfigItem configItem;
 
     @JsonCreator
-    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema, @JsonProperty("configItem") final ConfigItem configItem) {
+    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema){
         this.xmlSchema = Objects.requireNonNull(xmlSchema);
-        this.configItem = Objects.requireNonNull(configItem);
     }
 
     public XMLSchema getXmlSchema() {
@@ -48,6 +53,12 @@ public final class ServiceSchema {
     }
 
     public ConfigItem getConfigItem() {
+        // process only when it is needed.
+        if(configItem == null) {
+            final XsdModelConverter xsdModelConverter = new XsdModelConverter();
+            final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xmlSchema.getXsdContent());
+            configItem = xsdModelConverter.convert(schemaCollection, xmlSchema.getTopLevelObject());
+        }
         return configItem;
     }
 

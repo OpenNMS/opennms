@@ -25,9 +25,8 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.config.service.util;
+package org.opennms.features.config.dao.api.util;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -41,8 +40,6 @@ import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaWalker;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.api.ServiceSchema;
-import org.opennms.features.config.dao.api.XMLSchema;
 
 /**
  * Used to convert a XSD to a structure of {@link ConfigItem}s.
@@ -54,15 +51,13 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     final List<ConfigItem> configItemStack = new LinkedList<>();
     ConfigItem currentConfigItem;
 
-    public XmlSchemaCollection convertToSchemaCollection(String xsdStr) throws IOException {
+    public XmlSchemaCollection convertToSchemaCollection(String xsdStr) {
         XmlSchemaCollection schemaCollection = new XmlSchemaCollection();
         StringReader reader = new StringReader(xsdStr);
         try {
-            if (reader.ready()) {
-                schemaCollection.read(reader);
-            }
-        }finally
-        {
+            // no need to check read for StringReader if the source is a String
+            schemaCollection.read(reader);
+        } finally {
             reader.close();
         }
         return schemaCollection;
@@ -129,7 +124,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     @Override
     public void onExitElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
-        configItemStack.remove(configItemStack.size()-1);
+        configItemStack.remove(configItemStack.size() - 1);
     }
 
     @Override

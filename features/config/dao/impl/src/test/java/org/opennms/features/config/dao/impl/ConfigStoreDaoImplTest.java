@@ -33,16 +33,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.dao.api.*;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,75 +67,18 @@ public class ConfigStoreDaoImplTest {
     @Autowired
     private ConfigStoreDao configStoreDao;
 
-    public static class FakeConvert implements ConfigConverter {
-        private Class<ProvisiondConfiguration> configurationClass;
-        private String xsdName;
-        private String rootElement;
-        private ServiceSchema serviceSchema;
-        private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
-        public FakeConvert() {}
-
-        @Override
-        public boolean validate(Object obj) {
-            return true;
-        }
-
-        @Override
-        public Object xmlToJaxbObject(String xml) {
-            return null;
-        }
-
-        @Override
-        public String xmlToJson(String xmlStr) {
-            return null;
-        }
-
-        @Override
-        public String jsonToXml(String jsonStr) {
-            return null;
-        }
-
-        @Override
-        public Object jsonToJaxbObject(String jsonStr) {
-            return null;
-        }
-
-        @Override
-        public String jaxbObjectToJson(Object entity) {
-            return null;
-        }
-
-        @Override
-        public Class getConfigurationClass() {
-            return ProvisiondConfiguration.class;
-        }
-
-        @Override
-        public ServiceSchema getServiceSchema() {
-            return new ServiceSchema(new XMLSchema("","",""), new ConfigItem());
-        }
-
-        @Override
-        public URL getSchemaPath() throws IOException {
-            return null;
-        }
-
-        @Override
-        public SCHEMA_TYPE getSchemaType() {
-            return null;
-        }
-
-        @Override
-        public String getRawSchema() {
-            return null;
-        }
-    }
-
     @Test
-    public void testData() throws IOException, ClassNotFoundException {
-        ConfigSchema<FakeConvert> configSchema = new ConfigSchema<>(configName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+    public void testData() throws IOException, ClassNotFoundException, JAXBException {
+        // register
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
+        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(serviceName, majorVersion, 0, 0, ValidateUsingConverter.class, converter);
+
+        boolean status = configStoreDao.register(configSchema);
+        Assert.assertTrue("FAIL TO WRITE CONFIG", status);
+
+        // config
         JSONObject config = new JSONObject();
-        config.put("test", "test");
+        config.put("importThreads", 11);
         ConfigData configData = new ConfigData();
         configData.getConfigs().put(filename, config);
         // register
@@ -147,8 +92,8 @@ public class ConfigStoreDaoImplTest {
         Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
-        String configName2 = configName + "_2";
-        ConfigSchema<FakeConvert> configSchema2 = new ConfigSchema<>(configName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        String serviceName2 = serviceName + "_2";
+        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(serviceName2, majorVersion, 0, 0, ValidateUsingConverter.class, converter);
         configStoreDao.register(configSchema2);
         configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);

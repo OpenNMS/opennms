@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.util;
+package org.opennms.features.config.dao.impl.util;
 
 import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -67,22 +67,18 @@ public class XmlMapper<CONFIG_CLASS> {
         this.xmlSchema = xmlSchema;
         this.configurationClass = configurationClass;
         jc = JaxbUtils.getContextFor(configurationClass);
-        //Schema schema = this.getValidatorFor(configurationClass);
         unmarshaller = jc.createUnmarshaller();
-        //unmarshaller.setSchema(schema);
         marshaller = jc.createMarshaller();
-        //marshaller.setSchema(schema);
-        //new ValidatingMarshalRecord((MarshalRecord)marshalRecord, this);
     }
 
-    public boolean validate(CONFIG_CLASS obj) throws RuntimeException{
-        if (xmlSchema == null || xmlSchema.getXsdContent() == null){
+    public boolean validate(CONFIG_CLASS obj) throws RuntimeException {
+        if (xmlSchema == null || xmlSchema.getXsdContent() == null) {
             return false;
         }
         final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             Schema schema = factory.newSchema(new StreamSource(new StringReader(this.xmlSchema.getXsdContent())));
-            if(schema == null){
+            if (schema == null) {
                 return false;
             }
             Marshaller marshaller = jc.createMarshaller();
@@ -120,6 +116,7 @@ public class XmlMapper<CONFIG_CLASS> {
 
     /**
      * Convert config object to json (it will not validate)
+     *
      * @param config object matching the Generic type
      * @return xml string
      */
@@ -137,6 +134,7 @@ public class XmlMapper<CONFIG_CLASS> {
 
     /**
      * Convert config object to xml (it will not validate)
+     *
      * @param config object matching the Generic type
      * @return xml string
      */
@@ -153,6 +151,7 @@ public class XmlMapper<CONFIG_CLASS> {
 
     /**
      * Convert xml to config object (it will not validate)
+     *
      * @param sourceXml xml in string format
      * @return config object
      */

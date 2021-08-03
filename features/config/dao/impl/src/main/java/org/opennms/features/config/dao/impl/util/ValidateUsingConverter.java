@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.util;
+package org.opennms.features.config.dao.impl.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,10 +35,10 @@ import com.google.common.io.Resources;
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.opennms.core.xml.ValidateUsing;
-import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ServiceSchema;
 import org.opennms.features.config.dao.api.XMLSchema;
-import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -52,8 +52,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-
+/**
+ * It handles all kinds of xml <> json conventions
+ *
+ * @param <CONFIG_CLASS>
+ */
 public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CONFIG_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
 
@@ -66,7 +72,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
     /**
-     * It only support using ValidateUsing annotation, assume xsd file is unique in classpath
+     * It only supports using ValidateUsing annotation, assume xsd file is unique in classpath
      *
      * @param configurationClass opennms config entity class
      * @throws IllegalArgumentException if you provide invalid config entity class
@@ -88,11 +94,11 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
         this.xmlAccessorType = configurationClass.getAnnotation(XmlAccessorType.class).value();
         this.configurationClass = configurationClass;
         this.serviceSchema = this.readXmlSchema();
-        this.xmlMapper = new XmlMapper<CONFIG_CLASS>(serviceSchema.getXmlSchema(), configurationClass);
+        this.xmlMapper = new XmlMapper<>(serviceSchema.getXmlSchema(), configurationClass);
     }
 
     /**
-     * It search the xsd defined in configuration class and load into schema.
+     * It searches the xsd defined in configuration class and load into schema.
      *
      * @return ServiceSchema with xsds
      * @throws IOException
@@ -101,16 +107,17 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
         String xsdStr = Resources.toString(this.getSchemaPath(), StandardCharsets.UTF_8);
         final XsdModelConverter xsdModelConverter = new XsdModelConverter();
         final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xsdStr);
-        ConfigItem configItem = xsdModelConverter.convert(schemaCollection, rootElement);
         // Grab the first namespace that includes 'opennms', sort for predictability
-        // TODO: We should re-consider the behavior when multiple schemas are found
-        String namespace = Arrays.stream(schemaCollection.getXmlSchemas())
+        List<String> namespaces = Arrays.stream(schemaCollection.getXmlSchemas())
                 .map(XmlSchema::getTargetNamespace)
-                .filter(targetNamespace -> targetNamespace.contains("opennms"))
-                .sorted().findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("XSD must contain one or more 'opennms' namespaces! XSD: " + xsdName));
-        XMLSchema xmlSchema = new XMLSchema(xsdStr, namespace, rootElement);
-        return new ServiceSchema(xmlSchema, configItem);
+                .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
+
+        if (namespaces.size() != 1) {
+            throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
+        }
+
+        XMLSchema xmlSchema = new XMLSchema(xsdStr, namespaces.get(0), rootElement);
+        return new ServiceSchema(xmlSchema);
     }
 
     public String getRootElement() {
@@ -156,7 +163,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public boolean validate(CONFIG_CLASS obj) throws RuntimeException{
+    public boolean validate(CONFIG_CLASS obj) throws RuntimeException {
         return xmlMapper.validate(obj);
     }
 

@@ -96,21 +96,11 @@
               </exclusion>
           </exclusions>
       </dependency>
-      <!--dependency>
-          <groupId>org.eclipse.persistence</groupId>
-          <artifactId>org.eclipse.persistence.moxy</artifactId>
-          <version>2.7.8</version>
-      </dependency-->
       <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink</artifactId>
           <version>${eclipselinkVersion}</version>
       </dependency>
-      <!--dependency>
-          <groupId>jakarta.xml.bind</groupId>
-          <artifactId>jakarta.xml.bind-api</artifactId>
-          <version>2.3.3</version>
-      </dependency-->
       <dependency>
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-xjc</artifactId>

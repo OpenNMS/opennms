@@ -32,6 +32,7 @@ import com.google.common.io.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ServiceSchema;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
