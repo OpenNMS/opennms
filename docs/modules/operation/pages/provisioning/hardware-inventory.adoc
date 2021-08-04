@@ -57,7 +57,7 @@ In this example, only the nodes that match the `sysOidMask .1.3.6.1.4.1.9` (Cisc
 The definition of `ceAssetSerialNumber` has been configured to replace one of the base attributes `entPhysicalSerialNum` so the adapter will know to override the generic Entity-MIB attribute instead of creating a new custom attribute entry.
 
 Once you have configured your `snmp-hardware-inventory-adapter-configuration.xml`, the Provisiond service attempts to collect hardware inventory data when it refreshes requisitions.
-After synchronizing the requisition, you should be able to see a `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event to confirm inventory was collected.
+After synchronizing the requisition, you should see a `uei.opennms.org/internal/discovery/hardwareInventorySuccessful` event to confirm inventory was collected.
 This event is triggered only when the provisioning adapter detects changed hardware inventory for a node.
 If there is a problem retrieving or storing the inventory data, a `uei.opennms.org/internal/discovery/hardwareInventoryFailed` event will be sent instead.
 
@@ -71,7 +71,7 @@ See the REST documentation for more information.
 
 == Using hardware information in events and notifications
 
-A set of placeholders are available in {page-component-title} to enrich the content of the events, alarms, and notifications.
+A set of placeholders is available in {page-component-title} to enrich the content of the events, alarms, and notifications.
 Because of the hierarchical nature of the hardware entities, you must provide two fields to obtain the value of the required attribute.
 These two fields are either the `entPhysicalIndex` or the `entPhysicalName` and the name of the attribute to use.
 
