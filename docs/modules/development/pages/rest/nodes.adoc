@@ -46,7 +46,7 @@ POST requires XML using application/xml as its Content-Type.
 [[rest-api-nodes-put]]
 == PUTs (Modifying Data)
 
-PUT requires form data using `application/x-www-form-urlencoded` as a content-type.
+PUT requires form data using `application/x-www-form-urlencoded` as a content type.
 
 [options="header", cols="5,10"]
 |===
