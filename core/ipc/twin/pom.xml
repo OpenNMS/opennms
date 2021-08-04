@@ -15,5 +15,6 @@
     <modules>
         <module>api</module>
         <module>common</module>
+        <module>grpc</module>
     </modules>
 </project>

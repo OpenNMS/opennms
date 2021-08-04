@@ -48,7 +48,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     /**
      * @param sinkUpdate Handle sink Update from @{@link AbstractTwinPublisher}.
      */
-    abstract void handleSinkUpdate(TwinResponseBean sinkUpdate);
+    protected abstract void handleSinkUpdate(TwinResponseBean sinkUpdate);
 
     @Override
     public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {

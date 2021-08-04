@@ -59,7 +59,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     /**
      * @param twinRequest Send RpcRequest from @{@link AbstractTwinSubscriber}
      */
-    abstract void sendRpcRequest(TwinRequestBean twinRequest);
+    protected abstract void sendRpcRequest(TwinRequestBean twinRequest);
 
 
     @Override
@@ -72,7 +72,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return session;
     }
 
-    protected void accept(TwinResponseBean twinResponse) throws IOException {
+    protected void accept(TwinResponseBean twinResponse) {
         LOG.info("Received object update with key {}", twinResponse.getKey());
         SessionImpl<?> session = sessionMap.get(twinResponse.getKey());
         if (session == null) {
@@ -80,8 +80,16 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             sessionMap.keySet().forEach(LOG::info);
         }
         if (session != null) {
-            session.accept(twinResponse);
+            try {
+                session.accept(twinResponse);
+            } catch (IOException e) {
+                LOG.error("Exception while sending response to consumer", e);
+            }
         }
+    }
+
+    public MinionIdentity getMinionIdentity() {
+        return minionIdentity;
     }
 
     private class SessionImpl<T> implements Closeable {
