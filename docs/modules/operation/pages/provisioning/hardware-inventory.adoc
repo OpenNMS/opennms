@@ -25,7 +25,7 @@ To install the opennms-plugin-provisioning-snmp-hardware-inventory package:
 ** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
 ****
 
-Once enabled, the hardware inventory plugin will collection the ENTITY-MIB::entPhysicalTable of all devices without any configuration.
+Once enabled, the hardware inventory plugin collects the ENTITY-MIB::entPhysicalTable of all devices with no additional configuration.
 To collect inventory from devices that provide additional fields, you can specify which OIDs to use in the configuration file `$OPENNMS_HOME/etc/snmp-hardware-inventory-adapter-configuration.xml`.
 This file includes support for the https://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?mibName=ENTITY-MIB[CISCO-ENTITY-MIB] as a starter example.
 
