@@ -32,7 +32,7 @@ This file includes support for the https://tools.cisco.com/Support/SNMP/do/Brows
 Any MIB column indexed by `entPhysicalIndex` can be added to the configuration file and the hardware inventory adapter will collect the value and store it for each entity that contains a non-null value for the custom attribute.
 The `hw-extension` element lets you group a list of Entity-MIB extensions defined in `mibObj` elements based on a sysOidMask of a node.
 If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
-When a vendor provides the standard objects on a different table rather than `entPhysicalTable`, you can override one of the base attributes by specifying on the `mibObj` that the attribute that must be overridden.
+When a vendor provides the standard objects on a table other than `entPhysicalTable`, you can override any of the base attributes by specifying which attribute is to be overridden.
 
 
 [source, xml]
