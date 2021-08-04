@@ -23,11 +23,12 @@ The BMP parser accepts BMP connections from router packets using a <<telemetryd/
 
 .Optional parameters for the BMP Parser
 [options="header"]
+[cols="1,2,3"]
 |===
-| Parameter                   | Description                                                                   | Default
-| dnsLookupsEnabled           | Enable or disable DNS resolution of router and peer hostnames.                | true
-| bulkhead.maxConcurrentCalls | Limit the number of parallel parsing operations.                              | 1000
-| bulkhead.maxWaitDurationMs  | Limit the amount of time to wait for a saturated bulkhead (in milliseconds).  | 5 Minutes
+| Parameter                   | Default    | Description
+| dnsLookupsEnabled           | true       | Enable or disable DNS resolution of router and peer hostnames.
+| bulkhead.maxConcurrentCalls | 1000       | Limit the number of parallel parsing operations.
+| bulkhead.maxWaitDurationMs  | 5 minutes  | Limit the amount of time to wait for a saturated bulkhead (in milliseconds).
 |===
 
 == Configure BMP listener on a minion
@@ -73,9 +74,10 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 .Optional parameters for the BMP telemetry adapter
 [options="header"]
+[cols="1,2,3"]
 |===
-| Parameter          | Description                                                                    | Default
-| metaDataNodeLookup | Enables lookup using BGP IDs.                                                  | n/a
+| Parameter          | Default | Description
+| metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
 [[telemetryd-bmp-peer-status-adapter]]
@@ -103,9 +105,10 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 .Optional parameters for the BMP telemetry adapter
 [options="header"]
+[cols="1,2,3"]
 |===
-| Parameter          | Description                                                                    | Default value
-| metaDataNodeLookup | Enables lookup using BGP IDs.                                                  |
+| Parameter          | Default | Description
+| metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
 
@@ -128,11 +131,12 @@ This setup replaces the collector component of OpenBMP.
 
 .Parameters for the OpenBMP Integration Adapter
 [options="header"]
+[cols="1,2,3"]
 |===
-| Parameter          | Description                                                                    | Default
-| kafka.*            | Uses options to create OpenBMP Kafka producer.
-                       Enables all known Kafka settings, but with `kafka.` prefixed.                  |
-| topicPrefix        | Prefix used before each Kafka topic.                                           |
+| Parameter          | Default | Description
+| kafka.*            | n/a     | Uses options to create OpenBMP Kafka producer.
+                                 Enables all known Kafka settings, but with `kafka.` prefixed.
+| topicPrefix        | n/a     | Prefix used before each Kafka topic.
 |===
 
 [[telemetryd-bmp-persisting-adapter]]
@@ -171,12 +175,13 @@ To ensure that the feature continues to be installed on subsequent restarts, add
 You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
 
 [options="header"]
+[cols="1,2,3"]
 |===
 | Name              | Default Value                             | Description
 | rpkiUrl           | http://localhost:8080/api/export.json     | Rest API URL to retrieve RPKI ROAs.
 | rpkiUsername      |                                           | Username for RPKI Rest API.
 | rpkiPassword      |                                           | Password for RPKI Rest API.
-| routeInfoDbPath   | ${karaf.etc}/routeinfo                   | Path for RouteInfo DB tables.
+| routeInfoDbPath   | ${karaf.etc}/routeinfo                    | Path for RouteInfo DB tables.
 |===
 
 Configure the above parameters as follows:
