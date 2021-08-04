@@ -8,6 +8,7 @@ The integration in {page-component-title} lets you use these route views, status
 image:bmp/bmp_integration_overview.png[BMP integration]
 
 [[telemetryd-bmp-parser]]
+
 == BMP TCP Parser
 
 The BMP parser accepts BMP connections from router packets using a <<telemetryd/listener/tcp.adoc#telemetryd-listener-tcp, TCP Listener>>.
@@ -19,13 +20,14 @@ The BMP parser accepts BMP connections from router packets using a <<telemetryd/
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Optional parameters for the BMP Parser
+.Parameters for the BMP Parser
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
 | Parameter                   | Default    | Description
+3+| *Optional*
 | dnsLookupsEnabled           | true       | Enable or disable DNS resolution of router and peer hostnames.
 | bulkhead.maxConcurrentCalls | 1000       | Limit the number of parallel parsing operations.
 | bulkhead.maxWaitDurationMs  | 5 minutes  | Limit the amount of time to wait for a saturated bulkhead (in milliseconds).
@@ -72,11 +74,12 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 === Configuration and use
 
-.Optional parameters for the BMP telemetry adapter
+.Parameters for the BMP telemetry adapter
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
 | Parameter          | Default | Description
+3+| *Optional*
 | metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
@@ -103,11 +106,12 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 === Configuration and use
 
-.Optional parameters for the BMP telemetry adapter
+.Parameters for the BMP telemetry adapter
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
 | Parameter          | Default | Description
+3+| *Optional*
 | metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
@@ -131,7 +135,7 @@ This setup replaces the collector component of OpenBMP.
 
 .Parameters for the OpenBMP Integration Adapter
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
 | Parameter          | Default | Description
 | kafka.*            | n/a     | Uses options to create OpenBMP Kafka producer.
@@ -175,9 +179,9 @@ To ensure that the feature continues to be installed on subsequent restarts, add
 You can configure the following parameters when connecting to external sources like RPKI or RouteInfo DB tables.
 
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
-| Name              | Default Value                             | Description
+| Name              | Default                                   | Description
 | rpkiUrl           | http://localhost:8080/api/export.json     | Rest API URL to retrieve RPKI ROAs.
 | rpkiUsername      |                                           | Username for RPKI Rest API.
 | rpkiPassword      |                                           | Password for RPKI Rest API.
@@ -228,8 +232,10 @@ admin@opennms()> feature:install sentinel-jsonstore-postgres
 admin@opennms()> feature:install sentinel-telemetry-bmp-persist
 ----
 
-<1> needs datasource configuration. Refer to link:#ga-sentinel-persistence[Sentinel Persistence] for configuring datasource.
-<2> or `sentinel-kafka`. Refer to link:#ga-sentinel-kafka[Sentinel Kafka] for configuring Kafka on Sentinel.
+<1> needs datasource configuration.
+Refer to link:#ga-sentinel-persistence[Sentinel Persistence] for configuring datasource.
+<2> or `sentinel-kafka`.
+Refer to link:#ga-sentinel-kafka[Sentinel Kafka] for configuring Kafka on Sentinel.
 
 NOTE: When running Kafka as the broker, the consumer config needs to have the `auto.offset.reset=earliest` setting, otherwise
 the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for for proper BMP state.
