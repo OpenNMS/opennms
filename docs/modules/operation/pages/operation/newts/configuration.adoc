@@ -6,7 +6,7 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 [[ga-opennms-operation-newts-properties-general]]
 == General
 [options="header"]
-[cols="1,2,3"]
+[cols="2,1,3"]
 |===
 | Name                                            | Default              | Description
 | org.opennms.newts.config.keyspace             | newts              | Name of the keyspace to use.
