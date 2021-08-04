@@ -123,7 +123,7 @@ public class TrapListener implements TrapNotificationListener {
         try {
             if (m_registeredForTraps) {
                 LOG.debug("stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_config.getSnmpTrapPort());
+                SnmpUtils.unregisterForTraps(this);
                 m_registeredForTraps = false;
                 LOG.debug("stop: SNMP trap session closed.");
             } else {
