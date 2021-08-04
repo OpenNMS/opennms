@@ -34,7 +34,7 @@ The `hw-extension` element lets you group a list of Entity-MIB extensions define
 If the system enterprise ID of the node matches the `sysOidMask` defined on the `hw-extension`, the `mibObj` entities inside are collected for populating the inventory.
 When a vendor provides the standard objects on a table other than `entPhysicalTable`, you can override any of the base attributes by specifying which attribute is to be overridden.
 
-
+.Example of importing custom vendor information
 [source, xml]
 ----
 <hw-extension name="CISCO-ENTITY-ASSET-MIB" sysOidMask=".1.3.6.1.4.1.9.">
