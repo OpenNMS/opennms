@@ -635,21 +635,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
-        final RegistrationInfo info = s_registrations.remove(listener);
-        final Snmp session = info.getSession();
-        try {
-            session.close();
-        } catch (final IOException e) {
-            LOG.error("session error unregistering for traps", e);
-            throw e;
-        } finally {
-            Snmp4JStrategy.reapSession(session);
-        }
-    }
-
-    @Override
-    public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
+    public void unregisterForTraps(final TrapNotificationListener listener) throws IOException {
         final RegistrationInfo info = s_registrations.remove(listener);
         final Snmp session = info.getSession();
         try {
