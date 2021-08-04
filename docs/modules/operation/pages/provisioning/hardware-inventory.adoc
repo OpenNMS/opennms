@@ -88,8 +88,7 @@ Sample placeholders naming structure:
 * %hardware[\{entPhysicalName}:\{attributeName}]%
 * %hardware[~\{regexOverEntPhysicalName}:\{attributeName}]%
 
-Example event definition:
-
+.Example event definition
 [source, xml]
 ----
 <event>
