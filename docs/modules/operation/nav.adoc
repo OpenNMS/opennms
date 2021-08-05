@@ -257,7 +257,8 @@
 
 * xref:elasticsearch/introduction.adoc[]
 ** xref:elasticsearch/features/introduction.adoc[]
-** xref:elasticsearch/features/event-forwarder-mapping.adoc[]
+** xref:elasticsearch/features/event-forwarder.adoc[]
+*** xref:elasticsearch/features/event-forwarder-mapping.adoc[]
 *** xref:elasticsearch/features/event-forwarder-mapping-table.adoc[]
 ** xref:elasticsearch/features/flows.adoc[]
 ** xref:elasticsearch/features/situation-feedback.adoc[]
