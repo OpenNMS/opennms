@@ -1,14 +1,13 @@
 
 = SystemExecuteMonitor
 
-If it is required to execute a system call or run a script to determine a service status, the _SystemExecuteMonitor_ can be used.
-It is calling a script or system command, if required it provides additional arguments to the call.
-To determine the status of the service the _SystemExecuteMonitor_ can rely on `0` or a _non-0_ exit code of system call.
+If you need to run a system call or a script to determine a service status, use the SystemExecuteMonitor.
+The monitor calls a script or system command and determines service status based on the return of a `0` or a `non-0` exit code.
 As an alternative, the output of the system call can be matched against a banner.
-If the banner is part of the output the status is interpreted as up.
-If the banner is not available in the output the status is determined as down.
+If the banner is part of the output, the status is interpreted as up.
+If the banner is not available in the output, the status is determined as down.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,36 +15,39 @@ If the banner is not available in the output the status is determined as down.
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the SystemExecuteMonitor
-[options="header, autowidth"]
+.Monitor-specific parameters for the SystemExecuteMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter | Description                                                                                               | Required | Default value
-| `script`  | The system-call to execute.                                                                               | required | `-`
-| `args`    | The arguments to hand over to the system-call. It supports variable replacement, see below.               | optional | `-`
-| `banner`  | A string that is match against the output of the system-call. If the output contains the banner, the
-              service is determined as _UP_.                                                                            | optional | `-`
+| Parameter | Description                                                                                               | Default
+3+|*Required*
+| script  | The system call to run.                                                                               | n/a
+3+|*Optional*
+| args    | The arguments to hand over to the system call. It supports variable replacement, see below.               | n/a
+| banner  | A string that is matched against the output of the system-call. If the output contains the banner, the
+              service is determined as UP.                                                                            | n/a
 |===
 
 The parameter `args` supports variable replacement for the following set of variables.
 
-TIP: Providing always a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
+TIP: Always providing a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
-
-.Variables which can be used in the configuration
+.Variables that can be used in the configuration
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `$\{timeout}`    | Timeout in milliseconds, based on config of the service.
-| `$\{timeoutsec}` | Timeout in seconds, based on config of the service.
-| `$\{retry}`      | Amount of retries based on config of the service.
-| `$\{svcname}`    | Service name based on the config of the service.
-| `$\{ipaddr}`     | IP-address of the interface the service is bound to.
-| `${\nodeidl}`     | Nodeid of the node the monitor is associated to.
-| `$\{nodelabel}`  | Nodelabel of the node the monitor is associated to.
+| $\{timeout}    | Timeout in milliseconds, based on service configuration.
+| $\{timeoutsec} | Timeout in seconds, based on service configuration.
+| $\{retry}      | Amount of retries based on service configuration.
+| $\{svcname}    | Service name based on service configuration.
+| $\{ipaddr}     | IP-address of the interface the service is bound to.
+| $\{nodeid}     | Nodeid of the node the monitor is associated with.
+| $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
 |===
+
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
@@ -114,22 +116,3 @@ else
   echo "FAILED"
 fi
 ----
-
-== SystemExecuteMonitor vs. GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
-----
-<parameter key="args" value="--hostname $\{ipaddr} --timeout $\{timeoutsec}" />
-----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the `args` key.

@@ -11,9 +11,9 @@ See <<operation:alarms/history.adoc#ga-alarm-history, Alarm History>> for detail
 [options="header", cols="5,10"]
 |===
 | Resource | Description
-| `/alarms/history/\{alarmid\}/states` | Retrieve the complete set of state changes for the given alarm.
-| `/alarms/history/\{alarmid\}`        | Retrieve the last known state of an alarm at the given time.
-| `/alarms/history`                    | Retrieve the last known state of all alarms which were active at the given time.
+| `/alarms/history/\{alarmid}/states` | Retrieve the complete set of state changes for the given alarm.
+| `/alarms/history/\{alarmid}`        | Retrieve the last known state of an alarm at the given time.
+| `/alarms/history`                   | Retrieve the last known state of all alarms which were active at the given time.
 |===
 
 |===

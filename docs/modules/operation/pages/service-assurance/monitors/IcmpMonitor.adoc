@@ -1,40 +1,45 @@
 
 [[poller-icmp-monitor]]
 = IcmpMonitor
-The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
-The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
 
-== Monitor Facts
+The ICMP monitor tests for ICMP service availability by sending echo-request ICMP messages.
+The service is considered available when the node sends back an echo-reply ICMP message within the specified amount of time.
+
+== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
-| Remote Enabled | true with some restrictions (see below)
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the IcmpMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the IcmpMonitor
+[options="header"]
+[cols="1,3,2"]
+
 |===
-| Parameter               | Description                                                 | Required | Default value
-| `timeout`               | Time in milliseconds to wait for a response.                | optional | `800`
-| `allow-fragmentation`   | Whether to set the "Don't Fragment" bit on outgoing packets | optional | `true`
-| `dscp`                  | DSCP traffic-control value.                                 | optional | `0`
-| `packet-size`           | Number of bytes of the ICMP packet to send.                 | optional | `64`
-| `thresholding-enabled`  | Enables ICMP thresholding.                                  | optional | `true`
+| Parameter               | Description                                                 | Default
+| timeout               | Time in milliseconds to wait for a response.                | 800
+| allow-fragmentation   | Whether to set the "Don't Fragment" bit on outgoing packets. | true
+| dscp                  | DSCP traffic-control value.                                 | 0
+| packet-size           | Number of bytes of the ICMP packet to send.                 | 64
+| thresholding-enabled  | Enables ICMP thresholding.                                  | true
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
+Examples use CentOS/RHEL path names.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
 [source, xml]
 ----
 <service name="ICMP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>
@@ -50,7 +55,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="dscp" value="0x1C"/> <!-- AF32: Class 3, Medium drop probability -->
   <parameter key="allow-fragmentation" value="false"/>
   <parameter key="packet-size" value="2048"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="icmp"/>
   <parameter key="ds-name" value="icmp"/>
 </service>

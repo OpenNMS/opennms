@@ -1,10 +1,38 @@
 
 = MailTransportMonitor
 
-MailTransportMonitor is used to run a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
+The MailTransportMonitor runs a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
 It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.
 
-== Monitor Facts
+== Tests
+There are four basic tests that this monitor can perform.
+
+=== Sending mail
+
+The most basic test, the sendmail-test is highly configurable.
+An exception thrown during the sending of the configured email message causes the poll to fail.
+
+=== Access of mail store and folder
+
+Configure a readmail-test and don't configure a subject-match attribute. 
+This tests only the ability to open the default mail store and the configured mail folder (INBOX) by default. 
+Folders are given by `INBOX<separator>Foldername`.
+The separator character might vary between IMAP implementations. 
+Exchange uses `/` as a separator, for example.
+
+=== Specific message in folder
+
+Configure a readmail-test and a matching subject. 
+Optionally, configure the test to delete all read mail. 
+Do not do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
+
+=== Sending and receipt (end-to-end test) of a message
+
+Test your infrastructure's ability to send and receive email. 
+It tests sending and receiving of an mail message via one or two separate mail servers. 
+For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
+
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -12,109 +40,121 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | Remote Enabled | true
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the MailTransportMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the MailTransportMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter        | Description                                                                                        | Required | Default value
-| `sendmail-test` | Defines the test for sending mail. Contains sendmail-host, sendmail-protocol, sendmail-message,
-                     and user-auth                                                                                      | optional | `debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"`
-| `readmail-test` | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.        | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
-|===
-
-.Options for sendmail-test
-[options="header, autowidth"]
-|===
-| Attribute            | Description                                                                                    | Required | Default value
-| `debug`              | Show additional debug output                                                                   | optional | `true`
-| `use-authentication` | Whether to use authentication, in the event it is required                                     | optional | `false`
-| `use-jmta`           | Use the JavaMail Mail Transport Agent                                                          | optional | `true`
-| `attempt-interval`   | Interval in ms between send attempts                                                           | optional | `3000`
+| Parameter        | Description                                                     | Default
+| sendmail-test | Defines the test for sending mail. Contains sendmail-host, sendmail-protocol, sendmail-message,
+                     and user-auth.                                                                                      | debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"
+| readmail-test | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.        |debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"
 |===
 
-.Options for sendmail-host
-[options="header, autowidth"]
+.Optional attributes for sendmail-test
+[options="header"]
+[cols="1,3,2"]
 |===
-| Attribute       | Description                                                                                         | Required | Default value
-| `host`          | The SMTP server address for sending mail                                                            | optional | `$\{ipaddr}`
-| `port`          | The SMTP server port                                                                                | optional | `25`
-|===
-
-.Options for sendmail-protocol
-[options="header, autowidth"]
-|===
-| Attribute              | Description                                                                                  | Required | Default value
-| `char-set`             | Set the character set                                                                        | optional | `us-ascii`
-| `mailer`               | Use smtpsend or an alternate mailer                                                          | optional | `smtpsend`
-| `message-content-type` | Set the message content-type                                                                 | optional | `text/plain`
-| `message-encoding`     | Set the message encoding                                                                     | optional | `7-bit`
-| `quit-wait`            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
-                            to true (the default), causes the transport to wait for the response to the QUIT command.   | optional | `true`
-| `transport`            | The transport protocol to use. One of: `smtp`  or `smtps`                                    | optional | `smtp`
-| `ssl-enable`           | Use SSL or not                                                                               | optional | `"false`
-| `start-tls`            | Use the STARTTLS command (if supported or required by the server) to switch the connection 
-                            to a TLS-protected connection before issuing any login commands                             | optional | `"false`
+| Attribute            | Description                                                                                    | Default
+| debug              | Show additional debug output.                                                                   | true
+| use-authentication | Whether to use authentication, in the event it is required.                                     | false
+| use-jmta           | Use the JavaMail Mail Transport Agent.                                                          | true
+| attempt-interval   | Interval in milliseconds between send attempts.                                                           | 3000
 |===
 
-.Options for sendmail-message
-[options="header, autowidth"]
+.Optional attributes for sendmail-host
+[options="header"]
+[cols="1,3,2"]
 |===
-| Attribute | Description                                                                                               | Required | Default value
-| `to`      | The destination address                                                                                   | optional | `root@localhost`
-| `from`    | The address to insert into the From: field                                                                | optional | `root@[127.0.0.1]`
-| `subject` | The message subject                                                                                       | optional | `OpenNMS Test Message`
-| `body`    | The body of the message                                                                                   | optional | `This is an OpenNMS test message.`
-|===
-
-.Options for readmail-test
-[options="header, autowidth"]
-|===
-| Attribute          | Description                                                                                      | Required | Default value
-| `debug`            | Show additional debug output                                                                     | optional | `true`
-| `mail-folder`      | The folder or IMAP label to check for mail                                                       | optional | `INBOX`
-| `subject-match`    | Substring match in email subjects when looking for a specific email                              | optional | `no default`
-| `attempt-interval` | Attempt to read email after this many milliseconds have passed, also used for retry interval     | optional | `1000`
-| `delete-all-mail`  | Delete all read mail after a successful match                                                    | optional | `false`
+| Attribute       | Description                                                     | Default
+| host         | The SMTP server address for sending mail.                                                            | $\{ipaddr}
+| port          | The SMTP server port.                                                           | 25
 |===
 
-.Options for readmail-host
-[options="header, autowidth"]
+.Optional attributes for sendmail-protocol
+[options="header"]
+[cols="1,3,2"]
 |===
-| Attribute   | Description                                                                                             | Required | Default value
-| `host`      | The target host for reading mail                                                                        | optional | `$\{ipaddr}`
-| `port`      | The appropriate port for the protocol                                                                   | optional | `110`
-|===
-
-.Options for readmail-protocol
-[options="header, autowidth"]
-|===
-| Attribute    | Description                                                                                            | Required | Default value
-| `transport`  | The transport protocol to use. One of: `pop3` `pop3s` `imap` `imaps`                                   | optional | `pop3`
-| `ssl-enable` | Whether to enable SSL for the connection                                                               | optional | `false`
-| `start-tls`  | Use the STARTTLS command (if supported or required by the server) to switch the connection to a 
-                  TLS-protected connection before issuing any login commands                                            | optional | `false`
-|===
-
-.Options for user-auth
-[options="header, autowidth"]
-|===
-| Attribute   | Description                                                                                             | Required | Default value
-| `user-name` | The user name for SMTP, POP, or IMAP authentication                                                     | optional | `opennms`
-| `password`  | The password for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
+| Attribute              | Description                                                     | Default
+| char-set             | Set the character set.                                                                        | us-ascii
+| mailer               | Use smtpsend or an alternate mailer.                                                          | smtpsend
+| message-content-type | Set the message content type.                                                                 | text/plain
+| message-encoding     | Set the message encoding.                                                                     | 7-bit
+| quit-wait            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
+                            to true (the default), it causes the transport to wait for the response to the QUIT command.   | true
+| transport            | The transport protocol to use. One of smtp  or smtps.                                    | smtp
+| ssl-enable           | Whether to use SSL.                                                                               | false
+| start-tls            | Use the STARTTLS command (if supported or required by the server) to switch the connection 
+                            to a TLS-protected connection before issuing any login commands.                             | false
 |===
 
-.Variables which can be used in the configuration
-[options="header, autowidth"]
+.Optional attributes for sendmail-message
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute | Description                                                     | Default
+| to      | The destination address.                                                                                   | root@localhost
+| from    | The address to insert into the From: field.                                                                | root@[127.0.0.1]
+| subject | The message subject.                                                                                       | OpenNMS Test Message
+| body    | The body of the message.                                                                                   | This is an OpenNMS test message.
+|===
+
+.Optional attributes for readmail-test
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute          | Description                                                                                      | Default
+| debug           | Show additional debug output.                                                                     | true
+| mail-folder      | The folder or IMAP label to check for mail.                                                       | INBOX
+| subject-match    | Substring match in email subjects when looking for a specific email.                              | no default
+| attempt-interval | Attempt to read email after this many milliseconds have passed; also used for retry interval.     | 1000
+| delete-all-mail  | Delete all read mail after a successful match.                                                    | false
+|===
+
+.Optional attributes for readmail-host
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute   | Description                                                                                             | Default
+| host      | The target host for reading mail.                                                                        | $\{ipaddr}
+| port      | The appropriate port for the protocol.                                                                   | 110
+|===
+
+.Optional attributes for readmail-protocol
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute    | Description                                                     | Default
+| transport  | The transport protocol to use. One of: pop3, pop3s, imap, imaps.                                   | pop3
+| ssl-enable | Whether to enable SSL for the connection.                                                               | false
+| start-tls  | Use the STARTTLS command (if supported or required by the server) to switch the connection to a 
+                  TLS-protected connection before issuing any login commands.                                            | false
+|===
+
+.Optional attributes for user-auth
+[options="header"]
+[cols="1,3,2"]
+|===
+| Attribute   | Description                                                     | Default 
+| user-name | The user name for SMTP, POP, or IMAP authentication.                                                     | opennms
+| password  | The password for SMTP, POP, or IMAP authentication.                                                      | opennms
+|===
+
+.Variables that you can use in the configuration
+[options="header"]
+[cols="1,3"]
 |===
 | Variable        | Description
-| `$\{ipaddr}`     | This value will be substituted with the IP address of the interface on which the monitored service 
-                     appears
+| $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service 
+                     appears.
 |===
 
 == Examples
 
 Test for an end-to-end email transaction.
+
+Examples use CentOS/RHEL path name. For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -166,19 +206,3 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 </service>
 ----
 
-== Tests
-There are five basic tests that this monitor can perform.
-
-Sending Mail: The most basic test, the sendmail-test is highly configurable.
-An exception thrown during the sending of the configured email message will cause the poll to fail.
-
-Access of Mail Store and Folder: Configure a readmail-test and don't configure a subject-match attribute. 
-This will test only the ability to open the default mail store and the configured mail folder ("INBOX") by default. 
-Folders are given by "INBOX<separator>Foldername"; separator character might vary between IMAP implementations. Exchange uses "/" as separator, for example.
-
-Specific Message in Folder: Configure a readmail-test and a matching subject. 
-Optionally configure the test to delete all read mail. 
-Probably not something you want to do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
-
-Sending and Receipt (end-to-end test) of a Message: Test your infrastructure's ability to send and receive email. It tests sending and receiving of an mail message via one or two separate mail servers. 
-For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.

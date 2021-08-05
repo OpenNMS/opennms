@@ -48,7 +48,6 @@
     <feature name="batik" version="${batikVersion}" description="Apache :: XML Graphics :: Batik">
         <bundle>wrap:mvn:xalan/xalan/${xalanVersion}</bundle>
         <bundle>wrap:mvn:xalan/serializer/${xalanVersion}</bundle>
-        <bundle>wrap:mvn:xml-apis/xml-apis/${xmlApisVersion}</bundle>
         <bundle>wrap:mvn:xml-apis/xml-apis-ext/1.3.04</bundle>
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-anim/${batikVersion}</bundle>
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-awt-util/${batikVersion}</bundle>

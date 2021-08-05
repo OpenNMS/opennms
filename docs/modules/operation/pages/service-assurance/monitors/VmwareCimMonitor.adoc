@@ -1,40 +1,42 @@
 
 = VmwareCimMonitor
 
-This monitor is part of the VMware integration provided in _Provisiond_.
-The monitor is specialized to test the health status provided from all _Host System_ (host) sensor data.
+This monitor is part of the VMware integration provided by Provisiond.
+The monitor is specialized to test the health status provided from all host system (host) sensor data.
 
-IMPORTANT: This monitor is only executed if the host is in power state _on_.
+This monitor only runs on VMware hosts and only if the power state "on".
+It does not apply to virtual machines.
 
-IMPORTANT: This monitor requires to import hosts with _Provisiond_ and the _VMware_ import.
-           {page-component-title} requires network access to _VMware vCenter_ and the hosts.
-           To get the sensor data the credentials from _vmware-config.xml_ for the responsible _vCenter_ is used.
-           The following asset fields are filled from _Provisiond_ and is provided by _VMware_ import feature:
-           _VMware Management Server_, _VMware Managed Entity Type_ and the _foreignId_ which contains an internal _VMware vCenter Identifier_.
+This monitor requires hosts be imported with Provisiond and the VMware import. 
+{page-component-title} requires network access to VMware vCenter server and each of the monitored hosts.
+The credentials for accessing the status of a VMware entity are collected from the responsible VMware vCenter using the settings from `$OPENNMS_HOME/etc/vmware-config.xml`.
+The VMware integration populates the following via Provisiond:
+
+* VMware Management Server
+* VMware Managed Entity Type
+* foreignId (which contains an internal VMware vCenter Identifier)
 
 The global health status is evaluated by testing all available host sensors and evaluating the state of each sensor.
 A sensor state could be represented as the following:
 
- - _Unknown(0)_
- - _OK(5)_
- - _Degraded/Warning(10)_
- - _Minor failure(15)_
- - _Major failure(20)_
- - _Critical failure(25)_
- - _Non-recoverable error(30)_
+* Unknown(0)
+* OK(5)
+* Degraded/Warning(10)
+* Minor failure(15)
+* Major failure(20)
+* Critical failure(25)
+* Non-recoverable error(30)
 
-The service is _up_ if *all* sensors have the status _OK(5)_.
-If any sensor gives another status then _OK(5)_ the service is marked as _down_.
-The monitor error reason contains a list of all sensors which not returned status _OK(5)_.
+The service is up if all sensors have the status OK(5).
+If any sensor gives a status other than OK(5), the service is marked as down.
+The monitor error reason contains a list of all sensors that do not return status OK(5).
 
-NOTE: In case of using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] the _standBy_ state forces a service _down_.
-      The health status is gathrered with a direct connection to the host and in stand by this connection is unavailable and the service is _down_.
-      To deal with stand by states, the configuration _ignoreStandBy_ can be used.
-      In case of a stand by state, the service is considered as _up_.
+When using link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/techpaper/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] (automatic PDF download), the standBy state forces a service down. 
+The health status is gathered with a direct connection to the host and in standby this connection is unavailable and the service is down.
+To deal with standby states, use the ignoreStandBy parameter to consider the service as up when using distributed power management. 
+See the ignoreStandBy parameter below on how to change the state. 
 
-state can be changed see the `ignoreStandBy` configuration parameter.
-
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -42,20 +44,21 @@ state can be changed see the `ignoreStandBy` configuration parameter.
 | Remote Enabled | false
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Monitor specific parameters for the VmwareCimMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameters for the VmwareCimMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter       | Description                                                    | Required | Default value
-| `retry`         | Number of retries before the service is marked as down.        | optional | `0`
-| `ignoreStandBy` | Treat power state _standBy_ as _up_.                           | optional | `false`
+| Parameter       | Description                                                    |Default
+| retry         | Number of retries before the service is marked as down.        | 0
+| ignoreStandBy | Treat power state standBy as up.                           | false
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
-Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+Example configuration on how to configure the monitor in `poller-configuration.xml`.
 
 [source, xml]
 ----

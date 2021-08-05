@@ -1,8 +1,8 @@
 
 = BgpSessionMonitor
 
-This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.
-To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of the session using the following OIDs is used:
+This monitor checks if a BGP session to a peering partner (peer-ip) is functional.
+The monitor uses the link:https://datatracker.ietf.org/doc/html/rfc1269[RFC1269 SNMP MIB] to monitor the BGP-Session, and uses the following OIDs to test the session status:
 
  BGP_PEER_STATE_OID = .1.3.6.1.2.1.15.3.1.2.<peer-ip>
  BGP_PEER_ADMIN_STATE_OID = .1.3.6.1.2.1.15.3.1.3.<peer-ip>
@@ -12,21 +12,21 @@ To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of t
 
 The `<peer-ip>` is the far end IP address of the BGP session end point.
 
-A SNMP get request for `BGP_PEER_STATE_OID` returns a result between `1` to `6`.
-The servicestates for {page-component-title} are mapped as follows:
+An SNMP GET request for `BGP_PEER_STATE_OID` returns a result between 1 and 6.
+The service states for {page-component-title} are mapped as follows:
 
 [options="header, autowidth"]
 |===
 | Result | State description | Monitor state in {page-component-title}
-| `1`    | _Idle_            | DOWN
-| `2`    | _Connect_         | DOWN
-| `3`    | _Active_          | DOWN
-| `4`    | _OpenSent_        | DOWN
-| `5`    | _OpenConfirm_     | DOWN
-| `6`    | _Established_     |  UP
+| 1      | Idle            | DOWN
+| 2      | Connect         | DOWN
+| 3      | Active          | DOWN
+| 4      | OpenSent        | DOWN
+| 5      | OpenConfirm     | DOWN
+| 6      | Established     | UP
 |===
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -34,21 +34,25 @@ The servicestates for {page-component-title} are mapped as follows:
 | Remote Enabled  | false
 |===
 
-To define the mapping I used the description from http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine].
+See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine] for more information on how we defined the mapping. 
 
-== Configuration and Use
+== Configuration and use
 
-[options="header, autowidth"]
+.Required monitor-specific parameter for the BgpSessionMonitor
+
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter   | Description                                                             | Required | Default value
-| `bgpPeerIp` | IP address of the far end BGP peer session                              | required | `-`
+| *Parameter* | *Description* | *Default* 
+| bgpPeerIp | IP address of the far end BGP peer session | n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-To monitor the session state _Established_ it is necessary to add a service to your poller configuration in '$\{OPENNMS_HOME}/etc/poller-configuration.xml', for example:
+To monitor the session state `Established`, add a service to your poller configuration in `$\{OPENNMS_HOME}/etc/poller-configuration.xml`. 
+For example:
 
 [source, xml]
 ----
@@ -66,50 +70,50 @@ To monitor the session state _Established_ it is necessary to add a service to y
 
 == Error code mapping
 
-The _BGP_PEER_LAST_ERROR_OID_ gives an error in HEX-code.
-To make it human readable a codemapping table is implemented:
+The BGP_PEER_LAST_ERROR_OID gives an error in hex code.
+The error codes returned are listed in the table below.
 
 [options="header, autowidth"]
 |===
 | Error code | Error Message
-| `0100`     | Message Header Error
-| `0101`     | Message Header Error - Connection Not Synchronized
-| `0102`     | Message Header Error - Bad Message Length
-| `0103`     | Message Header Error - Bad Message Type
-| `0200`     | OPEN Message Error
-| `0201`     | OPEN Message Error - Unsupported Version Number
-| `0202`     | OPEN Message Error - Bad Peer AS
-| `0203`     | OPEN Message Error - Bad BGP Identifier
-| `0204`     | OPEN Message Error - Unsupported Optional Parameter
-| `0205`     | OPEN Message Error (deprecated)
-| `0206`     | OPEN Message Error - Unacceptable Hold Time
-| `0300`     | UPDATE Message Error
-| `0301`     | UPDATE Message Error - Malformed Attribute List
-| `0302`     | UPDATE Message Error - Unrecognized Well-known Attribute
-| `0303`     | UPDATE Message Error - Missing Well-known Attribute
-| `0304`     | UPDATE Message Error - Attribute Flags Error
-| `0305`     | UPDATE Message Error - Attribute Length Error
-| `0306`     | UPDATE Message Error - Invalid ORIGIN Attribute
-| `0307`     | UPDATE Message Error (deprecated)
-| `0308`     | UPDATE Message Error - Invalid NEXT_HOP Attribute
-| `0309`     | UPDATE Message Error - Optional Attribute Error
-| `030A`     | UPDATE Message Error - Invalid Network Field
-| `030B`     | UPDATE Message Error - Malformed AS_PATH
-| `0400`     | Hold Timer Expired
-| `0500`     | Finite State Machine Error
-| `0600`     | Cease
-| `0601`     | Cease - Maximum Number of Prefixes Reached
-| `0602`     | Cease - Administrative Shutdown
-| `0603`     | Cease - Peer De-configured
-| `0604`     | Cease - Administrative Reset
-| `0605`     | Cease - Connection Rejected
-| `0606`     | Cease - Other Configuration Change
-| `0607`     | Cease - Connection Collision Resolution
-| `0608`     | Cease - Out of Resources
+| 0100     | Message Header Error
+| 0101     | Message Header Error - Connection Not Synchronized
+| 0102     | Message Header Error - Bad Message Length
+| 0103     | Message Header Error - Bad Message Type
+| 0200     | OPEN Message Error
+| 0201     | OPEN Message Error - Unsupported Version Number
+| 0202     | OPEN Message Error - Bad Peer AS
+| 0203     | OPEN Message Error - Bad BGP Identifier
+| 0204     | OPEN Message Error - Unsupported Optional Parameter
+| 0205     | OPEN Message Error (deprecated)
+| 0206     | OPEN Message Error - Unacceptable Hold Time
+| 0300     | UPDATE Message Error
+| 0301     | UPDATE Message Error - Malformed Attribute List
+| 0302     | UPDATE Message Error - Unrecognized Well-known Attribute
+| 0303     | UPDATE Message Error - Missing Well-known Attribute
+| 0304     | UPDATE Message Error - Attribute Flags Error
+| 0305     | UPDATE Message Error - Attribute Length Error
+| 0306     | UPDATE Message Error - Invalid ORIGIN Attribute
+| 0307     | UPDATE Message Error (deprecated)
+| 0308     | UPDATE Message Error - Invalid NEXT_HOP Attribute
+| 0309     | UPDATE Message Error - Optional Attribute Error
+| 030A     | UPDATE Message Error - Invalid Network Field
+| 030B     | UPDATE Message Error - Malformed AS_PATH
+| 0400     | Hold Timer Expired
+| 0500     | Finite State Machine Error
+| 0600     | Cease
+| 0601     | Cease - Maximum Number of Prefixes Reached
+| 0602     | Cease - Administrative Shutdown
+| 0603     | Cease - Peer De-configured
+| 0604     | Cease - Administrative Reset
+| 0605     | Cease - Connection Rejected
+| 0606     | Cease - Other Configuration Change
+| 0607     | Cease - Connection Collision Resolution
+| 0608     | Cease - Out of Resources
 |===
 
-Instead of HEX-Code the error message will be displayed in the service down logmessage.
-To give some additional informations the logmessage contains also
+The error message text will be displayed in the service down log message.
+The log message also provides the following additional information:
 
  BGP-Peer Adminstate
  BGP-Peer Remote AS
@@ -117,7 +121,7 @@ To give some additional informations the logmessage contains also
 
 == Debugging
 
-If you have problems to detect or monitor the BGP Session you can use the following command to figure out where the problem come from.
+If you cannot detect or monitor the BGP session, use the following command to check that the device is providing BGP data via SNMP.
 
 [source, bash]
 ----
@@ -125,4 +129,4 @@ snmpwalk -v 2c -c <myCommunity> <myRouter2Monitor> .1.3.6.1.2.1.15.3.1.2.99.99.9
 ----
 
 Replace `99.99.99.99` with your BGP-Peer IP.
-The result should be an Integer between `1` and `6`.
+The result should be an integer between 1 and 6.

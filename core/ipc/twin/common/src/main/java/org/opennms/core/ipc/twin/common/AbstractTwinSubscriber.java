@@ -77,7 +77,6 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         SessionImpl<?> session = sessionMap.get(twinResponse.getKey());
         if (session == null) {
             LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
-            sessionMap.keySet().forEach(LOG::info);
         }
         if (session != null) {
             try {

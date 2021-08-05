@@ -16,16 +16,16 @@ NOTE: If not otherwise specified, the `Content-Type` of the response is `applica
   The request is limited to `10` items by default.
   Setting `limit` to `0` returns ALL enabled rules.
 
-| `/classifications/\{id\}`
-| Retrieve the rule identified by `\{id\}`.
+| `/classifications/\{id}`
+| Retrieve the rule identified by `\{id}`.
 
 | `/classifications/groups`
 | Retrieve all existing groups.
   The request is limited to `10` items by default.
   Setting `limit` to `0` returns ALL enabled rules.
 
-| `/classifications/groups/\{id\}`
-| Retrieve the group identified by `\{id\}``
+| `/classifications/groups/\{id}`
+| Retrieve the group identified by `\{id}``
   Supports downloading all rules of the given group in CSV format.
   For this, set the accept header: `Accept: text/comma-separated-values`.
 
@@ -43,13 +43,13 @@ NOTE: The given filters are combined using a logical `AND`.
 [options="header", cols="1,1,2"]
 |===
 
-|Name 
-|Default 
+|Name
+|Default
 |Comment
 
-| groupFilter 
-| (none) 
-| The group by which to filter the rules. 
+| groupFilter
+| (none)
+| The group by which to filter the rules.
 Should be the `id` retrieved by `/classifications/groups`.
 It is not possible to retrieve the rules for a disabled group.
 
@@ -250,7 +250,7 @@ HTTP/1.1 204 No Content
 .Import rules from CSV
 [source,bash]
 ----
-curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'name;ipAddress;port;protocol\nOpenNMS;;8980;tcp,udp\n' http://localhost:8980/opennms/rest/classifications/groups/\{id\}\?hasHeader\=true
+curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'name;ipAddress;port;protocol\nOpenNMS;;8980;tcp,udp\n' http://localhost:8980/opennms/rest/classifications/groups/\{id}\?hasHeader\=true
 ----
 
 .Response
@@ -292,12 +292,12 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 | Resource
 | Description
 
-| `/classifications/\{id\}`
-| Update a rule identified by `\{id\}`.
+| `/classifications/\{id}`
+| Update a rule identified by `\{id}`.
   The ID of the rule cannot be changed.
 
-| `/groups/\{id\}`
-| Retrieve the rule identified by `\{id\}`.
+| `/groups/\{id}`
+| Retrieve the rule identified by `\{id}`.
 
 | `/classifications/groups`
 | Update a group.
@@ -312,10 +312,10 @@ curl -X POST -H "Content-Type: text/comma-separated-values" -u admin:admin -d $'
 | Resource
 | Description
 
-| `/classifications?groupId=\{groupid\}`
+| `/classifications?groupId=\{groupid}`
 | Deletes all rules of a given group.
 
-| `/groups/\{id\}`
+| `/groups/\{id}`
 | Delete the given group and all its containing rules.
 
 |===
