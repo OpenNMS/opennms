@@ -214,6 +214,7 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
 </features>
 -----
 
+[[ga-kafka-configuration]]
 == Kafka Configuration
 
 Each _Minion_ works as a Producer and must be configured beforehead.
