@@ -52,7 +52,7 @@ import java.util.Set;
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
-    public static final String CONTEXT_META = "CM_META";
+    public static final String CONTEXT_SCHEMA = "CM_SCHEMA";
     private final ObjectMapper mapper;
 
     private final JsonStore jsonStore;
@@ -73,7 +73,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public Optional<Set<String>> getServiceIds() {
-        return this.getIds(CONTEXT_META);
+        return this.getIds(CONTEXT_SCHEMA);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
-        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_META);
+        Optional<String> jsonStr = jsonStore.get(serviceName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -194,9 +194,9 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void unregister(String configName) {
-        jsonStore.delete(configName, CONTEXT_META);
-        jsonStore.delete(configName, CONTEXT_CONFIG);
+    public void unregister(String serviceName) {
+        jsonStore.delete(serviceName, CONTEXT_SCHEMA);
+        jsonStore.delete(serviceName, CONTEXT_CONFIG);
     }
 
     @Override
@@ -209,7 +209,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     private void putSchema(ConfigSchema<?> configSchema) throws IOException {
-        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
+        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_SCHEMA);
         if(timestamp < 0){
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
