@@ -21,8 +21,7 @@ The Netflow v9 UDP parser supports protocol detection.
 === Configuration and use
 
 .Parameters for the Netflow v9 UDP parser
-[options="header"]
-[cols="1,3,2"]
+[options="header, autowidth"]
 |===
 | Parameter              | Default    | Description
 3+| *Optional*
