@@ -7,7 +7,7 @@ JMX must be enabled on the Cassandra nodes and made accessible from {page-compon
 See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication and authorization] for details.
 
 The data collection is bound to the agent IP interface with the service name JMX-Cassandra-Newts.
-The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
+The JMXCollector retrieves the MBean entities from the Cassandra node.
 
 == All memory table data size
 

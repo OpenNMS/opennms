@@ -1,7 +1,7 @@
 
 = IS-IS Discovery
 
-The ISIS Topology Updater provides ISIS OnmsTopology consolidating IS-IS data collected by ISIS Collector.
+The ISIS Topology Updater provides ISIS OnmsTopology, consolidating IS-IS data ISIS Collector collects.
 Only full bidirectional connections between two ISIS-supported devices become edges.
 Node A and Node B are connected by an ISIS edge if and only if there is an ISIS link in Node A to Node B and vice versa.
 
@@ -10,8 +10,8 @@ This table has the information needed to find the Adjacency Intermediate System.
 The information about IS-IS is stored into two tables: isisElement and isisLink.
 isisElement contains the ISISSysID, a unique identifier of the Intermediate-System (the name for the router in ISO protocols).
 Each entry in this SNMP MIB table represents a unidirectional link from the Intermediate-System that is queried to the Adjacent Intermediate Systems running IS-IS and "peering" with the source router.
-If two routers IS-A and IS-B support ISIS-MIB, then EnLinkd creates two link entries in {page-component-title}: one from IS-A to IS-B (from the adjtable of IS-A) the complementary link back from IS-B to IS-A (from the adjTable of IS-B).
-IS-IS links are represented in the ISIS-MIB as follows:
+If two routers IS-A and IS-B support ISIS-MIB, then Enlinkd creates two link entries in {page-component-title}: one from IS-A to IS-B (from the adjtable of IS-A) and the complementary link back from IS-B to IS-A (from the adjTable of IS-B).
+IS-IS links are represented in the ISIS-MIB as in the table below.
 
 The following OIDs are supported to discover and build the ISIS network topology and are collected by the ISIS Discovery Collector.
 
@@ -40,7 +40,7 @@ The following OIDs are supported to discover and build the ISIS network topology
 |===
 
 Find generic information about the IS-IS link discovery process in the IS-IS information box on the node detail page of the device.
-Information gathered from this OIDs will be stored in the following database table:
+Information gathered from these OIDs is stored in the following database table:
 
 .Database tables related to IS-IS discovery
 image::enlinkd/is-is-database.png[]

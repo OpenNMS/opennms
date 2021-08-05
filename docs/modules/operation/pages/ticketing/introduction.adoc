@@ -7,7 +7,7 @@ Create and update tickets in response to new and/or resolved alarms.
 To activate the ticketing integration, set the following properties in `$OPENNMS_HOME/etc/opennms.properties`:
 
 [options="header"]
-[cols="1,1,3"]
+[cols="2,1,3"]
 |===
 | Property                               | Default                   | Description
 | opennms.ticketer.plugin              | NullTicketerPlugin      | The plugin implementation to use.

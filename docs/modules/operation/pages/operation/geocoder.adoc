@@ -8,17 +8,17 @@ By default, geolocation resolution is disabled.
 NOTE: To enable or configure the Geocoder Service, use the web-based configuration tool.
         In the web UI, click the gear icon and choose menu:Provisioning[Configure Geocoder Service].
 
-The currently used Geocoder Service is configured via the property `activeGeocoderId` in `etc/org.opennms.features.geocoder.cfg`.
+Configure the active Geocoder Service via the property `activeGeocoderId` in `etc/org.opennms.features.geocoder.cfg`.
 
 == Google
 
 The Google Geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
-For more details please refer to the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation].
+For more details, see the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation].
 
 The following properties in `etc/org.opennms.features.geocoder.google.cfg` are supported:
 
 [options="header"]
-[cols="1,1,1,3"]
+[cols="2,1,1,3"]
 |===
 | Property       | Type         | Default             | Description
 
@@ -28,13 +28,13 @@ The following properties in `etc/org.opennms.features.geocoder.google.cfg` are s
 | String
 | empty string
 | The apiKey provided by the Google Cloud Platform.
-Required only if `useEnterpriseCredentials` is `false`.
+Required only if `useEnterpriseCredentials` is false.
 
 | clientId
 | String
 | empty string
 | The Google Geocoder API client ID.
-Required only if `useEnterpriseCredentials` is `true`
+Required only if `useEnterpriseCredentials` is true.
 
 | signature
 | String
@@ -69,7 +69,7 @@ For more details, refer to the link:https://developer.mapquest.com/documentation
 The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are supported:
 
 [options="header"]
-[cols="1,1,2,3"]
+[cols="1,1,3,3"]
 |===
 | Property       | Type         | Default             | Description
 
@@ -82,10 +82,10 @@ The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are
 | url
 | String
 | `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}`
-| The url template for the MapQuest Geocoder API.
+| The URL template for the MapQuest Geocoder API.
   The `apikey` and `query` strings are substituted before making the request.
 
-4+| *Optional
+4+| *Optional*
 
 | useSystemProxy
 | Boolean
@@ -96,7 +96,7 @@ The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are
 
 == Nominatim
 
-For more details, please refer to the link:https://wiki.openstreetmap.org/wiki/Nominatim[official documentation]
+For more details, see the link:https://wiki.openstreetmap.org/wiki/Nominatim[official documentation]
 and check the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using
 the geocoder service.
 

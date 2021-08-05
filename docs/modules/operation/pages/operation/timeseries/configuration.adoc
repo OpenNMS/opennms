@@ -72,7 +72,7 @@ The Time Series Integration Layer includes several caches to improve performance
 You can tune the cache settings to suit your needs, using the parameters above.
 
 [options="header"]
-[cols="1,3"]
+[cols="2,3"]
 |===
 | Name                             | Description
 | TimeseriesMetaDataCache          | Caches metadata that uses {page-component-title} internally.

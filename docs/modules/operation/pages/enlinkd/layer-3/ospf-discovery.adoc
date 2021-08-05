@@ -1,15 +1,15 @@
 
 = OSPF Discovery
 
-The OSPF Topology Updater provides OSPF OnmsTopology consolidating OSPF data collected by OSPF Collector.
+The OSPF Topology Updater provides OSPF OnmsTopology, consolidating OSPF data the OSPF Collector collects.
 Only full bidirectional connections between two OSPF-supported devices become edges.
-Node A and Node B are connected by an OSPF edge if and only if there is a OSPF link in Node A to Node B and vice versa.
+Node A and Node B are connected by an OSPF edge if and only if there is an OSPF link in Node A to Node B and vice versa.
 
 The following MIBSs are supported to discover and build the OSPF network topology and are collected by the OSPF Discovery Collector.
 
 The relevant MIBs for OSPF topology are OSPF-MIB and OSPF-TRAP-MIB.
 These MIBs define the relevant objects used to find OSPF links, specifically the router ID.
-In OSPF the router ID has the same format as an IP address, but identifies the router independent of its IP address.
+In OSPF, the router ID has the same format as an IP address, but identifies the router independent of its IP address.
 
 All the interfaces are identified by their IP addresses.
 The OSPF links come from the SNMP ospfNbrTable defined in OSPF-MIB.
@@ -17,7 +17,7 @@ This table is persisted in the ospfLink table:
 
 .Supported OIDs from OSPF-MIB
 [options="header"]
-[cols="1,1,3"]
+[cols="2,1,3"]
 |===
 | Name                      | OID                      | Description
 | ospfRouterId            | .1.3.6.1.2.1.14.1.1.0  | A 32-bit integer uniquely identifying the router in the autonomous system.
