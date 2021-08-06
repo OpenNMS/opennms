@@ -20,11 +20,11 @@ The IPFIX UDP parser supports protocol detection.
 
 === Configuration and use
 
-.Parameters for the IPFIX UDP Parser
+.Optional parameters for the IPFIX UDP Parser
 [options="header, autowidth"]
 |===
 | Parameter              | Default     | Description
-| templateTimeout        | 30 minutes  | Templates must be re-declared in the given duration or they will be dropped.
+| templateTimeout        | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
 | maxClockSkew           | 0           | The maximum delta in seconds between exporter and Minion timestamps.
 | clockSkewEventRate     | 3600        | Used to rate-limit clock skew events in seconds.
 | dnsLookupsEnabled      | true        | Used to enable or disable DNS resolution for flows.
@@ -71,7 +71,7 @@ If you do not specify the queue name, the fallback is the name of the parser.
 [[telemetryd-ipfix-adapter]]
 == IPFIX adapter
 
-The IPFIX adapter handles IPFIX telemetry data received and parsed by either of the <<telemetryd-ipfix-parser-udp, IPFIX UDP parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP parser>>.
+The IPFIX adapter handles IPFIX telemetry data received and parsed by either the <<telemetryd-ipfix-parser-udp, IPFIX UDP parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP parser>>.
 Received flows are decoded from the messages into the canonical flow format and published to the flow repository.
 
 === Facts
@@ -83,13 +83,12 @@ Received flows are decoded from the messages into the canonical flow format and 
 
 === Configuration and use
 
-.Parameters for the IPFIX TCP parser
+.Optional parameters for the IPFIX TCP parser
 [options="header, autowidth"]
 |===
 | Parameter           | Default     | Description
-3+| *Optional*
-| templateTimeout     | 30 minutes  | Templates must be re-declared in the given duration or they will be dropped.
-| maxClockSkew        | 0           | The maximum delta in seconds between exporter and Minion time stamps.
+| templateTimeout     | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
+| maxClockSkew        | 0           | The maximum delta in seconds between exporter and Minion timestamps.
 | clockSkewEventRate  | 3600        | Rate-limit clock skew events in seconds.
 | dnsLookupsEnabled   | true        | Enable or disable DNS resolution for flows.
 |===

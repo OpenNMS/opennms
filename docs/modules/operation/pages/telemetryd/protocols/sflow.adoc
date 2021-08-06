@@ -23,7 +23,7 @@ The sFlow UDP parser supports protocol detection.
 
 === Configuration and use
 
-.Parameters for the Netflow v5 UDP Parser
+.Optional parameters for the Netflow v5 UDP Parser
 [options="header, autowidth"]
 |===
 | Parameter             | Default   | Description
@@ -53,7 +53,7 @@ This adapter does not currently have any configurable parameters.
 == sFlow telemetry adapter
 
 The sFlow telemetry adapter handles sFlow telemetry data received and parsed by the <<telemetryd-sflow-parser-udp, sFlow UDP parser>>.
-The telemetry data is forwarded to a JSR-223 compatible script (for example, Beanshell or Groovy) for further processing.
+The telemetry data is forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
 Using the script extension, you can extract the desired metrics from the sFlow messages and persist the results as time series data.
 
 === Facts
@@ -65,11 +65,10 @@ Using the script extension, you can extract the desired metrics from the sFlow m
 
 === Configuration and use
 
-.Adapter specific parameters
+.Required adapter-specific parameters
 [options="header, autowidth"]
 |===
 | Parameter        | Default | Description
-3+| *Required*
 | script           | none    | Full path to the script used to handle the sFlow messages.
 |===
 
@@ -83,8 +82,8 @@ The following globals will be passed to the script:
 [options="header, autowidth"]
 |===
 | Parameter  | Description                                                      | Type
-| agent      | The agent (node) against which the metrics will be associated    | `org.opennms.netmgt.collection.api.CollectionAgent`
-| builder    | Builder in which the resources and metrics should be added       | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| agent      | The agent (node) against which the metrics will be associated.    | `org.opennms.netmgt.collection.api.CollectionAgent`
+| builder    | Builder in which the resources and metrics should be added.       | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
 | msg        | sFlow (extended) counter sample                                  | dynamic Map
 |===
 

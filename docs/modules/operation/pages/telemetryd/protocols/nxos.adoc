@@ -78,10 +78,9 @@ Using the script extension you can extract the desired metrics from the NX-OS me
 
 === Configuration and use
 
-.Adapter specific parameters for the NxosGpbAdapter
+.Required adapter-specific parameters for the NxosGpbAdapter
 [options="header, autowidth"]
 |===
-3+| *Required*
 | Parameter        | Default   | Description
 | script           | none      | Full path to the script used to handle the NXOS messages.
 |===

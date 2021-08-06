@@ -20,21 +20,20 @@ The Netflow v5 UDP parser supports protocol detection.
 
 === Configuration and use
 
-.Parameters for the Netflow v5 UDP parser
+.Optional parameters for the Netflow v5 UDP parser
 [options="header, autowidth"]
 |===
 | Parameter             | Default     | Description
-3+| *Optional*
 | maxClockSkew          | 0           | The maximum delta in seconds between exporter and Minion timestamps.
-| clockSkewEventRate    | 3600        | Rate limit clock skew events, in seconds.
+| clockSkewEventRate    | 3600        | Rate-limit clock skew events, in seconds.
 | dnsLookupsEnabled     | True        | Enable or disable DNS resolution for flows.
 |===
 
 NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
-It specifies the maximum delta in seconds between exporter and Minion time stamps.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
 If exceeded, an alarm will be generated for the exporting device.
 The default value is 0, so clock skew detection is disabled.
-Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate-limit clock skew events.
 The default is `3600` seconds, so every hour an event will be sent.
 
 [[telemetryd-netflow5-adapter]]

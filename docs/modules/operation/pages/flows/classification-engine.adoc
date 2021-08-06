@@ -16,13 +16,13 @@ A rule has the following fields:
 | Name            | Description
 2+| *Required*
 | group            | The group in which this rule was placed.
-                     See also <<rule-groups,Rule Groups>>
+                     See also <<rule-groups,Rule Groups>>.
 | position         | The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
-| name             | The name the flow is classified with.
-                     For example, `http`.
+| name             | The name the flow is classified with; for example, `http`.
+                
 2+| *Optional*
 | dstPort          | The destination port of the flow to match.
-                     May be a range or list of ports, for example, 80,8080,8980, or 8000-9000.
+                     May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
 | dstAddress       | The destination IP address of the flow to match.
                      May contain wildcards.
 | srcPort          | The source port of the flow to match.
@@ -38,7 +38,7 @@ Even if all fields (besides `group`, `position`, and `name`) are optional, at le
 
 A list of predefined rules already exist in the group `pre-defined`.
 The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
-Define new rules using the Classification UI, under the gears icon in the web UI: menu:Gear icon[Flow Management > Manage Flow Classification]
+Define new rules using the Classification UI, under the gears icon in the web UI: menu:Gear icon[Flow Management > Manage Flow Classification].
 
 == Omnidirectional Rules
 You can mark rules as omnidirectional, which additionally evaluates the rules with interchanged endpoint addresses and ports.
@@ -48,7 +48,7 @@ This is helpful if traffic related to a matching classification should be classi
 == Rule Groups
 Rules live within a rule group.
 New groups can be added, edited, and deleted via the Classification UI.
-The `pre-defined` group is read only
+The `pre-defined` group is read only.
 You cannot alter it or its rules.
 
 [[evaluation-order]]

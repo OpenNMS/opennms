@@ -1,7 +1,7 @@
 
 = Elasticsearch Integration
 
-{page-component-title} cab persist/forward certain data to Elasticsearch.
+{page-component-title} can persist/forward certain data to Elasticsearch.
 The following sections describe the configuration possibilities as well as the available features.
 Internally, all Elasticsearch integrations use the https://github.com/searchbox-io/Jest[Jest library] to access the Elasticsearch REST interface.
 
@@ -17,22 +17,22 @@ You can set the following properties:
 |===
 | Property                               | Default                         | Description
 3+| *Required*
-| elasticUrl                             | \http://localhost:9200          | URL(s) to Elasticsearch nodes
+| elasticUrl                             | \http://localhost:9200          | URL(s) to Elasticsearch nodes.
                                                                              Can either point directly to REST API or seed nodes.
                                                                              The format is: `<host>:<port>`.
                                                                              Comma separate multiple values.
 3+| *Optional*
-| elasticIndexStrategy                   | daily                           | Index strategy for data, allowed values yearly, monthly, daily, hourly
+| elasticIndexStrategy                   | daily                           | Index strategy for data. Allowed values: yearly, monthly, daily, hourly.
 | globalElasticUser                      | none                            | Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
 | globalElasticPassword                  | none                            | Password to use for all nodes, when X-Pack Security is configured.
 | ignoreCertificates                     | false                           | Set this to ignore HTTPS/SSL/TLS certificates.
 | defaultMaxTotalConnectionPerRoute      | <available processors> * 2      | Sets the default maximum connections per route.
-                                                                             If a negative value is given, the value is ignored.
+                                                                             Negative values are ignored.
 | maxTotalConnection                     | <max connections per route> * 3 | Sets the default maximum total connections.
-                                                                             If a negative value is given, the value is ignored.
+                                                                             Negative values are ignored.
 | nodeDiscovery                          | false                           | Enable/disable node discovery.
                                                                              Valid values are `true\|false`.
-| nodeDiscoveryFrequency                 | none                            | Defines the frequency, in seconds, in which the nodes are re-discovered.
+| nodeDiscoveryFrequency                 | none                            | Defines the frequency, in seconds, in which the nodes are rediscovered.
                                                                              Must be set, if `discovery=true`
 | proxy                                  | none                            | Defines a proxy server for communicating with your Elasticsearch cluster.
                                                                              Must be a valid URL.

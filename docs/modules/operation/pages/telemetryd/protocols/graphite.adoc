@@ -3,7 +3,7 @@
 
 The Graphite telemetry adapter lets you push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
 
-To enable support for plaintext Graphite over UDP, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` set `enabled=true` for the Graphite protocol.
+To enable support for plaintext Graphite over UDP, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to set `enabled=true` for the Graphite protocol.
 
 .Enable Graphite protocol in telemetryd-configuration.xml
 [source, xml]
@@ -37,7 +37,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 $OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
-By default, this will open a UDP socket bound to `0.0.0.0:2003` to which Graphite messages can be forwarded.
+By default, this opens a UDP socket bound to `0.0.0.0:2003` to which Graphite messages can be forwarded.
 
 == Configure Graphite listener on a Minion
 
@@ -73,17 +73,16 @@ Using the script extension you can extract the desired metrics from the Graphite
 
 === Configuration and use
 
-.Adapter specific parameters for the GraphiteAdapter
+.Required adapter-specific parameters for the GraphiteAdapter
 [options="header, autowidth"]
 |===
 | Parameter        | Default  | Description
-3+| *Required*
 | script           | none     | Full path to the script used to handle the Graphite messages.
 |===
 
 === Scripting
 
-The script will be invoked for every Graphite message that is received and successfully decoded.
+The script is invoked for every Graphite message that is received and successfully decoded.
 
 The following globals will be passed to the script:
 

@@ -78,11 +78,10 @@ Use the script extension to extract the desired metrics from the JTI messages an
 
 === Configuration and use
 
-.Adapter specific parameters for the JtiGpbAdapter
+.Required adapter-specific parameters for the JtiGpbAdapter
 [options="header, autowidth"]
 |===
 | Parameter      | Default | Description
-3+| *Required*
 | script         | none    | Full path to the script used to handle the JTI messages.
 |===
 

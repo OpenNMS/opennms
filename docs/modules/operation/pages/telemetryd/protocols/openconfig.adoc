@@ -6,7 +6,7 @@ https://www.openconfig.net/[OpenConfig] is an open-source initiative by network 
 The OpenConfig client lets you stream OpenConfig telemetry data over gRPC to {page-component-title}.
 Some vendors currently using OpenConfig telemetry include Juniper, Arista, and Cisco.
 
-To enable support for OpenConfig, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` set `enabled=true` for the OpenConfig protocol.
+To enable support for OpenConfig, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to set `enabled=true` for the OpenConfig protocol.
 
 IMPORTANT: The OpenConfig protocol is not supported on Minion.
 
@@ -114,7 +114,7 @@ Parameters are passed to the connector and are interpolated for node/interface a
 == OpenConfig adapter
 
 The OpenConfig adapter handles OpenConfig payloads.
-Messages are decoded and forwarded to a JSR-223 compatible script (for example, BeanShell or Groovy) for further processing.
+Messages are decoded and forwarded to a JSR-223-compatible script (for example, BeanShell or Groovy) for further processing.
 Use the script extension to extract the desired metrics from the OpenConfig stream data and persist the results as time series data.
 
 === Facts

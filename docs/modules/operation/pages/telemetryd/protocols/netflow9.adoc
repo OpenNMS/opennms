@@ -20,12 +20,11 @@ The Netflow v9 UDP parser supports protocol detection.
 
 === Configuration and use
 
-.Parameters for the Netflow v9 UDP parser
+.Optional parameters for the Netflow v9 UDP parser
 [options="header, autowidth"]
 |===
 | Parameter              | Default    | Description
-3+| *Optional*
-| templateTimeout        | 30 minutes | Templates must be re-declared in the given duration or they will be dropped.
+| templateTimeout        | 30 minutes | Templates must be redeclared in the given duration or they will be dropped.
 | maxClockSkew           | 0          | The maximum delta in seconds between exporter and Minion timestamps.
 | clockSkewEventRate     | 3600       | Used to rate-limit clock skew events in seconds.
 | dnsLookupsEnabled      | true       | Used to enable or disable DNS resolution for flows.
@@ -34,10 +33,10 @@ The Netflow v9 UDP parser supports protocol detection.
 |===
 
 NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
-It specifies the maximum delta in seconds between exporter and Minion time stamps.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
 If exceeded, an alarm will be generated for the exporting device.
 The default value is 0, so clock skew detection is disabled.
-Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate-limit clock skew events.
 The default is `3600` seconds, so every hour an event will be sent.
 
 

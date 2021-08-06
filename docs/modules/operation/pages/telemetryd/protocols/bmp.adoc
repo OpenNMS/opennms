@@ -22,17 +22,18 @@ The BMP parser accepts BMP connections from router packets using a <<telemetryd/
 
 === Configuration and use
 
-.Parameters for the BMP Parser
+.Optional parameters for the BMP Parser
 [options="header, autowidth"]
 |===
 | Parameter                   | Default    | Description
-3+| *Optional*
 | dnsLookupsEnabled           | true       | Enable or disable DNS resolution of router and peer hostnames.
 | bulkhead.maxConcurrentCalls | 1000       | Limit the number of parallel parsing operations.
 | bulkhead.maxWaitDurationMs  | 5 minutes  | Limit the amount of time to wait for a saturated bulkhead (in milliseconds).
 |===
 
-== Configure BMP listener on a minion
+== Configure BMP listener on a Minion
+``
+needs to be capitalized b/c it's our official name for this component. This is one reason I'm not a fan of NH style of sentence-case headings. :-)
 
 To enable and configure a TCP listener for BMP on Minion, connect to the Karaf Console and set the following properties:
 
@@ -62,7 +63,7 @@ The router must exist as a regular node in {page-component-title}.
 
 {page-component-title} uses the IP address exported in BMP messages to associate a router with the appropriate {page-component-title} node.
 In addition, the node's metadata can be used to specify a BGP ID, which will be used to associate routers.
-If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node that has stored the queried BGP ID as a value in the specified key.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to look up a node that has stored the queried BGP ID as a value in the specified key.
 
 === Facts
 
@@ -73,11 +74,10 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 === Configuration and use
 
-.Parameters for the BMP telemetry adapter
+.Optional parameters for the BMP telemetry adapter
 [options="header, autowidth"]
 |===
 | Parameter          | Default | Description
-3+| *Optional*
 | metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
@@ -104,11 +104,10 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 
 === Configuration and use
 
-.Parameters for the BMP telemetry adapter
+.Optional parameters for the BMP telemetry adapter
 [options="header, autowidth"]
 |===
 | Parameter          | Default | Description
-3+| *Optional*
 | metaDataNodeLookup | n/a     | Enables lookup using BGP IDs.
 |===
 
@@ -130,7 +129,7 @@ This setup replaces the collector component of OpenBMP.
 
 === Configuration and use
 
-.Parameters for the OpenBMP Integration Adapter
+.Optional parameters for the OpenBMP Integration Adapter
 [options="header, autowidth"]
 |===
 | Parameter          | Default | Description
@@ -157,11 +156,11 @@ Stats and retrieving data from external data for rpki/routeinfo/asinfo are handl
 The `opennms-telemetry-bmp-stats` feature needs to be installed on {page-component-title}.
 
 BMP Stats are stored as time series data in Postgres with TimescaleDB extension.
-You can find instructions to install the TimescaleDB 2.x extension link:https://docs.timescale.com/latest/getting-started/installation[here].
-For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example `$OPENNMS_HOME/bin/install -dist`).
+TimescaleDB 2.x extension link:https://docs.timescale.com/latest/getting-started/installation[installation instructions].
+For `opennms` schema, TimescaleDB extension can be added with -t option on install DB script(for example, `$OPENNMS_HOME/bin/install -dist`).
 If the TimescaleDB extension is not installed, stat tables will not be converted to hypertables.
 
-To load the adapter while {page-component-title} is running, the following command can be used in the Karaf shell.
+To load the adapter while {page-component-title} is running, use the following command in the Karaf shell.
 
 [source]
 ----
@@ -197,10 +196,10 @@ admin@opennms()> config:update
 ==== Running BMP Adapter on Sentinel
 
 BMP Persisting Adapter can also run on Sentinel.
-Sentinel must start appropriate BMP adapter.
+Sentinel must start the appropriate BMP adapter.
 In Sentinel, adapters are configured either by placing a .cfg file in $SENTINEL_HOME/etc or via a `config:edit` statement.
 
-The following example will configure the consumption of `BMP` messages and saves the configuration in `$SENTINEL_HOME/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
+The following example configures the consumption of `BMP` messages and saves the configuration in `$SENTINEL_HOME/etc/org.opennms.features.telemetry.adapters-bmp.cfg`.
 
 First, login to the Karaf Shell.
 
@@ -232,4 +231,4 @@ admin@opennms()> feature:install sentinel-telemetry-bmp-persist
 Refer to xref:reference:configuration/sentinel-features.adoc#ga-kafka-configuration[Sentinel Kafka Configuration].
 
 NOTE: When running Kafka as the broker, the consumer config needs to have the `auto.offset.reset=earliest` setting, otherwise
-the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for for proper BMP state.
+the BMP Adapter may miss some of the early messages, like the PeerUp notification, which are essential for proper BMP state.
