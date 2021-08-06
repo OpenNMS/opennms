@@ -8,7 +8,7 @@ In Elasticsearch, we must flatten these entries into a single index entry for ea
 Thus, each index entry contains more context information than would be found in the actual {page-component-title} event.
 This context information includes the associated node and asset table information which was current when (but may have changed since) the event was archived.
 
-The <<elasticsearch/features/event-forwarder-mapping-table.adoc#ga-elastic-field-index, table of index mappings>>  has an example event JSON entries retrieved using a sense command.
+The <<elasticsearch/features/event-forwarder-mapping-table.adoc#ga-elastic-field-index, table of index mappings>> illustrates sample event data as stored in Elasticsearch.
 The table illustrates how {page-component-title} saves data in Elasticsearch.
 
 Internal Elasticsearch fields always begin with an underscore character.
