@@ -12,7 +12,7 @@ The Jira ticketing plugin and its dependencies are not part of the core packages
 
 To enable the plugin, start by setting following property in `$OPENNMS_HOME/etc/opennms.properties`:
 
-[source]
+[source, properties]
 ----
 opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
 ----
@@ -49,7 +49,7 @@ Restart {page-component-title}.
 
 When {page-component-title} has started, log in to the Karaf shell and install the feature:
 
-[source]
+[source, console]
 ----
 feature:install jira-troubleticketer
 ----
@@ -78,16 +78,16 @@ To set these fields, the Jira ticketing plugin provides the opportunity to defin
 
 To enable the Drools ticketing integration, set the following property in `$OPENNMS_HOME/etc/opennms.properties`:
 
-[source]
+[source, properties]
 ----
 opennms.ticketer.servicelayer=org.opennms.netmgt.ticketd.DroolsTicketerServiceLayer
 ----
 
 In addition, the property in `$OPENNMS_HOME/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
 
-[source]
+[source, properties]
 ----
-drools-ticketer.rules-file=$\{OPENNMS_HOME/etc/drools-ticketer-rules.drl
+drools-ticketer.rules-file=$OPENNMS_HOME/etc/drools-ticketer-rules.drl
 ----
 
 Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in `$OPENNMS_HOME/etc`.

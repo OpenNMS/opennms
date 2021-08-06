@@ -31,7 +31,7 @@ The Remedy ticketing plugin and its dependencies are part of the {page-component
 
 Start by enabling the plugin and the ticket controls in the {page-component-title} web interface, by setting the following properties in `$OPENNMS_HOME/etc/opennms.properties`:
 
-[source]
+[source, properties]
 ----
 opennms.ticketer.plugin=org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin
 opennms.alarmTroubleTicketEnabled = true

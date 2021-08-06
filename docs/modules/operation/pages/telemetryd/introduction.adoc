@@ -86,7 +86,7 @@ For example:
 ----
 
 When setting these options on Minion, you can add them as parser properties, and on Sentinel as adapter properties:
-[source]
+[source, properties]
 ----
 name=IPFIX-Listener
 class-name=org.opennms.netmgt.telemetry.listeners.UdpListener

@@ -5,7 +5,7 @@
 
 {page-component-title} can be configured to use the Time Series Integration Layer by setting the following property in `$OPENNMS_HOME/etc/opennms.properties`:
 
-[source]
+[source, properties]
 ----
 org.opennms.timeseries.strategy=integration
 ----

@@ -53,7 +53,7 @@ If you updated an existing Java Truststore, type the password you chose when you
 Use the following command to download an existing public certificate.
 
 .Download an existing public certificate
-[source,shell]
+[source, console]
 ----
 openssl \
   s_client \ <1>
@@ -77,9 +77,9 @@ To set up {page-component-title} to use the defined Java Truststore you must set
 Open `$OPENNMS_HOME/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
 
 .$OPENNMS_HOME/etc/opennms.properties snippet to define a Java Truststore
-[source]
+[source, properties]
 ----
-javax.net.ssl.trustStore=/$\{OPENNMS_HOME}/etc/trust-store.jks <1>
+javax.net.ssl.trustStore=$OPENNMS_HOME/etc/trust-store.jks <1>
 javax.net.ssl.trustStorePassword=change-me <2>
 ----
 <1> Java Truststore location
