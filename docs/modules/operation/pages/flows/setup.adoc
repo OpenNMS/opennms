@@ -129,10 +129,10 @@ To reduce the number of queries to the database, the data is cached.
 
 The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
 
+.Optional parameters for the node cache
 [options="header, autowidth"]
 |===
 | Property                   | Default | Description
-3+| *Optional*
 | nodeCache.maximumSize      | 1000    | The maximum size of the cache.
 | nodeCache.expireAfterWrite | 300     | Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
 | nodeCache.recordStats      | true    | Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
@@ -146,10 +146,10 @@ A cache can be configured to cache the result to improve performance.
 
 The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
 
+.Optional parameters for the classification engine filters
 [options="header, autowidth"]
 |===
 | Property                                   | Default | Description
-3+| *Optional*
 | cache.classificationFilter.enabled         | false   | Enables or disables the cache.
 | cache.classificationFilter.maxSize         | 5000    | The maximum size of the cache.
 | cache.classificationFilter.expireAfterRead | 300     | Number of seconds until an entry in the node cache is evicted.

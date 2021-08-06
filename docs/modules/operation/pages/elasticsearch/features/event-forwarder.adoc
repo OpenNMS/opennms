@@ -13,11 +13,11 @@ Please refer to <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-c
 
 Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:
 
+.Optional parameters for the Elasticsearch event forwarder
 [options="header"]
 [cols="1,1,5"]
 |===
 | Parameter           | Default | Description
-3+| *Optional*
 | logEventDescription | true    | Whether to forward the event description field to Elasticsearch.
                                   It can be disabled as it contains a long text field that can be redundant with the rest of the metadata included in the event.
 | archiveAssetData    | true    | If `true`, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms.

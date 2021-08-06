@@ -11,10 +11,10 @@ NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink]
 
 Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
+.Optional parameters for flow aggregation
 [options="header, autowidth"]
 |===
 | Property                               | Default            | Description
-3+| *Optional*
 | alwaysUseRawForQueries                 | true               | Use raw flow documents to respond to all queries instead of aggregated flows.
 | alwaysUseAggForQueries                 | false              | Use aggregated flow documents to respond to all queries instead of raw flows.
 | timeRangeDurationAggregateThresholdMs  | 120000 (2 minutes) | Queries with time range filters that have a duration greater than this value will use aggregated flows when possible.
