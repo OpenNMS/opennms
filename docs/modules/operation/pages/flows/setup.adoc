@@ -54,7 +54,7 @@ $OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inter
 
 This will open a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages can be forwarded.
 
-== Linking to OpenNMS Helm in the web UI
+== Link the web UI to Helm
 
 To access flow-related graphs from the {page-component-title} web interface, you must configure a link to your instance of OpenNMS Helm.
 
