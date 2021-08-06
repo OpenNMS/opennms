@@ -1,5 +1,5 @@
 
-= Newts Repository Converter: RRD/JRB to Newts migration utility
+RRD/JRB to Newts Migration Utility
 
 Use this utility to migrate existing RRDTool- or JRobin-based data to a Newts cluster.
 The migration process traverses the `share/rrd` directory and its subdirectories, reads the data and properties files, and persists this data to Newts.
@@ -9,7 +9,7 @@ The migration process traverses the `share/rrd` directory and its subdirectories
 The following suggestions try to minimize the data collection gap that occurs when reconfiguring {page-component-title} for a different storage strategy.
 First, we determine the parameters needed for migration of the existing data.
 After that, we reconfigure {page-component-title} to persist all new collected data to Newts storage.
-Finally, we convert and persist the Rrd- or JRobin-based data to Newts using the newts-repository-converter utility.
+Finally, we convert and persist the RRD- or JRobin-based data to Newts using the newts-repository-converter utility.
 
 === Prerequisites
  * Working {page-component-title} installation with RRDTool- or JRobin-based storage strategy configured.
@@ -31,43 +31,44 @@ Finally, we convert and persist the Rrd- or JRobin-based data to Newts using the
  . Start your {page-component-title} instance.
  . Use the newts-repository-converter utility to convert the existing data to Newts by specifying the options that correspond to the information gathered during step #1.
 
-This procedure will minimize the data collection gap to the time needed to reconfigure {page-component-title} for Newts storage.
+This procedure minimizes the data collection gap to the time needed to reconfigure {page-component-title} for Newts storage.
 
-IMPORTANT: The _newts_converter_ utility needs the path to the base directory of your {page-component-title} instance to read the configuration files.
+IMPORTANT: The newts_converter utility needs the path to the base directory of your {page-component-title} instance to read the configuration files.
 For example, the utility needs the datasource configuration during the migration process to query the database to look up node data.
 
 == Use
-The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory.
+The utility is installed by default and its wrapper script is located in the `$OPENNMS_HOME/bin` directory.
 
-[source, shell]
+[source, console]
 ----
 $ cd /path/to/opennms/bin
 $ ./newts-repository-converter
 ----
 
-TIP: When invoked without parameters the usage and help information is printed.
+TIP: When invoked without parameters, the use and help information is printed.
 
 The newts-repository-converter tool provides the following options and parameters:
 
-[options="header, %autowidth"]
+[options="header"]
+[cols="1,1,3,2"]
 |===
-| Short-option | Long-option | Description | Default
-| `h` | `help`           | Prints help and usage. information                                                      | false
-| `o` | `onms-home`      | {page-component-title} home directory                                                | /opt/opennms
-| `r` | `rrd-dir`        | The path to the RRD data                                                               | ONMS-HOME/share/rrd
-| `t` | `rrd-tool`       | Whether to use RRDtool or JRobin.                                                       |
-| `T` | `rrd-binary`     | The binary path to the rrdtool command (used only if rrd-tool is set).                  | /usr/bin/rrdtool
-| `s` | `store-by-group` | Whether store by group was enabled.                                              |
-| `n` | `threads`        | Number of conversion threads                                                           | defaults to number of CPUs
+| Short option | Long option | Description | Default
+| h | help           | Prints help and use information.                                                      | false
+| o | onms-home      | {page-component-title} home directory                                                | /opt/opennms
+| r | rrd-dir        | The path to the RRD data                                                               | ONMS-HOME/share/rrd
+| t | rrd-tool       | Whether to use RRDtool or JRobin.                                                       |
+| T | rrd-binary     | The binary path to the rrdtool command (used only if rrd-tool is set).                  | /usr/bin/rrdtool
+| s | store-by-group | Whether store by group was enabled.                                              |
+| n | threads        | Number of conversion threads                                                           | Defaults to number of CPUs
 |===
 
 == Example 1: Convert RRD-based data with storeByGroup enabled
 
 The following example shows how to convert RRDTool-based data that was stored with `storeByGroup` enabled.
-The {page-component-title} home is `/opt/opennms`, the data directory is `/opt/opennms/share/rrd`, and the RRDTool binary located at `/usr/local/bin/rrdtool`.
+The {page-component-title} home is `/opt/opennms`, the data directory is `/opt/opennms/share/rrd`, and the RRDTool binary is located at `/usr/local/bin/rrdtool`.
 This program call uses 16 concurrent threads to convert the RRD files.
 
-[source, shell]
+[source, console]
 ----
 $ ./newts-repository-converter -t true -s true -T /usr/local/bin/rrdtool -n 16
 <output omitted>

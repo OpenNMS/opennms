@@ -2,17 +2,19 @@
 [[ga-opennms-operation-daemon-config-files-eventd]]
 = Eventd
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3"]
 |===
 | Internal Daemon Name | Reload Event
 | Eventd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'`
 |===
 
 .Eventd configuration file overview
-[options="header, autowidth"]
+[options="header"]
+[cols="2,1,1,3"]
 |===
 | File                        | Restart Required | Reload Event | Description
-| `eventd-configuration.xml`  | yes              | no           | Configure generic behavior of Eventd, i.e., TCP and UDP port numbers with IP addresses to listen for events and socket timeouts.
-| `eventconf.xml`             | no               | yes          | Main configuration file for Eventd.
-| `events/*`                  | no               | yes          | Out-of-the-box, all files in this folder are included via `include` directives in `eventconf.xml`.
+| eventd-configuration.xml  | yes              | no           | Configure generic behavior of Eventd; for example, TCP and UDP port numbers with IP addresses to listen for events and socket timeouts.
+| eventconf.xml             | no               | yes          | Main configuration file for Eventd.
+| events/*`                  | no               | yes          | Out-of-the-box, all files in this folder are included via `include` directives in `eventconf.xml`.
 |===

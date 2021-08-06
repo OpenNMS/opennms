@@ -62,20 +62,21 @@ Queues transfer data between parsers and adapters and are represented by a chann
 
 The following options can help fine tune queue behavior:
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,1,3,1"]
 |===
 | Queue attribute (OpenNMS) | Key (Minion/Sentinel)  | Description | Default value
-| `threads`                 | `queue.threads`            | Number of threads used for consuming and dispatching messages. | (2 * number of cores)
-| `queue-size`              | `queue.size`               | Maximum number of messages to keep in memory while waiting to be dispatched. | 10000
-| `use-routing-key`         | `queue.use-routing-key`    | Whether to use the routing key when forwarding messages to the broker. This enforces message ordering. | true
-| `batch-size`              | `batch.size`               | Messages are aggregated in batches before being dispatched. When the batch reaches this size, it will be dispatched. | 1000
-| `batch-interval`          | `batch.interval`           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
+| threads                 | queue.threads            | Number of threads used for consuming and dispatching messages. | (2 * number of cores)
+| queue-size              | queue.size               | Maximum number of messages to keep in memory while waiting to be dispatched. | 10000
+| use-routing-key         | queue.use-routing-key    | Whether to use the routing key when forwarding messages to the broker. This enforces message ordering. | true
+| batch-size              | batch.size               | Messages are aggregated in batches before being dispatched. When the batch reaches this size, it will be dispatched. | 1000
+| batch-interval          | batch.interval           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
 |===
 
 TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` balances the messages across all partitions.
 This can be done safely for flows, but is not supported for metrics when using thresholding (order is required).
 
-When setting these options in OpenNMS, they can be added as an attribute to the `<queue>` element.
+When setting these options in OpenNMS, you can add them as an attribute to the `<queue>` element.
 For example:
 [source, xml]
 ----
@@ -84,8 +85,8 @@ For example:
 </queue>
 ----
 
-When setting these options on Minion, you can add them as `parser` properties, and on Sentinel as `adapter` properties:
-[source]
+When setting these options on Minion, you can add them as parser properties, and on Sentinel as adapter properties:
+[source, properties]
 ----
 name=IPFIX-Listener
 class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
