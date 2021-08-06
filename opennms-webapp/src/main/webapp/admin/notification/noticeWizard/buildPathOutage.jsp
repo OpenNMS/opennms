@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.admin.notification.noticeWizard.*"
+	import="org.opennms.web.admin.notification.noticeWizard.*,
+                org.opennms.core.utils.WebSecurityUtils
+        "
 %>
 
 <%
@@ -133,7 +135,7 @@
 
            <div class="form-group">
              <label for="newRule">Current Rule:</label>
-	     <input type="text" class="form-control" name="newRule" value="<%=newRule%>"/>
+	     <input type="text" class="form-control" name="newRule" value="<%=WebSecurityUtils.sanitizeString(newRule)%>"/>
            </div>
 
            <div class="form-group">
