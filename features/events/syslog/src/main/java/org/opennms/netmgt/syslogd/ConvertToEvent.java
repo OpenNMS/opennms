@@ -314,7 +314,7 @@ public class ConvertToEvent {
         }
 
         // If no host name was provided we will use the source IP address
-        if(message.getHostName() == null)
+        if(message.getHostAddress() == null)
         {
             message.setHostName(addr.getHostAddress());
         }
