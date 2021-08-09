@@ -6,9 +6,9 @@ The Junos Telemetry Interface (JTI) lets you push operational statistics asynchr
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 For detailed information about JTI, see the https://www.juniper.net/documentation/en_US/junos/topics/concept/junos-telemetry-interface-oveview.html[Juniper Documentation].
 
-To enable support for JTI, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` and set `enabled=true` for `JTI` protocol.
+To enable support for JTI, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` and set `enabled=true` for JTI protocol.
 
-.Enable JTI protocol in telemetryd-configuration.xml 
+.Enable JTI protocol in telemetryd-configuration.xml
 [source, xml]
 ----
 <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
@@ -19,7 +19,7 @@ To enable support for JTI, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.x
 
 <queue name="JTI">
     <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="false">
-        <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
+        <parameter key="script" value="$OPENNMS_HOME/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
 
         <package name="JTI-Default">
             <rrd step="300">
@@ -37,18 +37,18 @@ To enable support for JTI, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.x
 Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the Web UI:
 
 .Send a reloadDaemonConfig event through CLI
-[source]
+[source, console]
 ----
-$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$OPENNMS_HOMEbin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:50000` to which JTI messages can be forwarded.
 
-== Configure JTI Listener on a Minion
+== Configure JTI listener on a Minion
 
 To enable and configure a UDP listener for JTI on Minion, connect to the Karaf Console and set the following properties:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8201 admin@localhost
 ...
@@ -63,11 +63,10 @@ admin@minion()> config:update
 
 NOTE: The protocol must also be enabled on {page-component-title} for the messages to be processed.
 
-
-== JTI Adapter
+== JTI adapter
 
 The JTI adapter handles Junos Telemetry Interface payloads.
-Messages are decoded using the published protobuf specifications and forwarded to a JSR-223-compatible script (i.e., Beanshell or Groovy) for further processing.
+Messages are decoded using the published protobuf specifications and forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
 Use the script extension to extract the desired metrics from the JTI messages and persist the results as time series data.
 
 === Facts
@@ -77,27 +76,26 @@ Use the script extension to extract the desired metrics from the JTI messages an
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Adapter specific parameters for the JtiGpbAdapter
-[options="header, %autowidth"]
+.Required adapter-specific parameters for the JtiGpbAdapter
+[options="header, autowidth"]
 |===
-| Parameter        | Description                                                       | Required | Default value
-| `script`         | Full path to the script used to handle the JTI messages.           | required | (none)
+| Parameter      | Default | Description
+| script         | none    | Full path to the script used to handle the JTI messages.
 |===
 
 === Scripting
 
-The script will be invoked for every JTI message that is received and succesfully decoded.
+The script will be invoked for every JTI message that is received and successfully decoded.
 
 The following globals will be passed to the script:
 
 .Globals passed to the script
-[options="header, %autowidth"]
+[options="header, autowidth"]
 |===
-| Parameter  | Description                                                    | Type
-| `agent`    | The agent (node) against which the metrics will be associated.  | `org.opennms.netmgt.collection.api.CollectionAgent`
-| `builder`  | Builder in which to add the resources and metrics.     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
-| `msg`      | Decoded JTI message from which the metrics should be extracted. | `org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop`
+| Parameter  | Description                                                     | Type
+| agent      | The agent (node) against which the metrics will be associated.  | `org.opennms.netmgt.collection.api.CollectionAgent`
+| builder    | Builder in which to add the resources and metrics.              | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| msg        | Decoded JTI message from which the metrics should be extracted. | `org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop`
 |===
-

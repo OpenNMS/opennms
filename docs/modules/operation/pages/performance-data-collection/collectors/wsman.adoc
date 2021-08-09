@@ -168,7 +168,7 @@ The following shows the default WS-Management collection:
 [source, xml]
 ----
 <?xml version="1.0"?>
-<wsman-datacollection-config rrd-repository="${install.share.dir}/rrd/snmp/">
+<wsman-datacollection-config rrd-repository="$OPENNMS_HOME/share/rrd/snmp/">
     <collection name="default">
         <rrd step="300">
             <rra>RRA:AVERAGE:0.5:1:2016</rra>

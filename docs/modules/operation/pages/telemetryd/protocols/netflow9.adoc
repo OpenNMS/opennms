@@ -1,7 +1,7 @@
 
 = NetFlow v9
 
-See <<ga-flow-support, Flow Support>> for details on flow support in _{page-component-title}_.
+See <<ga-flow-support, Flow Support>> for details on flow support in {page-component-title}.
 
 
 [[telemetryd-netflow9-parser-udp]]
@@ -18,22 +18,30 @@ The Netflow v9 UDP parser supports protocol detection.
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Parameters for the Netflow v9 UDP Parser
-[options="header, %autowidth"]
+.Optional parameters for the Netflow v9 UDP parser
+[options="header, autowidth"]
 |===
-| Parameter                | Description                                                                                | Required | Default value
-| `templateTimeout`        | Templates must be re-declared in the given duration or they will be dropped.               | no       | 30 minutes
-| `maxClockSkew`           | The maximum delta in seconds between exporter and Minion timestamps.                       | no       | 0
-| `clockSkewEventRate`     | Used to rate-limit clock skew events in seconds.                                           | no       | 3600
-| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                                        | no       | true
-| `sequenceNumberPatience` | A value > 1 enables checking for seuqence number completeness.
-                            The value gives the size of the history buffer allowing flows to be processed out of order. | no       | 32
-| `flowActiveTimeoutFallback`   | Fallback value for active flow timeout if setting value is not included in exported flows | no | null
-| `flowInactiveTimeoutFallback`   | Fallback value for inactive flow timeout if setting value is not included in exported flows | no | null
-| `flowSamplingIntervalFallback`   | Fallback value for sampling interval if setting value is not included in exported flows | no | null
+| Parameter                     | Default    | Description
+| templateTimeout               | 30 minutes | Templates must be redeclared in the given duration or they will be dropped.
+| maxClockSkew                  | 0          | The maximum delta in seconds between exporter and Minion timestamps.
+| clockSkewEventRate            | 3600       | Used to rate-limit clock skew events in seconds.
+| dnsLookupsEnabled             | true       | Used to enable or disable DNS resolution for flows.
+| sequenceNumberPatience        | 32         | A value > 1 enables checking for sequence number completeness.
+                                                The value gives the size of the history buffer allowing flows to be processed out of order.
+| flowActiveTimeoutFallback     | none       | Fallback value for active flow timeout, if value is not included in exported flows.
+| flowInactiveTimeoutFallback   | none       | Fallback value for inactive flow timeout, if value is not included in exported flows.
+| flowSamplingIntervalFallback  | none       | Fallback value for sampling interval, if value is not included in exported flows.
 |===
+
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
+Furthermore, you can use the `clockSkewEventRate` parameter to rate-limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.
+
 
 [[telemetryd-netflow9-adapter]]
 == Netflow v9 Adapter
@@ -48,13 +56,6 @@ Flows are decoded from the messages into the canonical flow format and are publi
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
 This adapter does not currently have any configurable parameters.
-
-TIP: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters. 
-It specifies the maximum delta in seconds between exporter and Minion time stamps. 
-If exceeded, an alarm will be generated for the exporting device. 
-The default value is 0, so clock skew detection is disabled. 
-Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
-The default is `3600` seconds, so every hour an event will be sent.

@@ -45,14 +45,15 @@ If the node is not associated with both a foreign source and foreign ID, then th
 
 == Topologies
 
-The Kafka Producer listens for changes made to the current set of topologies (bridge, CDP, ISIS, LLDP, and OSPF) and forwards the resulting messages to Kafka topics. A topic is defined either for Topology Vertex Update Message and another topic is defined for Topology Edge Update Message.
-The topologies are provided by the enhanced linkd updaters via the OnmsTopology API.
+The Kafka Producer listens for changes made to the current set of topologies and forwards the resulting messages to the topologyEdgeTopic Kafka topic.
+The topologies are provided by the <<enlinkd/introduction.adoc#ga-enlinkd, Enhanced Linkd>> updaters via the OnmsTopology API.
 An updater sends OnmsTopologyMessage to the subscribers.
 The records are keyed by GPB-encoded key of the protocol and TopologyRef and contain a GPB-encoded model of the vertex or edge.
 When a vertex or an edge is deleted, a null value is sent with the corresponding encoded GPB key.
 Publishing records in this fashion lets the topic be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
 
-IMPORTANT: The topologies topic is not intended to include all of the vertices in the system, it only includes records for vertices that relate to topology messages that have been forwarded. 
+IMPORTANT: The topologies topic is not intended to include all the vertices in the system.
+It only includes records for vertices that relate to topology messages that have been forwarded.
 
 == Metrics
 
@@ -64,8 +65,3 @@ The records are keyed in this fashion to help ensure that collection sets relate
 When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
 
 NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be available on the {page-component-title} instance.
-
-
-
-
-

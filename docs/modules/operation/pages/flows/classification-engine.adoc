@@ -11,56 +11,34 @@ A rule defines at least a name, which the flow is classified with, and additiona
 == Rule definition
 A rule has the following fields:
 
+[options="header, autowidth"]
 |===
-| Name | Mandatory | Description
-
-| `group`
-| `mandatory`
-| The group in which this rule was placed, e.g., `system-defined`, see also <<rule-groups,Rule Groups>>
-
-| `position`
-| `mandatory`
-| The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
-
-| `name`
-| `mandatory`
-| The name the flow is classified with, e.g., `http`.
-
-| `dstPort`
-| `optional`
-| The `dstPort` of the flow must match this port.
-  May be a range or list of ports, e.g., 80,8080,8980, or 8000-9000.
-
-| `dstAddress`
-| `optional`
-| The `dstAddress` of the flow must match this address.
-  May contain wildcards.
-
-| `srcPort`
-| `optional`
-| The `srcPort` of the flow must match this port.
-  See `dstPort` for more details.
-
-| `srcAddress`
-| `optional`
-| The `srcAddress` of the flow must match this address.
-  See `dstAddress` for more details.
-
-| `exporterFilter`
-| `optional`
-| The exporter of the flow must match this criteria.
-  It supports all capabilities of the https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API].
-
-| `protocol`
-| `optional`
-| The IP protocol of the flow must match this criteria.
+| Name            | Description
+2+| *Required*
+| group            | The group in which this rule was placed.
+                     See also <<rule-groups,Rule Groups>>.
+| position         | The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
+| name             | The name the flow is classified with; for example, `http`.
+                
+2+| *Optional*
+| dstPort          | The destination port of the flow to match.
+                     May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
+| dstAddress       | The destination IP address of the flow to match.
+                     May contain wildcards.
+| srcPort          | The source port of the flow to match.
+                     See `dstPort` for more details.
+| srcAddress       | The source IP address of the flow to match.
+                     See `dstAddress` for more details.
+| exporterFilter   | The exporter of the flow must match this criteria.
+                     This parameter supports all capabilities of the https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API].
+| protocol         | The IP protocol of the flow to match.
 |===
 
 Even if all fields (besides `group`, `position`, and `name`) are optional, at least one of them must be defined to be considered a valid rule.
 
 A list of predefined rules already exist in the group `pre-defined`.
 The predefined rules are inspired by the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].
-Define new rules using the Classification UI, under the gears icon in the web UI: *Flow Management -> Manage Flow Classification*
+Define new rules using the Classification UI, under the gears icon in the web UI: menu:Gear icon[Flow Management > Manage Flow Classification].
 
 == Omnidirectional Rules
 You can mark rules as omnidirectional, which additionally evaluates the rules with interchanged endpoint addresses and ports.
@@ -70,28 +48,31 @@ This is helpful if traffic related to a matching classification should be classi
 == Rule Groups
 Rules live within a rule group.
 New groups can be added, edited, and deleted via the Classification UI.
-The `pre-defined` group is read only. You cannot alter it or its rules.
+The `pre-defined` group is read only.
+You cannot alter it or its rules.
 
 [[evaluation-order]]
 == Order of Evaluation
 Rules and groups have a position.
 Lower positions are evaluated first.
-The position of a rules group is more important than the rule's position within its group. The system-defined group is always evaluated last.
+The position of a rules group is more important than the rule's position within its group.
+The system-defined group is always evaluated last.
 
 An example of an evaluation:
 
+[options="header"]
 |===
-| Group Position | Group     | Rule Position | Rule
-| `1`            | `group 1` | `1`           | `rule 1.1`
-| `1`            | `group 1` | `2`           | `rule 1.2`
-| `1`            | `group 1` | `3`           | `rule 1.3`
-| `1`            | `group 1` | `4`           | `rule 1.4`
-| `2`            | `group 2` | `1`           | `rule 2.1`
-| `2`            | `group 2` | `2`           | `rule 2.2`
-| `2`            | `group 2` | `3`           | `rule 2.3`
-| `2`            | `group 2` | `4`           | `rule 2.4`
-| `3`            | `group 3` | `1`           | `rule 3.1`
-| `3`            | `group 3` | `2`           | `rule 3.2`
+| Group Position | Group   | Rule Position | Rule
+| 1              | group 1 | 1             | rule 1.1
+| 1              | group 1 | 2             | rule 1.2
+| 1              | group 1 | 3             | rule 1.3
+| 1              | group 1 | 4             | rule 1.4
+| 2              | group 2 | 1             | rule 2.1
+| 2              | group 2 | 2             | rule 2.2
+| 2              | group 2 | 3             | rule 2.3
+| 2              | group 2 | 4             | rule 2.4
+| 3              | group 3 | 1             | rule 3.1
+| 3              | group 3 | 2             | rule 3.2
 |===
 
 Change the positions of rules and groups by drag and drop or by editing the position field in the edit dialogs.
@@ -101,82 +82,44 @@ Change the positions of rules and groups by drag and drop or by editing the posi
 With a more complex set of rules, it is not always easy to verify if everything is configured correctly.
 To make things easier, the Classification UI lets you test/verify a classification.
 To do so, navigate to the Classification UI:
-*Gear icon-> Flow Management -> Manage Flow Classification* and select the Test classification icon in the top right.
+menu:Gear icon[Flow Management > Manage Flow Classification] and select the Test classification icon in the top right.
 This simulates sending a flow to the Classification Engine with certain fields.
 
 == Example
 
 Let's assume the following rules are defined:
 
+[options="header"]
 |===
-| name |  srcAddress | srcPort | dstAddress | dstPort | protocol | exporterFilter
-
-| `OpenNMS`
-|
-|
-| 10.0.0.1
-| 8980
-| tcp,udp
-|
-
-| `http`
-|
-|
-|
-| 80,8980,8080,9000
-| udp,tcp
-|
-
-| `https`
-|
-|
-|
-| 443
-|
-|
-
-| `Exporters`
-|
-|
-|
-|
-|
-| categoryName == 'Exporters'
+| name       |  srcAddress | srcPort | dstAddress | dstPort           | protocol | exporterFilter
+| OpenNMS    |             |         | 10.0.0.1   | 8980              | tcp,udp  |
+| http       |             |         |            | 80,8980,8080,9000 | udp,tcp  |
+| https      |             |         |            | 443               |          |
+| Exporters  |             |         |            |                   |          | categoryName == 'Exporters'
 |===
-
 
 The following flows are sent to {page-component-title} and with the rules defined above classified accordingly.
 
-[%header, cols=2]
+[options="header, autowidth"]
 |===
-| Flow
-| Classification
+| Flow    | Classification
 
-| protocol: tcp,
-
-  srcAddress: 10.0.0.5, srcPort: 60123,
-
-  dstAddress: 54.246.188.65, dstPort: 80,
-
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 54.246.188.65, dstPort: 80, +
   exporterAddress: 10.0.0.55
-| `http`
+| http
 
-| protocol: tcp,
-
-  srcAddress: 10.0.0.5, srcPort: 60123,
-
-  dstAddress: 54.246.188.65, dstPort: 443,
-
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 54.246.188.65, dstPort: 443, +
   exporterAddress: 10.0.0.55
-| `https`
+| https
 
-| protocol: tcp,
-
-  srcAddress: 10.0.0.5, srcPort: 60123,
-
-  dstAddress: 10.0.0.1, dstPort: 8980,
-
+| protocol: tcp, +
+  srcAddress: 10.0.0.5, srcPort: 60123, +
+  dstAddress: 10.0.0.1, dstPort: 8980, +
   exporterAddress: 10.0.0.55
-| `OpenNMS`
+| OpenNMS
 
 |===
