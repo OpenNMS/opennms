@@ -123,6 +123,7 @@ public class Snmp implements Serializable {
 
         Snmp snmp = new Snmp();
         snmp.setId(source.getId());
+        snmp.setTrapOID(source.getTrapOID());
         snmp.setIdtext(source.getIdtext());
         snmp.setVersion(source.getVersion());
         snmp.setSpecific(source.hasSpecific() ? source.getSpecific() : null);
