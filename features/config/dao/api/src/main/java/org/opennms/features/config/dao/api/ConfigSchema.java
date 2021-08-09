@@ -32,14 +32,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 
 /**
  * This class include meta-data of the config
  */
-public class ConfigSchema<T extends XmlConfigConverter> implements Serializable {
+public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private String name;
     private int majorVersion;
     private int minorVersion;

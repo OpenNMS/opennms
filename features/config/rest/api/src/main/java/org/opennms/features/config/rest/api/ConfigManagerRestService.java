@@ -54,14 +54,14 @@ public interface ConfigManagerRestService {
     Set<String> listServices();
 
     @GET
-    @Path("/{serviceName}")
-    ConfigSchema getSchema(@PathParam("serviceName") String serviceName);
+    @Path("/{configName}")
+    ConfigSchema getSchema(@PathParam("configName") String configName);
 
     @GET
-    @Path("/{serviceName}/{configId}")
-    ConfigData getConfigFile(@PathParam("serviceName") String serviceName, @PathParam("configId") String filename);
+    @Path("/{configName}/{configId}")
+    ConfigData getConfigFile(@PathParam("configName") String configName, @PathParam("configId") String filename);
 
     @POST
-    @Path("/{serviceName}/{configId}/attach")
-    ConfigData getView(@PathParam("serviceName") String serviceName, @PathParam("configId") String filename, Map<String, Object> inputParameters);
+    @Path("/{configName}/{configId}/attach")
+    ConfigData getView(@PathParam("configName") String configName, @PathParam("configId") String filename, Map<String, Object> inputParameters);
 }

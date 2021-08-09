@@ -49,6 +49,8 @@ public class JSONObjectSerialIzer extends StdSerializer<JSONObject> {
             throws IOException {
         jgen.writeStartObject();
         String tmp = value.toString();
+        // remove the double quote of the string, since the writeStartObject will give a quote already
+        // if you don't call start object, objectmapper won't know there is an object. So the workaround is remove the quote.
         jgen.writeRaw(tmp.substring(1, tmp.length() - 1));
         jgen.writeEndObject();
     }

@@ -38,7 +38,7 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.api.ServiceSchema;
 import org.opennms.features.config.dao.api.XMLSchema;
-import org.opennms.features.config.dao.api.XmlConfigConverter;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -51,7 +51,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 
-public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
+public class ValidateUsingConverter<T> implements ConfigConverter<T> {
     private Class<T> configurationClass;
     private XmlMapper<T> xmlMapper;
     private String xsdName;
@@ -141,12 +141,12 @@ public class ValidateUsingConverter<T> implements XmlConfigConverter<T> {
     }
 
     @Override
-    public T xmlToJaxbObject(final String xml) {
-        return xmlMapper.xmlToJaxbObject(xml);
+    public T xmlToJaxbObject(final String xmlStr) {
+        return xmlMapper.xmlToJaxbObject(xmlStr);
     }
 
     @Override
-    public String xmlTOJson(final String xmlStr) {
+    public String xmlToJson(final String xmlStr) {
         return xmlMapper.xmlToJson(xmlStr);
     }
 

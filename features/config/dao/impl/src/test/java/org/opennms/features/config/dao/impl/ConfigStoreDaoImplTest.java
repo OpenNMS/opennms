@@ -57,13 +57,13 @@ import java.util.Set;
 @JUnitTemporaryDatabase
 @Transactional
 public class ConfigStoreDaoImplTest {
-    final String serviceName = "testServiceName";
+    final String configName = "testConfigName";
     final int majorVersion = 29;
     final String filename = "testFilename";
     @Autowired
     private ConfigStoreDao configStoreDao;
 
-    public static class FakeConvert<T> implements XmlConfigConverter {
+    public static class FakeConvert<T> implements ConfigConverter {
         private Class<T> configurationClass;
         private ServiceSchema serviceSchema;
         private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
@@ -75,7 +75,7 @@ public class ConfigStoreDaoImplTest {
         }
 
         @Override
-        public String xmlTOJson(String xmlStr) {
+        public String xmlToJson(String xmlStr) {
             return null;
         }
 
@@ -117,29 +117,28 @@ public class ConfigStoreDaoImplTest {
 
     @Test
     public void testData() throws IOException, ClassNotFoundException {
-        ConfigSchema<FakeConvert> configSchema = new ConfigSchema<>(serviceName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        ConfigSchema<FakeConvert> configSchema = new ConfigSchema<>(configName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
         JSONObject config = new JSONObject();
         config.put("test", "test");
         ConfigData configData = new ConfigData();
         configData.getConfigs().put(filename, config);
         // register
-        boolean status = configStoreDao.register(configSchema);
-        Assert.assertTrue("FAIL TO WRITE CONFIG", status);
-        configStoreDao.addConfigs(serviceName, configData);
-        Optional<ConfigData> configsInDb = configStoreDao.getConfigData(serviceName);
+        configStoreDao.register(configSchema);
+        configStoreDao.addConfigs(configName, configData);
+        Optional<ConfigData> configsInDb = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO getConfigData", configsInDb.isPresent());
 
         // get
-        Optional<ConfigSchema> result = configStoreDao.getConfigSchema(serviceName);
+        Optional<ConfigSchema> result = configStoreDao.getConfigSchema(configName);
         Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
-        String serviceName2 = serviceName + "_2";
-        ConfigSchema<FakeConvert> configSchema2 = new ConfigSchema<>(serviceName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        String configName2 = configName + "_2";
+        ConfigSchema<FakeConvert> configSchema2 = new ConfigSchema<>(configName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
         configStoreDao.register(configSchema2);
         configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);
-        Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(serviceName2);
+        Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(configName2);
         Assert.assertEquals("FAIL TO updateConfigSchema", tmpConfigSchema2.get().getVersion(), "30.0.0");
 
         // list all
@@ -149,27 +148,24 @@ public class ConfigStoreDaoImplTest {
         // update
         JSONObject config2 = new JSONObject();
         config2.put("test2", "test2");
-        status = configStoreDao.addConfig(serviceName, filename + "_2", config2);
-        Assert.assertTrue("FAIL TO addOrUpdateConfig", status);
-        Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(serviceName);
+        configStoreDao.addConfig(configName, filename + "_2", config2);
+        Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
 
         // delete config
-        status = configStoreDao.deleteConfig(serviceName, filename + "_2");
-        Assert.assertTrue("FAIL TO deleteConfig", true);
-        Optional<ConfigData> resultAfterDelete = configStoreDao.getConfigData(serviceName);
+        configStoreDao.deleteConfig(configName, filename + "_2");
+        Optional<ConfigData> resultAfterDelete = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 1", resultAfterDelete.get().getConfigs().size() == 1);
 
         // updateConfigs
-        status = configStoreDao.updateConfigs(serviceName, new ConfigData());
-        Assert.assertTrue("FAIL TO updateConfigs", true);
-        Optional<ConfigData> resultAfterUpdateConfigs = configStoreDao.getConfigData(serviceName);
+        configStoreDao.updateConfigs(configName, new ConfigData());
+        Optional<ConfigData> resultAfterUpdateConfigs = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 0", resultAfterUpdateConfigs.get().getConfigs().size() == 0);
 
         // deregister
-        configStoreDao.unregister(serviceName);
-        Optional<ConfigSchema<?>> schemaAfterDeregister = configStoreDao.getConfigSchema(serviceName);
-        Optional<ConfigData> configAfterDeregister = configStoreDao.getConfigData(serviceName);
+        configStoreDao.unregister(configName);
+        Optional<ConfigSchema<?>> schemaAfterDeregister = configStoreDao.getConfigSchema(configName);
+        Optional<ConfigData> configAfterDeregister = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());
     }

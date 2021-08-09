@@ -47,7 +47,6 @@ import java.util.Set;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
-    //private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
     public static final String CONTEXT_META = "CM_META";
     private final ObjectMapper mapper;
@@ -64,9 +63,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public boolean register(ConfigSchema<?> configSchema) throws IOException {
-        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
-        return timestamp > 0;
+    public void register(ConfigSchema<?> configSchema) throws IOException {
+        this.putSchema(configSchema);
     }
 
     @Override
@@ -88,8 +86,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getConfigSchema(String serviceName) throws IOException, ClassNotFoundException {
-        Optional<String> jsonStr = jsonStore.get(serviceName, CONTEXT_META);
+    public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException, ClassNotFoundException {
+        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_META);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -97,23 +95,22 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         String className = (String) json.get("converterClass");
         Class<?> converterClass = Class.forName(className);
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
-        System.out.println(javaType);
         ConfigSchema<?> schema = (ConfigSchema) mapper.readValue(jsonStr.get(), javaType);
         return Optional.ofNullable(schema);
     }
 
     @Override
-    public boolean updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException {
+    public void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configSchema.getName());
         if (schema.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("ConfigName not found: " + configSchema.getName());
         }
-        return this.putSchema(configSchema);
+        this.putSchema(configSchema);
     }
 
     @Override
-    public Optional<ConfigData<JSONObject>> getConfigData(final String serviceName) throws IOException {
-        Optional<String> configDataJsonStr = jsonStore.get(serviceName, CONTEXT_CONFIG);
+    public Optional<ConfigData<JSONObject>> getConfigData(final String configName) throws IOException {
+        Optional<String> configDataJsonStr = jsonStore.get(configName, CONTEXT_CONFIG);
 
         if (configDataJsonStr.isEmpty()) {
             return Optional.empty();
@@ -123,31 +120,31 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public boolean addConfigs(String serviceName, ConfigData<JSONObject> configData) throws IOException {
-        Optional<ConfigData<JSONObject>> exist = this.getConfigData(serviceName);
+    public void addConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
+        Optional<ConfigData<JSONObject>> exist = this.getConfigData(configName);
         if (exist.isPresent()) {
-            return false;
+            throw new IllegalArgumentException("Duplicate config found for service: " + configName);
         }
-        return this.putConfig(serviceName, configData);
+        this.putConfig(configName, configData);
     }
 
     @Override
-    public boolean addConfig(String serviceName, String configId, JSONObject config) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(serviceName);
+    public void addConfig(String configName, String configId, JSONObject config) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             configData = Optional.of(new ConfigData<JSONObject>());
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (configs.containsKey(configId)) {
-            return false;
+            throw new IllegalArgumentException("Duplicate config found for configId: " + configId);
         }
         configs.put(configId, config);
-        return this.putConfig(serviceName, configData.get());
+        this.putConfig(configName, configData.get());
     }
 
     @Override
-    public Optional<JSONObject> getConfig(String serviceName, String configId) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(serviceName);
+    public Optional<JSONObject> getConfig(String configName, String configId) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             return Optional.empty();
         }
@@ -155,58 +152,62 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public boolean updateConfig(String serviceName, String configId, JSONObject config) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(serviceName);
+    public void updateConfig(String configName, String configId, JSONObject config) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
-            return false;
+            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
         configs.put(configId, config);
-        return this.putConfig(serviceName, configData.get());
+        this.putConfig(configName, configData.get());
     }
 
     @Override
-    public boolean updateConfigs(String serviceName, ConfigData<JSONObject> configData) throws IOException {
-        return this.putConfig(serviceName, configData);
+    public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
+        this.putConfig(configName, configData);
     }
 
     @Override
-    public boolean deleteConfig(String serviceName, String configId) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(serviceName);
+    public void deleteConfig(String configName, String configId) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
         if (configData.get().getConfigs().remove(configId) == null) {
-            return false;
+            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
-        return this.putConfig(serviceName, configData.get());
+        this.putConfig(configName, configData.get());
     }
 
     @Override
-    public void unregister(String serviceName) {
-        jsonStore.delete(serviceName, CONTEXT_META);
-        jsonStore.delete(serviceName, CONTEXT_CONFIG);
+    public void unregister(String configName) {
+        jsonStore.delete(configName, CONTEXT_META);
+        jsonStore.delete(configName, CONTEXT_CONFIG);
     }
 
     @Override
-    public Optional<Map<String, JSONObject>> getConfigs(String serviceName) throws IOException {
-        Optional<ConfigData<JSONObject>> configData = this.getConfigData(serviceName);
+    public Optional<Map<String, JSONObject>> getConfigs(String configName) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(configData.get().getConfigs());
     }
 
-    private boolean putSchema(ConfigSchema<?> configSchema) throws IOException {
+    private void putSchema(ConfigSchema<?> configSchema) throws IOException {
         long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
-        return timestamp > 0;
+        if(timestamp < 0){
+            throw new RuntimeException("Fail to put data in JsonStore!");
+        }
     }
 
-    private boolean putConfig(String serviceName, ConfigData<JSONObject> configData) throws IOException {
-        long timestamp = jsonStore.put(serviceName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
-        return timestamp > 0;
+    private void putConfig(String configName, ConfigData<JSONObject> configData) throws IOException {
+        long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
+        if(timestamp < 0){
+            throw new RuntimeException("Fail to put data in JsonStore!");
+        }
     }
 }

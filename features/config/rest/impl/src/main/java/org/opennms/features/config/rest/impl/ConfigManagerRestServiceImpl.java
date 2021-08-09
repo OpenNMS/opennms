@@ -66,16 +66,16 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
 
     /**
      * get or create a fake schema and return
-     * @param serviceName
+     * @param configName
      * @return
      */
     @Override
-    public ConfigSchema getSchema(String serviceName){
+    public ConfigSchema getSchema(String configName){
         try{
-            Optional<ConfigSchema> schema = configurationManagerService.getRegisteredSchema(serviceName);
+            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             if(schema.isEmpty()){
-                configurationManagerService.registerSchema(serviceName, 29,0,0,ProvisiondConfiguration.class);
-                schema = configurationManagerService.getRegisteredSchema(serviceName);
+                configurationManagerService.registerSchema(configName, 29,0,0,ProvisiondConfiguration.class);
+                schema = configurationManagerService.getRegisteredSchema(configName);
             }
             return schema.get();
         } catch (Exception e) {
@@ -86,12 +86,12 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public ConfigData getConfigFile(String serviceName, String filename) {
+    public ConfigData getConfigFile(String configName, String filename) {
         return null;
     }
 
     @Override
-    public ConfigData getView(String serviceName, String filename, Map<String, Object> inputParameters) {
+    public ConfigData getView(String configName, String filename, Map<String, Object> inputParameters) {
         return null;
     }
 }

@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.api.XmlConfigConverter;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ValidateUsingConverter;
 import org.slf4j.Logger;
@@ -48,8 +48,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-public class ConfigurationManagerServiceImpl implements ConfigurationManagerService<JSONObject> {
-
+public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceImpl.class);
     private final ConfigStoreDao<JSONObject> configStoreDao;
 
@@ -58,32 +57,32 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public <ENTITY> void registerSchema(final String serviceName, final int majorVersion, final int minorVersion,
+    public <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
                                         final int patchVersion, Class<ENTITY> entityClass)
             throws IOException, ClassNotFoundException {
         ValidateUsingConverter<ENTITY> converter = new ValidateUsingConverter<>(entityClass);
-        this.registerSchema(serviceName, majorVersion, minorVersion, patchVersion, converter);
+        this.registerSchema(configName, majorVersion, minorVersion, patchVersion, converter);
     }
 
     @Override
-    public void registerSchema(final String serviceName, final int majorVersion, final int minorVersion,
-                               final int patchVersion, final XmlConfigConverter converter)
+    public void registerSchema(final String configName, final int majorVersion, final int minorVersion,
+                               final int patchVersion, final ConfigConverter converter)
             throws IOException, ClassNotFoundException {
-        Objects.requireNonNull(serviceName);
+        Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
-        if (this.getRegisteredSchema(serviceName).isPresent()) {
-            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", serviceName));
+        if (this.getRegisteredSchema(configName).isPresent()) {
+            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
         }
 
-        final ConfigSchema configSchema = new ConfigSchema(serviceName, majorVersion, minorVersion, patchVersion,
+        final ConfigSchema configSchema = new ConfigSchema(configName, majorVersion, minorVersion, patchVersion,
                 converter.getClass(), converter);
         configStoreDao.register(configSchema);
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException {
-        Objects.requireNonNull(serviceName);
-        return configStoreDao.getConfigSchema(serviceName);
+    public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException, ClassNotFoundException {
+        Objects.requireNonNull(configName);
+        return configStoreDao.getConfigSchema(configName);
     }
 
     private String readFile(final String xmlPath) throws IOException {
@@ -92,52 +91,52 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(final String serviceName, final String configId, final String xmlPath)
+    public void registerConfiguration(final String configName, final String configId, final String xmlPath)
             throws IOException, ClassNotFoundException {
         Objects.requireNonNull(configId);
-        Objects.requireNonNull(serviceName);
+        Objects.requireNonNull(configName);
         Objects.requireNonNull(xmlPath);
 
-        Optional<ConfigSchema<?>> meta = this.getRegisteredSchema(serviceName);
+        Optional<ConfigSchema<?>> meta = this.getRegisteredSchema(configName);
         if (meta.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", serviceName));
+            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        if (this.getConfiguration(serviceName, configId).isPresent()) {
-            throw new IllegalArgumentException(String.format("Configuration with service=%s, id=%s is already registered, update instead.", serviceName, configId));
+        if (this.getConfiguration(configName, configId).isPresent()) {
+            throw new IllegalArgumentException(String.format("Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
         try {
             final String xmlStr = this.readFile(xmlPath);
-            String jsonStr = meta.get().getConverter().xmlTOJson(xmlStr);
+            String jsonStr = meta.get().getConverter().xmlToJson(xmlStr);
             JSONObject configJson = new JSONObject(jsonStr);
-            this.registerConfiguration(serviceName, configId, configJson);
+            this.registerConfiguration(configName, configId, configJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void registerConfiguration(String serviceName, String configId, JSONObject jsonObj) throws IOException {
+    public void registerConfiguration(String configName, String configId, JSONObject jsonObj) throws IOException {
         Objects.requireNonNull(configId);
-        Objects.requireNonNull(serviceName);
+        Objects.requireNonNull(configName);
         Objects.requireNonNull(jsonObj);
         //TODO: validation logic here
-        configStoreDao.addConfig(serviceName, configId, jsonObj);
-        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", serviceName, configId, jsonObj);
+        configStoreDao.addConfig(configName, configId, jsonObj);
+        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, jsonObj);
     }
 
     @Override
-    public void unregisterConfiguration(final String serviceName, final String configId) throws IOException {
-        this.configStoreDao.deleteConfig(serviceName, configId);
+    public void unregisterConfiguration(final String configName, final String configId) throws IOException {
+        this.configStoreDao.deleteConfig(configName, configId);
     }
 
     @Override
-    public boolean updateConfiguration(String serviceName, String configId, JSONObject object) throws IOException {
-        return configStoreDao.updateConfig(serviceName, configId, object);
+    public void updateConfiguration(String configName, String configId, JSONObject object) throws IOException {
+        configStoreDao.updateConfig(configName, configId, object);
     }
 
     @Override
-    public Optional<JSONObject> getConfiguration(final String serviceName, final String configId) throws IOException {
-        return configStoreDao.getConfig(serviceName, configId);
+    public Optional<JSONObject> getConfiguration(final String configName, final String configId) throws IOException {
+        return configStoreDao.getConfig(configName, configId);
     }
 
     @Override
@@ -146,30 +145,30 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void unregisterSchema(String serviceName) throws IOException {
-        configStoreDao.unregister(serviceName);
+    public void unregisterSchema(String configName) throws IOException {
+        configStoreDao.unregister(configName);
     }
 
     @Override
-    public Optional<ConfigData<JSONObject>> getConfigData(String serviceName) throws IOException {
-        return configStoreDao.getConfigData(serviceName);
+    public Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException {
+        return configStoreDao.getConfigData(configName);
     }
 
 //    //TODO: CHECK WHAT IS THAT FOR
 //    @Override
-//    public Optional<ConfigData<JSONObject>> getConfigurationMetaData(String serviceName) {
+//    public Optional<ConfigData<JSONObject>> getConfigurationMetaData(String configName) {
 //        Objects.requireNonNull(serviceId);
-//        return configStoreDao.getConfigData(serviceName).get();
+//        return configStoreDao.getConfigData(configName).get();
 //    }
 /*
     @Override
-    public ConfigData getSchemaForConfiguration(String serviceName) {
+    public ConfigData getSchemaForConfiguration(String configName) {
         return configStoreDao.getConfigSchema()
     }
 */
 //    //TODO: CHECK later
 //    @Override
-//    public ConfigData<JSONObject> getSchemaForConfiguration(String serviceName) {
+//    public ConfigData<JSONObject> getSchemaForConfiguration(String configName) {
 //        return null;
 //    }
 

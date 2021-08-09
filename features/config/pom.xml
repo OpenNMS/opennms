@@ -16,8 +16,6 @@
     <module>rest</module>
   </modules>
   <properties>
-    <!-- Kotlin options -->
-    <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     <!-- Misc. -->
     <skipITs>true</skipITs>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

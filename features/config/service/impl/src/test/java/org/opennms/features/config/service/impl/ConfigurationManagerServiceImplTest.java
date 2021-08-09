@@ -67,7 +67,7 @@ public class ConfigurationManagerServiceImplTest {
     private static final String SERVICE_NAME = "provisiond";
     private static final String CONFIG_ID = "test1";
     @Autowired
-    private ConfigurationManagerService<JSONObject> configManagerService;
+    private ConfigurationManagerService configManagerService;
 
     @Test
     public void testRegisterSchema() throws IOException, ClassNotFoundException {

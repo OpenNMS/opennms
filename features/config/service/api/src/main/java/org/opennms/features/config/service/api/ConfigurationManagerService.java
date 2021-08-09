@@ -28,9 +28,10 @@
 
 package org.opennms.features.config.service.api;
 
+import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.api.XmlConfigConverter;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -41,12 +42,12 @@ import java.util.Set;
  * A Schema is a set of rules that constrain the data of a Configuration.
  * A Configuration is the data that defines the runtime behaviour of a service together with the code of that service.
  */
-public interface ConfigurationManagerService<CONFIG_STORE_TYPE> {
+public interface ConfigurationManagerService {
 
     /**
      * Register a service to use config manager
      *
-     * @param serviceName
+     * @param configName
      * @param majorVersion
      * @param minorVersion
      * @param patchVersion
@@ -55,41 +56,40 @@ public interface ConfigurationManagerService<CONFIG_STORE_TYPE> {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    <ENTITY> void registerSchema(final String serviceName, final int majorVersion, final int minorVersion,
+    <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
                                  final int patchVersion, Class<ENTITY> entityClass) throws IOException, ClassNotFoundException;
 
-    void registerSchema(final String serviceName, final int majorVersion, final int minorVersion,
-                        final int patchVersion, final XmlConfigConverter converter) throws IOException, ClassNotFoundException;
+    void registerSchema(final String configName, final int majorVersion, final int minorVersion,
+                        final int patchVersion, final ConfigConverter converter) throws IOException, ClassNotFoundException;
 
     /**
      * Get the registered Schema
      *
-     * @param serviceName
+     * @param configName
      * @return ConfigSchema
      * @throws IOException
      */
-    Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException, ClassNotFoundException;
 
     /**
      * register a new configuration by xml
      *
-     * @param serviceName
+     * @param configName
      * @param configId
      * @param xmlPath
      * @throws IOException
      */
-    <ENTITY> void registerConfiguration(final String serviceName, final String configId, final String xmlPath)
-            throws IOException, ClassNotFoundException;
+    void registerConfiguration(String configName, String configId, String xmlPath) throws IOException, ClassNotFoundException;
 
     /**
      * register a new configuration by JSONObject
      *
-     * @param serviceName
+     * @param configName
      * @param configId
      * @param object
      * @throws IOException
      */
-    <ENTITY> void registerConfiguration(final String serviceName, final String configId, final CONFIG_STORE_TYPE object)
+    void registerConfiguration(String configName, String configId, JSONObject object)
             throws IOException;
 
     /**
@@ -98,24 +98,24 @@ public interface ConfigurationManagerService<CONFIG_STORE_TYPE> {
      * @param configId
      * @throws IOException
      */
-    void unregisterConfiguration(final String serviceName, final String configId) throws IOException;
+    void unregisterConfiguration(String configName, String configId) throws IOException;
 
-    boolean updateConfiguration(final String serviceName, final String configId,
-                                                    final CONFIG_STORE_TYPE object) throws IOException;
+    void updateConfiguration(String configName, String configId,
+                                JSONObject object) throws IOException;
 
-    Optional<CONFIG_STORE_TYPE> getConfiguration(final String serviceName, final String configId) throws IOException;
+    Optional<JSONObject> getConfiguration(String configName, String configId) throws IOException;
 
     Set<String> getServiceIds() throws IOException;
 
     /**
      * it will remove both config and schema
-     * @param serviceName
+     * @param configName
      * @throws IOException
      */
-    void unregisterSchema(final String serviceName) throws IOException;
+    void unregisterSchema(String configName) throws IOException;
 
-    Optional<ConfigData<CONFIG_STORE_TYPE>> getConfigData(String serviceName) throws IOException;
-    //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String serviceName);
+    Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException;
+    //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
     //    ConfigData getSchemaForConfiguration(final String configId);
 // TODO: next phase for xml conversion work
 //    /** add: inserts a child into a parent element */

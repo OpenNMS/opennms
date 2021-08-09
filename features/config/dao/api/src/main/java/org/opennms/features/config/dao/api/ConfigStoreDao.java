@@ -43,7 +43,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configSchema
      * @return status
      */
-    boolean register(ConfigSchema<?> configSchema) throws IOException;
+    void register(ConfigSchema<?> configSchema) throws IOException;
 
     /**
      * get all services managing by config manager
@@ -57,91 +57,86 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     Optional<Set<String>> getConfigIds();
 
     /**
-     * get configs meta by serviceName
+     * get configs meta by configName
      *
-     * @param serviceName
+     * @param configName
      * @return status
      */
-    Optional<ConfigSchema<?>> getConfigSchema(String serviceName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException, ClassNotFoundException;
 
     /**
-     * update configs meta by serviceName
-     *
+     * update configs meta by configName
      * @param configSchema
-     * @return update status
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    boolean updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException;
+    void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException;
 
     /**
-     * get configs data by serviceName and configId
+     * get configs data by configName and configId
      *
-     * @param serviceName
+     * @param configName
      * @return config object
      * @throws IOException
      */
-    Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(final String serviceName) throws IOException;
+    Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(String configName) throws IOException;
 
     /**
      * add configs for the registered service name, return false is config already exist
-     *
-     * @param serviceName
+     * @param configName
      * @param configData
-     * @return status
+     * @throws IOException
      */
-    boolean addConfigs(String serviceName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
+    void addConfigs(String configName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
 
     /**
      * add new config to a registered service name
-     *
-     * @param serviceName
+     * @param configName
      * @param configId
      * @param config
-     * @return status
+     * @throws IOException
      */
-    boolean addConfig(String serviceName, String configId, JSONObject config) throws IOException;
+    void addConfig(String configName, String configId, JSONObject config) throws IOException;
 
-    Optional<CONFIG_DATATYPE> getConfig(String serviceName, String configId) throws IOException;
+    Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
 
     /**
      * update config to a registered service name
-     *
-     * @param serviceName
+     * @param configName
      * @param configId
      * @param config
-     * @return status
+     * @throws IOException
      */
-    boolean updateConfig(String serviceName, String configId, JSONObject config) throws IOException;
+    void updateConfig(String configName, String configId, JSONObject config) throws IOException;
 
     /**
      * **replace** all configs for the registered service name
-     *
-     * @param serviceName
+     * @param configName
      * @param configData
-     * @return status
+     * @throws IOException
      */
-    boolean updateConfigs(String serviceName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
+    void updateConfigs(String configName, ConfigData<CONFIG_DATATYPE> configData) throws IOException;
 
     /**
      * delete one config from registered service name
-     *
-     * @param serviceName
+     * @param configName
      * @param configId
-     * @return status
+     * @throws IOException
      */
-    boolean deleteConfig(String serviceName, String configId) throws IOException;
+    void deleteConfig(String configName, String configId) throws IOException;
 
     /**
      * deregister a service from config manager
      *
-     * @param serviceName
+     * @param configName
      */
-    void unregister(String serviceName) throws IOException;
+    void unregister(String configName) throws IOException;
 
     /**
      * get all configs by registered service name
      *
-     * @param serviceName
+     * @param configName
      * @return configs
      */
-    Optional<Map<String, CONFIG_DATATYPE>> getConfigs(String serviceName) throws IOException;
+    Optional<Map<String, CONFIG_DATATYPE>> getConfigs(String configName) throws IOException;
 }

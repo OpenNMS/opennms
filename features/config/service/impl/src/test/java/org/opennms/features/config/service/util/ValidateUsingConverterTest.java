@@ -57,7 +57,7 @@ public class ValidateUsingConverterTest {
                 Resources.getResource("provisiond.json"), StandardCharsets.UTF_8);
 
         // Verify the rendered JSON
-        final String convertedJson = converter.xmlTOJson(sourceXml);
+        final String convertedJson = converter.xmlToJson(sourceXml);
         JSONAssert.assertEquals(expectedJson, convertedJson, true);
 
         // Verify the rendered JSON
