@@ -214,9 +214,10 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
 </features>
 -----
 
+[[ga-kafka-configuration]]
 == Kafka Configuration
 
-Each _Minion_ works as a Producer and must be configured beforehead.
+Each Minion works as a producer and must be configured beforehand.
 Please refer to section <<ga-minion-kafka-producer-configuration, Minion Kafka Producer Configuration>> on how to configure _Minion_ as a _Kafka Producer_.
 
 Each _Sentinel_ works as a Consumer and can be configured in the file `$\{SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.

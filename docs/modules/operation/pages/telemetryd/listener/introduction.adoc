@@ -2,4 +2,4 @@
 [[listener-ref]]
 = Listener Reference
 
-This section describes telemetryd listeners: TCP and UDP. 
+This section describes the available Telemetryd listeners.
