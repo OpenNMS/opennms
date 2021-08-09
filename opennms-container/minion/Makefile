@@ -22,6 +22,7 @@ REVISION                := $(shell git describe --always)
 BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
 BUILD_BRANCH            := $(shell git describe --always)
+PROM_JMX_EXPORTER_VERSION := 0.15.0
 
 %.yml: %.yml.in
 	@echo "Generating $@..."
@@ -61,6 +62,7 @@ help:
 	@echo "  BUILD_NUMBER:       In case we run in CI/CD this is the build number which produced the artifact, default: $(BUILD_NUMBER)"
 	@echo "  BUILD_URL:          In case we run in CI/CD this is the URL which for the build, default: $(BUILD_URL)"
 	@echo "  BUILD_BRANCH:       In case we run in CI/CD this is the branch of the build, default: $(BUILD_BRANCH)"
+	@echo "  PROM_JMX_EXPORTER_VERSION: Version for the Prometheus JMX Exporter agent, default: $(PROM_JMX_EXPORTER_VERSION)"
 	@echo ""
 	@echo "Example:"
 	@echo "  make build DOCKER_REGISTRY=myregistry.com DOCKER_ORG=myorg DOCKER_FLAGS=--push"
@@ -76,9 +78,8 @@ build: test minion-config-schema.yml
 	@echo "Copy Minion tarball to Docker context ..."
 	@find ../../opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./tarball/minion.tar.gz \;
 	@echo "Initialize builder instance ..."
-	# If we don't have a builder instance create it, otherwise use the existing one
-	@if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
-	@docker-buildx use $(DOCKERX_INSTANCE)
+	if ! docker-buildx inspect $(DOCKERX_INSTANCE); then docker-buildx create --name $(DOCKERX_INSTANCE); fi;
+	docker-buildx use $(DOCKERX_INSTANCE)
 	@echo "Build container image for architecture: $(DOCKER_ARCH) ..."
 	docker-buildx build --platform=$(DOCKER_ARCH) \
 	  --build-arg BASE_IMAGE=$(BASE_IMAGE) \
@@ -89,6 +90,7 @@ build: test minion-config-schema.yml
 	  --build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
 	  --build-arg BUILD_URL=$(BUILD_URL) \
 	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
+	  --build-arg PROM_JMX_EXPORTER_VERSION=$(PROM_JMX_EXPORTER_VERSION) \
 	  --tag=$(DOCKER_TAG) \
 	  $(DOCKER_FLAGS) \
 	  .

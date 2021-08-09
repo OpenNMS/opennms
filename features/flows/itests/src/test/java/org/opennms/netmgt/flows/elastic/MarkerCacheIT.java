@@ -173,8 +173,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    mock(SmartQueryService.class));
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -216,8 +215,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    mock(SmartQueryService.class));
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -261,8 +259,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                    mock(SmartQueryService.class));
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
 
             final int ingress = 2;
             final int egress = 3;

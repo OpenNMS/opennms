@@ -54,6 +54,10 @@ import com.google.common.primitives.UnsignedLong;
 
 public class IpFixMessageBuilder implements MessageBuilder {
 
+    private Long flowActiveTimeoutFallback;
+    private Long flowInactiveTimeoutFallback;
+    private Long flowSamplingIntervalFallback;
+
     public IpFixMessageBuilder() {
     }
 
@@ -94,7 +98,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long samplingAlgorithm = null;
         Long samplerMode = null;
         Long selectorAlgorithm = null;
-        Long samplingInterval = null;
+        Long samplingInterval = this.flowSamplingIntervalFallback;
         Long samplerRandomInterval = null;
         Long samplingFlowInterval = null;
         Long samplingFlowSpacing = null;
@@ -117,8 +121,8 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long dot1qCustomerVlanId = null;
         Long postDot1qVlanId = null;
         Long postDot1qCustomerVlanId = null;
-        Long flowActiveTimeout = null;
-        Long flowInactiveTimeout = null;
+        Long flowActiveTimeout = this.flowActiveTimeoutFallback;
+        Long flowInactiveTimeout = this.flowInactiveTimeoutFallback;
 
         for (Value<?> value : values) {
             switch (value.getName()) {
@@ -579,5 +583,29 @@ public class IpFixMessageBuilder implements MessageBuilder {
 
         builder.setNetflowVersion(NetflowVersion.IPFIX);
         return builder;
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.flowActiveTimeoutFallback;
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.flowInactiveTimeoutFallback;
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.flowSamplingIntervalFallback;
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.flowSamplingIntervalFallback = flowSamplingIntervalFallback;
     }
 }

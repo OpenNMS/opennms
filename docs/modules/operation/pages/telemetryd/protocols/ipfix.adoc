@@ -23,13 +23,16 @@ The IPFIX UDP parser supports protocol detection.
 .Optional parameters for the IPFIX UDP Parser
 [options="header, autowidth"]
 |===
-| Parameter              | Default     | Description
-| templateTimeout        | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
-| maxClockSkew           | 0           | The maximum delta in seconds between exporter and Minion timestamps.
-| clockSkewEventRate     | 3600        | Used to rate-limit clock skew events in seconds.
-| dnsLookupsEnabled      | true        | Used to enable or disable DNS resolution for flows.
-| sequenceNumberPatience | 32          | A value > 1 enables checking for sequence number completeness.
-                                         The value gives the size of the history buffer allowing flows to be processed out of order.
+| Parameter                     | Default     | Description
+| templateTimeout               | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
+| maxClockSkew                  | 0           | The maximum delta in seconds between exporter and Minion timestamps.
+| clockSkewEventRate            | 3600        | Used to rate-limit clock skew events in seconds.
+| dnsLookupsEnabled             | true        | Used to enable or disable DNS resolution for flows.
+| sequenceNumberPatience        | 32          | A value > 1 enables checking for sequence number completeness.
+                                                The value gives the size of the history buffer allowing flows to be processed out of order.
+| flowActiveTimeoutFallback     | none        | Fallback value for active flow timeout, if value is not included in exported flows.
+| flowInactiveTimeoutFallback   | none        | Fallback value for inactive flow timeout, if value is not included in exported flows.
+| flowSamplingIntervalFallback  | none        | Fallback value for sampling interval, if value is not included in exported flows.
 |===
 
 [[telemetryd-ipfix-parser-tcp]]

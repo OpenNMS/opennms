@@ -75,4 +75,10 @@ public interface FlowQueryService {
 
     CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
+    CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters);
+
+    CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters);
+
+    CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters);
+
 }

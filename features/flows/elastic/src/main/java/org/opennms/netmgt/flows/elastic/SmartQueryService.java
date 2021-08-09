@@ -41,6 +41,7 @@ import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -226,6 +227,24 @@ public class SmartQueryService implements FlowQueryService {
     public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters) {
         return runWithDelegate(filters, false,
                 qs -> qs.getTopNHostSeries(N, step, includeOther, filters));
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
+        return runWithDelegate(filters, false,
+                qs -> qs.getFieldValues(field, filters));
+    }
+
+    @Override
+    public CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters) {
+        return runWithDelegate(filters, false,
+                               qs -> qs.getFieldSummaries(field, filters));
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters) {
+        return runWithDelegate(filters, false,
+                               qs -> qs.getFieldSeries(field, step, filters));
     }
 
     public boolean isAlwaysUseAggForQueries() {

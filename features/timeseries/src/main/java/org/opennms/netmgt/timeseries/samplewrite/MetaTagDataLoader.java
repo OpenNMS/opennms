@@ -106,7 +106,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Map<Strin
             Scope scope = new FallbackScope(scopes);
             Map<String, String> configuredMetaTags = this.config.getConfiguredMetaTags();
             for(Map.Entry<String, String> entry: configuredMetaTags.entrySet()) {
-                final String value = Interpolator.interpolate(entry.getValue(), scope);
+                final String value = Interpolator.interpolate(entry.getValue(), scope).output;
                 // Ignore tags with empty values
                 if (Strings.isNullOrEmpty(value)) {
                     continue;

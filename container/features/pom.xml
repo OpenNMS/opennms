@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>28.0.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -460,6 +460,12 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.config</groupId>
       <artifactId>org.opennms.features.telemetry.config.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.shell</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

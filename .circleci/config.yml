@@ -3,10 +3,10 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
+      - image: opennms/build-env:11.0.9.11-3.6.3-b5958
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5875
+      - image: opennms/build-env:debian-jdk11-b6222
   docker-executor:
     docker:
       - image: docker:20.10.1-git
@@ -14,7 +14,8 @@ executors:
     docker:
       - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
-    machine: true
+    machine:
+     image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -30,28 +31,63 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: foundation-2020
+      default: foundation-2021
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: foundation-2020
+      default: foundation-2021
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: foundation-2021
+      default: release-28.x
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: foundation-2021
+      default: release-28.x
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: release-28.x
+      default: develop
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: release-28.x
+      default: develop
 
+aliases:
+  - &setup_dct_env
+    name: Setup DCT environment
+    command: |
+      case "${CIRCLE_BRANCH}" in
+        "master-"*)
+           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+          ;;
+        "release-"*)
+           MINION_IMAGE_VERSION="release-candidate"
+          ;;
+        "develop")
+           MINION_IMAGE_VERSION="bleeding"
+          ;;
+        *)
+          MINION_IMAGE_VERSION=b<< pipeline.number >>
+          ;;
+      esac
+      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
+      echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
+      echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
+  - &setup_dct_key
+    name: Setup DCT key
+    command: |
+      KEY_FOLDER=~/.docker/trust/private
+      mkdir -p $KEY_FOLDER
+      # the key that is used to sign single-arch images
+      echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      # the key that is used by Notary to sign the multi-arch minion image
+      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      chmod 600 $KEY_FOLDER/*
+      # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
+      # that is required for loading the
+      docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -321,8 +357,18 @@ commands:
     steps:
       - update-maven-cache
       - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
           name: Integration Tests
-          no_output_timeout: 1.0h
+          no_output_timeout: 15m
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
@@ -334,8 +380,8 @@ commands:
           when: always
           command: |
             mkdir -p ~/test-results/junit
-            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
-            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/.*-reports-[0-9]+/.*dump.*" -exec cp {} ~/test-results/junit/ \;
       - run:
           name: Gather tests
           when: always
@@ -356,12 +402,26 @@ commands:
                 root: ~/
                 paths:
                   - code-coverage
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           when: always
           path: ~/test-results
           destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
       - store_artifacts:
           when: always
           path: ~/generated-tests
@@ -514,6 +574,30 @@ workflows:
       - tarball-assembly:
           requires:
             - build
+      - minion-image-single-arch:
+          matrix:
+            parameters:
+              architecture: [linux/amd64,linux/arm64,linux/arm/v7]
+          context: "docker-content-trust"
+          requires:
+            - tarball-assembly
+            - smoke-test-minion
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+      - minion-image-multi-arch:
+          context: "docker-content-trust"
+          requires:
+            - minion-image-single-arch
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
       - horizon-rpm-build:
           requires:
             - build
@@ -628,40 +712,22 @@ workflows:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - minion-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - sentinel-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -760,11 +826,12 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
       docker_layer_caching: true
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     parameters:
       number-vcpu:
-        default: 2
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -787,6 +854,7 @@ jobs:
           command: |
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -799,6 +867,7 @@ jobs:
               -Dopennms.home=/opt/opennms \
               install --batch-mode
             # javadoc
+            date
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -810,6 +879,7 @@ jobs:
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
               javadoc:aggregate --batch-mode
+            date
       - run:
           name: Build Minion OCI
           command: |
@@ -823,37 +893,6 @@ jobs:
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
 
-            # Build for multiple architectures only in release branches and push images with manifest to a registry
-            # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
-            case "${CIRCLE_BRANCH}" in
-              "master-"*)
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="$(../pom2version.py ../../pom.xml)" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "release-"*)
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="release-candidate" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "develop")
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="bleeding" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              *)
-                echo "No branch to push to registry."
-                ;;
-            esac
       - run:
           name: Collect Artifacts
           command: |
@@ -889,6 +928,94 @@ jobs:
       - cache-oci:
           key: minion
           path: opennms-container/minion/images/
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+
+  minion-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - dockerhub-login
+      - run: *setup_dct_env
+      - run: *setup_dct_key
+      - run:
+          name: Single-arch build & push
+          command: |
+            cd opennms-container/minion
+            ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            TAG="${MINION_IMAGE_VERSION}-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_FLAGS=--load \
+                 VERSION="${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}"
+            docker push ${MINION_IMAGE}:${TAG}
+
+  minion-image-multi-arch:
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - dockerhub-login
+      - run: *setup_dct_env
+      - run: *setup_dct_key
+      - run:
+          name: Install notary
+          command: |
+            sudo wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -O /usr/local/bin/notary
+            sudo chmod a+x /usr/local/bin/notary
+      - run:
+          name: Create & push multi-arch manifest
+          command: |
+            IMAGE_REF="${MINION_IMAGE}:${MINION_IMAGE_VERSION}"
+            docker manifest create ${IMAGE_REF} \
+              ${IMAGE_REF}-linux-amd64 \
+              ${IMAGE_REF}-linux-arm64 \
+              ${IMAGE_REF}-linux-arm-v7 \
+              --amend
+            SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
+            echo "Manifest SHA-256: ${SHA_256}"
+            echo "Image-Ref: ${IMAGE_REF}"
+            MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
+            BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+            echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
+            echo "Manifest contents:\n";
+            printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+            echo "Sign ${SHA_256} with the notary"
+            # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
+            # -> the following lines can not be used:
+            #
+            # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
+            #
+            # -> use the targets key of the minion repository to sign the multi-arch image instead
+            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+            echo "Done!"
+            # notary -s https://notary.docker.io list "${IMAGE}"
 
   horizon-rpm-build:
     executor: centos-build-executor

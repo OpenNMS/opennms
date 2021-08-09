@@ -35,10 +35,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,7 +57,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class HttpsDetectorTest {
-    private static final int SSL_PORT = 7142;
 
     @Autowired
     private HttpsDetectorFactory m_detectorFactory;
@@ -67,7 +64,9 @@ public class HttpsDetectorTest {
     private HttpsDetector m_detector;
 
     @Rule
-    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
+    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig()
+            .dynamicPort()
+            .dynamicHttpsPort());
 
     private ResponseDefinitionBuilder getOKResponse() {
         return aResponse()
@@ -94,7 +93,7 @@ public class HttpsDetectorTest {
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
 
         /* make sure defaults are initialized */
-        m_detector.setPort(SSL_PORT);
+        m_detector.setPort(m_wireMockRule.httpsPort());
         m_detector.setUseSSLFilter(true);
         m_detector.setUrl("/");
         m_detector.setCheckRetCode(false);
@@ -171,7 +170,7 @@ public class HttpsDetectorTest {
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
-        m_detector.setPort(SSL_PORT);
+        m_detector.setPort(m_wireMockRule.httpsPort());
         m_detector.init();
         m_detector.setIdleTime(1000);
 

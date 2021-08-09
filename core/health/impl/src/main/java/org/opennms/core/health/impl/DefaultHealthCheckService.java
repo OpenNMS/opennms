@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheck;
@@ -85,7 +86,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, List<String> tags) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -94,7 +95,8 @@ public class DefaultHealthCheckService implements HealthCheckService {
         };
         try {
             // Fail if no checks are available
-            final List<HealthCheck> checks = getHealthChecks();
+            List<HealthCheck> checks = getHealthChecks();
+            checks = filterChecksWithTags(checks, tags);
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
             } else {
@@ -106,6 +108,13 @@ public class DefaultHealthCheckService implements HealthCheckService {
             returnFuture.complete(health);
         }
         return returnFuture;
+    }
+
+    List<HealthCheck> filterChecksWithTags(List<HealthCheck> checks, List<String> tags){
+        if (checks != null && tags != null && tags.stream().anyMatch(tag -> !Strings.isNullOrEmpty(tag))){
+            checks = checks.stream().filter(check -> check.getTags().stream().anyMatch(tags::contains)).collect(Collectors.toList());
+        }
+        return checks;
     }
 
     // Asynchronously run all checks

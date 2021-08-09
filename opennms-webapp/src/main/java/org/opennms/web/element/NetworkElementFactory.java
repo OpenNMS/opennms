@@ -53,6 +53,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -148,6 +152,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Autowired
     @Qualifier("pending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
+
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -1061,5 +1068,17 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
 
         return status;
+    }
+
+    public Scope getScopeForNode(final Integer nodeId) {
+        return this.m_entityScopeProvider.getScopeForNode(nodeId);
+    }
+
+    public Scope getScopeForInterface(final Integer nodeId, final String ipAddress) {
+        return this.m_entityScopeProvider.getScopeForInterface(nodeId, ipAddress);
+    }
+
+    public Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName) {
+        return this.m_entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
     }
 }

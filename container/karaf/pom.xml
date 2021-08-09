@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>28.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -42,8 +42,6 @@
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-                        <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                         <!-- OPENNMS: Add the OpenNMS Minion feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</repository>
                     </bootRepositories>
@@ -167,6 +165,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!--
@@ -186,6 +188,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -250,6 +256,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -260,6 +270,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

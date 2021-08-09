@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>27.1.2-SNAPSHOT</version>
+        <version>28.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -383,6 +383,11 @@
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.nxos</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.nxos.adapter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry</groupId>
+            <artifactId>org.opennms.features.telemetry.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

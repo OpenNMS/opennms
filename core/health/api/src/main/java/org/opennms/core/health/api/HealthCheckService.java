@@ -28,6 +28,7 @@
 
 package org.opennms.core.health.api;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -56,5 +57,5 @@ public interface HealthCheckService {
      * @param onFinishConsumer Callback method which is invoked after the {@link HealthCheck#perform(Context)} method is invoked. May be null.
      * @return The {@link CompletableFuture} to retrieve the {@link Health} from.
      */
-    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
+    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, List<String> tags);
 }

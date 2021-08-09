@@ -29,6 +29,7 @@
 package org.opennms.core.health.rest.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,8 +58,9 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response probeHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+    public Response probeHealth(int timeoutInMs, UriInfo uriInfo) {
+        List<String> tags = uriInfo.getQueryParameters().get("tag");
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs,tags);
         final Health health = healthWrapper.health;
         if (health.isSuccess()) {
             return Response.ok()
@@ -72,8 +75,9 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response getHealth(int timeoutInMs) {
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs);
+    public Response getHealth(int timeoutInMs, UriInfo uriInfo){
+        List<String> tags = uriInfo.getQueryParameters().get("tag");
+        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tags);
         final Health health = healthWrapper.health;
 
         // Create response object
@@ -97,7 +101,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs) {
+    private HealthWrapper getHealthInternally(int timeoutInMs, List<String> tags){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
@@ -107,7 +111,7 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
                     healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get())); // apply description
+                    response -> healthWrapper.descriptionMap.put(response, reference.get()), tags); // apply description
             healthWrapper.health = future.get();
             return healthWrapper;
         } catch (InterruptedException | ExecutionException e) {

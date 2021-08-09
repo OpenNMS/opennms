@@ -63,12 +63,10 @@ public class MeasurementApiConnectorIT {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiClientTest.class);
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(
-            new WireMockConfiguration()
-                    .port(9999)
-                    .httpsPort(9443)
-                    .keystorePath(System.getProperty("javax.net.ssl.keyStore"))
-                    .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword")));
+    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()
+            .keystorePath(System.getProperty("javax.net.ssl.keyStore"))
+            .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword"))
+            .dynamicPort().dynamicHttpsPort());
 
     @BeforeClass
     public static void beforeClass() {
@@ -81,7 +79,7 @@ public class MeasurementApiConnectorIT {
                 "javax.net.ssl.trustStorePassword"};
         for (String eachKey : keys) {
             String value = eachKey.toLowerCase().contains("password") ? "*****" : System.getProperty(eachKey);
-            LOG.debug("{} = {}", eachKey, value);
+            LOG.error("{} = {}", eachKey, value);
         }
     }
 
@@ -120,7 +118,7 @@ public class MeasurementApiConnectorIT {
 
     @Test
     public void test200() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/measurements", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteStreams.copy(result.getInputStream(), outputStream);
@@ -131,7 +129,7 @@ public class MeasurementApiConnectorIT {
 
     @Test
     public void test404() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/doesNotExist", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/doesNotExist", null, null, "<dummy request>");
         Assert.assertFalse(result.wasSuccessful());
         Assert.assertEquals(404, result.getResponseCode());
         Assert.assertEquals("Not Found", result.getResponseMessage());
@@ -145,7 +143,7 @@ public class MeasurementApiConnectorIT {
      */
     @Test
     public void test302() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/forward/me", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/forward/me", null, null, "<dummy request>");
         Assert.assertFalse(result.wasSuccessful());
         Assert.assertTrue(result.wasRedirection());
         Assert.assertEquals(302, result.getResponseCode());
@@ -157,7 +155,7 @@ public class MeasurementApiConnectorIT {
 
     @Test
     public void test500() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/bad/request", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/bad/request", null, null, "<dummy request>");
         Assert.assertFalse(result.wasSuccessful());
         Assert.assertFalse(result.wasRedirection());
         Assert.assertEquals(500, result.getResponseCode());
@@ -169,7 +167,7 @@ public class MeasurementApiConnectorIT {
 
     @Test
     public void testAuthentication() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/measurements", "admin", "admin", "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/measurements", "admin", "admin", "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         Assert.assertFalse(result.wasRedirection());
         Assert.assertEquals(200, result.getResponseCode());
@@ -185,7 +183,7 @@ public class MeasurementApiConnectorIT {
     // Tests a delay before receiving any result
     @Test
     public void testSlowConnection() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "http://localhost:9999/opennms/rest/measurements/slow-response", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/measurements/slow-response", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
     }
 
@@ -202,7 +200,7 @@ public class MeasurementApiConnectorIT {
         WireMock.setGlobalFixedDelay(5000);
         long start = System.currentTimeMillis();
         try {
-            new MeasurementApiClient(MeasurementApiClient.CONNECT_TIMEOUT, 2500).execute(false, "http://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
+            new MeasurementApiClient(MeasurementApiClient.CONNECT_TIMEOUT, 2500).execute(false, "http://localhost:" + wireMockRule.port() + "/opennms/rest/measurements", null, null, "<dummy request>");
         } catch (SocketTimeoutException ex) {
             long diff = System.currentTimeMillis() - start;
             long offset = 500; // ms
@@ -215,8 +213,8 @@ public class MeasurementApiConnectorIT {
 
     // Verifies that a https call can be made
     @Test
-    public void testHttpsOk() throws IOException {
-        Result result = new MeasurementApiClient().execute(true, "https://localhost:9443/opennms/rest/measurements", null, null, "<dummy request>");
+    public void testHttpsOk() throws IOException, InterruptedException {
+        Result result = new MeasurementApiClient().execute(true, "https://localhost:" + wireMockRule.httpsPort() + "/opennms/rest/measurements", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         Assert.assertTrue(result.wasSecureConnection());
         Assert.assertNotNull(result.getInputStream());
@@ -228,13 +226,13 @@ public class MeasurementApiConnectorIT {
     // Verifies that a https call cannot be made to an unknown server (certificate)
     @Test(expected=SSLHandshakeException.class)
     public void testHttpsUnknown() throws IOException {
-        new MeasurementApiClient().execute(true, "https://127.0.0.1:9443/opennms/rest/measurements", null, null, "<dummy request>");
+        new MeasurementApiClient().execute(true, "https://127.0.0.1:" + wireMockRule.httpsPort() + "/opennms/rest/measurements", null, null, "<dummy request>");
     }
 
     // Verifies that even if useSSL = false, when connecting to a valid https url the connection is secure
     @Test
     public void testHttpsUrlButUseSslNotSet() throws IOException {
-        Result result = new MeasurementApiClient().execute(false, "https://localhost:9443/opennms/rest/measurements", null, null, "<dummy request>");
+        Result result = new MeasurementApiClient().execute(false, "https://localhost:" + wireMockRule.httpsPort() + "/opennms/rest/measurements", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         Assert.assertTrue(result.wasSecureConnection());
         Assert.assertNotNull(result.getInputStream());
@@ -246,7 +244,7 @@ public class MeasurementApiConnectorIT {
             if (MeasurementApiClient.class.getName().equals(eachEvent.getLoggerName())) {
                 Assert.assertTrue(eachEvent.getMessage().contains("A secure connection was established even if it was not intended."));
                 Assert.assertTrue(eachEvent.getMessage().contains("Use SSL = false"));
-                Assert.assertTrue(eachEvent.getMessage().contains("URL = https://localhost:9443/opennms/rest/measurements"));
+                Assert.assertTrue(eachEvent.getMessage().contains("URL = https://localhost:" + wireMockRule.httpsPort() + "/opennms/rest/measurements"));
                 found = true;
             }
         }
@@ -256,13 +254,13 @@ public class MeasurementApiConnectorIT {
     // Verifies that if SSL is enabled and we connect to a HTTP connection, a SSLException is thrown by our client.
     @Test(expected=SSLException.class)
     public void testHttpUrlButUseSslSet() throws IOException {
-        new MeasurementApiClient().execute(true, "http://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
+        new MeasurementApiClient().execute(true, "http://localhost:" + wireMockRule.port() + "/opennms/rest/measurements", null, null, "<dummy request>");
     }
 
     // We do not need this test, but I leave it for now
     @Test(expected=SSLException.class)
     public void testConectToHttpPortUsingHttpsProtocol() throws IOException {
-        new MeasurementApiClient().execute(true, "https://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
+        new MeasurementApiClient().execute(true, "https://localhost:" + wireMockRule.port() + "/opennms/rest/measurements", null, null, "<dummy request>");
     }
 
     // Verify that an empty URL throws an expected IllegalArgumentException

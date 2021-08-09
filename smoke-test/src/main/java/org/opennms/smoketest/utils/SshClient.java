@@ -111,6 +111,14 @@ public class SshClient implements AutoCloseable {
         return stdoutContents;
     }
 
+    public String getStdoutOrNull() {
+        try {
+            return getStdout();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public String getStderr() throws IOException {
         // Prepend the contents of the buffer, which may be have populated by isShellClosed()
         final String stderrContents = stderrBuff.toString() + readAvailableBytes(stderr);

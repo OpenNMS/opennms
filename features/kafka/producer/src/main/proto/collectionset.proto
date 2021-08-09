@@ -29,6 +29,7 @@ message NodeLevelResource {
 message InterfaceLevelResource {
   NodeLevelResource node = 1;
   string instance = 2;
+  int32 if_index = 3;
 }
 
 message GenericTypeResource {

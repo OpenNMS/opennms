@@ -33,12 +33,15 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.features.eifadapter.EifParser.parseEifSlots;
 import static org.opennms.features.eifadapter.EifParser.translateEifToOpenNMS;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
@@ -47,6 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.xbill.DNS.Address;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -63,11 +67,14 @@ public class EifTranslatorTest {
     private MockNodeDao m_nodeDao;
 
     @Before
-    public void setUp() {
+    public void setUp() throws UnknownHostException {
+        // Enable DEBUG logging
+        MockLogAppender.setupLogging();
+
         OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
         OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
-        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(),"127.0.0.1");
+        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), Address.getHostName(InetAddress.getLocalHost()));
 
         fqhostnameNode.setForeignSource("eifTestSource");
         fqhostnameNode.setForeignId("eifTestId");

@@ -34,6 +34,7 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getLongValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getUInt32Value;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.getUInt64Value;
+import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setDoubleValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setIntValue;
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setLongValue;
 
@@ -48,6 +49,10 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
 public class Netflow9MessageBuilder implements MessageBuilder {
+
+    private Long flowActiveTimeoutFallback;
+    private Long flowInactiveTimeoutFallback;
+    private Long flowSamplingIntervalFallback;
 
     public Netflow9MessageBuilder() {
     }
@@ -70,14 +75,18 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         Long ipv6SrcMask = null;
         Long srcVlan = null;
         Long dstVlan = null;
-        Long flowActiveTimeout = null;
-        Long flowInActiveTimeout = null;
+        Long flowActiveTimeout = this.flowActiveTimeoutFallback;
+        Long flowInActiveTimeout = this.flowInactiveTimeoutFallback;
         Long sysUpTime = null;
         Long unixSecs = null;
         Long firstSwitched = null;
         Long lastSwitched = null;
         Long flowStartMilliseconds = null;
         Long flowEndMilliseconds = null;
+
+	if (this.flowSamplingIntervalFallback != null) {
+	    builder.setSamplingInterval(setDoubleValue(this.flowSamplingIntervalFallback));
+	}
 
         for (Value<?> value : values) {
             switch (value.getName()) {
@@ -292,5 +301,29 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
         builder.setNetflowVersion(NetflowVersion.V9);
         return builder;
+    }
+
+    public Long getFlowActiveTimeoutFallback() {
+        return this.flowActiveTimeoutFallback;
+    }
+
+    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
+        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
+    }
+
+    public Long getFlowInactiveTimeoutFallback() {
+        return this.flowInactiveTimeoutFallback;
+    }
+
+    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
+        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
+    }
+
+    public Long getFlowSamplingIntervalFallback() {
+        return this.flowSamplingIntervalFallback;
+    }
+
+    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
+        this.flowSamplingIntervalFallback = flowSamplingIntervalFallback;
     }
 }

@@ -1,15 +1,10 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
-           xsi:schemaLocation="
-		http://www.osgi.org/xmlns/blueprint/v1.0.0
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
-		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
-">
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <!-- Configuration properties -->
     <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
@@ -207,6 +202,7 @@
         <property name="timeRangeDurationAggregateThresholdMs" value="${timeRangeDurationAggregateThresholdMs}"/>
         <property name="timeRangeEndpointAggregateThresholdMs" value="${timeRangeEndpointAggregateThresholdMs}"/>
     </bean>
+    <service interface="org.opennms.netmgt.flows.api.FlowQueryService" ref="smartQueryService" />
 
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
@@ -222,7 +218,6 @@
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
-        <argument ref="smartQueryService" />
 
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>

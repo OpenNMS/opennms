@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>27.1.2-SNAPSHOT</version>
+    <version>28.0.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -939,6 +939,10 @@
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -1057,6 +1061,11 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.bmp.stats</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.shell</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

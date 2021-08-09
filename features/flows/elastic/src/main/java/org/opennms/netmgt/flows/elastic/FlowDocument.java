@@ -308,6 +308,12 @@ public class FlowDocument {
     @SerializedName("netflow.tos")
     private Integer tos;
 
+    @SerializedName("netflow.ecn")
+    private Integer ecn;
+
+    @SerializedName("netflow.dscp")
+    private Integer dscp;
+
     /**
      * Netfow version
      */
@@ -677,8 +683,31 @@ public class FlowDocument {
         return tos;
     }
 
-    public void setTos(Integer tos) {
+    public void setTos(final Integer tos) {
+        if (tos != null) {
+            setDscp((tos & 0b11111100) >> 2);
+            setEcn(tos & 0b00000011);
+        } else {
+            setDscp(null);
+            setEcn(null);
+        }
         this.tos = tos;
+    }
+
+    private void setEcn(final Integer ecn) {
+        this.ecn = ecn;
+    }
+
+    private void setDscp(final Integer dscp) {
+        this.dscp = dscp;
+    }
+
+    public Integer getEcn() {
+        return ecn;
+    }
+
+    public Integer getDscp() {
+        return dscp;
     }
 
     public NetflowVersion getNetflowVersion() {
