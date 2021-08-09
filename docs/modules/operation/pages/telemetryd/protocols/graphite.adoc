@@ -3,48 +3,47 @@
 
 The Graphite telemetry adapter lets you push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
 
-To enable support for plaintext Graphite over UDP, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `Graphite` protocol.
+To enable support for plaintext Graphite over UDP, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to set `enabled=true` for the Graphite protocol.
 
 .Enable Graphite protocol in telemetryd-configuration.xml
 [source, xml]
-[subs="verbatim,attributes"]
 ----
-    <listener name="Graphite-UDP-2003" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
-        <parameter key="port" value="2003"/>
-        <parser name="Graphite-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="Graphite" />
-    </listener>
+<listener name="Graphite-UDP-2003" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+    <parameter key="port" value="2003"/>
+    <parser name="Graphite-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="Graphite" />
+</listener>
 
-    <queue name="Graphite">
-        <adapter name="Graphite" class-name="org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter" enabled="true">
-            <parameter key="script" value="/Users/ranger/git/opennms-work/target/opennms-{page-component-version}/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
-             <package name="Graphite-Default">
-                <rrd step="300">
-                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
-                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
-                    <rra>RRA:AVERAGE:0.5:288:366</rra>
-                    <rra>RRA:MAX:0.5:288:366</rra>
-                    <rra>RRA:MIN:0.5:288:366</rra>
-                </rrd>
-            </package>
-        </adapter>
-    </queue>
+<queue name="Graphite">
+    <adapter name="Graphite" class-name="org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter" enabled="true">
+        <parameter key="script" value="$OPENNMS_HOME/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
+        <package name="Graphite-Default">
+            <rrd step="300">
+                <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                <rra>RRA:AVERAGE:0.5:288:366</rra>
+                <rra>RRA:MAX:0.5:288:366</rra>
+                <rra>RRA:MIN:0.5:288:366</rra>
+            </rrd>
+        </package>
+    </adapter>
+</queue>
 ----
 
 Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the Web UI:
 
 .Send a reloadDaemonConfig event through CLI
-[source]
+[source, console]
 ----
-$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
-By default, this will open a UDP socket bound to `0.0.0.0:2003` to which _Graphite_ messages can be forwarded.
+By default, this opens a UDP socket bound to `0.0.0.0:2003` to which Graphite messages can be forwarded.
 
-== Configure Graphite Listener on a Minion
+== Configure Graphite listener on a Minion
 
 To enable and configure a UDP Listener for Graphite on Minion, connect to the Karaf Console and set the following properties:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8201 admin@localhost
 ...
@@ -59,11 +58,10 @@ admin@minion()> config:update
 
 NOTE: The protocol must also be enabled on {page-component-title} for the messages to be processed.
 
-
-== Graphite Adapter
+== Graphite adapter
 
 The Graphite adapter handles Graphite payloads.
-Messages are decoded and forwarded to a JSR-223-compatible script (i.e., Beanshell or Groovy) for further processing.
+Messages are decoded and forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
 Using the script extension you can extract the desired metrics from the Graphite messages and persist the results as time series data.
 
 === Facts
@@ -73,27 +71,26 @@ Using the script extension you can extract the desired metrics from the Graphite
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Adapter specific parameters for the GraphiteAdapter
-[options="header, %autowidth"]
+.Required adapter-specific parameters for the GraphiteAdapter
+[options="header, autowidth"]
 |===
-| Parameter        | Description                                                       | Required | Default value
-| `script`         | Full path to the script used to handle the Graphite messages.      | required | (none)
+| Parameter        | Default  | Description
+| script           | none     | Full path to the script used to handle the Graphite messages.
 |===
 
 === Scripting
 
-The script will be invoked for every Graphite message that is received and succesfully decoded.
+The script is invoked for every Graphite message that is received and successfully decoded.
 
 The following globals will be passed to the script:
 
 .Globals passed to the script
-[options="header, %autowidth"]
+[options="header, autowidth"]
 |===
-| Parameter  | Description                                                    | Type
-| `agent`    | The agent (node) against which the metrics will be associated.  | `org.opennms.netmgt.collection.api.CollectionAgent`
-| `builder`  | Builder in which the resources and metrics should be added.     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
-| `msg`      | Decoded message from which the metrics should be extracted.     | `org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteMetric`
+| Parameter | Description                                                     | Type
+| agent     | The agent (node) against which the metrics will be associated.  | `org.opennms.netmgt.collection.api.CollectionAgent`
+| builder   | Builder in which the resources and metrics should be added.     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| msg       | Decoded message from which the metrics should be extracted.     | `org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteMetric`
 |===
-
