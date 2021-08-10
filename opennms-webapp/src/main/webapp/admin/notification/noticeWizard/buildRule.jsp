@@ -36,7 +36,8 @@
 		java.sql.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*
+		org.opennms.netmgt.config.notifications.*,
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 
@@ -116,7 +117,7 @@
 	    </p>
             <div class="form-group">
               <label for="input_newRule">Current Rule:</label>
-	      <input type="text" class="form-control" size=100 id="input_newRule" name="newRule" value="<%=newRule%>"/>
+	      <input type="text" class="form-control" size=100 id="input_newRule" name="newRule" value="<%=WebSecurityUtils.sanitizeString(newRule)%>"/>
             </div>
           </td>
         </tr>
