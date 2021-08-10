@@ -313,6 +313,20 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[[releasenotes-changelog-Meridian-2019.1.22]]
+
+==== Release Meridian-2019.1.22
+
+Release 2019.1.22 contains an update for a Jetty CVE plus a couple of XSS fixes.
+
+The codename for 2019.1.22 is link:$$https://wikipedia.org/wiki/HD_218566$$[_Ugarit_].
+
+===== Bug
+
+* Jetty 9.4.38 security issues CVE-2021-28164, CVE-2021-34428 and CVE-2021-28169 (Issue http://issues.opennms.org/browse/NMS-13449[NMS-13449])
+* Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
+* Reflected XSS in scheduled outage editor (Issue http://issues.opennms.org/browse/NMS-13498[NMS-13498])
+
 [[releasenotes-changelog-Meridian-2019.1.21]]
 
 ==== Release Meridian-2019.1.21
