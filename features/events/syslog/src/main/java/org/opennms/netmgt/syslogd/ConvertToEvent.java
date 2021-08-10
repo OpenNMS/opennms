@@ -36,12 +36,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HostaddrMatch;
@@ -52,6 +55,7 @@ import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +88,8 @@ public class ConvertToEvent {
 
     private final Event m_event;
 
+    private final LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
+
     private static final LoadingCache<String,Pattern> CACHED_PATTERNS = CacheBuilder.newBuilder().build(
         new CacheLoader<String,Pattern>() {
             public Pattern load(String expression) {
@@ -100,7 +106,7 @@ public class ConvertToEvent {
     /**
      * Reduce the limit of the buffer to trim trailing nulls from the value.
      * 
-     * @param buffer
+     * @param original ByteBuffer
      * @return A new {@link ByteBuffer} representing the trimmed value.
      */
     public static ByteBuffer trimTrailingNulls(ByteBuffer original) {
@@ -114,11 +120,11 @@ public class ConvertToEvent {
     }
 
     public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location) {
-        return toEventBuilder(message, systemId, location, null);
+        return toEventBuilder(message, systemId, location, null, null);
     }
 
     public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location,
-                                                    Date receivedTimestamp) {
+                                                    Date receivedTimestamp, LocationAwareDnsLookupClient locationAwareDnsLookupClient) {
         if (message == null) {
             return null;
         }
@@ -148,7 +154,20 @@ public class ConvertToEvent {
         // Add any syslog message parameters as event parameters.
         message.getParameters().forEach((k, v) -> bldr.addParam(k.toString(), v));
 
-        final InetAddress hostAddress = message.getHostAddress();
+        InetAddress hostAddress = message.getHostAddress();
+        String hostIpAddress = null;
+        if (hostAddress == null &&
+                message.getHostName() != null &&
+                !LocationUtils.isDefaultLocationName(location) &&
+                locationAwareDnsLookupClient != null) {
+            CompletableFuture<String> future = locationAwareDnsLookupClient.lookup(message.getHostName(), location, systemId);
+            try {
+                hostIpAddress = future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("Exception while resolving hostname {} at location {}", message.getHostName(), location);
+            }
+            hostAddress = InetAddressUtils.addr(hostIpAddress);
+        }
         if (hostAddress != null) {
             // Set nodeId
             InterfaceToNodeCache cache = AbstractInterfaceToNodeCache.getInstance();
@@ -249,9 +268,10 @@ public class ConvertToEvent {
             final InetAddress addr,
             final int port,
             final ByteBuffer incoming,
-            final SyslogdConfig config
+            final SyslogdConfig config,
+            final LocationAwareDnsLookupClient locationAwareDnsLookupClient
     ) throws MessageDiscardedException {
-        this(systemId, location, addr, port, incoming, null, config);
+        this(systemId, location, addr, port, incoming, null, config, locationAwareDnsLookupClient);
     }
 
     /**
@@ -266,17 +286,20 @@ public class ConvertToEvent {
      * @param incoming The syslog datagram in {@link StandardCharsets#US_ASCII} encoding.
      * @param receivedTimestamp the time the message was received
      * @param config The Syslogd configuration
-     * @throws MessageDiscardedException 
+     * @param locationAwareDnsLookupClient Location Aware DNS Lookup Client
+     * @throws MessageDiscardedException
      */
     public ConvertToEvent(
-        final String systemId,
-        final String location,
-        final InetAddress addr,
-        final int port,
-        final ByteBuffer incoming,
-        final Date receivedTimestamp,
-        final SyslogdConfig config
-    ) throws MessageDiscardedException {
+            final String systemId,
+            final String location,
+            final InetAddress addr,
+            final int port,
+            final ByteBuffer incoming,
+            final Date receivedTimestamp,
+            final SyslogdConfig config,
+            LocationAwareDnsLookupClient locationAwareDnsLookupClient) throws MessageDiscardedException {
+
+        this.m_locationAwareDnsLookupClient = locationAwareDnsLookupClient;
 
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
@@ -314,7 +337,7 @@ public class ConvertToEvent {
         }
 
         // If no host name was provided we will use the source IP address
-        if(message.getHostAddress() == null)
+        if(message.getHostName() == null)
         {
             message.setHostName(addr.getHostAddress());
         }
@@ -343,7 +366,7 @@ public class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        EventBuilder bldr = toEventBuilder(message, systemId, location, receivedTimestamp);
+        EventBuilder bldr = toEventBuilder(message, systemId, location, receivedTimestamp, m_locationAwareDnsLookupClient);
 
         final List<UeiMatch> ueiMatch = (config.getUeiList() == null ? Collections.emptyList() : config.getUeiList());
         for (final UeiMatch uei : ueiMatch) {
