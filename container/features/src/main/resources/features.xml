@@ -1769,6 +1769,9 @@
     </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
         <feature>org.json</feature>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.api/${project.version}</bundle>
