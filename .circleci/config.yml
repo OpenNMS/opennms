@@ -581,10 +581,10 @@ workflows:
           context: "docker-content-trust"
           requires:
             - tarball-assembly
+            - smoke-test-minion
           filters:
             branches:
               only:
-                - ranger/backport-dct
                 - develop
                 - /^master-.*/
                 - /^release-.*/
@@ -595,7 +595,6 @@ workflows:
           filters:
             branches:
               only:
-                - ranger/backport-dct
                 - develop
                 - /^master-.*/
                 - /^release-.*/
@@ -713,40 +712,22 @@ workflows:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - minion-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - sentinel-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes

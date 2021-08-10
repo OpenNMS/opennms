@@ -1,10 +1,10 @@
 
 [[xml-sample-provision]]
-= XML Samples
+= XML samples
 
 This section provides sample XML configuration for many of the tasks described in the Provisioning chapter.
 
-[[SNMP-commmunity-xml]]
+[[SNMP-community-xml]]
 == Configuring SNMP community names
 
 [source, xml]
@@ -28,4 +28,3 @@ read-community="public" version="v2c">
 
 </snmp-config>
 ----
-

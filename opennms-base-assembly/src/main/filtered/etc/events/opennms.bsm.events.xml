@@ -37,7 +37,7 @@
        <uei>uei.opennms.org/bsm/graphInvalidated</uei>
        <event-label>Business Service Monitoring: Graph invalidated</event-label>
        <descr>&lt;p>Business Service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%.
-             A reload of the BMS daemon is scheduled. Make sure the Business Service still works properly.
+             A reload of the BSM daemon is scheduled. Make sure the Business Service still works properly.
              Please verify it's &lt;a href=&quot;admin/bsm/adminpage.jsp&quot;>definition&lt;/a>.&lt;/p></descr>
        <logmsg dest="logndisplay">Business service '%parm[businessServiceName]%' with ID '%parm[businessServiceId]%' is affected by the deletion of %parm[cause]%.</logmsg>
        <severity>Warning</severity>

@@ -1,7 +1,7 @@
 
 
 [[ga-alarmd-configuration]]
-= Configuring Alarms
+= Configure Alarms
 
 Since Alarmd instantiates alarms from events, defining alarms in {page-component-title} entails defining an additional XML element of an event indicating a problem or resolution in the Network.
 This additional element is the "alarm-data" element.
@@ -114,7 +114,7 @@ The Alarm fields that are currently allowed to be controlled this way are:
 * acktime
 * ackuser
 
-NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most #recent# event's value.
+NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most recent event's value.
 
 .Reduction (de-duplication) of Alarms
 Alarmd is designed to reduce multiple occurrences of an alarm into a single alarm.

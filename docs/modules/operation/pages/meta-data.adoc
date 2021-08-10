@@ -173,5 +173,5 @@ The following places allow the use the Metadata DSL:
 * <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service Assurance>>
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance Management>>
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>
-* <<thresholds/thresholding.adoc#ga-threshhold-metadata, Expression-Based Thresholds>>
+* <<thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>
 * <<notifications/introduction.adoc#ga-notifications, Notifications>>

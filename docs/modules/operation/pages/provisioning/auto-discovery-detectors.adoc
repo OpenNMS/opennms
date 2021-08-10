@@ -1,5 +1,5 @@
 [[ga-provisioning-auto-discovery-detectors]]
-= Auto Discovery with Detectors
+= Provisioning Detectors
 
 Currently {page-component-title} uses ICMP ping sweep to find IP addresses on the network.
 You can define IP ranges and specifics in `discovery-configuration.xml`:

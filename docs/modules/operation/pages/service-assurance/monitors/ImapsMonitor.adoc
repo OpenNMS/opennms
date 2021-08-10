@@ -1,11 +1,11 @@
 
 = ImapsMonitor
 
-The _IMAPS_ monitor tests the response of an _SSL-enabled_ _IMAP_ server.
-The _IMAPS_ monitor is an _SSL-enabled_ extension of the _IMAP_ monitor with a default _TCP_ port value of 993.
-All _ImapMonitor_ parameters apply, so please refer to <<service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
+The IMAPS monitor tests the response of an SSL-enabled IMAP server.
+The IMAPS monitor is an SSL-enabled extension of the IMAP monitor with a default TCP port value of 993.
+All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
 
-== Monitor Facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -15,16 +15,20 @@ All _ImapMonitor_ parameters apply, so please refer to <<service-assurance/monit
 
 == Configuration and Use
 
-.Monitor specific parameters for the ImapsMonitor
-[options="header, autowidth"]
+.Optional monitor-specific parameter for the ImapsMonitor
+[options="header"]
+[cols="1,3,2"]
 |===
-| Parameter              | Description                                                | Required | Default value
-| `port`                 | The destination port where connections shall be attempted. | optional | `993`
+| Parameter              | Description                                                | Default
+| port             | The destination port to attempt connections on. | 993
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 [source, xml]
 ----
@@ -34,7 +38,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
   <parameter key="version" value="3"/>
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="3000"/>
-  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
   <parameter key="rrd-base-name" value="imaps"/>
   <parameter key="ds-name" value="imaps"/>
 </service>

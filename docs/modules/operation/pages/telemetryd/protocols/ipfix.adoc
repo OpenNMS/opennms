@@ -18,23 +18,22 @@ The IPFIX UDP parser supports protocol detection.
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Parameters for the IPFIX UDP Parser
-[options="header, %autowidth"]
+.Optional parameters for the IPFIX UDP Parser
+[options="header, autowidth"]
 |===
-| Parameter                | Description                                                                                 | Required | Default value
-| `templateTimeout`        | Templates must be redeclared in the given duration or they will be dropped.                 | no       | 30 minutes
-| `maxClockSkew`           | The maximum delta in seconds between exporter and Minion timestamps.                        | no       | 0
-| `clockSkewEventRate`     | Used to rate-limit clock skew events in seconds.                                            | no       | 3600
-| `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                                         | no       | true
-| `sequenceNumberPatience` | A value > 1 enables checking for seuqence number completeness.
-                             The value gives the size of the history buffer allowing flows to be processed out of order. | no       | 32
-| `flowActiveTimeoutFallback`   | Fallback value for active flow timeout if setting value is not included in exported flows | no | null
-| `flowInactiveTimeoutFallback`   | Fallback value for inactive flow timeout if setting value is not included in exported flows | no | null
-| `flowSamplingIntervalFallback`   | Fallback value for sampling interval if setting value is not included in exported flows | no | null
+| Parameter                     | Default     | Description
+| templateTimeout               | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
+| maxClockSkew                  | 0           | The maximum delta in seconds between exporter and Minion timestamps.
+| clockSkewEventRate            | 3600        | Used to rate-limit clock skew events in seconds.
+| dnsLookupsEnabled             | true        | Used to enable or disable DNS resolution for flows.
+| sequenceNumberPatience        | 32          | A value > 1 enables checking for sequence number completeness.
+                                                The value gives the size of the history buffer allowing flows to be processed out of order.
+| flowActiveTimeoutFallback     | none        | Fallback value for active flow timeout, if value is not included in exported flows.
+| flowInactiveTimeoutFallback   | none        | Fallback value for inactive flow timeout, if value is not included in exported flows.
+| flowSamplingIntervalFallback  | none        | Fallback value for sampling interval, if value is not included in exported flows.
 |===
-
 
 [[telemetryd-ipfix-parser-tcp]]
 == IPFIX TCP Parser
@@ -48,15 +47,15 @@ The IPFIX TCP Parser accepts packets received by a <<telemetryd/listener/tcp.ado
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser`
 |===
 
-=== Parameters
+=== Configuration and use
 
 This parser does not currently have any configurable parameters.
 
-== Configure IPFIX Listener on a Minion
+== Configure IPFIX listener on a Minion
 
 To enable and configure a TCP Listener for IPFIX on Minion, connect to the Karaf Console and set the following properties:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8201 admin@localhost
 ...
@@ -64,18 +63,18 @@ admin@minion()> config:edit --alias tcp-50000 --factory org.opennms.features.tel
 admin@minion()> config:property-set name IPFIX
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
 admin@minion()> config:property-set parameters.port 50000
-admin@minion()> config:property-set parsers.0.name IPFIX 
+admin@minion()> config:property-set parsers.0.name IPFIX
 admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixParser
 admin@minion()> config:update
 ----
 
 NOTE: The protocol must also be enabled on {page-component-title} for the messages to be processed.
-If you do not specify the queue name, the fallback is the name of the parser. 
+If you do not specify the queue name, the fallback is the name of the parser.
 
 [[telemetryd-ipfix-adapter]]
-== IPFIX Adapter
+== IPFIX adapter
 
-The IPFIX Adapter handles IPFIX telemetry data received and parsed by either of the <<telemetryd-ipfix-parser-udp, IPFIX UDP parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP parser>>.
+The IPFIX adapter handles IPFIX telemetry data received and parsed by either the <<telemetryd-ipfix-parser-udp, IPFIX UDP parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP parser>>.
 Received flows are decoded from the messages into the canonical flow format and published to the flow repository.
 
 === Facts
@@ -85,21 +84,21 @@ Received flows are decoded from the messages into the canonical flow format and 
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Parameters for the IPFIX TCP Parser
-[options="header, %autowidth"]
+.Optional parameters for the IPFIX TCP parser
+[options="header, autowidth"]
 |===
-| Parameter             | Description                                                                    | Required | Default value
-| `templateTimeout`     | Templates must be redeclared in the given duration or they will be dropped.    | no       | 30 minutes
-| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion time stamps.       | no       | 0
-| `clockSkewEventRate`  | Rate-limit clock skew events in seconds.                           | no       | 3600
-| `dnsLookupsEnabled`      | Enable or disable DNS resolution for flows.                        | no       | true
+| Parameter           | Default     | Description
+| templateTimeout     | 30 minutes  | Templates must be redeclared in the given duration or they will be dropped.
+| maxClockSkew        | 0           | The maximum delta in seconds between exporter and Minion timestamps.
+| clockSkewEventRate  | 3600        | Rate-limit clock skew events in seconds.
+| dnsLookupsEnabled   | true        | Enable or disable DNS resolution for flows.
 |===
 
-TIP: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters. 
-It specifies the maximum delta in seconds between exporter and Minion timestamps. 
-If exceeded, an alarm will be generated for the exporting device. 
-The default value is 0, so clock skew detection is disabled. 
+NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.
+It specifies the maximum delta in seconds between exporter and Minion timestamps.
+If exceeded, an alarm will be generated for the exporting device.
+The default value is 0, so clock skew detection is disabled.
 Furthermore, you can use a parameter `clockSkewEventRate` to rate limit clock skew events.
 The default is `3600` seconds, so every hour an event will be sent.

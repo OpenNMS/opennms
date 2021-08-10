@@ -21,19 +21,19 @@ The sFlow UDP parser supports protocol detection.
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Parameters for the Netflow v5 UDP Parser
-[options="header, %autowidth"]
+.Optional parameters for the Netflow v5 UDP Parser
+[options="header, autowidth"]
 |===
-| Parameter             | Description                                                                | Required | Default value
-| `dnsLookupsEnabled`      | Enable or disable DNS resolution for flows.                        | no       | true
+| Parameter             | Default   | Description
+| dnsLookupsEnabled     | true      | Enable or disable DNS resolution for flows.
 |===
 
 [[telemetryd-sflow-adapter-flow]]
-== sFlow Adapter
+== sFlow adapter
 
-The sFlow Adapter handles sFlow data received and parsed by the <<telemetryd-sflow-parser, sFlow parser>>.
+The sFlow adapter handles sFlow data received and parsed by the <<telemetryd-sflow-parser, sFlow parser>>.
 Flows are decoded from the messages into the canonical flow format and published to the flow repository.
 
 === Facts
@@ -43,16 +43,16 @@ Flows are decoded from the messages into the canonical flow format and published
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
 This adapter does not currently have any configurable parameters.
 
 
 [[telemetryd-sflow-adapter-telemetry]]
-== sFlow Telemetry Adapter
+== sFlow telemetry adapter
 
 The sFlow telemetry adapter handles sFlow telemetry data received and parsed by the <<telemetryd-sflow-parser-udp, sFlow UDP parser>>.
-The telemetry data is forwarded to a JSR-223 compatible script (i.e., Beanshell or Groovy) for further processing.
+The telemetry data is forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
 Using the script extension, you can extract the desired metrics from the sFlow messages and persist the results as time series data.
 
 === Facts
@@ -62,13 +62,13 @@ Using the script extension, you can extract the desired metrics from the sFlow m
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter`
 |===
 
-=== Parameters
+=== Configuration and use
 
-.Adapter specific parameters
-[options="header, %autowidth"]
+.Required adapter-specific parameters
+[options="header, autowidth"]
 |===
-| Parameter        | Description                                                       | Required | Default value
-| `script`         | Full path to the script used to handle the sFlow messages.         | required | (none)
+| Parameter        | Default | Description
+| script           | none    | Full path to the script used to handle the sFlow messages.
 |===
 
 === Scripting
@@ -78,12 +78,12 @@ The script will be invoked for every sFlow (extended) counter sample that is rec
 The following globals will be passed to the script:
 
 .Globals passed to the script
-[options="header, %autowidth"]
+[options="header, autowidth"]
 |===
 | Parameter  | Description                                                      | Type
-| `agent`    | The agent (node) against which the metrics will be associated    | `org.opennms.netmgt.collection.api.CollectionAgent`
-| `builder`  | Builder in which the resources and metrics should be added       | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
-| `msg`      | sFlow (extended) counter sample                                  | dynamic Map
+| agent      | The agent (node) against which the metrics will be associated.    | `org.opennms.netmgt.collection.api.CollectionAgent`
+| builder    | Builder in which the resources and metrics should be added.       | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| msg        | sFlow (extended) counter sample                                  | dynamic Map
 |===
 
 See https://sflow.org/developers/specifications.php[sFlow Specification] for the contained fields and their meaning.

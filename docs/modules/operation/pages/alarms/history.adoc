@@ -18,7 +18,7 @@ A simple REST API is also made available for the purposes of evaluating the resu
 [[ga-alarm-history-requirements]]
 == Requirements
 
-This feature requires #Elasticsearch 7.x#.
+This feature requires Elasticsearch 7.0+.
 
 [[ga-alarm-history-setup]]
 == Setup
@@ -61,38 +61,39 @@ In order to avoid pushing a new document every time a new event is reduced on to
 . The alarm has been associated with, or removed, from a situation.
 . A related alarm has been added or removed from the situation.
 
-NOTE: To change this behaviour and push a new document for *every* change, you can set `indexAllUpdates` to `true`.
+NOTE: To change this behavior and push a new document for *every* change, you can set `indexAllUpdates` to `true`.
 
 When alarms are deleted, we push a new document that contains the alarm id, reduction key, and deletion time.
 
 The following table describes a subset of the fields in the alarm document:
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3"]
 |===
 | Field | Description
 
-|`@first_event_time`
+| @first_event_time
 | Timestamp in milliseconds associated with the first event that triggered this alarm.
 
-|`@first_event_time`
+| @first_event_time
 | Timestamp in milliseconds associated with the last event that triggered this alarm.
 
-|`@update_time`
+| @update_time
 | Timestamp in milliseconds at which the document was created.
 
-|`@deleted_time`
+| @deleted_time
 | Timestamp in milliseconds when the alarm was deleted.
 
-|`id`
+| id
 | Database ID associated with the alarm.
 
-|`reduction_key`
+| reduction_key
 | Key used to reduce events on to the alarm.
 
-|`severity_label`
+| severity_label
 | Severity of the alarm.
 
-|`severity_id`
+| severity_id
 | Numerical ID used to represent the severity.
 
 |===
@@ -100,39 +101,34 @@ The following table describes a subset of the fields in the alarm document:
 [[ga-alarm-history-options]]
 == Options
 
-In addition to those mentioned in <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>>, the following properties can be set in `$\{OPENNMS_HOME}/etc/org.opennms.features.alarms.history.elastic.cfg`:
+In addition to those mentioned in <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>>, you can set the following optional properties in `$OPENNMS_HOME/etc/org.opennms.features.alarms.history.elastic.cfg`:
 
-[options="header, autowidth"]
+[options="header"]
+[cols="1,3,2"]
 |===
-| Property | Description | Required | default
+| Property | Description | Default
 
 | indexAllUpdates
 | Index every alarm update, including simple event reductions.
-| optional
-| `false`
+| false
 
 | alarmReindexDurationMs
 | Number of milliseconds to wait before re-indexing an alarm if nothing "interesting" has changed.
-| optional
-| `3600000`
+| 3600000
 
 | lookbackPeriodMs
 | Number of milliseconds to go back when searching for alarms.
-| optional
-| `604800000`
+| 604800000
 
 | batchIndexSize
 | Maximum number of records inserted in a single batch insert.
-| optional
-| `200`
+| 200
 
 | bulkRetryCount
 | Number of retries until a bulk operation is considered failed.
-| optional
-| `3`
+| 3
 
 | taskQueueCapacity
 | Maximum number of tasks to hold in memory.
-| optional
-| `5000`
+| 5000
 |===

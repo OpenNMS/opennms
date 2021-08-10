@@ -38,7 +38,7 @@ if [ ! -d "${opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
-minimum_version="1.8.0"
+minimum_version="11.0"
 maximum_version="11.9999"
 
 searchdirs=("/usr/lib/jvm" "/usr/java" "/System/Library/Java/JavaVirtualMachines" "/Library/Java/JavaVirtualMachines" "/Library/Java/Home" "/usr" "/opt")

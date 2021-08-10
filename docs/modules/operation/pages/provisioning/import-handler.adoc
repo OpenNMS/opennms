@@ -1,158 +1,205 @@
 
 [[import-handlers]]
-= Import Handlers
+= Import handlers
 
-The new Provisioning service in {page-component-title} is continuously improving and adapting to the needs of the community.
-
-One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL.
-Most commonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI.
-However, these same requisitions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs.
-For example a requisition can be retrieved using the HTTP protocol.
+{page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
+This is done in the `provisiond-configuration.xml` file by referencing a requisition's location via a URL.
+Most commonly, these URLs are files on the file system (`file:/opt/opennms/etc/imports/<my-requisition.xml>`) created through the Requisitions UI.
+However, these same requisitions for adding, updating, and deleting nodes can also come from external URLs.
+For example, a requisition can be retrieved using the HTTP protocol.
 
 In addition to the standard protocols supported by Java, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 
-== Generic Handler
+== Generic handler
 
-The generic handler is made available using URLs of the form: requisition://type?param=1;param=2
+The generic handler is made available using URLs of the form: `requisition://type?param=1;param=2`
 
-Using these URLs various type handlers can be invoked, both locally and via a _Minion_.
+Using these URLs, you can invoke various handlers, both locally and via a Minion.
+In addition to the type-specific parameters, the following parameters are supported by all handlers:
 
-In addition to the type specific parameters, the following parameters are supported:
-
-.General parameters
+.Common parameters
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
-| `location`             | The name of location at which the handler should be run                        | optional | Default
-| `ttl`                  | The maximum number of milliseconds to wait for the handler when ran remotely    | optional | 20000
+| `location`             | The name of the location at which the handler should run.                        | optional | Default
+| `ttl`                  | The maximum number of milliseconds to wait for the handler when run remotely.  | optional | 20000
 |===
 
-See the relevant sections below for additional details on the support types.
+See the relevant sections below for additional details on the supported types.
 
-The `opennms:show-import` command available via the _Karaf Shell_ can be used to show the results of an import (without persisting or triggering the import):
+Use the `opennms:show-import` command, available via the Karaf shell, to show the results of an import without persisting or triggering the import:
 
 [source]
 ----
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-== File Handler
+== File handler
 
 Examples:
 
 === Simple
 
- file:///path/to/my/requisition.xml
+[source]
+----
+file:///path/to/my/requisition.xml
+----
 
 === Using the generic handler
 
- requisition://file?path=/path/to/my/requisition.xml;location=MINION
+[source]
+----
+requisition://file?path=/path/to/my/requisition.xml;location=MINION
+----
 
-== HTTP Handler
+== HTTP handler
 
 Examples:
 
 === Simple
 
- http://myinventory.server.org/nodes.cgi
+[source]
+----
+http://myinventory.server.org/nodes.cgi
+----
 
 === Using the generic handler
 
- requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
+[source]
+----
+requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
+----
 
 TIP: When using the generic handler, the URL should be "URL encoded".
 
-== DNS Handler
+=== Using the OpenNMS Provisioning Integration Server (PRIS)
 
-The DNS handler requests a _Zone Transfer (AXFR) request_ from a DNS server.
-The A records are recorded and used to build an import requisition.
-This is handy for organizations that use DNS (possibly coupled with an IP management tool) as the data base of record for nodes in the network.
-So, rather than ping sweeping the network or entering the nodes manually into {page-component-title} Provisioning UI, nodes can be managed via 1 or more DNS servers.
+[source]
+----
+http://localhost:8000/requisitions/myServer
+----
 
-The format of the URL for this new protocol handler is: dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]
+
+== DNS handler
+
+The DNS handler requests a Zone Transfer (AXFR) from a DNS server.
+The A and AAAA records are retrieved and used to build an import requisition.
+This is useful for organizations that use DNS, possibly coupled with an IP management tool, as the database of record for nodes in the network.
+So, rather than ping sweeping the network or entering the nodes manually into the {page-component-title} Requisition UI, you can manage nodes via one or more DNS servers.
+
+The format of the URL for this new protocol handler is: `dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]`
 
 DNS Import Examples:
 
 === Simple
 
- dns://my-dns-server/myzone.com
+[source]
+----
+dns://my-dns-server/myzone.com
+----
 
-This URL will import all A records from the host `my-dns-server` on port 53 (default port) from zone "myzone.com" and since the foreign source (a.k.a. the provisioning group) is not specified it will default to the specified zone.
+This URL imports all A and AAAA records from the zone `myzone.com` on the host `my-dns-server` via port 53 (default DNS port).
+Since the foreign source is not specified, it will be added to the default requisition.
 
-== Using a Regular Expression Filter
+== Using a regular expression filter
 
- dns://my-dns-server/myzone.com/portland/?expression=^por-.*
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por-.*
+----
 
-This URL will import all nodes from the same server and zone but will only manage the nodes in the zone matching the regular expression `^port-.*` and will and they will be assigned a unique foreign source (provisioning group) for managing these nodes as a subset of nodes from within the specified zone.
+This URL imports all nodes from the same server and zone, but only imports the nodes in the zone matching the regular expression `^port-.*`.
+The matching nodes will be assigned to a requisition named 'portland'.
+If your expression requires URL encoding, for example you need to use a `?` in the expression, it must be properly encoded.
 
-If your expression requires URL encoding (for example you need to use a `?` in the expression) it must be properly encoded.
-
- dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
+----
 
 == Location
 
-You can use the `location` parameter to assign a single location to all nodes in this requisition:
+You can use the `location` parameter to assign a single location to all nodes in this requisition.
+This would only apply if you are using Minions in your network.
 
-  dns://my-dns-server/myzone.com/portland/?location=Raleigh
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?location=Raleigh
+----
 
 By prefixing with a `~`, you can specify a url-encoded regular expression to determine the location based on the host entries.
 The following example derives the location based on the subdomain.
-It uses a regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly one capturing group containing the subdomain:
+This example uses a URL-encoded regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly one capturing group containing the subdomain.
 
-  dns://my-dns-server/hs-fulda.de/?location=~%5E%28%3F%3A.%2A%5C.%7C%29%28.%2A%3F%29%5C.hs-fulda%5C.de%5C.%24
+[source]
+----
+dns://my-dns-server/hs-fulda.de/?location=~%5E%28%3F%3A.%2A%5C.%7C%29%28.%2A%3F%29%5C.hs-fulda%5C.de%5C.%24
+----
 
 This will associate nodes for the host entries `foo.e46.hs-fulda.de.` and `bar.e46.hs-fulda.de.` to the location `e46` while hosts like `aaa.g51.hs-fulda.de` and `bbb.g51.hs-fulda.de` will be assigned location `g51`.
 
-TIP: You can use online tools like `https://www.urlencoder.org` to encode your parameters.
+TIP: You can use online tools like https://www.urlencoder.org to encode your parameters.
 
-=== DNS Setup
+=== DNS setup
 
-Currently, the DNS server requires to be setup to allow a zone transfer from the {page-component-title} server.
-It is recommended that a secondary DNS server is running on {page-component-title} and that the {page-component-title} server be allowed to request a zone transfer.
+The DNS import handler performs an AXFR zone transfer request to collect DNS resource records for use in provisioning nodes.
+Zone transfers are designed for zone replication between DNS servers.
+You may want to provide additional security mechanisms to protect your DNS infrastructure.
+At a minimum, you should always restrict AXFR requests to only trusted IP addresses and/or use a hidden, read-only secondary DNS server for {page-component-title}.
+
+One suggestion is to set up a secondary DNS server on your {page-component-title} and configure the rest of the DNS servers to allow transfers to your {page-component-title} server.
+This allows you to point the DNS import handler to `localhost`.
+
+NOTE: There is no encryption or authentication available for AXFR transfer requests.
+Transaction signatures (TSIG) to prevent IP spoofing attempts are currently not supported by {page-component-title}.
+
 A quick way to test if zone transfers are working is:
 
- dig -t AXFR @<dnsServer> <zone>
+[source]
+----
+dig -t AXFR @<dnsServer> <zone>
+----
 
 === Configuration
 
-The configuration of the Provisoning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
-The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own cron based schedule for automatic importing from various sources (intended for integration with external URL such as http and this new dns protocol handler.
-
+The configuration of the Provisioning system allows the definition of zero or more import requisitions, each with their own cron-based schedule for automatic importing from various sources intended for integration with external URLs such as http and/or dns protocol handler.
 A default configuration is provided in the {page-component-title} `etc/` directory and is called: `provisiond-configuration.xml`.
 This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at the stroke of midnight.
-Not very practical but is a good example.
+Not very practical, but is a good example to get you started.
 
 [source, xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
-    <provisiond-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
-                              foreign-source-dir="/opt/opennms/etc/foreign-sources"
-                              requistion-dir="/opt/opennms/etc/imports"
-                              importThreads="8"
-                              scanThreads="10"
-                              rescanThreads="10"
-                              writeThreads="8" >
+<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
 
-    <!--http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
-        Field Name Allowed Values Allowed Special Characters
-        Seconds 0-59 , - * / Minutes 0-59 , - * / Hours 0-23 , - * /
-        Day-of-month1-31, - * ? / L W C Month1-12 or JAN-DEC, - * /
-        Day-of-Week1-7 or SUN-SAT, - * ? / L C # Year (Opt)empty, 1970-2099, - * /
-    -->
+  foreign-source-dir="/opt/opennms/etc/foreign-sources" 
+  requistion-dir="/opt/opennms/etc/imports"
 
-    <requisition-def import-name="localhost"
-                     import-url-resource="dns://localhost/localhost">
+  importThreads="8" scanThreads="10" rescanThreads="10" writeThreads="8" >
 
-        <cron-schedule>0 0 0 * * ? *</cron-schedule> <!-- daily, at midnight -->
-    </requisition-def>
+  <!--
+    http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
+        Field Name     Allowed Values      Allowed Special Characters
+        Seconds        0-59                , - * /
+        Minutes        0-59                , - * /
+        Hours          0-23                , - * /
+        Day-of-month   1-31                , - * ? / L W C
+        Month          1-12 or JAN-DEC     , - * /
+        Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
+        Year (Opt)     empty, 1970-2099    , - * /
+  -->
+
+  <requisition-def import-name="localhost" import-url-resource="dns://localhost/localhost">
+    <cron-schedule>0 0 0 * * ? *</cron-schedule>
+  </requisition-def>
 </provisiond-configuration>
 ----
 
-== Configuration Reload
+== Configuration reload
 
-Like many of the daemon configuration in the 1.7 branch, the configurations are reloadable without having to restart {page-component-title}, using the reloadDaemonConfig uei:
+It is possible to reload the provisiond configuration without having to restart {page-component-title} by triggering the reloadDaemonConfig UEI:
 
- /opt/opennms/bin/send-event.pl
- uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
-
-This means that you don't have to restart {page-component-title} every time you update the configuration.
+[source, bash]
+----
+/opt/opennms/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
+----

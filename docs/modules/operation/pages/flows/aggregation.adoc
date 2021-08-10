@@ -9,29 +9,14 @@ To use this functionality you must enable the Kafka forwarder as described in <<
 
 NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
 
-YOu can set the following properties in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
+Set the following properties in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
-[options="header, %autowidth"]
+.Optional parameters for flow aggregation
+[options="header, autowidth"]
 |===
-| Property | Description | Required | Default
-
-| `alwaysUseRawForQueries`
-| Set to `true` to use raw flow documents to respond to all queries and effectively disable the use of aggregated flows.
-| `false`
-| `true`
-
-| `alwaysUseAggForQueries`
-| Set to `true` to use raw aggregated flow documents to respond to all queries and effectively disable the use of raw flows.
-| `false`
-| `false`
-
-| `timeRangeDurationAggregateThresholdMs`
-| Queries with time range filters that have a duration greater than this value will use aggregated flows when possible.
-| `false`
-| `120000` (2 minutes)
-
-| `timeRangeEndpointAggregateThresholdMs`
-| Queries with time range filters that have an endpoint that is older than this value will use aggregated flows when possible.
-| `false`
-| `604800000` (7 days)
+| Property                               | Default            | Description
+| alwaysUseRawForQueries                 | true               | Use raw flow documents to respond to all queries instead of aggregated flows.
+| alwaysUseAggForQueries                 | false              | Use aggregated flow documents to respond to all queries instead of raw flows.
+| timeRangeDurationAggregateThresholdMs  | 120000 (2 minutes) | Queries with time range filters that have a duration greater than this value will use aggregated flows when possible.
+| timeRangeEndpointAggregateThresholdMs  | 604800000 (7 days) | Queries with time range filters that have an endpoint that is older than this value will use aggregated flows when possible.
 |===

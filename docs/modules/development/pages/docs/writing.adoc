@@ -226,7 +226,7 @@ There is no easy way to add new admonition types; do not create your own.
 
 Common attributes you can use in documents:
 
-* \{\opennms-version} - rendered as "{\opennms-version}"
+* \{opennms-version} - rendered as "\{opennms-version}"
 
 These can substitute part of URLs that point to, for example, APIdocs or source code.
 Note that opennms-git-tag also handles the case of snapshot/master.
@@ -309,4 +309,3 @@ this is rendered as:
 | `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
                            `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
 |===
-

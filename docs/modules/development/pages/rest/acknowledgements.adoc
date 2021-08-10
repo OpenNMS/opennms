@@ -12,7 +12,7 @@ To get all results, use `limit=0` as a parameter on the URL (i.e., `GET /acks?li
 | Resource      | Description
 | `/acks`       | Get a list of acknowledgements.
 | `/acks/count` | Get the number of acknowledgements. (Returns plaintext, rather than XML or JSON.)
-| `/acks/\{id\}`  | Get the acknowledgement specified by the given ID.
+| `/acks/\{id}` | Get the acknowledgement specified by the given ID.
 |===
 
 == POSTs (Setting Data)

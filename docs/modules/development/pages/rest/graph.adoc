@@ -15,19 +15,19 @@ NOTE: If not otherwise specified, the `Content-Type` of the request and response
 | GET
 | Retrieves the metadata of all registered graph containers.
 
-| `/graphs/\{containerid\}`
+| `/graphs/\{containerid}`
 | GET
-| Retrieve the container identified by `\{containerid\}`.
-  Returns a 404 if a graph container with `\{containerid\}` does not exist.
+| Retrieve the container identified by `\{containerid}`.
+  Returns a 404 if a graph container with `\{containerid}` does not exist.
 
-| `/graphs/\{containerid\}/\{namespace\}`
+| `/graphs/\{containerid}/\{namespace}`
 | GET
-| Retrieve the graph with namespace `\{namespace\}` from the container `\{containerid\}`.
-  Returns a 404 if either the `\{containerid\}` does not exist or the container does not contain any graphs with namespace `\{namespace\}`.
+| Retrieve the graph with namespace `\{namespace}` from the container `\{containerid}`.
+  Returns a 404 if either the `\{containerid}` does not exist or the container does not contain any graphs with namespace `\{namespace}`.
 
-| `/graphs/\{containerid\}/\{namespace\}`
+| `/graphs/\{containerid}/\{namespace}`
 | POST
-| Retrieve the view of the graph with namespace `\{namespace\}` from the container `\{containerid\}`.
+| Retrieve the view of the graph with namespace `\{namespace}` from the container `\{containerid}`.
   The body must contain the query to create the view, e.g., `{ "semanticZoomLevel": 1, "verticesInFocus": []}`
   If no `semanticZoomLevel` is provided, `1` is assumed.
   If no `verticesInFocus` is provided, the default focus of the graph is used.
@@ -44,20 +44,20 @@ At the moment, the context of a search must always be a concrete namespace and c
 | Method
 | Description
 
-| `/graphs/search/suggestions/\{namespace\}?s=\{search\}`
+| `/graphs/search/suggestions/\{namespace}?s=\{search}`
 | GET
-| Provides suggestions in the context of `\{namespace\}` for the input `\{search\}`.
+| Provides suggestions in the context of `\{namespace}` for the input `\{search}`.
   Each suggestion has the following properties:
   `context`: The context of the suggestion, e.g., Node for a node,
   `id`: A unique identifier of the representing element of this suggestion, e.g., `node id`,
   `label`: A human-readable label, e.g., `node label`,
   `provider`: The source of the suggestion.
 
-| `/graphs/search/results/\{namespace\}?providerId=\{providerid\}&criteria=\{criteria\}&context=\{context\}`
+| `/graphs/search/results/\{namespace}?providerId=\{providerid}&criteria=\{criteria}&context=\{context}`
 | GET
 | Resolves a suggestion to actual vertices.
-  The values for `\{providerid\}` and `\{context\}` are defined in the suggestion.
-  The `\{criteria\}` is the `\{id\}` property of the suggestion.
+  The values for `\{providerid}` and `\{context}` are defined in the suggestion.
+  The `\{criteria}` is the `\{id}` property of the suggestion.
 
 |===
 
