@@ -3,6 +3,7 @@
 
 This section describes the available service detectors that the Provisiond service can use to automatically add services to nodes for monitoring and collecting metrics.
 
+[[ga-provisioning-meta-data]]
 == Metadata DSL
 Service detectors can use <<meta-data.adoc#ga-meta-data-dsl, MetaData DSL>> (domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter.
 

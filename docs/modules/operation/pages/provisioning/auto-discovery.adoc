@@ -31,6 +31,7 @@ NOTE: To configure a discovery scan to run once, select *Run Single Discovery Sc
 . If desired, edit the nodes or delete them from the requisition, then click *Synchronize* to add them to the {page-component-title} database.
 . Repeat this process for each requisition you want to provision.
 
+[[ga-provisioning-auto-discovery-detectors]]
 == Automatic Discovery Detectors
 
 Auto discovery with detectors lets users specify the services to detect, in addition to ICMP ping, for the specified IP addresses to be discovered.

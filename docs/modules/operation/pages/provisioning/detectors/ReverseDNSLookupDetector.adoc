@@ -19,4 +19,4 @@ Reverse DNS Lookup detector does not take any parameters.
 
 == Examples
 
-Use the Reverse-DNS-Lookup detector in <<provisioning/auto-discovery-detectors.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.
+Use the Reverse-DNS-Lookup detector in <<provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.
