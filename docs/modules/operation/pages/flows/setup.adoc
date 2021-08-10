@@ -5,13 +5,13 @@
 Here we assume that you already have:
 
 * An Elasticsearch cluster setup with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch-drift plugin] installed on every Elasticsearch node.
-* An instance of Grafana link:https://github.com/OpenNMS/opennms-helm[OpenNMS Helm] #v2.0.0# or greater installed.
+* An instance of Grafana with a compatible version of link:https://github.com/OpenNMS/opennms-helm[OpenNMS Helm] installed.
 
-== Configuration Elasticsearch Persistence
+== Configure Elasticsearch persistence
 
 From a Karaf shell on your {page-component-title} instance, start by configuring the flow persistence to use your Elasticsearch cluster:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...
@@ -20,12 +20,12 @@ admin@opennms()> config:property-set elasticUrl http://elastic:9200
 admin@opennms()> config:update
 ----
 
-NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
-      See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
+NOTE: This configuration is stored in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
 
-== Enabling a Protocol
+== Enabling a protocol
 
-Next, enable one or more of the protocols you would like to handle in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`.
+Next, enable one or more of the protocols you would like to handle in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`.
 
 NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the same process for any of the other flow-related protocols.
 
@@ -47,14 +47,14 @@ NOTE: In this example we enable the NetFlow v5 protocol, but you can repeat the 
 Apply the changes without restarting by sending a `reloadDaemonConfig` event via the CLI:
 
 .Send a reloadDaemonConfig event through CLI
-[source]
+[source, console]
 ----
-$\{OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 This will open a UDP socket bound to `0.0.0.0:8877` to which NetFlow v5 messages can be forwarded.
 
-== Linking to OpenNMS Helm in the Web UI
+== Link the web UI to Helm
 
 To access flow-related graphs from the {page-component-title} web interface, you must configure a link to your instance of OpenNMS Helm.
 
@@ -67,20 +67,20 @@ admin@opennms()> config:update
 ----
 
 NOTE: This URL can optionally point to other tools as well.
-      It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
+It supports placeholders for `$nodeId`, `$ifIndex`, `$start`, and `$end`.
 
 Once configured, an icon will appear on the top-right corner of a resource graph for an SNMP interface if there is flow data for that interface.
 
-=== Configuring a Listener on a Minion (Optional)
+=== Configure a listener on a Minion
 
 In this example, we enable a generic listener for the NetFlow v5 protocol on Minion.
 
 IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
-           See the examples in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#listener-ref, Telemetryd Listener Reference>> for details.
+See the examples in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#listener-ref, Telemetryd Listener Reference>> for details.
 
 To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8201 admin@localhost
 ...
@@ -93,9 +93,9 @@ admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.tele
 admin@minion()> config:update
 ----
 
-TIP: If using a configuration management, the properties file can be created and used as startup configuration in `$\{MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
+TIP: If using a configuration management, you can create and use the properties file as startup configuration in `$MINION_HOME/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
 
-[source]
+[source, console]
 ----
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
@@ -114,80 +114,53 @@ The value used for the lookup corresponds to the following fields from the vario
 
 [options="header, autowidth"]
 |===
-| Property | Description
-
-| `NetFlow v5` | `engineId`
-| `NetFlow v9` | `sourceId`
-| `IPFix` | `observationDomainId`
-| `SFlow` | `agent_address:sub_agent_id`
-| `BMP` | `bgpId`
+| Property     | Description
+| NetFlow v5   | engineId
+| NetFlow v9   | sourceId
+| IPFix        | observationDomainId
+| SFlow        | agent_address:sub_agent_id
+| BMP          | bgpId
 |===
 
-== Node Cache Configuration (Optional)
+== Node cache configuration
 
-By default, each flow document - if {page-component-title} knows it - is  enriched with node information.
+By default, each flow document, if {page-component-title} can match the IP address to a node, is enriched with node information.
 To reduce the number of queries to the database, the data is cached.
 
-The following cache properties are available to be set in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
+The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
 
+.Optional parameters for the node cache
 [options="header, autowidth"]
 |===
-| Property | Description | Required | Default
-
-| `nodeCache.maximumSize`
-| The maximum size of the cache.
-| `false`
-| `1000`
-
-| `nodeCache.expireAfterWrite`
-| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
-| `false`
-| `300`
-
-| `nodeCache.recordStats`
-| Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
-| `false`
-| `true`
-
+| Property                   | Default | Description
+| nodeCache.maximumSize      | 1000    | The maximum size of the cache.
+| nodeCache.expireAfterWrite | 300     | Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+| nodeCache.recordStats      | true    | Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
 |===
 
-== Classification Exporter Filter Cache Configuration (Optional)
+== Classification exporter filter cache configuration
 
 A rule in the Classification Engine may define an `exporterFilter`.
 To resolve if the filter criteria match the address of an exporter, a database query is executed.
 A cache can be configured to cache the result to improve performance.
 
-The following cache properties are available to be set in `$\{OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
+The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
 
+.Optional parameters for the classification engine filters
 [options="header, autowidth"]
 |===
-| Property | Description | Required | Default
-
-| `cache.classificationFilter.enabled`
-| Enables or disables the cache.
-| `false`
-| `false`
-
-| `cache.classificationFilter.maxSize`
-| The maximum size of the cache.
-| `false`
-| `5000`
-
-| `cache.classificationFilter.expireAfterRead`
-| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
-  The timer is reset every time an entry is read.
-| `false`
-| `300`
-
-| `nodeCache.recordStats`
-| Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
-| `false`
-| `true`
-
+| Property                                   | Default | Description
+| cache.classificationFilter.enabled         | false   | Enables or disables the cache.
+| cache.classificationFilter.maxSize         | 5000    | The maximum size of the cache.
+| cache.classificationFilter.expireAfterRead | 300     | Number of seconds until an entry in the node cache is evicted.
+                                                         Set to 0 to disable eviction.
+                                                         The timer is reset every time an entry is read.
+| nodeCache.recordStats                      | true    | Defines if cache statistics are exposed via JMX.
+                                                         Set to `false` to disable statistic recording.
 |===
 
 [[kafka-forwarder-config]]
-== Configure Kafka Forwarder
+== Configure Kafka forwarder
 
 Enriched flows (with OpenNMS node data) can also be forwarded to Kafka.
 
@@ -195,7 +168,7 @@ Enriched flows are stored in `flowDocuments` topic and the payloads are encoded 
 See `flowdocument.proto` in the corresponding source distribution for the model definitions.
 
 Enable Kafka forwarding:
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...
@@ -206,7 +179,7 @@ admin@opennms()> config:update
 
 Configure Kafka server for flows:
 
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...
@@ -228,7 +201,7 @@ If these times differ by a certain amount, the receive time will be considered m
 To enable clock correction, configure a threshold for the maximum allowed delta in milliseconds.
 Setting the threshold to `0` will disable the correction mechanism.
 
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...
