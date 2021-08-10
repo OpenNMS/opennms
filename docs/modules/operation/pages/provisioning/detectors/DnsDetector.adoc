@@ -8,7 +8,7 @@ Use the command line tool `host` to simulate the detector:
 
 [source, console]
 ----
-~ % host -v -t a www.google.com 8.8.8.8
+> host -v -t a www.google.com 8.8.8.8
 Trying "www.google.com"
 Using domain server:
 Name: 8.8.8.8
@@ -38,14 +38,14 @@ Received 112 bytes from 8.8.8.8#53 in 41 ms
 | Implementation | `org.opennms.netmgt.provision.detector.datagram.DnsDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the DNS Service Detector
-[options="header, %autowidth"]
+.Optional parameters for the DNS service detector
+[options="header, autowidth"]
 |===
-| Parameter | Description   | Required | Default value
-| `port`    | Port to query | optional | `53`
-| `lookup`  | Name to query | optional | `localhost`
+| Parameter | Default   | Description
+| port      | 53        | Port to query.
+| lookup    | localhost | Name to query.
 |===
 
 == Example Configuration

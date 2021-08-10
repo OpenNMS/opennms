@@ -1,5 +1,5 @@
 
-= Reverse-DNS-Lookup Detector
+= Reverse DNS Lookup Detector
 
 This detector tries to detect if a given IP address can be found in PTR records.
 
@@ -10,12 +10,12 @@ This detector tries to detect if a given IP address can be found in PTR records.
 | Implementation | `org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the Reverse-DNS-Lookup Detector
-
-Reverse DNS Lookup detector does not take any parameters.
-
+.Parameters for the Reverse DNS Lookup Detector
+|===
+| Reverse DNS Lookup detector does not take any parameters.
+|===
 
 == Examples
 

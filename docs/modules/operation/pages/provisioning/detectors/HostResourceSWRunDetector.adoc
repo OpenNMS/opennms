@@ -1,11 +1,15 @@
-= HostResourceSWRunDetector
+= HostResourceSWRun Detector
 
-Use the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] to detect a process to monitor.
+This detector tests the running state of one or more processes.
+It does this via SNMP by inspecting the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] hrSwRunTable.
+The test matches a given process as hrSwRunName to determine if it exists on the node.
 
-You must configure the SNMP protocol, and the SNMP agent must support HOST-RESOURCES-MIB.
-Most modern _SNMP agents_, e.g. _Net-SNMP agent_ and the _Microsoft SNMP service_, support the _HOST-RESOURCES-MIB_.
+This detector uses SNMP to accomplish its work.
+Therefore, systems against which you use it must have an SNMP agent supporting the HOST-RESOURCES-MIB installed and configured.
+Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ship with Microsoft Windows, support this MIB.
+Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be somewhat spotty.
 
-NOTE: This detector implements the configuration parameters inherited from the <<provisioning/detectors/SnmpDetector.adoc>>.
+NOTE: This detector implements the configuration parameters inherited from the <<provisioning/detectors/SnmpDetector.adoc, SNMP Detector>>.
 
 == Detector facts
 
@@ -14,15 +18,14 @@ NOTE: This detector implements the configuration parameters inherited from the <
 | Implementation | `org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the HostResourceSwRunDetector
-[options="header, %autowidth"]
+.Required parameters for the HostResourceSwRun service detector
+[options="header, autowidth"]
 |===
-| Parameter         | Description                            | Required | Default value
-| `serviceToDetect` | Process name that should be detected   | required | `-`
+| Parameter       | Default | Description
+| serviceToDetect | none    | Process name that should be detected
 |===
-
 
 == Examples
 

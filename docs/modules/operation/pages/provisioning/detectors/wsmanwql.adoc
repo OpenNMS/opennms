@@ -11,15 +11,18 @@ If the query successfully returns one or more items, the service is marked as de
 | Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the <DETECTOR-NAME-HERE>
-[options="header, %autowidth"]
+.Parameters for the WS-Man WQL detector
+[options="header, autowidth"]
+[cols="1,1,4"]
 |===
-| Parameter      | Description                                                                                        | Required | Default value
-| `resourceUri`  | A resourceUri consists of a prefix and a path to a resource.                                       | yes      | `http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*`
-| `wql`          | A query using the WQL filter dialect.                                                               | yes      | `none`
-| `serviceName`  | A custom service name to identify this service.                                                     | no       | `WsManWQLService`
+| Parameter    | Default                                                    | Description
+3+| *Required*
+| resourceUri  | \http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/* | A resourceUri consists of a prefix and a path to a resource.
+| wql          | none                                                       | A query using the WQL filter dialect.
+3+| *Optional*
+| serviceName  | WsManWQLService                                            | A custom service name to identify this service.
 |===
 
 == Examples
@@ -29,9 +32,9 @@ Example detector configuration:
 [source, xml]
 ----
 <detector name="WinRM" class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector">
-   <parameter key="resourceUri" value="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"/>
-   <parameter key="serviceName" value="WinRM"/>
-   <parameter key="wql" value="select Name,Status from Win32_Service where Name = 'WinRM' and StartMode='Auto' and Status = 'OK'"/>
+    <parameter key="resourceUri" value="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"/>
+    <parameter key="serviceName" value="WinRM"/>
+    <parameter key="wql" value="select Name,Status from Win32_Service where Name = 'WinRM' and StartMode='Auto' and Status = 'OK'"/>
 </detector>
 ----
 
