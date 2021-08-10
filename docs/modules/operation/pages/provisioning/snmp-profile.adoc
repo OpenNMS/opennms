@@ -1,4 +1,4 @@
-= SNMP profiles
+= SNMP Profiles
 
 SNMP Profiles are prefabricated sets of SNMP configuration which are automatically "fitted" against eligible IP addresses at provisioning time.
 Each profile may have a unique label and an optional filter expression.
@@ -51,7 +51,7 @@ The `opennms:snmp-fit` Karaf shell command finds a matching profile for a given 
 
 Matching or "fitting" an SNMP profile should be understood as passing the profile's filter expression _and_ success in getting the scalar `sysObjectID` instance.
 
-[source]
+[source, console]
 ----
 $ ssh -p 8101 admin@localhost
 ...

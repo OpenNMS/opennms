@@ -1,0 +1,5 @@
+
+= Adapters
+
+The {page-component-title} Provisiond API also supports provisioning adapters (plugins) for integration with external systems during the provisioning import phase.
+These adapters allow the exchange of data between OpenNMS and another system, allowing the enrichment of node data.

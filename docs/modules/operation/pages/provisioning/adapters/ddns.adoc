@@ -1,0 +1,10 @@
+
+= DDNS Adapter
+
+The DDNS adapter uses the dynamic DNS protocol to send updated DNS records to your DNS system as nodes are provisioned into {{page-component-title}.
+To configure this adapter, create a .properties file in  the `$OPENNMS_HOME/etc/opennms.properties.d/` folder and set the `importer.adapter.dns.server property`:
+
+[source, properties]
+----
+importer.adapter.dns.server=192.168.1.1
+----

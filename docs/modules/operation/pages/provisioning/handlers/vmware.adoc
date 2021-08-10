@@ -1,0 +1,128 @@
+[[vmware-handler]]
+= VMWare Handler
+
+The VMware adapter can pull hosts and/or virtual machines from a vCenter server into {page-component-title}.
+With this adapter, nodes can automatically be added, updated, or removed from your {page-component-title} based on the status of the VMware entity.
+The adapter also lets {page-component-title} collect additional performance metrics directly from the VMware server based on stats stored by the hypervisor.
+
+== Preparing VMware credentials
+
+To allow communication between OpenNMS and VMware, it is necessary to create a user and a role for authentication and permissions.
+You can either create a new local user within your vCenter server or use an account that has been defined in an external authentication system that is setup to access your vCenter instance.
+
+.Create a new vCenter role:
+. Log into vCenter Server.
+. Go to menu:Home[Administration > Roles].
+. Select the built in "Read Only" role.
+. Select the option to Clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
+. Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
+. Click OK to save the role.
+
+.Assign OpenNMS user permissions to access vCenter objects:
+. Navigate to menu:Home[Inventory > Hosts and Clusters] within your vCenter.
+. Right click on the container to apply the permission.
+If you want {page-component-title} to import all entities, this would be the root vCenter level.
+If you only want to import a subset of nodes, you would select a specific datacenter, cluster, or host.
+. Select the Add Permission option from the right-click menu.
+. Enter the name of the user account to use for connecting to vCenter during the import process.
+. Select the "OpenNMS-Access" role (or whatever you called it in the previous step).
+. Save the role assignment and make sure to propagate to child objects, if prompted.
+
+== Provide credentials to {page-component-title}
+
+Now that vCenter has been configured to allow access to read objects, it is time to setup {page-component-title} to be able to connect to vCenter.
+In the `$OPENNMS_HOME/etc/vmware-config.xml` file, add a line with the hostname, user, and password to connect to your vCenter server.
+If you have multiple vCenter servers, you can specify multiple `<vmware-server />` objects in this file.
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<vmware-config>
+    <vmware-server hostname="vcenter.mydomain.org" username="OpenNMS" password="secret"/>
+</vmware-config>
+----
+
+== Configure VMware requisition
+
+The final step is to setup a requisition definition in `$OPENNMS_HOME/etc/provisiond-configuration.xml`.
+Using the `vmware://` prefix, create a `<requisition-def>` object for the vCenter server.
+
+[source, xml]
+----
+<requisition-def import-name="vCenter" <1>
+    import-url-resource="vmware://vcenter.mydomain.org"> <2>
+    <cron-schedule>0 42 23 * * ? *</cron-schedule> <3>
+</requisition-def>
+----
+
+<1> The name of the requisition to appear within {page-component-title}.
+A suggestion is to use the name of the vCenter server, but it can be whatever label you want to use.
+<2> The hostname defined in the `provisiond-configuration.xml` must match the same case as the hostname is entered in the `vmware-config.xml`.
+<3> The schedule of how frequently the import should re-run.
+In this example, the import would run every day at 23:42.
+
+By default, all running hosts and virtual machines will be detected and added to the requisition.
+This behavior can be changed by adding additional parameters to the `import-url-resource` parameter in the requisition definition.
+
+Do not forget to restart services after making changes to the `provisiond-configuration.xml` file.
+
+== Optional import parameters
+
+[options="header, autowidth"]
+[cols="2,1,4"]
+|===
+| Parameter              | Default | Description
+| importIPv4Only         | false   | Imports only IPv4 Interfaces
+| importIPv6Only         | false   | Imports only IPv6 Interfaces
+| topologyNetworks       | true    | Add the network information to the VMWare Topology
+| topologyDatastores     | true    | Add the datastores information to the VMWare Topology
+| topologyPortGroups     | false   | Add the port groups information (distributed virtual switches) to the VMWare Topology
+| importVMPoweredOn      | true    | Defines if powered on machines should be imported.
+| importVMPoweredOff     | false   | Defines if powered off machines should be imported.
+| importVMSuspended      | false   | Defines if suspended machines should be imported.
+| importVMAll            | false   | Import all virtual machines and ignores importVMPoweredOn, importVMPoweredOff and importVMSuspended parameters
+| importVMOnly           | false   | Imports only virtual machines and ignores hosts.
+| importHostPoweredOn    | true    | Defines if powered on host systems should be imported.
+| importHostPoweredOff   | false   | Defines if powered off host systems should be imported.
+| importHostStandBy      | false   | Defines if stand-by host systems should be imported.
+| importHostUnknown      | false   | Defines if host systems with a unknown power state should be imported.
+| importHostAll          | false   | Imports all host systems and ignores importHostPoweredOn, importHostPoweredOff and importHostSuspended parameters
+| importHostOnly         | false   | Imports only host systems and ignores VMs.
+| virtualMachineServices | VMware-ManagedEntity,VMware-VirtualMachine                  | Monitor services to assign to imported virtual machines.
+                                                                                         Values should be comma separated.
+| hostSystemServices     | VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem | Monitor services to assign to imported host systems.
+                                                                                         Values should be comma separated.
+| timeout                | 3000    | VMware connection timeout, in milliseconds.
+| cimTimeout             | 3000    | Timeout, in milliseconds, used to test interface addresses for a reachable CIM service.
+                                     Only increase this value if you have problems discovering CIM services on host systems.
+|===
+
+IMPORTANT: `importVMOnly` and `importHostOnly` can't both be true simultaneously. +
+`importIPv4Only` and `importIPv6Only` can't both be true simultaneously.
+
+NOTE: If you do not import powered off or standby entities, they will be removed and re-added to {page-component-title} based on their power state.
+This can cause their database ID to change over time.
+Enabling the https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[storeByForeignSource] setting can help make sure collected metrics are kept properly.
+
+
+
+== Provision a subset of VMware entities
+
+If you want to provision an arbitrary selection of VMware entities, you can specify a key-value pair to match objects that have a specific attribute in vCenter.
+The key to lookup is a user defined attributes for entities being imported.
+If the value provided starts with a `~`, the value will be treated as a regular expression.
+Only one key-value pair can be specified per requisition.
+
+[source, xml]
+----
+<requisition-def import-name="vmware-requisition"
+    import-url-resource="vmware://<vcenter-host>/VCenterImport?key=OpenNMS-Import;value=yes">
+----
+
+If you need to specify several attributes, use the `_[customAttributeName]` parameter
+
+[source, xml]
+----
+<requisition-def import-name="vmware-requisition"
+    import-url-resource="vmware://<vcenter-host>/VCenterImport?_OpenNMS-Import=yes">
+----

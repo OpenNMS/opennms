@@ -1,5 +1,5 @@
 
-= Directed discovery
+= Directed Discovery
 
 Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
 Two other methods for manually adding nodes (quick add node and manually adding an interface) are in the process of being deprecated. We do not recommend using these features.

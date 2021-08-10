@@ -6,7 +6,7 @@ You can customize the A record used in the query with the `lookup` configuration
 
 Use the command line tool `host` to simulate the detector:
 
-[source]
+[source, console]
 ----
 ~ % host -v -t a www.google.com 8.8.8.8
 Trying "www.google.com"

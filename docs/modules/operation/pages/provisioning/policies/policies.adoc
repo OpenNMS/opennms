@@ -1,0 +1,11 @@
+
+= Policies
+
+The Policy API in Provisiond allows you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.
+
+Policies are defined by editing the foreign source definition (Edit Definition button) of a requisition.
+
+== Common policy parameters
+
+The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
+Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` will cause OR logic to be applied.

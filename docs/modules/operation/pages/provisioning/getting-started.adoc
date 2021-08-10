@@ -1,6 +1,6 @@
 
 [[provision-getting-started]]
-= Getting started
+= Getting Started
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 

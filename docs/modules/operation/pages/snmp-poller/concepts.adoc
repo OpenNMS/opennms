@@ -1,4 +1,4 @@
-
+[[snmp-interface-poller]]
 = SNMP Interface Poller
 
 {page-component-title} can monitor the status of a SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
