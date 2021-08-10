@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.opennms.netmgt.syslogd.api.SyslogMessageDTO;
 import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
@@ -74,6 +75,9 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
 
     @Autowired
     private EventForwarder eventForwarder;
+
+    @Autowired
+    private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
     private final String localAddr;
     private final Timer consumerTimer;
@@ -123,8 +127,8 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         messageLog.getSourcePort(),
                         message.getBytes(),
                         message.getTimestamp(),
-                        syslogdConfig
-                    );
+                        syslogdConfig,
+                        m_locationAwareDnsLookupClient);
                 events.addEvent(re.getEvent());
             } catch (final MessageDiscardedException e) {
                 LOG.info("Message discarded, returning without enqueueing event.", e);
@@ -203,5 +207,9 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         this.distPollerDao = distPollerDao;
+    }
+
+    public void setLocationAwareDnsLookupClient(LocationAwareDnsLookupClient locationAwareDnsLookupClient) {
+        this.m_locationAwareDnsLookupClient = locationAwareDnsLookupClient;
     }
 }

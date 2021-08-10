@@ -30,20 +30,24 @@ package org.opennms.netmgt.syslogd;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static junit.framework.TestCase.assertFalse;
+import static org.apache.camel.component.xslt.XsltOutput.bytes;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -58,7 +62,9 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.InterfaceToNodeCacheEventProcessor;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
@@ -286,6 +292,44 @@ public class SyslogSinkConsumerNewSuspectIT {
         assertFalse(event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI));
         m_anticipator.reset();
 
+    }
+
+
+    @Test
+    @Transactional
+    public void testSyslogMessageWithHostNameThatIsResolvableOnMinion() throws IOException {
+        // Overwrite with new config by enabling new suspect on message flag.
+        SyslogdConfigFactory config = loadSyslogConfiguration("/etc/syslogd-new-suspect-enable-configuration.xml");
+        // One of the interfaces on node1
+        final InetAddress addr = InetAddressUtils.addr("192.168.1.3");
+        // Create new consumer and module with the new config.
+        SyslogSinkConsumer syslogSinkConsumer = new SyslogSinkConsumer(new MetricRegistry());
+        syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
+        OnmsDistPoller onmsDistPoller = m_distPollerDao.whoami();
+        onmsDistPoller.setLocation("MINION");
+        m_distPollerDao.save(onmsDistPoller);
+        LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
+        syslogSinkConsumer.setLocationAwareDnsLookupClient(locationAwareDnsLookupClient);
+        Mockito.when(locationAwareDnsLookupClient.lookup(anyString(), Mockito.eq("MINION"), Mockito.eq(onmsDistPoller.getId())))
+                .thenReturn(CompletableFuture.completedFuture("192.168.1.3"));
+        syslogSinkConsumer.setSyslogdConfig(config);
+        syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        SyslogSinkModule syslogSinkModule = syslogSinkConsumer.getModule();
+
+        // Syslog message with hostname (hostResolvableOnMinion) that is resolvable on Minion, should create new suspect event.
+        byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + "hostResolvableOnMinion" + " - - - - \uFEFFfoo0: load test 0 on tty1\0").getBytes();
+        DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, addr, SyslogClient.PORT);
+        // Create a new SyslogConnection and call it to create the processed event
+        SyslogMessageLogDTO messageLog = syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        // Dispatch
+        syslogSinkConsumer.handleMessage(messageLog);
+        // Capture
+        await().until(() -> m_anticipator.getUnanticipatedEvents().size(), equalTo(2));
+        List<Event> events = m_anticipator.getUnanticipatedEvents();
+        assertEquals(2, events.size());
+        // One of the events should be New Suspect.
+        assertTrue(events.stream().anyMatch(event -> event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)));
+        m_anticipator.reset();
     }
 
 
