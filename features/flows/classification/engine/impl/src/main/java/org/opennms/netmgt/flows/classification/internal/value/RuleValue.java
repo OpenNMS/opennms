@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,11 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.flows.classification.internal.value;
 
-package org.opennms.netmgt.flows.classification.internal.classifier;
+import org.opennms.netmgt.flows.classification.internal.decision.Bound;
 
-import org.opennms.netmgt.flows.classification.ClassificationRequest;
+public interface RuleValue<S extends Comparable<S>, T extends RuleValue<S, T>> {
 
-public interface Classifier extends Comparable<Classifier> {
-    String classify(ClassificationRequest classificationRequest);
+    /**
+     * Shrinks this rule value by removing those parts are already covered by the given bound.
+     * <p>
+     * The given bounds result from thresholds along paths in the decision tree. Therefore during
+     * classification those parts that are covered by these threshold need not to be checked again.
+     *
+     * @return Returns {@code null} if this rule value is completely covered by the given bound.
+     */
+    T shrink(Bound<S> bound);
 }

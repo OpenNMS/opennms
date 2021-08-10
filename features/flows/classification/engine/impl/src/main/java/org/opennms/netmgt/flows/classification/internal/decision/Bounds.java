@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,35 +25,28 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.flows.classification.internal.decision;
 
-package org.opennms.netmgt.flows.classification.persistence.api;
-
-import java.util.Comparator;
-import java.util.Objects;
+import org.opennms.core.network.IPAddress;
 
 /**
- * Compares first the group position and the the rules position.
+ * Bundles bounds for the different aspects of flows that are used for classification.
+ * <p>
+ * Bounds are used during decision tree construction to filter candidate thresholds and classification rules.
  */
-public class RulePositionComparator implements Comparator<RuleDefinition> {
+public class Bounds {
 
-    public static RulePositionComparator INSTANCE = new RulePositionComparator();
+    public static Bounds ANY = new Bounds(Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY, Bound.ANY);
 
-    private RulePositionComparator() {}
+    public final Bound<Integer> protocol;
+    public final Bound<Integer> srcPort, dstPort;
+    public final Bound<IPAddress> srcAddr, dstAddr;
 
-    @Override
-    public int compare(RuleDefinition r1, RuleDefinition r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
-
-        // Sort by group position (lowest position first)
-        int groupPosition1 = r1.getGroupPosition();
-        int groupPosition2 = r2.getGroupPosition();
-        int result = Integer.compare(groupPosition1, groupPosition2);
-
-        // If group position is identical, sort by rule position (lowest position first)
-        if (result == 0) {
-            return Integer.compare(r1.getPosition(), r2.getPosition());
-        }
-        return result;
+    public Bounds(Bound<Integer> protocol, Bound<Integer> srcPort, Bound<Integer> dstPort, Bound<IPAddress> srcAddr, Bound<IPAddress> dstAddr) {
+        this.protocol = protocol;
+        this.srcPort = srcPort;
+        this.dstPort = dstPort;
+        this.srcAddr = srcAddr;
+        this.dstAddr = dstAddr;
     }
 }
