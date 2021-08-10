@@ -18,11 +18,13 @@ The codename for 2021.1.3 is link:$$https://wikipedia.org/wiki/MESSENGER$$[_MESS
 * OutOfMemory issue on Minion ( corner case related to Offheap) (Issue http://issues.opennms.org/browse/NMS-13405[NMS-13405])
 * The PageSequenceMonitor keys host and virtual-host are confusing (Issue http://issues.opennms.org/browse/NMS-13412[NMS-13412])
 * Jetty 9.4.38 security issues CVE-2021-28164, CVE-2021-34428 and CVE-2021-28169 (Issue http://issues.opennms.org/browse/NMS-13449[NMS-13449])
+* Optimize node cache refresh to be non-blocking to flow data (Issue http://issues.opennms.org/browse/NMS-13481[NMS-13481])
 * Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
 * Reflected XSS in scheduled outage editor (Issue http://issues.opennms.org/browse/NMS-13498[NMS-13498])
 
 === Enhancement
 
+* Add missing Prometheus collectd example in our documenation (Issue http://issues.opennms.org/browse/NMS-12978[NMS-12978])
 * Table formatting issue in new docs (Issue http://issues.opennms.org/browse/NMS-13364[NMS-13364])
 * Hardware Inventory Plugin needs docs (Issue http://issues.opennms.org/browse/NMS-13370[NMS-13370])
 * Doc typos - improper character escaping (Issue http://issues.opennms.org/browse/NMS-13448[NMS-13448])
