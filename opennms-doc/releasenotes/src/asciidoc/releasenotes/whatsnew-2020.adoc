@@ -219,6 +219,21 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[[releasenotes-changelog-Meridian-2020.1.11]]
+
+==== Release Meridian-2020.1.11
+
+Release 2020.1.11 contains an update for a Jetty CVE plus a couple of XSS fixes and a Minion OOM bug.
+
+The codename for 2020.1.11 is link:$$https://wikipedia.org/wiki/Ayre_(landform)$$[_Ayre_].
+
+===== Bug
+
+* OutOfMemory issue on Minion (corner case related to Offheap) (Issue http://issues.opennms.org/browse/NMS-13405[NMS-13405])
+* Jetty 9.4.38 security issues CVE-2021-28164, CVE-2021-34428 and CVE-2021-28169 (Issue http://issues.opennms.org/browse/NMS-13449[NMS-13449])
+* Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
+* Reflected XSS in scheduled outage editor (Issue http://issues.opennms.org/browse/NMS-13498[NMS-13498])
+
 [[releasenotes-changelog-Meridian-2020.1.10]]
 
 ==== Release Meridian-2020.1.10
