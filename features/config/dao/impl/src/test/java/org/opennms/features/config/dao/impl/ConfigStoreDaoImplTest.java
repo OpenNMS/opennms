@@ -90,6 +90,11 @@ public class ConfigStoreDaoImplTest {
         }
 
         @Override
+        public String jaxbObjectToJson(Object entity) {
+            return null;
+        }
+
+        @Override
         public Class getConfigurationClass() {
             return null;
         }

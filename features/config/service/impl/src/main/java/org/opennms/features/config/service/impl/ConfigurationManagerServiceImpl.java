@@ -80,48 +80,26 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException, ClassNotFoundException {
+    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) throws IOException, ClassNotFoundException {
         Objects.requireNonNull(configName);
         return configStoreDao.getConfigSchema(configName);
     }
 
-    private String readFile(final String xmlPath) throws IOException {
-        Path path = Path.of(xmlPath);
-        return Files.readString(path);
-    }
-
     @Override
-    public void registerConfiguration(final String configName, final String configId, final String xmlPath)
+    public void registerConfiguration(final String configName, final  String configId, Object configEntity)
             throws IOException, ClassNotFoundException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
-        Objects.requireNonNull(xmlPath);
-
-        Optional<ConfigSchema<?>> meta = this.getRegisteredSchema(configName);
-        if (meta.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
-        }
-        if (this.getConfiguration(configName, configId).isPresent()) {
-            throw new IllegalArgumentException(String.format("Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
-        }
-        try {
-            final String xmlStr = this.readFile(xmlPath);
-            String jsonStr = meta.get().getConverter().xmlToJson(xmlStr);
-            JSONObject configJson = new JSONObject(jsonStr);
-            this.registerConfiguration(configName, configId, configJson);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void registerConfiguration(String configName, String configId, JSONObject jsonObj) throws IOException {
-        Objects.requireNonNull(configId);
-        Objects.requireNonNull(configName);
-        Objects.requireNonNull(jsonObj);
+        Objects.requireNonNull(configEntity);
         //TODO: validation logic here
-        configStoreDao.addConfig(configName, configId, jsonObj);
-        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, jsonObj);
+        Optional<ConfigSchema<?>> schema = configStoreDao.getConfigSchema(configName);
+        if(schema.isEmpty()){
+            throw new IllegalArgumentException("ConfigName not found: " + configName);
+        }
+        String jsonStr = schema.get().getConverter().jaxbObjectToJson(configEntity);
+
+        configStoreDao.addConfig(configName, configId, new JSONObject(jsonStr));
+        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, jsonStr);
     }
 
     @Override

@@ -72,25 +72,17 @@ public interface ConfigurationManagerService {
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException, ClassNotFoundException;
 
     /**
-     * register a new configuration by xml
-     *
-     * @param configName
-     * @param configId
-     * @param xmlPath
-     * @throws IOException
-     */
-    void registerConfiguration(String configName, String configId, String xmlPath) throws IOException, ClassNotFoundException;
-
-    /**
      * register a new configuration by JSONObject
      *
      * @param configName
      * @param configId
-     * @param object
+     * @param configEntity
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, JSONObject object)
-            throws IOException;
+    void registerConfiguration(String configName, String configId, Object configEntity)
+            throws IOException, ClassNotFoundException;
+
+
 
     /**
      * remove configure from service

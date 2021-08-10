@@ -160,6 +160,11 @@ public class ValidateUsingConverter<T> implements ConfigConverter<T> {
         return xmlMapper.jsonToJaxbObject(jsonStr);
     }
 
+    @Override
+    public String jaxbObjectToJson(T entity) {
+        return xmlMapper.jaxbObjectToJson(entity);
+    }
+
     public Class<T> getConfigurationClass() {
         return configurationClass;
     }

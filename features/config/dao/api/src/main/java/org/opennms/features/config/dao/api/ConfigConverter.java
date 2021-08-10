@@ -69,6 +69,14 @@ public interface ConfigConverter<CONFIG_CLASS> {
      */
     CONFIG_CLASS jsonToJaxbObject(String jsonStr);
 
+
+    /**
+     * convert config object to json string
+     * @param entity
+     * @return json string
+     */
+    String jaxbObjectToJson(CONFIG_CLASS entity);
+
     /**
      * get the configuration class register with the converter
      *

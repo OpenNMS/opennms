@@ -48,6 +48,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -82,7 +84,9 @@ public class ConfigurationManagerServiceImplTest {
     public void testRegisterConfiguration() throws IOException, ClassNotFoundException {
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
+        String jsonStr = Files.readString(Path.of(xmlPath.getPath()));
+        Object entity = configSchema.get().getConverter().xmlToJaxbObject(jsonStr);
+        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, entity);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
         Assert.assertEquals("Incorrect importThreads", 11,
