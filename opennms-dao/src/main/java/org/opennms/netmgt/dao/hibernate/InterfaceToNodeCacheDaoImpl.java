@@ -189,7 +189,7 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     private TransactionOperations transactionOperations;
 
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-    private final SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+    private SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
     private final Timer refreshTimer = new Timer(getClass().getSimpleName());
 
@@ -264,36 +264,37 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     }
 
     private void dataSourceSyncWithinTransaction() {
-        m_lock.writeLock().lock();
-        try {
-            /*
-             * Make a new list with which we'll replace the existing one, that way
-             * if something goes wrong with the DB we won't lose whatever was already
-             * in there
-             */
-            final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+        /*
+         * Make a new list with which we'll replace the existing one, that way
+         * if something goes wrong with the DB we won't lose whatever was already
+         * in there
+         */
+        final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
-            // Fetch all non-deleted nodes
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-            builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+        // Fetch all non-deleted nodes
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+        builder.ne("type", String.valueOf(NodeType.DELETED.value()));
 
-            for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
-                for (final OnmsIpInterface iface : node.getIpInterfaces()) {
-                    // Skip deleted interfaces
-                    // TODO: Refactor the 'D' value with an enumeration
-                    if ("D".equals(iface.getIsManaged())) {
-                        continue;
-                    }
-                    LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                    newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
+        for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
+            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                // Skip deleted interfaces
+                // TODO: Refactor the 'D' value with an enumeration
+                if ("D".equals(iface.getIsManaged())) {
+                    continue;
                 }
+                LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
+                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
             }
-            m_managedAddresses.clear();
-            m_managedAddresses.putAll(newAlreadyDiscovered);
-            LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
+        }
+
+        try {
+            m_lock.writeLock().lock();
+            m_managedAddresses = newAlreadyDiscovered;
         } finally {
             m_lock.writeLock().unlock();
         }
+
+        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
     }
 
     /**
