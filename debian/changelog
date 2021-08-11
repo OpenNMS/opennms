@@ -1,12 +1,12 @@
-opennms (28.0.1-1) stable; urgency=high
+opennms (28.0.2-1) stable; urgency=high
 
-  * New minor release. It contains a bunch of bug fixes and enhancements, plus a
-    few security updates.
+  * New minor release. It contains a bunch of bug fixes and enhancements, as
+    well as some fixes for XSS issues and a Jetty CVE.
     
     For details on what has changed, see:
-    https://docs.opennms.com/horizon/28.0.1/index.html
+    https://docs.opennms.com/horizon/28.0.2/index.html
 
- -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Jul 2021 12:35:00 -0400
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Aug 2021 13:11:00 -0400
  
 opennms (28.0.0-1) stable; urgency=low
 
