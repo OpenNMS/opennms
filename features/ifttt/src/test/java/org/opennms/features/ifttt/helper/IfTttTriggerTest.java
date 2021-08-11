@@ -38,7 +38,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Assert;
@@ -77,7 +79,10 @@ public class IfTttTriggerTest {
         });
 
         mockStatic(HttpClients.class);
-        when(HttpClients.createDefault()).thenReturn(closeableHttpClient);
+        HttpClientBuilder httpClientBuilder = mock(HttpClientBuilder.class);
+        when(HttpClients.custom()).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
 
         ifTttTrigger.key(TEST_KEY).event(TEST_EVENT).value1("abc1").value2("will-be-overwritten").value2("abc2").value3("abc3").trigger();
     }
