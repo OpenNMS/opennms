@@ -8,6 +8,9 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "lodash": "^4.17.21",
+    "primeicons": "^4.1.0",
+    "primevue": "3.6.0",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "vue": "^3.0.5",
