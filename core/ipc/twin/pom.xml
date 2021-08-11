@@ -15,5 +15,7 @@
     <modules>
         <module>api</module>
         <module>common</module>
+        <module>test</module>
+        <module>memory</module>
     </modules>
 </project>
