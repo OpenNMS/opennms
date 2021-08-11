@@ -118,6 +118,7 @@
     <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
+    <module>web</module>
 
     <!-- old structure -->
     <module>opennms-util</module>
@@ -1505,9 +1506,10 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.11.0</frontendPluginVersion>
-    <nodeVersion>v10.19.0</nodeVersion>
+    <frontendPluginVersion>1.12.0</frontendPluginVersion>
+    <nodeVersion>v12.19.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
+    <yarnVersion>v1.22.10</yarnVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
