@@ -30,7 +30,6 @@ package org.opennms.netmgt.syslogd;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static junit.framework.TestCase.assertFalse;
-import static org.apache.camel.component.xslt.XsltOutput.bytes;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

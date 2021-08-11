@@ -329,7 +329,7 @@ public class ConvertToEventTest {
                     SyslogdTestUtils.toByteBuffer(syslog),
                     receivedTimestamp,
                     config,
-                    locationAwareDnsLookupClient);
+                    locationAwareDnsLookupClient, null);
             Event event = convert.getEvent();
             LOG.info("Generated event ({}): {}", name, event.toString());
             return event;
