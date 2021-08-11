@@ -160,12 +160,7 @@ public class OpenConfigTestServer {
             if(gnmiStream != null) {
                 gnmiStream.onCompleted();
             }
-            server.shutdown();
-            try {
-                server.awaitTermination();
-            } catch (final InterruptedException e) {
-                LOG.warn("Failed to wait for OpenConfig server termination.", e);
-            }
+            server.shutdownNow();
         }
     }
 
