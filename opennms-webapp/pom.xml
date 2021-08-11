@@ -42,6 +42,24 @@
             </configuration>
           </execution>
           <execution>
+            <id>unpack-ui</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>org.opennms.web</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>dist</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/opennms-webapp-${project.version}/ui</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+          <execution>
             <id>copy-jaxb-dependencies</id>
             <phase>test-compile</phase>
             <goals><goal>copy</goal></goals>
@@ -397,6 +415,13 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web-assets</artifactId>
+      <version>${project.version}</version>
+      <classifier>dist</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.web</artifactId>
       <version>${project.version}</version>
       <classifier>dist</classifier>
       <scope>provided</scope>
