@@ -1508,6 +1508,8 @@
     <frontendPluginVersion>1.11.0</frontendPluginVersion>
     <nodeVersion>v10.19.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
+    <!-- configuration manager -->
+    <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
