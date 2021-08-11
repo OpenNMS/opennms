@@ -31,11 +31,16 @@ package org.opennms.netmgt.syslogd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
+import java.util.Set;
 
+import com.codahale.metrics.Gauge;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -64,6 +69,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogSinkConsumer.class);
 
+
     @Autowired
     private MessageConsumerManager messageConsumerManager;
 
@@ -79,6 +85,8 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
     @Autowired
     private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
+    private Cache<String, Set<IpAddressWithLocation>> hostNameToIpAddressCache;
+
     private final String localAddr;
     private final Timer consumerTimer;
     private final Timer toEventTimer;
@@ -88,6 +96,9 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
         consumerTimer = registry.timer("consumer");
         toEventTimer = registry.timer("consumer.toevent");
         broadcastTimer = registry.timer("consumer.broadcast");
+        Integer maxCacheSize = SystemProperties.getInteger("org.opennms.netmgt.syslogd.dnscache.maxsize", 1000);
+        hostNameToIpAddressCache = CacheBuilder.newBuilder().maximumSize(maxCacheSize).build();
+        registry.register("dnsCacheSize", (Gauge<Long>) () -> hostNameToIpAddressCache.size());
         localAddr = InetAddressUtils.getLocalHostName();
     }
 
@@ -128,7 +139,8 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         message.getBytes(),
                         message.getTimestamp(),
                         syslogdConfig,
-                        m_locationAwareDnsLookupClient);
+                        m_locationAwareDnsLookupClient,
+                        hostNameToIpAddressCache);
                 events.addEvent(re.getEvent());
             } catch (final MessageDiscardedException e) {
                 LOG.info("Message discarded, returning without enqueueing event.", e);
@@ -212,4 +224,5 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
     public void setLocationAwareDnsLookupClient(LocationAwareDnsLookupClient locationAwareDnsLookupClient) {
         this.m_locationAwareDnsLookupClient = locationAwareDnsLookupClient;
     }
+
 }
