@@ -28,14 +28,13 @@
 
 package org.opennms.features.config.dao.api;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.IOException;
 import java.net.URL;
 
 public interface ConfigConverter<CONFIG_CLASS> {
-    enum SCHEMA_TYPE {XML, JSON};
+    enum SCHEMA_TYPE {XML, JSON, PROPERTY};
 
     /**
      * convert xml into config object

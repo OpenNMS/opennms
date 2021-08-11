@@ -56,11 +56,11 @@ public interface ConfigurationManagerService {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                                 final int patchVersion, Class<ENTITY> entityClass) throws IOException, ClassNotFoundException;
+    <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion,
+                                 int patchVersion, Class<ENTITY> entityClass) throws IOException, ClassNotFoundException;
 
-    void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                        final int patchVersion, final ConfigConverter converter) throws IOException, ClassNotFoundException;
+    void registerSchema(String configName, int majorVersion, int minorVersion,
+                        int patchVersion, ConfigConverter converter) throws IOException, ClassNotFoundException;
 
     /**
      * Get the registered Schema
@@ -82,8 +82,6 @@ public interface ConfigurationManagerService {
     void registerConfiguration(String configName, String configId, Object configEntity)
             throws IOException, ClassNotFoundException;
 
-
-
     /**
      * remove configure from service
      *
@@ -95,7 +93,45 @@ public interface ConfigurationManagerService {
     void updateConfiguration(String configName, String configId,
                                 JSONObject object) throws IOException;
 
-    Optional<JSONObject> getConfiguration(String configName, String configId) throws IOException;
+
+    /**
+     * get config as object by configName, configId and Config class
+     * @param configName
+     * @param configId
+     * @param entityClass
+     * @param <ENTITY>
+     * @return
+     * @throws IOException
+     */
+    <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
+            throws IOException;
+
+    /**
+     * get config as json by configName, configId
+     * @param configName
+     * @param configId
+     * @return
+     * @throws IOException
+     */
+    Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+
+
+    /**
+     * get config as xml by configName, configId
+     * @param configName
+     * @param configId
+     * @return
+     * @throws IOException
+     */
+    Optional<String>  getXmlConfiguration(String configName, String configId) throws IOException;
+
+    /**
+     * get whole ConfigData by configName
+     * @param configName
+     * @return
+     * @throws IOException
+     */
+    Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException;
 
     Set<String> getServiceIds() throws IOException;
 
@@ -106,7 +142,6 @@ public interface ConfigurationManagerService {
      */
     void unregisterSchema(String configName) throws IOException;
 
-    Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException;
     //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
     //    ConfigData getSchemaForConfiguration(final String configId);
 // TODO: next phase for xml conversion work

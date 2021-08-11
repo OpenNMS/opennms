@@ -91,21 +91,26 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertTrue("Config not found", configData.isPresent());
         Assert.assertEquals("Incorrect importThreads", 11,
                 configData.get().getConfigs().get(CONFIG_ID).get("importThreads"));
+        Optional<String> xml = configManagerService.getXmlConfiguration(SERVICE_NAME, CONFIG_ID);
+        Assert.assertTrue("Cannot get XML config", xml.get().length() > 0);
+        Optional<ProvisiondConfiguration> entityFromDb = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID,
+                ProvisiondConfiguration.class);
+        Assert.assertTrue("Cannot get XML config", entityFromDb.get().getImportThreads() == 11);
     }
 
     @Test
     public void testUpdateConfiguration() throws IOException, ClassNotFoundException {
-        JSONObject json = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID).get();
+        JSONObject json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID).get();
         json.put("importThreads", 12);
         configManagerService.updateConfiguration(SERVICE_NAME, CONFIG_ID, json);
-        JSONObject jsonAfterUpdate = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID).get();
+        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID).get();
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
     }
 
     @Test
     public void testRemoveConfiguration() throws IOException, ClassNotFoundException {
         configManagerService.unregisterConfiguration(SERVICE_NAME, CONFIG_ID);
-        Optional<JSONObject> json = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID);
+        Optional<JSONObject> json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
         configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, new JSONObject());
         configManagerService.unregisterSchema(SERVICE_NAME);

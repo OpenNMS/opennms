@@ -62,7 +62,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configName
      * @return status
      */
-    Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException;
 
     /**
      * update configs meta by configName
@@ -70,7 +70,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException;
+    void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException;
 
     /**
      * get configs data by configName and configId

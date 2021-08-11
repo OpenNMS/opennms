@@ -86,21 +86,26 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException, ClassNotFoundException {
+    public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
         Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_META);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
         JSONObject json = new JSONObject(jsonStr.get());
         String className = (String) json.get("converterClass");
-        Class<?> converterClass = Class.forName(className);
+        Class<?> converterClass = null;
+        try {
+            converterClass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Invalid schema for configName: " + configName);
+        }
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
         ConfigSchema<?> schema = (ConfigSchema) mapper.readValue(jsonStr.get(), javaType);
         return Optional.ofNullable(schema);
     }
 
     @Override
-    public void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException, ClassNotFoundException {
+    public void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configSchema.getName());
         if (schema.isEmpty()) {
             throw new IllegalArgumentException("ConfigName not found: " + configSchema.getName());

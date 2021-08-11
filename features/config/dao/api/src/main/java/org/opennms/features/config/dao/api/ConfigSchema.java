@@ -44,7 +44,6 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private Class<T> converterClass;
     private T converter;
 
-
     @JsonCreator
     public ConfigSchema(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
                         @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,

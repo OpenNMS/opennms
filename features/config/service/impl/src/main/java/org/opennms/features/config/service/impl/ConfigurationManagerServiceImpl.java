@@ -28,12 +28,11 @@
 
 package org.opennms.features.config.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.util.ValidateUsingConverter;
 import org.slf4j.Logger;
@@ -41,8 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -86,14 +83,14 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(final String configName, final  String configId, Object configEntity)
+    public void registerConfiguration(final String configName, final String configId, Object configEntity)
             throws IOException, ClassNotFoundException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configEntity);
         //TODO: validation logic here
         Optional<ConfigSchema<?>> schema = configStoreDao.getConfigSchema(configName);
-        if(schema.isEmpty()){
+        if (schema.isEmpty()) {
             throw new IllegalArgumentException("ConfigName not found: " + configName);
         }
         String jsonStr = schema.get().getConverter().jaxbObjectToJson(configEntity);
@@ -113,8 +110,41 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<JSONObject> getConfiguration(final String configName, final String configId) throws IOException {
+    public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
+            throws IOException {
+        Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
+        if (configSchema.isEmpty()) {
+            LOG.error("Fail to get schema for configName: " + configName + " configId: " + configId);
+            return Optional.empty();
+        }
+        Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
+        if (config.isEmpty()) {
+            LOG.error("Fail to get config for configName: " + configName + " configId: " + configId);
+            return Optional.empty();
+        }
+        JSONObject json = config.get();
+        return (Optional<ENTITY>) Optional.of(configSchema.get().getConverter().jsonToJaxbObject(json.toString()));
+    }
+
+    @Override
+    public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
         return configStoreDao.getConfig(configName, configId);
+    }
+
+    @Override
+    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
+        Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
+        if (configSchema.isEmpty()) {
+            LOG.error("Fail to get schema for configName: " + configName + " configId: " + configId);
+            return Optional.empty();
+        }
+        Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
+        if (config.isEmpty()) {
+            LOG.error("Fail to get config for configName: " + configName + " configId: " + configId);
+            return Optional.empty();
+        }
+        JSONObject json = config.get();
+        return (Optional<String>) Optional.of(configSchema.get().getConverter().jsonToXml(json.toString()));
     }
 
     @Override
