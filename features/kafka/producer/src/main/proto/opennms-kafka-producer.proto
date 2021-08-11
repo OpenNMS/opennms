@@ -51,6 +51,7 @@ message SnmpInfo {
   uint32 specific = 3;
   uint32 generic = 4;
   string community = 5;
+  string trap_oid = 6;
 }
 
 message Event {
