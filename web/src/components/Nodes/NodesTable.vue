@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-  const msg = 'First Component'
+  const msg = 'Nodes Table...'
 </script>
 
 <style scoped>
