@@ -160,7 +160,7 @@ public class OpenConfigTestServer {
             if(gnmiStream != null) {
                 gnmiStream.onCompleted();
             }
-            server.shutdown();
+            server.shutdownNow();
         }
     }
 
