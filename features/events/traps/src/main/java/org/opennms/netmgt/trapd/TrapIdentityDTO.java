@@ -52,7 +52,7 @@ public class TrapIdentityDTO {
     @XmlAttribute(name="enterprise-id", required=true)
     private String enterpriseId;
 
-    @XmlAttribute(name="enterprise-id")
+    @XmlAttribute(name="trap-oid")
     private String trapOID;
 
     // Default Constructor for JAXB
