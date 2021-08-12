@@ -95,6 +95,9 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void registerConfiguration(final String configName, final String configId, Object configObject)
             throws IOException {
+        Objects.requireNonNull(configId);
+        Objects.requireNonNull(configName);
+        Objects.requireNonNull(configObject);
         Optional<ConfigSchema<?>> configSchema = this.getRegisteredSchema(configName);
         if (configSchema.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
@@ -157,8 +160,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Set<String> getServiceIds() {
-        return configStoreDao.getServiceIds().get();
+    public Set<String> getConfigNames() {
+        return configStoreDao.getConfigNames().get();
     }
 
     @Override

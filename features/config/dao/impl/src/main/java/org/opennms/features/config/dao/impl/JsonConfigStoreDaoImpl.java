@@ -73,13 +73,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<Set<String>> getServiceIds() {
+    public Optional<Set<String>> getConfigNames() {
         return this.getIds(CONTEXT_SCHEMA);
-    }
-
-    @Override
-    public Optional<Set<String>> getConfigIds() {
-        return this.getIds(CONTEXT_CONFIG);
     }
 
     private Optional<Set<String>> getIds(String context) {

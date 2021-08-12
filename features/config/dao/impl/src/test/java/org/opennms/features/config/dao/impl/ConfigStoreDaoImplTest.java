@@ -103,7 +103,7 @@ public class ConfigStoreDaoImplTest {
         Assert.assertEquals("FAIL TO updateConfigSchema", tmpConfigSchema2.get().getVersion(), "30.0.0");
 
         // list all
-        Optional<Set<String>> all = configStoreDao.getServiceIds();
+        Optional<Set<String>> all = configStoreDao.getConfigNames();
         Assert.assertEquals("FAIL TO getServices", all.get().size(), 2);
 
         // add config

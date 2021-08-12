@@ -825,38 +825,6 @@
       <artifactId>org.opennms.features.newts</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- config management -->
-    <dependency>
-      <groupId>org.opennms.features.config.dao</groupId>
-      <artifactId>org.opennms.features.config.dao.impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.dao</groupId>
-      <artifactId>org.opennms.features.config.dao.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.service</groupId>
-      <artifactId>org.opennms.features.config.service.impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.service</groupId>
-      <artifactId>org.opennms.features.config.service.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.rest</groupId>
-      <artifactId>org.opennms.features.config.rest.impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.rest</groupId>
-      <artifactId>org.opennms.features.config.rest.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!-- END config management -->
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.timeseries</artifactId>

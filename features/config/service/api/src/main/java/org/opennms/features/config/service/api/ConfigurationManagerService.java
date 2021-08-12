@@ -52,17 +52,16 @@ public interface ConfigurationManagerService {
      * @param majorVersion
      * @param minorVersion
      * @param patchVersion
-     * @param entityClass
+     * @param entityClass (Must have ValidateUsing annotation)
      * @param <ENTITY>
      * @throws IOException
-     * @throws ClassNotFoundException
      * @throws JAXBException
      */
-    <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                                 final int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException;
+    <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion,
+                                 int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException;
 
-    void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                        final int patchVersion, final ConfigConverter converter) throws IOException;
+    void registerSchema(String configName, int majorVersion, int minorVersion,
+                        int patchVersion, ConfigConverter converter) throws IOException;
 
     /**
      * Get the registered Schema
@@ -79,10 +78,10 @@ public interface ConfigurationManagerService {
      *
      * @param configName
      * @param configId
-     * @param object
+     * @param configObject
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, Object object)
+    void registerConfiguration(String configName, String configId, Object configObject)
             throws IOException;
 
     /**
@@ -91,20 +90,20 @@ public interface ConfigurationManagerService {
      * @param configId
      * @throws IOException
      */
-    void unregisterConfiguration(final String configName, final String configId) throws IOException;
+    void unregisterConfiguration(String configName, String configId) throws IOException;
 
-    void updateConfiguration(final String configName, final String configId,
-                                         final Object object)
+    void updateConfiguration(String configName, String configId,
+                                         Object configObject)
             throws IOException;
 
     /**
-     * get config as object by configName, configId and Config class
+     * get config as configObject by configName, configId and Config class
      *
      * @param configName
      * @param configId
      * @param entityClass
      * @param <ENTITY>
-     * @return
+     * @return configObject
      * @throws IOException
      */
     <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
@@ -115,7 +114,7 @@ public interface ConfigurationManagerService {
      *
      * @param configName
      * @param configId
-     * @return
+     * @return JSONObject
      * @throws IOException
      */
     Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
@@ -125,7 +124,7 @@ public interface ConfigurationManagerService {
      *
      * @param configName
      * @param configId
-     * @return
+     * @return xml string
      * @throws IOException
      */
     Optional<String> getXmlConfiguration(String configName, String configId) throws IOException;
@@ -134,12 +133,17 @@ public interface ConfigurationManagerService {
      * get whole ConfigData by configName
      *
      * @param configName
-     * @return
+     * @return ConfigData
      * @throws IOException
      */
     Optional<ConfigData<JSONObject>> getConfigData(String configName) throws IOException;
 
-    Set<String> getServiceIds() throws IOException;
+    /**
+     * get a list of registered configName
+     * @return configName set
+     * @throws IOException
+     */
+    Set<String> getConfigNames() throws IOException;
 
     /**
      * it will remove both config and schema

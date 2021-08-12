@@ -50,15 +50,12 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     void register(ConfigSchema<?> configSchema) throws IOException;
 
     /**
-     * get all services managing by config manager
+     * get all config names managing by config manager
      *
-     * @return list of configdata
+     * @return list of config name
      * @throws IOException
      */
-
-    Optional<Set<String>> getServiceIds();
-
-    Optional<Set<String>> getConfigIds();
+    Optional<Set<String>> getConfigNames();
 
     /**
      * get configs meta by configName
@@ -143,7 +140,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     void unregister(String configName) throws IOException;
 
     /**
-     * get all configs by registered service name
+     * get all configs by registered config name
      *
      * @param configName
      * @return configs
