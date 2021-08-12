@@ -30,6 +30,9 @@ Project routes make use of [vue-router](https://next.router.vuejs.org/guide/)
 
 [VSCode](https://code.visualstudio.com/)
 
+## Prettier
+Formatting should use the .prettierrc file. For VSCode, install the Prettier extension, go to the IDE Settings and set this formatter to take precedence.
+
 ### Use `<script setup>`
 
 [`<script setup>`](https://github.com/vuejs/rfcs/pull/227). To get proper IDE support for the syntax, use [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar).

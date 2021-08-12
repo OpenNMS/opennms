@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'nodes',
-      component: Nodes,
+      component: Nodes
     }
   ]
 })
