@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -91,7 +92,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
-        Optional<String> jsonStr = jsonStore.get(serviceName, CONTEXT_SCHEMA);
+        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -133,11 +134,12 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (exist.isPresent()) {
             throw new IllegalArgumentException("Duplicate config found for service: " + configName);
         }
+        this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
     @Override
-    public void addConfig(String configName, String configId, JSONObject config) throws IOException {
+    public void addConfig(String configName, String configId, Object configObject) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             configData = Optional.of(new ConfigData<>());
@@ -146,8 +148,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (configs.containsKey(configId)) {
             throw new IllegalArgumentException("Duplicate config found for configId: " + configId);
         }
-        this.validateConfig(serviceName, config);
-        configs.put(configId, config);
+        JSONObject json = this.validateConfigWithConvert(configName, configObject);
+        configs.put(configId, json);
         this.putConfig(configName, configData.get());
     }
 
@@ -161,22 +163,23 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfig(String configName, String configId, JSONObject config) throws IOException {
+    public void updateConfig(String configName, String configId, Object config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
-        this.validateConfig(serviceName, config);
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
-        configs.put(configId, config);
+        JSONObject jsonObject = this.validateConfigWithConvert(configName, config);
+        configs.put(configId, jsonObject);
         this.putConfig(configName, configData.get());
     }
 
     @Override
     public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
+        this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
@@ -193,9 +196,9 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void unregister(String serviceName) {
-        jsonStore.delete(serviceName, CONTEXT_SCHEMA);
-        jsonStore.delete(serviceName, CONTEXT_CONFIG);
+    public void unregister(String configName) {
+        jsonStore.delete(configName, CONTEXT_SCHEMA);
+        jsonStore.delete(configName, CONTEXT_CONFIG);
     }
 
     @Override
@@ -221,66 +224,39 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         }
     }
 
-    private void validateConfig(final String serviceName, final JSONObject config)
-            throws IOException, ClassNotFoundException {
-        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
-        this.validateConfig(schema, config);
+    private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
+            throws IOException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+        this.validateConfig(schema, configObject);
+        return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
     }
 
-    private void validateConfig(final String serviceName, final ConfigData<JSONObject> configData)
-            throws IOException, ClassNotFoundException {
-        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
-        configData.getConfigs().forEach((key, config) -> {
-            this.validateConfig(schema, config);
-        });
-    }
-
-    private void validateConfig(final Optional<ConfigSchema<?>> schema, final JSONObject json) {
-        try {
-            if (schema.isEmpty()) {
-                LOG.error("Schema not found! ", json);
-                throw new RuntimeException("Schema not found!");
-            }
-            ConfigConverter converter = schema.get().getConverter();
-            Object obj = converter.jsonToJaxbObject(json.toString());
-            if (!converter.validate(obj)) {
-                LOG.error("Config validation error! ", json);
-                throw new RuntimeException("Fail to validate xml! May be schema issue.");
-            }
-        } catch (Exception e) {
-            LOG.error("Config validation fail! ", json);
-            throw new RuntimeException(e);
+    private void validateConfigData(final String configName, final ConfigData<JSONObject> configData)
+            throws IOException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+        if (schema.isEmpty()) {
+            LOG.error("Schema not found!");
+            throw new RuntimeException("Schema not found!");
         }
-    }
-
-    private void validateConfig(final String serviceName, final JSONObject config)
-            throws IOException, ClassNotFoundException {
-        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
-        this.validateConfig(schema, config);
-    }
-
-    private void validateConfig(final String serviceName, final ConfigData<JSONObject> configData)
-            throws IOException, ClassNotFoundException {
-        Optional<ConfigSchema<?>> schema = this.getConfigSchema(serviceName);
         configData.getConfigs().forEach((key, config) -> {
-            this.validateConfig(schema, config);
+            Object configObject = schema.get().getConverter().jsonToJaxbObject(config.toString());
+            this.validateConfig(schema, configObject);
         });
     }
 
-    private void validateConfig(final Optional<ConfigSchema<?>> schema, final JSONObject json) {
+    private void validateConfig(final Optional<ConfigSchema<?>> schema, final Object configObject) {
         try {
             if (schema.isEmpty()) {
-                LOG.error("Schema not found! ", json);
+                LOG.error("Schema not found!");
                 throw new RuntimeException("Schema not found!");
             }
             ConfigConverter converter = schema.get().getConverter();
-            Object obj = converter.jsonToJaxbObject(json.toString());
-            if (!converter.validate(obj)) {
-                LOG.error("Config validation error! ", json);
+            if (!converter.validate(configObject)) {
+                LOG.error("Config validation error! ", schema.get().getName());
                 throw new RuntimeException("Fail to validate xml! May be schema issue.");
             }
         } catch (Exception e) {
-            LOG.error("Config validation fail! ", json);
+            LOG.error("Config validation fail! ", schema.get().getConverter().jaxbObjectToJson(configObject));
             throw new RuntimeException(e);
         }
     }

@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.api.ConfigConverter;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -53,36 +52,38 @@ public interface ConfigurationManagerService {
      * @param majorVersion
      * @param minorVersion
      * @param patchVersion
-     * @param entityClass (Must have ValidateUsing annotation)
+     * @param entityClass
      * @param <ENTITY>
      * @throws IOException
      * @throws ClassNotFoundException
+     * @throws JAXBException
      */
-    <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion,
-                                 int patchVersion, Class<ENTITY> entityClass) throws IOException, ClassNotFoundException;
+    <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
+                                 final int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException;
 
-    void registerSchema(String configName, int majorVersion, int minorVersion,
-                        int patchVersion, ConfigConverter converter) throws IOException, ClassNotFoundException;
+    void registerSchema(final String configName, final int majorVersion, final int minorVersion,
+                        final int patchVersion, final ConfigConverter converter) throws IOException;
 
     /**
      * Get the registered Schema
      *
-     * @param serviceName
+     * @param configName
      * @return ConfigSchema
      * @throws IOException
      */
-    Optional<ConfigSchema<?>> getRegisteredSchema(String serviceName) throws IOException, ClassNotFoundException;
+    Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
 
     /**
-     * register a new configuration by JSONObject
+     * register a new configuration by JSONObject.
+     * It will make sure the configId is not duplicated !!!
      *
      * @param configName
      * @param configId
-     * @param configEntity
+     * @param object
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, Object configEntity)
-            throws IOException, ClassNotFoundException;
+    void registerConfiguration(String configName, String configId, Object object)
+            throws IOException;
 
     /**
      * remove configure from service
@@ -90,14 +91,15 @@ public interface ConfigurationManagerService {
      * @param configId
      * @throws IOException
      */
-    void unregisterConfiguration(String configName, String configId) throws IOException;
+    void unregisterConfiguration(final String configName, final String configId) throws IOException;
 
-    void updateConfiguration(String configName, String configId,
-                                JSONObject object) throws IOException;
-
+    void updateConfiguration(final String configName, final String configId,
+                                         final Object object)
+            throws IOException;
 
     /**
      * get config as object by configName, configId and Config class
+     *
      * @param configName
      * @param configId
      * @param entityClass
@@ -110,6 +112,7 @@ public interface ConfigurationManagerService {
 
     /**
      * get config as json by configName, configId
+     *
      * @param configName
      * @param configId
      * @return
@@ -119,15 +122,17 @@ public interface ConfigurationManagerService {
 
     /**
      * get config as xml by configName, configId
+     *
      * @param configName
      * @param configId
      * @return
      * @throws IOException
      */
-    Optional<String>  getXmlConfiguration(String configName, String configId) throws IOException;
+    Optional<String> getXmlConfiguration(String configName, String configId) throws IOException;
 
     /**
      * get whole ConfigData by configName
+     *
      * @param configName
      * @return
      * @throws IOException
@@ -138,6 +143,7 @@ public interface ConfigurationManagerService {
 
     /**
      * it will remove both config and schema
+     *
      * @param configName
      * @throws IOException
      */

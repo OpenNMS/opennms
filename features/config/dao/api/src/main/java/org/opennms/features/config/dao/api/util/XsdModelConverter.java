@@ -75,10 +75,6 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     @Override
     public void onEnterElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
-        //System.out.println("onEnterElement(" + xmlSchemaElement.getQName() + ")");
-        //System.out.printf("\tbase type is: %s min-occurs: %d, max-occurs: %d\n",
-        //        xmlSchemaTypeInfo.getBaseType().name(), xmlSchemaElement.getMinOccurs(), xmlSchemaElement.getMaxOccurs());
-
         currentConfigItem = configItemsByQName.get(xmlSchemaElement.getQName());
 
         if (currentConfigItem == null) {

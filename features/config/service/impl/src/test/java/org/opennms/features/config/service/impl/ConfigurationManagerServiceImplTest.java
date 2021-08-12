@@ -38,8 +38,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,110 +66,81 @@ import java.util.Optional;
 @JUnitTemporaryDatabase
 @Transactional
 public class ConfigurationManagerServiceImplTest {
-    private static final String SERVICE_NAME = "provisiond";
+    private static final String CONFIG_NAME = "provisiond";
     private static final String CONFIG_ID = "test1";
     @Autowired
     private ConfigurationManagerService configManagerService;
 
     @Before
     public void init() throws IOException, ClassNotFoundException, JAXBException {
-        configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
+        configManagerService.registerSchema(CONFIG_NAME, 29, 0, 0, ProvisiondConfiguration.class);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
-    }
-    @After
-    public void after(){
-        try {
-            configManagerService.unregisterSchema(SERVICE_NAME);
-        } catch (IOException e) {
-        }
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
+        String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
+        Object configObject = configSchema.get().getConverter().xmlToJaxbObject(xmlStr);
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, configObject);
     }
 
-    @Before
-    public void init() throws IOException, ClassNotFoundException, JAXBException {
-        configManagerService.registerSchema(SERVICE_NAME, 29, 0, 0, ProvisiondConfiguration.class);
-        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, xmlPath.getPath());
-    }
     @After
-    public void after(){
+    public void after() {
         try {
-            configManagerService.unregisterSchema(SERVICE_NAME);
+            configManagerService.unregisterSchema(CONFIG_NAME);
         } catch (IOException e) {
         }
     }
 
     @Test
     public void testRegisterSchema() throws IOException, ClassNotFoundException, JAXBException {
-        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
-        Assert.assertTrue(SERVICE_NAME + " fail to register", configSchema.isPresent());
-        Assert.assertTrue(SERVICE_NAME + " fail to register", "29.0.0".equals(configSchema.get().getVersion()));
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
+        Assert.assertTrue(CONFIG_NAME + " fail to register", configSchema.isPresent());
+        Assert.assertTrue(CONFIG_NAME + " fail to register", "29.0.0".equals(configSchema.get().getVersion()));
         Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof ValidateUsingConverter);
     }
 
     @Test
-    public void testRegisterConfiguration() throws IOException, ClassNotFoundException {
-        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(SERVICE_NAME);
-        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        String jsonStr = Files.readString(Path.of(xmlPath.getPath()));
-        Object entity = configSchema.get().getConverter().xmlToJaxbObject(jsonStr);
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, entity);
-        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+    public void testRegisterConfiguration() throws IOException {
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
         Assert.assertEquals("Incorrect importThreads", 11,
                 configData.get().getConfigs().get(CONFIG_ID).get("importThreads"));
-        Optional<String> xml = configManagerService.getXmlConfiguration(SERVICE_NAME, CONFIG_ID);
-        Assert.assertTrue("Cannot get XML config", xml.get().length() > 0);
-        Optional<ProvisiondConfiguration> entityFromDb = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID,
-                ProvisiondConfiguration.class);
-        Assert.assertTrue("Cannot get XML config", entityFromDb.get().getImportThreads() == 11);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testRegisterInvalidConfiguration() throws IOException, ClassNotFoundException {
+    public void testRegisterInvalidConfiguration() throws IOException {
         ProvisiondConfiguration config = new ProvisiondConfiguration();
         config.setImportThreads(-1L);
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID + "_2", config, ProvisiondConfiguration.class);
-        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
-        Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testRegisterInvalidConfiguration() throws IOException, ClassNotFoundException {
-        ProvisiondConfiguration config = new ProvisiondConfiguration();
-        config.setImportThreads(-1L);
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID + "_2", config, ProvisiondConfiguration.class);
-        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_2", config);
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
     }
 
     @Test
-    public void testUpdateConfiguration() throws IOException, ClassNotFoundException {
-        JSONObject json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID).get();
-        json.put("importThreads", 12);
-        configManagerService.updateConfiguration(SERVICE_NAME, CONFIG_ID, json);
-        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID).get();
+    public void testUpdateConfiguration() throws IOException {
+        ProvisiondConfiguration pConfig = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
+        pConfig.setImportThreads(12L);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, pConfig);
+        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
     }
 
     @Test(expected = RuntimeException.class)
-    public void testUpdateInvalidateConfiguration() throws IOException, ClassNotFoundException {
-        JSONObject json = configManagerService.getConfiguration(SERVICE_NAME, CONFIG_ID).get();
+    public void testUpdateInvalidateConfiguration() throws IOException {
+        JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
         json.put("importThreads", -1);
-        configManagerService.updateConfiguration(SERVICE_NAME, CONFIG_ID, json);
-        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(SERVICE_NAME);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, json);
+        Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }
 
     @Test
-    public void testRemoveEverything() throws IOException, ClassNotFoundException {
-        configManagerService.unregisterConfiguration(SERVICE_NAME, CONFIG_ID);
-        Optional<JSONObject> json = configManagerService.getJSONConfiguration(SERVICE_NAME, CONFIG_ID);
+    public void testRemoveEverything() throws IOException {
+        configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
+        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
-        configManagerService.registerConfiguration(SERVICE_NAME, CONFIG_ID, new JSONObject());
-        configManagerService.unregisterSchema(SERVICE_NAME);
-        Optional<ConfigSchema<?>> schemaAfterDeregister = configManagerService.getRegisteredSchema(SERVICE_NAME);
-        Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(SERVICE_NAME);
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, new ProvisiondConfiguration());
+        configManagerService.unregisterSchema(CONFIG_NAME);
+        Optional<ConfigSchema<?>> schemaAfterDeregister = configManagerService.getRegisteredSchema(CONFIG_NAME);
+        Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());
     }

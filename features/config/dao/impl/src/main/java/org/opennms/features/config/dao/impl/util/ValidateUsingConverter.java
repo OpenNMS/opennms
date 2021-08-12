@@ -74,8 +74,8 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     /**
      * It only supports using ValidateUsing annotation, assume xsd file is unique in classpath
      *
-     * @param configurationClass opennms config entity class
-     * @throws IllegalArgumentException if you provide invalid config entity class
+     * @param configurationClass opennms config configObject class
+     * @throws IllegalArgumentException if you provide invalid config configObject class
      */
     @JsonCreator
     public ValidateUsingConverter(@JsonProperty("configurationClass") Class<CONFIG_CLASS> configurationClass)
@@ -113,6 +113,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
                 .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
 
         if (namespaces.size() != 1) {
+            LOG.error("XSD must contain one 'opennms' namespaces! " + this.serviceSchema);
             throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
         }
 
@@ -153,23 +154,23 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public String jaxbObjectToJson(final CONFIG_CLASS obj) {
-        return xmlMapper.jaxbObjectToJson(obj);
+    public String jaxbObjectToJson(final CONFIG_CLASS configObject) {
+        return xmlMapper.jaxbObjectToJson(configObject);
     }
 
     @Override
-    public String jaxbObjectToXml(CONFIG_CLASS obj) {
-        return xmlMapper.jaxbObjectToXml(obj);
+    public String jaxbObjectToXml(CONFIG_CLASS configObject) {
+        return xmlMapper.jaxbObjectToXml(configObject);
     }
 
     @Override
-    public boolean validate(CONFIG_CLASS obj) throws RuntimeException {
-        return xmlMapper.validate(obj);
+    public boolean validate(CONFIG_CLASS configObject) throws RuntimeException {
+        return xmlMapper.validate(configObject);
     }
 
     @Override
-    public CONFIG_CLASS xmlToJaxbObject(final String xml) {
-        return xmlMapper.xmlToJaxbObject(xml);
+    public CONFIG_CLASS xmlToJaxbObject(final String xmlStr) {
+        return xmlMapper.xmlToJaxbObject(xmlStr);
     }
 
     @Override
@@ -188,10 +189,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public String jaxbObjectToJson(T entity) {
-        return xmlMapper.jaxbObjectToJson(entity);
-    }
-
     public Class<CONFIG_CLASS> getConfigurationClass() {
         return configurationClass;
     }

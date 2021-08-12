@@ -68,13 +68,13 @@ public class ConfigStoreDaoImplTest {
     private ConfigStoreDao configStoreDao;
 
     @Test
-    public void testData() throws IOException, ClassNotFoundException, JAXBException {
+    public void testData() throws IOException, JAXBException {
         // register
         ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
-        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(serviceName, majorVersion, 0, 0, ValidateUsingConverter.class, converter);
+        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, majorVersion,
+                0, 0, ValidateUsingConverter.class, converter);
 
-        boolean status = configStoreDao.register(configSchema);
-        Assert.assertTrue("FAIL TO WRITE CONFIG", status);
+        configStoreDao.register(configSchema);
 
         // config
         JSONObject config = new JSONObject();
@@ -93,8 +93,9 @@ public class ConfigStoreDaoImplTest {
         Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
-        String serviceName2 = serviceName + "_2";
-        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(serviceName2, majorVersion, 0, 0, ValidateUsingConverter.class, converter);
+        String configName2 = configName + "_2";
+        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, majorVersion,
+                0, 0, ValidateUsingConverter.class, converter);
         configStoreDao.register(configSchema2);
         configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);
@@ -105,9 +106,9 @@ public class ConfigStoreDaoImplTest {
         Optional<Set<String>> all = configStoreDao.getServiceIds();
         Assert.assertEquals("FAIL TO getServices", all.get().size(), 2);
 
-        // update
-        JSONObject config2 = new JSONObject();
-        config2.put("test2", "test2");
+        // add config
+        ProvisiondConfiguration config2 = new ProvisiondConfiguration();
+        config2.setImportThreads(20L);
         configStoreDao.addConfig(configName, filename + "_2", config2);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());

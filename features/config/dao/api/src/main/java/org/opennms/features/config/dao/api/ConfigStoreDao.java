@@ -28,8 +28,6 @@
 
 package org.opennms.features.config.dao.api;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +35,8 @@ import java.util.Set;
 
 /**
  * It handles storing config data in database by generic datatype
- * It also expects to do any validation before persist.
+ * It also validation config before persist. (add & update)
+ *
  * @param <CONFIG_DATATYPE> data type store in database
  */
 public interface ConfigStoreDao<CONFIG_DATATYPE> {
@@ -71,13 +70,13 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * update configs meta by configName
+     *
      * @param configSchema
      * @throws IOException
      * @throws ClassNotFoundException
      */
     void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException;
 
-    Optional<List<ConfigData>> getServices() throws IOException;
     /**
      * get configs data by configName and configId
      *
@@ -89,6 +88,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * add configs for the registered service name, return false is config already exist
+     *
      * @param configName
      * @param configData
      * @throws IOException
@@ -97,26 +97,29 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * add new config to a registered service name
+     *
      * @param configName
      * @param configId
-     * @param config
+     * @param configObject
      * @throws IOException
      */
-    void addConfig(String configName, String configId, JSONObject config) throws IOException;
+    void addConfig(String configName, String configId, Object configObject) throws IOException;
 
     Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
 
     /**
      * update config to a registered service name
+     *
      * @param configName
      * @param configId
-     * @param config
+     * @param configObject
      * @throws IOException
      */
-    void updateConfig(String configName, String configId, JSONObject config) throws IOException;
+    void updateConfig(String configName, String configId, Object configObject) throws IOException;
 
     /**
      * **replace** all configs for the registered service name
+     *
      * @param configName
      * @param configData
      * @throws IOException
@@ -125,11 +128,12 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
 
     /**
      * delete one config from registered service name
+     *
      * @param configName
      * @param configId
      * @throws IOException
      */
-    boolean deleteConfig(String serviceName, String configId) throws IOException;
+    void deleteConfig(String configName, String configId) throws IOException;
 
     /**
      * unregister a service from config manager, it will remove both schema and configs
