@@ -95,7 +95,7 @@ public class ConvertToEvent {
 
     private final LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
-    private final Cache<String, Set<IpAddressWithLocation>> m_dnsCache;
+    private final Cache<HostNameWithLocationKey, String> m_dnsCache;
 
     private static final LoadingCache<String,Pattern> CACHED_PATTERNS = CacheBuilder.newBuilder().build(
         new CacheLoader<String,Pattern>() {
@@ -133,7 +133,7 @@ public class ConvertToEvent {
     public static final EventBuilder toEventBuilder(SyslogMessage message, String systemId, String location,
                                                     Date receivedTimestamp,
                                                     LocationAwareDnsLookupClient locationAwareDnsLookupClient,
-                                                    Cache<String, Set<IpAddressWithLocation>> dnsCache) {
+                                                    Cache<HostNameWithLocationKey, String> dnsCache) {
         if (message == null) {
             return null;
         }
@@ -246,44 +246,34 @@ public class ConvertToEvent {
     }
 
     private static InetAddress resolveHostName(LocationAwareDnsLookupClient locationAwareDnsLookupClient,
-                                        Cache<String, Set<IpAddressWithLocation>> dnsCache,
+                                               Cache<HostNameWithLocationKey, String> dnsCache,
                                                String location, String systemId, SyslogMessage message) {
 
-        if(LocationUtils.isDefaultLocationName(location)) {
+        if (LocationUtils.isDefaultLocationName(location)) {
             return message.getHostAddress();
         }
         String hostName = message.getHostName();
         if (Strings.isNullOrEmpty(hostName) ||
                 locationAwareDnsLookupClient == null || dnsCache == null) {
-           return null;
+            return null;
         }
         // Try to find the element in the cache first.
-        InetAddress hostInetAddress = null;
-        String hostIpAddress;
-        Set<IpAddressWithLocation> ipAddressWithLocationSet = dnsCache.getIfPresent(hostName);
-        if (ipAddressWithLocationSet != null) {
-            Optional<IpAddressWithLocation> optionalIpAddressWithLocation = ipAddressWithLocationSet.stream()
-                    .filter(value -> value.getLocation().equals(location)).findFirst();
-            if (optionalIpAddressWithLocation.isPresent()) {
-                hostInetAddress = optionalIpAddressWithLocation.get().getInetAddress();
-            }
-        }
+        String hostIpAddress = dnsCache.getIfPresent(new HostNameWithLocationKey(hostName, location));
         // If it's not present in the cache, try lookup and add result to cache.
-        if (hostInetAddress == null) {
+        if (hostIpAddress == null) {
             CompletableFuture<String> future = locationAwareDnsLookupClient.lookup(hostName, location, systemId);
             try {
                 hostIpAddress = future.get();
                 if (hostIpAddress != null) {
-                    hostInetAddress = InetAddressUtils.addr(hostIpAddress);
-                    if (ipAddressWithLocationSet == null) {
-                        ipAddressWithLocationSet = new HashSet<>();
-                    }
-                    ipAddressWithLocationSet.add(new IpAddressWithLocation(hostInetAddress, location));
-                    dnsCache.put(hostName, ipAddressWithLocationSet);
+                    dnsCache.put(new HostNameWithLocationKey(hostName, location), hostIpAddress);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("Exception while resolving hostname {} at location {}", hostName, location);
             }
+        }
+        InetAddress hostInetAddress = null;
+        if (hostIpAddress != null) {
+            hostInetAddress = InetAddressUtils.addr(hostIpAddress);
         }
         return hostInetAddress;
     }
@@ -337,7 +327,7 @@ public class ConvertToEvent {
             final ByteBuffer incoming,
             final Date receivedTimestamp,
             final SyslogdConfig config,
-            LocationAwareDnsLookupClient locationAwareDnsLookupClient, Cache<String, Set<IpAddressWithLocation>> dnsCache) throws MessageDiscardedException {
+            LocationAwareDnsLookupClient locationAwareDnsLookupClient, Cache<HostNameWithLocationKey, String> dnsCache) throws MessageDiscardedException {
 
         this.m_locationAwareDnsLookupClient = locationAwareDnsLookupClient;
         this.m_dnsCache = dnsCache;
