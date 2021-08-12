@@ -28,18 +28,23 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
@@ -61,24 +66,19 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
-
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
-import io.searchbox.client.JestClient;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class ElasticFlowRepository implements FlowRepository {
 
@@ -142,7 +142,8 @@ public class ElasticFlowRepository implements FlowRepository {
     private boolean enableFlowForwarding = false;
 
     private int bulkSize = 0;
-    private int bulkRetryCount = 1;
+    private int bulkRetryCount = 5;
+    private int bulkFlushMs = 0;
 
     /**
      * Can be used to skip persisting the flows into ES>
@@ -155,11 +156,21 @@ public class ElasticFlowRepository implements FlowRepository {
      * This maps a node ID to a set if snmpInterface IDs.
      */
     private final Map<Direction, Cache<Integer, Set<Integer>>> markerCache = Maps.newEnumMap(Direction.class);
+    
+    private class FlowBulk {
+        private List<FlowDocument> documents = Lists.newArrayListWithCapacity(ElasticFlowRepository.this.bulkSize);
+        private ReentrantLock lock = new ReentrantLock();
+        private long lastPersist = 0;
+
+        public FlowBulk() {
+        }
+    }
 
     /**
      * Collect flow documents ready for persistence.
      */
-    private final Map<Thread, List<FlowDocument>> bulk = Maps.newHashMap();
+    private final Map<Thread, FlowBulk> flowBulks = Maps.newConcurrentMap();
+    private java.util.Timer flushTimer;
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher,
@@ -210,6 +221,45 @@ public class ElasticFlowRepository implements FlowRepository {
         });
     }
 
+    private void startTimer() {
+        if (bulkFlushMs > 0) {
+            int delay = Math.max(1, bulkFlushMs / 2);
+            flushTimer = new java.util.Timer("ElasticFlowRepositoryFlush");
+            flushTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    final long currentTimeMillis = System.currentTimeMillis();
+                    for(final Map.Entry<Thread, ElasticFlowRepository.FlowBulk> entry : flowBulks.entrySet()) {
+                        final ElasticFlowRepository.FlowBulk flowBulk = entry.getValue();
+                        if (flowBulk.lock.tryLock()) {
+                            try {
+                                if (currentTimeMillis - flowBulk.lastPersist > bulkFlushMs && flowBulk.documents.size() > 0) {
+                                    try {
+                                        persistBulk(flowBulk.documents);
+                                        flowBulk.lastPersist = currentTimeMillis;
+                                    } catch (Throwable t) {
+                                        LOG.error("An error occurred while flushing one or more bulks in ElasticFlowRepository.", t);
+                                    }
+                                }
+                            } finally {
+                                flowBulk.lock.unlock();
+                            }
+                        }
+                    }
+                }
+            }, delay, delay);
+        } else {
+            flushTimer = null;
+        }
+    }
+
+    private void stopTimer() {
+        if (flushTimer != null) {
+            flushTimer.cancel();
+            flushTimer = null;
+        }
+    }
+
     @Override
     public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
         // Track the number of flows per call
@@ -236,11 +286,16 @@ public class ElasticFlowRepository implements FlowRepository {
         if (skipElasticsearchPersistence) {
             RATE_LIMITED_LOGGER.info("Flow persistence disabled. Dropping {} flow documents.", flowDocuments.size());
         } else {
-            final var bulk = this.bulk.computeIfAbsent(Thread.currentThread(), (thread) -> Lists.newArrayListWithCapacity(this.bulkSize));
-            bulk.addAll(flowDocuments);
-
-            if (bulk.size() >= this.bulkSize) {
-                this.persistBulk(bulk);
+            final FlowBulk flowBulk = this.flowBulks.computeIfAbsent(Thread.currentThread(), (thread) -> new FlowBulk());
+            flowBulk.lock.lock();
+            try {
+                flowBulk.documents.addAll(flowDocuments);
+                if (flowBulk.documents.size() >= this.bulkSize) {
+                    this.persistBulk(flowBulk.documents);
+                    flowBulk.lastPersist = System.currentTimeMillis();
+                }
+            } finally {
+                flowBulk.lock.unlock();
             }
         }
 
@@ -353,11 +408,15 @@ public class ElasticFlowRepository implements FlowRepository {
         if (tracerRegistry != null && identity != null) {
             tracerRegistry.init(identity.getId());
         }
+
+        startTimer();
     }
 
     public void stop() throws FlowException {
-        for (List<FlowDocument> flowDocuments : this.bulk.values()) {
-            persistBulk(flowDocuments);
+        stopTimer();
+
+        for(final FlowBulk flowBulk : flowBulks.values()) {
+            persistBulk(flowBulk.documents);
         }
     }
 
@@ -392,6 +451,16 @@ public class ElasticFlowRepository implements FlowRepository {
         this.bulkRetryCount = bulkRetryCount;
     }
 
+    public int getBulkFlushMs() {
+        return bulkFlushMs;
+    }
+
+    public void setBulkFlushMs(final int bulkFlushMs) {
+        this.bulkFlushMs = bulkFlushMs;
+
+        stopTimer();
+        startTimer();
+    }
     public boolean isSkipElasticsearchPersistence() {
         return skipElasticsearchPersistence;
     }
