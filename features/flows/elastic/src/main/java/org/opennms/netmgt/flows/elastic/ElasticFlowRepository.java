@@ -141,6 +141,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private boolean enableFlowForwarding = false;
 
+    private int bulkSize = 0;
     private int bulkRetryCount = 1;
 
     /**
@@ -154,6 +155,11 @@ public class ElasticFlowRepository implements FlowRepository {
      * This maps a node ID to a set if snmpInterface IDs.
      */
     private final Map<Direction, Cache<Integer, Set<Integer>>> markerCache = Maps.newEnumMap(Direction.class);
+
+    /**
+     * Collect flow documents ready for persistence.
+     */
+    private final Map<Thread, List<FlowDocument>> bulk = Maps.newHashMap();
 
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
                                  DocumentEnricher documentEnricher,
@@ -230,38 +236,11 @@ public class ElasticFlowRepository implements FlowRepository {
         if (skipElasticsearchPersistence) {
             RATE_LIMITED_LOGGER.info("Flow persistence disabled. Dropping {} flow documents.", flowDocuments.size());
         } else {
-            LOG.debug("Persisting {} flow documents.", flowDocuments.size());
-            final Tracer tracer = getTracer();
-            try (final Timer.Context ctx = logPersistingTimer.time();
-                 Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
-                // Add location and source address tags to span.
-                scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
-                scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
-                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-                final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
-                    final Bulk.Builder bulkBuilder = new Bulk.Builder();
-                    for (FlowDocument flowDocument : documents) {
-                        final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
-                        final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                                .index(index);
-                        bulkBuilder.addAction(indexBuilder.build());
-                    }
-                    return new BulkWrapper(bulkBuilder);
-                }, bulkRetryCount);
-                try {
-                    // the bulk request considers retries
-                    bulkRequest.execute();
-                } catch (BulkException ex) {
-                    if (ex.getBulkResult() != null) {
-                        throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
-                    } else {
-                        throw new PersistenceException(ex.getMessage(), Collections.emptyList());
-                    }
-                } catch (IOException ex) {
-                    LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
-                    throw new FlowException(ex.getMessage(), ex);
-                }
-                flowsPersistedMeter.mark(flowDocuments.size());
+            final var bulk = this.bulk.computeIfAbsent(Thread.currentThread(), (thread) -> Lists.newArrayListWithCapacity(this.bulkSize));
+            bulk.addAll(flowDocuments);
+
+            if (bulk.size() >= this.bulkSize) {
+                this.persistBulk(bulk);
             }
         }
 
@@ -326,6 +305,42 @@ public class ElasticFlowRepository implements FlowRepository {
         }
     }
 
+    private void persistBulk(final List<FlowDocument> bulk) throws FlowException {
+        LOG.debug("Persisting {} flow documents.", bulk.size());
+        final Tracer tracer = getTracer();
+        try (final Timer.Context ctx = logPersistingTimer.time();
+             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+            // Add location and source address tags to span.
+            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, bulk, (documents) -> {
+                final Bulk.Builder bulkBuilder = new Bulk.Builder();
+                for (FlowDocument flowDocument : documents) {
+                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+                            .index(index);
+                    bulkBuilder.addAction(indexBuilder.build());
+                }
+                return new BulkWrapper(bulkBuilder);
+            }, bulkRetryCount);
+            try {
+                // the bulk request considers retries
+                bulkRequest.execute();
+            } catch (BulkException ex) {
+                if (ex.getBulkResult() != null) {
+                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                } else {
+                    throw new PersistenceException(ex.getMessage(), Collections.emptyList());
+                }
+            } catch (IOException ex) {
+                LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
+                throw new FlowException(ex.getMessage(), ex);
+            }
+            flowsPersistedMeter.mark(bulk.size());
+
+            bulk.clear();
+        }
+    }
+
     public Identity getIdentity() {
         return identity;
     }
@@ -337,6 +352,12 @@ public class ElasticFlowRepository implements FlowRepository {
     public void start() {
         if (tracerRegistry != null && identity != null) {
             tracerRegistry.init(identity.getId());
+        }
+    }
+
+    public void stop() throws FlowException {
+        for (List<FlowDocument> flowDocuments : this.bulk.values()) {
+            persistBulk(flowDocuments);
         }
     }
 
@@ -353,6 +374,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
     public void setEnableFlowForwarding(boolean enableFlowForwarding) {
         this.enableFlowForwarding = enableFlowForwarding;
+    }
+
+    public int getBulkSize() {
+        return this.bulkSize;
+    }
+
+    public void setBulkSize(final int bulkSize) {
+        this.bulkSize = bulkSize;
     }
 
     public int getBulkRetryCount() {
