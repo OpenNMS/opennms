@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
-public class IpAddressWithLocation {
+public class HostNameWithLocationKey {
 
-    private final InetAddress inetAddress;
+    private final String hostName;
+
     private final String location;
 
-    public IpAddressWithLocation(InetAddress inetAddress, String location) {
-        this.inetAddress = inetAddress;
+    public HostNameWithLocationKey(String hostName, String location) {
+        this.hostName = hostName;
         this.location = location;
     }
 
-    public InetAddress getInetAddress() {
-        return inetAddress;
+    public String getHostName() {
+        return hostName;
     }
 
     public String getLocation() {
@@ -53,12 +53,12 @@ public class IpAddressWithLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IpAddressWithLocation that = (IpAddressWithLocation) o;
-        return Objects.equals(inetAddress, that.inetAddress) && Objects.equals(location, that.location);
+        HostNameWithLocationKey that = (HostNameWithLocationKey) o;
+        return Objects.equals(hostName, that.hostName) && Objects.equals(location, that.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(inetAddress, location);
+        return Objects.hash(hostName, location);
     }
 }

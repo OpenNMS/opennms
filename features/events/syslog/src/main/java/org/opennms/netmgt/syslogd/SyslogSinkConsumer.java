@@ -69,7 +69,8 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogSinkConsumer.class);
 
-
+    private static final String defaultCacheConfig = "maximumSize=1000,expireAfterWrite=8h";
+    private static final String dnsCacheConfigProperty = "org.opennms.netmgt.syslogd.dnscache.config";
     @Autowired
     private MessageConsumerManager messageConsumerManager;
 
@@ -85,7 +86,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
     @Autowired
     private LocationAwareDnsLookupClient m_locationAwareDnsLookupClient;
 
-    private Cache<String, Set<IpAddressWithLocation>> hostNameToIpAddressCache;
+    private Cache<HostNameWithLocationKey, String> dnsCache;
 
     private final String localAddr;
     private final Timer consumerTimer;
@@ -96,9 +97,10 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
         consumerTimer = registry.timer("consumer");
         toEventTimer = registry.timer("consumer.toevent");
         broadcastTimer = registry.timer("consumer.broadcast");
-        Integer maxCacheSize = SystemProperties.getInteger("org.opennms.netmgt.syslogd.dnscache.maxsize", 1000);
-        hostNameToIpAddressCache = CacheBuilder.newBuilder().maximumSize(maxCacheSize).build();
-        registry.register("dnsCacheSize", (Gauge<Long>) () -> hostNameToIpAddressCache.size());
+        String cacheConfig = System.getProperty(dnsCacheConfigProperty, defaultCacheConfig);
+        dnsCache = CacheBuilder.from(cacheConfig).recordStats().build();
+        registry.register("dnsCacheSize", (Gauge<Long>) () -> dnsCache.size());
+        registry.register("dnsCacheHitRate", (Gauge<Double>) () -> dnsCache.stats().hitRate());
         localAddr = InetAddressUtils.getLocalHostName();
     }
 
@@ -140,7 +142,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         message.getTimestamp(),
                         syslogdConfig,
                         m_locationAwareDnsLookupClient,
-                        hostNameToIpAddressCache);
+                        dnsCache);
                 events.addEvent(re.getEvent());
             } catch (final MessageDiscardedException e) {
                 LOG.info("Message discarded, returning without enqueueing event.", e);

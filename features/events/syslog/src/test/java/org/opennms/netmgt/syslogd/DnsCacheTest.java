@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
 public class DnsCacheTest {
 
     private LocationAwareDnsLookupClient locationAwareDnsLookupClient;
-    private Cache<String, Set<IpAddressWithLocation>> cache;
+    private Cache<HostNameWithLocationKey, String> cache;
     private static final SyslogConfigBean radixConfig = new SyslogConfigBean();
 
     @Before
@@ -78,7 +78,7 @@ public class DnsCacheTest {
     }
 
 
-    private Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp, Cache<String, Set<IpAddressWithLocation>> cache) {
+    private Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp, Cache<HostNameWithLocationKey, String> cache) {
         try {
             ConvertToEvent convert = new ConvertToEvent(
                     DistPollerDao.DEFAULT_DIST_POLLER_ID,
