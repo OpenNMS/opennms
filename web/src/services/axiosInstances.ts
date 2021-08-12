@@ -10,7 +10,4 @@ const rest = axios.create({
   withCredentials: true
 })
 
-export {
-  v2,
-  rest
-}
+export { v2, rest }

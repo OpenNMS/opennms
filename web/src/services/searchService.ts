@@ -3,7 +3,7 @@ import { SearchResultResponse } from '../types'
 
 const endpoint = '/search'
 
-const search = async (searchStr: string): Promise<SearchResultResponse[]|false> => {
+const search = async (searchStr: string): Promise<SearchResultResponse[] | false> => {
   try {
     const resp = await v2.get(`${endpoint}?_s=${searchStr}`)
 
@@ -18,6 +18,4 @@ const search = async (searchStr: string): Promise<SearchResultResponse[]|false> 
   }
 }
 
-export {
-  search
-}
+export { search }
