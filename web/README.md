@@ -2,6 +2,30 @@
 
 This template should help get you started developing with Vue 3 and Typescript in Vite.
 
+## Build instructions
+
+This project was started with Node v14+
+You will also need [yarn](https://yarnpkg.com/getting-started/install)
+
+To install packages and run dev server
+```
+yarn install
+yarn dev
+```
+
+Build for prod
+```
+yarn build
+```
+
+## Vuex state management
+This project uses [Vuex](https://next.vuex.vuejs.org/) with the modules pattern.
+Each store module has separate files for state, actions, and mutations.
+Current convention is to only call actions from components, (no mutations).
+
+## Vue-router
+Project routes make use of [vue-router](https://next.router.vuejs.org/guide/)
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/)
