@@ -223,6 +223,16 @@ public class ElasticFlowRepository implements FlowRepository {
         });
     }
 
+    public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
+                                 final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
+                                 final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final int bulkSize,
+                                 final int bulkFlushMs) {
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings);
+        this.bulkSize = bulkSize;
+        this.bulkFlushMs = bulkFlushMs;
+    }
+
     private void startTimer() {
         if (flushTimer != null) {
             return;
