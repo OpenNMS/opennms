@@ -31,7 +31,7 @@ opennms:scv-set opennms.broker my-minion-user my-minion-password<2>
 <1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
 <2> Set the credentials for the ActiveMQ message broker.
 
-The credentials are encrypted on disk in `etc/scv.jce`.
+The credentials are encrypted on disk in `$MINION_HOME/etc/scv.jce`.
 
 Exit the Karaf shell with kbd:[Ctrl+d]
 
