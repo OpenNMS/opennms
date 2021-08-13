@@ -141,9 +141,9 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private boolean enableFlowForwarding = false;
 
-    private int bulkSize = 0;
+    private int bulkSize = 1000;
     private int bulkRetryCount = 5;
-    private int bulkFlushMs = 0;
+    private int bulkFlushMs = 500;
 
     /**
      * Can be used to skip persisting the flows into ES>
@@ -203,6 +203,8 @@ public class ElasticFlowRepository implements FlowRepository {
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build());
 
+        this.startTimer();
+
         this.sessionUtils.withTransaction(() -> {
             for (final OnmsNode node : this.nodeDao.findAllHavingIngressFlows()) {
                 this.markerCache.get(Direction.INGRESS).put(node.getId(),
@@ -222,6 +224,10 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private void startTimer() {
+        if (flushTimer != null) {
+            return;
+        }
+
         if (bulkFlushMs > 0) {
             int delay = Math.max(1, bulkFlushMs / 2);
             flushTimer = new java.util.Timer("ElasticFlowRepositoryFlush");
@@ -231,18 +237,20 @@ public class ElasticFlowRepository implements FlowRepository {
                     final long currentTimeMillis = System.currentTimeMillis();
                     for(final Map.Entry<Thread, ElasticFlowRepository.FlowBulk> entry : flowBulks.entrySet()) {
                         final ElasticFlowRepository.FlowBulk flowBulk = entry.getValue();
-                        if (flowBulk.lock.tryLock()) {
-                            try {
-                                if (currentTimeMillis - flowBulk.lastPersist > bulkFlushMs && flowBulk.documents.size() > 0) {
-                                    try {
-                                        persistBulk(flowBulk.documents);
-                                        flowBulk.lastPersist = currentTimeMillis;
-                                    } catch (Throwable t) {
-                                        LOG.error("An error occurred while flushing one or more bulks in ElasticFlowRepository.", t);
+                        if (currentTimeMillis - flowBulk.lastPersist > bulkFlushMs) {
+                            if (flowBulk.lock.tryLock()) {
+                                try {
+                                    if (flowBulk.documents.size() > 0) {
+                                        try {
+                                            persistBulk(flowBulk.documents);
+                                            flowBulk.lastPersist = currentTimeMillis;
+                                        } catch (Throwable t) {
+                                            LOG.error("An error occurred while flushing one or more bulks in ElasticFlowRepository.", t);
+                                        }
                                     }
+                                } finally {
+                                    flowBulk.lock.unlock();
                                 }
-                            } finally {
-                                flowBulk.lock.unlock();
                             }
                         }
                     }
