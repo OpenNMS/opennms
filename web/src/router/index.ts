@@ -3,7 +3,7 @@ import Nodes from '../containers/Nodes.vue'
 import NodeDetails from '../containers/NodeDetails.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/opennms/ui'),
   routes: [
     {
       path: '/',

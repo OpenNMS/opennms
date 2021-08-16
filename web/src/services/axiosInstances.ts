@@ -1,12 +1,14 @@
 import axios from 'axios'
 
+console.log(import.meta.env.VITE_BASE_V2_URL)
+
 const v2 = axios.create({
-  baseURL: process.env.VITE_BASE_V2_URL || '/opennms/api/v2',
+  baseURL: import.meta.env.VITE_BASE_V2_URL?.toString() || '/opennms/api/v2',
   withCredentials: true
 })
 
 const rest = axios.create({
-  baseURL: process.env.VITE_BASE_REST_URL || '/opennms/rest',
+  baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
   withCredentials: true
 })
 

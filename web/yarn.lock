@@ -690,6 +690,11 @@ prettier@^2.3.2:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.2.tgz#ef280a05ec253712e486233db5c6f23441e7342d"
   integrity sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==
 
+primeflex@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/primeflex/-/primeflex-2.0.0.tgz#b4152a97a455bbfad33503b6e10fe73d1f9e2228"
+  integrity sha512-t6AG3iRI1rh04uI+9nC4JSlbKfA8PnpRDFtjyqi3rDSLRgdfOuhIiunJbjVQ4alnnCfuQAAbVyde1AKN9QxT/w==
+
 primeicons@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-4.1.0.tgz#19eaef8ef5594b0006358ae64e738d03e167c9bb"
@@ -1077,7 +1082,7 @@ vue-tsc@^0.2.2:
   dependencies:
     vscode-vue-languageservice "^0.26.6"
 
-vue@^3.0.5:
+vue@^3.1.5:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.2.tgz#11715cb71a02baefd0f6e6552dc623680eb1bf32"
   integrity sha512-D/LuzAV30CgNJYGyNheE/VUs5N4toL2IgmS6c9qeOxvyh0xyn4exyRqizpXIrsvfx34zG9x5gCI2tdRHCGvF9w==
