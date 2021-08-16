@@ -2,7 +2,9 @@
 <template>
   <Menubar />
   <Sidebar />
-  <router-view />
+  <div id="view">
+    <router-view />
+  </div>
 </template>
   
 <script setup lang="ts">
@@ -16,5 +18,9 @@ body {
 }
 input.p-dropdown-label {
   cursor: auto !important;
+}
+#view {
+  padding: 15px;
+  margin-left: 230px;
 }
 </style>
