@@ -45,7 +45,6 @@ import Panel from 'primevue/panel'
 import Divider from 'primevue/divider'
 import { debounce } from 'lodash'
 
-// @ts-ignore
 const baseUrl = ref(import.meta.env.VITE_BASE_URL || '')
 const store = useStore()
 const route = useRoute()
@@ -54,9 +53,8 @@ const now = dayjs()
 const startTime = ref(now.subtract(1, 'day').unix())
 const endTime = ref(now.unix())
 const width = ref(200)
-const timeline = ref(null)
+const timeline = ref<any>(null)
 const recalculateWidth = () => {
-  // @ts-ignore
   width.value = timeline.value.clientWidth - 60
 }
 

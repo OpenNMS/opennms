@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '../containers/Nodes.vue'
 import NodeDetails from '../containers/NodeDetails.vue'
 
 const router = createRouter({
-  history: createWebHistory('/opennms/ui'),
+  history: createWebHashHistory('/opennms/ui'),
   routes: [
     {
       path: '/',
