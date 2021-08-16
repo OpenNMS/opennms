@@ -10,11 +10,12 @@
     "axios": "^0.21.1",
     "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
+    "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
     "primevue": "3.6.0",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
-    "vue": "^3.0.5",
+    "vue": "^3.1.5",
     "vue-router": "4",
     "vuex": "^4.0.2"
   },
