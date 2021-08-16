@@ -11,8 +11,6 @@
 
 * xref:provisioning/introduction.adoc[]
 ** xref:provisioning/getting-started.adoc[]
-** xref:provisioning/directed-discovery.adoc[]
-** xref:provisioning/auto-discovery.adoc[]
 ** xref:provisioning/adapters/adapters.adoc[]
 *** xref:provisioning/adapters/ddns.adoc[]
 ** xref:provisioning/detectors/detectors.adoc[]
@@ -42,12 +40,13 @@
 *** xref:provisioning/handlers/file.adoc[]
 *** xref:provisioning/handlers/http.adoc[]
 *** xref:provisioning/handlers/vmware.adoc[]
+** xref:provisioning/directed-discovery.adoc[]
+** xref:provisioning/auto-discovery.adoc[]
 ** xref:provisioning/integration.adoc[]
 ** xref:provisioning/scalability.adoc[]
 ** xref:provisioning/fine-grained.adoc[]
 ** xref:provisioning/hardware-inventory.adoc[]
 ** xref:provisioning/snmp-profile.adoc[]
-** xref:provisioning/xml-samples.adoc[]
 
 * xref:thresholds/thresholding.adoc[]
 
