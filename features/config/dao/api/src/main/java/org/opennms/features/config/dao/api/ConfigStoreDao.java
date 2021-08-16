@@ -75,8 +75,11 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     void updateConfigSchema(ConfigSchema<?> configSchema) throws IOException;
 
     /**
-     * get configs data by configName and configId
-     *
+     * get configs data by configName
+     * It gives the raw ConfigData object.
+     * If you only want to get the specific config, you should use getConfig(String, String)
+     * @see #getConfig(String, String)
+     * @see ConfigData
      * @param configName
      * @return config object
      * @throws IOException

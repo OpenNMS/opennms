@@ -33,7 +33,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.XMLSchema;
+import org.opennms.features.config.dao.api.XmlSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -54,13 +54,13 @@ import java.util.Objects;
 public class XmlMapper<CONFIG_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlMapper.class);
 
-    private final XMLSchema xmlSchema;
+    private final XmlSchema xmlSchema;
     private final Class<CONFIG_CLASS> configurationClass;
     private final JAXBContext jc;
     private final Unmarshaller unmarshaller;
     private final Marshaller marshaller;
 
-    public XmlMapper(XMLSchema xmlSchema, Class<CONFIG_CLASS> configurationClass)
+    public XmlMapper(XmlSchema xmlSchema, Class<CONFIG_CLASS> configurationClass)
             throws NullPointerException, JAXBException {
         Objects.requireNonNull(xmlSchema);
         Objects.requireNonNull(configurationClass);

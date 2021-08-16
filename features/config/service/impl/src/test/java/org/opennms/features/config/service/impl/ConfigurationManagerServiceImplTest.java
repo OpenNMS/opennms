@@ -72,7 +72,7 @@ public class ConfigurationManagerServiceImplTest {
     private ConfigurationManagerService configManagerService;
 
     @Before
-    public void init() throws IOException, ClassNotFoundException, JAXBException {
+    public void init() throws IOException, JAXBException {
         configManagerService.registerSchema(CONFIG_NAME, 29, 0, 0, ProvisiondConfiguration.class);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
@@ -82,15 +82,12 @@ public class ConfigurationManagerServiceImplTest {
     }
 
     @After
-    public void after() {
-        try {
-            configManagerService.unregisterSchema(CONFIG_NAME);
-        } catch (IOException e) {
-        }
+    public void after() throws IOException{
+        configManagerService.unregisterSchema(CONFIG_NAME);
     }
 
     @Test
-    public void testRegisterSchema() throws IOException, ClassNotFoundException, JAXBException {
+    public void testRegisterSchema() throws IOException {
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", configSchema.isPresent());
         Assert.assertTrue(CONFIG_NAME + " fail to register", "29.0.0".equals(configSchema.get().getVersion()));
@@ -105,6 +102,10 @@ public class ConfigurationManagerServiceImplTest {
                 configData.get().getConfigs().get(CONFIG_ID).get("importThreads"));
     }
 
+    /**
+     * it is expected to have exception due to not xsd validation. importThreads > 0
+     * @throws IOException
+     */
     @Test(expected = RuntimeException.class)
     public void testRegisterInvalidConfiguration() throws IOException {
         ProvisiondConfiguration config = new ProvisiondConfiguration();
@@ -123,6 +124,10 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
     }
 
+    /**
+     * it is expected to have exception due to not xsd validation. importThreads > 0
+     * @throws IOException
+     */
     @Test(expected = RuntimeException.class)
     public void testUpdateInvalidateConfiguration() throws IOException {
         JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();

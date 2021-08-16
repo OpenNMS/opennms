@@ -31,14 +31,14 @@ package org.opennms.features.config.dao.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class XMLSchema {
+public class XmlSchema {
 
     private final String xsdContent;
     private final String namespace;
     private final String topLevelObject;
 
     @JsonCreator
-    public XMLSchema(@JsonProperty("xsdContent") String xsdContent,
+    public XmlSchema(@JsonProperty("xsdContent") String xsdContent,
                      @JsonProperty("namespace") String namespace,
                      @JsonProperty("topLevelObject") String topLevelObject) {
         this.xsdContent = xsdContent;

@@ -97,7 +97,7 @@ public interface ConfigConverter<CONFIG_CLASS> {
     /**
      * @return ServiceSchema
      */
-    ServiceSchema getServiceSchema();
+    ValidationSchema<?> getValidationSchema();
 
     /**
      * @return schema URL

@@ -32,12 +32,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.io.Resources;
-import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ServiceSchema;
-import org.opennms.features.config.dao.api.XMLSchema;
+import org.opennms.features.config.dao.api.ValidationSchema;
+import org.opennms.features.config.dao.api.XmlValidationSchema;
+import org.opennms.features.config.dao.api.XmlSchema;
 import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     private String xsdName;
     private String rootElement;
     private XmlAccessType xmlAccessorType;
-    private ServiceSchema serviceSchema;
+    private XmlValidationSchema validationSchema;
     private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
     /**
@@ -77,48 +77,74 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
      * @param configurationClass opennms config configObject class
      * @throws IllegalArgumentException if you provide invalid config configObject class
      */
-    @JsonCreator
-    public ValidateUsingConverter(@JsonProperty("configurationClass") Class<CONFIG_CLASS> configurationClass)
+    public ValidateUsingConverter(Class<CONFIG_CLASS> configurationClass)
             throws IllegalArgumentException, IOException, JAXBException {
         if (!configurationClass.isAnnotationPresent(ValidateUsing.class)) {
+            LOG.error("It need annotation ValidateUsing! " + configurationClass.getName());
             throw new IllegalArgumentException("It need annotation ValidateUsing!");
         }
         if (!configurationClass.isAnnotationPresent(XmlRootElement.class)) {
+            LOG.error("It need annotation XmlRootElement! " + configurationClass.getName());
             throw new IllegalArgumentException("It need annotation XmlRootElement!");
         }
         if (!configurationClass.isAnnotationPresent(XmlAccessorType.class)) {
+            LOG.error("It need annotation XmlAccessorType! " + configurationClass.getName());
             throw new IllegalArgumentException("It need annotation XmlAccessorType!");
         }
         this.xsdName = configurationClass.getAnnotation(ValidateUsing.class).value();
         this.rootElement = configurationClass.getAnnotation(XmlRootElement.class).name();
         this.xmlAccessorType = configurationClass.getAnnotation(XmlAccessorType.class).value();
         this.configurationClass = configurationClass;
-        this.serviceSchema = this.readXmlSchema();
-        this.xmlMapper = new XmlMapper<>(serviceSchema.getXmlSchema(), configurationClass);
+        this.validationSchema = this.readXmlSchema();
+        this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
     }
 
+
+    /**
+     * For object mapper use
+     * @param xsdName
+     * @param rootElement
+     * @param configurationClass
+     * @param xmlAccessorType
+     * @param validationSchema
+     * @throws JAXBException
+     */
+    @JsonCreator
+    public ValidateUsingConverter(
+            @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
+            @JsonProperty("configurationClass") Class<CONFIG_CLASS> configurationClass,
+            @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
+            @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {
+
+        this.xsdName = xsdName;
+        this.rootElement = rootElement;
+        this.xmlAccessorType = xmlAccessorType;
+        this.configurationClass = configurationClass;
+        this.validationSchema = validationSchema;
+        this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
+    }
     /**
      * It searches the xsd defined in configuration class and load into schema.
      *
      * @return ServiceSchema with xsds
      * @throws IOException
      */
-    private ServiceSchema readXmlSchema() throws IOException {
+    private XmlValidationSchema readXmlSchema() throws IOException {
         String xsdStr = Resources.toString(this.getSchemaPath(), StandardCharsets.UTF_8);
         final XsdModelConverter xsdModelConverter = new XsdModelConverter();
         final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xsdStr);
         // Grab the first namespace that includes 'opennms', sort for predictability
         List<String> namespaces = Arrays.stream(schemaCollection.getXmlSchemas())
-                .map(XmlSchema::getTargetNamespace)
+                .map(org.apache.ws.commons.schema.XmlSchema::getTargetNamespace)
                 .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
 
         if (namespaces.size() != 1) {
-            LOG.error("XSD must contain one 'opennms' namespaces! " + this.serviceSchema);
+            LOG.error("XSD must contain one 'opennms' namespaces! " + this.validationSchema);
             throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
         }
 
-        XMLSchema xmlSchema = new XMLSchema(xsdStr, namespaces.get(0), rootElement);
-        return new ServiceSchema(xmlSchema);
+        XmlSchema xmlSchema = new XmlSchema(xsdStr, namespaces.get(0), rootElement);
+        return new XmlValidationSchema(xmlSchema);
     }
 
     public String getRootElement() {
@@ -150,7 +176,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
 
     @Override
     public String getRawSchema() {
-        return this.serviceSchema.getXmlSchema().getXsdContent();
+        return this.validationSchema.getSchema().getXsdContent();
     }
 
     @Override
@@ -194,7 +220,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public ServiceSchema getServiceSchema() {
-        return serviceSchema;
+    public ValidationSchema<?> getValidationSchema() {
+        return validationSchema;
     }
 }

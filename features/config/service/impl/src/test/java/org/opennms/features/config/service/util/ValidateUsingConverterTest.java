@@ -31,7 +31,8 @@ package org.opennms.features.config.service.util;
 import com.google.common.io.Resources;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.config.dao.api.ServiceSchema;
+import org.opennms.features.config.dao.api.ValidationSchema;
+import org.opennms.features.config.dao.api.XmlValidationSchema;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -83,7 +84,7 @@ public class ValidateUsingConverterTest {
     public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
         ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
-        ServiceSchema schema = converter.getServiceSchema();
+        ValidationSchema schema = converter.getValidationSchema();
         Assert.assertNotNull("Fail to find schema!!!", schema);
     }
 
@@ -107,6 +108,11 @@ public class ValidateUsingConverterTest {
         converter.validate(convertedTest);
     }
 
+    /**
+     * it is expected to have exception due to not xsd validation. importThreads > 0
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Test(expected = RuntimeException.class)
     public void testValidateFail() throws JAXBException, IOException {
         ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
@@ -114,6 +120,12 @@ public class ValidateUsingConverterTest {
         test.setSnmpTrapPort(-1);
         converter.validate(test);
     }
+
+    /**
+     * it is expected to have exception due to not xsd validation.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
 
     @Test(expected = RuntimeException.class)
     public void testJsonValidateFail() throws JAXBException, IOException {

@@ -36,19 +36,22 @@ import org.opennms.features.config.dao.api.util.XsdModelConverter;
 
 import java.util.Objects;
 
-public final class ServiceSchema {
-    private final XMLSchema xmlSchema;
+/**
+ * This is sepcial for existing xsd validation use
+ */
+public final class XmlValidationSchema implements ValidationSchema<XmlSchema>{
+    private final XmlSchema xmlSchema;
 
     // reduce duplicated data store in database
     @JsonIgnore
     private ConfigItem configItem;
 
     @JsonCreator
-    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema){
+    public XmlValidationSchema(@JsonProperty("schema") final XmlSchema xmlSchema){
         this.xmlSchema = Objects.requireNonNull(xmlSchema);
     }
 
-    public XMLSchema getXmlSchema() {
+    public XmlSchema getSchema() {
         return xmlSchema;
     }
 
@@ -66,7 +69,7 @@ public final class ServiceSchema {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ServiceSchema that = (ServiceSchema) o;
+        XmlValidationSchema that = (XmlValidationSchema) o;
         return Objects.equals(xmlSchema, that.xmlSchema) && Objects.equals(configItem, that.configItem);
     }
 
