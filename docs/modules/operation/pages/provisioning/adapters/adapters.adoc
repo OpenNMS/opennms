@@ -1,4 +1,4 @@
-
+[[adapters]]
 = Adapters
 
 The {page-component-title} Provisiond API also supports provisioning adapters (plugins) for integration with external systems during the provisioning import phase.

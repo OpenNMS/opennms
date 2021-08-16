@@ -1,4 +1,4 @@
-
+[[policies]]
 = Policies
 
 The Policy API in Provisiond allows you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.

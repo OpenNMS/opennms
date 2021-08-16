@@ -12,7 +12,7 @@ This detector tries to detect if a given IP address can be found in PTR records.
 
 == Configuration and use
 
-.Parameters for the Reverse DNS Lookup Detector
+.Parameters for the reverse DNS lookup detector
 |===
 | Reverse DNS Lookup detector does not take any parameters.
 |===
