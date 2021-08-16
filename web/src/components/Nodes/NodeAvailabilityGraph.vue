@@ -36,54 +36,39 @@
   </Panel>
 </template>
   
-<script lang="ts">
-import { defineComponent, onMounted, ref, onUnmounted, computed } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, onUnmounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
 import Panel from 'primevue/panel'
 import Divider from 'primevue/divider'
 import { debounce } from 'lodash'
-export default defineComponent({
-  name: 'Node Availability Graph',
-  components: {
-    Panel,
-    Divider
-  },
-  setup() {
-    // @ts-ignore
-    const baseUrl = ref(process.env.VUE_APP_BASE_URL || '')
-    const store = useStore()
-    const route = useRoute()
-    const nodeId = ref(route.params.id as string)
-    const now = dayjs()
-    const startTime = ref(now.subtract(1, 'day').unix())
-    const endTime = ref(now.unix())
-    const width = ref(200)
-    const timeline = ref(null)
-    const recalculateWidth = () => {
-      // @ts-ignore
-      width.value = timeline.value.clientWidth - 60
-    }
 
-    onMounted(async () => {
-      store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
-      recalculateWidth()
-      window.addEventListener("resize", debounce(recalculateWidth, 100))
-    })
-    const availability = computed(() => store.state.nodesModule.availability)
-    onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
-    return {
-      width,
-      nodeId,
-      baseUrl,
-      endTime,
-      timeline,
-      startTime,
-      availability
-    }
-  }
+// @ts-ignore
+const baseUrl = ref(import.meta.env.VITE_BASE_V2_URL || '')
+const store = useStore()
+const route = useRoute()
+const nodeId = ref(route.params.id as string)
+const now = dayjs()
+const startTime = ref(now.subtract(1, 'day').unix())
+const endTime = ref(now.unix())
+const width = ref(200)
+const timeline = ref(null)
+const recalculateWidth = () => {
+  // @ts-ignore
+  width.value = timeline.value.clientWidth - 60
+}
+
+onMounted(async () => {
+  store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
+  recalculateWidth()
+  window.addEventListener("resize", debounce(recalculateWidth, 100))
 })
+
+const availability = computed(() => store.state.nodesModule.availability)
+
+onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
 </script>
 
 <style lang="scss" scoped>

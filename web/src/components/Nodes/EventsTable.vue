@@ -47,10 +47,9 @@
   </DataTable>
 </template>
   
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import DataTable from 'primevue/datatable'
-import InputText from 'primevue/inputtext'
 import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
@@ -58,37 +57,18 @@ import { useRoute } from 'vue-router'
 import useQueryParameters from '../../hooks/useQueryParams'
 import { Event } from '../../types'
 import dayjs from 'dayjs'
-export default defineComponent({
-  name: 'EventsTable',
-  components: {
-    DataTable,
-    InputText,
-    Column,
-    Pagination
-  },
-  setup() {
-    const store = useStore()
-    const route = useRoute()
-    const loading = ref(false)
-    const { queryParameters, sort, updateQueryParameters } = useQueryParameters({
-      limit: 5,
-      offset: 0,
-      _s: `node.id==${route.params.id}`
-    }, 'eventsModule/getEvents')
-    const events = computed(() => store.state.eventsModule.events)
-    const getRowClass = (data: Event) => data.severity.toLowerCase()
-    const getFormattedCreatedTime = (time: number) => dayjs(time).format()
-    return {
-      sort,
-      events,
-      loading,
-      getRowClass,
-      queryParameters,
-      updateQueryParameters,
-      getFormattedCreatedTime
-    }
-  }
-})
+
+const store = useStore()
+const route = useRoute()
+const loading = ref(false)
+const { queryParameters, sort, updateQueryParameters } = useQueryParameters({
+  limit: 5,
+  offset: 0,
+  _s: `node.id==${route.params.id}`
+}, 'eventsModule/getEvents')
+const events = computed(() => store.state.eventsModule.events)
+const getRowClass = (data: Event) => data.severity.toLowerCase()
+const getFormattedCreatedTime = (time: number) => dayjs(time).format()
 </script>
   
 <style lang="scss">

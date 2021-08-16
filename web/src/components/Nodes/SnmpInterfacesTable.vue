@@ -47,41 +47,22 @@
   </DataTable>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import DataTable from 'primevue/datatable'
-import InputText from 'primevue/inputtext'
 import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '../../hooks/useQueryParams'
-export default defineComponent({
-  name: 'SNMP Interfaces Table',
-  components: {
-    DataTable,
-    InputText,
-    Column,
-    Pagination
-  },
-  setup() {
-    const store = useStore()
-    const route = useRoute()
-    const loading = ref(false)
-    const optionalPayload = { id: route.params.id }
-    const { queryParameters, updateQueryParameters, payload, sort } = useQueryParameters({
-      limit: 5,
-      offset: 0,
-    }, 'nodesModule/getNodeSnmpInterfaces', optionalPayload)
-    const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
-    return {
-      sort,
-      loading,
-      payload,
-      snmpInterfaces,
-      queryParameters,
-      updateQueryParameters
-    }
-  }
-})
+
+const store = useStore()
+const route = useRoute()
+const loading = ref(false)
+const optionalPayload = { id: route.params.id }
+const { queryParameters, updateQueryParameters, payload, sort } = useQueryParameters({
+  limit: 5,
+  offset: 0,
+}, 'nodesModule/getNodeSnmpInterfaces', optionalPayload)
+const snmpInterfaces = computed(() => store.state.nodesModule.snmpInterfaces)
 </script>

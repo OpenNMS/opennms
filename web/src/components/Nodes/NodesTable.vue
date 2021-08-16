@@ -58,8 +58,8 @@
   </DataTable>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import DataTable from 'primevue/datatable'
 import InputText from 'primevue/inputtext'
 import Column from 'primevue/column'
@@ -67,43 +67,25 @@ import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { QueryParameters } from '../../types'
 import useQueryParameters from '../../hooks/useQueryParams'
-export default defineComponent({
-  name: 'NodesTable',
-  components: {
-    DataTable,
-    InputText,
-    Column,
-    Pagination
-  },
-  setup() {
-    const store = useStore()
-    const loading = ref(false)
-    const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
-      limit: 5,
-      offset: 0,
-      orderBy: 'label'
-    }, 'nodesModule/getNodes')
-    const searchFilterHandler = (e: any) => {
-      const searchQueryParam: QueryParameters = { _s: `node.label==${e.target.value}*` }
-      const updatedParams = { ...queryParameters.value, ...searchQueryParam }
-      store.dispatch('nodesModule/getNodes', updatedParams)
-      queryParameters.value = updatedParams
-    }
-    const nodes = computed(() => store.state.nodesModule.nodes)
-    return {
-      nodes,
-      sort,
-      loading,
-      queryParameters,
-      searchFilterHandler,
-      updateQueryParameters
-    }
-  }
-})
+
+const store = useStore()
+const loading = ref(false)
+const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
+  limit: 5,
+  offset: 0,
+  orderBy: 'label'
+}, 'nodesModule/getNodes')
+const searchFilterHandler = (e: any) => {
+  const searchQueryParam: QueryParameters = { _s: `node.label==${e.target.value}*` }
+  const updatedParams = { ...queryParameters.value, ...searchQueryParam }
+  store.dispatch('nodesModule/getNodes', updatedParams)
+  queryParameters.value = updatedParams
+}
+const nodes = computed(() => store.state.nodesModule.nodes)
 </script>
 
 <style lang="scss" scoped>
-.nodes-table::v-deep .p-datatable-header {
+.nodes-table :deep(.p-datatable-header) {
   padding-top: 0px;
   padding-bottom: 0px;
   height: 60px;
