@@ -46,7 +46,7 @@ import Divider from 'primevue/divider'
 import { debounce } from 'lodash'
 
 // @ts-ignore
-const baseUrl = ref(import.meta.env.VITE_BASE_V2_URL || '')
+const baseUrl = ref(import.meta.env.VITE_BASE_URL || '')
 const store = useStore()
 const route = useRoute()
 const nodeId = ref(route.params.id as string)
