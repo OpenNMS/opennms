@@ -41,7 +41,7 @@ public class FilesystemPermissionException extends Exception {
     }
 
     public FilesystemPermissionException(final Path path, final String user, final Exception e) {
-        super("Failed to validate " + path + " (or its contents) for ownership by " + user, e);
+        super("Failed to validate " + path + " (or its contents) for read/write by " + user, e);
         this.path = path;
         this.user = user;
     }
