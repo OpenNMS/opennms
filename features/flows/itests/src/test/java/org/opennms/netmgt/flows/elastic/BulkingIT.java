@@ -106,7 +106,7 @@ public class BulkingIT {
         try (final JestClient jestClient = restClientFactory.createClient()) {
             final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
             final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
-            final FlowRepository flowRepository = createFlowRepository(jestClient, documentEnricher, 1000, 1000);
+            final FlowRepository flowRepository = createFlowRepository(jestClient, documentEnricher, 1000, 5000);
 
             final long[] persists = new long[2];
 
@@ -127,7 +127,7 @@ public class BulkingIT {
             flowRepository.persist(Lists.newArrayList(createMockedFlows(30)), FlowDocumentTest.getMockFlowSource());
 
             // these 90 flows should not be visible yet
-            with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
+            with().pollInterval(2, SECONDS).await().atMost(10, SECONDS).until(() -> {
                 final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
                 LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", SearchResultUtils.getTotal(searchResult));
                 return SearchResultUtils.getTotal(searchResult) == 1000L;
@@ -144,7 +144,7 @@ public class BulkingIT {
 
             long timePassed = (persists[1] - persists[0]);
             LOG.info("Time between persists is {}ms", timePassed);
-            assertTrue(timePassed >= 1000);
+            assertTrue(timePassed >= 5000);
         }
 
         // stop ES
