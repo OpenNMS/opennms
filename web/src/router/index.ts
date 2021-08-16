@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Nodes from '../containers/Nodes.vue'
+import NodeDetails from '../containers/NodeDetails.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -8,6 +9,15 @@ const router = createRouter({
       path: '/',
       name: 'nodes',
       component: Nodes
+    },
+    {
+      path: '/node/:id',
+      name: 'Node Details',
+      component: NodeDetails
+    },
+    {
+      path: '/:pathMatch(.*)*', // catch other paths and redirect
+      redirect: '/'
     }
   ]
 })

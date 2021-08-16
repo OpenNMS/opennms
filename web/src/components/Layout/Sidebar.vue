@@ -20,6 +20,7 @@ $linkColor: #14d1df;
   float: left;
   background: $menuColor;
   color: rgba($color: $linkColor, $alpha: 0.8);
+  z-index: 1;
 }
 </style>
   
