@@ -41,43 +41,24 @@
   </DataTable>
 </template>
   
-<script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import useQueryParameters from '../../hooks/useQueryParams'
-export default defineComponent({
-  name: 'IP Interfaces Table',
-  components: {
-    DataTable,
-    Column,
-    Pagination
-  },
-  setup() {
-    const store = useStore()
-    const route = useRoute()
-    const optionalPayload = { id: route.params.id }
-    const { queryParameters, updateQueryParameters, sort, payload } = useQueryParameters({
-      limit: 5,
-      offset: 0,
-      _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
-    }, 'nodesModule/getNodeIpInterfaces', optionalPayload)
-    // data
-    const loading = ref(false)
-    // computed
-    const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
-    return {
-      loading,
-      sort,
-      payload,
-      ipInterfaces,
-      queryParameters,
-      updateQueryParameters
-    }
-  }
-})
+
+const store = useStore()
+const route = useRoute()
+const optionalPayload = { id: route.params.id }
+const { queryParameters, updateQueryParameters, sort, payload } = useQueryParameters({
+  limit: 5,
+  offset: 0,
+  _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
+}, 'nodesModule/getNodeIpInterfaces', optionalPayload)
+const loading = ref(false)
+const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
 </script>
   
