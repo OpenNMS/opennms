@@ -33,14 +33,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.dao.api.*;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 
@@ -63,70 +67,21 @@ public class ConfigStoreDaoImplTest {
     @Autowired
     private ConfigStoreDao configStoreDao;
 
-    public static class FakeConvert<T> implements ConfigConverter {
-        private Class<T> configurationClass;
-        private ServiceSchema serviceSchema;
-        private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
-        public FakeConvert() {}
-
-        @Override
-        public Object xmlToJaxbObject(String xml) {
-            return null;
-        }
-
-        @Override
-        public String xmlToJson(String xmlStr) {
-            return null;
-        }
-
-        @Override
-        public String jsonToXml(String jsonStr) {
-            return null;
-        }
-
-        @Override
-        public Object jsonToJaxbObject(String jsonStr) {
-            return null;
-        }
-
-        @Override
-        public String jaxbObjectToJson(Object entity) {
-            return null;
-        }
-
-        @Override
-        public Class getConfigurationClass() {
-            return null;
-        }
-
-        @Override
-        public ServiceSchema getServiceSchema() {
-            return null;
-        }
-
-        @Override
-        public URL getSchemaPath() throws IOException {
-            return null;
-        }
-
-        @Override
-        public SCHEMA_TYPE getSchemaType() {
-            return null;
-        }
-
-        @Override
-        public String getRawSchema() {
-            return null;
-        }
-    }
-
     @Test
-    public void testData() throws IOException, ClassNotFoundException {
-        ConfigSchema<FakeConvert> configSchema = new ConfigSchema<>(configName, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+    public void testData() throws IOException, JAXBException {
+        // register
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
+        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, majorVersion,
+                0, 0, ValidateUsingConverter.class, converter);
+
+        configStoreDao.register(configSchema);
+
+        // config
         JSONObject config = new JSONObject();
-        config.put("test", "test");
+        config.put("importThreads", 11);
         ConfigData configData = new ConfigData();
         configData.getConfigs().put(filename, config);
+
         // register
         configStoreDao.register(configSchema);
         configStoreDao.addConfigs(configName, configData);
@@ -139,7 +94,8 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<FakeConvert> configSchema2 = new ConfigSchema<>(configName2, majorVersion, 0, 0, FakeConvert.class, new FakeConvert());
+        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, majorVersion,
+                0, 0, ValidateUsingConverter.class, converter);
         configStoreDao.register(configSchema2);
         configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);
@@ -147,12 +103,12 @@ public class ConfigStoreDaoImplTest {
         Assert.assertEquals("FAIL TO updateConfigSchema", tmpConfigSchema2.get().getVersion(), "30.0.0");
 
         // list all
-        Optional<Set<String>> all = configStoreDao.getServiceIds();
+        Optional<Set<String>> all = configStoreDao.getConfigNames();
         Assert.assertEquals("FAIL TO getServices", all.get().size(), 2);
 
-        // update
-        JSONObject config2 = new JSONObject();
-        config2.put("test2", "test2");
+        // add config
+        ProvisiondConfiguration config2 = new ProvisiondConfiguration();
+        config2.setImportThreads(20L);
         configStoreDao.addConfig(configName, filename + "_2", config2);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());

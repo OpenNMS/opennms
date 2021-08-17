@@ -32,12 +32,15 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.JSONObjectDeserializer;
 import org.opennms.features.config.dao.impl.util.JSONObjectSerialIzer;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -47,8 +50,9 @@ import java.util.Set;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigStoreDao.class);
     public static final String CONTEXT_CONFIG = "CM_CONFIG";
-    public static final String CONTEXT_META = "CM_META";
+    public static final String CONTEXT_SCHEMA = "CM_SCHEMA";
     private final ObjectMapper mapper;
 
     private final JsonStore jsonStore;
@@ -68,13 +72,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<Set<String>> getServiceIds() {
-        return this.getIds(CONTEXT_META);
-    }
-
-    @Override
-    public Optional<Set<String>> getConfigIds() {
-        return this.getIds(CONTEXT_CONFIG);
+    public Optional<Set<String>> getConfigNames() {
+        return this.getIds(CONTEXT_SCHEMA);
     }
 
     private Optional<Set<String>> getIds(String context) {
@@ -87,7 +86,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
-        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_META);
+        Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -116,7 +115,6 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(final String configName) throws IOException {
         Optional<String> configDataJsonStr = jsonStore.get(configName, CONTEXT_CONFIG);
-
         if (configDataJsonStr.isEmpty()) {
             return Optional.empty();
         }
@@ -130,20 +128,22 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (exist.isPresent()) {
             throw new IllegalArgumentException("Duplicate config found for service: " + configName);
         }
+        this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
     @Override
-    public void addConfig(String configName, String configId, JSONObject config) throws IOException {
+    public void addConfig(String configName, String configId, Object configObject) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            configData = Optional.of(new ConfigData<JSONObject>());
+            configData = Optional.of(new ConfigData<>());
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (configs.containsKey(configId)) {
             throw new IllegalArgumentException("Duplicate config found for configId: " + configId);
         }
-        configs.put(configId, config);
+        JSONObject json = this.validateConfigWithConvert(configName, configObject);
+        configs.put(configId, json);
         this.putConfig(configName, configData.get());
     }
 
@@ -157,7 +157,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfig(String configName, String configId, JSONObject config) throws IOException {
+    public void updateConfig(String configName, String configId, Object config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
@@ -166,12 +166,14 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (!configs.containsKey(configId)) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
-        configs.put(configId, config);
+        JSONObject jsonObject = this.validateConfigWithConvert(configName, config);
+        configs.put(configId, jsonObject);
         this.putConfig(configName, configData.get());
     }
 
     @Override
     public void updateConfigs(String configName, ConfigData<JSONObject> configData) throws IOException {
+        this.validateConfigData(configName, configData);
         this.putConfig(configName, configData);
     }
 
@@ -189,7 +191,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public void unregister(String configName) {
-        jsonStore.delete(configName, CONTEXT_META);
+        jsonStore.delete(configName, CONTEXT_SCHEMA);
         jsonStore.delete(configName, CONTEXT_CONFIG);
     }
 
@@ -203,7 +205,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     private void putSchema(ConfigSchema<?> configSchema) throws IOException {
-        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_META);
+        long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_SCHEMA);
         if(timestamp < 0){
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
@@ -213,6 +215,43 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
         if(timestamp < 0){
             throw new RuntimeException("Fail to put data in JsonStore!");
+        }
+    }
+
+    private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
+            throws IOException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+        this.validateConfig(schema, configObject);
+        return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
+    }
+
+    private void validateConfigData(final String configName, final ConfigData<JSONObject> configData)
+            throws IOException {
+        Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+        if (schema.isEmpty()) {
+            LOG.error("Schema not found!");
+            throw new RuntimeException("Schema not found!");
+        }
+        configData.getConfigs().forEach((key, config) -> {
+            Object configObject = schema.get().getConverter().jsonToJaxbObject(config.toString());
+            this.validateConfig(schema, configObject);
+        });
+    }
+
+    private void validateConfig(final Optional<ConfigSchema<?>> schema, final Object configObject) {
+        try {
+            if (schema.isEmpty()) {
+                LOG.error("Schema not found!");
+                throw new RuntimeException("Schema not found!");
+            }
+            ConfigConverter converter = schema.get().getConverter();
+            if (!converter.validate(configObject)) {
+                LOG.error("Config validation error! ", schema.get().getName());
+                throw new RuntimeException("Fail to validate xml! May be schema issue.");
+            }
+        } catch (Exception e) {
+            LOG.error("Config validation fail! ", schema.get().getConverter().jaxbObjectToJson(configObject));
+            throw new RuntimeException(e);
         }
     }
 }

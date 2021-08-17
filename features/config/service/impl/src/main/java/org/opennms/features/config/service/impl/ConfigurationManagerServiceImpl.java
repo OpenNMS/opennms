@@ -33,12 +33,13 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.util.ValidateUsingConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
                                         final int patchVersion, Class<ENTITY> entityClass)
-            throws IOException, ClassNotFoundException {
+            throws IOException, JAXBException {
         ValidateUsingConverter<ENTITY> converter = new ValidateUsingConverter<>(entityClass);
         this.registerSchema(configName, majorVersion, minorVersion, patchVersion, converter);
     }
@@ -64,7 +65,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void registerSchema(final String configName, final int majorVersion, final int minorVersion,
                                final int patchVersion, final ConfigConverter converter)
-            throws IOException, ClassNotFoundException {
+            throws IOException {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
         if (this.getRegisteredSchema(configName).isPresent()) {
@@ -77,26 +78,37 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) throws IOException, ClassNotFoundException {
+    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) throws IOException {
         Objects.requireNonNull(configName);
         return configStoreDao.getConfigSchema(configName);
     }
 
+    /**
+     * it validates and add the config object to database
+     *
+     * @param configName
+     * @param configId
+     * @param configObject
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     @Override
-    public void registerConfiguration(final String configName, final String configId, Object configEntity)
-            throws IOException, ClassNotFoundException {
+    public void registerConfiguration(final String configName, final String configId, Object configObject)
+            throws IOException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
-        Objects.requireNonNull(configEntity);
-        //TODO: validation logic here
-        Optional<ConfigSchema<?>> schema = configStoreDao.getConfigSchema(configName);
-        if (schema.isEmpty()) {
-            throw new IllegalArgumentException("ConfigName not found: " + configName);
+        Objects.requireNonNull(configObject);
+        Optional<ConfigSchema<?>> configSchema = this.getRegisteredSchema(configName);
+        if (configSchema.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        String jsonStr = schema.get().getConverter().jaxbObjectToJson(configEntity);
+        if (this.getJSONConfiguration(configName, configId).isPresent()) {
+            throw new IllegalArgumentException(String.format(
+                    "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
+        }
 
-        configStoreDao.addConfig(configName, configId, new JSONObject(jsonStr));
-        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, jsonStr);
+        configStoreDao.addConfig(configName, configId, configObject);
+        LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
     }
 
     @Override
@@ -105,7 +117,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JSONObject object) throws IOException {
+    public void updateConfiguration(String configName, String configId, Object object) throws IOException {
         configStoreDao.updateConfig(configName, configId, object);
     }
 
@@ -148,8 +160,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Set<String> getServiceIds() {
-        return configStoreDao.getServiceIds().get();
+    public Set<String> getConfigNames() {
+        return configStoreDao.getConfigNames().get();
     }
 
     @Override

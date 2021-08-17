@@ -29,25 +29,39 @@
 package org.opennms.features.config.dao.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.opennms.features.config.dao.api.util.XsdModelConverter;
 
 import java.util.Objects;
 
-public final class ServiceSchema {
-    private final XMLSchema xmlSchema;
-    private final ConfigItem configItem;
+/**
+ * This is sepcial for existing xsd validation use
+ */
+public final class XmlValidationSchema implements ValidationSchema<XmlSchema>{
+    private final XmlSchema xmlSchema;
+
+    // reduce duplicated data store in database
+    @JsonIgnore
+    private ConfigItem configItem;
 
     @JsonCreator
-    public ServiceSchema(@JsonProperty("xmlSchema") final XMLSchema xmlSchema, @JsonProperty("configItem") final ConfigItem configItem) {
+    public XmlValidationSchema(@JsonProperty("schema") final XmlSchema xmlSchema){
         this.xmlSchema = Objects.requireNonNull(xmlSchema);
-        this.configItem = Objects.requireNonNull(configItem);
     }
 
-    public XMLSchema getXmlSchema() {
+    public XmlSchema getSchema() {
         return xmlSchema;
     }
 
     public ConfigItem getConfigItem() {
+        // process only when it is needed.
+        if(configItem == null) {
+            final XsdModelConverter xsdModelConverter = new XsdModelConverter();
+            final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xmlSchema.getXsdContent());
+            configItem = xsdModelConverter.convert(schemaCollection, xmlSchema.getTopLevelObject());
+        }
         return configItem;
     }
 
@@ -55,7 +69,7 @@ public final class ServiceSchema {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ServiceSchema that = (ServiceSchema) o;
+        XmlValidationSchema that = (XmlValidationSchema) o;
         return Objects.equals(xmlSchema, that.xmlSchema) && Objects.equals(configItem, that.configItem);
     }
 

@@ -56,7 +56,6 @@
       <version>${jackson2Version}</version>
     </dependency>
 
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

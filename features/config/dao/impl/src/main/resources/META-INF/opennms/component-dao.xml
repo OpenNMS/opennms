@@ -11,5 +11,4 @@
     <constructor-arg name="jsonStore" ref="jsonStore" />
   </bean>
   <onmsgi:service interface="org.opennms.features.config.dao.api.ConfigStoreDao" ref="jsonConfigStoreDao" />
-
 </beans>

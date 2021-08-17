@@ -60,8 +60,8 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Set<String> listServices() {
-       return (Set<String>) configStoreDao.getServiceIds().get();
+    public Set<String> listConfigNames() {
+       return (Set<String>) configStoreDao.getConfigNames().get();
     }
 
     /**
