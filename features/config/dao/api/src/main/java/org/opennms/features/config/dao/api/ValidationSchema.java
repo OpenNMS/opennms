@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,38 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.features.config.dao.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * This class include meta-data of the config
+ * It is the class which hold the schema info. (e.g. xsd) It also helps to transform to ConfigItem for openapi use
  */
-public class ConfigData<CONFIG_DATATYPE> {
-    // reserve for later notification use
-    private Class notificationClass;
-    // it should be fileName <> config pair
-    private Map<String, CONFIG_DATATYPE> configs;
+public interface ValidationSchema<SCHEMA_TYPE> {
+    /**
+     * It returns the whole schema
+     * @return
+     */
+    SCHEMA_TYPE getSchema();
 
-    public ConfigData() {
-        configs = new HashMap<>();
-    }
-
-    public Map<String, CONFIG_DATATYPE> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(Map<String, CONFIG_DATATYPE> configs) {
-        this.configs = configs;
-    }
-
-    public Class getNotificationClass() {
-        return notificationClass;
-    }
-
-    public void setNotificationClass(Class notificationClass) {
-        this.notificationClass = notificationClass;
-    }
+    /**
+     * This is use for openapi generation use
+     * @return
+     */
+    ConfigItem getConfigItem();
 }

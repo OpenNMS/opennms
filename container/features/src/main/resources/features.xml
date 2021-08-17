@@ -1776,11 +1776,11 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
-    <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
-        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
-    </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
         <feature>org.json</feature>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.api/${project.version}</bundle>
@@ -1789,5 +1789,8 @@
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
+    </feature>
+    <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
+        <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
 </features>

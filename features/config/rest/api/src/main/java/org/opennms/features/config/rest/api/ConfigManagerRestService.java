@@ -51,7 +51,7 @@ import javax.ws.rs.core.MediaType;
 public interface ConfigManagerRestService {
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
-    Set<String> listServices();
+    Set<String> listConfigNames();
 
     @GET
     @Path("/{configName}")

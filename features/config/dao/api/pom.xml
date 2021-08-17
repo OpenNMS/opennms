@@ -31,6 +31,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${jsonVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson2Version}</version>
@@ -46,10 +51,19 @@
       <version>${jackson2Version}</version>
     </dependency>
     <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${jsonVersion}</version>
+      <groupId>org.apache.ws.xmlschema</groupId>
+      <artifactId>xmlschema-walker</artifactId>
+      <version>${xmlschemaVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
   </dependencies>
 </project>
