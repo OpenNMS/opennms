@@ -41,8 +41,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.smoketest.utils.RestClient;
 import org.openqa.selenium.By;
 
+/**
+ * Basic validation of the new UI
+ */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UXRefreshIT extends OpenNMSSeleniumIT {
+public class UIRefreshIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
@@ -76,9 +79,18 @@ public class UXRefreshIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void canRenderNodeLabel() {
-        // The node label should be displayed
+    public void canRender() {
+        // The node label should be displayed on the landing page
         wait.until(pageContainsText("ItsRainingItsPouring"));
+
+        // If I click on the node, I should see the node's recent events
+        clickElement(By.linkText("ItsRainingItsPouring"));
+        wait.until(pageContainsText("Recent Events"));
+
+        // If I refresh the browser, I should still the node's recent events
+        // (This tests URL mapping to the SPA on the web server)
+        driver.navigate().refresh();
+        wait.until(pageContainsText("Recent Events"));
     }
 
 }
