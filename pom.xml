@@ -118,7 +118,7 @@
     <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
-    <module>web</module>
+    <module>ui</module>
 
     <!-- old structure -->
     <module>opennms-util</module>

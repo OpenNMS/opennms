@@ -7,8 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
-  <artifactId>org.opennms.web</artifactId>
-  <name>OpenNMS :: Web</name>
+  <artifactId>org.opennms.ui</artifactId>
+  <name>OpenNMS :: UI (SPA)</name>
   <packaging>jar</packaging>
 
 

@@ -49,7 +49,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.opennms</groupId>
-                  <artifactId>org.opennms.web</artifactId>
+                  <artifactId>org.opennms.ui</artifactId>
                   <version>${project.version}</version>
                   <classifier>dist</classifier>
                   <overWrite>true</overWrite>
@@ -421,7 +421,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.web</artifactId>
+      <artifactId>org.opennms.ui</artifactId>
       <version>${project.version}</version>
       <classifier>dist</classifier>
       <scope>provided</scope>
