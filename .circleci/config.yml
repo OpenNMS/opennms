@@ -817,7 +817,7 @@ jobs:
   build-ui:
     executor: ui-executor
     steps:
-      - cached-checkout
+      - checkout
       - run:
           name: Build
           command: |
