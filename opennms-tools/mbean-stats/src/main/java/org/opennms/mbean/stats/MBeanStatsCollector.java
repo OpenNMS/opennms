@@ -78,6 +78,7 @@ public class MBeanStatsCollector implements BundleActivator {
                 for(Attribute att: attList) {
                     sb.append(att.getValue() + ",");
                 }
+                sb.append("\n");
             }
             sb.append("\n\n");
             writeData(sb.toString());
