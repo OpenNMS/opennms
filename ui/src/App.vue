@@ -8,8 +8,8 @@
 </template>
   
 <script setup lang="ts">
-import Menubar from './components/Layout/Menubar.vue'
-import Sidebar from './components/Layout/Sidebar.vue'
+import Menubar from './components/layout/Menubar.vue'
+import Sidebar from './components/layout/Sidebar.vue'
 </script>
   
 <style lang="scss">
