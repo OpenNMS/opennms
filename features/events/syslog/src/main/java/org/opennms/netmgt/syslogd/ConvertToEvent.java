@@ -257,15 +257,16 @@ public class ConvertToEvent {
                 locationAwareDnsLookupClient == null || dnsCache == null) {
             return null;
         }
+        HostNameWithLocationKey cacheKey = new HostNameWithLocationKey(hostName, location);
         // Try to find the element in the cache first.
-        String hostIpAddress = dnsCache.getIfPresent(new HostNameWithLocationKey(hostName, location));
+        String hostIpAddress = dnsCache.getIfPresent(cacheKey);
         // If it's not present in the cache, try lookup and add result to cache.
         if (hostIpAddress == null) {
             CompletableFuture<String> future = locationAwareDnsLookupClient.lookup(hostName, location, systemId);
             try {
                 hostIpAddress = future.get();
                 if (hostIpAddress != null) {
-                    dnsCache.put(new HostNameWithLocationKey(hostName, location), hostIpAddress);
+                    dnsCache.put(cacheKey, hostIpAddress);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("Exception while resolving hostname {} at location {}", hostName, location);
