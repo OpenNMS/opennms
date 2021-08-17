@@ -822,7 +822,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd web && yarn install && yarn build
+            cd ui && yarn install && yarn build
   build-docs:
     executor: docs-executor
     steps:
