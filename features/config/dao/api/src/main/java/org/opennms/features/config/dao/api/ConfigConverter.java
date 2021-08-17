@@ -36,10 +36,12 @@ import java.net.URL;
 public interface ConfigConverter<CONFIG_CLASS> {
     enum SCHEMA_TYPE {XML, JSON, PROPERTY};
 
+    boolean validate(CONFIG_CLASS obj);
+
     /**
      * convert xml into config object
      *
-     * @param xml input xml string
+     * @param xmlStr input xml string
      * @return configClass instance
      */
     CONFIG_CLASS xmlToJaxbObject(String xmlStr);
@@ -71,10 +73,19 @@ public interface ConfigConverter<CONFIG_CLASS> {
 
     /**
      * convert config object to json string
-     * @param entity
+     *
+     * @param configObject
      * @return json string
      */
-    String jaxbObjectToJson(CONFIG_CLASS entity);
+    String jaxbObjectToJson(CONFIG_CLASS configObject);
+
+    /**
+     * convert config object to xml string
+     *
+     * @param configObject
+     * @return json string
+     */
+    String jaxbObjectToXml(CONFIG_CLASS configObject);
 
     /**
      * get the configuration class register with the converter
@@ -86,7 +97,7 @@ public interface ConfigConverter<CONFIG_CLASS> {
     /**
      * @return ServiceSchema
      */
-    ServiceSchema getServiceSchema();
+    ValidationSchema<?> getValidationSchema();
 
     /**
      * @return schema URL

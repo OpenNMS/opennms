@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.api;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class XMLSchema {
-
-    private final String xsdContent;
-    private final String namespace;
-    private final String topLevelObject;
-
-    @JsonCreator
-    public XMLSchema(@JsonProperty("xsdContent") String xsdContent,
-                     @JsonProperty("namespace") String namespace,
-                     @JsonProperty("topLevelObject") String topLevelObject) {
-        this.xsdContent = xsdContent;
-        this.namespace = namespace;
-        this.topLevelObject = topLevelObject;
+@XmlSchema(
+    namespace="http://xmlns.opennms.org/xsd/config/trapd",
+    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/trapd")
     }
-
-    public String getXsdContent() {
-        return xsdContent;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public String getTopLevelObject() {
-        return topLevelObject;
-    }
-
-}
+)
+package org.opennms.features.config.service.config;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;

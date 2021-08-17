@@ -29,27 +29,30 @@
 package org.opennms.features.config.service.util;
 
 import com.google.common.io.Resources;
-import org.eclipse.persistence.jpa.jpql.Assert;
+import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.config.dao.api.ServiceSchema;
+import org.opennms.features.config.dao.api.ValidationSchema;
+import org.opennms.features.config.dao.api.XmlValidationSchema;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-
 @JUnitConfigurationEnvironment
 public class ValidateUsingConverterTest {
     final static String FOREIGN_SOURCES = "/opt/opennms/etc/foreign-sources";
 
     @Test
-    public void testConverter() throws IOException {
+    public void testConverter() throws IOException, JAXBException {
         final ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
         final String sourceXml = Resources.toString(
                 Resources.getResource("provisiond-configuration.xml"), StandardCharsets.UTF_8);
@@ -62,9 +65,9 @@ public class ValidateUsingConverterTest {
 
         // Verify the rendered JSON
         final ProvisiondConfiguration objectFromMappedJson = converter.jsonToJaxbObject(convertedJson);
-        Assert.isEqual(11L, objectFromMappedJson.getImportThreads(), "json importThreads Value is not correct");
-        Assert.isTrue(FOREIGN_SOURCES.equals(objectFromMappedJson.getForeignSourceDir()),
-                "json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir());
+
+        Assert.assertEquals("json importThreads Value is not correct", 11L, (long) objectFromMappedJson.getImportThreads());
+        Assert.assertTrue("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromMappedJson.getForeignSourceDir()));
 
         // compare Object from json to object from source xml
         final ProvisiondConfiguration objectFromSourceXml = converter.xmlToJaxbObject(sourceXml);
@@ -73,15 +76,63 @@ public class ValidateUsingConverterTest {
         // check xml > json > xml > object
         String convertedXml = converter.jsonToXml(convertedJson);
         ProvisiondConfiguration objectFromConvertedXml = converter.xmlToJaxbObject(convertedXml);
-        Assert.isEqual(11L, objectFromConvertedXml.getImportThreads(), "Object ImportThreads Value is not correct");
-        Assert.isTrue(FOREIGN_SOURCES.equals(objectFromConvertedXml.getForeignSourceDir()),
-                "Object ForeignSourceDir is not correct. " + objectFromConvertedXml.getForeignSourceDir());
+        Assert.assertEquals("Object ImportThreads Value is not correct", 11L, (long) objectFromConvertedXml.getImportThreads());
+        Assert.assertTrue("Object ForeignSourceDir is not correct. " + objectFromConvertedXml.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromConvertedXml.getForeignSourceDir()));
     }
 
     @Test
-    public void testXsdSearch() throws IOException {
+    public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
         ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
-        ServiceSchema schema = converter.getServiceSchema();
+        ValidationSchema schema = converter.getValidationSchema();
+        Assert.assertNotNull("Fail to find schema!!!", schema);
+    }
+
+    @Test
+    public void testValidate() throws JAXBException, IOException {
+        ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
+        FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
+        Snmpv3User user = new Snmpv3User();
+        user.setSecurityName("SecurityName");
+        test.addSnmpv3User(user);
+        test.setUseAddressFromVarbind(true);
+        converter.validate(test);
+        String xmlStr = converter.jaxbObjectToXml(test);
+        FakeXsdForTest convertedTest = converter.xmlToJaxbObject(xmlStr);
+        Assert.assertEquals("Trap port is wrong after conversion!",
+                1024, convertedTest.getSnmpTrapPort());
+        Assert.assertEquals("SnmpTrapAddress is wrong after conversion!",
+                "127.0.0.1", convertedTest.getSnmpTrapAddress());
+        Assert.assertEquals("Snmpv3User is wrong after conversion!",
+                "SecurityName", convertedTest.getSnmpv3User(0).getSecurityName());
+        converter.validate(convertedTest);
+    }
+
+    /**
+     * it is expected to have exception due to not xsd validation. importThreads > 0
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @Test(expected = RuntimeException.class)
+    public void testValidateFail() throws JAXBException, IOException {
+        ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
+        FakeXsdForTest test = new FakeXsdForTest();
+        test.setSnmpTrapPort(-1);
+        converter.validate(test);
+    }
+
+    /**
+     * it is expected to have exception due to not xsd validation.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+
+    @Test(expected = RuntimeException.class)
+    public void testJsonValidateFail() throws JAXBException, IOException {
+        final String invalidJson = Resources.toString(
+                Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
+        ProvisiondConfiguration test = converter.jsonToJaxbObject(invalidJson);
+        converter.validate(test);
     }
 }
