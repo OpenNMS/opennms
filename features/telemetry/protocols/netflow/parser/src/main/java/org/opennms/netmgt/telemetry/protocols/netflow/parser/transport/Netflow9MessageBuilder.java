@@ -251,17 +251,19 @@ public class Netflow9MessageBuilder implements MessageBuilder {
 
         if (firstSwitched != null) {
             builder.setFirstSwitched(setLongValue(firstSwitched + bootTime));
+        } else {
+            // Some Cisco platforms also support absolute timestamps in NetFlow v9 (like defined in IPFIX). See NMS-13006
+            if (flowStartMilliseconds != null) {
+                builder.setFirstSwitched(setLongValue(flowStartMilliseconds));
+            }
         }
         if(lastSwitched != null) {
             builder.setLastSwitched(setLongValue(lastSwitched + bootTime));
-        }
-
-        // Some Cisco platforms also support absolute timestamps in NetFlow v9 (like defined in IPFIX). See NMS-13006
-        if (flowStartMilliseconds != null) {
-            builder.setFirstSwitched(setLongValue(flowStartMilliseconds));
-        }
-        if (flowEndMilliseconds != null) {
-            builder.setLastSwitched(setLongValue(flowEndMilliseconds));
+        } else {
+            // Some Cisco platforms also support absolute timestamps in NetFlow v9 (like defined in IPFIX). See NMS-13006
+            if (flowEndMilliseconds != null) {
+                builder.setLastSwitched(setLongValue(flowEndMilliseconds));
+            }
         }
 
         // Set Destination address and host name.

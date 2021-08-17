@@ -1,144 +1,64 @@
 
 = Elasticsearch Integration
 
-{page-component-title} persists/forwards certain data to Elasticsearch.
-
+{page-component-title} can persist/forward certain data to Elasticsearch.
 The following sections describe the configuration possibilities as well as the available features.
-
 Internally, all Elasticsearch integrations use the https://github.com/searchbox-io/Jest[Jest library] to access the Elasticsearch REST interface.
 
 [[ga-elasticsearch-integration-configuration]]
 == Configuration
 
 The location of the configuration file depends on the feature.
-For flows, find it in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
+For flows, find it in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 You can set the following properties:
 
-[options="header, %autowidth"]
+[options="header, autowidth"]
 |===
-| Property | Description | Required | Default
-
-| elasticUrl
-| URL(s) to Elasticsearch nodes.
-  Can either point directly to REST API or seed nodes.
-  The format is: `<host>:<port>`.
-  Comma separate multiple values.
-| required
-| `\http://localhost:9200`
-
-| elasticIndexStrategy
-| Index strategy for data, allowed values yearly, monthly, daily, hourly
-| optional
-| `daily`
-
-| globalElasticUser
-| Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
-| optional
-| -
-
-| globalElasticPassword
-| Password to use for all nodes, when X-Pack Security is configured.
-| optional
-| -
-
-| ignoreCertificates
-| Set this to ignore HTTPS/SSL/TLS certificates.
-| optional
-| false
-
-| defaultMaxTotalConnectionPerRoute
-| Sets the default maximum connections per route.
-  If a negative value is given, the value is ignored.
-| optional
-| `<available processors> * 2`
-
-| maxTotalConnection
-| Sets the default maximum total connections.
-  If a negative value is given, the value is ignored.
-| optional
-| `<max connections per route> * 3`
-
-| nodeDiscovery
-| Enable/disable node discovery.
-  Valid values are `true\|false`.
-| optional
-| `false`
-
-| nodeDiscoveryFrequency
-| Defines the frequency, in seconds, in which the nodes are rediscovered.
-  Must be set, if `discovery=true`
-| optional
-| -
-
-| proxy
-| Defines a proxy server for communicating with your Elasticsearch cluster.
-  Must be a valid URL.
-| optional
-| -
-
-| httpCompression
-| Defines that HTTP compression is enabled.
-| optional
-| -
-
-| retries
-| Defines how many times an operation is retried before considered failed.
-| optional
-| 0
-
-| retryCooldown
-| Defines the cool-down in ms to wait before retrying.
-  Value of `0` means no cool-down.
-  Value must be >= `0`.
-| optional
-| `500`
-
-| connTimeout
-| Defines the connection timeout in ms.
-| optional
-| `5000`
-
-| readTimeout
-| Defines the read timeout in ms.
-| optional
-| `30000`
-
-| bulkRetryCount
-| Defines the number of retries performed before a bulk operation is considered failed.
-  When bulk operations fail, only the failed items are retried.
-| optional
-| `5`
-
-| settings.index.number_of_shards
-| The number of primary shards that an index should have.
-  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
-| optional
-| -
-
-| settings.index.number_of_replicas
-| The number of replicas each primary shard has.
-  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
-| optional
-| -
-
-| settings.index.refresh_interval
-| How often to perform a refresh operation, which makes recent changes to the index visible to search.
-  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
-| optional
-| -
-
-| settings.index.routing_partition_size
-| The number of shards a custom routing value can go to.
-  Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
-| optional
-| -
-
-| indexPrefix
-| Prefix is prepended to the index and template names.
-  Used in cases where you want to share the same Elasticsearch cluster with many {page-component-title} instances.
-| optional
-| -
+| Property                               | Default                         | Description
+3+| *Required*
+| elasticUrl                             | \http://localhost:9200          | URL(s) to Elasticsearch nodes.
+                                                                             Can either point directly to REST API or seed nodes.
+                                                                             The format is: `<host>:<port>`.
+                                                                             Comma separate multiple values.
+3+| *Optional*
+| elasticIndexStrategy                   | daily                           | Index strategy for data. Allowed values: yearly, monthly, daily, hourly.
+| globalElasticUser                      | none                            | Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
+| globalElasticPassword                  | none                            | Password to use for all nodes, when X-Pack Security is configured.
+| ignoreCertificates                     | false                           | Set this to ignore HTTPS/SSL/TLS certificates.
+| defaultMaxTotalConnectionPerRoute      | <available processors> * 2      | Sets the default maximum connections per route.
+                                                                             Negative values are ignored.
+| maxTotalConnection                     | <max connections per route> * 3 | Sets the default maximum total connections.
+                                                                             Negative values are ignored.
+| nodeDiscovery                          | false                           | Enable/disable node discovery.
+                                                                             Valid values are `true\|false`.
+| nodeDiscoveryFrequency                 | none                            | Defines the frequency, in seconds, in which the nodes are rediscovered.
+                                                                             Must be set, if `discovery=true`
+| proxy                                  | none                            | Defines a proxy server for communicating with your Elasticsearch cluster.
+                                                                             Must be a valid URL.
+| httpCompression                        | none                            | Defines that HTTP compression is enabled.
+| retries                                | 0                               | Defines how many times an operation is retried before considered failed.
+| retryCooldown                          | 500                             | Defines the cool-down in ms to wait before retrying.
+                                                                             Value of 0 means no cool-down.
+                                                                             Value must be >= 0.
+| connTimeout                            | 5000                            | Defines the connection timeout in ms.
+| readTimeout                            | 30000                           | Defines the read timeout in ms.
+| bulkRetryCount                         | 5                               | Defines the number of retries performed before a bulk operation is considered failed.
+                                                                             When bulk operations fail, only the failed items are retried.
+| bulkSize                               | 1000                            | Number of flow documents to collect into a bulk operation before committing.
+                                                                             This is per thread. Set to `0` to disable bulking.
+| bulkFlushMs                            | 500                             | Timeout to flush bulk even if `bulkSize` wasn't reached.
+                                                                             This is per thread. Set to `0` to disable flushing.
+| settings.index.number_of_shards        | none                            | The number of primary shards that an index should have.
+                                                                             Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| settings.index.number_of_replicas      | none                            | The number of replicas each primary shard has.
+                                                                             Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| settings.index.refresh_interval        | none                            | How often to perform a refresh operation, which makes recent changes to the index visible to search.
+                                                                             Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| settings.index.routing_partition_size  | none                            | The number of shards a custom routing value can go to.
+                                                                             Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| indexPrefix                            | none                            | Prefix is prepended to the index and template names.
+                                                                             Used in cases where you want to share the same Elasticsearch cluster with many {page-component-title} instances.
 |===
 
 
@@ -146,8 +66,8 @@ TIP: If a configuration management tool is used, the properties file can be crea
 
 NOTE: If credentials are provided, preemptive authorization is used for all defined Elasticsearch nodes.
 
-.Configuration Example to Access Elasticsearch
-[source]
+.Configuration example to access Elasticsearch
+[source, properties]
 ----
 elasticUrl=http://elastic:9200
 elasticIndexStrategy=daily
@@ -158,15 +78,16 @@ globalElasticPassword=changeme
 == Credentials
 
 It is possible to define credentials for each Elasticsearch node individually.
-Credentials for each node must be stored in `$\{OPENNMS_HOME}/etc/elastic-credentials.xml`.
+Credentials for each node must be stored in `$OPENNMS_HOME/etc/elastic-credentials.xml`.
 
 .Custom credentials
-```xml
+[source, xml]
+----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <elastic-credentials>
     <credentials url="http://localhost:9200" username="ulf" password="ulf" />
     <credentials url="https://10.10.0.1:9333" username="ulf" password="flu" />
 </elastic-credentials>
-```
+----
 
-NOTE: Credentials are globally defined and will be used by each feature.
+NOTE: Credentials are globally defined and will be used by all features that connect to the specified URLs.

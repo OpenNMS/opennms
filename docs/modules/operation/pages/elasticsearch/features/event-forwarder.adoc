@@ -2,94 +2,70 @@
 = Event Forwarder
 
 The Event Forwarder (formerly known as the Elasticsearch REST plugin) forwards events to https://github.com/elastic/elasticsearch[Elasticsearch].
-
 The events in Elasticsearch can then be used for indexing, long time archival, plotting with Grafana, and browsing with Kibana.
-
-NOTE: This feature uses the Elasticsearch REST interface and can interact with cloud-hosted Elasticsearch instances.
 
 NOTE: If you use Kibana, make sure you are using the version that is compatible with your version of Elasticsearch.
 
 == Configuration
 
-The configuration is held in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+The configuration is held in `$OPENNMS_HOME/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
 Please refer to <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Configuring Elasticsearch>> for information on how to configure Elasticsearch connection settings.
 
 Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:
 
-[options="header, %autowidth"]
+.Optional parameters for the Elasticsearch event forwarder
+[options="header"]
+[cols="1,1,5"]
 |===
-| Parameter | Default Value | Required  | Description
-
-|`logEventDescription`
-| true
-| optional
-| Whether to forward the event description field to Elasticsearch. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
-
-|`archiveAssetData`
-| true
-| optional
-| If true, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms. These are included only where the values are not null or empty strings in the table.
-
-(asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid)
-
-|`groupOidParameters`
-| false
-| optional
-| If `true` all OID from the event parameters are stored in a single array `p_oids` instead of a flattened structue.
-
-|`logAllEvents`
-| false
-| optional
-| If changed to true, then archive all events even if they have not been persisted in the {page-component-title} database.
-
-|`batchSize`
-| 200
-| optional
-| Increase this value to enable batch inserts into Elasticsearch. This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
-
-|`batchInterval`
-| 500
-| optional
-| The maximum time interval in milliseconds between batch events (recommended: 500ms) when using a `batchSize` value greater than.
-
+| Parameter           | Default | Description
+| logEventDescription | true    | Whether to forward the event description field to Elasticsearch.
+                                  It can be disabled as it contains a long text field that can be redundant with the rest of the metadata included in the event.
+| archiveAssetData    | true    | If `true`, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms.
+                                  These are included only where the values are not null or empty strings in the table.+
+                                  asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid.
+| groupOidParameters  | false    | If `true`, all OIDs from the event parameters are stored in a single array `p_oids` instead of a flattened structure.
+| logAllEvents        | false    | If changed to `true`, then archive all events even if they have not been persisted in the {page-component-title} database.
+| batchSize           | 200      | Increase this value to enable batch inserts into Elasticsearch.
+                                   This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
+| batchInterval       | 500      | The maximum time interval in milliseconds between batch events (recommended: 500ms) when using a `batchSize` value greater than.
 |===
 
 Once you are sure everything is correctly configured, you can activate the Event Forwarder by logging into the OSGi console and installing the feature: `opennms-es-rest`.
 
 .OSGi login and installation of the Elasticsearch forwarder
-[source, shell]
+[source, console]
 ----
 ssh admin@localhost -p 8101
-feature:install opennms-es-rest
+karaf> feature:install opennms-es-rest
 ----
 
-== Loading Historical Events
+== Loading historical events
 
 It is possible to load historical {page-component-title} events into Elasticsearch from the {page-component-title} database using a Karaf Console command.
 The command uses the {page-component-title} Events REST interface to retrieve a set number of historical events and forward them to Elasticsearch.
-Because we are using the REST interface it is also possible to contact a remote {page-component-title} and download its events into Elasticsearch by using the correct remote URL and credentials.
+Because we are using the REST interface, it is also possible to contact a remote {page-component-title} and download its events into Elasticsearch by using the correct remote URL and credentials.
 
-The following example sends historic events to Elasticsearch using the Karaf Console:
-
+.Example sending historic events to Elasticsearch using the Karaf Console:
+[source, console]
 ----
 # open karaf command prompt using
 # ssh -p 8101 admin@localhost
 karaf> opennms:send-events-to-elasticsearch --username admin --password admin --url http://localhost:8980 --limit 10 --offset 0
 ----
 
-NOTE: For more details, consolidate the `--help` option of the command.
+TIP: For more details, consolidate the `--help` option of the command.
 
-== Index Definition
+== Index definition
 
 The index names used to store the events use the following form: `opennms-raw-events-<index-strategy>/type/id`
 
-For example (assuming an index strategy of monthly):
-
+.Sample index name using a monthly index strategy
+[source]
 ----
 opennms-events-raw-2017-01/eventdata/11549
 ----
 
-== Viewing Events Using Kibana Sense
+== Viewing events using Kibana Sense
 
 https://www.elastic.co/guide/en/sense/current/installing.html[Kibana Sense] is a Kibana app that lets you run queries directly against Elasticsearch.
 
@@ -97,8 +73,8 @@ If you install Kibana Sense, you can use the following commands to view the even
 You should review the https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
 [Elasticsearch REST API documentation] to understand how to specify searches.
 
-Example searches to use in Kibana Sense (you can copy the whole contents of this panel into Kibana Sense as a set of examples):
-
+.Example searches to use in Kibana Sense
+[source]
 ----
 # Search all the events indexes
 

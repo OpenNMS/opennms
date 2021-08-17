@@ -5,43 +5,45 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 
 [[ga-opennms-operation-newts-properties-general]]
 == General
-[options="header, %autowidth"]
+[options="header"]
+[cols="2,1,3"]
 |===
 | Name                                            | Default              | Description
-| `org.opennms.newts.config.keyspace`             | `newts`              | Name of the keyspace to use.
-| `org.opennms.newts.config.hostname`             | `localhost`          | IP address or hostnames of the Cassandra nodes. Separate multiple hosts by a comma.
-| `org.opennms.newts.config.port`                 | `9042`               | CQL port used to connect to the Cassandra nodes.
-| `org.opennms.newts.config.username`             | `cassandra`          | Username to use when connecting to Cassandra via CQL.
-| `org.opennms.newts.config.password`             | `cassandra`          | Password to use when connecting to Cassandra via CQL.
-| `org.opennms.newts.config.ssl`                  | `false`              | Enable/disable SSL when connecting to Cassandra.
-| `org.opennms.newts.config.core-connections-per-host`   | Driver default | Core number of connections per host.
-| `org.opennms.newts.config.max-connections-per-host`    | Driver default | Maximum number of connections per host.
-| `org.opennms.newts.config.max-requests-per-connection` | Driver default | Maximum number of requests that can be in-flight on a single connection at the same time.
-| `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for read operations.
+| org.opennms.newts.config.keyspace             | newts              | Name of the keyspace to use.
+| org.opennms.newts.config.hostname             | localhost          | IP address or hostnames of the Cassandra nodes. Separate multiple hosts by a comma.
+| org.opennms.newts.config.port                 | 9042               | CQL port used to connect to the Cassandra nodes.
+| org.opennms.newts.config.username             | cassandra          | Username to use when connecting to Cassandra via CQL.
+| org.opennms.newts.config.password             | cassandra          | Password to use when connecting to Cassandra via CQL.
+| org.opennms.newts.config.ssl                  | false              | Enable/disable SSL when connecting to Cassandra.
+| org.opennms.newts.config.core-connections-per-host   | Driver default | Core number of connections per host.
+| org.opennms.newts.config.max-connections-per-host    | Driver default | Maximum number of connections per host.
+| org.opennms.newts.config.max-requests-per-connection | Driver default | Maximum number of requests that can be in flight on a single connection at the same time.
+| org.opennms.newts.config.read_consistency     | ONE                | Consistency level for read operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
-| `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for write operations.
+| org.opennms.newts.config.write_consistency    | ANY                | Consistency level for write operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
-| `org.opennms.newts.config.max_batch_size`       | `16`                 | Maximum number of records to insert in a single transaction. Limited by the size of the Cassandra cluster's batch_size_fail_threshold_in_kb property.
-| `org.opennms.newts.config.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
-| `org.opennms.newts.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and inserted into Newts.
-| `org.opennms.newts.config.ttl`                  | `31540000`           | Number of seconds after which samples will automatically be deleted. Defaults to one year, in seconds.
-| `org.opennms.newts.config.resource_shard`       | `604800`             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days in seconds.
-| `org.opennms.newts.query.minimum_step`          | `300000`             | Minimum step size in milliseconds. Used to prevent large queries.
-| `org.opennms.newts.query.interval_divider`      | `2`                  | If no interval is specified in the query, the step will be divided into this many intervals when aggregating values.
-| `org.opennms.newts.query.heartbeat`             | `450000`             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5 times your largest collection interval.
-| `org.opennms.newts.query.parallelism`           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
-| `org.opennms.newts.config.cache.strategy`       | See below           | Canonical name of the class used for resource-level caching. See the table below for all of the available options.
-| `org.opennms.newts.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
-| `org.opennms.newts.nan_on_counter_wrap`         | `false`              | Disables the processing of counter wraps, replacing these with NANs instead.
-| `org.opennms.newts.config.cache.priming.disable`  | `false`            | Disables the cache primer, which preemptively loads the cache with indexed resources on start-up.
-| `org.opennms.newts.config.cache.priming.block_ms` | `120000`           | Block start-up for this many milliseconds while waiting for the cache to be primed.
+| org.opennms.newts.config.max_batch_size       | 16                 | Maximum number of records to insert in a single transaction. Limited by the size of the Cassandra cluster's batch_size_fail_threshold_in_kb property.
+| org.opennms.newts.config.ring_buffer_size     | 8192               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
+| org.opennms.newts.config.writer_threads       | 16                 | Number of threads used to pull samples from the ring buffer and inserted into Newts.
+| org.opennms.newts.config.ttl                  | 31540000           | Number of seconds after which samples will automatically be deleted. Defaults to one year, in seconds.
+| org.opennms.newts.config.resource_shard       | 604800             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days, in seconds.
+| org.opennms.newts.query.minimum_step          | 300000             | Minimum step size in milliseconds. Used to prevent large queries.
+| org.opennms.newts.query.interval_divider      | 2                  | If the query does not specify an interval, the step will be divided into this many intervals when aggregating values.
+| org.opennms.newts.query.heartbeat             | 450000             | Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5 times your largest collection interval.
+| org.opennms.newts.query.parallelism           | Number of cores      | Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
+| org.opennms.newts.config.cache.strategy       | See below           | Canonical name of the class used for resource-level caching. See the table below for all of the available options.
+| org.opennms.newts.config.cache.max_entries    | 8192               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
+| org.opennms.newts.nan_on_counter_wrap         | false              | Disables the processing of counter wraps, replacing these with NANs instead.
+| org.opennms.newts.config.cache.priming.disable  | false            | Disables the cache primer, which preemptively loads the cache with indexed resources on startup.
+| org.opennms.newts.config.cache.priming.block_ms | 120000           | Block startup for this many milliseconds while waiting for the cache to be primed.
                                                                            Set this value to `-1` to disable blocking.
                                                                            Set this value to `0` to block indefinitely waiting for all of the records to be read.
 |===
 
 Available caching strategies include:
 
-[options="header, %autowidth, footer"]
+[options="header"]
+[cols="1,3,1"]
 |===
 | Name                        | Class                                                                   | Default
 | In-Memory Cache             | `org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache` | Y
@@ -53,11 +55,12 @@ Available caching strategies include:
 
 When enabled, the following options can be used to configure the Redis-based cache.
 
-[options="header, %autowidth"]
+[options="header"]
+[cols="3,1,3"]
 |===
 | Name                                            | Default              | Description
-| `org.opennms.newts.config.cache.redis_hostname` | `localhost`          | IP address of hostname of the Redis server.
-| `org.opennms.newts.config.cache.redis_port`     | `6379`               | TCP port used to connect to the Redis server.
+| `org.opennms.newts.config.cache.redis_hostname` | localhost          | IP address of hostname of the Redis server.
+| `org.opennms.newts.config.cache.redis_port`     | 6379               | TCP port used to connect to the Redis server.
 |===
 
 == Recommendations
@@ -65,10 +68,10 @@ When enabled, the following options can be used to configure the Redis-based cac
 You will likely want to change the values of `cache.max_entries` and the `ring_buffer_size` to suit your installation.
 
 {page-component-title} caches metadata related to resources to avoid writing redundant records in Cassandra.
-If you are collecting data from a large number of resources, you should increase the `cache.max_entries` to reflect the number of resources you are collecting from, with a suitable buffer.
+If you are collecting data from a large number of resources, you should increase the cache.max_entries to reflect the number of resources you are collecting from, with a suitable buffer.
 
 The samples the collectors gather are temporarily stored in a ring buffer before they are persisted to Cassandra using Newts.
-You should increase the value of the `ring_buffer_size` if you expect large peaks of collectors returning at once or latency in persisting these to Cassandra.
+You should increase the value of the ring_buffer_size if you expect large peaks of collectors returning at once or latency in persisting these to Cassandra.
 However, note that the memory the ring buffer uses is reserved, and larger values may require an increased heap size.
 
 Newts uses cache priming to help reduce the number of records that need to be indexed after restarting {page-component-title}.

@@ -13,51 +13,51 @@ These charts can be configured and defined in the `trend-configuration.xml` file
 The following sample defines a Trend chart for displaying nodes with ongoing outages.
 
 .Sample Trend chart XML definition for displaying nodes with outages
-[source,XML]
+[source, xml]
 ----
-   <trend-definition name="nodes">
-        <title>Nodes</title> <1>
-        <subtitle>w/ Outages</subtitle> <2>
-        <visible>true</visible> <3>
-        <icon>fa-fire</icon> <4>
-        <trend-attributes> <5>
-            <trend-attribute key="sparkWidth" value="100%"/>
-            <trend-attribute key="sparkHeight" value="35"/>
-            <trend-attribute key="sparkChartRangeMin" value="0"/>
-            <trend-attribute key="sparkLineColor" value="white"/>
-            <trend-attribute key="sparkLineWidth" value="1.5"/>
-            <trend-attribute key="sparkFillColor" value="#88BB55"/>
-            <trend-attribute key="sparkSpotColor" value="white"/>
-            <trend-attribute key="sparkMinSpotColor" value="white"/>
-            <trend-attribute key="sparkMaxSpotColor" value="white"/>
-            <trend-attribute key="sparkSpotRadius" value="3"/>
-            <trend-attribute key="sparkHighlightSpotColor" value="white"/>
-            <trend-attribute key="sparkHighlightLineColor" value="white"/>
-        </trend-attributes>
-        <descriptionLink>outage/list.htm?outtype=current</descriptionLink> <6>
-        <description>${intValue[23]} NODES WITH OUTAGE(S)</description> <7>
-        <query> <8>
-            <![CDATA[
-                select (
-                    select
-                        count(distinct nodeid)
-                    from
-                        outages o, events e
-                    where
-                        e.eventid = o.svclosteventid
-                        and iflostservice < E
-                        and (ifregainedservice is null
-                            or ifregainedservice > E)
-                ) from (
-                    select
-                        now() - interval '1 hour' * (O + 1) AS S,
-                        now() - interval '1 hour' * O as E
-                    from
-                        generateseries(0, 23) as O
-                ) I order by S;
-            ]]>
-        </query>
-    </trend-definition>
+<trend-definition name="nodes">
+    <title>Nodes</title> <1>
+    <subtitle>w/ Outages</subtitle> <2>
+    <visible>true</visible> <3>
+    <icon>fa-fire</icon> <4>
+    <trend-attributes> <5>
+        <trend-attribute key="sparkWidth" value="100%"/>
+        <trend-attribute key="sparkHeight" value="35"/>
+        <trend-attribute key="sparkChartRangeMin" value="0"/>
+        <trend-attribute key="sparkLineColor" value="white"/>
+        <trend-attribute key="sparkLineWidth" value="1.5"/>
+        <trend-attribute key="sparkFillColor" value="#88BB55"/>
+        <trend-attribute key="sparkSpotColor" value="white"/>
+        <trend-attribute key="sparkMinSpotColor" value="white"/>
+        <trend-attribute key="sparkMaxSpotColor" value="white"/>
+        <trend-attribute key="sparkSpotRadius" value="3"/>
+        <trend-attribute key="sparkHighlightSpotColor" value="white"/>
+        <trend-attribute key="sparkHighlightLineColor" value="white"/>
+    </trend-attributes>
+    <descriptionLink>outage/list.htm?outtype=current</descriptionLink> <6>
+    <description>${intValue[23]} NODES WITH OUTAGE(S)</description> <7>
+    <query> <8>
+        <![CDATA[
+            select (
+                select
+                    count(distinct nodeid)
+                from
+                    outages o, events e
+                where
+                    e.eventid = o.svclosteventid
+                    and iflostservice < E
+                    and (ifregainedservice is null
+                        or ifregainedservice > E)
+            ) from (
+                select
+                    now() - interval '1 hour' * (O + 1) AS S,
+                    now() - interval '1 hour' * O as E
+                from
+                    generateseries(0, 23) as O
+            ) I order by S;
+        ]]>
+    </query>
+</trend-definition>
 ----
 
 <1> title of the Trend chart, see below for supported variable substitutions
@@ -105,4 +105,3 @@ You can also display a single graph in your JSP files by including the file `/tr
     <jsp:param name="name" value="example"/>
 </jsp:include>
 ----
-

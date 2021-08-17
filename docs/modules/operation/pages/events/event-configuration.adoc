@@ -43,22 +43,22 @@ These paths are resolved relative to the `$\{OPENNMS_HOME}/etc` directory; absol
 Each *tributary file* contains a top-level `<events>` element with one or more `<event>` child elements.
 Consider the following event definition:
 
-[source,xml]
+[source, xml]
 ----
-   <event>
-      <uei>uei.opennms.org/nodes/nodeLostService</uei>
-      <event-label>OpenNMS-defined node event: nodeLostService</event-label>
-      <descr>&lt;p>A %service% outage was identified on interface
-            %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
-            A new outage record has been created and service-level
-            availability calculations will be impacted until this outage is
-            resolved.&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            %service% outage identified on interface %interface%.
-        </logmsg>
-      <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
-   </event>
+<event>
+    <uei>uei.opennms.org/nodes/nodeLostService</uei>
+    <event-label>OpenNMS-defined node event: nodeLostService</event-label>
+    <descr>&lt;p>A %service% outage was identified on interface
+        %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
+        A new outage record has been created and service-level
+        availability calculations will be impacted until this outage is
+        resolved.&lt;/p></descr>
+    <logmsg dest="logndisplay">
+        %service% outage identified on interface %interface%.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+</event>
 ----
 
 Every event definition has this same basic structure.
@@ -117,6 +117,8 @@ Not all events will have values for all tokens, and some refer specifically to i
     The host of the SNMP agent that generated the event.
 `%id%`::
     The SNMP enterprise OID for the event.
+`%trapoid%`::
+    Full trap OID for the event.
 `%idtext%`::
     The decoded (human-readable) SNMP Enterprise OID for the event.
 `%ifalias%`::
@@ -209,7 +211,7 @@ To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the fo
 
 [source,xml]
 ----
-        <KeyValuePair key="eventd"               value="WARN" />
+<KeyValuePair key="eventd"               value="WARN" />
 ----
 
 Changes to `log42.xml` will take effect within 60 seconds with no extra action needed.
