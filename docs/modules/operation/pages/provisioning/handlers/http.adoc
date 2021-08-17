@@ -2,7 +2,7 @@
 [[http-handler]]
 = HTTP Handler
 
-The HTTP handler is used to import a properly-formatted requisition definition from an XML file stored remotely on a web server.
+The HTTP handler imports a properly-formatted requisition definition from an XML file stored remotely on a web server.
 
 Examples:
 
@@ -20,11 +20,11 @@ http://myinventory.server.org/nodes.cgi
 requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
 ----
 
-TIP: When using the generic handler, the address should be "URL encoded".
+TIP: When using the generic handler, the address should be URL encoded.
 
 == Using the OpenNMS Provisioning Integration Server (PRIS)
 
-The https://github.com/OpenNMS/opennms-provisioning-integration-server[OpenNMS Provisioning Integration Server (PRIS)] is a stand-alone service the is able to convert an existing list into the proper XML format for import.
+The https://github.com/OpenNMS/opennms-provisioning-integration-server[OpenNMS Provisioning Integration Server (PRIS)] is a stand-alone service that can convert an existing list into the proper XML format for import.
 
 [source]
 ----

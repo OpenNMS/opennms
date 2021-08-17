@@ -1,6 +1,6 @@
 = WMI Service Detector
 
-Use the WMI Detector to detect the availability of WmiConfiguration on a device when scanning it using Provisiond.
+Use the WMI detector to detect the availability of WmiConfiguration on a device when scanning it using Provisiond.
 By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, checking for `OK` from the Status object.
 
 == Detector facts
@@ -25,8 +25,8 @@ By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, 
 | wmiObject   | Status               | A WMI object is technically a member of a WMI property set. +
                                         Using the previous example of `Win32_ComputerSystem`, this class contains a variety of properties that we can look at and poll. +
                                         The default WMI service uses the `Status` property to determine if the system is running and if WMI is available.
-| wmiWqlStr   | NOTSET               | Microsoft WMI also implements an `ExecQuery` method which is more common in Windows scripting but less common in OpenNMS polling and monitoring. +
-                                        WQL is a simple, SQL-like, syntax for querying WMI classes, properties, and instances. +
+| wmiWqlStr   | NOTSET               | Microsoft WMI also implements an `ExecQuery` method that is more common in Windows scripting but less common in OpenNMS polling and monitoring. +
+                                        WQL is a simple, SQL-like, syntax to query WMI classes, properties, and instances. +
                                         Here's an example of a WQL query that you could use to discover whether a Windows service is running: +
                                         `Select State From Win32_Service Where Name='Server'`
 | compVal     | OK                   | The value to use when performing a comparison against the wmiObject.
@@ -41,11 +41,11 @@ By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, 
                                         The NOOP operation is a special case in which the Manager will always return a result code of "OK". +
                                         This is typically used in scenarios where the existence of a class or property is more interesting than the contents of the property. +
                                         We use this in the collector to check and ensure that WMI is available before attempting to collect data.
-| matchType     | all                | The match type configuration tells the system how you want to handle multiple instance results. +
+| matchType     | all                | The match type configuration tells the system how to handle multiple instance results. +
                                         Available match types are: +
                                         * *all*: all instances must comply to the compare operation. +
                                         * *none*: no instances should comply with the compare operation. +
-                                        * *some*:  one or more must comply with the compare operation. +
+                                        * *some*: one or more must comply with the compare operation. +
                                         * *one*: only one instance can comply with the compare operation.
 | namespace     | OK                 | Every WMI class exists in a namespace. +
                                         The default namespace for most common classes is `root/cimv2`. +

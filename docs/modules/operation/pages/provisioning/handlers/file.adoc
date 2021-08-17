@@ -2,7 +2,7 @@
 [[file-handler]]
 = File Handler
 
-The file handler is used to import a properly-formatted requisition definition from an XML file stored locally on the server.
+The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.
 
 Examples:
 

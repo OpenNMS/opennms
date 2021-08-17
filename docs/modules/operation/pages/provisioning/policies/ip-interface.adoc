@@ -1,6 +1,6 @@
 = IP Interface Policy
 
-The `Matching IP Interface` policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
+The `Matching IP Interface` policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether they will be forced to be managed or unmanaged.
 
 The two required parameters for this policy are action and matchBehavior.
 
@@ -16,9 +16,9 @@ The two required parameters for this policy are action and matchBehavior.
 | UNMANAGE           | Add interface to node but do not process pollerd and collectd tasks for the interface.
 |===
 
-Any subsequent scan of the node or re-imports of the requisition will force this policy to be applied.
+Any subsequent scan of the node or reimports of the requisition will force this policy to be applied.
 IP Interface entities that already exist and match a policy will not be deleted, unless the `UNMANAGE` action is specified.
-Existing interfaces can be deleted by recreating the node in the Requisition screen (simply change the foreign ID and re-import the group) or by using the ReST API:
+Delete existing interfaces by recreating the node in the Requisition UI (simply change the foreign ID and reimport the group) or by using the REST API:
 
 [source, bash]
 ----

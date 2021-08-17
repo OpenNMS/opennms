@@ -50,7 +50,7 @@ Scripts running in `eval` mode must return a string matching a status code of `O
 
 A script with more than one line of logic requires a `run-type` of `exec`.
 Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the `results` object.
-Additionally, the `results` object can also carry a `"reason":"message"` entry that is used in non `OK` states.
+Additionally, the `results` object can also carry a `"reason":"message"` entry that is used in non-`OK` states.
 
 == Commonly used language settings
 
@@ -146,7 +146,7 @@ if (testFile.exists()) {
 === Jython example
 
 The Jython (Java implementation of Python) language requires an additional library.
-Copy a compatible `jython-x.y.z.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Jython available for the BSF Detector.
+Copy a compatible `jython-x.y.z.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Jython available for the BSF detector.
 
 .Jython example for `run-type` of `exec`
 [source, xml]

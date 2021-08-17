@@ -36,9 +36,9 @@ opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 === Configuration
 
 The configuration of the Provisioning system allows the definition of zero or more import requisitions, each with their own cron-based schedule.
-This allows for for automatic importing from various sources intended for integration with external URLs such as http and/or dns protocol handler.
+This allows for automatic importing from various sources intended for integration with external URLs such as HTTP and/or DNS protocol handler.
 A default configuration is provided in the {page-component-title} `etc/` directory and is called: `provisiond-configuration.xml`.
-This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at the stroke of midnight.
+This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at midnight.
 Not very practical, but is a good example to get you started.
 
 [source, xml]

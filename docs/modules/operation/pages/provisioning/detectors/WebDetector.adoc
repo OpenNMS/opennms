@@ -17,16 +17,16 @@ Use this detector to find and assign services based on HTTP.
 |===
 | Parameter       | Default            | Description
 | authEnable      | false              | Whether to enable basic authentication.
-| authPassword    | admin              | Password that is required for authentication.
+| authPassword    | admin              | Password required for authentication.
 | authPreemtive   | true               | Whether to send basic authentication even if the site did not ask for it.
-| authUser        | admin              | Username that is required for authentication.
+| authUser        | admin              | Username required for authentication.
 | headers         | none               | Optional headers to pass in the HTTP request.
 | ipMatch         | none               | Matches against specific IP addresses or patterns.
                                          Use filters here to match single addresses or ranges. +
                                          Substring match by default (see note below regarding regular expressions).
 | path            | /                  | The relative URL to call in the request.
-| port            | 80                 | Port of the web server detector is connecting to.
-| queryString     | none               | The query string to add to the URL after a ? (e.g., foo=bar&baz=zot).
+| port            | 80                 | Port of the web server the detector is connecting to.
+| queryString     | none               | The query string to add to the URL after a ? (for example, foo=bar&baz=zot).
 | responseRange   | 100-399            | Range for allowed HTTP error codes from the response.
 | responseText    | none               | Text to look for in the response body.
                                          This will be matched against every line, and it will be considered a success at the first match. +

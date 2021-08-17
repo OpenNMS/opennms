@@ -1,6 +1,6 @@
 = SNMP Profiles
 
-SNMP Profiles are prefabricated sets of SNMP configuration which are automatically "fitted" against eligible IP addresses at provisioning time.
+SNMP Profiles are prefabricated sets of SNMP configuration that are automatically "fitted" against eligible IP addresses at provisioning time.
 Each profile may have a unique label and an optional filter expression.
 If the filter expression is present, it will be evaluated to check whether a given IP address or reverse-lookup hostname passes the filter.
 A profile with a filter expression will be fitted to a given IP address only if the filter expression evaluates true against that IP address.

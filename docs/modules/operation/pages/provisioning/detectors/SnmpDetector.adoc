@@ -24,12 +24,12 @@ The detector binds a service with a given service name when a particular SNMP OI
 | retry            | agent config       | Number of retries to detect the service.
 | timeout          | agent config       | Timeout in milliseconds to wait for a response from the SNMP agent.
 | vbvalue          | none               | Expected return value to detect the service. +
-                                          If not specified, the service is detected if the SNMP OID returned any kind of valid value. +
+                                          If not specified, the service is detected if the SNMP OID returns any valid value. +
                                           Evaluated as a link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Regular Expression].
 | hex               | false             | Set `true` if the data is from type HEX-String.
 | isTable           | false             | Set `true` if detector should evaluate SNMP tables.
 | matchType         | exist             | Set match type to evaluate the expected value in the SNMP table. +
-                                          *exist*: the expected #`vbalue`# is ignored and the service is detected if the given table under OID exists. +
+                                          *exist*: ignore the expected #`vbalue`# and detect the service if the given table under OID exists. +
                                           *all*: all values in the table must match against expected `vbalue` to detect the service. +
                                           *any*: at least one value in the table must match against expected `vbalue` to detect the service. +
                                           *none*: none of the values should match against expected value to detect service.
@@ -54,16 +54,16 @@ We create a detector with the name `Dell-OMSA-Global-State` for this requisition
 | oid       | .1.3.6.1.4.1.674.10892.1.200.10.1.2.1
 |===
 
-When the requisition Server synchronizes with the service, `Dell-OMSA-Global-State` will be detected if it supports the given SNMP OID.
+When the requisition server synchronizes with the service, `Dell-OMSA-Global-State` will be detected if it supports the given SNMP OID.
 
 == Example using SNMP tables
 
-Assume you have a HP server farm and want to monitor the status of logical drives over SNMP provided from the HP Insight Manager.
-The status for logical drives is provided in a SNMP Table under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
-The service should be automatically assigned to all servers exposing the given SNMP OID.
+Assume you have an HP server farm and want to monitor the status of logical drives over SNMP provided from the HP Insight Manager.
+The status for logical drives is provided in a SNMP table under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
+The service should be assigned automatically to all servers exposing the given SNMP OID.
 
-For provisioning, we have a requisition named `Server` that contains all server of our data center.
-A detector with the name `HP-Insight-Drive-Logical` for this requisition is created with the following parameter:
+For provisioning, we have a requisition named `Server` that contains all servers in our data center.
+A detector with the name `HP-Insight-Drive-Logical` for this requisition is created with the following parameters:
 
 .Parameters for the SNMP detector
 [options="header, autowidth"]
@@ -74,4 +74,4 @@ A detector with the name `HP-Insight-Drive-Logical` for this requisition is crea
 | isTable   | true
 |===
 
-When the requisition `Server` is synchronized, the service `HP-Insight-Drive-Logical` will be detected in case they support the given SNMP OID table.
+When the requisition `Server` is synchronized, the service `HP-Insight-Drive-Logical` will be detected if it supports the given SNMP OID table.

@@ -4,10 +4,10 @@ This detector tests the running state of one or more processes.
 It does this via SNMP by inspecting the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] hrSwRunTable.
 The test matches a given process as hrSwRunName to determine if it exists on the node.
 
-This detector uses SNMP to accomplish its work.
+Since this detector uses SNMP to accomplish its work, systems against when you use it must have an SNMP agent that supports the HOST-RESOURCES-MIB installed and configured. 
 Therefore, systems against which you use it must have an SNMP agent supporting the HOST-RESOURCES-MIB installed and configured.
 Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ship with Microsoft Windows, support this MIB.
-Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be somewhat spotty.
+Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be spotty.
 
 NOTE: This detector implements the configuration parameters inherited from the <<provisioning/detectors/SnmpDetector.adoc, SNMP Detector>>.
 
@@ -24,7 +24,7 @@ NOTE: This detector implements the configuration parameters inherited from the <
 [options="header, autowidth"]
 |===
 | Parameter       | Default | Description
-| serviceToDetect | none    | Process name that should be detected
+| serviceToDetect | none    | Process name to detect.
 |===
 
 == Examples

@@ -69,7 +69,7 @@ NOTE: The screen displays the list of service detectors and a tab to view and de
 Provisiond scans the services in the order in which the detectors appear in the list.
 
 . Click the appropriate icon to edit, delete, or move a service detector.
-.. You can also add parameters to a detector, including retries, timeout, port, etc., by clicking the Edit icon and choosing *Add Parameter*.
+.. You can also add parameters to a detector, including retries, timeout, port, and so on, by clicking the Edit icon and choosing *Add Parameter*.
 . Click *Save*.
 . If desired, update the scan interval using one of the following:
 

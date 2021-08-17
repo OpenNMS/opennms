@@ -32,7 +32,7 @@ NOTE: To configure a discovery scan to run once, select *Run Single Discovery Sc
 . Repeat this process for each requisition you want to provision.
 
 [[ga-provisioning-auto-discovery-detectors]]
-== Automatic Discovery Detectors
+== Automatic discovery detectors
 
 Auto discovery with detectors lets users specify the services to detect, in addition to ICMP ping, for the specified IP addresses to be discovered.
 Discovery will send a new suspect event only when the specified detectors succeed.

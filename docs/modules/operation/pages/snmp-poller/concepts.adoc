@@ -1,7 +1,7 @@
 [[snmp-interface-poller]]
 = SNMP Interface Poller
 
-{page-component-title} can monitor the status of a SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
+{page-component-title} can monitor the status of an SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
 
 The SNMP interface poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
 On a configurable time interval, a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:

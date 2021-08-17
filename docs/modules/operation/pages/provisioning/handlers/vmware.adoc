@@ -7,14 +7,14 @@ The adapter also lets {page-component-title} collect additional performance metr
 
 == Preparing VMware credentials
 
-To allow communication between OpenNMS and VMware, it is necessary to create a user and a role for authentication and permissions.
+To allow communication between OpenNMS and VMware, you must create a user and a role for authentication and permissions.
 You can either create a new local user within your vCenter server or use an account that has been defined in an external authentication system that is setup to access your vCenter instance.
 
 .Create a new vCenter role:
 . Log into vCenter Server.
 . Go to menu:Home[Administration > Roles].
-. Select the built in "Read Only" role.
-. Select the option to Clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
+. Select the built-in "Read Only" role.
+. Select the option to clone the role and name the new role "OpenNMS-Access" (or another name to your preference).
 . Edit the new role to add the menu:Host[CIM > CIM Interaction] permission.
 . Click OK to save the role.
 
@@ -22,15 +22,15 @@ You can either create a new local user within your vCenter server or use an acco
 . Navigate to menu:Home[Inventory > Hosts and Clusters] within your vCenter.
 . Right click on the container to apply the permission.
 If you want {page-component-title} to import all entities, this would be the root vCenter level.
-If you only want to import a subset of nodes, you would select a specific datacenter, cluster, or host.
+To import only a subset of nodes, select a specific data center, cluster, or host.
 . Select the Add Permission option from the right-click menu.
-. Enter the name of the user account to use for connecting to vCenter during the import process.
+. Enter the name of the user account to use to connect to vCenter during the import process.
 . Select the "OpenNMS-Access" role (or whatever you called it in the previous step).
 . Save the role assignment and make sure to propagate to child objects, if prompted.
 
 == Provide credentials to {page-component-title}
 
-Now that vCenter has been configured to allow access to read objects, it is time to setup {page-component-title} to be able to connect to vCenter.
+Now that vCenter has been configured to allow access to read objects, it is time to set up {page-component-title} to be able to connect to vCenter.
 In the `$OPENNMS_HOME/etc/vmware-config.xml` file, add a line with the hostname, user, and password to connect to your vCenter server.
 If you have multiple vCenter servers, you can specify multiple `<vmware-server />` objects in this file.
 
@@ -44,7 +44,7 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 
 == Configure VMware requisition
 
-The final step is to setup a requisition definition in `$OPENNMS_HOME/etc/provisiond-configuration.xml`.
+The final step is to set up a requisition definition in `$OPENNMS_HOME/etc/provisiond-configuration.xml`.
 Using the `vmware://` prefix, create a `<requisition-def>` object for the vCenter server.
 
 [source, xml]
@@ -57,12 +57,12 @@ Using the `vmware://` prefix, create a `<requisition-def>` object for the vCente
 
 <1> The name of the requisition to appear within {page-component-title}.
 A suggestion is to use the name of the vCenter server, but it can be whatever label you want to use.
-<2> The hostname defined in the `provisiond-configuration.xml` must match the same case as the hostname is entered in the `vmware-config.xml`.
-<3> The schedule of how frequently the import should re-run.
-In this example, the import would run every day at 23:42.
+<2> The hostname defined in the `provisiond-configuration.xml` must match the same case as the hostname entered in the `vmware-config.xml`.
+<3> The schedule of how frequently the import should rerun.
+In this example, the import runs every day at 23:42.
 
 By default, all running hosts and virtual machines will be detected and added to the requisition.
-This behavior can be changed by adding additional parameters to the `import-url-resource` parameter in the requisition definition.
+Change this behavior by adding additional parameters to the `import-url-resource` parameter in the requisition definition.
 
 Do not forget to restart services after making changes to the `provisiond-configuration.xml` file.
 
@@ -72,21 +72,21 @@ Do not forget to restart services after making changes to the `provisiond-config
 [cols="2,1,4"]
 |===
 | Parameter              | Default | Description
-| importIPv4Only         | false   | Imports only IPv4 Interfaces
-| importIPv6Only         | false   | Imports only IPv6 Interfaces
-| topologyNetworks       | true    | Add the network information to the VMWare Topology
-| topologyDatastores     | true    | Add the datastores information to the VMWare Topology
-| topologyPortGroups     | false   | Add the port groups information (distributed virtual switches) to the VMWare Topology
-| importVMPoweredOn      | true    | Defines if powered on machines should be imported.
-| importVMPoweredOff     | false   | Defines if powered off machines should be imported.
+| importIPv4Only         | false   | Imports only IPv4 Interfaces.
+| importIPv6Only         | false   | Imports only IPv6 Interfaces.
+| topologyNetworks       | true    | Add the network information to the VMWare topology.
+| topologyDatastores     | true    | Add the datastores information to the VMWare topology.
+| topologyPortGroups     | false   | Add the port groups information (distributed virtual switches) to the VMWare topology.
+| importVMPoweredOn      | true    | Defines if powered-on machines should be imported.
+| importVMPoweredOff     | false   | Defines if powered-off machines should be imported.
 | importVMSuspended      | false   | Defines if suspended machines should be imported.
-| importVMAll            | false   | Import all virtual machines and ignores importVMPoweredOn, importVMPoweredOff and importVMSuspended parameters
+| importVMAll            | false   | Imports all virtual machines and ignores importVMPoweredOn, importVMPoweredOff, and importVMSuspended parameters.
 | importVMOnly           | false   | Imports only virtual machines and ignores hosts.
-| importHostPoweredOn    | true    | Defines if powered on host systems should be imported.
-| importHostPoweredOff   | false   | Defines if powered off host systems should be imported.
+| importHostPoweredOn    | true    | Defines if powered-on host systems should be imported.
+| importHostPoweredOff   | false   | Defines if powered-off host systems should be imported.
 | importHostStandBy      | false   | Defines if stand-by host systems should be imported.
-| importHostUnknown      | false   | Defines if host systems with a unknown power state should be imported.
-| importHostAll          | false   | Imports all host systems and ignores importHostPoweredOn, importHostPoweredOff and importHostSuspended parameters
+| importHostUnknown      | false   | Defines if host systems with an unknown power state should be imported.
+| importHostAll          | false   | Imports all host systems and ignores importHostPoweredOn, importHostPoweredOff, and importHostSuspended parameters.
 | importHostOnly         | false   | Imports only host systems and ignores VMs.
 | virtualMachineServices | VMware-ManagedEntity,VMware-VirtualMachine                  | Monitor services to assign to imported virtual machines.
                                                                                          Values should be comma separated.
@@ -94,13 +94,13 @@ Do not forget to restart services after making changes to the `provisiond-config
                                                                                          Values should be comma separated.
 | timeout                | 3000    | VMware connection timeout, in milliseconds.
 | cimTimeout             | 3000    | Timeout, in milliseconds, used to test interface addresses for a reachable CIM service.
-                                     Only increase this value if you have problems discovering CIM services on host systems.
+                                     Increase this value only if you have problems discovering CIM services on host systems.
 |===
 
-IMPORTANT: `importVMOnly` and `importHostOnly` can't both be true simultaneously. +
-`importIPv4Only` and `importIPv6Only` can't both be true simultaneously.
+IMPORTANT: `importVMOnly` and `importHostOnly` cannot both be true simultaneously. +
+`importIPv4Only` and `importIPv6Only` cannot both be true simultaneously.
 
-NOTE: If you do not import powered off or standby entities, they will be removed and re-added to {page-component-title} based on their power state.
+NOTE: If you do not import powered-off or standby entities, they will be removed and re-added to {page-component-title} based on their power state.
 This can cause their database ID to change over time.
 Enabling the https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[storeByForeignSource] setting can help make sure collected metrics are kept properly.
 
@@ -109,7 +109,7 @@ Enabling the https://opennms.discourse.group/t/storing-data-with-foreign-sources
 == Provision a subset of VMware entities
 
 If you want to provision an arbitrary selection of VMware entities, you can specify a key-value pair to match objects that have a specific attribute in vCenter.
-The key to lookup is a user defined attributes for entities being imported.
+The key to lookup is a user-defined attribute for entities being imported.
 If the value provided starts with a `~`, the value will be treated as a regular expression.
 Only one key-value pair can be specified per requisition.
 
