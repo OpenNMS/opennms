@@ -61,6 +61,10 @@ For more complicated integrations, we also have a new API -- `AlarmLifecycleList
 
 In addition to publishing events, alarms, and node inventory to Kafka, we now link:https://issues.opennms.org/browse/NMS-10215[publish collected time-series data to the Kafka bus] as well.
 
+==== Minion
+
+The Sink API on the Minion has been enhanced to support buffering messages to the filesystem in cases where ActiveMQ or Kafka get disconnected from OpenNMS.
+
 ==== Sentinel
 
 In addition to the Minion, we have added a new container-based subsystem called "Sentinel."
