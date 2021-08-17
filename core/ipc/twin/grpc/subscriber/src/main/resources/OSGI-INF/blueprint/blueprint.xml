@@ -23,6 +23,7 @@
           init-method="start" destroy-method="shutdown">
         <argument ref="minionIdentity"/>
         <argument ref="configAdmin"/>
+        <argument value="${port}"/>
     </bean>
 
 </blueprint>
