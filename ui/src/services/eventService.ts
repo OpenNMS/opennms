@@ -1,5 +1,5 @@
 import { v2 } from './axiosInstances'
-import { QueryParameters, EventApiResponse } from '../types'
+import { QueryParameters, EventApiResponse } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/events'

@@ -1,5 +1,5 @@
 import { rest } from './axiosInstances'
-import { QueryParameters, IfServiceApiResponse } from '../types'
+import { QueryParameters, IfServiceApiResponse } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/ifservices'

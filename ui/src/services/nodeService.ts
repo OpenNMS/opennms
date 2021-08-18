@@ -6,7 +6,7 @@ import {
   IpInterfaceApiResponse,
   NodeAvailability,
   OutagesApiResponse
-} from '../types'
+} from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { orderBy } from 'lodash'
 

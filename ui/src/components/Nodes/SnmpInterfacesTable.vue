@@ -54,7 +54,7 @@ import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import useQueryParameters from '../../hooks/useQueryParams'
+import useQueryParameters from '@/hooks/useQueryParams'
 
 const store = useStore()
 const route = useRoute()

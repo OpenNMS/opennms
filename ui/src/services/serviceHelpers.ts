@@ -1,4 +1,4 @@
-import { QueryParameters } from '../types'
+import { QueryParameters } from '@/types'
 
 const queryParametersHandler = (queryParameters: QueryParameters, endpoint: string): string => {
   let modifiedEndpoint = endpoint + '?'

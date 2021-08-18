@@ -19,7 +19,7 @@
     
 <script setup lang="ts">
   import Button from 'primevue/button'
-  import Logo from '../../assets/OpenNMS_Horizontal-Logo_Dark-BG.svg'
+  import Logo from '@/assets/OpenNMS_Horizontal-Logo_Dark-BG.svg'
   import Search from './Search.vue'
   import { useRouter } from 'vue-router'
 

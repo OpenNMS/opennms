@@ -1,4 +1,4 @@
-import { IfService } from '../../types'
+import { IfService } from '@/types'
 import { State } from './state'
 
 const SAVE_IF_SERVICES_TO_STATE = (state: State, ifServices: IfService[]) => {

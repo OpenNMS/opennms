@@ -1,5 +1,5 @@
-import API from "../../services"
-import { QueryParameters, VuexContext } from '../../types'
+import API from "@/services"
+import { QueryParameters, VuexContext } from '@/types'
 
 const getEvents = async (context: VuexContext, queryParameters?: QueryParameters) => {
   const resp = await API.getEvents(queryParameters)

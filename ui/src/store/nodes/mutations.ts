@@ -1,4 +1,4 @@
-import { IpInterface, Node, NodeAvailability, Outage, SnmpInterface } from '../../types'
+import { IpInterface, Node, NodeAvailability, Outage, SnmpInterface } from '@/types'
 import { State } from './state'
 
 const SAVE_TOTAL_COUNT = (state: State, totalCount: number) => {
