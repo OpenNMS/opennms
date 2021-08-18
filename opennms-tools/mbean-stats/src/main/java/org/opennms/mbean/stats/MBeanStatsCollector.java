@@ -34,6 +34,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -41,19 +46,20 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.Attribute;
-import javax.management.AttributeList;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.sql.DataSource;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class MBeanStatsCollector implements BundleActivator {
     private static final String PKG_NAME = "org.opennms.netmgt.eventd";
     private boolean stop = false;
-    private int interval = 5; //minutes
+    private int interval = 1; //minutes
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
@@ -71,14 +77,19 @@ public class MBeanStatsCollector implements BundleActivator {
                 MBeanAttributeInfo[] attributes = info.getAttributes();
                 String[] attNames = Arrays.stream(attributes).map(i -> i.getName()).toArray(String[]::new);
                 List<Attribute> attList = server.getAttributes(mbeanName, attNames).asList();
-                for(Attribute att: attList) {
+                for (Attribute att : attList) {
                     sb.append(att.getName() + ",");
                 }
                 sb.append("\n\t");
-                for(Attribute att: attList) {
+                for (Attribute att : attList) {
                     sb.append(att.getValue() + ",");
                 }
                 sb.append("\n");
+            }
+            DataSource dataSource = getDataSource(bundleContext);
+            if (dataSource != null) {
+                sb.append("Query from monitoringSystems \n");
+                sb.append(processResultSet(queryDB(dataSource, "select * from monitoringSystems;")));
             }
             sb.append("\n\n");
             writeData(sb.toString());
@@ -89,6 +100,36 @@ public class MBeanStatsCollector implements BundleActivator {
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
         stop = true;
+    }
+
+    private DataSource getDataSource(BundleContext context) {
+        Class<DataSource> type = DataSource.class;
+        ServiceReference<DataSource> ref = context.getServiceReference(type);
+        if(ref != null) {
+            return context.getService(ref);
+        }
+        return null;
+    }
+
+    private ResultSet queryDB(DataSource dataSource, String sql) throws SQLException {
+        Connection conn = dataSource.getConnection();
+        PreparedStatement st = conn.prepareStatement(sql);
+        return st.executeQuery();
+    }
+
+    private String processResultSet(ResultSet rs) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        ResultSetMetaData metaData = rs.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            sb.append(metaData.getColumnName(i) + ",");
+        }
+        sb.append("\n");
+        while(rs.next()) {
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                sb.append(rs.getObject(i) + ",");
+            }
+        }
+        return sb.toString();
     }
 
     private void writeData(String data) throws IOException {
