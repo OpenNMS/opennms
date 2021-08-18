@@ -54,8 +54,8 @@ import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
-import useQueryParameters from '../../hooks/useQueryParams'
-import { Event } from '../../types'
+import useQueryParameters from '@/hooks/useQueryParams'
+import { Event } from '@/types'
 import dayjs from 'dayjs'
 
 const store = useStore()

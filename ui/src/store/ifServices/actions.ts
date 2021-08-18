@@ -1,5 +1,5 @@
-import API from "../../services"
-import { QueryParameters, VuexContext } from '../../types'
+import API from "@/services"
+import { QueryParameters, VuexContext } from '@/types'
 
 const getNodeIfServices = async (context: VuexContext, queryParameters?: QueryParameters) => {
   const resp = await API.getNodeIfServices(queryParameters)

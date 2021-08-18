@@ -1,4 +1,4 @@
-import { SearchResultResponse } from '../../types'
+import { SearchResultResponse } from '@/types'
 
 export interface State {
   searchResults: SearchResultResponse[]

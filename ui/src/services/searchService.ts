@@ -1,5 +1,5 @@
 import { v2 } from './axiosInstances'
-import { SearchResultResponse } from '../types'
+import { SearchResultResponse } from '@/types'
 
 const endpoint = '/search'
 

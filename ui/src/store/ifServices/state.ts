@@ -1,4 +1,4 @@
-import { IfService } from '../../types'
+import { IfService } from '@/types'
 
 export interface State {
   ifServices: IfService[]

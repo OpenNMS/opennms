@@ -65,8 +65,8 @@ import InputText from 'primevue/inputtext'
 import Column from 'primevue/column'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
-import { QueryParameters } from '../../types'
-import useQueryParameters from '../../hooks/useQueryParams'
+import { QueryParameters } from '@/types'
+import useQueryParameters from '@/hooks/useQueryParams'
 
 const store = useStore()
 const loading = ref(false)

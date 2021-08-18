@@ -1,4 +1,4 @@
-import { QueryParameters, SortProps } from '../types'
+import { QueryParameters, SortProps } from '@/types'
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 

@@ -1,4 +1,4 @@
-import { IpInterface, Node, NodeAvailability, Outage, SnmpInterface } from '../../types'
+import { IpInterface, Node, NodeAvailability, Outage, SnmpInterface } from '@/types'
 
 export interface State {
   nodes: Node[]
