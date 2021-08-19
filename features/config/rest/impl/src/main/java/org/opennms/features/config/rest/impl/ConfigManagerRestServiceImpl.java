@@ -28,14 +28,18 @@
 
 package org.opennms.features.config.rest.impl;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -44,38 +48,73 @@ import java.util.Set;
  * <b>Currently for testing OSGI integration</b>
  */
 public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
-
-    @Autowired
-    private ConfigStoreDao configStoreDao;
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigManagerRestServiceImpl.class);
+    private String BASE_PATH = "/rest/cm/";
 
     @Autowired
     private ConfigurationManagerService configurationManagerService;
-
-    public void setConfigStoreDao(ConfigStoreDao configStoreDao) {
-        this.configStoreDao = configStoreDao;
-    }
 
     public void setConfigurationManagerService(ConfigurationManagerService configurationManagerService) {
         this.configurationManagerService = configurationManagerService;
     }
 
     @Override
-    public Set<String> listConfigNames() {
-       return (Set<String>) configStoreDao.getConfigNames().get();
+    public Response getOpenApiSchema(final String configName) {
+        try {
+            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
+            SwaggerConverter swaggerConverter = new SwaggerConverter();
+            OpenAPI openapi = swaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
+                    BASE_PATH + schema.get().getName());
+            return Response.ok(openapi)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Content-Type, api_key, Authorization").build();
+        } catch (IOException | RuntimeException e) {
+            LOG.error(e.getMessage());
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    public Response getOpenApiSchemaStr(final String configName) {
+        try {
+            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
+            SwaggerConverter swaggerConverter = new SwaggerConverter();
+            String outStr = swaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
+                    BASE_PATH + schema.get().getName());
+            return Response.ok(outStr)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Content-Type, api_key, Authorization").build();
+        } catch (IOException | RuntimeException e) {
+            LOG.error(e.getMessage());
+            return Response.serverError().build();
+        }
+    }
+
+    @Override
+    public Response listConfigs() {
+        try {
+            return Response.ok(configurationManagerService.getConfigNames()).build();
+        } catch (IOException | RuntimeException e) {
+            LOG.error(e.getMessage());
+            return Response.serverError().build();
+        }
     }
 
     /**
      * get or create a fake schema and return
-     * @param configName
+     *
+     * @param serviceName
      * @return
      */
     @Override
-    public ConfigSchema getSchema(String configName){
-        try{
-            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            if(schema.isEmpty()){
-                configurationManagerService.registerSchema(configName, 29,0,0,ProvisiondConfiguration.class);
-                schema = configurationManagerService.getRegisteredSchema(configName);
+    public ConfigSchema getSchema(String serviceName) {
+        try {
+            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(serviceName);
+            if (schema.isEmpty()) {
+                configurationManagerService.registerSchema(serviceName, 29, 0, 0, ProvisiondConfiguration.class);
+                schema = configurationManagerService.getRegisteredSchema(serviceName);
             }
             return schema.get();
         } catch (Exception e) {
@@ -86,12 +125,12 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public ConfigData getConfigFile(String configName, String filename) {
+    public ConfigData getConfigFile(String serviceName, String filename) {
         return null;
     }
 
     @Override
-    public ConfigData getView(String configName, String filename, Map<String, Object> inputParameters) {
+    public ConfigData getView(String serviceName, String filename, Map<String, Object> inputParameters) {
         return null;
     }
 }
