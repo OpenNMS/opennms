@@ -2,13 +2,6 @@
 [[ga-opennms-operation-daemon-config-files-pollerd]]
 = Pollerd
 
-[options="header"]
-[cols="1,3"]
-|===
-| Internal Daemon Name | Reload Event
-| Pollerd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Pollerd'`
-|===
-
 .Pollerd configuration file overview
 [options="header"]
 [cols="2,1,1,3"]

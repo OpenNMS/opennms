@@ -1,0 +1,11 @@
+
+[[ga-opennms-operation-daemon-config-files-trapd]]
+= Trapd
+
+.Trapd configuration file overview
+[options="header"]
+[cols="2,1,1,3"]
+|===
+| File                        | Restart Required | Reload Event | Description
+| trapd-configuration.xml  | no              | yes           | Configure generic behavior of Trapd; for example, port numbers with IP addresses to listen for traps
+|===

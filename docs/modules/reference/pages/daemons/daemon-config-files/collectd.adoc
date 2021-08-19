@@ -1,0 +1,15 @@
+
+[[ga-opennms-operation-daemon-config-files-collectd]]
+= Collectd
+
+.Collectd configuration file overview
+[options="header"]
+[cols="2,1,1,3"]
+|===
+| File                              | Restart Required | Reload Event   | Description
+| collectd-configuration.xml        | yes              | yes            | Restart is required in case new collection services are created or removed.
+                                                                          A reload command changed configuration parameters of existing monitors.
+| jdbc-datacollection-config.xml    | yes              | no             | Restart is required in case of any changes
+| http-datacollection-config.xml    | yes              | no             | Restart is required in case of any changes
+| xml-datacollection-config.xml     | yes              | no             | Restart is required in case of any changes
+|===

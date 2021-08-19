@@ -1,0 +1,50 @@
+= List of daemons
+
+.List of daemons
+[options="header"]
+[cols="1,3,2"]
+|===
+| Name | Description
+| instrumentation |
+| access-point-monitor |
+| ackd |
+| actiond | Action daemon
+| alarmd | Alarm daemon
+| asterisk-gateway |
+| archiver |
+| bsmd | Business Service Monitor daemon
+| collectd | Data collection daemon
+| correlator| 
+| discovery | Dicovery daemon
+| eventd | Event daemon
+| event-translator |
+| icmp |
+| ipc |
+| jetty-server |
+| enlinkd | Enhanced link daemon
+| manager |
+| map |
+| minion |
+| notifd | Notification daemon
+| oss-qosd |
+| oss-qosdrx |
+| passive |
+| perspectivepollerd |
+| poller | Poller daemon
+| provisiond | Provision daemon
+| queued |
+| reportd | Report daemon
+| reports |
+| rtc |
+| statsd | Statistic daemon
+| scriptd | Script daemon
+| snmp |
+| snmp-poller | SNMP Poller daemon
+| syslogd | Syslog daemon
+| telemetryd | Telemetry daemon
+| tl1d |
+| trapd | Trap daemon
+| trouble-ticketer |
+| vacuumd | Vacuum daemon
+| web |
+|===

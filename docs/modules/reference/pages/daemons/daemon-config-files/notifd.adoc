@@ -2,13 +2,6 @@
 [[ga-opennms-operation-daemon-config-files-notifd]]
 = Notifd
 
-[options="header"]
-[cols="1,3"]
-|===
-| Internal Daemon Name | Reload Event
-| Notifd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Notifd'`
-|===
-
 .Notifd configuration file overview
 [options="header"]
 [cols="2,1,1,3"]

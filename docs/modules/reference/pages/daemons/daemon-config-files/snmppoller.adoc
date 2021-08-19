@@ -16,3 +16,10 @@
 | File                                       | Restart Required | Reload Event | Description
 | snmp-interface-poller-configuration.xml  | no               | yes          | Change how and when polling is performed globally or define fine-grained settings for specific packages.
 |===
+
+.Example reload command
+[source, shell]
+----
+cd $\{OPENNMS_HOME}/bin
+./send-event.pl uei.opennms.org/internal/reloadSnmpPollerConfig
+----
