@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.service</groupId>
     <artifactId>org.opennms.features.config.service.api</artifactId>
-    <name>OpenNMS :: Features :: Config Manager :: Service :: API</name>
+    <name>OpenNMS :: Features :: Config :: Service :: API</name>
     <packaging>bundle</packaging>
     <build>
         <plugins>

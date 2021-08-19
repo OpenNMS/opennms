@@ -28,19 +28,17 @@
 
 package org.opennms.features.config.rest.api;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Set;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 @Path("/configManager")
 @Produces("application/json")
@@ -50,8 +48,16 @@ import javax.ws.rs.core.MediaType;
  */
 public interface ConfigManagerRestService {
     @GET
-    @Produces(value={MediaType.APPLICATION_JSON})
-    Set<String> listConfigNames();
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    Response listConfigs();
+
+    @GET
+    @Path("/schema/{configName}")
+    Response getOpenApiSchema(@PathParam("configName") String config);
+
+    @GET
+    @Path("/schemaStr/{configName}")
+    Response getOpenApiSchemaStr(@PathParam("configName") String config);
 
     @GET
     @Path("/{configName}")
