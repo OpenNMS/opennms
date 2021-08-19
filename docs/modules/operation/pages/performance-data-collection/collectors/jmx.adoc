@@ -21,29 +21,71 @@ Attributes are extracted from the available MBeans.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter            | Description                                                                            | Default
+| Parameter
+| Description
+| Default
+
 3+|*Required*
-| collection           | The name of the JMX Collection to use.                                                 | n/a
-3+|
-*Optional*
-| thresholding-enabled | Whether to test collected performance data against thresholds.                         | true
-| retry                | Number of retries before failing.                                                      | 3
-| friendlyName         | Name of the path to store the metrics.                                                 | Value of the port, or `jsr160` if no port is set.
-| factory              | The password strategy to use.
-                            Supported values are: +
-                            STANDARD (for authentication) +
-                            PASSWORD_CLEAR (same as STANDARD) +
-                            SASL (if secure connection is required)                                             | STANDARD
-| url                  | The connection url to reach JMX metrics. +
-                            Example:  `service:jmx:rmi:localhost:18980` +
-                            Use `$\{ipaddr}` to substitute the IP address: `service:jmx:rmi:$\{ipaddr}:18980`.  | n/a
-| username             | The username, if authentication is required.                                           | n/a
-| password             | The password, if authentication is required.                                           | n/a
-| port                 | *Deprecated*. JMX port.                                                                | 1099
-| protocol             | *Deprecated*. Protocol used in the JMX connection string.                              | rmi
-| urlPath              | *Deprecated*. Path used in JMX connection string.                                      | /jmxrmi
-| rmiServerPort        | *Deprecated*. RMI port.                                                                | 45444
-| remoteJMX            | *Deprecated*. Use an alternative JMX URL scheme.                                       | false
+
+| collection
+| The name of the JMX Collection to use.
+| n/a
+
+3+|*Optional*
+
+| thresholding-enabled
+| Whether to test collected performance data against thresholds.
+| true
+
+| retry
+| Number of retries before failing.
+| 3
+
+| friendlyName
+| Name of the path to store the metrics.
+| Value of the port, or `jsr160` if no port is set.
+
+| factory
+| The password strategy to use.
+Supported values are: +
+STANDARD (for authentication) +
+PASSWORD_CLEAR (same as STANDARD) +
+SASL (if secure connection is required)
+| STANDARD
+
+| url
+| The connection url to reach JMX metrics. +
+Example:  `service:jmx:rmi:localhost:18980` +
+Use `$\{ipaddr}` to substitute the IP address: `service:jmx:rmi:$\{ipaddr}:18980`.
+| n/a
+
+| username
+| The username, if authentication is required.
+| n/a
+
+| password
+| The password, if authentication is required.
+| n/a
+
+| port
+| *Deprecated*. JMX port.
+| 1099
+
+| protocol
+| *Deprecated*. Protocol used in the JMX connection string.
+| rmi
+
+| urlPath
+| *Deprecated*. Path used in JMX connection string.
+| /jmxrmi
+
+| rmiServerPort
+| *Deprecated*. RMI port.
+| 45444
+
+| remoteJMX
+| *Deprecated*. Use an alternative JMX URL
+| false
 |===
 
 NOTE: Replace the deprecated parameters port, protocol, urlPath, rmiServerPort, and remoteJMX with the url parameter.
