@@ -1,0 +1,127 @@
+.p-jc-start {
+    justify-content: flex-start;
+}
+
+.p-jc-end {
+    justify-content: flex-end;
+}
+
+.p-jc-center {
+    justify-content: center;
+}
+
+.p-jc-between {
+    justify-content: space-between;
+}
+
+.p-jc-around {
+    justify-content: space-around;
+}
+
+.p-jc-evenly {
+    justify-content: space-evenly;
+}
+
+@media screen and (min-width: $sm) {
+    .p-jc-sm-start {
+        justify-content: flex-start;
+    }
+    
+    .p-jc-sm-end {
+        justify-content: flex-end;
+    }
+    
+    .p-jc-sm-center {
+        justify-content: center;
+    }
+    
+    .p-jc-sm-between {
+        justify-content: space-between;
+    }
+    
+    .p-jc-sm-around {
+        justify-content: space-around;
+    }
+
+    .p-jc-sm-evenly {
+        justify-content: space-evenly;
+    }
+}
+
+@media screen and (min-width: $md) {
+    .p-jc-md-start {
+        justify-content: flex-start;
+    }
+    
+    .p-jc-md-end {
+        justify-content: flex-end;
+    }
+    
+    .p-jc-md-center {
+        justify-content: center;
+    }
+    
+    .p-jc-md-between {
+        justify-content: space-between;
+    }
+    
+    .p-jc-md-around {
+        justify-content: space-around;
+    }
+
+    .p-jc-md-evenly {
+        justify-content: space-evenly;
+    }
+}
+
+@media screen and (min-width: $lg) {
+    .p-jc-lg-start {
+        justify-content: flex-start;
+    }
+    
+    .p-jc-lg-end {
+        justify-content: flex-end;
+    }
+    
+    .p-jc-lg-center {
+        justify-content: center;
+    }
+    
+    .p-jc-lg-between {
+        justify-content: space-between;
+    }
+    
+    .p-jc-lg-around {
+        justify-content: space-around;
+    }
+
+    .p-jc-lg-evenly {
+        justify-content: space-evenly;
+    }
+}
+
+@media screen and (min-width: $xl) {
+    .p-jc-xl-start {
+        justify-content: flex-start;
+    }
+    
+    .p-jc-xl-end {
+        justify-content: flex-end;
+    }
+    
+    .p-jc-xl-center {
+        justify-content: center;
+    }
+    
+    .p-jc-xl-between {
+        justify-content: space-between;
+    }
+    
+    .p-jc-xl-around {
+        justify-content: space-around;
+    }
+
+    .p-jc-xl-evenly {
+        justify-content: space-evenly;
+    }
+}

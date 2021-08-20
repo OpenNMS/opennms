@@ -1,0 +1,107 @@
+.p-as-start {
+    align-self: start;
+}
+
+.p-as-end {
+    align-self: flex-end;
+}
+
+.p-as-center {
+    align-self: center;
+}
+
+.p-as-baseline {
+    align-self: baseline;
+}
+
+.p-as-stretch {
+    align-self: stretch;
+}
+
+@media screen and (min-width: $sm) {
+    .p-as-sm-start {
+        align-self: start;
+    }
+    
+    .p-as-sm-end {
+        align-self: flex-end;
+    }
+    
+    .p-as-sm-center {
+        align-self: center;
+    }
+    
+    .p-as-sm-baseline {
+        align-self: baseline;
+    }
+    
+    .p-as-sm-stretch {
+        align-self: stretch;
+    }
+}
+
+@media screen and (min-width: $md) {
+    .p-as-md-start {
+        align-self: start;
+    }
+    
+    .p-as-md-end {
+        align-self: flex-end;
+    }
+    
+    .p-as-md-center {
+        align-self: center;
+    }
+    
+    .p-as-md-baseline {
+        align-self: baseline;
+    }
+    
+    .p-as-md-stretch {
+        align-self: stretch;
+    }
+}
+
+@media screen and (min-width: $lg) {
+    .p-as-lg-start {
+        align-self: start;
+    }
+    
+    .p-as-lg-end {
+        align-self: flex-end;
+    }
+    
+    .p-as-lg-center {
+        align-self: center;
+    }
+    
+    .p-as-lg-baseline {
+        align-self: baseline;
+    }
+    
+    .p-as-lg-stretch {
+        align-self: stretch;
+    }
+}
+
+@media screen and (min-width: $xl) {
+    .p-as-xl-start {
+        align-self: start;
+    }
+    
+    .p-as-xl-end {
+        align-self: flex-end;
+    }
+    
+    .p-as-xl-center {
+        align-self: center;
+    }
+    
+    .p-as-xl-baseline {
+        align-self: baseline;
+    }
+    
+    .p-as-xl-stretch {
+        align-self: stretch;
+    }
+}

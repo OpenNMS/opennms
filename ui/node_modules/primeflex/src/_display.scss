@@ -1,0 +1,153 @@
+.p-d-none {
+    display: none !important;
+}
+
+.p-d-inline {
+    display: inline !important;
+}
+
+.p-d-inline-block {
+    display: inline-block !important;
+}
+
+.p-d-block {
+    display: block !important;
+}
+
+.p-d-flex {
+    display: flex !important;
+}
+
+.p-d-inline-flex {
+    display: inline-flex !important;
+}
+
+@media screen and (min-width: $sm) {
+    .p-d-sm-none {
+        display: none !important;
+    }
+    
+    .p-d-sm-inline {
+        display: inline !important;
+    }
+    
+    .p-d-sm-inline-block {
+        display: inline-block !important;
+    }
+    
+    .p-d-sm-block {
+        display: block !important;
+    }
+    
+    .p-d-sm-flex {
+        display: flex !important;
+    }
+    
+    .p-d-sm-inline-flex {
+        display: inline-flex !important;
+    }
+}
+
+@media screen and (min-width: $md) {
+    .p-d-md-none {
+        display: none !important;
+    }
+    
+    .p-d-md-inline {
+        display: inline !important;
+    }
+    
+    .p-d-md-inline-block {
+        display: inline-block !important;
+    }
+    
+    .p-d-md-block {
+        display: block !important;
+    }
+    
+    .p-d-md-flex {
+        display: flex !important;
+    }
+    
+    .p-d-md-inline-flex {
+        display: inline-flex !important;
+    }
+}
+
+@media screen and (min-width: $lg) {
+    .p-d-lg-none {
+        display: none !important;
+    }
+    
+    .p-d-lg-inline {
+        display: inline !important;
+    }
+    
+    .p-d-lg-inline-block {
+        display: inline-block !important;
+    }
+    
+    .p-d-lg-block {
+        display: block !important;
+    }
+    
+    .p-d-lg-flex {
+        display: flex !important;
+    }
+    
+    .p-d-lg-inline-flex {
+        display: inline-flex !important;
+    }
+}
+
+@media screen and (min-width: $xl) {
+    .p-d-xl-none {
+        display: none !important;
+    }
+    
+    .p-d-xl-inline {
+        display: inline !important;
+    }
+    
+    .p-d-xl-inline-block {
+        display: inline-block !important;
+    }
+    
+    .p-d-xl-block {
+        display: block !important;
+    }
+    
+    .p-d-xl-flex {
+        display: flex !important;
+    }
+    
+    .p-d-xl-inline-flex {
+        display: inline-flex !important;
+    }
+}
+
+@media print {
+    .p-d-print-none {
+        display: none !important;
+    }
+    
+    .p-d-print-inline {
+        display: inline !important;
+    }
+    
+    .p-d-print-inline-block {
+        display: inline-block !important;
+    }
+    
+    .p-d-print-block {
+        display: block !important;
+    }
+    
+    .p-d-print-flex {
+        display: flex !important;
+    }
+    
+    .p-d-print-inline-flex {
+        display: inline-flex !important;
+    }
+}

@@ -1,0 +1,86 @@
+.p-field {
+    margin-bottom: $fieldMargin;
+}
+
+.p-field > label {
+    display: inline-block;
+    margin-bottom: $fieldLabelMargin;
+}
+
+.p-field.p-grid > label {
+    display: flex;
+    align-items: center;
+}
+
+.p-field > small {
+    margin-top: $helperTextMargin;
+}
+
+.p-field.p-grid,
+.p-formgrid.p-grid {
+    margin-top: 0;
+}
+
+.p-field.p-grid .p-col-fixed,
+.p-formgrid.p-grid .p-col-fixed,
+.p-field.p-grid .p-col,
+.p-formgrid.p-grid .p-col,
+.p-field.p-grid .p-col-1, 
+.p-formgrid.p-grid .p-col-1, 
+.p-field.p-grid .p-col-2,
+.p-formgrid.p-grid .p-col-2, 
+.p-field.p-grid .p-col-3, 
+.p-formgrid.p-grid .p-col-3, 
+.p-field.p-grid .p-col-4, 
+.p-formgrid.p-grid .p-col-4, 
+.p-field.p-grid .p-col-5, 
+.p-formgrid.p-grid .p-col-5, 
+.p-field.p-grid .p-col-6, 
+.p-formgrid.p-grid .p-col-6,
+.p-field.p-grid .p-col-7, 
+.p-formgrid.p-grid .p-col-7, 
+.p-field.p-grid .p-col-8, 
+.p-formgrid.p-grid .p-col-8, 
+.p-field.p-grid .p-col-9, 
+.p-formgrid.p-grid .p-col-9, 
+.p-field.p-grid .p-col-10, 
+.p-formgrid.p-grid .p-col-10, 
+.p-field.p-grid .p-col-11, 
+.p-formgrid.p-grid .p-col-11, 
+.p-field.p-grid .p-col-12,
+.p-formgrid.p-grid .p-col-12 {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.p-formgroup-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.p-formgroup-inline .p-field,
+.p-formgroup-inline .p-field-checkbox,
+.p-formgroup-inline .p-field-radiobutton {
+    margin-right: $fieldMargin;
+}
+
+.p-formgroup-inline .p-field > label,
+.p-formgroup-inline .p-field-checkbox > label,
+.p-formgroup-inline .p-field-radiobutton > label {
+    margin-right: $fieldLabelMargin;
+    margin-bottom: 0;
+}
+
+.p-field-checkbox,
+.p-field-radiobutton {
+    margin-bottom: $fieldMargin;
+    display: flex;
+    align-items: center;
+}
+
+.p-field-checkbox > label,
+.p-field-radiobutton > label {
+    margin-left: $fieldLabelMargin;
+    line-height: 1;
+}

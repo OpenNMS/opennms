@@ -1,0 +1,125 @@
+.p-text-justify {
+    text-align: justify !important;
+}
+
+.p-text-left {
+    text-align: left !important;
+}
+
+.p-text-right {
+    text-align: right !important;
+}
+
+.p-text-center {
+    text-align: center !important;
+}
+
+.p-text-nowrap {
+    white-space: nowrap !important;
+}
+
+.p-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.p-text-lowercase {
+    text-transform: lowercase !important;
+}
+
+.p-text-uppercase {
+    text-transform: uppercase !important;
+}
+
+.p-text-capitalize {
+    text-transform: capitalize !important;
+}
+
+.p-text-bold {
+    font-weight: 700 !important;
+}
+
+.p-text-normal {
+    font-weight: 400 !important;
+}
+
+.p-text-light {
+    font-weight: 300 !important;
+}
+
+.p-text-italic {
+    font-style: italic !important;
+}
+
+@media screen and (min-width: $sm) {
+    .p-text-sm-justify {
+        text-align: justify !important;
+    }
+    
+    .p-text-sm-left {
+        text-align: left !important;
+    }
+    
+    .p-text-sm-right {
+        text-align: right !important;
+    }
+    
+    .p-text-sm-center {
+        text-align: center !important;
+    }
+}
+
+@media screen and (min-width: $md) {
+    .p-text-md-justify {
+        text-align: justify !important;
+    }
+    
+    .p-text-md-left {
+        text-align: left !important;
+    }
+    
+    .p-text-md-right {
+        text-align: right !important;
+    }
+    
+    .p-text-md-center {
+        text-align: center !important;
+    }
+}
+
+@media screen and (min-width: $lg) {
+    .p-text-lg-justify {
+        text-align: justify !important;
+    }
+    
+    .p-text-lg-left {
+        text-align: left !important;
+    }
+    
+    .p-text-lg-right {
+        text-align: right !important;
+    }
+    
+    .p-text-lg-center {
+        text-align: center !important;
+    }
+}
+
+@media screen and (min-width: $xl) {
+    .p-text-xl-justify {
+        text-align: justify !important;
+    }
+    
+    .p-text-xl-left {
+        text-align: left !important;
+    }
+    
+    .p-text-xl-right {
+        text-align: right !important;
+    }
+    
+    .p-text-xl-center {
+        text-align: center !important;
+    }
+}
