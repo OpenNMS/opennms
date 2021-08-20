@@ -1,8 +1,9 @@
 <template>
             <InputText
-              cmclass="sm"
+              id="inputText01"
+              primeClass="lg"
               type="text"
-              placeholder="Enter text"
+              placeholder="Please Enter Text"
               v-model="show"
             />
             <p>Input Text :: {{show}}</p>

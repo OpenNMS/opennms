@@ -1,8 +1,9 @@
 <template>
     <InputText
+        :id="id"
         :type="type"
         :placeholder="placeholder"
-        :class="cmclass === 'sm' ? 'p-inputtext-sm' : (cmclass === 'lg' ? 'p-inputtext-lg' : 'p-inputtext')"
+        :class="primeClass === 'sm' ? 'p-inputtext-sm' : (primeClass === 'lg' ? 'p-inputtext-lg' : 'p-inputtext')"
     />
 </template> 
 
@@ -11,9 +12,12 @@
 import InputText from 'primevue/inputtext';
 import { defineProps, defineEmits } from "vue";
 
-let enteredText;
 
 const props = defineProps({
+    id: {
+        type: String,
+        required: false
+    },
     type: {
         type: String,
         required: true
@@ -22,7 +26,7 @@ const props = defineProps({
         type: String,
         required: false
     },
-    cmclass: {
+    primeClass: {
         type: String,
         required: false
     }
