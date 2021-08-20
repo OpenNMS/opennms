@@ -44,6 +44,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,6 +56,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -85,7 +88,6 @@ import liquibase.exception.ChangeLogParseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.parser.ChangeLogParserFactory;
 import liquibase.resource.ResourceAccessor;
-import liquibase.util.StringUtils;
 
 /**
  * 
@@ -687,7 +689,10 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         final long start = System.currentTimeMillis();
 
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-        changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(Migrator.getLiquibaseContexts(), ",")));
+        Collection<String> contexts = Arrays.stream(Migrator.getLiquibaseContexts().split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        changeLogParameters.setContexts(new Contexts(contexts));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
         List<URI> seenChangeLogs = new LinkedList<>();
@@ -703,7 +708,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 URI uri = resource.createRelative(c.getFilePath()).getURI();
                 if (!seenChangeLogs.contains(uri)) {
                     seenChangeLogs.add(uri);
-                    for (InputStream s : accessor.getResourcesAsStream(c.getFilePath())) {
+                    for (InputStream s : accessor.openStreams(null, c.getFilePath())) {
                         DigestUtils.updateDigest(md, s);
                     }
                 }

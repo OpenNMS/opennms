@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.exception.ValidationErrors;
-import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
@@ -43,7 +43,7 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
 public class SetSequenceGenerator extends AbstractSqlGenerator<SetSequenceStatement> {
-    private static final Logger LOG = LogService.getLog(SetSequenceGenerator.class);
+    private static final Logger LOG = Scope.getCurrentScope().getLog(SetSequenceGenerator.class);
     private final String m_tempTableName = "t" + Integer.toHexString(new Random().nextInt());
 
     @Override

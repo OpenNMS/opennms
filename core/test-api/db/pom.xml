@@ -86,6 +86,7 @@
       <scope>compile</scope>
     </dependency>
     <!-- test dependencies -->
+    <!-- Does not exist in 4.4.3 anymore TODO: Patrick remove
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
@@ -98,7 +99,7 @@
           <artifactId>logback-classic</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>

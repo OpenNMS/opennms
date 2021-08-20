@@ -28,13 +28,16 @@
 
 package org.opennms.core.schema;
 
-import liquibase.resource.ResourceAccessor;
-import org.springframework.core.io.Resource;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collections;
-import java.util.Set;
+import java.util.SortedSet;
+
+import org.springframework.core.io.Resource;
+
+import liquibase.resource.InputStreamList;
+import liquibase.resource.ResourceAccessor;
 
 public class ExistingResourceAccessor implements ResourceAccessor {
     private final Resource m_resource;
@@ -48,22 +51,32 @@ public class ExistingResourceAccessor implements ResourceAccessor {
     }
 
     @Override
-    public Set<InputStream> getResourcesAsStream(String path) throws IOException {
+    public InputStreamList openStreams(String relativeTo, String streamPath) throws IOException {
+        InputStreamList list = new InputStreamList();
+        InputStream stream = openStream(relativeTo, streamPath);
+        if (stream != null) {
+            list.add(URI.create(streamPath), stream);
+        }
+        return list;
+    }
+
+    @Override
+    public InputStream openStream(String relativeTo, String streamPath) throws IOException {
         if (m_resource == null) {
-            return Collections.emptySet();
+            return null;
         } else {
-            return Collections.singleton(m_resource.createRelative(path).getInputStream());
+            return m_resource.createRelative(streamPath).getInputStream();
         }
     }
 
     @Override
-    public Set<String> list(String relativeTo, String path, boolean includeFiles, boolean includeDirectories, boolean recursive) throws IOException {
+    public SortedSet<String> list(String relativeTo, String path, boolean includeFiles, boolean includeDirectories, boolean recursive) throws IOException {
         throw new UnsupportedOperationException("Unnecessary; not used in temporary database resource access.");
     }
 
     @Override
-    public ClassLoader toClassLoader() {
-        throw new UnsupportedOperationException("Unnecessary; not used in temporary database resource access.");
+    public SortedSet<String> describeLocations() {
+        return Collections.emptySortedSet();
     }
 
     @Override
