@@ -15,13 +15,25 @@ A summary what the detector is doing.
 [options="header, autowidth"]
 [cols="1,1,4"]
 |===
-| Parameter        | Default | Description
+| Parameter
+| Description
+| Default
+
 3+| *Required*
-| my parameter 1   | none     | Placeholder for the first required monitor parameter description.
-                                One sentence per line.
-                                If you have a very long description, make a soft break at line 120.
+
+| my parameter 1
+| Placeholder for the first required monitor parameter description.
+One column per line, with a blank line between rows.
+One sentence per line, if multiple sentences for the cell.
+If you have a very long description, make a soft break at line 120.
+| none
+
 3+| *Optional*
-| `my parameter 2` | value    | Placeholder for the second optional monitor parameter description.
+
+| my parameter 2
+| Placeholder for the second optional monitor parameter description.
+| value
+
 |===
 
 ==== Examples

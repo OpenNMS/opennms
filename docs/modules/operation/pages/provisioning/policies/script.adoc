@@ -2,7 +2,7 @@
 = Script Policy
 
 This policy lets you use Groovy scripts to modify provisioned node data.
-These scripts have to be placed in the `$OPENNMS_HOME/etc/script-policies` directory.
+These scripts have to be placed in the `$\{OPENNMS_HOME}/etc/script-policies` directory.
 An example would be to change of the node's primary interface or location.
 The script will be invoked for each matching node.
 

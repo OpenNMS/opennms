@@ -1,4 +1,4 @@
-= BSF detector
+= BSF Detector
 
 The BSF Detector lets you run arbitrary scripts using the Bean Scripting Framework to determine the existence of a service.
 This can be a script written in any of the languages BSF supports.
@@ -16,23 +16,43 @@ The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variable
 == Configuration and use
 
 .Optional parameters for the BSF service detector
-[options="header, autowidth"]
-[cols="1,1,4"]
+[options="header"]
+[cols="1,3a,1"]
 |===
-| Parameter      | Default | Description
-| fileName       | none    | The path to the file on the OpenNMS server which contains the BSF-compatible script to run.
-| langClass      | none    | The short name of the language the script is written in. Choices: +
-                             * jython +
-                             * beanshell +
-                             * groovy
-| bsfEngine      | none    | The BSF engine to use when running the script. Choices: +
-                             * bsh.util.BeanShellBSFEngine +
-                             * org.codehaus.groovy.bsf.GroovyEngine +
-                             * org.apache.bsf.engines.jython.JythonEngine
-| fileExtensions | none    | A comma-separated list of file extensions to consider a valid script for this BSF instance.
-| runType        | eval    | Mode to run the BSF script. Choices: +
-                             * `eval` - expects the script to print the OK/NOK status for validation +
-                             * `exec` - expects the script to manipulate the provided results hashmap directly
+| Parameter
+| Description
+| Default
+
+| fileName
+| The path to the file on the OpenNMS server which contains the BSF-compatible script to run.
+| none
+
+| langClass
+| The short name of the language the script is written in. Choices:
+
+* jython
+* beanshell
+* groovy
+| none
+
+| bsfEngine
+| The BSF engine to use when running the script. Choices:
+
+* bsh.util.BeanShellBSFEngine
+* org.codehaus.groovy.bsf.GroovyEngine
+* org.apache.bsf.engines.jython.JythonEngine
+| none
+
+| fileExtensions
+| A comma-separated list of file extensions to consider a valid script for this BSF instance.
+| none
+
+| runType
+| Mode to run the BSF script. Choices:
+
+* *eval*: expects the script to print the OK/NOK status for validation
+* *exec*: expects the script to manipulate the provided results hashmap directly
+| eval
 |===
 
 CAUTION: Avoid non-character names for parameters to avoid problems in the script languages.
@@ -57,15 +77,32 @@ Additionally, the `results` object can also carry a `"reason":"message"` entry t
 The BSF detector supports many languages.
 The following table provides the required setup for commonly used languages.
 
-.BSF language setups
+.BSF language options
 [options="header, autowidth"]
 [cols="2,1,2,2"]
 |===
-| Language                            | lang-class  | bsf-engine                                  | required library
-| http://www.beanshell.org[BeanShell] | beanshell   | bsh.util.BeanShellBSFEngine                 | supported by default
-| https://groovy-lang.org/[Groovy]    | groovy      | org.codehaus.groovy.bsf.GroovyEngine        | groovy-all-[version].jar
-| http://www.jython.org[Jython]       | jython      | org.apache.bsf.engines.jython.JythonEngine  | jython-[version].jar
+| Language
+| langClass parameter
+| bsfEngine parameter
+| Required library
+
+| http://www.beanshell.org[BeanShell]
+| beanshell
+| bsh.util.BeanShellBSFEngine
+| supported by default
+
+| https://groovy-lang.org/[Groovy]
+| groovy
+| org.codehaus.groovy.bsf.GroovyEngine
+| groovy-all-[version].jar
+
+| http://www.jython.org[Jython]
+| jython
+| org.apache.bsf.engines.jython.JythonEngine
+| jython-[version].jar
 |===
+
+IMPORTANT: If you will be using a Groovy or Jython script, you will need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
 
 == Example configurations
 
@@ -96,6 +133,8 @@ if (testFile.exists()) {
 
 === Groovy example
 
+The Groovy language requires the installation of an additional library.
+
 .Groovy example for `run-type` of `eval`
 [source, xml]
 ----
@@ -108,7 +147,7 @@ if (testFile.exists()) {
 ----
 
 .Groovy example `MinimalGroovy.groovy` script file for `run-type` of `eval`
-[source, java]
+[source, groovy]
 ----
 File testFile = new File("/tmp/TestFile");
 if (testFile.exists()) {
@@ -132,7 +171,7 @@ if (testFile.exists()) {
 ----
 
 .Groovy example `MinimalGroovy.groovy` script file for `run-type` of `exec`
-[source, java]
+[source, groovy]
 ----
 def testFile = new File("/tmp/TestFile");
 if (testFile.exists()) {
@@ -145,8 +184,7 @@ if (testFile.exists()) {
 
 === Jython example
 
-The Jython (Java implementation of Python) language requires an additional library.
-Copy a compatible `jython-x.y.z.jar` into the `$OPENNMS_HOME/lib` folder and restart {page-component-title} to make Jython available for the BSF detector.
+The Jython (Java implementation of Python) language requires the installation of an additional library.
 
 .Jython example for `run-type` of `exec`
 [source, xml]

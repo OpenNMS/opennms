@@ -3,8 +3,8 @@
 = Import Handlers
 
 {page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
-This is done in the `$OPENNMS_HOME/etc/provisiond-configuration.xml` file by referencing a requisition's location via a URL.
-Most commonly, these URLs are files on the file system (`file:/opt/opennms/etc/imports/<my-requisition.xml>`) created through the Requisitions UI.
+This is done in the `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml` file by referencing a requisition's location via a URL.
+Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`) created through the Requisitions UI.
 However, these same requisitions for adding, updating, and deleting nodes can also come from external URLs.
 For example, a requisition can be retrieved using the HTTP protocol.
 
@@ -19,11 +19,19 @@ In addition to the type-specific parameters, the following parameters are suppor
 
 .Optional parameters
 [options="header, autowidth"]
-[cols="1,1,4"]
+[cols="1,4,1"]
 |===
-| Parameter     | Default | Description
-| location      | Default | The name of the location at which the handler should run.
-| ttl           | 20000   | The maximum number of milliseconds to wait for the handler when run remotely.
+| Parameter
+| Description
+| Default
+
+| location
+| The name of the location at which the handler should run.
+| Default
+
+| ttl
+| The maximum number of milliseconds to wait for the handler when run remotely.
+| 20000
 |===
 
 Use the `opennms:show-import` command, available via the Karaf shell, to show the results of an import without persisting or triggering the import:
@@ -73,7 +81,7 @@ Not very practical, but is a good example to get you started.
 
 It is possible to reload the provisiond configuration without having to restart {page-component-title} by triggering the reloadDaemonConfig UEI:
 
-[source, bash]
+[source, console]
 ----
-/opt/opennms/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
 ----

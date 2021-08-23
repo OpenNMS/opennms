@@ -12,15 +12,34 @@ Use this detector to find and assign services based on HTTP.
 == Configuration and use
 
 .Optional parameters for the HTTP service detector
-[options="header, %autowidth"]
+[options="header, autowidth"]
+[cols="1,3,1"]
 |===
-| Parameter      | Default | Description
-| checkRetCode   | false   | If set to `true`, only HTTP status codes that are the same or lower than the value of `maxRetCode` pass.
-| maxRetCode     | 399     | Highest HTTP response code that passes.
-                             Only evaluated if `checkRetCode` is set to `true`.
-| port           | 80      | Port to query.
-| url            | /       | URL to query.
-| timeout        | 2000    | Timeout in milliseconds to wait for a response.
+
+| Parameter
+| Description
+| Default
+
+| checkRetCode
+| If set to `true`, only HTTP status codes that are the same or lower than the value of `maxRetCode` pass.
+| false
+
+| maxRetCode
+| Highest HTTP response code that passes.
+Only evaluated if `checkRetCode` is set to `true`.
+| 399
+
+| port
+| Port to query.
+| 80
+
+| url
+| URL to query.
+| /
+
+| timeout
+| Timeout in milliseconds to wait for a response.
+| 2000
 |===
 
 NOTE: The HTTP detector makes only one HTTP request and does not follow redirects.

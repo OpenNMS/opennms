@@ -17,12 +17,25 @@ If the query successfully returns one or more items, the service is marked as de
 [options="header, autowidth"]
 [cols="1,1,4"]
 |===
-| Parameter    | Default                                                    | Description
+| Parameter
+| Description
+| Default
+
 3+| *Required*
-| resourceUri  | \http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/* | A resourceUri consists of a prefix and a path to a resource.
-| wql          | none                                                       | A query using the WQL filter dialect.
+
+| resourceUri
+| A resourceUri consists of a prefix and a path to a resource.
+| \http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*
+
+| wql
+| A query using the WQL filter dialect.
+| none
+
 3+| *Optional*
-| serviceName  | WsManWQLService                                            | A custom service name to identify this service.
+
+| serviceName
+| A custom service name to identify this service.
+| WsManWQLService
 |===
 
 == Examples

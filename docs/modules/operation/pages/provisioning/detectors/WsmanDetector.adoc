@@ -14,10 +14,15 @@ If the identify command is successful, the service is marked as detected, and th
 
 .Optional parameters for the WS-Man detector
 [options="header, autowidth"]
-[cols="1,1,4"]
+[cols="1,4,1"]
 |===
-| Parameter     | Default | Description
-| updateAssets  | true    | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.
+| Parameter
+| Description
+| Default
+
+| updateAssets
+| Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.
+| true
 |===
 
 == Examples

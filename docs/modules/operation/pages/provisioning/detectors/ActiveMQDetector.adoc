@@ -15,13 +15,29 @@ Use this detector to find and assign services based on ActiveMQ.
 [options="header, autowidth"]
 [cols="1,1,4"]
 |===
-| Parameter       | Default                    | Description
+| Parameter
+| Description
+| Default
+
 3+| *Required*
-| broker-url     | vm://localhost?create=false | The URL used to connect to the ActiveMQ broker.
+
+| broker-url
+| The URL used to connect to the ActiveMQ broker.
+| vm://localhost?create=false
+
 3+| *Optional*
-| user           | none                        | The authentication username for connecting to the broker.
-| password       | none                        | The password for connecting to the broker.
-| use-nodelabel  | false                       | If true, modify the broker URL to use the node label instead of the IP address in the broker URL.
+
+| user
+| The authentication username for connecting to the broker.
+| none
+
+| password
+| The password for connecting to the broker.
+| none
+
+| use-nodelabel
+| If true, modify the broker URL to use the node label instead of the IP address in the broker URL.
+| false
 |===
 
 == Examples

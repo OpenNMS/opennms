@@ -31,7 +31,7 @@ To import only a subset of nodes, select a specific data center, cluster, or hos
 == Provide credentials to {page-component-title}
 
 Now that vCenter has been configured to allow access to read objects, it is time to set up {page-component-title} to be able to connect to vCenter.
-In the `$OPENNMS_HOME/etc/vmware-config.xml` file, add a line with the hostname, user, and password to connect to your vCenter server.
+In the `$\{OPENNMS_HOME}/etc/vmware-config.xml` file, add a line with the hostname, user, and password to connect to your vCenter server.
 If you have multiple vCenter servers, you can specify multiple `<vmware-server />` objects in this file.
 
 [source, xml]
@@ -44,7 +44,7 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 
 == Configure VMware requisition
 
-The final step is to set up a requisition definition in `$OPENNMS_HOME/etc/provisiond-configuration.xml`.
+The final step is to set up a requisition definition in `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml`.
 Using the `vmware://` prefix, create a `<requisition-def>` object for the vCenter server.
 
 [source, xml]
@@ -56,7 +56,6 @@ Using the `vmware://` prefix, create a `<requisition-def>` object for the vCente
 ----
 
 <1> The name of the requisition to appear within {page-component-title}.
-A suggestion is to use the name of the vCenter server, but it can be whatever label you want to use.
 <2> The hostname defined in the `provisiond-configuration.xml` must match the same case as the hostname entered in the `vmware-config.xml`.
 <3> The schedule of how frequently the import should rerun.
 In this example, the import runs every day at 23:42.
@@ -68,33 +67,95 @@ Do not forget to restart services after making changes to the `provisiond-config
 
 == Optional import parameters
 
-[options="header, autowidth"]
-[cols="2,1,4"]
+[options="header"]
+[cols="1,3,1"]
 |===
-| Parameter              | Default | Description
-| importIPv4Only         | false   | Imports only IPv4 Interfaces.
-| importIPv6Only         | false   | Imports only IPv6 Interfaces.
-| topologyNetworks       | true    | Add the network information to the VMWare topology.
-| topologyDatastores     | true    | Add the datastores information to the VMWare topology.
-| topologyPortGroups     | false   | Add the port groups information (distributed virtual switches) to the VMWare topology.
-| importVMPoweredOn      | true    | Defines if powered-on machines should be imported.
-| importVMPoweredOff     | false   | Defines if powered-off machines should be imported.
-| importVMSuspended      | false   | Defines if suspended machines should be imported.
-| importVMAll            | false   | Imports all virtual machines and ignores importVMPoweredOn, importVMPoweredOff, and importVMSuspended parameters.
-| importVMOnly           | false   | Imports only virtual machines and ignores hosts.
-| importHostPoweredOn    | true    | Defines if powered-on host systems should be imported.
-| importHostPoweredOff   | false   | Defines if powered-off host systems should be imported.
-| importHostStandBy      | false   | Defines if stand-by host systems should be imported.
-| importHostUnknown      | false   | Defines if host systems with an unknown power state should be imported.
-| importHostAll          | false   | Imports all host systems and ignores importHostPoweredOn, importHostPoweredOff, and importHostSuspended parameters.
-| importHostOnly         | false   | Imports only host systems and ignores VMs.
-| virtualMachineServices | VMware-ManagedEntity,VMware-VirtualMachine                  | Monitor services to assign to imported virtual machines.
-                                                                                         Values should be comma separated.
-| hostSystemServices     | VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem | Monitor services to assign to imported host systems.
-                                                                                         Values should be comma separated.
-| timeout                | 3000    | VMware connection timeout, in milliseconds.
-| cimTimeout             | 3000    | Timeout, in milliseconds, used to test interface addresses for a reachable CIM service.
-                                     Increase this value only if you have problems discovering CIM services on host systems.
+| Parameter
+| Description
+| Default
+
+| importIPv4Only
+| Imports only IPv4 Interfaces.
+| false
+
+| importIPv6Only
+| Imports only IPv6 Interfaces.
+| false
+
+| topologyNetworks
+| Add the network information to the VMWare topology.
+| true
+
+| topologyDatastores
+| Add the datastores information to the VMWare topology.
+| true
+
+| topologyPortGroups
+| Add the port groups information (distributed virtual switches) to the VMWare topology.
+| false
+
+| importVMPoweredOn
+| Defines if powered-on machines should be imported.
+| true
+
+| importVMPoweredOff
+| Defines if powered-off machines should be imported.
+| false
+
+| importVMSuspended
+| Defines if suspended machines should be imported.
+| false
+
+| importVMAll
+| Imports all virtual machines and ignores importVMPoweredOn, importVMPoweredOff, and importVMSuspended parameters.
+| false
+
+| importVMOnly
+| Imports only virtual machines and ignores hosts.
+| false
+
+| importHostPoweredOn
+| Defines if powered-on host systems should be imported.
+| true
+
+| importHostPoweredOff
+| Defines if powered-off host systems should be imported.
+| false
+
+| importHostStandBy
+| Defines if stand-by host systems should be imported.
+| false
+
+| importHostUnknown
+| Defines if host systems with an unknown power state should be imported.
+| false
+
+| importHostAll
+| Imports all host systems and ignores importHostPoweredOn, importHostPoweredOff, and importHostSuspended parameters.
+| false
+
+| importHostOnly
+| Imports only host systems and ignores VMs.
+| false
+
+| virtualMachineServices
+| Monitor services to assign to imported virtual machines.
+Multiple values should be comma separated.
+| VMware-ManagedEntity, VMware-VirtualMachine
+
+| hostSystemServices
+| Monitor services to assign to imported host systems.
+Multiple values should be comma separated.
+| VMware-ManagedEntity, VMware-HostSystem, VMwareCim-HostSystem
+
+| timeout
+| VMware connection timeout, in milliseconds.
+| 3000
+
+| cimTimeout
+| Timeout, in milliseconds, used to test interface addresses for a reachable CIM service.
+Increase this value only if you have problems discovering CIM services on host systems.
+| 3000
 |===
 
 IMPORTANT: `importVMOnly` and `importHostOnly` cannot both be true simultaneously. +

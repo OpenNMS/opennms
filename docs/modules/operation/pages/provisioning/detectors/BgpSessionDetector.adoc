@@ -16,8 +16,13 @@ The configured BGP peer session is detected when the return value is in the vali
 
 .Required parameters for the BGP session detector
 [options="header, autowidth"]
-[cols="1,1,4"]
+[cols="1,4,1"]
 |===
-| Parameter      | Default | Description
-| bgpPeerIp      | none    | The IPv4 peer ID to query.
+| Parameter
+| Description
+| Default
+
+| bgpPeerIp
+| The IPv4 peer ID to query.
+| none
 |===
