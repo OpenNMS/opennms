@@ -2,7 +2,7 @@
 
 = Changelog
 
-[releasenotes-changelog-28.0.2]
+[[releasenotes-changelog-28.0.2]]
 
 == Release 28.0.2
 
