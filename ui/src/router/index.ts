@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
 import NodeDetails from '@/containers/NodeDetails.vue'
-import InputTextDemo from '../components/Common/Demo/InputTextDemo.vue'
+import Demo from '../components/Common/Demo/Demo.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -17,9 +17,9 @@ const router = createRouter({
       component: NodeDetails
     },
     {
-      path: '/inputTextDemo',
-      name: 'InputTextDemo',
-      component: InputTextDemo
+      path: '/demo',
+      name: 'Demo',
+      component: Demo
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
