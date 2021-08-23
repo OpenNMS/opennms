@@ -37,17 +37,18 @@
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.filter.FilterDaoFactory,
-		org.opennms.netmgt.filter.api.FilterParseException
+		org.opennms.netmgt.filter.api.FilterParseException,
+		org.opennms.core.utils.WebSecurityUtils
 	"
 %>
 
 
 <%
-   String newRule = request.getParameter("newRule");
-   String criticalIp = InetAddressUtils.normalize(request.getParameter("criticalIp"));
+   String newRule = WebSecurityUtils.sanitizeString(request.getParameter("newRule"));
+   String criticalIp = InetAddressUtils.normalize(WebSecurityUtils.sanitizeString(request.getParameter("criticalIp")));
    if (criticalIp == null) { criticalIp = ""; }
-   String criticalSvc = request.getParameter("criticalSvc");
-   String showNodes = request.getParameter("showNodes");
+   String criticalSvc = WebSecurityUtils.sanitizeString(request.getParameter("criticalSvc"));
+   String showNodes = WebSecurityUtils.sanitizeString(request.getParameter("showNodes"));
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
