@@ -32,8 +32,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
+
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -60,28 +62,51 @@ public class SwaggerConverter {
 
     private String prefix = "/";
 
-    public String convertToString(ConfigItem item, String prefix) {
+    public String convertToString(ConfigItem item, String prefix, String type) {
         OpenAPI openapi = convert(item, prefix);
 
         try {
-            return convertOpenAPIToString(openapi);
+            return convertOpenAPIToString(openapi, type);
         } catch (JsonProcessingException e) {
             return "";
         }
     }
 
-    static public String convertOpenAPIToString(OpenAPI openapi) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * convert open api object to specific string (default is yaml)
+     *
+     * @param openapi
+     * @param type
+     * @return
+     * @throws JsonProcessingException
+     */
+    static public String convertOpenAPIToString(OpenAPI openapi, String type) throws JsonProcessingException {
+        ObjectMapper objectMapper;
+        try {
+            org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.valueOf(type);
+            if (org.springframework.http.MediaType.APPLICATION_JSON.equals(mediaType) && mediaType != null) {
+                objectMapper = new ObjectMapper();
+            } else {
+                objectMapper = new ObjectMapper(new YAMLFactory());
+            }
+        } catch (Exception e) {
+            LOG.warn("UNKNOWN MideaType: " + type + " error: " + e.getMessage());
+            objectMapper = new ObjectMapper(new YAMLFactory());
+        }
+
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        final String intermediateJson = objectMapper.writeValueAsString(openapi);
-        final String almostSwaggerJson = intermediateJson.replaceAll("[\\n\\r\\s]*\"exampleSetFlag\".*,", "");
-        LOG.debug("intermediateJson: " + intermediateJson);
-        LOG.debug("almostSwaggerJson: " + almostSwaggerJson);
-        LOG.debug("almostSwaggerJson replace: " + almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*\"exampleSetFlag\".*", ""));
-        return almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*\"exampleSetFlag\".*", "");
-
+        //TODO: dirty hack to remove exampleSetFlag
+        if (objectMapper.getFactory() instanceof YAMLFactory) {
+            final String intermediateJson = objectMapper.writeValueAsString(openapi);
+            final String almostSwaggerJson = intermediateJson.replaceAll("[\\n\\r\\s]*exampleSetFlag.*,", "");
+            return almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*exampleSetFlag.*", "");
+        } else {
+            final String intermediateJson = objectMapper.writeValueAsString(openapi);
+            final String almostSwaggerJson = intermediateJson.replaceAll("[\\n\\r\\s]*\"exampleSetFlag\".*,", "");
+            return almostSwaggerJson.replaceAll(",?[\\n\\r\\s]*\"exampleSetFlag\".*", "");
+        }
     }
 
     public OpenAPI convert(ConfigItem item, String prefix) {
@@ -118,18 +143,21 @@ public class SwaggerConverter {
     }
 
     private void generatePathsForItems(ConfigItem parent, ConfigItem item) {
-        // Skip simple types - they can be set on the parent object and have no children
-        if (item.getType().isSimple()) {
+// TODO: check is that correct !!!
+// Skip simple types - they can be set on the parent object and have no children
+//        if (item.getType().isSimple()) {
+//            return;
+//        }
+        // we only generate path for first level item (compare with the last checking, it looks better)
+        if (parent != null) {
             return;
         }
 
         // Build the path to this element
-        boolean isParentAnArray = false;
         String path;
         if (parent != null) {
             path = pathsByItem.get(parent);
             if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
-                isParentAnArray = true;
                 path += "/{" + item.getName() + "Index}";
             } else {
                 path += "/" + item.getName();
@@ -144,7 +172,6 @@ public class SwaggerConverter {
         Schema schemaForCurrentItem = new Schema();
         schemaForCurrentItem.setName(item.getName());
         schemaForCurrentItem.set$ref("#/components/schemas/" + item.getName());
-
 
         PathItem pathItem = new PathItem();
 
@@ -165,37 +192,38 @@ public class SwaggerConverter {
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
-        jsonObjectContent.addMediaType("application/json", mediaType);
+        jsonObjectContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
         //============= POST =================
-        Operation post = this.generateOperation(tagName, "Configure " + item.getName(), "OK",
-                schemaForCurrentItem, jsonObjectContent, true, false);
+        Operation post = this.generateOperation(tagName, "Add Configure " + item.getName(), "OK",
+                jsonObjectContent, true, false);
         pathItem.setPost(post);
 
         //============== PUT =================
         Operation put = this.generateOperation(tagName, "Overwrite " + item.getName(), "OK",
-                schemaForCurrentItem, jsonObjectContent, true, false);
+                jsonObjectContent, true, false);
         pathItem.setPut(put);
 
         //============== PATCH =================
         Operation patch = this.generateOperation(tagName, "Overwrite " + item.getName(), "OK",
-                schemaForCurrentItem, jsonObjectContent, true, false);
+                jsonObjectContent, true, false);
         pathItem.setPatch(patch);
 
         //============== GET =================
         Operation get = this.generateOperation(tagName, "Get " + item.getName() + " configuration",
-                item.getName() + " configuration", schemaForCurrentItem, jsonObjectContent, false, true);
+                item.getName() + " configuration", jsonObjectContent, false, true);
         pathItem.setGet(get);
 
         //============== DELETE =================
         Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
-                item.getName() + " configuration", schemaForCurrentItem, jsonObjectContent, false, false);
+                item.getName() + " configuration", jsonObjectContent, false, false);
         pathItem.setDelete(delete);
 
         // Save
         pathItemsByPath.put(path, pathItem);
     }
 
-    private Operation generateOperation(String tagName, String summary, String description, Schema schemaForCurrentItem, Content jsonObjectContent, boolean isGenRequestBody, boolean isGenResponseContent) {
+    private Operation generateOperation(String tagName, String summary, String description,
+                                        Content jsonObjectContent, boolean isGenRequestBody, boolean isGenResponseContent) {
         Operation operation = new Operation();
         operation.tags(Arrays.asList(tagName));
         operation.summary(summary);
@@ -215,8 +243,45 @@ public class SwaggerConverter {
             apiResponse.setContent(jsonObjectContent);
         }
         apiResponses.addApiResponse("200", apiResponse);
+
+        // 400 error
+        apiResponses.addApiResponse("400", getSimpleMessageResponse("Error message", "message"));
+
+        //operation.requestBody(getSimpleRequest("fileId", "fileId"));
         operation.responses(apiResponses);
         return operation;
+    }
+/*
+    private RequestBody getSimpleRequest(String description, String keyName) {
+        RequestBody requestBody = new RequestBody();
+        requestBody.setDescription(description);
+        Content messageContent = new Content();
+        requestBody.setContent(messageContent);
+        MediaType mediaType = new MediaType();
+        messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+
+        Schema parentSchema = new ObjectSchema();
+        Schema messageSchema = new StringSchema();
+
+        mediaType.schema(parentSchema);
+        parentSchema.addProperties(keyName, messageSchema);
+        return requestBody;
+    }*/
+
+    private ApiResponse getSimpleMessageResponse(String description, String keyName) {
+        ApiResponse messageResponse = new ApiResponse();
+        messageResponse.setDescription(description);
+        Content messageContent = new Content();
+        messageResponse.setContent(messageContent);
+        MediaType mediaType = new MediaType();
+        messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+
+        Schema parentSchema = new ObjectSchema();
+        Schema messageSchema = new StringSchema();
+
+        mediaType.schema(parentSchema);
+        parentSchema.addProperties(keyName, messageSchema);
+        return messageResponse;
     }
 
     private String getTagName(String path) {
@@ -270,16 +335,40 @@ public class SwaggerConverter {
             case BOOLEAN:
                 schema = new BooleanSchema();
                 break;
+            case POSITIVE_INTEGER:
+                schema = new IntegerSchema();
+                schema.setMinimum(new BigDecimal(1));
+                break;
+            case NON_NEGATIVE_INTEGER:
+                schema = new IntegerSchema();
+                schema.setMinimum(new BigDecimal(0));
+                break;
+            case NEGATIVE_INTEGER:
+                schema = new IntegerSchema();
+                schema.setMaximum(new BigDecimal(-1));
+                break;
+            case DATE_TIME:
+                schema = new DateTimeSchema();
+                break;
+            case DATE:
+                schema = new DateSchema();
+                break;
             default:
                 throw new RuntimeException("Unsupported type " + item);
         }
         schema.setName(item.getName());
+        if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
+            schema.setDescription(item.getDocumentation());
+        }
 
         if (item.isMinSet()) {
             schema.setMinimum(BigDecimal.valueOf(item.getMin()));
         }
         if (item.isMaxSet()) {
             schema.setMaximum(BigDecimal.valueOf(item.getMax()));
+        }
+        if (item.getDefaultValue() != null) {
+            schema.setDefault(item.getDefaultValue());
         }
         if (parent != null) {
             // Add the item to the parent
