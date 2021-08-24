@@ -127,7 +127,7 @@ public class FlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings, 0, 0);
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 

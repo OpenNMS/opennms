@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.twin</groupId>
     <artifactId>org.opennms.core.ipc.twin.api</artifactId>
+    <packaging>bundle</packaging>
     <name>OpenNMS :: Core :: IPC :: Twin :: API </name>
     <build>
         <plugins>

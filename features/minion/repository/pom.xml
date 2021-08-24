@@ -393,6 +393,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.twin.grpc.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.grpc</groupId>
             <artifactId>org.opennms.core.ipc.grpc.common</artifactId>
             <version>${project.version}</version>
