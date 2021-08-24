@@ -3,7 +3,7 @@
 
 This policy lets you use Groovy scripts to modify provisioned node data.
 These scripts have to be placed in the `$\{OPENNMS_HOME}/etc/script-policies` directory.
-An example would be to change of the node's primary interface or location.
+An example would be to change the node's primary interface or location.
 The script will be invoked for each matching node.
 
 The following example shows the source code for setting the `192.168.100.0/24` interface to `PRIMARY`, while all remaining interfaces are set to `SECONDARY`.

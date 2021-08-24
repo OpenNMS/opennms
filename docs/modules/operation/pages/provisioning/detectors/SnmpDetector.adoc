@@ -18,8 +18,8 @@ The detector binds a service with a given service name when a particular SNMP OI
 [cols="1,4a,1"]
 |===
 | Parameter
-| Default
 | Description
+| Default
 
 3+| *Required*
 
@@ -97,7 +97,7 @@ When the requisition server synchronizes with the service, `Dell-OMSA-Global-Sta
 == Example using SNMP tables
 
 Assume you have an HP server farm and want to monitor the status of logical drives over SNMP provided from the HP Insight Manager.
-The status for logical drives is provided in a SNMP table under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
+The status for logical drives is provided in an SNMP table under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
 The service should be assigned automatically to all servers exposing the given SNMP OID.
 
 For provisioning, we have a requisition named `Server` that contains all servers in our data center.

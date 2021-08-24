@@ -4,7 +4,7 @@
 
 {page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
 This is done in the `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml` file by referencing a requisition's location via a URL.
-Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`) created through the Requisitions UI.
+Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`) created through the Requisition UI.
 However, these same requisitions for adding, updating, and deleting nodes can also come from external URLs.
 For example, a requisition can be retrieved using the HTTP protocol.
 
@@ -14,8 +14,8 @@ In addition to the standard protocols supported by Java, we provide a series of 
 
 The generic handler is made available using URLs of the form: `requisition://type?param=1;param=2`
 
-Using these URLs, you can invoke various handlers, both locally and via a Minion.
-In addition to the type-specific parameters, the following parameters are supported by all handlers:
+Use these URLs to invoke handlers, both locally and via a Minion.
+In addition to the type-specific parameters, all handlers support the following parameters:
 
 .Optional parameters
 [options="header, autowidth"]
@@ -43,7 +43,7 @@ opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 
 === Configuration
 
-The configuration of the Provisioning system allows the definition of zero or more import requisitions, each with their own cron-based schedule.
+The configuration of the Provisioning system allows the definition of zero or more import requisitions, each with its own cron-based schedule.
 This allows for automatic importing from various sources intended for integration with external URLs such as HTTP and/or DNS protocol handler.
 A default configuration is provided in the {page-component-title} `etc/` directory and is called: `provisiond-configuration.xml`.
 This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at midnight.

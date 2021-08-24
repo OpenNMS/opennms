@@ -13,7 +13,7 @@ A summary what the detector is doing.
 
 .Parameters for the <DETECTOR-NAME-HERE>
 [options="header, autowidth"]
-[cols="1,1,4"]
+[cols="1,4,1"]
 |===
 | Parameter
 | Description

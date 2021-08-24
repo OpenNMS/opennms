@@ -1,14 +1,14 @@
 [[vmware-handler]]
 = VMWare Handler
 
-The VMware adapter can pull hosts and/or virtual machines from a vCenter server into {page-component-title}.
+The VMware adapter pulls hosts and/or virtual machines from a vCenter server into {page-component-title}.
 With this adapter, nodes can automatically be added, updated, or removed from your {page-component-title} based on the status of the VMware entity.
 The adapter also lets {page-component-title} collect additional performance metrics directly from the VMware server based on stats stored by the hypervisor.
 
 == Preparing VMware credentials
 
 To allow communication between OpenNMS and VMware, you must create a user and a role for authentication and permissions.
-You can either create a new local user within your vCenter server or use an account that has been defined in an external authentication system that is setup to access your vCenter instance.
+You can either create a new local user within your vCenter server or use an account that has been defined in an external authentication system that is set up to access your vCenter instance.
 
 .Create a new vCenter role:
 . Log into vCenter Server.
@@ -45,7 +45,7 @@ If you have multiple vCenter servers, you can specify multiple `<vmware-server /
 == Configure VMware requisition
 
 The final step is to set up a requisition definition in `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml`.
-Using the `vmware://` prefix, create a `<requisition-def>` object for the vCenter server.
+Use the `vmware://` prefix to create a `<requisition-def>` object for the vCenter server.
 
 [source, xml]
 ----
@@ -75,11 +75,11 @@ Do not forget to restart services after making changes to the `provisiond-config
 | Default
 
 | importIPv4Only
-| Imports only IPv4 Interfaces.
+| Imports only IPv4 interfaces.
 | false
 
 | importIPv6Only
-| Imports only IPv6 Interfaces.
+| Imports only IPv6 interfaces.
 | false
 
 | topologyNetworks
@@ -170,7 +170,7 @@ Enabling the https://opennms.discourse.group/t/storing-data-with-foreign-sources
 == Provision a subset of VMware entities
 
 If you want to provision an arbitrary selection of VMware entities, you can specify a key-value pair to match objects that have a specific attribute in vCenter.
-The key to lookup is a user-defined attribute for entities being imported.
+The key to look up is a user-defined attribute for entities being imported.
 If the value provided starts with a `~`, the value will be treated as a regular expression.
 Only one key-value pair can be specified per requisition.
 

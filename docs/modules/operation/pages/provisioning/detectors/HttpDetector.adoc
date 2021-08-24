@@ -26,7 +26,7 @@ Use this detector to find and assign services based on HTTP.
 
 | maxRetCode
 | Highest HTTP response code that passes.
-Only evaluated if `checkRetCode` is set to `true`.
+Evaluated only if `checkRetCode` is set to `true`.
 | 399
 
 | port

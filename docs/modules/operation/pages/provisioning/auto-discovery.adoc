@@ -35,7 +35,7 @@ NOTE: To configure a discovery scan to run once, select *Run Single Discovery Sc
 == Automatic discovery detectors
 
 Auto discovery with detectors lets users specify the services to detect, in addition to ICMP ping, for the specified IP addresses to be discovered.
-Discovery will send a new suspect event only when the specified detectors succeed.
+Discovery sends a new suspect event only when the specified detectors succeed.
 A definition without any detectors will fall back to ICMP ping for discovery.
 
 [source, xml]

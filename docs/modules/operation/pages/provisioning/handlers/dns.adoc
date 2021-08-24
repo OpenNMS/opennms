@@ -21,7 +21,7 @@ dns://my-dns-server/myzone.com
 This URL imports all A and AAAA records from the zone `myzone.com` on the host `my-dns-server` via port 53 (default DNS port).
 Since the foreign source is not specified, it will be added to the default requisition.
 
-== Using a regular expression filter
+== Use a regular expression filter
 
 [source]
 ----
@@ -40,7 +40,7 @@ dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
 == Location
 
 You can use the `location` parameter to assign a single location to all nodes in this requisition.
-This would only apply if you are using Minions in your network.
+This would apply only if you are using Minions in your network.
 
 [source]
 ----
