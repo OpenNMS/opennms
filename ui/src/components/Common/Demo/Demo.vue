@@ -5,8 +5,10 @@
     id="inputText01"
     type="text"
     placeholder="Please Enter Text"
+    primeClass="lg"
     v-model="showInputText"
   />
+
 </template>
 
 <script setup lang="ts">
