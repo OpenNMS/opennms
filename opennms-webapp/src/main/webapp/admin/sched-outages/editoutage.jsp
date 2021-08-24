@@ -547,7 +547,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				}
 
 				boolean entryAlreadyExists = false;
-				for(Time time : theOutage.getTime()) {
+				for(Time time : theOutage.getTimes()) {
 					if (time.equals(newTime)) {
 						entryAlreadyExists = true;
 						break;
