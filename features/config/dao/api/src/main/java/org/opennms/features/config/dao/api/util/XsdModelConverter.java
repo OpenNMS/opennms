@@ -32,9 +32,7 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
-import org.apache.ws.commons.schema.XmlSchema;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.apache.ws.commons.schema.XmlSchemaElement;
+import org.apache.ws.commons.schema.*;
 import org.apache.ws.commons.schema.walker.XmlSchemaAttrInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
@@ -81,6 +79,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             ConfigItem.Type baseType = getConfigType(xmlSchemaTypeInfo.getBaseType().name());
             currentConfigItem = new ConfigItem();
             currentConfigItem.setName(xmlSchemaElement.getQName().getLocalPart());
+            currentConfigItem.setDocumentation(getDocumentation(xmlSchemaElement.getAnnotation()));
             currentConfigItem.setSchemaRef(xmlSchemaElement.getQName().toString());
             currentConfigItem.setType(baseType);
             setRestrictions(currentConfigItem, xmlSchemaTypeInfo.getFacets());
@@ -185,19 +184,65 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         return elem;
     }
 
+    /**
+     * Reading documentation from xsd annotation
+     * @param xmlSchemaAnnotation
+     * @return
+     */
+    public static String getDocumentation(XmlSchemaAnnotation xmlSchemaAnnotation){
+        if(xmlSchemaAnnotation != null){
+            for(XmlSchemaAnnotationItem item: xmlSchemaAnnotation.getItems()){
+                if (item instanceof XmlSchemaDocumentation) {
+                    XmlSchemaDocumentation doc = (XmlSchemaDocumentation) item;
+                    if ( doc.getMarkup() != null ){
+                        StringBuffer sb = new StringBuffer();
+                        for(int i = 0 ; i < doc.getMarkup().getLength() ; i++){
+                            sb.append(doc.getMarkup().item(i).getNodeValue());
+                        }
+                        return sb.toString();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Convert xsd attribute into ConfigItem
+     * @param xmlSchemaAttrInfo
+     * @return
+     */
     public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         ConfigItem configItem = new ConfigItem();
         configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
+        configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
         configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
+        configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse()));
+        configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
         configItem.setSchemaRef(xmlSchemaAttrInfo.getAttribute().getQName().toString());
         setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
 
         return configItem;
     }
 
+    /**
+     * Handle xsd type
+     * @param xmlSchemaAttrInfo
+     * @return
+     */
     public static ConfigItem.Type getTypeForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
-        String type = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
-        return getConfigType(type);
+        String strType;
+        ConfigItem.Type type = null;
+
+        if(xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
+            strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
+            type = getConfigType(strType);
+        }
+        if(ConfigItem.Type.OBJECT == type || type == null){
+            strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
+            type = getConfigType(strType);
+        }
+        return type;
     }
 
     private static ConfigItem.Type getConfigType(String type) {
@@ -206,18 +251,35 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             case "decimal":
                 return ConfigItem.Type.NUMBER;
             case "string":
+            case "id":
+            case "idref":
+            case "token":
+            case "anysimpletype":
                 return ConfigItem.Type.STRING;
             case "boolean":
                 return ConfigItem.Type.BOOLEAN;
             case "integer":
             case "int":
+            case "short":
                 return ConfigItem.Type.INTEGER;
             case "long":
                 return ConfigItem.Type.LONG;
-            case "anytype":
-                return ConfigItem.Type.OBJECT;
+            case "positiveinteger":
+                return ConfigItem.Type.POSITIVE_INTEGER;
+            case "negativeinteger":
+                return ConfigItem.Type.NEGATIVE_INTEGER;
+            case "nonnegativeinteger":
+            case "unsignedbyte":
+            case "unsignedshort":
+            case "unsignedint":
+                return ConfigItem.Type.NON_NEGATIVE_INTEGER;
+            case "date":
+                return ConfigItem.Type.DATE;
+            case "datetime":
+                return ConfigItem.Type.DATE_TIME;
             default:
-                throw new UnsupportedOperationException("Unsupported attribute type: " + type);
+                // both anytype and complextype will be detected later
+                return ConfigItem.Type.OBJECT;
         }
     }
 }

@@ -28,36 +28,47 @@
 
 package org.opennms.features.config.rest.api;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Set;
 
-@Path("/configManager")
+@Path("/cm")
 @Produces("application/json")
 @Consumes("application/json")
 /**
  * <b>Currently for testing OSGI integration</b>
  */
 public interface ConfigManagerRestService {
+    /**
+     * list registered configNames
+     * @return
+     */
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
     Response listConfigs();
 
+    /**
+     * get raw OpenApi schema
+     * @param configName
+     * @return
+     */
+    @GET
+    @Path("/schema/{configName}/raw")
+    Response getRawOpenApiSchema(@PathParam("configName") String configName);
+
+    /**
+     * get filtered OpenApi schema
+     * @param configName
+     * @param type
+     * @return
+     */
     @GET
     @Path("/schema/{configName}")
-    Response getOpenApiSchema(@PathParam("configName") String config);
-
-    @GET
-    @Path("/schemaStr/{configName}")
-    Response getOpenApiSchemaStr(@PathParam("configName") String config);
+    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String type);
 
     @GET
     @Path("/{configName}")

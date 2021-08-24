@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -59,16 +58,13 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response getOpenApiSchema(final String configName) {
+    public Response getRawOpenApiSchema(final String configName) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             SwaggerConverter swaggerConverter = new SwaggerConverter();
             OpenAPI openapi = swaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
                     BASE_PATH + schema.get().getName());
-            return Response.ok(openapi)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Content-Type, api_key, Authorization").build();
+            return Response.ok(openapi).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
             return Response.serverError().build();
@@ -76,16 +72,13 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response getOpenApiSchemaStr(final String configName) {
+    public Response getOpenApiSchema(String configName, String type){
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             SwaggerConverter swaggerConverter = new SwaggerConverter();
             String outStr = swaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
-                    BASE_PATH + schema.get().getName());
-            return Response.ok(outStr)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Content-Type, api_key, Authorization").build();
+                    BASE_PATH + schema.get().getName(), type);
+            return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
             return Response.serverError().build();
