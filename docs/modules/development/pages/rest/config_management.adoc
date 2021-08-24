@@ -1,0 +1,62 @@
+= Config Management
+
+It is the generic specification of Config Management RESTful API specification
+
+== GET
+
+[options="header", cols="5,10"]
+|===
+| Resource | Description
+| `/rest/cm/\{configName}` | Returns a list of configIds in JSON / YAML format e.g. ["config1", "config2"]
+
+200: Return: String Array
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| `/rest/cm/schema/\{configName}` | Returns openapi schema (for swagger UI) in JSON / YAML format.
+
+200: Return: OpenAPI schema
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+| `/rest/cm/\{configName}/\{configId}` | Returns configuration in JSON / YAML format
+
+200: Return: Config Bean 
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+
+== POST
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/rest/cm/\{configName}/\{configId}`             | Add new config (if same config exist, it will return error.)
+
+200: nothing return
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+== PUT
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/rest/cm/\{configName}/\{configId}`             | Update config (if config is not exist, it will return error.)
+
+200: nothing return
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
+
+== DELETE
+
+[options="header", cols="5,10"]
+|===
+| Resource                    | Description
+| `/rest/cm/\{configName}/\{configId}`             | Delete config
+
+200: nothing return
+
+400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
+|===
