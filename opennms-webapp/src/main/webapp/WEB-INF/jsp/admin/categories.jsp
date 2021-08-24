@@ -32,6 +32,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="org.opennms.web.api.Util" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Categories" />
@@ -81,7 +82,7 @@
     </tr>
     <c:forEach items="${categories}" var="category">
       <tr>
-        <td><a href="javascript:void(0);" onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></i></a></td>
+        <td><a href="javascript:void(0);" onclick="deleteCategory('${e:forJavaScript(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></i></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><i class="fa fa-edit fa-2x"></i></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td>
       </tr>
