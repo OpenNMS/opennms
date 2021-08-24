@@ -8,4 +8,4 @@ Edit the foreign source definition (Edit Definition button) of a requisition to 
 == Common policy parameters
 
 The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
-Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` will cause OR logic to be applied.
+Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` causes OR logic to be applied.
