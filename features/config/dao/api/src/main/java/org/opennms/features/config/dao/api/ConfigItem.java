@@ -45,6 +45,8 @@ public class ConfigItem {
     private long min = 0;
     private boolean maxSet = false;
     private long max = 0;
+    private Object defaultValue;
+    private String documentation;
 
     private boolean required = false;
 
@@ -55,7 +57,14 @@ public class ConfigItem {
         NUMBER,
         INTEGER,
         LONG,
-        BOOLEAN;
+        BOOLEAN,
+        DATE,  //YYYY-MM-DD
+        DATE_TIME, //YYYY-MM-DDThh:mm:ss
+        POSITIVE_INTEGER, // 1,2,3....
+        NON_NEGATIVE_INTEGER, // 0,1,2,....
+        NEGATIVE_INTEGER,
+        ANY_TYPE,
+        SIMPLE_TYPE;
 
         public boolean isSimple() {
             return !(this.equals(OBJECT) || this.equals(ARRAY));
@@ -83,7 +92,7 @@ public class ConfigItem {
     }
 
     static public boolean isPrimitiveType(Type type) {
-        switch(type) {
+        switch (type) {
             case STRING:
             case NUMBER:
             case INTEGER:
@@ -138,6 +147,22 @@ public class ConfigItem {
 
     public long getMin() {
         return min;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
     }
 
     @Override
