@@ -26,31 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.sqlgenerator;
+package liquibase.ext2.cm.database;
 
-import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
-import liquibase.ext.cm.statement.AbstractCmStatement;
-import liquibase.sql.Sql;
-import liquibase.sqlgenerator.SqlGeneratorChain;
-import liquibase.sqlgenerator.core.AbstractSqlGenerator;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 
-/** NoOps generator since we don't need actual SQL. */
-public class CmSqlGenerator extends AbstractSqlGenerator<AbstractCmStatement> {
+import liquibase.database.core.PostgresDatabase;
 
-    @Override
-    public ValidationErrors validate(AbstractCmStatement statement, Database database,
-                                     SqlGeneratorChain<AbstractCmStatement> sqlGeneratorChain) {
-        return null;
+/**
+ * We set a dummy database here since we are not actually modifying a database but sending
+ * instructions to the ConfigurationManager.
+ * TODO: Patrick: do we really need this class?
+ */
+public class CmDatabase extends PostgresDatabase {
+    public static final String PRODUCT_NAME = "cm";
+    public static final String PRODUCT_SHORT_NAME = "cm";
+
+    final ConfigurationManagerService configurationManager;
+
+    public CmDatabase(final ConfigurationManagerService configurationManager) {
+        this.configurationManager = configurationManager;
     }
 
     @Override
-    public Sql[] generateSql(AbstractCmStatement statement, Database database, SqlGeneratorChain<AbstractCmStatement> sqlGeneratorChain) {
-        return new Sql[0];
+    public String getDatabaseProductName() {
+        return PRODUCT_NAME;
     }
 
+    /**
+     * Returns an all-lower-case short name of the product.  Used for end-user selecting of database type
+     * such as the DBMS precondition.
+     */
     @Override
-    public boolean generateStatementsIsVolatile(Database database) {
-        return true;
+    public String getShortName() {
+        return PRODUCT_SHORT_NAME;
     }
+
+
+    @Override
+    protected String getDefaultDatabaseProductName() {
+        return PRODUCT_NAME;
+    }
+
+    public ConfigurationManagerService getConfigurationManager() {
+        return this.configurationManager;
+    }
+
 }

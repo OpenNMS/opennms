@@ -28,6 +28,13 @@
 
 package org.opennms.features.config.service.impl;
 
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -38,12 +45,6 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -60,6 +61,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             throws IOException, JAXBException {
         ValidateUsingConverter<ENTITY> converter = new ValidateUsingConverter<>(entityClass);
         this.registerSchema(configName, majorVersion, minorVersion, patchVersion, converter);
+    }
+
+    @Override
+    public <ENTITY> void registerSchema(final String configName, final Version version, Class<ENTITY> entityClass)
+            throws IOException, JAXBException {
+        this.registerSchema(configName, version.getMajorVersion(), version.getMinorVersion(), version.getPatchVersion(), entityClass);
     }
 
     @Override

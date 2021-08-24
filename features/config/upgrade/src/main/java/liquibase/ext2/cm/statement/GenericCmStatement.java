@@ -26,35 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.change;
+package liquibase.ext2.cm.statement;
 
-import liquibase.change.AbstractChange;
-import liquibase.database.Database;
-import liquibase.exception.ValidationErrors;
-import liquibase.ext.cm.database.CmDatabase;
+import java.util.function.Consumer;
 
-public abstract class AbstractCmChange extends AbstractChange {
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 
-    @Override
-    public boolean supports(Database database) {
-        return database instanceof CmDatabase;
+import liquibase.ext2.cm.database.CmDatabase;
+
+// TODO: Patrick: merge with parent?
+public class GenericCmStatement extends AbstractCmStatement {
+
+    private final Consumer<ConfigurationManagerService> executor;
+
+    public GenericCmStatement(Consumer<ConfigurationManagerService> executor) {
+        this.executor = executor;
     }
 
     @Override
-    public boolean generateStatementsVolatile(final Database database) {
-        return false;
+    public void execute(CmDatabase database) {
+        ConfigurationManagerService cm = database.getConfigurationManager();
+        executor.accept(cm);
     }
-
-    @Override
-    public boolean generateRollbackStatementsVolatile(final Database database) {
-        return false;
-    }
-
-    @Override
-    public ValidationErrors validate(Database database) {
-        ValidationErrors validationErrors = super.validate(database);
-        return validate((CmDatabase) database, validationErrors);
-    }
-
-    protected abstract ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors);
 }

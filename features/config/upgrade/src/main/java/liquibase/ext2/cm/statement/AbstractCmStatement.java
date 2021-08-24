@@ -26,26 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.statement;
+package liquibase.ext2.cm.statement;
 
-import java.util.function.Consumer;
+import liquibase.ext2.cm.database.CmDatabase;
+import liquibase.statement.SqlStatement;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+/**
+ * All cm specific statements must subclass this class (we have an instanceof check. Yes ugly but...)
+ */
+public abstract class AbstractCmStatement implements SqlStatement {
 
-import liquibase.ext.cm.database.CmDatabase;
+    public abstract void execute(CmDatabase database);
 
-// TODO: Patrick: merge with parent?
-public class GenericCmStatement extends AbstractCmStatement {
-
-    private final Consumer<ConfigurationManagerService> executor;
-
-    public GenericCmStatement(Consumer<ConfigurationManagerService> executor) {
-        this.executor = executor;
+    @Override
+    public boolean skipOnUnsupported() {
+        return false;
     }
 
     @Override
-    public void execute(CmDatabase database) {
-        ConfigurationManagerService cm = database.getConfigurationManager();
-        executor.accept(cm);
+    public boolean continueOnError() {
+        return false;
     }
 }

@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -48,6 +49,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -93,13 +95,15 @@ public class LiquibaseUpgraderIT {
     }
 
     @Test
-    public void shouldRunChangelog() throws LiquibaseException, IOException, ClassNotFoundException, SQLException {
+    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException {
         ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
         LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
-        liqui.runChangelog("/org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
+        liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
         // check if CM was called
-        verify(cm).registerSchema(anyString(),eq(1), eq(0), eq(0), eq(String.class)); // TODO: Patrick: fixme: String.class
+        verify(cm).registerSchema(anyString(),
+                eq(new ConfigurationManagerService.Version(1,0,0)),
+                eq(ProvisiondConfiguration.class));
 
         // check if liquibase table names where set correctly
         checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG);

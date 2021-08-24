@@ -26,25 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.statement;
+package liquibase.ext2.cm.executor;
 
-import liquibase.ext.cm.database.CmDatabase;
+import java.util.List;
+
+import liquibase.exception.DatabaseException;
+import liquibase.executor.jvm.JdbcExecutor;
+import liquibase.ext2.cm.database.CmDatabase;
+import liquibase.ext2.cm.statement.AbstractCmStatement;
+import liquibase.servicelocator.LiquibaseService;
+import liquibase.sql.visitor.SqlVisitor;
 import liquibase.statement.SqlStatement;
 
 /**
- * All cm specific statements must subclass this class (we have an instanceof check. Yes ugly but...)
+ * We are using a hybrid approach here:
+ * - All liquibase specific operations are carried out with the JdbcExecutor.
+ * - All NotConfd operations are carried out with this subclass.
  */
-public abstract class AbstractCmStatement implements SqlStatement {
+@LiquibaseService
+public class CmExecutor extends JdbcExecutor {
 
-    public abstract void execute(CmDatabase database);
+// Liqui 4.4.3
+//    @Override
+//    public int getPriority() {
+//        return PRIORITY_SPECIALIZED;
+//    }
 
     @Override
-    public boolean skipOnUnsupported() {
-        return false;
+    public void execute(final SqlStatement sql, final List<SqlVisitor> sqlVisitors) throws DatabaseException {
+        if(sql instanceof AbstractCmStatement && this.database instanceof CmDatabase) {
+            ((AbstractCmStatement) sql).execute((CmDatabase)this.database);
+            return;
+        }
+
+        // not our statement => delegate to parent
+        super.execute(sql, sqlVisitors);
     }
 
-    @Override
-    public boolean continueOnError() {
-        return false;
-    }
 }

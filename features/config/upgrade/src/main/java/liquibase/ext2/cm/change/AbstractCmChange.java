@@ -26,49 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.database;
+package liquibase.ext2.cm.change;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import liquibase.change.AbstractChange;
+import liquibase.database.Database;
+import liquibase.exception.ValidationErrors;
+import liquibase.ext2.cm.database.CmDatabase;
 
-import liquibase.database.core.PostgresDatabase;
+public abstract class AbstractCmChange extends AbstractChange {
 
-/**
- * We set a dummy database here since we are not actually modifying a database but sending
- * instructions to the ConfigurationManager.
- * TODO: Patrick: do we really need this class?
- */
-public class CmDatabase extends PostgresDatabase {
-    public static final String PRODUCT_NAME = "cm";
-    public static final String PRODUCT_SHORT_NAME = "cm";
-
-    final ConfigurationManagerService configurationManager;
-
-    public CmDatabase(final ConfigurationManagerService configurationManager) {
-        this.configurationManager = configurationManager;
+    @Override
+    public boolean supports(Database database) {
+        return database instanceof CmDatabase;
     }
 
     @Override
-    public String getDatabaseProductName() {
-        return PRODUCT_NAME;
+    public boolean generateStatementsVolatile(final Database database) {
+        return false;
     }
-
-    /**
-     * Returns an all-lower-case short name of the product.  Used for end-user selecting of database type
-     * such as the DBMS precondition.
-     */
-    @Override
-    public String getShortName() {
-        return PRODUCT_SHORT_NAME;
-    }
-
 
     @Override
-    protected String getDefaultDatabaseProductName() {
-        return PRODUCT_NAME;
+    public boolean generateRollbackStatementsVolatile(final Database database) {
+        return false;
     }
 
-    public ConfigurationManagerService getConfigurationManager() {
-        return this.configurationManager;
+    @Override
+    public ValidationErrors validate(Database database) {
+        ValidationErrors validationErrors = super.validate(database);
+        return validate((CmDatabase) database, validationErrors);
     }
 
+    protected abstract ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors);
 }

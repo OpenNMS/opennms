@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.change;
+package liquibase.ext2.cm.change;
 
 import java.io.IOException;
 
-import org.opennms.features.config.dao.api.ConfigConverter;
+import javax.xml.bind.JAXBException;
+
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,8 @@ import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
-import liquibase.ext.cm.database.CmDatabase;
-import liquibase.ext.cm.statement.GenericCmStatement;
+import liquibase.ext2.cm.database.CmDatabase;
+import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 
 /** Used in changelog.xml */
@@ -50,36 +51,50 @@ public class RegisterSchema extends AbstractCmChange {
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
     private String id;
-    private String xsdPath;
-    private String topLevelElement;
+    // The Jaxb class that represents a configuration
+    private String entityClassName;
+    private Class<?> entityClass;
+    private String version;
+    private ConfigurationManagerService.Version parsedVersion;
 
     @Override
     public ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
         validationErrors.checkRequiredField("id", this.id);
-        validationErrors.checkRequiredField("xsdPath", this.xsdPath);
-        validationErrors.checkRequiredField("topLevelElement", this.topLevelElement);
+        validationErrors.checkRequiredField("configClassName", this.entityClassName);
+        validationErrors.checkRequiredField("version", this.version);
+
+        try {
+            this.entityClass = Class.forName(entityClassName);
+        } catch(Exception e) {
+            validationErrors.addError(String.format("Can not load class %s: %s", this.entityClassName, e.getMessage()));
+        }
+
+        try {
+            String[] versions = version.split("\\.");
+            parsedVersion = new ConfigurationManagerService.Version(
+                    Integer.parseInt(versions[0]),
+                    Integer.parseInt(versions[1]),
+                    Integer.parseInt(versions[2])
+            );
+        } catch(Exception e) {
+            validationErrors.addError(e.getMessage());
+        }
         return validationErrors;
     }
 
     @Override
     public String getConfirmationMessage() {
-        return String.format("Registered new schema with schemaName=%s, xsdPath=%s, topLevelElement=%s", this.id, this.xsdPath, this.topLevelElement);
+        return String.format("Registered new schema with schemaName=%s, configClassName=%s", this.id, this.entityClassName);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
-
-                    int majorVersion = 1; // TODO: Patrick
-                    int minorVersion = 0; // TODO: Patrick
-                    int patchVersion = 0; // TODO: Patrick
-                    ConfigConverter<?> converter = null; // TODO: Patrick
-
-                    LOG.info("Registering new schema with schemaName={}, xsdPath={}, topLevelElement={}", this.id, this.xsdPath, this.topLevelElement);
+                    LOG.info("Registering new schema with schemaName={}, entityClass={}", this.id, this.entityClassName);
                     try {
-                        m.registerSchema(id, majorVersion, minorVersion, patchVersion, String.class); // // TODO: Patrick String.class
-                    } catch (IOException | ClassNotFoundException e) {
+                        m.registerSchema(id, parsedVersion, this.entityClass);
+                    } catch (IOException | JAXBException e) {
                         throw new RuntimeException(e);
                     }
 
@@ -95,20 +110,20 @@ public class RegisterSchema extends AbstractCmChange {
         this.id = id;
     }
 
-    public String getXsdPath() {
-        return xsdPath;
+    public String getEntityClass() {
+        return entityClassName;
     }
 
-    public void setXsdPath(String xsdPath) {
-        this.xsdPath = xsdPath;
+    public void setEntityClass(String entityClassName) {
+        this.entityClassName = entityClassName;
     }
 
-    public String getTopLevelElement() {
-        return topLevelElement;
+    public String getVersion() {
+        return version;
     }
 
-    public void setTopLevelElement(String topLevelElement) {
-        this.topLevelElement = topLevelElement;
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
 

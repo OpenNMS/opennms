@@ -8,8 +8,8 @@
     <xsd:element name="registerSchema">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="xsdPath" type="xsd:string" use="required"/>
-            <xsd:attribute name="topLevelElement" type="xsd:string" use="required"/>
+            <xsd:attribute name="version" type="xsd:string" use="required"/>
+            <xsd:attribute name="entityClass" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 

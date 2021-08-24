@@ -55,6 +55,6 @@ public class UpgradeConfigService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        new LiquibaseUpgrader(cm).runChangelog("/changelog/changelog.xml", dataSource.getConnection());
+        new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
     }
 }

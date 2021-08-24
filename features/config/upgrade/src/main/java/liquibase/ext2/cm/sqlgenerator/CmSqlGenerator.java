@@ -26,40 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext.cm.executor;
+package liquibase.ext2.cm.sqlgenerator;
 
-import java.util.List;
+import liquibase.database.Database;
+import liquibase.exception.ValidationErrors;
+import liquibase.ext2.cm.statement.AbstractCmStatement;
+import liquibase.sql.Sql;
+import liquibase.sqlgenerator.SqlGeneratorChain;
+import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
-import liquibase.exception.DatabaseException;
-import liquibase.executor.jvm.JdbcExecutor;
-import liquibase.ext.cm.database.CmDatabase;
-import liquibase.ext.cm.statement.AbstractCmStatement;
-import liquibase.servicelocator.LiquibaseService;
-import liquibase.sql.visitor.SqlVisitor;
-import liquibase.statement.SqlStatement;
-
-/**
- * We are using a hybrid approach here:
- * - All liquibase specific operations are carried out with the JdbcExecutor.
- * - All NotConfd operations are carried out with this subclass.
- */
-@LiquibaseService
-public class CmExecutor extends JdbcExecutor {
+/** NoOps generator since we don't need actual SQL. */
+public class CmSqlGenerator extends AbstractSqlGenerator<AbstractCmStatement> {
 
     @Override
-    public int getPriority() {
-        return PRIORITY_SPECIALIZED;
+    public ValidationErrors validate(AbstractCmStatement statement, Database database,
+                                     SqlGeneratorChain<AbstractCmStatement> sqlGeneratorChain) {
+        return null;
     }
 
     @Override
-    public void execute(final SqlStatement sql, final List<SqlVisitor> sqlVisitors) throws DatabaseException {
-        if(sql instanceof AbstractCmStatement && this.database instanceof CmDatabase) {
-            ((AbstractCmStatement) sql).execute((CmDatabase)this.database);
-            return;
-        }
-
-        // not our statement => delegate to parent
-        super.execute(sql, sqlVisitors);
+    public Sql[] generateSql(AbstractCmStatement statement, Database database, SqlGeneratorChain<AbstractCmStatement> sqlGeneratorChain) {
+        return new Sql[0];
     }
 
+    @Override
+    public boolean generateStatementsIsVolatile(Database database) {
+        return true;
+    }
 }
