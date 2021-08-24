@@ -154,7 +154,7 @@ public class AggregatedFlowQueryIT {
 
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
             new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings);
+            new MockIdentity(), new MockTracerRegistry(), documentForwarder, rawIndexSettings, 0, 0);
         flowRepository.setEnableFlowForwarding(true);
 
         // The repository should be empty

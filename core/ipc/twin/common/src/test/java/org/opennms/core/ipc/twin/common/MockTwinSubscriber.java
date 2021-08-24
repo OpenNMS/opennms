@@ -78,7 +78,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequestBean twinRequest) {
         try {
             byte[] value = objectMapper.writeValueAsBytes(twinRequest);
             ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(TwinApiIT.rpcRequestTopic, twinRequest.getKey(), value);

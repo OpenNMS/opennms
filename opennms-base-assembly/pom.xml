@@ -896,6 +896,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.twin.grpc.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc</groupId>
       <artifactId>org.opennms.core.ipc.osgi</artifactId>
       <version>${project.version}</version>

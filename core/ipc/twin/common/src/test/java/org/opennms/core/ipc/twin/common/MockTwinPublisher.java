@@ -66,7 +66,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    void handleSinkUpdate(TwinResponseBean sinkUpdate) {
+    protected void handleSinkUpdate(TwinResponseBean sinkUpdate) {
         KafkaProducer<String, byte[]> producer = new KafkaProducer<>(kafkaConfig);
         try {
             byte[] value = objectMapper.writeValueAsBytes(sinkUpdate);

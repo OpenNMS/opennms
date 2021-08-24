@@ -127,11 +127,11 @@
               <execution>
                 <id>run tests</id>
                 <goals>
-                  <goal>npm</goal>
+                  <goal>yarn</goal>
                 </goals>
                 <phase>test</phase>
                 <configuration>
-                  <arguments>--prefer-offline --no-progress run maven-test</arguments>
+                  <arguments>test</arguments>
                 </configuration>
               </execution>
             </executions>

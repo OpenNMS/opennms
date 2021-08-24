@@ -821,7 +821,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd ui && yarn install && yarn build
+            cd ui && yarn install && yarn test && yarn build
   build-docs:
     executor: docs-executor
     steps:

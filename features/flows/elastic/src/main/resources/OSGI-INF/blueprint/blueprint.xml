@@ -33,8 +33,10 @@
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
-            <!-- Bulk Action Retry settings -->
+            <!-- Bulk Action settings -->
+            <cm:property name="bulkSize" value="1000" /> <!-- Number of flow document collected into a bulk operation -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
+            <cm:property name="bulkFlushMs" value="500" /> <!-- Timeout to flush incomplete bulks -->
 
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
@@ -206,7 +208,7 @@
 
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
-          init-method="start">
+          init-method="start" destroy-method="stop">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
         <argument ref="rawIndexStrategy"/>
@@ -222,6 +224,8 @@
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>
         <property name="skipElasticsearchPersistence" value="${skipElasticsearchPersistence}"/>
+        <property name="bulkSize" value="${bulkSize}"/>
+        <property name="bulkFlushMs" value="${bulkFlushMs}"/>
     </bean>
 
     <!-- Proxy it, to ensure initialization on first call of any method -->

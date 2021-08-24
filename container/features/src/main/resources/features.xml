@@ -1667,6 +1667,15 @@
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.server/${project.version}</bundle>
+        <feature>opennms-core-ipc-twin-grpc-publisher</feature>
+    </feature>
+
+    <feature name="opennms-core-ipc-twin-grpc-publisher" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Publisher" version="${project.version}">
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.publisher/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-graphml" description="OpenNMS :: Features :: GraphML :: API + Service + ReST" version="${project.version}">
