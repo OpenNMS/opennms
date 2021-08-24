@@ -34,7 +34,6 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 
 import liquibase.ext2.cm.database.CmDatabase;
 
-// TODO: Patrick: merge with parent?
 public class GenericCmStatement extends AbstractCmStatement {
 
     private final Consumer<ConfigurationManagerService> executor;

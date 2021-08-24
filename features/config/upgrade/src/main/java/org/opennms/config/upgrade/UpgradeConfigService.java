@@ -36,7 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
- * Checks for config upgrades and executes them.
+ * Checks for config upgrades and executes them at startup of OpenNMS.
  * Runs at every start of the application.
  * Uses liquibase as underlying technology.
  */

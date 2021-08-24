@@ -2,4 +2,4 @@
 
 We use Liquibase to automatically upgrade configurations between OpenNMS versions.
 
-TODO: Patrick add full description.
+Add or change a configuration by editing the changelog-cm.xml file in the folder changelog-cm.

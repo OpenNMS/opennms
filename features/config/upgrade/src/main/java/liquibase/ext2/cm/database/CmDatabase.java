@@ -35,7 +35,6 @@ import liquibase.database.core.PostgresDatabase;
 /**
  * We set a dummy database here since we are not actually modifying a database but sending
  * instructions to the ConfigurationManager.
- * TODO: Patrick: do we really need this class?
  */
 public class CmDatabase extends PostgresDatabase {
     public static final String PRODUCT_NAME = "cm";
