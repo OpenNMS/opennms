@@ -69,19 +69,13 @@ IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell an
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8::
+Linux::
 +
 --
-include::centos-rhel/secure-karaf.adoc[]
+include::secure-karaf.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
-Debian/Ubuntu::
-+
---
-include::debian-ubuntu/secure-karaf.adoc[]
---
-
 Docker::
 +
 --
