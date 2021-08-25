@@ -61,8 +61,8 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response getRawOpenApiSchema(final String configName) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            SwaggerConverter swaggerConverter = new SwaggerConverter();
-            OpenAPI openapi = swaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
+            ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
+            OpenAPI openapi = configSwaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
                     BASE_PATH + schema.get().getName());
             return Response.ok(openapi).build();
         } catch (IOException | RuntimeException e) {
@@ -72,12 +72,12 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response getOpenApiSchema(String configName, String type){
+    public Response getOpenApiSchema(String configName, String acceptType){
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            SwaggerConverter swaggerConverter = new SwaggerConverter();
-            String outStr = swaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
-                    BASE_PATH + schema.get().getName(), type);
+            ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
+            String outStr = configSwaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
+                    BASE_PATH + schema.get().getName(), acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
