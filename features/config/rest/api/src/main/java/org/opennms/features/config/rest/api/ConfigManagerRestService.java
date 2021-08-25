@@ -68,7 +68,7 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/schema/{configName}")
-    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String type);
+    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType);
 
     @GET
     @Path("/{configName}")

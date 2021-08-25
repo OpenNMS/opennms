@@ -47,7 +47,7 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
-public class SwaggerConverterTest {
+public class ConfigSwaggerConverterTest {
     public static final String XSD_PATH = "xsds/fake-vacuumd-configuration.xsd";
     public static final String TOP_ELEMENT = "VacuumdConfiguration";
 
@@ -72,12 +72,10 @@ public class SwaggerConverterTest {
         property.setType(ConfigItem.Type.STRING);
         object.getChildren().add(property);
 
-        SwaggerConverter swaggerConverter = new SwaggerConverter();
-        OpenAPI api = swaggerConverter.convert(parent, "/svc");
+        ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
+        OpenAPI api = configSwaggerConverter.convert(parent, "/svc");
 
-        //TODO: looks like it is wrong, review again later
-        //assertThat(api.getPaths().keySet(), contains("/svc", "/svc/array", "/svc/array/{objectIndex}"));
-        assertThat(api.getPaths().keySet(), contains("/svc"));
+        assertThat(api.getPaths().keySet(), contains("/svc", "/svc/{configId}"));
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -92,8 +90,8 @@ public class SwaggerConverterTest {
         XsdModelConverter xsdModelConverter = new XsdModelConverter();
         ConfigItem configItem = xsdModelConverter.convert(schemaCol, TOP_ELEMENT);
 
-        SwaggerConverter swaggerConverter = new SwaggerConverter();
-        String openapiStr = swaggerConverter.convertToString(configItem, "/VacuumdConfiguration", MediaType.APPLICATION_JSON);
+        ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
+        String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration", MediaType.APPLICATION_JSON);
 
         final String expectedSwaggerJson = Resources.toString(
                 Resources.getResource("swagger.generated.json"), StandardCharsets.UTF_8);

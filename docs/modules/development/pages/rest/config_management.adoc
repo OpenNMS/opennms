@@ -1,6 +1,6 @@
 = Config Management
 
-It is the generic specification of Config Management RESTful API specification
+It is the generic specification of Config Management RESTful API
 
 == GET
 

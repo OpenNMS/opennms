@@ -9,7 +9,51 @@
     "/VacuumdConfiguration" : {
       "get" : {
         "tags" : [ "VacuumdConfiguration" ],
+        "summary" : "Get VacuumdConfiguration configIds",
+        "responses" : {
+          "200" : {
+            "description" : "configIds",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Error message",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "message" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/VacuumdConfiguration/{configId}" : {
+      "get" : {
+        "tags" : [ "VacuumdConfiguration" ],
         "summary" : "Get VacuumdConfiguration configuration",
+        "parameters" : [ {
+          "name" : "configId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "VacuumdConfiguration configuration",
@@ -40,7 +84,15 @@
       },
       "put" : {
         "tags" : [ "VacuumdConfiguration" ],
-        "summary" : "Overwrite VacuumdConfiguration",
+        "summary" : "Overwrite VacuumdConfiguration configuration",
+        "parameters" : [ {
+          "name" : "configId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -52,7 +104,7 @@
         },
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "empty"
           },
           "400" : {
             "description" : "Error message",
@@ -73,7 +125,15 @@
       },
       "post" : {
         "tags" : [ "VacuumdConfiguration" ],
-        "summary" : "Add Configure VacuumdConfiguration",
+        "summary" : "Add VacuumdConfiguration configuration",
+        "parameters" : [ {
+          "name" : "configId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -85,7 +145,7 @@
         },
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "empty"
           },
           "400" : {
             "description" : "Error message",
@@ -107,42 +167,17 @@
       "delete" : {
         "tags" : [ "VacuumdConfiguration" ],
         "summary" : "Delete VacuumdConfiguration configuration",
+        "parameters" : [ {
+          "name" : "configId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
-            "description" : "VacuumdConfiguration configuration"
-          },
-          "400" : {
-            "description" : "Error message",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "properties" : {
-                    "message" : {
-                      "type" : "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch" : {
-        "tags" : [ "VacuumdConfiguration" ],
-        "summary" : "Overwrite VacuumdConfiguration",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/VacuumdConfiguration"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK"
+            "description" : "empty"
           },
           "400" : {
             "description" : "Error message",
