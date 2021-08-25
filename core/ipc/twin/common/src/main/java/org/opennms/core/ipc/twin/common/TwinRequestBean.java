@@ -28,11 +28,13 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import java.util.Objects;
+
 public class TwinRequestBean {
 
-    private String key;
+    protected String key;
 
-    private String location;
+    protected String location;
 
     public TwinRequestBean(String key, String location) {
         this.key = key;
@@ -56,5 +58,26 @@ public class TwinRequestBean {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TwinRequestBean that = (TwinRequestBean) o;
+        return Objects.equals(key, that.key) && Objects.equals(location, that.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, location);
+    }
+
+    @Override
+    public String toString() {
+        return "TwinRequestBean{" +
+                "key='" + key + '\'' +
+                ", location='" + location + '\'' +
+                '}';
     }
 }

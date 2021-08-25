@@ -2,6 +2,40 @@
 
 = Changelog
 
+[releasenotes-changelog-28.0.2]
+
+== Release 28.0.2
+
+Release 28.0.2 contains a bunch of bug fixes and enhancements, as well as some fixes for
+XSS issues and a Jetty CVE.
+
+The codename for Horizon 28.0.2 is https://wikipedia.org/wiki/$$Soundwave_(Transformers)$$[_Soundwave_].
+
+=== Bug
+
+* The Dev Documentation doesn't have information about the Hardware Inventory (Issue http://issues.opennms.org/browse/NMS-11730[NMS-11730])
+* Admin guide still uses deprecated term "provisioning group" in places (Issue http://issues.opennms.org/browse/NMS-12373[NMS-12373])
+* Swagger UI hard coded to server via HTTP (Issue http://issues.opennms.org/browse/NMS-13353[NMS-13353])
+* OpenAPI spec fails validation (Issue http://issues.opennms.org/browse/NMS-13354[NMS-13354])
+* OutOfMemory issue on Minion (corner case related to Offheap) (Issue http://issues.opennms.org/browse/NMS-13405[NMS-13405])
+* vmwareconfigbuilder and vmwarecimquery not working anymore (Issue http://issues.opennms.org/browse/NMS-13444[NMS-13444])
+* Jetty 9.4.38 security issues CVE-2021-28164, CVE-2021-34428 and CVE-2021-28169 (Issue http://issues.opennms.org/browse/NMS-13449[NMS-13449])
+* Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
+* Reflected XSS in scheduled outage editor (Issue http://issues.opennms.org/browse/NMS-13498[NMS-13498])
+
+=== Enhancement
+
+* Add missing Prometheus collectd example in our documenation (Issue http://issues.opennms.org/browse/NMS-12978[NMS-12978])
+* Nephron: Consider interfaces for unaligned windows (Issue http://issues.opennms.org/browse/NMS-13352[NMS-13352])
+* Table formatting issue in new docs (Issue http://issues.opennms.org/browse/NMS-13364[NMS-13364])
+* Hardware Inventory Plugin needs docs (Issue http://issues.opennms.org/browse/NMS-13370[NMS-13370])
+* Document search panel (Issue http://issues.opennms.org/browse/NMS-13408[NMS-13408])
+* The PageSequenceMonitor keys host and virtual-host are confusing (Issue http://issues.opennms.org/browse/NMS-13412[NMS-13412])
+* Only publish Docker images when system tests are green (Issue http://issues.opennms.org/browse/NMS-13433[NMS-13433])
+* Doc typos - improper character escaping (Issue http://issues.opennms.org/browse/NMS-13448[NMS-13448])
+* Update table formatting in collectors section of docs (Issue http://issues.opennms.org/browse/NMS-13456[NMS-13456])
+* Optimize node cache refresh to be non-blocking to flow data (Issue http://issues.opennms.org/browse/NMS-13481[NMS-13481])
+
 [[releasenotes-changelog-28.0.1]]
 
 == Release 28.0.1

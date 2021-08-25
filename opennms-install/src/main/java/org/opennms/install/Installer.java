@@ -591,7 +591,7 @@ public class Installer {
         try {
             validator.validate(user, opennmsHome);
         } catch (final FilesystemPermissionException e) {
-            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not owned by that account.", user, e.path);
+            LOG.error("OpenNMS is configured to run as '{}' but '{}' is not writable by that account.", user, e.path);
             LOG.error("To fix permissions, run '{}/bin/fix-permissions' as root", m_opennms_home);
             System.out.println();
 
