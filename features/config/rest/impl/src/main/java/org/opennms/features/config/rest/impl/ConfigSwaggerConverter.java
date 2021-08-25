@@ -51,8 +51,8 @@ import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SwaggerConverter {
-    private static final Logger LOG = LoggerFactory.getLogger(SwaggerConverter.class);
+public class ConfigSwaggerConverter {
+    private final Logger LOG = LoggerFactory.getLogger(ConfigSwaggerConverter.class);
 
     private final Map<ConfigItem, Schema<?>> schemasByItem = new LinkedHashMap<>();
     private final Map<ConfigItem, String> pathsByItem = new LinkedHashMap<>();
@@ -62,11 +62,11 @@ public class SwaggerConverter {
 
     private String prefix = "/";
 
-    public String convertToString(ConfigItem item, String prefix, String type) {
+    public String convertToString(ConfigItem item, String prefix, String acceptType) {
         OpenAPI openapi = convert(item, prefix);
 
         try {
-            return convertOpenAPIToString(openapi, type);
+            return convertOpenAPIToString(openapi, acceptType);
         } catch (JsonProcessingException e) {
             return "";
         }
@@ -75,22 +75,22 @@ public class SwaggerConverter {
     /**
      * convert open api object to specific string (default is yaml)
      *
-     * @param openapi
-     * @param type
+     * @param openapi schema
+     * @param acceptType (json / yaml)
      * @return
      * @throws JsonProcessingException
      */
-    static public String convertOpenAPIToString(OpenAPI openapi, String type) throws JsonProcessingException {
+    public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws JsonProcessingException {
         ObjectMapper objectMapper;
         try {
-            org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.valueOf(type);
+            org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.valueOf(acceptType);
             if (org.springframework.http.MediaType.APPLICATION_JSON.equals(mediaType) && mediaType != null) {
                 objectMapper = new ObjectMapper();
             } else {
                 objectMapper = new ObjectMapper(new YAMLFactory());
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MideaType: " + type + " error: " + e.getMessage());
+            LOG.warn("UNKNOWN MideaType: " + acceptType + " error: " + e.getMessage());
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 
@@ -117,6 +117,7 @@ public class SwaggerConverter {
         openAPI.setComponents(components);
 
         // Create a basic info section
+        // TODO: handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");
@@ -136,35 +137,18 @@ public class SwaggerConverter {
         openAPI.setPaths(paths);
 
         // Generate paths for the items
-        walk(null, item, this::generatePathsForItems);
+        this.generatePathsForItems(item);
         pathItemsByPath.forEach(paths::addPathItem);
 
         return openAPI;
     }
 
-    private void generatePathsForItems(ConfigItem parent, ConfigItem item) {
-// TODO: check is that correct !!!
-// Skip simple types - they can be set on the parent object and have no children
-//        if (item.getType().isSimple()) {
-//            return;
-//        }
-        // we only generate path for first level item (compare with the last checking, it looks better)
-        if (parent != null) {
-            return;
-        }
-
-        // Build the path to this element
-        String path;
-        if (parent != null) {
-            path = pathsByItem.get(parent);
-            if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
-                path += "/{" + item.getName() + "Index}";
-            } else {
-                path += "/" + item.getName();
-            }
-        } else {
-            path = prefix;
-        }
+    /**
+     * It handles path for each config
+     * @param item config
+     */
+    private void generatePathsForItems(ConfigItem item) {
+        String path = prefix;
 
         // Index the path for future reference
         pathsByItem.put(item, path);
@@ -173,102 +157,101 @@ public class SwaggerConverter {
         schemaForCurrentItem.setName(item.getName());
         schemaForCurrentItem.set$ref("#/components/schemas/" + item.getName());
 
-        PathItem pathItem = new PathItem();
-
-        List<String> urlParameters = buildUrlParamList(path);
-
-        for (Iterator<String> iterator = urlParameters.iterator(); iterator.hasNext(); ) {
-            String param = iterator.next();
-            Parameter parameter = new Parameter();
-            parameter.setName(param);
-            parameter.setIn("path");
-            parameter.setSchema(new IntegerSchema());
-            parameter.setRequired(true);
-            parameter.setDescription("Index of item in the array");
-            pathItem.addParametersItem(parameter);
-        }
+        PathItem configNamePathItem = new PathItem();
+        PathItem configIdPathItem = new PathItem();
 
         String tagName = getTagName(path);
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
         jsonObjectContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+
+        // configId result content
+        Content configIdContent = new Content();
+        MediaType configIdMediaType = new MediaType();
+        ArraySchema configIdParent = new ArraySchema();
+        Schema configIdSchema = new StringSchema();
+        configIdParent.setItems(configIdSchema);
+        configIdMediaType.schema(configIdParent);
+        configIdContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), configIdMediaType);
+
+        // configId path param
+        List<Parameter> parameters = new ArrayList<>();
+        Parameter configIdParam = new Parameter();
+        configIdParam.setName("configId");
+        configIdParam.setRequired(true);
+        configIdParam.in("path");
+        configIdParam.setSchema(new StringSchema());
+        parameters.add(configIdParam);
+
         //============= POST =================
-        Operation post = this.generateOperation(tagName, "Add Configure " + item.getName(), "OK",
-                jsonObjectContent, true, false);
-        pathItem.setPost(post);
+        Operation post = this.generateOperation(tagName, "Add " + item.getName() + " configuration", "empty",
+                parameters, jsonObjectContent, null);
+        configIdPathItem.setPost(post);
 
         //============== PUT =================
-        Operation put = this.generateOperation(tagName, "Overwrite " + item.getName(), "OK",
-                jsonObjectContent, true, false);
-        pathItem.setPut(put);
-
-        //============== PATCH =================
-        Operation patch = this.generateOperation(tagName, "Overwrite " + item.getName(), "OK",
-                jsonObjectContent, true, false);
-        pathItem.setPatch(patch);
+        Operation put = this.generateOperation(tagName, "Overwrite " + item.getName() + " configuration", "OK",
+                parameters, jsonObjectContent, null);
+        configIdPathItem.setPut(put);
 
         //============== GET =================
         Operation get = this.generateOperation(tagName, "Get " + item.getName() + " configuration",
-                item.getName() + " configuration", jsonObjectContent, false, true);
-        pathItem.setGet(get);
+                item.getName() + " configuration", parameters, null, jsonObjectContent);
+        configIdPathItem.setGet(get);
+
+        Operation getConfigIds = this.generateOperation(tagName, "Get " + item.getName() + " configIds",
+                "configIds", null, null, configIdContent);
+        configNamePathItem.setGet(getConfigIds);
 
         //============== DELETE =================
         Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
-                item.getName() + " configuration", jsonObjectContent, false, false);
-        pathItem.setDelete(delete);
+                item.getName() + " configuration", parameters, null, null);
+        configIdPathItem.setDelete(delete);
 
         // Save
-        pathItemsByPath.put(path, pathItem);
+        pathItemsByPath.put(path, configNamePathItem);
+        pathItemsByPath.put(path + "/{configId}", configIdPathItem);
     }
 
     private Operation generateOperation(String tagName, String summary, String description,
-                                        Content jsonObjectContent, boolean isGenRequestBody, boolean isGenResponseContent) {
+                                        List<Parameter> parameters,
+                                        Content requestContent, Content responseContent) {
         Operation operation = new Operation();
         operation.tags(Arrays.asList(tagName));
         operation.summary(summary);
 
+        if (parameters != null) {
+            operation.parameters(parameters);
+        }
         // Request body
-        if (isGenRequestBody) {
+        if (requestContent != null) {
             RequestBody requestBody = new RequestBody();
-            requestBody.setContent(jsonObjectContent);
+            requestBody.setContent(requestContent);
             operation.requestBody(requestBody);
         }
 
         // 200 OK
         ApiResponses apiResponses = new ApiResponses();
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setDescription(description);
-        if (isGenResponseContent) {
-            apiResponse.setContent(jsonObjectContent);
+        if (responseContent != null) {
+            apiResponse.setDescription(description);
+            apiResponse.setContent(responseContent);
+        } else {
+            apiResponse.setDescription("empty");
         }
         apiResponses.addApiResponse("200", apiResponse);
 
         // 400 error
-        apiResponses.addApiResponse("400", getSimpleMessageResponse("Error message", "message"));
+        Map<String, Schema> properties = new HashMap<>();
+        Schema errorMessageSchema = new StringSchema();
+        properties.put("message", errorMessageSchema);
+        apiResponses.addApiResponse("400", getSimpleObjectResponse("Error message", properties));
 
-        //operation.requestBody(getSimpleRequest("fileId", "fileId"));
         operation.responses(apiResponses);
         return operation;
     }
-/*
-    private RequestBody getSimpleRequest(String description, String keyName) {
-        RequestBody requestBody = new RequestBody();
-        requestBody.setDescription(description);
-        Content messageContent = new Content();
-        requestBody.setContent(messageContent);
-        MediaType mediaType = new MediaType();
-        messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
 
-        Schema parentSchema = new ObjectSchema();
-        Schema messageSchema = new StringSchema();
-
-        mediaType.schema(parentSchema);
-        parentSchema.addProperties(keyName, messageSchema);
-        return requestBody;
-    }*/
-
-    private ApiResponse getSimpleMessageResponse(String description, String keyName) {
+    private ApiResponse getSimpleObjectResponse(String description, Map<String, Schema> properties) {
         ApiResponse messageResponse = new ApiResponse();
         messageResponse.setDescription(description);
         Content messageContent = new Content();
@@ -276,11 +259,10 @@ public class SwaggerConverter {
         MediaType mediaType = new MediaType();
         messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
 
-        Schema parentSchema = new ObjectSchema();
-        Schema messageSchema = new StringSchema();
+        ObjectSchema parentSchema = new ObjectSchema();
 
         mediaType.schema(parentSchema);
-        parentSchema.addProperties(keyName, messageSchema);
+        properties.forEach(parentSchema::addProperties);
         return messageResponse;
     }
 
@@ -397,11 +379,10 @@ public class SwaggerConverter {
         schemasByItem.put(item, schema);
     }
 
-    public static void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {
+    public void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {
         consumer.accept(parent, item);
         for (ConfigItem childItem : item.getChildren()) {
             walk(item, childItem, consumer);
         }
     }
-
 }
