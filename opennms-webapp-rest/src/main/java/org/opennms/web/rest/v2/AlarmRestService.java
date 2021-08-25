@@ -41,6 +41,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -76,7 +77,11 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.v2.api.AlarmRestApi;
 import org.opennms.web.svclayer.TroubleTicketProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,9 +92,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("alarms")
 @Transactional
-public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> {
+public class AlarmRestService  implements AlarmRestApi {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestService.class);
 
     @Autowired
     private AlarmDao m_dao;
@@ -106,22 +112,18 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     @Autowired
     private AlarmMapper m_alarmMapper;
 
-    @Override
     protected AlarmDao getDao() {
         return m_dao;
     }
 
-    @Override
     protected Class<OnmsAlarm> getDaoClass() {
         return OnmsAlarm.class;
     }
 
-    @Override
     protected Class<SearchBean> getQueryBeanClass() {
         return SearchBean.class;
     }
 
-    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
 
@@ -146,17 +148,15 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         return builder;
     }
 
-    @Override
+
     protected JaxbListWrapper<AlarmDTO> createListWrapper(Collection<AlarmDTO> list) {
         return new AlarmCollectionDTO(list);
     }
 
-    @Override
     protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.ALARM_SERVICE_PROPERTIES;
     }
 
-    @Override
     protected Map<String, CriteriaBehavior<?>> getCriteriaBehaviors() {
         final Map<String, CriteriaBehavior<?>> map = new HashMap<>();
 
@@ -186,12 +186,11 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         return map;
     }
 
-    @Override
+
     protected OnmsAlarm doGet(UriInfo uriInfo, Integer id) {
         return getDao().get(id);
     }
 
-    @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
         final String ticketIdValue = params.getFirst("ticketId");
         final String ticketStateValue = params.getFirst("ticketState");
@@ -249,82 +248,6 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         return Response.noContent().build();
     }
 
-    @PUT
-    @Path("{id}/memo")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
-        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
-        SecurityHelper.assertUserEditCredentials(securityContext, user);
-        final String body = params.getFirst("body");
-        if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
-        m_repository.updateStickyMemo(alarmId, body, user);
-        return Response.noContent().build();
-    }
-
-    @PUT
-    @Path("{id}/journal")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
-        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
-        SecurityHelper.assertUserEditCredentials(securityContext, user);
-        final String body = params.getFirst("body");
-        if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
-        m_repository.updateReductionKeyMemo(alarmId, body, user);
-        return Response.noContent().build();
-    }
-
-    @DELETE
-    @Path("{id}/memo")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-        m_repository.removeStickyMemo(alarmId);
-        return Response.noContent().build();
-    }
-
-    @DELETE
-    @Path("{id}/journal")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-        m_repository.removeReductionKeyMemo(alarmId);
-        return Response.noContent().build();
-    }
-
-    @POST
-    @Path("{id}/ticket/create")
-    public Response createTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-
-        return runIfTicketerPluginIsEnabled(() -> {
-            final Map<String, String> parameters = new HashMap<>();
-            parameters.put(EventConstants.PARM_USER, securityContext.getUserPrincipal().getName());
-            m_troubleTicketProxy.createTicket(alarmId, parameters);
-            return Response.status(Status.ACCEPTED).build();
-        });
-    }
-
-    @POST
-    @Path("{id}/ticket/update")
-    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-
-        return runIfTicketerPluginIsEnabled(() -> {
-            m_troubleTicketProxy.updateTicket(alarmId);
-            return Response.status(Status.ACCEPTED).build();
-        });
-    }
-
-    @POST
-    @Path("{id}/ticket/close")
-    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-
-        return runIfTicketerPluginIsEnabled(() -> {
-            m_troubleTicketProxy.closeTicket(alarmId);
-            return Response.status(Status.ACCEPTED).build();
-        });
-    }
 
     private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
         if (!isTicketerPluginEnabled()) {
@@ -339,13 +262,85 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
         return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
     }
 
-    @Override
+
     public AlarmDTO mapEntityToDTO(OnmsAlarm alarm) {
         return m_alarmMapper.alarmToAlarmDTO(alarm);
     }
 
-    @Override
+
     public OnmsAlarm mapDTOToEntity(AlarmDTO dto) {
         return m_alarmMapper.alarmDTOToAlarm(dto);
+    }
+
+    @Override
+    public Response updateMemo(SecurityContext securityContext, Integer alarmId, MultivaluedMapImpl params) {
+        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+        SecurityHelper.assertUserEditCredentials(securityContext, user);
+        final String body = params.getFirst("body");
+        if (body == null) throw getException(Response.Status.BAD_REQUEST, "Body cannot be null.");
+        m_repository.updateStickyMemo(alarmId, body, user);
+        return Response.noContent().build();
+    }
+
+    @Override
+    public Response updateJournal(SecurityContext securityContext, Integer alarmId, MultivaluedMapImpl params) {
+        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+        SecurityHelper.assertUserEditCredentials(securityContext, user);
+        final String body = params.getFirst("body");
+        if (body == null) throw getException(Response.Status.BAD_REQUEST, "Body cannot be null.");
+        m_repository.updateReductionKeyMemo(alarmId, body, user);
+        return Response.noContent().build();
+    }
+
+    @Override
+    public Response removeMemo(SecurityContext securityContext, Integer alarmId) {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        m_repository.removeStickyMemo(alarmId);
+        return Response.noContent().build();
+    }
+
+    @Override
+    public Response removeJournal(SecurityContext securityContext, Integer alarmId) {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        m_repository.removeReductionKeyMemo(alarmId);
+        return Response.noContent().build();
+    }
+
+    @Override
+    public Response createTicket(SecurityContext securityContext, Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            final Map<String, String> parameters = new HashMap<>();
+            parameters.put(EventConstants.PARM_USER, securityContext.getUserPrincipal().getName());
+            m_troubleTicketProxy.createTicket(alarmId, parameters);
+            return Response.status(Response.Status.ACCEPTED).build();
+        });
+    }
+
+    @Override
+    public Response updateTicket(SecurityContext securityContext, Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            m_troubleTicketProxy.updateTicket(alarmId);
+            return Response.status(Response.Status.ACCEPTED).build();
+        });
+    }
+
+    @Override
+    public Response closeTicket(SecurityContext securityContext, Integer alarmId) throws Exception {
+        SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+
+        return runIfTicketerPluginIsEnabled(() -> {
+            m_troubleTicketProxy.closeTicket(alarmId);
+            return Response.status(Response.Status.ACCEPTED).build();
+        });
+    }
+
+    protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+        LOG.error(msg);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 }
