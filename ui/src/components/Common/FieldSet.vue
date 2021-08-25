@@ -1,6 +1,6 @@
 <template>
 	<Fieldset>		
-		<Slot></Slot>
+		<slot></slot>
 	</Fieldset>
 </template>
 <script setup lang="ts">	
