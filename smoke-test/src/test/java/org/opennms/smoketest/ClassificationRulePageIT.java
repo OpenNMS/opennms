@@ -458,7 +458,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         public String classify(ClassificationRequestDTO classificationRequest) {
             // get the classification input
             if (!execute(() -> findElementById("classification-tab")).isDisplayed()) {
-                execute(() -> findElementById("action.classification.toggle")).click();
+                execute(() -> clickElement(By.id("action.classification.toggle")));
             }
 
             // Input fields
@@ -470,7 +470,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             setInput("classify-protocol", classificationRequest.getProtocol(), true);
 
             // Submit form
-            execute(() -> findElementById("classification-submit")).click();
+            execute(() -> clickElement(By.id("classification-submit")));
 
             // The "classification-response" may already be visible (e.g. due to an earlier verification)
             // therefore it may contain a value if it is fetched directly after clicking the button.
@@ -789,8 +789,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             return new RuleModal()
                     .open(() -> {
                         // Click add rule button
-                        findElementById("action.addRule").click();
-                        new WebDriverWait(driver, 5).until(pageContainsText("Create Classification Rule"));
+                        clickElement(By.id("action.addRule"));
+                        waitUntil(pageContainsText("Create Classification Rule"));
                     });
         }
 
@@ -798,8 +798,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             return new RuleModal()
                     .open(() -> {
                         // click edit button
-                        findElementById("action." + position + ".edit").click();
-                        new WebDriverWait(driver, 5).until(pageContainsText("Edit Classification Rule"));
+                        clickElement(By.id("action." + position + ".edit"));
+                        waitUntil(pageContainsText("Edit Classification Rule"));
                     });
         }
 
@@ -839,15 +839,15 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         public void deleteGroup(int position) {
             execute(() -> {
                 final String deleteActionId = "action." + position + ".delete";
-                findElementById(deleteActionId).click();
-                new WebDriverWait(driver, 5).until(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
+                clickElement(By.id(deleteActionId));
+                waitUntil(ExpectedConditions.numberOfElementsToBe(By.id(deleteActionId), 0));
                 return null;
             });
         }
 
         public void navigateToPage(int page) {
             // Navigate to next page
-            execute(() -> findElementByXpath("//li[contains(@class, 'page-item')]/a[contains(text(), '" + page + "')]")).click();
+            execute(() -> clickElement(By.xpath("//li[contains(@class, 'page-item')]/a[contains(text(), '" + page + "')]")));
 
             // The next page is active even if the data is not yet loaded, waiting reduced the likelihood of returning before
             // the page was refreshed. See HZN-1289.
