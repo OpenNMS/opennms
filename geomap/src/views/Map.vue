@@ -1,22 +1,23 @@
 <template>
-  <div class="leaflet-map">
-    <LeafletMap />
-  </div>
-  <router-link :to="{ name: 'MapAlarms' }">Alarms</router-link>
-  |
-  <router-link :to="{ name: 'MapNodes' }">Nodes</router-link>
-  <router-view />
+  <splitpanes class="default-theme" horizontal style="height: 1000px">
+    <pane min-size="1" max-size="60">
+      <div class="leaflet-map">
+        <LeafletMap />
+      </div>
+    </pane>
+    <pane id="map-pane-under">
+      <router-link :to="{ name: 'MapAlarms' }">Alarms</router-link>
+      |
+      <router-link :to="{ name: 'MapNodes' }">Nodes</router-link>
+      <router-view />
+    </pane>
+  </splitpanes>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import LeafletMap from "../components/LeafletMap.vue";
-
-export default {
-  name: "Map",
-  components: {
-    LeafletMap,
-  },
-};
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 </script>
 
 <style scoped>
