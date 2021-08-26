@@ -38,7 +38,7 @@ const props = defineProps({
         required: false
     }
 });
-console.log(props.optionValue);
+
 </script>
 
 <style lang="scss" scoped>
