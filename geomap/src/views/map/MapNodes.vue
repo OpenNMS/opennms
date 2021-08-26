@@ -1,15 +1,14 @@
 <template>
   <div class="mapnodes">
     <h4>This is the nodes page</h4>
-  </div>
-  <div class="map-nodes-grid">
+
     <div class="map-nodes-grid">
       <ag-grid-vue
         style="width: 100%; height: 600px"
         class="ag-theme-alpine"
         :columnDefs="columnDefs"
         :rowData="rowData"
-        >
+      >
       </ag-grid-vue>
     </div>
   </div>
