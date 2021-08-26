@@ -6,14 +6,14 @@
 
 import Calendar from 'primevue/calendar';
 
-interface ItimePickerProps {
+interface TimePickerProps {
     id?: string
     showTime?: boolean
     timeOnly?: boolean
     hourFormat?: string
 }
 
-const props = withDefaults(defineProps<ItimePickerProps>(), {
+const props = withDefaults(defineProps<TimePickerProps>(), {
     showTime: true,
     timeOnly: true,
     hourFormat: "24", // value - 12 or 24 supported 
