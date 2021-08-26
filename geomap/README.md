@@ -3,6 +3,6 @@
 
 To install packages and run dev server
 ```
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
