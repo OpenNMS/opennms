@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@ag-grid-community/vue3@^26.0.0":
+  version "26.0.0"
+  resolved "https://registry.yarnpkg.com/@ag-grid-community/vue3/-/vue3-26.0.0.tgz#72991d685ac7272b54f0a7c1f2df05da6ca65281"
+  integrity sha512-JeJHTggw3LXQVXiXpynjvUW4hqlhilfCyUK8xhtwb8F2KkUehCF/Oz1WStx164X5SVd1gIAN4vWFi79G/cpi4w==
+
 "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.14.5":
   version "7.14.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.14.5.tgz#23b08d740e83f49c5e59945fbf1b43e80bbf4edb"
@@ -3262,6 +3267,11 @@ vscode-vue-languageservice@^0.27.0:
     vscode-languageserver-textdocument "^1.0.1"
     vscode-pug-languageservice "^0.27.7"
     vscode-typescript-languageservice "^0.27.7"
+
+vue-class-component@^8.0.0-rc.1:
+  version "8.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-8.0.0-rc.1.tgz#db692cd97656eb9a08206c03d0b7398cdb1d9420"
+  integrity sha512-w1nMzsT/UdbDAXKqhwTmSoyuJzUXKrxLE77PCFVuC6syr8acdFDAq116xgvZh9UCuV0h+rlCtxXolr3Hi3HyPQ==
 
 vue-router@^4.0.11:
   version "4.0.11"
