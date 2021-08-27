@@ -33,8 +33,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.criteria.Criteria;
@@ -382,12 +383,13 @@ public class DefaultClassificationService implements ClassificationService {
 
         private final ClassificationEngine delegate;
 
-        private final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "AsyncReloadingClassificationEngine");
-            }
-        });
+        // uses at most one additional thread; if the thread is not used for 60 seconds then it is terminated
+        // -> uses no additional resources while being idle
+        private final ExecutorService executorService = new ThreadPoolExecutor(0, 1,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                runnable -> new Thread(runnable, "AsyncReloadingClassificationEngine")
+        );
 
         private State state = State.READY;
         private Exception reloadException;

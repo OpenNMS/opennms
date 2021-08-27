@@ -469,6 +469,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             setInput("classify-dstPort", classificationRequest.getDstPort());
             setInput("classify-protocol", classificationRequest.getProtocol(), true);
 
+            // remember the text that was in the response element before executing the classification
+            var textBeforeClassification = execute(() -> findElementById("classification-response")).getText();
+
             // Submit form
             execute(() -> findElementById("classification-submit")).click();
 
@@ -477,10 +480,16 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             // In some scenarios the response from the opennms endpoint is not yet received, thus the old value is returned
             // resulting in test failures. To avoid this, a bunch of seconds is waited before reading the value.
             // See HZN-1289.
-            sleep(DEFAULT_WAIT_TIME);
 
-            // Fiddle result out of UI
-            return execute(() -> findElementById("classification-response")).getText();
+            for (int i = 0; i < 10; i++) {
+                sleep(DEFAULT_WAIT_TIME);
+                var text = execute(() -> findElementById("classification-response")).getText();
+                if (!Objects.equals(textBeforeClassification, text)) {
+                    return text;
+                }
+            }
+
+            return textBeforeClassification;
         }
 
         private void setInput(String id, String text, boolean withEnter) {
