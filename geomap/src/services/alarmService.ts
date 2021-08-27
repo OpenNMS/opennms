@@ -20,7 +20,7 @@ const getAlarms = async (queryParameters?: QueryParameters): Promise<AlarmApiRes
 
         // no content from server
         if (resp.status === 204) {
-            return { node: [], totalCount: 0, count: 0, offset: 0 }
+            return { alarm: [], totalCount: 0, count: 0, offset: 0 }
         }
 
         return resp.data

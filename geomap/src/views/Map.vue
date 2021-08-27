@@ -27,6 +27,7 @@ const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
   offset: 0,
 }, 'nodesModule/getNodes')
   store.dispatch('mapModule/getNodes', queryParameters.value)
+  store.dispatch('mapModule/getAlarms', queryParameters.value)
 </script>
 
 <style scoped>
