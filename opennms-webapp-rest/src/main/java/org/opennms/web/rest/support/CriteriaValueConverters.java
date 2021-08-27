@@ -42,6 +42,18 @@ import org.opennms.core.utils.InetAddressUtils;
  */
 public abstract class CriteriaValueConverters {
 
+    public static final Function<String,Boolean> BOOLEAN_CONVERTER = new Function<String,Boolean>() {
+        @Override
+        public Boolean apply(final String t) {
+            return Boolean.parseBoolean(t);
+        }
+
+        @Override
+        public String toString() {
+            return "BOOLEAN_CONVERTER";
+        }
+    };
+
     public static final Function<String,Date> DATE_CONVERTER = new Function<String,Date>() {
         @Override
         public Date apply(String t) {
