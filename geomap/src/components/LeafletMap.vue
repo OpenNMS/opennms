@@ -21,7 +21,7 @@ import {
   LMap,
   LTileLayer,
   // LMarker,
-  // LControlLayers,
+  LControlLayers,
   // LTooltip,
   // LPopup,
   // LPolyline,
