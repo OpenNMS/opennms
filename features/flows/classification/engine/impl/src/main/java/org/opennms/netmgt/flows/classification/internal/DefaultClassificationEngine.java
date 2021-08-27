@@ -110,9 +110,9 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                     .append("minComp  : " + tree.info.minComp).append('\n')
                     .append("maxComp  : " + tree.info.maxComp).append('\n')
                     .append("avgComp  : " + (double) tree.info.sumComp / tree.info.leaves).append('\n')
-                    .append("minRuleSetSize :" + tree.info.minRuleSetSize).append('\n')
-                    .append("maxRuleSetSize :" + tree.info.maxRuleSetSize).append('\n')
-                    .append("avgRuleSetSize :" + (double) tree.info.sumRuleSetSize / tree.info.leaves).append('\n');
+                    .append("minLeafSize : " + tree.info.minLeafSize).append('\n')
+                    .append("maxLeafSize : " + tree.info.maxLeafSize).append('\n')
+                    .append("avgLeafSize : " + (double) tree.info.sumLeafSize / tree.info.leaves).append('\n');
             LOG.info(sb.toString());
         }
 

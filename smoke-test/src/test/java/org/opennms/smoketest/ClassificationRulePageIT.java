@@ -789,7 +789,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             return new RuleModal()
                     .open(() -> {
                         // Click add rule button
-                        findElementById("action.addRule").click();
+                        clickElement(By.id("action.addRule"));
                         new WebDriverWait(driver, 5).until(pageContainsText("Create Classification Rule"));
                     });
         }
