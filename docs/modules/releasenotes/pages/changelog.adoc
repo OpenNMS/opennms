@@ -2,7 +2,7 @@
 
 = Changelog
 
-[releasenotes-changelog-28.0.2]
+[[releasenotes-changelog-28.0.2]]
 
 == Release 28.0.2
 
@@ -37,7 +37,6 @@ The codename for Horizon 28.0.2 is https://wikipedia.org/wiki/$$Soundwave_(Trans
 * Optimize node cache refresh to be non-blocking to flow data (Issue http://issues.opennms.org/browse/NMS-13481[NMS-13481])
 
 [[releasenotes-changelog-28.0.1]]
-
 == Release 28.0.1
 
 Release 28.0.1 contains a bunch of bug fixes and enhancements, plus a few security updates.
@@ -169,4 +168,3 @@ The codename for Horizon 28.0.0 is https://wikipedia.org/wiki/$$Jazz_(Transforme
 * Location aware Requisitions from DNS (Issue http://issues.opennms.org/browse/NMS-13278[NMS-13278])
 * Support Rest API on Minion & Enable health-check REST feature  (Issue http://issues.opennms.org/browse/NMS-13311[NMS-13311])
 * Update conventions for text formatting (Issue http://issues.opennms.org/browse/NMS-13336[NMS-13336])
-
