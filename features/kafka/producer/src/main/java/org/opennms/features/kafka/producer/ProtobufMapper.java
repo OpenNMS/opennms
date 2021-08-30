@@ -145,7 +145,7 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
 
-        OnmsHwEntity rootEntity = hwEntityDao.findRootEntityByNodeId(node.getId());
+        OnmsHwEntity rootEntity = hwEntityDao.findRootByNodeId(node.getId());
         if (rootEntity != null) {
             builder.setHwInventory(toHwEntity(rootEntity));
         }
