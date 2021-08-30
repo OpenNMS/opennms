@@ -92,6 +92,9 @@ public class DefaultClassificationService implements ClassificationService {
         this.ruleValidator = new RuleValidator(filterService);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
+        // trigger reload
+        // -> blocks classification requests until classification engine is ready
+        this.classificationEngine.reload();
     }
 
     @Override
