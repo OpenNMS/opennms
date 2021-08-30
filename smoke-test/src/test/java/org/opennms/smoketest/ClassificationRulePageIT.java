@@ -481,15 +481,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             // resulting in test failures. To avoid this, a bunch of seconds is waited before reading the value.
             // See HZN-1289.
 
+            String textAfterClassification = "";
+
+            // wait until the classification response value change to a non-empty string that is different from the value
+            // before classification was started
             for (int i = 0; i < 10; i++) {
                 sleep(DEFAULT_WAIT_TIME);
-                var text = execute(() -> findElementById("classification-response")).getText();
-                if (!Objects.equals(textBeforeClassification, text)) {
-                    return text;
+                textAfterClassification = execute(() -> findElementById("classification-response")).getText();
+                if (!"".equals(textAfterClassification) && !Objects.equals(textBeforeClassification, textAfterClassification)) {
+                    break;
                 }
             }
 
-            return textBeforeClassification;
+            return textAfterClassification;
         }
 
         private void setInput(String id, String text, boolean withEnter) {
