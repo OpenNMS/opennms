@@ -19,6 +19,11 @@ The WmiCollector collects performance metrics from Windows systems using Windows
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                              | Default
-| collection             | The name of the WMI Collection to use.   | n/a
+| Parameter
+| Description
+| Default
+
+| collection
+| The name of the WMI Collection to use.
+| n/a
 |===
