@@ -6,10 +6,10 @@ The service is considered available when the session attempt succeeds and the ag
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.XmpMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.XmpMonitor`
 |===
 
 == Configuration and use
@@ -21,21 +21,37 @@ Don't forget to add an entry in response-graph.properties so that response value
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter     | Description                                            | Default
-| timeout     | Time in milliseconds to wait for a successful session. | 5000
-| authenUser  | The authenUser parameter for use with the XMP session. | xmpUser
-| port        | TCP port to connect to for XMP session establishment.   | 5270
-| mib         | Name of MIB to query.                                   | core
-| object      | Name of MIB object to query.                            | sysObjectID
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time in milliseconds to wait for a successful session.
+| 5000
+
+| authenUser
+| The authenUser parameter for use with the XMP session.
+| xmpUser
+
+| port
+| TCP port to connect to for XMP session establishment.
+| 5270
+
+| mib
+| Name of MIB to query.
+| core
+
+| object
+| Name of MIB object to query.
+| sysObjectID
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
-Example uses CentOS/RHEL path name. 
-
-For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`. 
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 .Add entry in poller-configuration.xml
 [source, xml]
@@ -50,7 +66,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 ----
 
 .Add entry in response-graph.properties
-[source, bash]
+[source, plain]
 ----
 reports=icmp, \
 xmp, \ . . . .
