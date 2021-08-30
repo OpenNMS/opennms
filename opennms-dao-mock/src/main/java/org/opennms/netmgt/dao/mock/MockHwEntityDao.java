@@ -58,6 +58,11 @@ public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> impl
 	}
 
 	@Override
+	public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
+		return findRootByNodeId(nodeId);
+	}
+
+	@Override
 	public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
 		throw new UnsupportedOperationException("Not yet implemented!");
 	}

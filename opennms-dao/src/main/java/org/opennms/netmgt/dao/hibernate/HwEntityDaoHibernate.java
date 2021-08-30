@@ -28,10 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The Class HwEntityDaoHibernate.
@@ -53,6 +60,32 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
+    }
+
+    @Override
+    public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
+        List<OnmsHwEntity> hwEntityList = find("from OnmsHwEntity e where e.node.id = ?", nodeId);
+        Optional<OnmsHwEntity> rootElement = hwEntityList.stream().filter(onmsHwEntity -> onmsHwEntity.getParent() == null).findFirst();
+        if(rootElement.isPresent()) {
+            findChildren(rootElement.get(), hwEntityList);
+            return rootElement.get();
+        }
+        return null;
+    }
+
+    private void findChildren(OnmsHwEntity parent, List<OnmsHwEntity> list) {
+
+        Set<OnmsHwEntity> children = list.stream().filter(onmsHwEntity -> {
+                    if (onmsHwEntity.getParent() != null) {
+                        return onmsHwEntity.getParent().getId().equals(parent.getId());
+                    }
+                    return false;
+                }
+        ).collect(Collectors.toSet());
+        children.forEach(onmsHwEntity ->  {
+            findChildren(onmsHwEntity, list);
+            parent.addChildEntity(onmsHwEntity);
+        });
     }
 
     /* (non-Javadoc)
@@ -87,7 +120,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     public String getAttributeValue(Integer nodeId, String nameSource, String attributeName) {
         boolean isRegex = nameSource.startsWith("~");
         if (isRegex) {
-            OnmsHwEntity r = findRootByNodeId(nodeId);
+            OnmsHwEntity r = findRootEntityByNodeId(nodeId);
             return r == null ? null : findAttribute(r, nameSource.substring(1), attributeName);
         }
         OnmsHwEntity e = findEntityByName(nodeId, nameSource);

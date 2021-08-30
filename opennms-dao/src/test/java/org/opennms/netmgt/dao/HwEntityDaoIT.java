@@ -170,8 +170,21 @@ public class HwEntityDaoIT implements InitializingBean {
         OnmsHwEntity c = e1.getChildren().iterator().next();
         Assert.assertEquals("4", c.getAttributeValue("ram"));
 
+        // Test valid findRootEntityByNodeId
+        OnmsHwEntity entity1 = m_hwEntityDao.findRootEntityByNodeId(node.getId());
+        Assert.assertNotNull(entity1);
+        Assert.assertNotNull(entity1.getNode());
+        Assert.assertEquals(entity1.getNode().getId(), node.getId());
+        Assert.assertEquals(2, entity1.getChildren().size());
+        Assert.assertEquals("chassis", entity1.getEntPhysicalClass());
+        OnmsHwEntity children1 = entity1.getChildren().iterator().next();
+        Assert.assertEquals("4", children1.getAttributeValue("ram"));
+
         // Test invalid findRootByNodeId
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
+
+        // Test invalid with findRootEntityByNodeId
+        Assert.assertNull(m_hwEntityDao.findRootEntityByNodeId(10000));
 
         // Test findEntityByIndex
         OnmsHwEntity e2 = m_hwEntityDao.findEntityByIndex(node.getId(), e1.getEntPhysicalIndex());
