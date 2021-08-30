@@ -38,19 +38,19 @@ The following keys are available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key            | Description
-| `node:label`           | The node's label
-| `node:foreign-source`  | The node's foreign source name
-| `node:foreign-id`      | The node's foreign ID
-| `node:netbios-domain`  | The NetBIOS domain as provided by SNMP
-| `node:netbios-name`    | The NetBIOS name as provided by SNMP
-| `node:os`              | The node's operating system
-| `node:sys-name`        | The system name of the node
-| `node:sys-location`    | The system location of the node
-| `node:sys-contact`     | The system contact specified for the node
-| `node:sys-description` | The system description of the node
-| `node:location`        | The node's monitoring location name
-| `node:area`            | The node's monitoring location area
-| `node:geohash`         | A xref:https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
+| node:label             | The node's label
+| node:foreign-source    | The node's foreign source name
+| node:foreign-id        | The node's foreign ID
+| node:netbios-domain    | The NetBIOS domain as provided by SNMP
+| node:netbios-name      | The NetBIOS name as provided by SNMP
+| node:os                | The node's operating system
+| node:sys-name          | The system name of the node
+| node:sys-location      | The system location of the node
+| node:sys-contact       | The system contact specified for the node
+| node:sys-description   | The system description of the node
+| node:location          | The node's monitoring location name
+| node:area              | The node's monitoring location area
+| node:geohash           | A xref:https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
 |===
 
 === Interface context
@@ -61,13 +61,13 @@ The following keys are available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key                | Description
-| `interface:hostname`       | The hostname associated with the IP address of the interface
-| `interface:address`        | The IP address of the interface
-| `interface:netmask`        | The netmask of the interface
-| `interface:if-index`       | The SNMP interface index
-| `interface:if-alias`       | The SNMP interface alias
-| `interface:if-description` | The SNMP interface description
-| `interface:phy-addr`       | The physical address of the interface
+| interface:hostname         | The hostname associated with the IP address of the interface
+| interface:address          | The IP address of the interface
+| interface:netmask          | The netmask of the interface
+| interface:if-index         | The SNMP interface index
+| interface:if-alias         | The SNMP interface alias
+| interface:if-description   | The SNMP interface description
+| interface:phy-addr         | The physical address of the interface
 |===
 
 === Service context
@@ -78,7 +78,7 @@ The following key is available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key        | Description
-| `service:name`     | The full name of the service
+| service:name       | The full name of the service
 |===
 
 [[ga-metadata-webui]]

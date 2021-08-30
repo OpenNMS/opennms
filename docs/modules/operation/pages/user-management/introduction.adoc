@@ -24,7 +24,7 @@ The OpenNMS Group uses this information to help determine product usage and to i
 image:users/data-sources.png[prompt,300]
 
 Click *Show me what is being sent* to see what xref:ga-data-collection[information we collect]. 
-Statisitcs collection and publication happen only if an admin user opts in.
+Statistics collection and publication happen only if an admin user opts in.
 
 NOTE: Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the gear icon, selecting *Data Choices* in the *Additional Tools* area, and clicking *Opt-in* or *Opt-out*.
 
