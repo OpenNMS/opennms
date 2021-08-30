@@ -18,16 +18,19 @@
 import LeafletMap from "../components/LeafletMap.vue";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import useQueryParameters from '@/hooks/useQueryParams'
-import { useStore } from 'vuex'
+import { useStore } from "vuex";
 
-const store = useStore()
-const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
+const store = useStore();
+
+store.dispatch("mapModule/getNodes", {
   limit: 5000,
   offset: 0,
-}, 'nodesModule/getNodes')
-  store.dispatch('mapModule/getNodes', queryParameters.value)
-  store.dispatch('mapModule/getAlarms', queryParameters.value)
+});
+
+store.dispatch("mapModule/getAlarms", {
+  limit: 5000,
+  offset: 0,
+});
 </script>
 
 <style scoped>

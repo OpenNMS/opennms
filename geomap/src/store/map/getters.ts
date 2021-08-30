@@ -1,21 +1,24 @@
-const getInterestedNodesID = state => {
+import { Node, Alarm } from '@/types'
+import { State } from './state'
+
+const getInterestedNodesID = (state: State) => {
     return state.interestedNodesID;
 }
 
-const getInterestedNodes = state => {
-    return state.nodesWithCoordinates.filter(node => state.interestedNodesID.includes(node.id));
+const getInterestedNodes = (state: State) => {
+    return state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id));
 }
 
-const getAlarmsFromSelectedNodes = (state, getters) => {
-    let selectedNodesLable = getters.getInterestedNodes.map(
-        (node) => node.label
+const getAlarmsFromSelectedNodes = (state: State) => {
+    let selectedNodesLable = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
+        (node: Node) => node.label
     );
-    return state.alarms.filter((alarm) =>
+    return state.alarms.filter((alarm: Alarm) =>
         selectedNodesLable.includes(alarm.nodeLabel)
     )
 }
 
-const getEdges = state => {
+const getEdges = (state: State) => {
     return state.edges;
 }
 

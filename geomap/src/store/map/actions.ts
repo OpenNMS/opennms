@@ -1,5 +1,5 @@
 import API from "@/services"
-import { Node, QueryParameters, VuexContext } from '@/types'
+import { QueryParameters, VuexContext } from '@/types'
 import { State } from './state'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
