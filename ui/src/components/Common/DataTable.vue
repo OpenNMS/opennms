@@ -1,5 +1,6 @@
 <template>
     <DataTable
+        :showGridlines="showGridlines"
         :loading="loading"
         :value="dataValue"
         :data-key="datakey"
@@ -46,6 +47,7 @@ const columnDef: any = ref([]);
 
 interface DataTableProps {
     tableHeader?: any
+    showGridlines?:boolean
     value: any
     datakey?: string
     responsiveLayout?: string
@@ -60,6 +62,7 @@ interface DataTableProps {
 
 //default values for props
 const props = withDefaults(defineProps<DataTableProps>(), {
+    showGridlines:false,
     datakey: "id",
     responsiveLayout: "scroll",
     paginator: true,
