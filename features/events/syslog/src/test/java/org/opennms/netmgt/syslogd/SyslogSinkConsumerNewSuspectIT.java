@@ -33,7 +33,7 @@ import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Matchers.anyString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +60,6 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.InterfaceToNodeCacheEventProcessor;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
