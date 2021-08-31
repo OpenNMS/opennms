@@ -62,14 +62,9 @@ public class ConfigSwaggerConverter {
 
     private String prefix = "/";
 
-    public String convertToString(ConfigItem item, String prefix, String acceptType) {
+    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException{
         OpenAPI openapi = convert(item, prefix);
-
-        try {
-            return convertOpenAPIToString(openapi, acceptType);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
+        return convertOpenAPIToString(openapi, acceptType);
     }
 
     /**
@@ -90,7 +85,7 @@ public class ConfigSwaggerConverter {
                 objectMapper = new ObjectMapper(new YAMLFactory());
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MideaType: " + acceptType + " error: " + e.getMessage());
+            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage()+ " using media type = yaml instead.");
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 
@@ -117,7 +112,7 @@ public class ConfigSwaggerConverter {
         openAPI.setComponents(components);
 
         // Create a basic info section
-        // TODO: handle version properly
+        // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");

@@ -98,6 +98,11 @@ public class ConfigItem {
             case INTEGER:
             case LONG:
             case BOOLEAN:
+            case DATE:
+            case DATE_TIME:
+            case POSITIVE_INTEGER:
+            case NON_NEGATIVE_INTEGER:
+            case NEGATIVE_INTEGER:
                 return true;
         }
         return false;
