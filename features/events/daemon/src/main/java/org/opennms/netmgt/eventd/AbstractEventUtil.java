@@ -172,6 +172,12 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 */
 	protected static final String TAG_SNMP_ID = "id";
 
+
+	/**
+	 * The event snmp trapoid xml tag
+	 */
+	protected static final String TAG_SNMP_TRAP_OID = "trapoid";
+
 	/**
 	 * The SNMP xml tag
 	 */

@@ -120,6 +120,8 @@ Not all events will have values for all tokens, and some refer specifically to i
     The host of the SNMP agent that generated the event.
 `%id%`::
     The SNMP Enterprise OID for the event.
+`%trapoid%`::
+    Full trap OID for the event.
 `%idtext%`::
     The decoded (human-readable) SNMP Enterprise OID for the event (?).
 `%ifalias%`::

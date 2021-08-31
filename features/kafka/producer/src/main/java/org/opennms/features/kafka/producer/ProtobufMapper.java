@@ -265,6 +265,7 @@ public class ProtobufMapper {
             snmpInfoBuilder.setGeneric(snmp.getGeneric());
         }
         getString(snmp.getCommunity()).ifPresent(snmpInfoBuilder::setCommunity);
+        getString(snmp.getTrapOID()).ifPresent(snmpInfoBuilder::setTrapOid);
         return snmpInfoBuilder;
     }
 
