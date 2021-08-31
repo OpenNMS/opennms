@@ -428,12 +428,16 @@ public class DefaultClassificationService implements ClassificationService {
                 if (reloadSucceeded()) {
                     LOG.debug("another classification engine reload is required");
                     doReload();
+                } else {
+                    LOG.debug("classification engine reloaded");
                 }
             } catch (Exception e) {
                 LOG.error("reload of classification engine failed", e);
                 if (reloadFailed(e)) {
                     LOG.debug("another classification engine reload is required");
                     doReload();
+                } else {
+                    LOG.debug("classification engine reloaded");
                 }
             }
         }

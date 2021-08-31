@@ -485,7 +485,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
             // wait until the classification response value change to a non-empty string that is different from the value
             // before classification was started
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 30; i++) {
                 sleep(DEFAULT_WAIT_TIME);
                 textAfterClassification = execute(() -> findElementById("classification-response")).getText();
                 if (!"".equals(textAfterClassification) && !Objects.equals(textBeforeClassification, textAfterClassification)) {

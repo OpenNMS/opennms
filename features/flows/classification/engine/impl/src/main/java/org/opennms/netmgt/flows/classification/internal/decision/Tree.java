@@ -72,7 +72,7 @@ public abstract class Tree {
     private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) {
         final var ruleSetSize = rules.size();
         if (ruleSetSize <= 1) {
-            LOG.debug("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
+            LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
             return leaf(rules, filterService, bounds);
         }
 
@@ -90,7 +90,7 @@ public abstract class Tree {
                 .orElse(null);
 
         if (entry != null) {
-            LOG.debug("Node - depth: " + depth + "; rules: " + ruleSetSize + "; threshold: " + entry.getKey() + "; maximum child size: " + maximumSize(entry) +
+            LOG.trace("Node - depth: " + depth + "; rules: " + ruleSetSize + "; threshold: " + entry.getKey() + "; maximum child size: " + maximumSize(entry) +
                                "; lt: " + entry.getValue().lt.size() +
                                "; eq: " + entry.getValue().eq.size() + "; gt: " + entry.getValue().gt.size() + "; na: " + entry.getValue().na.size());
             var lt = of(entry.getValue().lt, entry.getKey().lt(bounds), depth + 1, filterService);
@@ -100,7 +100,7 @@ public abstract class Tree {
 
             return node(entry.getKey(), lt, eq, gt, na);
         } else {
-            LOG.debug("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
+            LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
             return leaf(rules, filterService, bounds);
         }
 
