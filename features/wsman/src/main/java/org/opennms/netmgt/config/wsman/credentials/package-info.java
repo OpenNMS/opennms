@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,5 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
-
-public interface WsmanAgentConfig {
-    String getUsername();
-    String getPassword();
-    Integer getPort();
-    Integer getRetry();
-    Integer getTimeout();
-    Integer getMaxElements();
-    Boolean isSsl();
-    Boolean isStrictSsl();
-    String getPath();
-    String getProductVendor();
-    String getProductVersion();
-    Boolean isGssAuth();
-}
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/wsman", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package org.opennms.netmgt.config.wsman.credentials;

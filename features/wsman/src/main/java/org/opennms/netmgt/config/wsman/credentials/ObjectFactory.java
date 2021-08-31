@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
@@ -51,67 +51,46 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _IpMatch_QNAME = new QName("http://xmlns.opennms.org/xsd/config/wsman", "ip-match");
+
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.opennms.netmgt.config.wsman
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.opennms.netmgt.config.wsman.credentials
      * 
      */
     public ObjectFactory() {
     }
 
     /**
-     * Create an instance of {@link Collection }
+     * Create an instance of {@link Range }
      * 
      */
-    public Collection createCollection() {
-        return new Collection();
+    public Range createRange() {
+        return new Range();
     }
 
     /**
-     * Create an instance of {@link Rrd }
+     * Create an instance of {@link WsmanConfig }
      * 
      */
-    public Rrd createRrd() {
-        return new Rrd();
+    public WsmanConfig createWsmanConfig() {
+        return new WsmanConfig();
     }
 
     /**
-     * Create an instance of {@link WsmanDatacollectionConfig }
+     * Create an instance of {@link Definition }
      * 
      */
-    public WsmanDatacollectionConfig createWsmanDatacollectionConfig() {
-        return new WsmanDatacollectionConfig();
+    public Definition createDefinition() {
+        return new Definition();
     }
 
     /**
-     * Create an instance of {@link Collection.IncludeAllSystemDefinitions }
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    public Collection.IncludeAllSystemDefinitions createCollectionIncludeAllSystemDefinitions() {
-        return new Collection.IncludeAllSystemDefinitions();
-    }
-
-    /**
-     * Create an instance of {@link Group }
-     * 
-     */
-    public Group createGroup() {
-        return new Group();
-    }
-
-    /**
-     * Create an instance of {@link Attrib }
-     * 
-     */
-    public Attrib createAttrib() {
-        return new Attrib();
-    }
-
-    /**
-     * Create an instance of {@link SystemDefinition }
-     * 
-     */
-    public SystemDefinition createSystemDefinition() {
-        return new SystemDefinition();
+    @XmlElementDecl(namespace = "http://xmlns.opennms.org/xsd/config/wsman", name = "ip-match")
+    public JAXBElement<String> createIpMatch(String value) {
+        return new JAXBElement<String>(_IpMatch_QNAME, String.class, null, value);
     }
 
 }

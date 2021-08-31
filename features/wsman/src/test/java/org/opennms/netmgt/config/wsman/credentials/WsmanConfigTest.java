@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
@@ -47,9 +51,15 @@ public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
                 {
                     getWsmanConfig(),
                     new File("src/test/resources/wsman-config.xml"),
-                    null
+                    "target/classes/xsds/wsman-config.xsd"
                 }
         });
+    }
+
+
+    @Test(expected = Exception.class)
+    public void badConfigFailsValidation() throws IOException, Exception {
+        validateXmlString(Files.readString(Path.of("src/test/resources/wsman-config-bad.xml")));
     }
 
     private static WsmanConfig getWsmanConfig() {

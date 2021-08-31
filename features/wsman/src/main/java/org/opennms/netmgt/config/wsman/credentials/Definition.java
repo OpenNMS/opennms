@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.wsman;
+package org.opennms.netmgt.config.wsman.credentials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,10 +50,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/wsman}definition" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/wsman}range" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="specific" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://xmlns.opennms.org/xsd/config/wsman}ip-match" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="retry" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="username" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="password" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="port" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
@@ -70,17 +72,21 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "definition"
+    "range",
+    "specific",
+    "ipMatch"
 })
-@XmlRootElement(name = "wsman-config")
-public class WsmanConfig implements WsmanAgentConfig {
+@XmlRootElement(name = "definition")
+public class Definition implements WsmanAgentConfig {
 
-    @XmlElement
-    protected List<Definition> definition;
-    @XmlAttribute(name = "timeout")
-    protected Integer timeout;
+    protected List<Range> range;
+    protected List<String> specific;
+    @XmlElement(name = "ip-match")
+    protected List<String> ipMatch;
     @XmlAttribute(name = "retry")
     protected Integer retry;
+    @XmlAttribute(name = "timeout")
+    protected Integer timeout;
     @XmlAttribute(name = "username")
     protected String username;
     @XmlAttribute(name = "password")
@@ -102,58 +108,108 @@ public class WsmanConfig implements WsmanAgentConfig {
     @XmlAttribute(name = "gss-auth")
     protected Boolean gssAuth;
 
+    public Definition() { }
+
+    public Definition(WsmanAgentConfig config) {
+        setUsername(config.getUsername());
+        setPassword(config.getPassword());
+        setPort(config.getPort());
+        setRetry(config.getRetry());
+        setTimeout(config.getTimeout());
+        setMaxElements(config.getMaxElements());
+        setSsl(config.isSsl());
+        setStrictSsl(config.isStrictSsl());
+        setPath(config.getPath());
+        setProductVendor(config.getProductVendor());
+        setProductVersion(config.getProductVersion());
+        setGssAuth(config.isGssAuth());
+    }
+
     /**
-     * Maps IP addresses to specific WS-Man parameters(retries, timeouts...) Gets the value of the definition property.
+     * IP address range to which this definition applies.Gets the value of the range property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the definition property.
+     * This is why there is not a <CODE>set</CODE> method for the range property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDefinition().add(newItem);
+     *    getRange().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Definition }
+     * {@link Range }
      * 
      * 
      */
-    public List<Definition> getDefinition() {
-        if (definition == null) {
-            definition = new ArrayList<>();
+    public List<Range> getRange() {
+        if (range == null) {
+            range = new ArrayList<>();
         }
-        return this.definition;
+        return this.range;
     }
 
     /**
-     * Gets the value of the timeout property.
+     * Gets the value of the specific property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the specific property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getSpecific().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
      */
-    @Override
-    public Integer getTimeout() {
-        return timeout;
+    public List<String> getSpecific() {
+        if (specific == null) {
+            specific = new ArrayList<>();
+        }
+        return this.specific;
     }
 
     /**
-     * Sets the value of the timeout property.
+     * Match Octets (as in IPLIKE) Gets the value of the ipMatch property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the ipMatch property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getIpMatch().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
      */
-    public void setTimeout(Integer value) {
-        this.timeout = value;
+    public List<String> getIpMatch() {
+        if (ipMatch == null) {
+            ipMatch = new ArrayList<>();
+        }
+        return this.ipMatch;
     }
 
     /**
@@ -164,7 +220,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link Integer }
      *     
      */
-    @Override
     public Integer getRetry() {
         return retry;
     }
@@ -182,6 +237,30 @@ public class WsmanConfig implements WsmanAgentConfig {
     }
 
     /**
+     * Gets the value of the timeout property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Sets the value of the timeout property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setTimeout(Integer value) {
+        this.timeout = value;
+    }
+
+    /**
      * Gets the value of the username property.
      * 
      * @return
@@ -189,7 +268,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link String }
      *     
      */
-    @Override
     public String getUsername() {
         return username;
     }
@@ -214,7 +292,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link String }
      *     
      */
-    @Override
     public String getPassword() {
         return password;
     }
@@ -239,7 +316,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link Integer }
      *     
      */
-    @Override
     public Integer getPort() {
         return port;
     }
@@ -264,7 +340,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link Integer }
      *     
      */
-    @Override
     public Integer getMaxElements() {
         return maxElements;
     }
@@ -289,7 +364,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link Boolean }
      *     
      */
-    @Override
     public Boolean isSsl() {
         return ssl;
     }
@@ -314,7 +388,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link Boolean }
      *     
      */
-    @Override
     public Boolean isStrictSsl() {
         return strictSsl;
     }
@@ -339,7 +412,6 @@ public class WsmanConfig implements WsmanAgentConfig {
      *     {@link String }
      *     
      */
-    @Override
     public String getPath() {
         return path;
     }
@@ -356,7 +428,6 @@ public class WsmanConfig implements WsmanAgentConfig {
         this.path = value;
     }
 
-    @Override
     public String getProductVendor() {
         return productVendor;
     }
@@ -365,7 +436,6 @@ public class WsmanConfig implements WsmanAgentConfig {
         this.productVendor = productVendor;
     }
 
-    @Override
     public String getProductVersion() {
         return productVersion;
     }
@@ -385,8 +455,8 @@ public class WsmanConfig implements WsmanAgentConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(definition, timeout, retry, username, password, port,
-                maxElements, ssl, strictSsl, path, productVendor, productVersion, gssAuth);
+        return Objects.hash(range, specific, ipMatch, timeout, retry, username, password, port, maxElements,
+                ssl, strictSsl, path, productVendor, gssAuth);
     }
 
     @Override
@@ -397,8 +467,10 @@ public class WsmanConfig implements WsmanAgentConfig {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        WsmanConfig other = (WsmanConfig) obj;
-        return Objects.equals(this.definition, other.definition) &&
+        Definition other = (Definition) obj;
+        return Objects.equals(this.range, other.range) &&
+                Objects.equals(this.specific, other.specific) &&
+                Objects.equals(this.ipMatch, other.ipMatch) &&
                 Objects.equals(this.timeout, other.timeout) &&
                 Objects.equals(this.retry, other.retry) &&
                 Objects.equals(this.username, other.username) &&
