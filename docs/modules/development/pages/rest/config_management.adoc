@@ -1,7 +1,7 @@
 = Config Management
 
-It is the generic specification of Config Management RESTful API. This set of API is used to GET, ADD, UPDATE, DELETE
-configurations for OpenNMS. Configurations modified will take effect instantly.
+Use the Config Management REST API to manage configurations for OpenNMS.
+Configurations modified will take effect instantly.
 
 == GETs (Reading Data)
 
