@@ -1,14 +1,14 @@
 <template>
     <DataTable
         :loading="loading"
-        :value="valueBypass"
+        :value="dataValue"
         :data-key="datakey"
         :responsiveLayout="responsiveLayout"
         :paginator="paginator"
         :rows="rows"
         :rowHover="rowHover"
         v-model:selection="selectedRows"
-        :rowsPerPageOptions="rowsPerPage"
+        :rowsPerPageOptions = "rowsPerPage"
     >
         <template #header v-if="tableHeader">{{ tableHeader }}</template>
         <template #empty>No records found.</template>
@@ -24,9 +24,9 @@
             :sortable="columnSortable"
         ></Column>
         <!-- custom data column  added -->
-        <Column v-for="col of props.customData">
+        <Column v-for="columnName of props.customData">
             <template #body="{ data }">
-                <button class="p-button" @click="onClickHandle(col, data.id)">{{ col }}</button>
+                <button class="p-button" @click="onClickHandle(columnName, data.id)">{{ columnName }}</button>
             </template>
         </Column>
     </DataTable>
@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import router from '@/router';
@@ -69,11 +69,11 @@ const props = withDefaults(defineProps<DataTableProps>(), {
 });
 
 //computed for value - display object
-const valueBypass = computed(() => {
+const dataValue = computed(() => {
     tableData.value = props.value;
     findColumn(tableData.value);
     return props.value;
-})
+});
 
 const findColumn = (data: any) => {
     let responseData = data[0];
@@ -82,17 +82,17 @@ const findColumn = (data: any) => {
         let columnName = Object.keys(responseData);
         columnName.forEach((colData) => {
             //column def values
-            const Obj = { "field": colData, "header": colData.toUpperCase(), "key": colData }
+            const Obj = { "field": colData, "header": colData.toUpperCase(), "key": colData };
             columnDef.value.push(Obj);
         });
         loading.value = false; //loading stops
     }
-}
+};
 
 //computed for rowsPerPage
 const rowsPerPage = computed(() => {
     return props.rowsPerPageOptions;
-})
+});
 
 //decision for routing
 const onClickHandle = (selectedName: any, id: any) => {
@@ -103,7 +103,9 @@ const onClickHandle = (selectedName: any, id: any) => {
         case "delete":
             confirm(`Please confirm delete id ${id}?`);
             break;
+        default:
+            alert(`please add logic for ${selectedName}`);
     }
-}
+};
 
 </script>
