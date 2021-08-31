@@ -40,6 +40,7 @@ const defaultColDef = ref({
   resizable: true,
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
+  sortable: true,
 })
 
 const interestedNodesID = computed(() => {
@@ -67,7 +68,7 @@ function getGridRowDataFromInterestedNodes() {
 
 let gridApi = ref({});
 
-function onGridReady(params) {
+function onGridReady(params: any) {
   gridApi = params.api
 }
 
@@ -82,6 +83,7 @@ watch(
 )
 
 function clearFilters() {
+  //TODO: make this smarter
   gridApi.getFilterInstance("id").setModel(null);
   gridApi.getFilterInstance("foreignSource").setModel(null);
   gridApi.getFilterInstance("lable").setModel(null);
@@ -92,8 +94,8 @@ function clearFilters() {
 }
 
 function confirmFilters() {
-  let ids = [];
-  gridApi.forEachNodeAfterFilter((node) => ids.push(node.data.id));
+  let ids: any = [];
+  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id));
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
@@ -105,41 +107,35 @@ const columnDefs = ref([
   {
     headerName: "ID",
     field: "id",
-    sortable: true,
     headerTooltip: "ID",
     filter: "agNumberColumnFilter",
-    comparator: (valueA: number, valueB: number) => {
+    comparator: (valueA, valueB) => {
       return valueA - valueB;
     },
   },
   {
     headerName: "FOREIGN SOURCE",
     field: "foreignSource",
-    sortable: true,
     headerTooltip: "Foreign Source",
   },
   {
     headerName: "FOREIGN ID",
     field: "foreignId",
-    sortable: true,
     headerTooltip: "Foreign ID",
   },
   {
     headerName: "LABLE",
     field: "lable",
-    sortable: true,
     headerTooltip: "Lable",
   },
   {
     headerName: "LABLE SOURCE",
     field: "lableSource",
-    sortable: true,
     headerTooltip: "Lable Source",
   },
   {
     headerName: "LAST CAPABILITIES SCAN",
     field: "lastCapabilitiesScan",
-    sortable: true,
     headerTooltip: "Last Capabilities Scan",
     filter: "agDateColumnFilter",
     cellRenderer: (data) => {
@@ -149,37 +145,31 @@ const columnDefs = ref([
   {
     headerName: "PRIMARY INTERFACE",
     field: "primaryInterface",
-    sortable: true,
     headerTooltip: "Primary Interface",
   },
   {
     headerName: "SYSOBJECTID",
     field: "sysObjectid",
-    sortable: true,
     headerTooltip: "Sys Object ID",
   },
   {
     headerName: "SYSNAME",
     field: "sysName",
-    sortable: true,
     headerTooltip: "Sys Name",
   },
   {
     headerName: "SYSDESCRIPTION",
     field: "sysDescription",
-    sortable: true,
     headerTooltip: "Sys Description",
   },
   {
     headerName: "SYSCONTACT",
     field: "sysContact",
-    sortable: true,
     headerTooltip: "Sys Contact",
   },
   {
     headerName: "SYSLOCATION",
     field: "sysLocation",
-    sortable: true,
     headerTooltip: "Sys Location",
   },
 ]);

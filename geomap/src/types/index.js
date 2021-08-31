@@ -32,7 +32,7 @@ export interface MapNode {
       nodeLabel: string
       uei: string
       count: number
-      lastEventTime: string
+      lastEvent: any
       logMessage: string
   }
 
