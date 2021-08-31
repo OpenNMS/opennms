@@ -1,18 +1,19 @@
 = Config Management
 
-It is the generic specification of Config Management RESTful API
+It is the generic specification of Config Management RESTful API. This set of API is used to GET, ADD, UPDATE, DELETE
+configurations for OpenNMS. Configurations modified by this API will take effect instantly.
 
-== GET
+== GETs (Reading Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource | Description
-| `/rest/cm/\{configName}` | Returns a list of configIds in JSON / YAML format e.g. ["config1", "config2"]
+| `/rest/cm/\{configName}` | Returns a list of configIds in JSON/YAML format, for example, ["config1", "config2"].
 
 200: Return: String Array
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
-| `/rest/cm/schema/\{configName}` | Returns openapi schema (for swagger UI) in JSON / YAML format.
+| `/rest/cm/schema/\{configName}` | Returns OpenAPI schema (for Swagger UI) in JSON/YAML format.
 
 200: Return: OpenAPI schema
 
@@ -25,38 +26,40 @@ It is the generic specification of Config Management RESTful API
 |===
 
 
-== POST
+== POSTs (Adding Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             | Add new config (if same config exist, it will return error.)
+| `/rest/cm/\{configName}/\{configId}`             | Add new configuration.
+                                                     If the same configuration exists, it will return an error.
 
-200: nothing return
+200: Return nothing
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 |===
 
-== PUT
+== PUTs (Modifying Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             | Update config (if config is not exist, it will return error.)
+| `/rest/cm/\{configName}/\{configId}`             |  Update configuration.
+                                                     If configuration does not exist, it will return error.
 
-200: nothing return
+200: Return nothing
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 |===
 
-== DELETE
+== DELETEs (Removing Data)
 
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/rest/cm/\{configName}/\{configId}`             | Delete config
+| `/rest/cm/\{configName}/\{configId}`             | Delete configuration.
 
-200: nothing return
+200: Return nothing
 
 400: Return: {"MESSAGE": "<ERROR_MESSAGE>"}
 |===
