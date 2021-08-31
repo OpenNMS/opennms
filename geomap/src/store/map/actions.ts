@@ -1,6 +1,5 @@
 import API from "@/services"
 import { QueryParameters, VuexContext } from '@/types'
-import { State } from './state'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getNodes(queryParameters)
@@ -28,8 +27,8 @@ const getAlarms = async (context: VuexContext, queryParameters?: QueryParameters
 
 }
 
-const resetInterestedNodesID = (context: VuexContext, state: State) => {
-    context.commit("SET_INTERESTED_NODES_ID", state.nodesWithCoordinates.map(node => node.id))
+const resetInterestedNodesID = ({ commit, state }) => {
+    commit("SAVE_INTERESTED_NODES_ID", state.nodesWithCoordinates.map(node => node.id))
 }
 
 // const getNodesGraph = ({ commit }) => {

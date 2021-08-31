@@ -1,5 +1,13 @@
 <template>
   <div class="mapnodes">
+    <div class="button-group">
+      <span class="buttons">
+        <button v-on:click="clearFilters()">Clear Filters</button>
+        <!-- <button v-on:click="showTopology()">Show Topology</button> -->
+        <button v-on:click="confirmFilters()">Apply filter</button>
+        <button v-on:click="reset()">Reset</button>
+      </span>
+    </div>
     <div class="map-nodes-grid">
       <ag-grid-vue
         style="width: 100%; height: 600px"
@@ -72,6 +80,26 @@ watch(
     );
   }
 )
+
+function clearFilters() {
+  gridApi.getFilterInstance("id").setModel(null);
+  gridApi.getFilterInstance("foreignSource").setModel(null);
+  gridApi.getFilterInstance("lable").setModel(null);
+  gridApi.getFilterInstance("lableSource").setModel(null);
+  gridApi.getFilterInstance("foreignId").setModel(null);
+  gridApi.getFilterInstance("lastCapabilitiesScan").setModel(null);
+  gridApi.onFilterChanged();
+}
+
+function confirmFilters() {
+  let ids = [];
+  gridApi.forEachNodeAfterFilter((node) => ids.push(node.data.id));
+  store.dispatch("mapModule/setInterestedNodesId", ids);
+}
+
+function reset() {
+  store.dispatch("mapModule/resetInterestedNodesID");
+}
 
 const columnDefs = ref([
   {
@@ -157,4 +185,18 @@ const columnDefs = ref([
 ]);
 </script>
 <style scoped>
+.button-group {
+  width: 100%;
+  height: 25px;
+}
+.map-nodes-grid {
+  width: 100%;
+  height: 700px;
+}
+.buttons {
+  float: right;
+}
+button {
+  margin-right: 5px;
+}
 </style>
