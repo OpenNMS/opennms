@@ -83,5 +83,5 @@ Available match types are:
 | Every WMI class exists in a namespace.
 The default namespace for most common classes is `root/cimv2`.
 It is possible to refer to WMI objects from other namespaces such as `root/MicrosoftActiveDirectory`.
-| OK
+| root/cimv2
 |===
