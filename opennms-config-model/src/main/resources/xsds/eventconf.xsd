@@ -246,9 +246,9 @@
             "nodeid" (the OpenNMS node identifier for the node related to this
             event), "interface" (interface related to the event; for SNMP
             traps this is the same as "snmphost"), "service", "id" (enterprise
-            ID in an SNMP trap), "specific" (specific value in an SNMP trap),
-            "generic" (generic value in an SNMP trap), or "community"
-            (community string in an SNMP trap).</documentation>
+            ID in an SNMP trap), "trapoid" (Full Trap OID), "specific"
+              (specific value in an SNMP trap), "generic" (generic value in an SNMP trap),
+              or "community" (community string in an SNMP trap).</documentation>
           </annotation>
         </element>
 
@@ -303,6 +303,12 @@
         <element maxOccurs="1" minOccurs="1" name="id" type="string">
           <annotation>
             <documentation>The snmp enterprise id</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="trapoid" type="string">
+          <annotation>
+            <documentation>Full Trap OID</documentation>
           </annotation>
         </element>
 
