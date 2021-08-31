@@ -32,8 +32,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -390,7 +390,7 @@ public class DefaultClassificationService implements ClassificationService {
         // -> uses no additional resources while being idle
         private final ExecutorService executorService = new ThreadPoolExecutor(0, 1,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(),
+                new ArrayBlockingQueue<>(1),
                 runnable -> new Thread(runnable, "AsyncReloadingClassificationEngine")
         );
 
@@ -420,33 +420,42 @@ public class DefaultClassificationService implements ClassificationService {
             }
         }
 
-        private void startReload() {
-            setState(State.RELOADING);
-            executorService.submit(() -> {
-                try {
-                    delegate.reload();
-                    reloadSucceeded();
-                } catch (Exception e) {
-                    LOG.error("reload of classification engine failed", e);
-                    reloadFailed(e);
+        private void doReload() {
+            // this method must not modify the state because it not synchronized
+            try {
+                LOG.debug("reload classification engine");
+                delegate.reload();
+                if (reloadSucceeded()) {
+                    LOG.debug("another classification engine reload is required");
+                    doReload();
                 }
-            });
-        }
-
-        private synchronized void reloadSucceeded() {
-            if (state == State.NEED_ANOTHER_RELOAD) {
-                startReload();
-            } else {
-                setState(State.READY);
+            } catch (Exception e) {
+                LOG.error("reload of classification engine failed", e);
+                if (reloadFailed(e)) {
+                    LOG.debug("another classification engine reload is required");
+                    doReload();
+                }
             }
         }
 
-        private synchronized void reloadFailed(Exception e) {
+        private synchronized boolean reloadSucceeded() {
             if (state == State.NEED_ANOTHER_RELOAD) {
-                startReload();
+                setState(State.RELOADING);
+                return true;
+            } else {
+                setState(State.READY);
+                return false;
+            }
+        }
+
+        private synchronized boolean reloadFailed(Exception e) {
+            if (state == State.NEED_ANOTHER_RELOAD) {
+                setState(State.RELOADING);
+                return true;
             } else {
                 reloadException = e;
                 setState(State.FAILED);
+                return false;
             }
         }
 
@@ -467,7 +476,8 @@ public class DefaultClassificationService implements ClassificationService {
             switch (state) {
                 case READY:
                 case FAILED:
-                    startReload();
+                    setState(State.RELOADING);
+                    executorService.submit(this::doReload);
                     break;
                 case RELOADING:
                     setState(State.NEED_ANOTHER_RELOAD);
