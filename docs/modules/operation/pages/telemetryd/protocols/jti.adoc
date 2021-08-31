@@ -79,10 +79,15 @@ Use the script extension to extract the desired metrics from the JTI messages an
 === Configuration and use
 
 .Required adapter-specific parameters for the JtiGpbAdapter
-[options="header, autowidth"]
+[options="header", cols="1,3,3"]
 |===
-| Parameter      | Default | Description
-| script         | none    | Full path to the script used to handle the JTI messages.
+| Parameter
+| Description
+| Default
+
+| script
+| Full path to the script used to handle the JTI messages.
+| none
 |===
 
 === Scripting
@@ -92,10 +97,21 @@ The script will be invoked for every JTI message that is received and successful
 The following globals will be passed to the script:
 
 .Globals passed to the script
-[options="header, autowidth"]
+[options="header", cols="1,3,3"]
 |===
-| Parameter  | Description                                                     | Type
-| agent      | The agent (node) against which the metrics will be associated.  | `org.opennms.netmgt.collection.api.CollectionAgent`
-| builder    | Builder in which to add the resources and metrics.              | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
-| msg        | Decoded JTI message from which the metrics should be extracted. | `org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop`
+| Parameter
+| Description
+| Type
+
+| agent
+| The agent (node) against which the metrics will be associated.
+| org.opennms.netmgt.collection.api.CollectionAgent
+
+| builder
+| Builder in which to add the resources and metrics.
+| org.opennms.netmgt.collection.support.builder.CollectionSetBuilder
+
+| msg
+| Decoded JTI message from which the metrics should be extracted.
+| org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop
 |===

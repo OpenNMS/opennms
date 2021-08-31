@@ -17,26 +17,58 @@ The following OIDs are supported to discover and build the ISIS network topology
 
 .Supported OIDs from ISIS-MIB
 [options="header"]
-[cols="1,1,3"]
+[cols="1,3,1"]
 |===
-| Name                         | OID                          | Description
-| isisSysID                  | .1.3.6.1.2.1.138.1.1.1.3.0 | The ID for this Intermediate-System.
-                                                                This value is appended to each of the area addresses to form the Network Entity Titles.
-                                                                The derivation of a value for this object is implementation specific.
-                                                                Some implementations may automatically assign values and not permit an SNMP write, while others may require the value to be set manually.
-                                                                Configured values must survive an agent reboot.
-| isisSysAdminState          | .1.3.6.1.2.1.138.1.1.1.8.0 | The administrative state of this Intermediate-System.
-                                                                Setting this object to the value to "on" from "off" enables the Intermediate-System.
-                                                                Configured values must survive an agent reboot.
-| isisSysObject              | .1.3.6.1.2.1.138.1.1.1     | isisSysObject
-| isisCircIfIndex            | .1.3.6.1.2.1.138.1.3.2.1.2 | The value of ifIndex for the interface to which this circuit corresponds.
-                                                                You cannot modify this object after creation.
-| isisCircAdminState         | .1.3.6.1.2.1.138.1.3.2.1.3 | The administrative state of the circuit.
-| isisISAdjState             | .1.3.6.1.2.1.138.1.6.1.1.2 | The state of the adjacency.
-| isisISAdjNeighSNPAAddress  | .1.3.6.1.2.1.138.1.6.1.1.4 | The SNPA address of the neighboring system.
-| isisISAdjNeighSysType      | .1.3.6.1.2.1.138.1.6.1.1.5 | The type of the neighboring system.
-| isisISAdjNeighSysID        | .1.3.6.1.2.1.138.1.6.1.1.6 | The system ID of the neighboring Intermediate-System.
-| isisISAdjNbrExtendedCircID | .1.3.6.1.2.1.138.1.6.1.1.7 | The 4-byte extended circuit ID learned from the neighbor during three-way handshake, or 0.
+| Name
+| Description
+| OID
+
+| isisSysID
+| The ID for this Intermediate-System.
+This value is appended to each of the area addresses to form the Network Entity Titles.
+The derivation of a value for this object is implementation specific.
+Some implementations may automatically assign values and not permit an SNMP write, while others may require the value to be set manually.
+Configured values must survive an agent reboot.
+| .1.3.6.1.2.1.138.1.1.1.3.0
+
+| isisSysAdminState
+| The administrative state of this Intermediate-System.
+Setting this object to the value to "on" from "off" enables the Intermediate-System.
+Configured values must survive an agent reboot.
+| .1.3.6.1.2.1.138.1.1.1.8.0
+
+| isisSysObject
+| isisSysObject
+| .1.3.6.1.2.1.138.1.1.1
+
+| isisCircIfIndex
+| The value of ifIndex for the interface to which this circuit corresponds.
+You cannot modify this object after creation.
+| .1.3.6.1.2.1.138.1.3.2.1.2
+
+| isisCircAdminState
+| The administrative state of the circuit.
+| .1.3.6.1.2.1.138.1.3.2.1.3
+
+| isisISAdjState
+| The state of the adjacency.
+| .1.3.6.1.2.1.138.1.6.1.1.2
+
+| isisISAdjNeighSNPAAddress
+| The SNPA address of the neighboring system.
+| .1.3.6.1.2.1.138.1.6.1.1.4
+
+| isisISAdjNeighSysType
+| The type of the neighboring system.
+| .1.3.6.1.2.1.138.1.6.1.1.5
+
+| isisISAdjNeighSysID
+| The system ID of the neighboring Intermediate-System.
+| .1.3.6.1.2.1.138.1.6.1.1.6
+
+| isisISAdjNbrExtendedCircID
+| The 4-byte extended circuit ID learned from the neighbor during three-way handshake, or 0.
+| .1.3.6.1.2.1.138.1.6.1.1.7
 |===
 
 Find generic information about the IS-IS link discovery process in the IS-IS information box on the node detail page of the device.

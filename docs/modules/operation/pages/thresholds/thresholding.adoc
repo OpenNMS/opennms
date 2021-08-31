@@ -68,37 +68,56 @@ For information on how to create a threshold group, see <<threshold-group, Creat
 . Set the following information and click *Save*:
 
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
 
-| Field | Value | Description
+| Field
+| Description
+| Default
 
-| Type | high | Triggers an event when the data source value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
+| Type
+| Triggers an event when the data source value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
+| high
 
-| Datasource | hrSystemNumUsers| Name of the data source you want to threshold against.
+| Datasource
+| Name of the data source you want to threshold against.
 For this tutorial, we have provided the data source for logged-in users.
-
 For information on how to determine a metric's data source, see <<datasource-determine, Determine the data source>>.
+| hrSystemNumUsers
 
-| Datasource label| leave blank | Optional text label.
+
+| Datasource label
+| Optional text label.
 Not required for this tutorial.
+| leave blank
 
-| Value| 2 | The value above which we want to trigger an event.
+| Value
+| The value above which we want to trigger an event.
 In this case, we want to trigger an event when the number of logged-in users exceeds two.
+| 2
 
-| Re-arm | 2 | The value below which we want the system to re-arm.
+| Re-arm
+| The value below which we want the system to re-arm.
 In this case, once the number of logged-in users falls below two.
+ | 2
 
-| Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event.
+| Trigger| The number of consecutive times the threshold value can occur before the system triggers an event.
 Since our default polling period is 5 minutes, a value of 3 means {page-component-title} would create a threshold event if there are more than 2 users for 15 minutes.
+ | 3
 
-| Description | leave blank | Optional text to describe your threshold.
+| Description
+| Optional text to describe your threshold.
+ | leave blank
 
-| Triggered UEI| leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is triggered.
+| Triggered UEI
+| A custom uniform event identifier (UEI) sent into the events system when the threshold is triggered.
 A custom UEI for each threshold makes it easier to <<threshold-notification, create notifications>>.
 If left blank, it defaults to the standard thresholds UEIs.
+| leave blank
 
-| Re-armed UEI | leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is re-armed.
+| Re-armed UEI
+| A custom uniform event identifier (UEI) sent into the events system when the threshold is re-armed.
+ | leave blank
 
 |===
 
@@ -128,35 +147,57 @@ NOTE: Expression-based thresholds work only if the data sources in question are 
 +
 
 [options="header"]
-[cols="1,3,2"]
+[cols="1,3,3"]
 |===
 
-| *Field* | *Value* | *Description*
+| Field
+| Description
+| Default
 
-| Type | high | Triggers an event when the data source value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
+| Type
+| Triggers an event when the data source value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value.
+| high
 
-| Expression | ((loadavg5 / 100) / CpuNumCpus) * 100| Divides the five-minute CPU load average by 100 (to obtain the effective load average\*), which is then divided by the number of CPUs.
+| Expression
+| Divides the five-minute CPU load average by 100 (to obtain the effective load average\*), which is then divided by the number of CPUs.
 This value is then multiplied by 100 to provide a percentage.
 
-(\* SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.)
+(* SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.)
+| ((loadavg5 / 100) / CpuNumCpus) * 100
 
-| Datasource type | node | The type of data source from which you are collecting data.
+| Datasource type
+| The type of data source from which you are collecting data.
+| node
 
-| Datasource label| leave blank | Optional text label.
+| Datasource label
+| Optional text label.
 Not required for this tutorial.
+| leave blank
 
-| Value| 70 | Trigger an event when the five-minute CPU load average goes above 70%.
+| Value
+| Trigger an event when the five-minute CPU load average goes above 70%.
+| 70
 
-| Re-arm | 50 | Re-arm the system when the five-minute CPU load average drops below 50%.
+| Re-arm
+| Re-arm the system when the five-minute CPU load average drops below 50%.
+| 50
 
-| Trigger | 2 | The number of consecutive times the threshold value can occur before the system triggers an event.
+| Trigger
+| The number of consecutive times the threshold value can occur before the system triggers an event.
 In this case, when the five-minute CPU load average goes above 70% for two consecutive polling periods.
+| 2
 
-| Description | Trigger an alert when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals | Optional text to describe your threshold.
+| Description
+| Optional text to describe your threshold.
+| Trigger an alert when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 
-| Triggered UEI| leave blank | See the table in xref:threshold-create[Create a threshold] for details.
+| Triggered UEI
+| See the table in xref:threshold-create[Create a threshold] for details.
+| leave blank
 
-| Re-armed UEI | leave blank | See the table in xref:threshold-create[Create a threshold] for details.
+| Re-armed UEI
+| See the table in xref:threshold-create[Create a threshold] for details.
+| leave blank
 
 |===
 

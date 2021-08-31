@@ -7,10 +7,10 @@ All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapM
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.ImapsMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.ImapsMonitor`
 |===
 
 == Configuration and Use
@@ -19,8 +19,13 @@ All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapM
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                                                | Default
-| port             | The destination port to attempt connections on. | 993
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port to attempt connections on.
+| 993
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
