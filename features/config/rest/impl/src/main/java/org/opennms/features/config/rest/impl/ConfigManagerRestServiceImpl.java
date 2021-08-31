@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,6 +50,7 @@ import java.util.Optional;
 public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigManagerRestServiceImpl.class);
     private String BASE_PATH = "/rest/cm/";
+    public static final String MESSAGE_TAG = "MESSAGE";
 
     @Autowired
     private ConfigurationManagerService configurationManagerService;
@@ -61,13 +63,16 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response getRawOpenApiSchema(final String configName) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
+            if(schema.isEmpty()){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             OpenAPI openapi = configSwaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
                     BASE_PATH + schema.get().getName());
             return Response.ok(openapi).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
-            return Response.serverError().build();
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -75,13 +80,16 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     public Response getOpenApiSchema(String configName, String acceptType){
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
+            if(schema.isEmpty()){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             String outStr = configSwaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
                     BASE_PATH + schema.get().getName(), acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
-            return Response.serverError().build();
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -98,16 +106,17 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     /**
      * get or create a fake schema and return
      *
-     * @param serviceName
+     * @param configName
      * @return
      */
     @Override
-    public ConfigSchema getSchema(String serviceName) {
+    public ConfigSchema getSchema(String configName) {
         try {
-            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(serviceName);
+            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             if (schema.isEmpty()) {
-                configurationManagerService.registerSchema(serviceName, 29, 0, 0, ProvisiondConfiguration.class);
-                schema = configurationManagerService.getRegisteredSchema(serviceName);
+                // TODO: Freddy remove in PE-54
+                configurationManagerService.registerSchema(configName, 29, 0, 0, ProvisiondConfiguration.class);
+                schema = configurationManagerService.getRegisteredSchema(configName);
             }
             return schema.get();
         } catch (Exception e) {
@@ -118,12 +127,25 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public ConfigData getConfigFile(String serviceName, String filename) {
+    public ConfigData getConfigFile(String configName, String filename) {
         return null;
     }
 
     @Override
-    public ConfigData getView(String serviceName, String filename, Map<String, Object> inputParameters) {
+    public ConfigData getView(String configName, String filename, Map<String, Object> inputParameters) {
         return null;
+    }
+
+
+    /**
+     * Generate simple error message response {"MESSAGE": "<ERROR MESSAGE>"}
+     * @param status
+     * @param message
+     * @return
+     */
+    private Response generateSimpleMessageResponse(Response.Status status, String message){
+        Map<String,String> messages = new HashMap<>();
+        messages.put(MESSAGE_TAG, message);
+        return Response.status(status).entity(messages).build();
     }
 }
