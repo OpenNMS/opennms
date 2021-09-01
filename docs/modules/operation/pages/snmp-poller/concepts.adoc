@@ -1,7 +1,7 @@
-
+[[snmp-interface-poller]]
 = SNMP Interface Poller
 
-{page-component-title} can monitor the status of a SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
+{page-component-title} can monitor the status of an SNMP interface that is not directly monitored by a <<service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
 
 The SNMP interface poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
 On a configurable time interval, a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:
@@ -197,9 +197,9 @@ Defaults to "2".
 
 == Using the Service
 
-Besides enabling the service and configuring packages and interfaces to match your use case, you must add a policy that enables polling to the foreign source definition of the import requisitions of the devices on which you'd like to use this feature.
+Besides enabling the service and configuring packages and interfaces to match your use case, you must add a policy that enables polling to the foreign source definition of the import requisition(s) for the devices on which you want to use this feature.
 
-Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the "Matching SNMP Interface Policy" to manage which SNMP interfaces are polled by this service along with the appropriate `matchBehavior` and parameters for your use case.
+Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the "<<provisioning/policies/snmp-interface.adoc#snmp-interface-policy, Matching SNMP Interface Policy>>" to manage which SNMP interfaces this service polls along with the appropriate `matchBehavior` and parameters for your use case.
 
 As an example, you could create a policy named pollVoIPDialPeers that marks interfaces with `ifType 104` to be polled.
 Set the `action` to `ENABLE_POLLING` and `matchBehavior` to `ALL_PARAMETERS`.

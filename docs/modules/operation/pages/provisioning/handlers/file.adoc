@@ -1,0 +1,21 @@
+
+[[file-handler]]
+= File Handler
+
+The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.
+
+Examples:
+
+== Simple
+
+[source]
+----
+file:///path/to/my/requisition.xml
+----
+
+== Using the generic handler
+
+[source]
+----
+requisition://file?path=/path/to/my/requisition.xml;location=MINION
+----
