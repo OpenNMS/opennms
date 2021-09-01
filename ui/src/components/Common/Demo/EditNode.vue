@@ -1,7 +1,7 @@
 <template>
-    <button>
-        <router-link to="/dataTableDemo" >Back to Node Table</router-link>
-    </button>
+    <p>
+        <Button :label="buttonLabel" primeClass="rounded" @click="onBackClick"></Button>
+    </p>
     <p>
         Edit Node ID ::
         <strong>{{ $route.params.id }}</strong>
@@ -9,4 +9,16 @@
 </template>
 
 <script setup lang="ts">
+
+import { ref } from 'vue'
+import Button from "../Button.vue";
+import router from '@/router';
+
+const buttonLabel = ref('Back To Node Table')
+
+//Routing Back to Table
+const onBackClick = () => {
+    router.push("/dataTableDemo");
+}
+
 </script>
