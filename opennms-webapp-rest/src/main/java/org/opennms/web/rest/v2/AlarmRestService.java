@@ -307,7 +307,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
             final Map<String, String> parameters = new HashMap<>();
             parameters.put(EventConstants.PARM_USER, securityContext.getUserPrincipal().getName());
             m_troubleTicketProxy.createTicket(alarmId, parameters);
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Status.ACCEPTED).build();
         });
     }
 
@@ -317,7 +317,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
         return runIfTicketerPluginIsEnabled(() -> {
             m_troubleTicketProxy.updateTicket(alarmId);
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Status.ACCEPTED).build();
         });
     }
 
@@ -327,7 +327,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
         return runIfTicketerPluginIsEnabled(() -> {
             m_troubleTicketProxy.closeTicket(alarmId);
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Status.ACCEPTED).build();
         });
     }
 
