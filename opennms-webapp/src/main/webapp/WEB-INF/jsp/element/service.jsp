@@ -57,6 +57,7 @@
 <%@ page import="org.opennms.core.rpc.utils.mate.FallbackScope" %>
 <%@ page import="org.opennms.core.rpc.utils.mate.Scope" %>
 <%@ page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@ page import="org.opennms.core.rpc.utils.mate.MapScope" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -339,7 +340,8 @@ function doDelete() {
                           final Scope nodeScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForNode(service.getNodeId());
                           final Scope interfaceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForInterface(service.getNodeId(), ipAddr);
                           final Scope serviceScope = NetworkElementFactory.getInstance(getServletContext()).getScopeForService(service.getNodeId(), InetAddressUtils.getInetAddress(ipAddr), serviceName);
-                          final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope);
+                          final Map<String, String> patternVariables = (Map<String, String>) pageContext.getAttribute("patternVariables");
+                          final Scope scope = new FallbackScope(nodeScope, interfaceScope, serviceScope, MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", patternVariables));
 
                           for(Map.Entry<String,String> entry : ((Map<String,String>)pageContext.getAttribute("parameters")).entrySet()) {
                               %>
