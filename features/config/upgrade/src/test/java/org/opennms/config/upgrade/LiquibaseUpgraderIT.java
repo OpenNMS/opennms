@@ -29,9 +29,11 @@
 package org.opennms.config.upgrade;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -44,6 +46,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -60,14 +63,17 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 
 public class LiquibaseUpgraderIT {
 
     private final static Logger LOG = LoggerFactory.getLogger(LiquibaseUpgraderIT.class);
 
     public static GenericContainer<?> container;
-
     private static DataSource dataSource;
+    private Connection connection;
+    private DBUtils db;
 
     @BeforeClass
     public static void setUpContainer() throws SQLException, LiquibaseException {
@@ -81,11 +87,6 @@ public class LiquibaseUpgraderIT {
         dataSource = createDatasource();
     }
 
-    @AfterClass
-    public static void tearDown() {
-        container.stop();
-    }
-
     private static DataSource createDatasource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(String.format("jdbc:postgresql://localhost:%s/", container.getFirstMappedPort()));
@@ -94,37 +95,86 @@ public class LiquibaseUpgraderIT {
         return new HikariDataSource(config);
     }
 
+    @AfterClass
+    public static void stopContainer() {
+        container.stop();
+    }
+
+    @Before
+    public void setUp() throws SQLException {
+        this.db = new DBUtils();
+        this.connection = dataSource.getConnection();
+        db.watch(connection);
+    }
+
     @Test
     public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException {
-        ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
-        LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
-        liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
+        try {
+            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
+            liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
-        // check if CM was called
-        verify(cm).registerSchema(anyString(),
-                eq(new ConfigurationManagerService.Version(1,0,0)),
-                eq(ProvisiondConfiguration.class));
+            // check if CM was called
+            verify(cm).registerSchema(anyString(),
+                    eq(new ConfigurationManagerService.Version(1, 0, 0)),
+                    eq(ProvisiondConfiguration.class));
 
-        // check if liquibase table names where set correctly
-        checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG);
-        checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+            // check if liquibase table names where set correctly
+            checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
+            checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+        } finally {
+            this.db.cleanUp();
+        }
+    }
 
+    @Test
+    public void shouldAbortInCaseOfValidationError() {
+        try {
+            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
+            assertThrowsException(ValidationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-faulty.xml", connection));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    @Test
+    public void shouldAbortInCaseOfErrorDuringRun() {
+        try {
+            ConfigurationManagerService cm = null; // will lead to Nullpointer
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
+            assertThrowsException(MigrationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-ok2.xml", connection));
+        } finally {
+            this.db.cleanUp();
+        }
     }
 
     private void checkIfTableExists(final String tableName) throws SQLException {
-        DBUtils db = new DBUtils();
+        PreparedStatement ps = connection.prepareStatement("SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name = ?)");
+        db.watch(ps);
+        ps.setString(1, tableName);
+        ResultSet result = ps.executeQuery();
+        db.watch(result);
+        result.next();
+        assertTrue(result.getBoolean(1));
+    }
+
+    // similar to JUnit5
+    public static void assertThrowsException(Class<? extends Throwable> expectedException, RunnableWithCheckedException function) {
         try {
-            Connection con = dataSource.getConnection();
-            db.watch(con);
-            PreparedStatement ps = con.prepareStatement("SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name = ?)");
-            db.watch(ps);
-            ps.setString(1, tableName);
-            ResultSet result = ps.executeQuery();
-            db.watch(result);
-            result.next();
-            assertTrue(result.getBoolean(1));
-        } finally {
-            db.cleanUp();
+            function.run();
+        } catch (Exception e) {
+            if (!expectedException.isAssignableFrom(e.getClass())) {
+                fail(String.format("Expected exception: %s but was %s", expectedException.getName(), e.getClass().getName()));
+            }
+            return;
         }
+        fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
+    }
+
+    public interface RunnableWithCheckedException {
+        void run() throws Exception;
     }
 }
