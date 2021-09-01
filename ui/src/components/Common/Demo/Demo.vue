@@ -42,6 +42,28 @@
     badge="8"
     ></Button>
   </p>
+
+  <hr />
+  <h5>Basic Radio button</h5>
+    <div class="p-field-radiobutton">
+        <RadioButton id="city1" name="city" value="Chicago" v-model="city" :disabled=true />
+        <label for="city1">Chicago</label>
+    </div>
+    <div class="p-field-radiobutton">
+        <RadioButton id="city2" name="city" value="Los Angeles" v-model="city" />
+        <label for="city2">Los Angeles</label>
+    </div>
+    <div class="p-field-radiobutton">
+        <RadioButton id="city3" name="city" value="New York" v-model="city" />
+        <label for="city3">New York</label>
+    </div>
+    <div class="p-field-radiobutton">
+        <RadioButton id="city4" name="city" value="San Francisco" v-model="city" />
+        <label for="city4">San Francisco</label>
+    </div>
+  <hr />
+<label>selected radio button values : {{city}}</label>
+
 </template>
 
 <script setup lang="ts">
@@ -52,7 +74,9 @@ import DropDown from '../DropDown.vue'
 import FieldSet from '../FieldSet.vue';
 import TimePicker from '../TimePicker.vue'
 import Button from '../Button.vue';
+import RadioButton from '../RadioButton.vue';
 
+const city = ref('');
 const showInputText = ref('');
 const selectedCity1 = ref('');
 const showTimePicker = ref('');
@@ -65,6 +89,4 @@ const cities = ref( [
   { name: 'Istanbul', code: 'IST' },
   { name: 'Paris', code: 'PRS' }
 ]);
-
-
 </script>
