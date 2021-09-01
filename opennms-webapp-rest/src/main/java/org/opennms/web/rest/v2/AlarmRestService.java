@@ -35,15 +35,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -52,6 +43,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -79,9 +71,6 @@ import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SecurityHelper;
 import org.opennms.web.rest.v2.api.AlarmRestApi;
 import org.opennms.web.svclayer.TroubleTicketProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,9 +82,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class AlarmRestService  implements AlarmRestApi {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestService.class);
+public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,AlarmDTO,SearchBean,Integer,Integer> implements AlarmRestApi {
 
     @Autowired
     private AlarmDao m_dao;
@@ -112,18 +99,22 @@ public class AlarmRestService  implements AlarmRestApi {
     @Autowired
     private AlarmMapper m_alarmMapper;
 
+    @Override
     protected AlarmDao getDao() {
         return m_dao;
     }
 
+    @Override
     protected Class<OnmsAlarm> getDaoClass() {
         return OnmsAlarm.class;
     }
 
+    @Override
     protected Class<SearchBean> getQueryBeanClass() {
         return SearchBean.class;
     }
 
+    @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
 
@@ -148,15 +139,17 @@ public class AlarmRestService  implements AlarmRestApi {
         return builder;
     }
 
-
+    @Override
     protected JaxbListWrapper<AlarmDTO> createListWrapper(Collection<AlarmDTO> list) {
         return new AlarmCollectionDTO(list);
     }
 
+    @Override
     protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.ALARM_SERVICE_PROPERTIES;
     }
 
+    @Override
     protected Map<String, CriteriaBehavior<?>> getCriteriaBehaviors() {
         final Map<String, CriteriaBehavior<?>> map = new HashMap<>();
 
@@ -186,11 +179,12 @@ public class AlarmRestService  implements AlarmRestApi {
         return map;
     }
 
-
+    @Override
     protected OnmsAlarm doGet(UriInfo uriInfo, Integer id) {
         return getDao().get(id);
     }
 
+    @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
         final String ticketIdValue = params.getFirst("ticketId");
         final String ticketStateValue = params.getFirst("ticketState");
@@ -248,7 +242,6 @@ public class AlarmRestService  implements AlarmRestApi {
         return Response.noContent().build();
     }
 
-
     private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
         if (!isTicketerPluginEnabled()) {
             return Response.status(Status.NOT_IMPLEMENTED).entity("AlarmTroubleTicketer is not enabled. Cannot perform operation").build();
@@ -262,12 +255,12 @@ public class AlarmRestService  implements AlarmRestApi {
         return "true".equalsIgnoreCase(Vault.getProperty("opennms.alarmTroubleTicketEnabled"));
     }
 
-
+    @Override
     public AlarmDTO mapEntityToDTO(OnmsAlarm alarm) {
         return m_alarmMapper.alarmToAlarmDTO(alarm);
     }
 
-
+    @Override
     public OnmsAlarm mapDTOToEntity(AlarmDTO dto) {
         return m_alarmMapper.alarmDTOToAlarm(dto);
     }
@@ -338,9 +331,49 @@ public class AlarmRestService  implements AlarmRestApi {
         });
     }
 
-    protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
-        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
-        LOG.error(msg);
-        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+    @Override
+    public Response get(UriInfo uriInfo, String id) {
+        return super.get (uriInfo, Integer.parseInt(id));
+    }
+
+    @Override
+    public Response create(SecurityContext securityContext, UriInfo uriInfo, AlarmDTO object) {
+        return  super.create(securityContext,uriInfo, object);
+    }
+
+    @Override
+    public Response update(SecurityContext securityContext, UriInfo uriInfo, Integer id, OnmsAlarm object) {
+        return  super.update(securityContext, uriInfo, id, object);
+    }
+
+    @Override
+    public Response updateProperties(SecurityContext securityContext, UriInfo uriInfo, String id, MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, Integer.parseInt(id), params);
+    }
+
+    @Override
+    public Response delete(SecurityContext securityContext, UriInfo uriInfo, String id) {
+        return super.delete(securityContext, uriInfo, Integer.parseInt(id));
+    }
+
+
+    @Override
+    public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response getProperties(String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    public Response getPropertyValues(String propertyId, String query, Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @Override
+    public Response get(UriInfo uriInfo, Integer id) {
+        return super.get(uriInfo, id);
     }
 }
