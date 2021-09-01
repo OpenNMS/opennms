@@ -1,36 +1,38 @@
 <template>
-    <DataTable
-        :showGridlines="showGridlines"
-        :loading="loading"
-        :value="dataValue"
-        :data-key="datakey"
-        :responsiveLayout="responsiveLayout"
-        :paginator="paginator"
-        :rows="rows"
-        :rowHover="rowHover"
-        v-model:selection="selectedRows"
-        :rowsPerPageOptions = "rowsPerPage"
-    >
-        <template #header v-if="tableHeader">{{ tableHeader }}</template>
-        <template #empty>No records found.</template>
-        <template #loading>Loading data. Please wait.</template>
+    <div>
+        <DataTable
+            :showGridlines="showGridlines"
+            :loading="loading"
+            :value="dataValue"
+            :data-key="datakey"
+            :responsiveLayout="responsiveLayout"
+            :paginator="paginator"
+            :rows="rows"
+            :rowHover="rowHover"
+            v-model:selection="selectedRows"
+            :rowsPerPageOptions="rowsPerPage"
+        >
+            <template #header v-if="tableHeader">{{ tableHeader }}</template>
+            <template #empty>No records found.</template>
+            <template #loading>Loading data. Please wait.</template>
 
-        <!-- Below Column is for radio button OR checkbox for rows :: props use selectionMode -->
-        <Column v-if="selectionMode" :selectionMode="selectionMode"></Column>
-        <Column
-            v-for="col of columnDef"
-            :field="col.field"
-            :header="col.header"
-            :key="col.field"
-            :sortable="columnSortable"
-        ></Column>
-        <!-- custom data column  added -->
-        <Column v-for="columnName of props.customData">
-            <template #body="{ data }">
-                <button class="p-button" @click="onClickHandle(columnName, data.id)">{{ columnName }}</button>
-            </template>
-        </Column>
-    </DataTable>
+            <!-- Below Column is for radio button OR checkbox for rows :: props can be use -> selectionMode -->
+            <Column v-if="selectionMode" :selectionMode="selectionMode"></Column>
+            <Column
+                v-for="col of columnDef"
+                :field="col.field"
+                :header="col.header"
+                :key="col.field"
+                :sortable="columnSortable"
+            ></Column>
+            <!-- custom data column added -->
+            <Column v-for="columnName of props.customData">
+                <template #body="{ data }">
+                    <Button :label="columnName" @click="onClickHandle(columnName, data.id)"></Button>
+                </template>
+            </Column>
+        </DataTable>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -39,6 +41,7 @@ import { computed, ref } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import router from '@/router';
+import Button from "./Button.vue";
 
 const selectedRows: any = ref();
 const tableData: any = ref();
@@ -47,26 +50,26 @@ const columnDef: any = ref([]);
 
 interface DataTableProps {
     tableHeader?: any
-    showGridlines?:boolean
+    showGridlines?: boolean //this is for gridline in table
     value: any
     datakey?: string
-    responsiveLayout?: string
+    responsiveLayout?: string //valid options are "stack" and "scroll".
     paginator?: boolean
     rows?: any
     columnSortable?: boolean
     rowHover?: boolean
-    selectionMode?: string  //it can be "multiple" OR "single"
+    selectionMode?: string  //valid options are "multiple" OR "single"
     rowsPerPageOptions?: any
     customData?: any
 };
 
 //default values for props
 const props = withDefaults(defineProps<DataTableProps>(), {
-    showGridlines:false,
+    showGridlines: false,
     datakey: "id",
     responsiveLayout: "scroll",
     paginator: true,
-    rows: 10,
+    rows: 5,
     columnSortable: true,
     rowHover: true,
 });
@@ -98,13 +101,13 @@ const rowsPerPage = computed(() => {
 });
 
 //decision for routing
-const onClickHandle = (selectedName: any, id: any) => {
+const onClickHandle = (selectedName: any, paramId: any) => {
     switch (selectedName) {
         case "edit":
-            router.push(`/${selectedName}/${id}`);
+            router.push({ path: `/dataTableDemo/${selectedName}/${paramId}` });
             break;
         case "delete":
-            confirm(`Please confirm delete id ${id}?`);
+            confirm(`Please confirm delete id ${paramId}?`);
             break;
         default:
             alert(`please add logic for ${selectedName}`);
