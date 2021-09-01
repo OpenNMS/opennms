@@ -6,5 +6,6 @@ To configure this adapter, create a .properties file in  the `$\{OPENNMS_HOME}/e
 
 [source, properties]
 ----
-importer.adapter.dns.server=192.168.1.1
+importer.adapter.dns.server=192.168.1.1 <1>
 ----
+<1> Replace with the IP address of your DNS server to receive dynamic DNS updates.
