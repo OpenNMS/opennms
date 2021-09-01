@@ -1050,6 +1050,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.twin.grpc.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.openconfig</groupId>
       <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
       <version>${project.version}</version>

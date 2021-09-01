@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FilesystemPermissionValidator {
     public static boolean VERBOSE = false;
@@ -65,7 +66,7 @@ public class FilesystemPermissionValidator {
         }
 
         if (VERBOSE) {
-            System.out.println("Validating: user " + user + " owns " + path + "\n");
+            System.out.println("Validating: user " + user + " can write to " + path + "\n");
         }
 
         for (final String dir : FULLDIRS) {
@@ -131,9 +132,10 @@ public class FilesystemPermissionValidator {
                 System.out.println("- checking " + dirPath);
             }
         }
+
         final List<Path> failures;
-        try {
-            failures = Files.walk(dirPath, FileVisitOption.FOLLOW_LINKS).filter(file -> {
+        try (final Stream<Path> stream = Files.walk(dirPath, FileVisitOption.FOLLOW_LINKS)) {
+            failures = stream.filter(file -> {
                 try {
                     validateFile(user, file);
                 } catch (final FilesystemPermissionException e) {
@@ -144,25 +146,23 @@ public class FilesystemPermissionValidator {
         } catch (final IOException e) {
             throw new FilesystemPermissionException(dirPath, user, e);
         }
-        if (failures.size() > 0) {
+        if (!failures.isEmpty()) {
             throw new FilesystemPermissionException(failures.get(0), user);
         }
     }
 
     private void validateFile(final String user, final Path filePath) throws FilesystemPermissionException {
         if (VERBOSE) {
-            System.out.println("- validating file " + filePath + " is owned by " + user);
+            System.out.println("- validating file " + filePath + " is writable by " + user);
         }
-        try {
-            final UserPrincipal owner = Files.getOwner(filePath);
-            if (VERBOSE) {
-                System.out.println("  - " + filePath + " is owned by " + owner);
-            }
-            if (!Objects.equals(owner.getName(), user)) {
+        var file = filePath.toFile();
+        if (!file.canRead() || !file.canWrite()) {
+            throw new FilesystemPermissionException(filePath, user);
+        }
+        if (file.isDirectory()) {
+            if (!file.canExecute()) {
                 throw new FilesystemPermissionException(filePath, user);
             }
-        } catch (final IOException e) {
-            throw new FilesystemPermissionException(filePath, user, e);
         }
     }
 
@@ -185,7 +185,7 @@ public class FilesystemPermissionValidator {
         try {
             validator.validate(user, path);
         } catch (final FilesystemPermissionException e) {
-            System.err.println("\nERROR: at least one file in " + path + " is not owned by " + user + ".");
+            System.err.println("\nERROR: at least one file in " + path + " is not writable by " + user + ".");
             System.err.println("Make sure $RUNAS in opennms.conf matches the permissions of " + path +
                     " and its subdirectories.\n");
             e.printStackTrace();

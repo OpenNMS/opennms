@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,6 +56,7 @@
         java.text.SimpleDateFormat
         "
 %>
+<%@ page import="org.opennms.netmgt.config.poller.outages.Time" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -252,8 +253,8 @@
 			if (interfaces != null) {
 				for(int i = 0 ; i < interfaces.length; i++ ) {
 					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
-					// hope this has builtin safeParseStuff
-					newInterface.setAddress(interfaces[i]);
+					// hope this has builtin safeParseStuff; hope is not a strategy
+					newInterface.setAddress(WebSecurityUtils.sanitizeString(interfaces[i]));
 					addInterface(theOutage, newInterface);
 				}
 			}
@@ -323,10 +324,12 @@ Could not find an outage to edit because no outage name parameter was specified 
 		theOutage.clearTimes();
 	} else {
 	    if (request.getParameter("outageType") != null) {
-			theOutage.setType(request.getParameter("outageType"));
+			theOutage.setType(WebSecurityUtils.sanitizeString(request.getParameter("outageType")));
 	    }
 	}
-	
+
+	boolean timeSpanError = false;
+
 	String isFormSubmission = request.getParameter("formSubmission");
 	if ("true".equals(isFormSubmission)) {
 
@@ -459,7 +462,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				// dispatcher.forward(request, response);
 				return;
 			} else if (request.getParameter("addNodeButton") != null) {
-				String newNode = request.getParameter("newNode");
+				String newNode = WebSecurityUtils.sanitizeString(request.getParameter("newNode"));
 				if (newNode == null || "".equals(newNode.trim())) {
 					// No node was specified
 				} else {
@@ -473,7 +476,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 
 				}
 			} else if (request.getParameter("addInterfaceButton") != null) {
-				String newIface = request.getParameter("newInterface");
+				String newIface = WebSecurityUtils.sanitizeString(request.getParameter("newInterface"));
 				if (newIface == null || "".equals(newIface.trim())) {
 					// No interface was specified
 				} else {
@@ -492,63 +495,70 @@ Could not find an outage to edit because no outage name parameter was specified 
 				theOutage.clearNodes();
 				theOutage.addInterface(matchAnyInterface);
 			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
+				org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
+
 				if (theOutage.getType().equalsIgnoreCase("specific")) {
-					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
-	
 					StringBuffer timeBuffer = new StringBuffer(17);
-					timeBuffer.append(request.getParameter("chooseStartDay"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartDay")));
 					timeBuffer.append("-");
-					timeBuffer.append(request.getParameter("chooseStartMonth"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMonth")));
 					timeBuffer.append("-");
-					timeBuffer.append(request.getParameter("chooseStartYear"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartYear")));
 					timeBuffer.append(" ");
-					timeBuffer.append(request.getParameter("chooseStartHour"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseStartMinute"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseStartSecond"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
 					newTime.setBegins(timeBuffer.toString());
 	
 					timeBuffer = new StringBuffer(17);
-					timeBuffer.append(request.getParameter("chooseFinishDay"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishDay")));
 					timeBuffer.append("-");
-					timeBuffer.append(request.getParameter("chooseFinishMonth"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMonth")));
 					timeBuffer.append("-");
-					timeBuffer.append(request.getParameter("chooseFinishYear"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishYear")));
 					timeBuffer.append(" ");
-					timeBuffer.append(request.getParameter("chooseFinishHour"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseFinishMinute"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseFinishSecond"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
 					newTime.setEnds(timeBuffer.toString());
-	
-					theOutage.addTime(newTime);
 				} else {
-					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
-	
 					if (theOutage.getType().equalsIgnoreCase("monthly")) {
-						newTime.setDay(request.getParameter("chooseDayOfMonth"));
+						newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfMonth")));
 					} else if (theOutage.getType().equalsIgnoreCase("weekly")) {
-						newTime.setDay(request.getParameter("chooseDayOfWeek"));
+						newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfWeek")));
 					}
 	
 					StringBuffer timeBuffer = new StringBuffer(8);
-					timeBuffer.append(request.getParameter("chooseStartHour"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartHour")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseStartMinute"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartMinute")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseStartSecond"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartSecond")));
 					newTime.setBegins(timeBuffer.toString());
 					
 					timeBuffer = new StringBuffer(8);
-					timeBuffer.append(request.getParameter("chooseFinishHour"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishHour")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseFinishMinute"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishMinute")));
 					timeBuffer.append(":");
-					timeBuffer.append(request.getParameter("chooseFinishSecond"));
+					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
 					newTime.setEnds(timeBuffer.toString());
-					
+				}
+
+				boolean entryAlreadyExists = false;
+				for(Time time : theOutage.getTimes()) {
+					if (time.equals(newTime)) {
+						entryAlreadyExists = true;
+						break;
+					}
+				}
+				if (entryAlreadyExists) {
+					timeSpanError = true;
+				} else {
 					theOutage.addTime(newTime);
 				}
 			} else {
@@ -746,7 +756,7 @@ function updateOutageTypeDisplay(selectElement) {
 	while (enumList.hasMoreElements()) {
 		String paramName = enumList.nextElement();
 %>
-<!--	<%=paramName%>=<%=request.getParameter(paramName)%><br/>  -->
+<!--	<%=paramName%>=<%=WebSecurityUtils.sanitizeString(request.getParameter(paramName))%><br/>  -->
 <%
     }
 %>
@@ -1013,6 +1023,10 @@ function updateOutageTypeDisplay(selectElement) {
 				<% if (theOutage.getTimes().size() == 0) { %>
 					<tr>
 						<td><span class="text-danger">You must have at least one time span defined.</span></td>
+					</tr>
+				<% } else if (timeSpanError) { %>
+					<tr>
+						<td><span class="text-danger">You can add each time span only once.</span></td>
 					</tr>
 				<% } %>
 			</table>

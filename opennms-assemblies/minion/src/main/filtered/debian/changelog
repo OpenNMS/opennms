@@ -1,3 +1,13 @@
+opennms-minion (28.0.2-1) stable; urgency=high
+
+  * New minor release. It contains a bunch of bug fixes and enhancements, as
+    well as some fixes for XSS issues and a Jetty CVE.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/28.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Aug 2021 13:11:00 -0400
+ 
 opennms-minion (28.0.1-1) stable; urgency=high
 
   * New minor release. It contains a bunch of bug fixes and enhancements, plus a

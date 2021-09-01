@@ -45,6 +45,10 @@ You can set the following properties:
 | readTimeout                            | 30000                           | Defines the read timeout in ms.
 | bulkRetryCount                         | 5                               | Defines the number of retries performed before a bulk operation is considered failed.
                                                                              When bulk operations fail, only the failed items are retried.
+| bulkSize                               | 1000                            | Number of flow documents to collect into a bulk operation before committing.
+                                                                             This is per thread. Set to `0` to disable bulking.
+| bulkFlushMs                            | 500                             | Timeout to flush bulk even if `bulkSize` wasn't reached.
+                                                                             This is per thread. Set to `0` to disable flushing.
 | settings.index.number_of_shards        | none                            | The number of primary shards that an index should have.
                                                                              Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | settings.index.number_of_replicas      | none                            | The number of replicas each primary shard has.
