@@ -48,7 +48,7 @@ Sample XML file `customer-a.foreign-source.xml`:
 
 Here is an example curl command to create the foreign source with the above foreign source specification:
 
-[source, bash]
+[source, console]
 ----
 curl -v -u admin:admin -X POST -H 'Content-type: application/xml' -d '@customer-a.foreign-source.xml' http://localhost:8980/opennms/rest/foreignSources
 ----
@@ -61,7 +61,7 @@ This example changes the community string for the IP address 10.1.1.1 to `yRuSon
 
 NOTE: Community string is the only required element.
 
-[source, bash]
+[source, console]
 ----
 curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" -H "Accept: application/xml" -d "<snmp-info><community>yRuSonoZ</community><port>161</port><retries>1</retries><timeout>2000</timeout><version>v2c</version></snmp-info>" http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
 ----
@@ -72,7 +72,7 @@ This example adds 2 nodes to the requisition `customer-a`.
 The foreign source must match the name of the requisition.
 In the following example, the xref:development:rest/requisitions.adoc[requisitions] REST API automatically creates a requisition based on the value of the foreign-source attribute specified in the XML requisition.
 
-[source, bash]
+[source, console]
 ----
 curl -v -u admin:admin -X POST -H "Content-Type: application/xml" -d '<?xml version="1.0" encoding="UTF-8"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2009-03-07T17:56:53.123-05:00" last-import="2009-03-07T17:56:53.117-05:00" foreign-source="customer-a"><node node-label="p-brane" foreign-id="1" ><interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node><node node-label="m-brane" foreign-id="2" ><interface ip-addr="10.0.1.4" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node></model-import>' http://localhost:8980/opennms/rest/requisitions
 ----
@@ -82,7 +82,7 @@ A requisition file called `etc/imports/customer-a.xml` will be found on the {pag
 Before the requisition's nodes are populated into the database, Provisiond needs to perform an import (also referred to as synchronization).
 Here is an example using the curl command to import the requisition:
 
-[source, bash]
+[source, console]
 ----
 curl -v -u admin:admin -X PUT http://localhost:8980/opennms/rest/requisitions/customer-a/import
 ----

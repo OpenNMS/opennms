@@ -1,6 +1,6 @@
 
 [[provision-getting-started]]
-= Getting started
+= Getting Started
 
 {page-component-title} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 
@@ -10,15 +10,15 @@
 * xref:provisioning/directed-discovery.adoc[]
 * xref:development:rest/rest-api.adoc#rest-api[asset import] through the RestAPI
 
-Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source.
-Be aware that auto discovery can generate too much information, including entities you do not want to monitor.
+Use auto discovery if you do not have a "source of truth" for your network inventory.
+Auto discovery can become that source.
+Be aware that auto discovery can include entities you do not want to monitor, if not properly configured.
 
 Directed discovery is effective if you know your inventory, particularly with smaller networks (i.e., 100–200 nodes).
 It is also useful for areas of your network that you cannot auto discover.
 
-See the link:#provisioning-works[how it works] section of the introduction for more information on the provisioning process.
-
-Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
+Regardless of the method, provisioning is an iterative process.
+You will need to fine-tune your results to exclude or add things to what you monitor.
 
 == Before you begin
 
@@ -61,7 +61,7 @@ Provisiond applies the existing default foreign source definition unless you cho
 
 +
 
-image:../images/provisioning/FS_def.png[]
+image:provisioning/FS_def.png[]
 
 +
 
@@ -69,11 +69,11 @@ NOTE: The screen displays the list of service detectors and a tab to view and de
 Provisiond scans the services in the order in which the detectors appear in the list.
 
 . Click the appropriate icon to edit, delete, or move a service detector.
-.. You can also add parameters to a detector, including retries, timeout, port, etc.) by clicking the Edit icon and choosing *Add Parameter*.
+.. You can also add parameters to a detector, including retries, timeout, port, and so on, by clicking the Edit icon and choosing *Add Parameter*.
 . Click *Save*.
 . If desired, update the scan interval using one of the following:
 
-+ 
++
 
 * w: weeks
 * d: days
@@ -125,8 +125,8 @@ NOTE: The requisition remains red until you synchronize it with the database.
 
 image:provisioning/red_requisition.png[]
 
-Once created, you can
+Once created, you can add nodes to the requisition.
 
-* xref:directed-discovery[manually add nodes to a requisition]
-* xref:auto-discovery[automatically add nodes to a requisition]
-* customize a requisition
+* xref:provisioning/directed-discovery.adoc#directed-discovery[Manually specify nodes to add to a requisition]
+* xref:provisioning/auto-discovery.adoc#auto-discovery[Automatically discover nodes to add to a requisition]
+* Customize a requisition with xref:provisioning/detectors/detectors.adoc#ga-detectors[detectors] and xref:provisioning/policies/policies.adoc#policies[policies]
