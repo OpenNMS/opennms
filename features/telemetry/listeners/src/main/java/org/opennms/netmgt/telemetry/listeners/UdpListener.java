@@ -200,7 +200,8 @@ public class UdpListener implements Listener {
             ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                    LOG.warn("Invalid packet: {}", cause.getMessage(), cause);
+                    LOG.warn("Invalid packet: {}", cause.getMessage());
+                    LOG.debug("", cause);
                 }
             });
         }
