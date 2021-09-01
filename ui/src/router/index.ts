@@ -29,7 +29,7 @@ const router = createRouter({
       component: DataTableDemo
     },
     {
-      path: '/edit/:id',
+      path: '/dataTableDemo/edit/:id',
       name: 'Edit',
       component: EditNode
     },
