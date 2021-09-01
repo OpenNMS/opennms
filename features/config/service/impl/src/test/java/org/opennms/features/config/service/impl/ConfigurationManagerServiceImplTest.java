@@ -28,6 +28,14 @@
 
 package org.opennms.features.config.service.impl;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -45,13 +53,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -73,7 +74,9 @@ public class ConfigurationManagerServiceImplTest {
 
     @Before
     public void init() throws IOException, JAXBException {
-        configManagerService.registerSchema(CONFIG_NAME, 29, 0, 0, ProvisiondConfiguration.class);
+        if(configManagerService.getRegisteredSchema(CONFIG_NAME).isEmpty()) {
+            configManagerService.registerSchema(CONFIG_NAME, 29, 0, 0, ProvisiondConfiguration.class);
+        }
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
