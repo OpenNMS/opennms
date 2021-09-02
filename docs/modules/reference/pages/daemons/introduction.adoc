@@ -1,7 +1,6 @@
 [[ga-daemons]]
 = Service Daemons
 
-.List of daemons
 [options="header"]
 [cols="1,3"]
 |===
