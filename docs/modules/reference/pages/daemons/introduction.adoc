@@ -1,4 +1,5 @@
-= List of daemons
+[[ga-daemons]]
+= Service Daemons
 
 .List of daemons
 [options="header"]
