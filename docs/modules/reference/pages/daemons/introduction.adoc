@@ -16,7 +16,7 @@
 | bsmd | Business Service Monitor daemon
 | collectd | Data collection daemon
 | correlator| 
-| discovery | Dicovery daemon
+| discovery | Discovery daemon
 | eventd | Event daemon
 | event-translator |
 | icmp |
