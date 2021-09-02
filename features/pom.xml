@@ -11,6 +11,9 @@
   <name>OpenNMS :: Features</name>
   <modules>
 
+    <!--Rest API for new UI node discover -->
+    <module>opennms-newgui-rest</module>
+
     <!-- Enlinkd -->
     <module>enlinkd</module>
 
