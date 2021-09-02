@@ -9,7 +9,7 @@ NOTE: Check out the daemon reference section (LINK MISSING) to get an overview a
 
 To use the reload commands in the CLI, log into the Karaf Shell on your system using:
 
-[source]
+[source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
