@@ -15,7 +15,7 @@ ssh -p 8101 admin@localhost
 ----
 
 To reload a daemon use the `reload-daemon` command:
-[source]
+[source, console]
 ----
 admin@opennms()> reload-daemon NAME
 ----
