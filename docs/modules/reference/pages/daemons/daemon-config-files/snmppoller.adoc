@@ -18,7 +18,7 @@
 |===
 
 .Example reload command
-[source, shell]
+[source, console]
 ----
 cd $\{OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadSnmpPollerConfig
