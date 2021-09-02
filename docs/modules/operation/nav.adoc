@@ -220,7 +220,6 @@
 
 ** xref:operation/timeseries/introduction.adoc[]
 *** xref:operation/timeseries/configuration.adoc[]
-** xref:operation/daemon-reload/introduction.adoc[]
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
 
@@ -275,3 +274,4 @@
 
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]
+** xref:admin/daemon-config-files.adoc[]
