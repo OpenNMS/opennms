@@ -30,22 +30,23 @@ package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -67,6 +68,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.Lists;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.xml.bind.JAXBException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -84,7 +89,10 @@ import com.google.common.collect.Lists;
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
+@JUnitTemporaryDatabase
+@Transactional
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+@TestExecutionListeners({CmTestExecutionListener.class})
 public class ImportSchedulerIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ImportSchedulerIT.class);
     
@@ -103,14 +111,22 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
+    @Autowired
+    ConfigurationManagerService configurationManagerService;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
+        System.out.println("+================= + " + configurationManagerService);
+        configurationManagerService.registerSchema("Provisiond",29,0,0, ProvisiondConfiguration.class);
+        configurationManagerService.registerConfiguration("Provisiond", "default", new ProvisiondConfiguration());
+        Optional<ProvisiondConfiguration> config = configurationManagerService.getConfiguration("Provisiond", "default", ProvisiondConfiguration.class);
+        System.out.println("+================= + " + config.isPresent());
     }
 
     @After
@@ -131,7 +147,7 @@ public class ImportSchedulerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
+    public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException, IOException {
         
         RequisitionDef def = m_dao.getDefs().get(0);
         
@@ -216,7 +232,7 @@ public class ImportSchedulerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    public void buildImportSchedule() throws SchedulerException, InterruptedException {
+    public void buildImportSchedule() throws SchedulerException, InterruptedException, IOException {
         // Add a simple definition to the configuration that attempts
         // to import a non existent file every 5 seconds
         RequisitionDef def = new RequisitionDef();
