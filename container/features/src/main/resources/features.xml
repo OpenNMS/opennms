@@ -1779,4 +1779,7 @@
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
+    <feature name="opennms-new-rest-api" version="${project.version}" description="OpenNMS :: Features :: New GUI REST">
+        <bundle>mvn:org.opennms.features/newgui-rest/${project.version}</bundle>
+    </feature>
 </features>
