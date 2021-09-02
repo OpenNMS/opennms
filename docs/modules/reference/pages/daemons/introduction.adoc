@@ -15,7 +15,7 @@
 | archiver |
 | bsmd | Business Service Monitor daemon
 | collectd | Data collection daemon
-| correlator| 
+| correlator|
 | discovery | Discovery daemon
 | eventd | Event daemon
 | event-translator |
