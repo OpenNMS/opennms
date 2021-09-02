@@ -40,64 +40,43 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Duration;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.MigrationFailedException;
 import liquibase.exception.ValidationFailedException;
 
-public class LiquibaseUpgraderIT {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"})
+@JUnitTemporaryDatabase
+public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    private final static Logger LOG = LoggerFactory.getLogger(LiquibaseUpgraderIT.class);
-
-    public static GenericContainer<?> container;
-    private static DataSource dataSource;
+    private DataSource dataSource;
     private Connection connection;
     private DBUtils db;
 
-    @BeforeClass
-    public static void setUpContainer() throws SQLException, LiquibaseException {
-        container = new GenericContainer<>("postgres:11.4")
-                .withExposedPorts(5432)
-                .withEnv("POSTGRES_PASSWORD", "password")
-                .withEnv("TIMESCALEDB_TELEMETRY", "off")
-                .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(60)))
-                .withLogConsumer(new Slf4jLogConsumer(LOG));
-        container.start();
-        dataSource = createDatasource();
-    }
-
-    private static DataSource createDatasource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(String.format("jdbc:postgresql://localhost:%s/", container.getFirstMappedPort()));
-        config.setUsername("postgres");
-        config.setPassword("password");
-        return new HikariDataSource(config);
-    }
-
-    @AfterClass
-    public static void stopContainer() {
-        container.stop();
+    @Override
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        this.dataSource = database;
     }
 
     @Before
