@@ -96,6 +96,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
         // rescan-threads are set to 10.
