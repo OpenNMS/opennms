@@ -25,7 +25,7 @@ NOTE: A list of reloadable daemons can be obtained by pressing `tabulator` after
 == Reload daemons by reload event
 
 .Running reload command in a shell
-[source, shell]
+[source, console]
 ----
 cd $\{OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
