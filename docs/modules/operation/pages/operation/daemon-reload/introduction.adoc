@@ -3,7 +3,7 @@
 
 Configuration changes can require a restart of OpenNMS and some daemons are able to reload configuration changes by a running CLI command or by sending a daemon reload event.
 
-NOTE: Check out the daemon reference section (LINK MISSING) to get an overview about all daemons and the related configuration files and which can be reloaded without restarting OpenNMS.
+NOTE: Check out the xref:reference:daemons/introduction#ga-daemons[daemon reference section] to get an overview about all daemons and the related configuration files and which can be reloaded without restarting OpenNMS.
 
 == Reload daemons by CLI
 
