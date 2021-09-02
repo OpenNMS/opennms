@@ -32,7 +32,7 @@ cd $\{OPENNMS_HOME}/bin
 ----
 
 .Running the reload command in Docker
-[source, shell]
+[source, console]
 ----
 docker exec -it horizon /opt/opennms/bin/send-event.pl  uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
 ----
