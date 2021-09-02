@@ -1,0 +1,100 @@
+[[data-types]]
+= Data Types
+
+
+== Counter
+
+The Counter32 type represents a non-negative integer which monotonically increases until it reaches a maximum value of 2^32-1 (4294967295 decimal), when it wraps around and starts increasing again from zero.
+
+Counters have no defined "initial" value, and thus, a single value of a Counter has (in general) no information content.
+Discontinuities in the monotonically increasing value normally occur at re-initialization of the management system, and at other times as specified in the description of an object-type using this ASN.1 type.
+If such other times can occur, for example, the creation of an object instance at times other than re-initialization, then a corresponding object should be defined, with an appropriate SYNTAX clause, to indicate the last discontinuity.
+
+Examples of appropriate SYNTAX clause include:
+
+* TimeStamp (a textual convention defined in [3])
+* DateAndTime (another textual convention from [3])
+* TimeTicks.
+
+The Counter64 type represents a non-negative integer which monotonically increases until it reaches a maximum value of 2^64-1 (18446744073709551615 decimal), when it wraps around and starts increasing again from zero.
+
+Counters have no defined "initial" value, and thus, a single value of a Counter has (in general) no information content.
+Discontinuities in the monotonically increasing value normally occur at re- initialization of the management system, and at other times as specified in the description of an object-type using this ASN.1 type.
+If such other times can occur, for example, the creation of an object instance at times other than re-initialization, then a corresponding object should be defined, with an appropriate SYNTAX clause, to indicate the last discontinuity.
+
+Examples of appropriate SYNTAX clause are:
+
+* TimeStamp (a textual convention defined in [3])
+* DateAndTime (another textual convention from [3])
+* TimeTicks.
+
+The value of the MAX-ACCESS clause for objects with a SYNTAX clause value of Counter64 is either "read-only" or "accessible-for-notify".
+
+A requirement on "standard" MIB modules is that the Counter64 type may be used only if the information being modeled would wrap in less than one hour if the Counter32 type was used instead.
+
+A DEFVAL clause is not allowed for objects with a SYNTAX clause value of Counter64.
+
+
+
+
+
+== Gauge
+
+The Gauge32 type represents a non-negative integer, which may increase or decrease, but shall never exceed a maximum value.
+The maximum value can not be greater than 2^32-1 (4294967295 decimal).
+The value of a Gauge has its maximum value whenever the information being modeled is greater or equal to that maximum value; if the information being modeled subsequently decreases below the maximum value, the Gauge also decreases.
+
+The Gauge32 type represents a non-negative integer, which may increase or decrease, but shall never exceed a maximum value, nor fall below a minimum value.
+The maximum value can not be greater than 2^32-1 (4294967295 decimal), and the minimum value can not be smaller than 0.
+The value of a Gauge32 has its maximum value whenever the information being modeled is greater than or equal to its maximum value, and has its minimum value whenever the information being modeled is smaller than or equal to its minimum value.
+If the information being modeled subsequently decreases below (increases above) the maximum (minimum) value, the Gauge32 also decreases (increases).
+(Note that despite of the use of the term "latched" in the original definition of this type, it does not become "stuck" at its maximum or minimum value.)
+
+== Integer
+
+The Integer32 type represents integer-valued information between -2^31 and 2^31-1 inclusive (-2147483648 to 2147483647 decimal).
+This type is indistinguishable from the INTEGER type.
+Both the INTEGER and Integer32 types may be sub-typed to be more constrained than the Integer32 type.
+
+The INTEGER type (but not the Integer32 type) may also be used to represent integer-valued information as named-number enumerations.
+In this case, only those named-numbers so enumerated may be present as a value.
+Note that although it is recommended that enumerated values start at 1 and be numbered contiguously, any valid value for Integer32 is allowed for an enumerated value and, further, enumerated values needn't be contiguously assigned.
+
+Finally, a label for a named-number enumeration must consist of one or more letters or digits, up to a maximum of 64 characters, and the initial character must be a lower-case letter.
+(However, labels
+longer than 32 characters are not recommended.)
+Note that hyphens are not allowed by this specification (except for use by information modules converted from SMIv1 which did allow hyphens).
+
+== IpAddress
+
+The IpAddress type represents a 32-bit internet address.
+It is represented as an OCTET STRING of length 4, in network byte-order.
+
+Note that the IpAddress type is a tagged type for historical reasons.
+Network addresses should be represented using an invocation of the TEXTUAL-CONVENTION macr
+
+== OctetString
+
+The OCTET STRING type represents arbitrary binary or textual data.
+Although the SMI-specified size limitation for this type is 65535 octets, MIB designers should realize that there may be implementation and interoperability limitations for sizes in excess of 255 octets.
+
+== Opaque
+
+The Opaque type is provided solely for backward-compatibility, and shall not be used for newly-defined object types.
+
+The Opaque type supports the capability to pass arbitrary ASN.1 syntax.
+A value is encoded using the ASN.1 Basic Encoding Rules [4] into a string of octets.
+This, in turn, is encoded as an OCTETSTRING, in effect "double-wrapping" the original ASN.1 value.
+
+Note that a conforming implementation need only be able to accept and recognize opaquely-encoded data.
+It need not be able to unwrap the data and then interpret its contents.
+
+A requirement on "standard" MIB modules is that no object may have a SYNTAX clause value of Opaque.
+
+== TimeTicks
+
+The TimeTicks type represents a non-negative integer which represents the time, modulo 2^32 (4294967296 decimal), in hundredths of a second between two epochs.
+When objects are defined which use this ASN.1 type, the description of the object identifies both of the reference epochs.
+
+For example, [3] defines the TimeStamp textual convention which is based on the TimeTicks type.
+With a TimeStamp, the first reference epoch is defined as the time when sysUpTime [5] was zero, and the second reference epoch is defined as the current value of sysUpTime.
