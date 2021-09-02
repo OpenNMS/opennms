@@ -92,9 +92,6 @@ public class DefaultClassificationService implements ClassificationService {
         this.ruleValidator = new RuleValidator(filterService);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
-        // trigger reload
-        // -> blocks classification requests until classification engine is ready
-        this.classificationEngine.reload();
     }
 
     @Override
@@ -399,6 +396,9 @@ public class DefaultClassificationService implements ClassificationService {
 
         public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
             this.delegate = delegate;
+            // trigger reload
+            // -> blocks classification requests until classification engine is ready
+            reload();
         }
 
         private void setState(State newState) {
@@ -425,7 +425,7 @@ public class DefaultClassificationService implements ClassificationService {
             try {
                 LOG.debug("reload classification engine");
                 delegate.reload();
-                if (reloadSucceeded()) {
+                if (onReloadSucceeded()) {
                     LOG.debug("another classification engine reload is required");
                     doReload();
                 } else {
@@ -433,7 +433,7 @@ public class DefaultClassificationService implements ClassificationService {
                 }
             } catch (Exception e) {
                 LOG.error("reload of classification engine failed", e);
-                if (reloadFailed(e)) {
+                if (onReloadFailed(e)) {
                     LOG.debug("another classification engine reload is required");
                     doReload();
                 } else {
@@ -442,7 +442,7 @@ public class DefaultClassificationService implements ClassificationService {
             }
         }
 
-        private synchronized boolean reloadSucceeded() {
+        private synchronized boolean onReloadSucceeded() {
             if (state == State.NEED_ANOTHER_RELOAD) {
                 setState(State.RELOADING);
                 return true;
@@ -452,7 +452,7 @@ public class DefaultClassificationService implements ClassificationService {
             }
         }
 
-        private synchronized boolean reloadFailed(Exception e) {
+        private synchronized boolean onReloadFailed(Exception e) {
             if (state == State.NEED_ANOTHER_RELOAD) {
                 setState(State.RELOADING);
                 return true;
