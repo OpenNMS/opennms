@@ -14,7 +14,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
-** xref:daemons/introduction.adoc[]
+* xref:daemons/introduction.adoc[]
 *** xref:daemons/daemon-config-files/alarmd.adoc[]
 *** xref:daemons/daemon-config-files/collectd.adoc[]
 *** xref:daemons/daemon-config-files/discovery.adoc[]
