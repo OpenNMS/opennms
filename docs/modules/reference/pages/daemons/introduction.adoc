@@ -3,7 +3,7 @@
 
 .List of daemons
 [options="header"]
-[cols="1,3,2"]
+[cols="1,3"]
 |===
 | Name | Description
 | instrumentation |
