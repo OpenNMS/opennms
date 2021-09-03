@@ -28,15 +28,18 @@
 
 package org.opennms.features.config.service.api;
 
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Responsible for managing Schemas and Configurations.
@@ -59,6 +62,8 @@ public interface ConfigurationManagerService {
      */
     <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion,
                                  int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException;
+
+    <ENTITY> void registerSchema(String configName, Version version, Class<ENTITY> entityClass) throws IOException, JAXBException;
 
     void registerSchema(String configName, int majorVersion, int minorVersion,
                         int patchVersion, ConfigConverter converter) throws IOException;
@@ -153,6 +158,63 @@ public interface ConfigurationManagerService {
      */
     void unregisterSchema(String configName) throws IOException;
 
+
+    final class Version {
+        int majorVersion;
+        int minorVersion;
+        int patchVersion;
+        public Version(int majorVersion, int minorVersion, int patchVersion) {
+            this.majorVersion = majorVersion;
+            this.minorVersion = minorVersion;
+            this.patchVersion = patchVersion;
+        }
+
+        public int getMajorVersion() {
+            return majorVersion;
+        }
+
+        public void setMajorVersion(int majorVersion) {
+            this.majorVersion = majorVersion;
+        }
+
+        public int getMinorVersion() {
+            return minorVersion;
+        }
+
+        public void setMinorVersion(int minorVersion) {
+            this.minorVersion = minorVersion;
+        }
+
+        public int getPatchVersion() {
+            return patchVersion;
+        }
+
+        public void setPatchVersion(int patchVersion) {
+            this.patchVersion = patchVersion;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Version version = (Version) o;
+            return majorVersion == version.majorVersion && minorVersion == version.minorVersion && patchVersion == version.patchVersion;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(majorVersion, minorVersion, patchVersion);
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Version.class.getSimpleName() + "[", "]")
+                    .add("majorVersion=" + majorVersion)
+                    .add("minorVersion=" + minorVersion)
+                    .add("patchVersion=" + patchVersion)
+                    .toString();
+        }
+    }
     //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
     //    ConfigData getSchemaForConfiguration(final String configId);
 // TODO: next phase for xml conversion work
