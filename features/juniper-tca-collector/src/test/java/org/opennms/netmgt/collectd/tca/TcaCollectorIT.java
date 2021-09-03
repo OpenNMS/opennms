@@ -102,6 +102,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/junit-component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })

@@ -14,6 +14,7 @@
     <module>service</module>
     <module>dao</module>
     <module>rest</module>
+    <module>upgrade</module>
   </modules>
   <properties>
     <!-- Misc. -->
