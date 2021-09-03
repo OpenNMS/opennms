@@ -218,28 +218,6 @@
 *** xref:enlinkd/layer-3/ospf-discovery.adoc[]
 *** xref:enlinkd/layer-3/is-is-discovery.adoc[]
 
-* xref:operation/introduction.adoc[]
-** xref:operation/ssl/ssl.adoc[]
-** xref:operation/request-logging.adoc[]
-** xref:operation/geocoder.adoc[]
-
-** xref:operation/config-tester.adoc[]
-** xref:operation/newts/introduction.adoc[]
-*** xref:operation/newts/configuration.adoc[]
-*** xref:operation/newts/cassandra-jmx.adoc[]
-*** xref:operation/newts/cassandra-newts-jmx.adoc[]
-*** xref:operation/newts/newts-repository-converter.adoc[]
-
-** xref:operation/timeseries/introduction.adoc[]
-*** xref:operation/timeseries/configuration.adoc[]
-** xref:operation/daemon-config-files/introduction.adoc[]
-** xref:operation/daemon-config-files/eventd.adoc[]
-** xref:operation/daemon-config-files/notifd.adoc[]
-** xref:operation/daemon-config-files/pollerd.adoc[]
-** xref:operation/daemon-config-files/snmppoller.adoc[]
-** xref:operation/daemon-config-files/syslogd.adoc[]
-** xref:operation/daemon-config-files/trapd.adoc[]
-
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
 
@@ -294,3 +272,24 @@
 
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]
+** xref:admin/ssl/ssl.adoc[]
+** xref:admin/request-logging.adoc[]
+** xref:admin/geocoder.adoc[]
+
+** xref:admin/config-tester.adoc[]
+** xref:admin/newts/introduction.adoc[]
+*** xref:admin/newts/configuration.adoc[]
+*** xref:admin/newts/cassandra-jmx.adoc[]
+*** xref:admin/newts/cassandra-newts-jmx.adoc[]
+*** xref:admin/newts/newts-repository-converter.adoc[]
+
+** xref:admin/timeseries/introduction.adoc[]
+*** xref:admin/timeseries/configuration.adoc[]
+** xref:admin/daemon-config-files/introduction.adoc[]
+** xref:admin/daemon-config-files/eventd.adoc[]
+** xref:admin/daemon-config-files/notifd.adoc[]
+** xref:admin/daemon-config-files/pollerd.adoc[]
+** xref:admin/daemon-config-files/snmppoller.adoc[]
+** xref:admin/daemon-config-files/syslogd.adoc[]
+** xref:admin/daemon-config-files/trapd.adoc[]
+
