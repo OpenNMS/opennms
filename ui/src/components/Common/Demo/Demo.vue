@@ -98,11 +98,11 @@ const cities = ref( [
 ]);
 
 const categories = ref([
-            {name: 'Accounting', key: 'A'}, 
-            {name: 'Marketing', key: 'M'}, 
-            {name: 'Production', key: 'P'}, 
-            {name: 'Research', key: 'R'}
-        ]);
+    {name: 'Accounting', key: 'A'}, 
+    {name: 'Marketing', key: 'M'}, 
+    {name: 'Production', key: 'P'}, 
+    {name: 'Research', key: 'R'}
+]);
 const selectedValue = (val : string) => {
   console.log('selected value :',val);
   cityGroupName.value = val;  

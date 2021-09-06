@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 
-import {defineEmits, ref, defineProps } from "vue";
+import {ref } from "vue";
 import RadioButton from "./RadioButton.vue";
 
 const selectedVal = ref('');
