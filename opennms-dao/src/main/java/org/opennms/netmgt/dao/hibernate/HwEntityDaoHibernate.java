@@ -115,7 +115,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     private List<HwEntityAlias> findHwEntityAlias(HwEntity parent) {
          List<HwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
                  (List<HwEntityAlias>) session.createSQLQuery(
-                 "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getParentId())
+                 "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getId())
                  .setResultTransformer(new ResultTransformer() {
              @Override
              public Object transformTuple(Object[] tuple, String[] strings) {

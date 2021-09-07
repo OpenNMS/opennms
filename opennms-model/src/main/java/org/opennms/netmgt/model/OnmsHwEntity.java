@@ -198,6 +198,10 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         m_entAliases = entAliases;
     }
 
+    public void addEntAliases(SortedSet<OnmsHwEntityAlias> entAliases) {
+        m_entAliases.addAll(entAliases);
+    }
+
     /**
      * Gets the entity id.
      *

@@ -28,13 +28,17 @@
 
 package org.opennms.netmgt.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-public class HwEntity {
+public class HwEntity implements Comparable<HwEntity> {
 
     private Integer id;
     private Integer parentId;
@@ -56,7 +60,7 @@ public class HwEntity {
     private Boolean entPhysicalIsFRU;
     private Date entPhysicalMfgDate;
     private String entPhysicalUris;
-    private Set<HwEntity> children = new HashSet<>();
+    private SortedSet<HwEntity> children = new TreeSet<>();
     private List<HwEntityAlias> hwEntityAliasList = new ArrayList<>();
 
     public HwEntity(Integer id, Integer parentId, Integer nodeId, Integer entPhysicalIndex) {
@@ -157,7 +161,50 @@ public class HwEntity {
     public void addHwEntityAlias(HwEntityAlias hwEntityAlias) {
         this.hwEntityAliasList.add(hwEntityAlias);
     }
+
     public void addHwEntityAliasList(List<HwEntityAlias> hwEntityAliasList) {
         this.hwEntityAliasList.addAll(hwEntityAliasList);
+    }
+
+    @Override
+    public int compareTo(HwEntity o) {
+        if (o == null) return -1;
+        return toString().compareTo(o.toString());
+    }
+
+    @Override
+    public String toString() {
+        ToStringBuilder b = new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE);
+        if (nodeId != null)
+            b.append("nodeId", nodeId);
+        if (entPhysicalIndex != null)
+            b.append("entPhysicalIndex", entPhysicalIndex);
+        if (hwEntityAliasList != null)
+            b.append("entAlias", hwEntityAliasList);
+        if (entPhysicalName != null)
+            b.append("entPhysicalName", entPhysicalName);
+        if (entPhysicalDescr != null)
+            b.append("entPhysicalDescr", entPhysicalDescr);
+        if (entPhysicalAlias != null)
+            b.append("entPhysicalAlias", entPhysicalAlias);
+        if (entPhysicalVendorType != null)
+            b.append("entPhysicalVendorType", entPhysicalVendorType);
+        if (entPhysicalClass != null)
+            b.append("entPhysicalClass", entPhysicalClass);
+        if (entPhysicalMfgName != null)
+            b.append("entPhysicalMfgName", entPhysicalMfgName);
+        if (entPhysicalModelName != null)
+            b.append("entPhysicalModelName", entPhysicalModelName);
+        if (entPhysicalHardwareRev != null)
+            b.append("entPhysicalHardwareRev", entPhysicalHardwareRev);
+        if (entPhysicalFirmwareRev != null)
+            b.append("entPhysicalFirmwareRev", entPhysicalFirmwareRev);
+        if (entPhysicalSoftwareRev != null)
+            b.append("entPhysicalSoftwareRev", entPhysicalSoftwareRev);
+        if (entPhysicalSerialNum != null)
+            b.append("entPhysicalSerialNum", entPhysicalSerialNum);
+        if (!children.isEmpty())
+            b.append("children", children.toString());
+        return b.toString();
     }
 }
