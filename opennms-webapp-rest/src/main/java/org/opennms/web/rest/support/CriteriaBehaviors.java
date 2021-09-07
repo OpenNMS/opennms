@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.support;
 
-import static org.opennms.web.rest.support.CriteriaValueConverters.BOOLEAN_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.INET_ADDRESS_CONVERTER;
@@ -388,10 +387,10 @@ public abstract class CriteriaBehaviors {
 
         SNMP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifAdminStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
-        SNMP_INTERFACE_BEHAVIORS.put("ifAlias", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifAlias")));
-        SNMP_INTERFACE_BEHAVIORS.put("ifDescr", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifDescr")));
+        SNMP_INTERFACE_BEHAVIORS.put("ifAlias", new StringCriteriaBehavior("ifAlias"));
+        SNMP_INTERFACE_BEHAVIORS.put("ifDescr", new StringCriteriaBehavior("ifDescr"));
         SNMP_INTERFACE_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
-        SNMP_INTERFACE_BEHAVIORS.put("ifName", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifName")));
+        SNMP_INTERFACE_BEHAVIORS.put("ifName", new StringCriteriaBehavior("ifName"));
         SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifType", new CriteriaBehavior<Integer>(INT_CONVERTER));
