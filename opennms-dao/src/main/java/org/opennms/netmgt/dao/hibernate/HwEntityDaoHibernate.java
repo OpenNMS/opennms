@@ -86,10 +86,11 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
                         ).list());
         Optional<HwEntity> optionalHwEntity =  entityList.stream().filter(hwEntity -> hwEntity.getParentId() == null).findFirst();
         if(optionalHwEntity.isPresent()) {
-            findChildren(optionalHwEntity.get(), entityList);
-            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(optionalHwEntity.get());
-            optionalHwEntity.get().addHwEntityAliasList(hwEntityAliases);
-            return optionalHwEntity.get();
+            HwEntity parent = optionalHwEntity.get();
+            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(parent);
+            parent.addHwEntityAliasList(hwEntityAliases);
+            findChildren(parent, entityList);
+            return parent;
         }
         return null;
     }
@@ -104,9 +105,9 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
                 }
         ).collect(Collectors.toSet());
         children.forEach(hwEntity ->  {
-            findChildren(hwEntity, hwEntityList);
             List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(hwEntity);
             hwEntity.addHwEntityAliasList(hwEntityAliases);
+            findChildren(hwEntity, hwEntityList);
             parent.addChild(hwEntity);
         });
     }

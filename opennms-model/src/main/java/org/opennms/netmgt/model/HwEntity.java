@@ -59,6 +59,13 @@ public class HwEntity {
     private Set<HwEntity> children = new HashSet<>();
     private List<HwEntityAlias> hwEntityAliasList = new ArrayList<>();
 
+    public HwEntity(Integer id, Integer parentId, Integer nodeId, Integer entPhysicalIndex) {
+        this.id = id;
+        this.parentId = parentId;
+        this.nodeId = nodeId;
+        this.entPhysicalIndex = entPhysicalIndex;
+    }
+
     public HwEntity(Integer id, Integer parentId, Integer nodeId,
                     Integer entPhysicalIndex, Integer entPhysicalParentRelPos,
                     String entPhysicalName, String entPhysicalDescr,
@@ -147,6 +154,9 @@ public class HwEntity {
         return hwEntityAliasList;
     }
 
+    public void addHwEntityAlias(HwEntityAlias hwEntityAlias) {
+        this.hwEntityAliasList.add(hwEntityAlias);
+    }
     public void addHwEntityAliasList(List<HwEntityAlias> hwEntityAliasList) {
         this.hwEntityAliasList.addAll(hwEntityAliasList);
     }
