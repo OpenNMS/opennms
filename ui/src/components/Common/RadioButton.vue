@@ -5,7 +5,6 @@
 <script setup lang="ts">
 
 import RadioButton from 'primevue/radiobutton';
-import { defineProps } from "vue";
 
 const props = defineProps({
     id: {
