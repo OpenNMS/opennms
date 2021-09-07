@@ -45,7 +45,6 @@ public class TrapIdentity {
     private int m_generic;
     private int m_specific;
     private String m_enterpriseId;
-    private String trapOID;
     
     /**
      * The standard traps list
@@ -136,8 +135,6 @@ public class TrapIdentity {
                 // set enterprise value to trap oid minus the
                 // the last two subids
                 setEnterpriseId(snmpTrapOidValue.substring(0, nextToLastIndex));
-                // Parse full trap oid with sub-id
-                setTrapOID(snmpTrapOidValue.substring(0, snmpTrapOidValue.length()));
             } else {
                 setEnterpriseId(snmpTrapOidValue.substring(0, lastIndex));
             }
@@ -174,15 +171,7 @@ public class TrapIdentity {
         m_enterpriseId = enterpriseId;
     }
 
-    public String getTrapOID() {
-        return trapOID;
-    }
-
-    private void setTrapOID(String trapOID) {
-        this.trapOID = trapOID;
-    }
-
-    @Override
+        @Override
     public String toString() {
         return "[Generic="+getGeneric()+", Specific="+getSpecific()+", EnterpriseId="+getEnterpriseId()+"]";
     }
