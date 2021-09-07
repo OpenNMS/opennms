@@ -50,6 +50,11 @@ public class ConfigurationManagerServiceProvisiondMock implements ConfigurationM
     }
 
     @Override
+    public <ENTITY> void registerSchema(String configName, Version version, Class<ENTITY> entityClass) throws IOException, JAXBException {
+
+    }
+
+    @Override
     public void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, ConfigConverter converter) throws IOException {
 
     }
