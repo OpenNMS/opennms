@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.mock;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.HwEntityDao;
+import org.opennms.netmgt.model.HwEntity;
 import org.opennms.netmgt.model.OnmsHwEntity;
 
 public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> implements HwEntityDao {
@@ -55,6 +56,11 @@ public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> impl
 	        }
 	    }
 	    return null;
+	}
+
+	@Override
+	public HwEntity findRootEntityByNodeId(Integer nodeId) {
+		return null;
 	}
 
 	@Override

@@ -28,10 +28,19 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.HwEntityDao;
+import org.opennms.netmgt.model.HwEntity;
+import org.opennms.netmgt.model.HwEntityAlias;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The Class HwEntityDaoHibernate.
@@ -53,6 +62,71 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
+    }
+
+    @Override
+    public HwEntity findRootEntityByNodeId(Integer nodeId) {
+        List<HwEntity> entityList = getHibernateTemplate().execute(session -> (List<HwEntity>)
+                session.createSQLQuery("select * FROM hwEntity where nodeid = " + nodeId)
+                        .setResultTransformer(
+                                new ResultTransformer() {
+                                    @Override
+                                    public Object transformTuple(Object[] tuple, String[] strings) {
+                                        return new HwEntity((Integer) tuple[0], (Integer) tuple[1], (Integer) tuple[2], (Integer) tuple[3], (Integer) tuple[4],
+                                                (String) tuple[5], (String) tuple[6], (String) tuple[7], (String) tuple[8], (String) tuple[9],
+                                                (String) tuple[10], (String) tuple[11], (String) tuple[12], (String) tuple[13], (String) tuple[14],
+                                                (String) tuple[15], (String) tuple[16], (Boolean) tuple[17], (Date) tuple[18], (String) tuple[19]);
+                                    }
+
+                                    @Override
+                                    public List transformList(List list) {
+                                        return list;
+                                    }
+                                }
+                        ).list());
+        Optional<HwEntity> optionalHwEntity =  entityList.stream().filter(hwEntity -> hwEntity.getParentId() == null).findFirst();
+        if(optionalHwEntity.isPresent()) {
+            findChildren(optionalHwEntity.get(), entityList);
+            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(optionalHwEntity.get());
+            optionalHwEntity.get().addHwEntityAliasList(hwEntityAliases);
+            return optionalHwEntity.get();
+        }
+        return null;
+    }
+
+    private void findChildren(HwEntity parent, List<HwEntity> hwEntityList) {
+
+        Set<HwEntity> children = hwEntityList.stream().filter(hwEntity -> {
+                    if (hwEntity.getParentId() != null) {
+                        return hwEntity.getParentId().equals(parent.getId());
+                    }
+                    return false;
+                }
+        ).collect(Collectors.toSet());
+        children.forEach(hwEntity ->  {
+            findChildren(hwEntity, hwEntityList);
+            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(hwEntity);
+            hwEntity.addHwEntityAliasList(hwEntityAliases);
+            parent.addChild(hwEntity);
+        });
+    }
+
+    private List<HwEntityAlias> findHwEntityAlias(HwEntity parent) {
+         List<HwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
+                 (List<HwEntityAlias>) session.createSQLQuery(
+                 "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getParentId())
+                 .setResultTransformer(new ResultTransformer() {
+             @Override
+             public Object transformTuple(Object[] tuple, String[] strings) {
+                 return new HwEntityAlias((Integer) tuple[0], (Integer) tuple[1], (Integer) tuple[2], (String) tuple[3]);
+             }
+
+             @Override
+             public List transformList(List list) {
+                 return list;
+             }
+         }).list());
+        return  hwEntityAliases;
     }
 
     /* (non-Javadoc)

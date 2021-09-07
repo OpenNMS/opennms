@@ -37,6 +37,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.HwEntity;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
@@ -170,8 +171,17 @@ public class HwEntityDaoIT implements InitializingBean {
         OnmsHwEntity c = e1.getChildren().iterator().next();
         Assert.assertEquals("4", c.getAttributeValue("ram"));
 
+        // Test valid findRootEntityByNodeId
+        HwEntity entity1 = m_hwEntityDao.findRootEntityByNodeId(node.getId());
+        Assert.assertNotNull(entity1);
+        Assert.assertNotNull(entity1.getNodeId());
+        Assert.assertEquals(entity1.getNodeId(), node.getId());
+        Assert.assertEquals(2, entity1.getChildren().size());
+        Assert.assertEquals("chassis", entity1.getEntPhysicalClass());
+
         // Test invalid findRootByNodeId
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
+        m_hwEntityDao.findRootByNodeId(10000);
 
         // Test findEntityByIndex
         OnmsHwEntity e2 = m_hwEntityDao.findEntityByIndex(node.getId(), e1.getEntPhysicalIndex());
