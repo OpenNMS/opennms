@@ -63,7 +63,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ScanReport;
-import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -86,8 +85,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "alarmAckUser", "Acknowledging User", STRING),
 		new SearchProperty(OnmsAlarm.class, "alarmType", "Alarm Type", INTEGER, ImmutableMap.<String,String>builder()
 			.put(String.valueOf(OnmsAlarm.PROBLEM_TYPE), "Problem")
-                        .put(String.valueOf(OnmsAlarm.RESOLUTION_TYPE), "Resolution")
-                        .put(String.valueOf(OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE), "Problem Without Resolution")
+			.put(String.valueOf(OnmsAlarm.RESOLUTION_TYPE), "Resolution")
+			.put(String.valueOf(OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE), "Problem Without Resolution")
 			.build()
 		),
 		new SearchProperty(OnmsAlarm.class, "applicationDN", "Application DN", STRING),
@@ -115,9 +114,9 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, null, "situationAlarmCount", null, "situationAlarmCount", INTEGER, false, false, null),
 		new SearchProperty(OnmsAlarm.class, "suppressedTime", "Suppressed Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "suppressedUntil", "Suppressed Until", TIMESTAMP),
-                new SearchProperty(OnmsAlarm.class, "suppressedUser", "Suppressed User", STRING),
-                new SearchProperty(OnmsAlarm.class, "TTicketId", "Trouble Ticket ID", STRING),
-                // TODO: skipping tTicketState 'cause I'm not entirely sure how to handle enums in this
+		new SearchProperty(OnmsAlarm.class, "suppressedUser", "Suppressed User", STRING),
+		new SearchProperty(OnmsAlarm.class, "TTicketId", "Trouble Ticket ID", STRING),
+		// TODO: skipping tTicketState 'cause I'm not entirely sure how to handle enums in this
 		new SearchProperty(OnmsAlarm.class, "uei", "UEI", STRING),
 		new SearchProperty(OnmsAlarm.class, "x733AlarmType", "X.733 Alarm Type", STRING),
 		new SearchProperty(OnmsAlarm.class, "x733ProbableCause", "X.733 Probable Cause", INTEGER)
@@ -167,7 +166,7 @@ public abstract class SearchProperties {
 		//new SearchProperty(OnmsAssetRecord.class, "longitude", "Longitude", FLOAT),
 		new SearchProperty(OnmsAssetRecord.class, "maintcontract", "Maintenance Contract", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "maintContractExpiration", "Maintenance Contract Expiration", STRING),
-                new SearchProperty(OnmsAssetRecord.class, "managedObjectInstance", "Managed Object Instance", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "managedObjectInstance", "Managed Object Instance", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "managedObjectType", "Managed Object Type", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "manufacturer", "Manufacturer", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "modelNumber", "Model Number", STRING),
@@ -211,7 +210,7 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> DIST_POLLER_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsDistPoller.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsDistPoller.class, "label", "Label", STRING),
-                new SearchProperty(OnmsDistPoller.class, "lastUpdated", "Last Updated", TIMESTAMP),
+		new SearchProperty(OnmsDistPoller.class, "lastUpdated", "Last Updated", TIMESTAMP),
 		new SearchProperty(OnmsDistPoller.class, "location", "Monitoring Location", STRING)
 	));
 
@@ -319,8 +318,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsNode.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsNode.class, "createTime", "Creation Time", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "foreignId", "Foreign ID", STRING),
-                new SearchProperty(OnmsNode.class, "foreignSource", "Foreign Source", STRING),
-                new SearchProperty(OnmsNode.class, "hasFlows", "Has Flows", BOOLEAN),
+		new SearchProperty(OnmsNode.class, "foreignSource", "Foreign Source", STRING),
 		new SearchProperty(OnmsNode.class, "label", "Label", STRING),
 		new SearchProperty(OnmsNode.class, "labelSource", "Label Source", STRING, ImmutableMap.<String,String>builder()
 			.put(String.valueOf(NodeLabelSource.ADDRESS.value()), "IP Address")
@@ -331,6 +329,9 @@ public abstract class SearchProperties {
 			.put(String.valueOf(NodeLabelSource.USER.value()), "User-Defined")
 			.build()
 		),
+		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
+		new SearchProperty(OnmsNode.class, "lastEgressFlow", "Last Egress Flow", TIMESTAMP),
+		new SearchProperty(OnmsNode.class, "lastIngressFlow", "Last Ingress Flow", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "netBiosDomain", "Windows NetBIOS Domain", STRING),
 		new SearchProperty(OnmsNode.class, "netBiosName", "Windows NetBIOS Name", STRING),
@@ -383,16 +384,18 @@ public abstract class SearchProperties {
 	));
 
 	static final SortedSet<SearchProperty> SNMP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(
-	        new SearchProperty(OnmsSnmpInterface.class, "id", "ID", INTEGER),
-                new SearchProperty(OnmsSnmpInterface.class, "ifAdminStatus", "Admin Status", INTEGER),
-                new SearchProperty(OnmsSnmpInterface.class, "ifAlias", "Interface Alias", STRING),
-                new SearchProperty(OnmsSnmpInterface.class, "ifDescr", "Interface Description", STRING),
+		new SearchProperty(OnmsSnmpInterface.class, "id", "ID", INTEGER),
+		new SearchProperty(OnmsSnmpInterface.class, "ifAdminStatus", "Admin Status", INTEGER),
+		new SearchProperty(OnmsSnmpInterface.class, "ifAlias", "Interface Alias", STRING),
+		new SearchProperty(OnmsSnmpInterface.class, "ifDescr", "Interface Description", STRING),
 		new SearchProperty(OnmsSnmpInterface.class, "ifIndex", "Interface Index", INTEGER),
-                new SearchProperty(OnmsSnmpInterface.class, "ifName", "Interface Name", STRING),
+		new SearchProperty(OnmsSnmpInterface.class, "ifName", "Interface Name", STRING),
 		new SearchProperty(OnmsSnmpInterface.class, "ifOperStatus", "Operational Status", INTEGER),
 		new SearchProperty(OnmsSnmpInterface.class, "ifSpeed", "Interface Speed (Bits per second)", LONG),
-                new SearchProperty(OnmsSnmpInterface.class, "ifType", "Interface Type", INTEGER),
+		new SearchProperty(OnmsSnmpInterface.class, "ifType", "Interface Type", INTEGER),
 		new SearchProperty(OnmsSnmpInterface.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
+		new SearchProperty(OnmsSnmpInterface.class, "lastEgressFlow", "Last Egress Flow", TIMESTAMP),
+		new SearchProperty(OnmsSnmpInterface.class, "lastIngressFlow", "Last Ingress Flow", TIMESTAMP),
 		new SearchProperty(OnmsSnmpInterface.class, "lastSnmpPoll", "Last SNMP Interface Poll", TIMESTAMP)
 	));
 
@@ -483,7 +486,7 @@ public abstract class SearchProperties {
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
-                ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
+		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
 		// Root prefix
 		APPLICATION_SERVICE_PROPERTIES.addAll(APPLICATION_PROPERTIES);
