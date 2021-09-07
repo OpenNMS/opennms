@@ -123,7 +123,7 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration pConfig = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
         pConfig.setImportThreads(12L);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, pConfig);
-        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
+        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
     }
 
@@ -133,7 +133,7 @@ public class ConfigurationManagerServiceImplTest {
      */
     @Test(expected = RuntimeException.class)
     public void testUpdateInvalidateConfiguration() throws IOException {
-        JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
+        JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         json.put("importThreads", -1);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
@@ -143,8 +143,8 @@ public class ConfigurationManagerServiceImplTest {
     @Test
     public void testRemoveEverything() throws IOException {
         configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
-        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
-        Assert.assertTrue("Fail to unregister config", json.isEmpty());
+        JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        Assert.assertTrue("Fail to unregister config", json != null);
         configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, new ProvisiondConfiguration());
         configManagerService.unregisterSchema(CONFIG_NAME);
         Optional<ConfigSchema<?>> schemaAfterDeregister = configManagerService.getRegisteredSchema(CONFIG_NAME);

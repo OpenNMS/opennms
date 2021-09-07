@@ -55,7 +55,7 @@ public interface ConfigurationManagerService {
      * @param majorVersion
      * @param minorVersion
      * @param patchVersion
-     * @param entityClass (Must have ValidateUsing annotation)
+     * @param entityClass  (Must have ValidateUsing annotation)
      * @param <ENTITY>
      * @throws IOException
      * @throws JAXBException
@@ -78,16 +78,15 @@ public interface ConfigurationManagerService {
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
 
     /**
-     * register a new configuration by JSONObject.
+     * register a new configuration by config object.
      * It will make sure the configId is not duplicated !!!
      *
      * @param configName
      * @param configId
-     * @param configObject
+     * @param configObject (config object / JSONObject)
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, Object configObject)
-            throws IOException;
+    void registerConfiguration(String configName, String configId, Object configObject) throws IOException;
 
     /**
      * remove configure from service
@@ -98,8 +97,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
-                                         Object configObject)
-            throws IOException;
+                             Object configObject) throws IOException;
 
     /**
      * get config as configObject by configName, configId and Config class
@@ -122,7 +120,7 @@ public interface ConfigurationManagerService {
      * @return JSONObject
      * @throws IOException
      */
-    Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+    JSONObject getJSONConfiguration(String configName, String configId) throws IOException;
 
     /**
      * get config as xml by configName, configId
@@ -145,6 +143,7 @@ public interface ConfigurationManagerService {
 
     /**
      * get a list of registered configName
+     *
      * @return configName set
      * @throws IOException
      */
@@ -157,7 +156,6 @@ public interface ConfigurationManagerService {
      * @throws IOException
      */
     void unregisterSchema(String configName) throws IOException;
-
 
     final class Version {
         int majorVersion;
@@ -215,6 +213,14 @@ public interface ConfigurationManagerService {
                     .toString();
         }
     }
+
+    /**
+     * return configIds by configName
+     *
+     * @param configName
+     */
+    Set<String> getConfigIds(String configName) throws IOException;
+
     //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
     //    ConfigData getSchemaForConfiguration(final String configId);
 // TODO: next phase for xml conversion work

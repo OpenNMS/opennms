@@ -166,8 +166,8 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (!configs.containsKey(configId)) {
             throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
         }
-        JSONObject jsonObject = this.validateConfigWithConvert(configName, config);
-        configs.put(configId, jsonObject);
+        JSONObject json = this.validateConfigWithConvert(configName, config);
+        configs.put(configId, json);
         this.putConfig(configName, configData.get());
     }
 
@@ -206,23 +206,38 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     private void putSchema(ConfigSchema<?> configSchema) throws IOException {
         long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_SCHEMA);
-        if(timestamp < 0){
+        if (timestamp < 0) {
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
     }
 
     private void putConfig(String configName, ConfigData<JSONObject> configData) throws IOException {
         long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
-        if(timestamp < 0){
+        if (timestamp < 0) {
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
     }
 
+    /**
+     * convert (it will skip convert it JSONObject passed) and validate
+     *
+     * @param configName
+     * @param configObject (config object / JSONObject)
+     * @return
+     * @throws IOException
+     */
     private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
             throws IOException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
-        this.validateConfig(schema, configObject);
-        return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
+        if (configObject instanceof JSONObject) {
+            JSONObject json = (JSONObject) configObject;
+            Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json.toString());
+            this.validateConfig(schema, tmpConfigObject);
+            return json;
+        } else {
+            this.validateConfig(schema, configObject);
+            return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
+        }
     }
 
     private void validateConfigData(final String configName, final ConfigData<JSONObject> configData)

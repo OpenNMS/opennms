@@ -46,6 +46,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceImpl.class);
@@ -91,13 +98,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     /**
-     * it validates and add the config object to database
-     *
-     * @param configName
-     * @param configId
-     * @param configObject
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * {@inheritDoc}
      */
     @Override
     public void registerConfiguration(final String configName, final String configId, Object configObject)
@@ -109,7 +110,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configSchema.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        if (this.getJSONConfiguration(configName, configId).isPresent()) {
+        if (this.getJSONConfiguration(configName, configId) != null) {
             throw new IllegalArgumentException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
@@ -146,8 +147,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
-        return configStoreDao.getConfig(configName, configId);
+    public JSONObject getJSONConfiguration(final String configName, final String configId) throws IOException {
+        return configStoreDao.getConfig(configName, configId).isEmpty() ? null : configStoreDao.getConfig(configName, configId).get() ;
     }
 
     @Override
@@ -174,6 +175,15 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void unregisterSchema(String configName) throws IOException {
         configStoreDao.unregister(configName);
+    }
+
+    @Override
+    public Set<String> getConfigIds(String configName) throws IOException {
+        Optional<ConfigData<JSONObject>> configData = configStoreDao.getConfigData(configName);
+        if(configData.isEmpty()){
+            return new HashSet<>();
+        }
+        return configData.get().getConfigs().keySet();
     }
 
     @Override

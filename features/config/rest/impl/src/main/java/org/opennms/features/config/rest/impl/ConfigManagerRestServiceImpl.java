@@ -29,6 +29,7 @@
 package org.opennms.features.config.rest.impl;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -59,28 +61,33 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         this.configurationManagerService = configurationManagerService;
     }
 
+    /**
+     * get or create a fake schema and return
+     *
+     * @param configName
+     * @return
+     */
     @Override
-    public Response getRawOpenApiSchema(final String configName) {
+    public Response getSchema(String configName) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            if(schema.isEmpty()){
-                return Response.status(Response.Status.NOT_FOUND).build();
+            if (schema.isEmpty()) {
+                // TODO: Freddy remove in PE-54 (It is for testing)
+                configurationManagerService.registerSchema(configName, 29, 0, 0, ProvisiondConfiguration.class);
+                schema = configurationManagerService.getRegisteredSchema(configName);
+                configurationManagerService.registerConfiguration(configName, "default", new ProvisiondConfiguration());
             }
-            ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-            OpenAPI openapi = configSwaggerConverter.convert(schema.get().getConverter().getValidationSchema().getConfigItem(),
-                    BASE_PATH + schema.get().getName());
-            return Response.ok(openapi).build();
-        } catch (IOException | RuntimeException e) {
-            LOG.error(e.getMessage());
+            return Response.ok(schema.get()).build();
+        } catch (Exception e) {
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
 
     @Override
-    public Response getOpenApiSchema(String configName, String acceptType){
+    public Response getOpenApiSchema(String configName, String acceptType) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            if(schema.isEmpty()){
+            if (schema.isEmpty()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
@@ -89,6 +96,65 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response getConfigIds(String configName) {
+        try {
+            Set<String> ids = configurationManagerService.getConfigIds(configName);
+            return Response.ok(ids).build();
+        } catch (IOException e) {
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response getConfig(String configName, String configId) {
+        try {
+            JSONObject config = configurationManagerService.getJSONConfiguration(configName, configId);
+//            if(config.isEmpty()){
+//                return Response.noContent().build();
+//            }
+            LOG.debug("HERE !!!!! 111");
+            String jsonStr = config.toString();
+            LOG.debug("HERE !!!!! " + jsonStr);
+            return Response.ok(jsonStr).build();
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response addConfig(String configName, String configId, String jsonStr) {
+        try {
+            JSONObject json = new JSONObject(jsonStr);
+            configurationManagerService.registerConfiguration(configName, configId, json);
+            return Response.ok().build();
+        } catch (IOException e) {
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response updateConfig(String configName, String configId, String jsonStr) {
+        try {
+            JSONObject json = new JSONObject(jsonStr);
+            configurationManagerService.updateConfiguration(configName, configId, json);
+            return Response.ok().build();
+        } catch (IOException e) {
+            return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @Override
+    public Response deleteConfig(String configName, String configId) {
+        try {
+            configurationManagerService.unregisterConfiguration(configName, configId);
+            return Response.ok().build();
+        } catch (IOException e) {
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -104,47 +170,14 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     /**
-     * get or create a fake schema and return
-     *
-     * @param configName
-     * @return
-     */
-    @Override
-    public ConfigSchema getSchema(String configName) {
-        try {
-            Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
-            if (schema.isEmpty()) {
-                // TODO: Freddy remove in PE-54
-                configurationManagerService.registerSchema(configName, 29, 0, 0, ProvisiondConfiguration.class);
-                schema = configurationManagerService.getRegisteredSchema(configName);
-            }
-            return schema.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-//            return Response.serverError().build();
-        }
-    }
-
-    @Override
-    public ConfigData getConfigFile(String configName, String filename) {
-        return null;
-    }
-
-    @Override
-    public ConfigData getView(String configName, String filename, Map<String, Object> inputParameters) {
-        return null;
-    }
-
-
-    /**
      * Generate simple error message response {"MESSAGE": "<ERROR MESSAGE>"}
+     *
      * @param status
      * @param message
      * @return
      */
-    private Response generateSimpleMessageResponse(Response.Status status, String message){
-        Map<String,String> messages = new HashMap<>();
+    private Response generateSimpleMessageResponse(Response.Status status, String message) {
+        Map<String, String> messages = new HashMap<>();
         messages.put(MESSAGE_TAG, message);
         return Response.status(status).entity(messages).build();
     }
