@@ -2,6 +2,41 @@
 
 = Changelog
 
+[[releasenotes-changelog-28.1.0]]
+
+== Release 28.1.0
+
+Release 28.1.0 contains a bunch of bug fixes and enhancements, including a dependency update
+related to a CVE.
+
+Note that we bumped the minor version on the release because of the changes made in
+http://issues.opennms.org/browse/NMS-13479[NMS-13479] -- in order to optimize the flow classification
+processing, some significant changes were made behind the scenes.  There _shouldn't_ be any change
+from a user perspective, but we bumped the version just in case.
+
+The codename for Horizon 28.1.0 is https://wikipedia.org/wiki/$$Bumblebee_(Transformers)$$[_Bumblebee_]
+
+=== Bug
+
+* OpenNMS Admin Guide HostResourceSwRunMonitor service-name not exact match string (Issue http://issues.opennms.org/browse/NMS-8968[NMS-8968])
+* Trailing whitespace breaks flow listener config (Issue http://issues.opennms.org/browse/NMS-13477[NMS-13477])
+* Syslog messages missing nodelabel, location, and interface (Issue http://issues.opennms.org/browse/NMS-13485[NMS-13485])
+* Minions > v27.0.0 stop processing flows after apprx 5 minutes (Issue http://issues.opennms.org/browse/NMS-13486[NMS-13486])
+* IFTTT integration not working anymore (Issue http://issues.opennms.org/browse/NMS-13501[NMS-13501])
+* Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
+* Service Parameters box misses Poller Patterns (Issue http://issues.opennms.org/browse/NMS-13517[NMS-13517])
+* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
+
+=== Enhancement
+
+* Add the full trap oid for v2 snmp event (Issue http://issues.opennms.org/browse/NMS-13422[NMS-13422])
+* Update Provisiond Docs (Issue http://issues.opennms.org/browse/NMS-13446[NMS-13446])
+* Update table formatting in docs.  (Issue http://issues.opennms.org/browse/NMS-13472[NMS-13472])
+* Migrate VMware config from wiki to docs (Issue http://issues.opennms.org/browse/NMS-13473[NMS-13473])
+* Review classification rules in the flow pipeline (Issue http://issues.opennms.org/browse/NMS-13479[NMS-13479])
+* Use Karaf shell commands to secure Minion SSH Karaf access (Issue http://issues.opennms.org/browse/NMS-13511[NMS-13511])
+* Reformat tables (again) (Issue http://issues.opennms.org/browse/NMS-13515[NMS-13515])
+
 [[releasenotes-changelog-28.0.2]]
 
 == Release 28.0.2
