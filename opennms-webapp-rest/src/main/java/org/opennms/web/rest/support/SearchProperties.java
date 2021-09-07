@@ -191,7 +191,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendor", "Vendor", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING)
+		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
 		//new SearchProperty(OnmsAssetRecord.class, "zip", "ZIP or Postal Code", STRING)
 	));
 
@@ -326,6 +326,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "lastEgressFlow", "Last Egress Flow", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "lastIngressFlow", "Last Ingress Flow", TIMESTAMP),
+		new SearchProperty(OnmsNode.class, "lastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsNode.class, "netBiosDomain", "Windows NetBIOS Domain", STRING),
 		new SearchProperty(OnmsNode.class, "netBiosName", "Windows NetBIOS Name", STRING),
 		new SearchProperty(OnmsNode.class, "operatingSystem", "Operating System", STRING),
@@ -362,6 +363,13 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "ifRegainedService", "Regained Service Time", TIMESTAMP),
 		new SearchProperty(OnmsOutage.class, "suppressedBy", "Suppressed By User", STRING),
 		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP)
+	));
+
+	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(
+		new SearchProperty(ScanReport.class, "id", "ID", STRING),
+		new SearchProperty(ScanReport.class, "locale", "Locale", STRING),
+		new SearchProperty(ScanReport.class, "location", "Monitoring Location", STRING),
+		new SearchProperty(ScanReport.class, "timestamp", "Timestamp", TIMESTAMP)
 	));
 
 	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(
