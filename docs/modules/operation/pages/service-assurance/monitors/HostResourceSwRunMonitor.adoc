@@ -12,10 +12,10 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor`
 |===
 
 == Configuration and use
@@ -24,31 +24,47 @@ Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating sy
 [options="header"]
 [cols="1,3,2"]
 |===
+| Parameter
+| Description
+| Default
 
-| Parameter           | Description                                                                                   | Default
 3+| *Required*
-| service-name        | The name of the process to be monitored.
-                       This parameter's value is case-sensitive and is evaluated as an exact match.                   | n/a
+
+| service-name
+| The name of the process to be monitored.
+If there is a `~` at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise it will be considered an exact match.
+| n/a
+
 3+|*Optional*
 
-| port                | The port of the server's SNMP agent to test.                                                  | from `snmp-config.xml`
+| port
+| The port of the server's SNMP agent to test.
+| from `snmp-config.xml`
 
-| match-all           | If the process name appears multiple times in the hrSwRunTable, and this parameter is set to
-                         `true`, then all instances of the named process must match the value specified for
-                         `run-level`.                                                                                 | false
-| run-level           | The maximum allowable value of hrSWRunStatus among +
-                        `running(1)`, +
-                         `runnable(2)` = waiting for resource +
-                        `notRunnable(3)` = loaded but waiting for event +
-                         `invalid(4)` = not loaded                                                                    | 2
-| service-name-oid    | The numeric object identifier (OID) from which process names are queried. Defaults to
-                         hrSwRunName. You should never change it under normal
-                         circumstances. That said, changing it to hrSwRunParameters (.1.3.6.1.2.1.25.4.2.1.5) is
-                         often helpful when dealing with processes running under Java Virtual Machines which all have
-                         the same process name _java_.                                                                | .1.3.6.1.2.1.25.4.2.1.2
-| service-status-oid  | The numeric object identifier (OID) from which run status is queried. Defaults to
-                         hrSwRunStatus and should never be changed under normal circumstances.                        | .1.3.6.1.2.1.25.4.2.1.7
+| match-all
+| If the process name appears multiple times in the hrSwRunTable, and this parameter is set to
+`true`, then all instances of the named process must match the value specified for `run-level`.
+| false
 
+| run-level
+| The maximum allowable value of hrSWRunStatus among +
+`running(1)`, +
+`runnable(2)` = waiting for resource +
+`notRunnable(3)` = loaded but waiting for event +
+`invalid(4)` = not loaded
+| 2
+
+| service-name-oid
+| The numeric object identifier (OID) from which process names are queried.
+Defaults to hrSwRunName.
+You should never change it under normal circumstances.
+That said, changing it to hrSwRunParameters (.1.3.6.1.2.1.25.4.2.1.5) is often helpful when dealing with processes running under Java Virtual Machines which all have the same process name _java_.
+| .1.3.6.1.2.1.25.4.2.1.2
+
+| service-status-oid
+| The numeric object identifier (OID) from which run status is queried.
+Defaults to hrSwRunStatus and should never be changed under normal circumstances.
+| .1.3.6.1.2.1.25.4.2.1.7
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -70,5 +86,5 @@ Define the configuration in `poller-configuration.xml` as follows:
 <monitor service="Process-httpd" class-name="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor"/>
 ----
 <1> Name of the process on the system.
-<2> Test if the process is in a valid state (in other words, have a `run-level` no higher than `notRunnable(3)`. 
+<2> Test if the process is in a valid state (in other words, have a `run-level` no higher than `notRunnable(3)`.
 <3> If the httpd process runs multiple times, the test is done for each instance of the process.

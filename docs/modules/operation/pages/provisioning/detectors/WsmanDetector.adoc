@@ -10,13 +10,19 @@ If the identify command is successful, the service is marked as detected, and th
 | Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the <DETECTOR-NAME-HERE>
-[options="header, %autowidth"]
+.Optional parameters for the WS-Man detector
+[options="header, autowidth"]
+[cols="1,4,1"]
 |===
-| Parameter      | Description                                                                                        | Required | Default value
-| `updateAssets` | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.       | false    | `true`
+| Parameter
+| Description
+| Default
+
+| updateAssets
+| Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.
+| true
 |===
 
 == Examples
@@ -25,14 +31,16 @@ If a valid response to the identify command is received, the product vendor and 
 
 For example, a Windows Server 2008 machine returns:
 
+[options="autowidth"]
+[cols="1h,2"]
 |===
-| *Product Vendor*  | Microsoft Corporation
-| *Product Version* | OS: 6.1.7601 SP: 1.0 Stack: 2.0
+| Product Vendor  | Microsoft Corporation
+| Product Version | OS: 6.1.7601 SP: 1.0 Stack: 2.0
 |===
 
 If these asset fields are being used for another purpose, disable this behavior by setting the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
 
-NOTE: Some agents may respond to the identify command with generic identities such as `Openwsman` `2.0.0`.
+NOTE: Some agents may respond to the identify command with generic identities, such as Openwsman 2.0.0.
       Specify the `product-vendor` and `product-version` attributes in `wsman-config.xml` to overwrite these values.
 
 Example detector configuration:
@@ -73,4 +81,4 @@ Payload:
 <1> `ProductVendor`: Stored in the `vendor` asset field.
 <2> `ProductVersion`: Stored in the `modelNumber` asset field.
 
-NOTE: The _System Definition Rule_ uses the asset field information to decide which performance metrics to gathere from Collectd.
+NOTE: The System Definition Rule uses the asset field information to decide which performance metrics to gather from Collectd.

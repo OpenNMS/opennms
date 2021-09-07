@@ -34,10 +34,12 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -57,10 +59,12 @@ public class OpenConfigClientIT {
     private final List<Telemetry.OpenConfigData> jtiData = new ArrayList<>();
     private final List<Gnmi.SubscribeResponse> gnmiData = new ArrayList<>();
     private OpenConfigTestServer server;
+    private int port;
 
     @Before
     public void setup() throws IOException {
-        server = new OpenConfigTestServer();
+        this.port = OpenConfigTestServer.getAvailablePort(new AtomicInteger(50052), 51000);
+        server = new OpenConfigTestServer(port);
         server.start();
     }
 
@@ -112,7 +116,8 @@ public class OpenConfigClientIT {
         if(jti) {
             parameterList.add(new Parameter("mode", "jti"));
         }
-        parameterList.add(new Parameter("port", "50052"));
+        String port = Integer.toString(this.port);
+        parameterList.add(new Parameter("port", port));
         parameterList.add(new Parameter("group1", "frequency", "2000"));
         parameterList.add(new Parameter("group1", "paths", "/interfaces"));
         parameterList.add(new Parameter("group1", "interval", "3"));
@@ -171,6 +176,5 @@ public class OpenConfigClientIT {
     public void shutdown() {
         server.stop();
     }
-
 
 }

@@ -183,7 +183,7 @@ public class DefaultClassificationEngineTest {
     @Test
     public void verifyAddressRuleWins() {
         final ClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-            new RuleBuilder().withName("HTTP").withDstPort(80).build(),
+            new RuleBuilder().withName("HTTP").withDstPort(80).withPosition(1).build(),
             new RuleBuilder().withName("XXX2").withSrcAddress("192.168.2.1").withSrcPort(4789).build(),
             new RuleBuilder().withName("XXX").withDstAddress("192.168.2.1").build()
         ), FilterService.NOOP);

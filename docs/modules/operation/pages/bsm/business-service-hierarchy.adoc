@@ -1,5 +1,5 @@
 
-= Business service hierarchy
+= Business Service Hierarchy
 
 Business services can depend on each other, and together build a business service hierarchy.
 Visualize the hierarchy using the Topology User Interface with the *Business Services* view.
