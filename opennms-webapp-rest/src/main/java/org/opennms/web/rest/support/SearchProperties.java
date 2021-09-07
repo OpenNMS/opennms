@@ -359,13 +359,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP)
 	}));
 
-	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
-		new SearchProperty(ScanReport.class, "id", "ID", STRING),
-		new SearchProperty(ScanReport.class, "locale", "Locale", STRING),
-		new SearchProperty(ScanReport.class, "location", "Monitoring Location", STRING),
-		new SearchProperty(ScanReport.class, "timestamp", "Timestamp", TIMESTAMP)
-	}));
-
 	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsServiceType.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsServiceType.class, "name", "Service Name", STRING)
