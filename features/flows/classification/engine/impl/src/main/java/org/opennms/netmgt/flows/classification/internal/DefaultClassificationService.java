@@ -32,10 +32,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.criteria.Criteria;
@@ -59,12 +55,8 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGro
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultClassificationService implements ClassificationService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultClassificationService.class);
 
     private final ClassificationRuleDao classificationRuleDao;
 
@@ -87,7 +79,7 @@ public class DefaultClassificationService implements ClassificationService {
                                         SessionUtils sessionUtils) {
         this.classificationRuleDao = Objects.requireNonNull(classificationRuleDao);
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
-        this.classificationEngine = new AsyncReloadingClassificationEngine(Objects.requireNonNull(classificationEngine));
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.ruleValidator = new RuleValidator(filterService);
         this.groupValidator = new GroupValidator(classificationRuleDao);
@@ -364,129 +356,6 @@ public class DefaultClassificationService implements ClassificationService {
         }
         if(countMatchingGroups(builder.toCriteria()) > 0) {
             throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_NAME_NOT_UNIQUE, group.getName());
-        }
-    }
-
-    /**
-     * A classification engine that does reloads asynchronously.
-     * <p>
-     * Reloads are triggered oftentimes while editing classification rules. In addition, reloads may take a couple of seconds
-     * depending on the enabled rules. In order to keep the front-end responsive, reloads are done asynchronously.
-     * Usages of the classification engine are blocked until ongoing reloads did finish. If a reload fails then
-     * future usages of this classification engine also fail until a following reload succeeds.
-     */
-    private static class AsyncReloadingClassificationEngine implements ClassificationEngine {
-
-        private enum State {
-            READY, RELOADING, NEED_ANOTHER_RELOAD, FAILED
-        }
-
-        private final ClassificationEngine delegate;
-
-        // uses at most one additional thread; if the thread is not used for 60 seconds then it is terminated
-        // -> uses no additional resources while being idle
-        private final ExecutorService executorService = new ThreadPoolExecutor(0, 1,
-                60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(1),
-                runnable -> new Thread(runnable, "AsyncReloadingClassificationEngine")
-        );
-
-        private State state = State.READY;
-        private Exception reloadException;
-
-        public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
-            this.delegate = delegate;
-            // trigger reload
-            // -> blocks classification requests until classification engine is ready
-            reload();
-        }
-
-        private void setState(State newState) {
-            state = newState;
-            notifyAll();
-        }
-
-        private void waitUntilReadyOrFailed() {
-            while (true) {
-                switch (state) {
-                    case READY: return;
-                    case FAILED: throw new RuntimeException("classification engine can not be used because last reload failed", reloadException);
-                }
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        private void doReload() {
-            // this method must not modify the state because it not synchronized
-            try {
-                LOG.debug("reload classification engine");
-                delegate.reload();
-                if (onReloadSucceeded()) {
-                    LOG.debug("another classification engine reload is required");
-                    doReload();
-                } else {
-                    LOG.debug("classification engine reloaded");
-                }
-            } catch (Exception e) {
-                LOG.error("reload of classification engine failed", e);
-                if (onReloadFailed(e)) {
-                    LOG.debug("another classification engine reload is required");
-                    doReload();
-                } else {
-                    LOG.debug("classification engine reloaded");
-                }
-            }
-        }
-
-        private synchronized boolean onReloadSucceeded() {
-            if (state == State.NEED_ANOTHER_RELOAD) {
-                setState(State.RELOADING);
-                return true;
-            } else {
-                setState(State.READY);
-                return false;
-            }
-        }
-
-        private synchronized boolean onReloadFailed(Exception e) {
-            if (state == State.NEED_ANOTHER_RELOAD) {
-                setState(State.RELOADING);
-                return true;
-            } else {
-                reloadException = e;
-                setState(State.FAILED);
-                return false;
-            }
-        }
-
-        @Override
-        public synchronized String classify(ClassificationRequest classificationRequest) {
-            waitUntilReadyOrFailed();
-            return delegate.classify(classificationRequest);
-        }
-
-        @Override
-        public synchronized List<Rule> getInvalidRules() {
-            waitUntilReadyOrFailed();
-            return delegate.getInvalidRules();
-        }
-
-        @Override
-        public synchronized void reload() {
-            switch (state) {
-                case READY:
-                case FAILED:
-                    setState(State.RELOADING);
-                    executorService.submit(this::doReload);
-                    break;
-                case RELOADING:
-                    setState(State.NEED_ANOTHER_RELOAD);
-                    break;
-            }
         }
     }
 }
