@@ -185,7 +185,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         dest.setCommunity(src.getCommunity());
         dest.setGeneric(src.getGeneric());
         dest.setSpecific(src.getSpecific());
-        dest.setTrapOID(src.getTrapOID());
 
         return dest;
     }

@@ -65,9 +65,6 @@ public class Snmp implements Serializable {
 	@NotNull
     private java.lang.String _id;
 
-	@XmlElement(name="trapOID")
-	private String _trapOID;
-
     /**
      * The snmp enterprise id text
      */
@@ -113,6 +110,7 @@ public class Snmp implements Serializable {
     public Snmp() {
         super();
     }
+
 
       //-----------/
      //- Methods -/
@@ -237,10 +235,6 @@ public class Snmp implements Serializable {
     	return this._specific != null;
     }
 
-    public boolean hasTrapOID() {
-        return this._trapOID != null;
-    }
-
     /**
      * Method hasTimeStamp.
      * 
@@ -282,14 +276,6 @@ public class Snmp implements Serializable {
     public void setId(
             final java.lang.String id) {
         this._id = id;
-    }
-
-    public String getTrapOID() {
-        return _trapOID;
-    }
-
-    public void setTrapOID(String _trapOID) {
-        this._trapOID = _trapOID;
     }
 
     /**
