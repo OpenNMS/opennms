@@ -52,9 +52,6 @@ public class TrapIdentityDTO {
     @XmlAttribute(name="enterprise-id", required=true)
     private String enterpriseId;
 
-    @XmlAttribute(name="trap-oid")
-    private String trapOID;
-
     // Default Constructor for JAXB
     public TrapIdentityDTO() {
 
@@ -65,7 +62,6 @@ public class TrapIdentityDTO {
         this.generic = trapIdentity.getGeneric();
         this.specific = trapIdentity.getSpecific();
         this.enterpriseId = trapIdentity.getEnterpriseId();
-        this.trapOID = trapIdentity.getTrapOID();
     }
 
     public int getGeneric() {
@@ -92,16 +88,11 @@ public class TrapIdentityDTO {
         this.enterpriseId = enterpriseId;
     }
 
-    public String getTrapOID() {
-        return trapOID;
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("Generic", getGeneric())
                 .add("Specific", getSpecific())
                 .add("EnterpriseId", getEnterpriseId())
-                .add("trapOID", getTrapOID())
                 .toString();
     }
 
@@ -112,12 +103,11 @@ public class TrapIdentityDTO {
         TrapIdentityDTO that = (TrapIdentityDTO) o;
         return Objects.equals(generic, that.generic)
                 && Objects.equals(specific, that.specific)
-                && Objects.equals(enterpriseId, that.enterpriseId)
-                && Objects.equals(trapOID, that.trapOID);
+                && Objects.equals(enterpriseId, that.enterpriseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(generic, specific, enterpriseId, trapOID);
+        return Objects.hash(generic, specific, enterpriseId);
     }
 }
