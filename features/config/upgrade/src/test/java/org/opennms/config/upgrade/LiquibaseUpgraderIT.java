@@ -30,8 +30,10 @@ package org.opennms.config.upgrade;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
@@ -56,6 +58,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -66,13 +69,17 @@ import liquibase.exception.ValidationFailedException;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"})
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",})
 @JUnitTemporaryDatabase
 public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
     private DataSource dataSource;
     private Connection connection;
     private DBUtils db;
+    @Autowired
+    private ConfigurationManagerService cm;
+    private ConfigurationManagerService cmSpy;
 
     @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
@@ -84,19 +91,26 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         this.db = new DBUtils();
         this.connection = dataSource.getConnection();
         db.watch(connection);
+        cmSpy = spy(cm);
     }
 
     @Test
     public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException {
         try {
-            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
-            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
-            liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
+//            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
+              LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+              liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
+//            ConfigSchema schema = new ConfigSchema("provisiond-liqui-test", 1, 0, 0,
+//                    ProvisiondConfiguration.class, new ValidateUsingConverter<>(ProvisiondConfiguration.class));
+//            when(cm.getRegisteredSchema("provisiond-liqui-test")).thenReturn(Optional.of(schema));
 
-            // check if CM was called
-            verify(cm).registerSchema(anyString(),
+            // check if CM was called for schema
+            verify(cmSpy).registerSchema(anyString(),
                     eq(new ConfigurationManagerService.Version(1, 0, 0)),
                     eq(ProvisiondConfiguration.class));
+
+            // check if CM was called for config
+            verify(cmSpy).registerConfiguration(eq("provisiond-liqui-test"), eq("provisiond"), any());
 
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
