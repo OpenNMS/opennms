@@ -238,6 +238,6 @@
         <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
     </onmsgi:list>
 
-    <bean id="configManager" class="org.opennms.netmgt.dao.mock.ConfigurationmanagerServiceMock" />
+    <bean id="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock" />
 
 </beans>

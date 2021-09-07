@@ -98,9 +98,6 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
-    @Autowired
-    ConfigurationManagerService configurationManagerService;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -109,11 +106,6 @@ public class ImportSchedulerIT implements InitializingBean {
     @Before
     public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
-        System.out.println("+================= + " + configurationManagerService);
-        configurationManagerService.registerSchema("Provisiond",29,0,0, ProvisiondConfiguration.class);
-        configurationManagerService.registerConfiguration("Provisiond", "default", new ProvisiondConfiguration());
-        Optional<ProvisiondConfiguration> config = configurationManagerService.getConfiguration("Provisiond", "default", ProvisiondConfiguration.class);
-        System.out.println("+================= + " + config.isPresent());
     }
 
     @After

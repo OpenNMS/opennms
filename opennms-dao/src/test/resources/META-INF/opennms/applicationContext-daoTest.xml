@@ -5,5 +5,6 @@
        ">
 
     <!-- Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency -->
-    <bean id="configService" class = "org.opennms.features.config.service.impl.ConfigurationmanagerServiceMock"/>
+    <bean id="configurationManagerService" class = "org.opennms.features.config.service.impl.ConfigurationManagerServiceMock"/>
+
 </beans>
