@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import Dropdown from 'primevue/dropdown';
-import {defineProps } from 'vue';
+
 const props = defineProps({
     placeholder: {
         type: String,
