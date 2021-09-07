@@ -42,6 +42,8 @@ import org.opennms.netmgt.flows.classification.FilterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Represents a decision tree for classifying flows.
  * <p>
@@ -70,7 +72,7 @@ public abstract class Tree {
     private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) {
         final var ruleSetSize = rules.size();
         if (ruleSetSize <= 1) {
-            LOG.debug("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
+            LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
             return leaf(rules, filterService, bounds);
         }
 
@@ -88,7 +90,7 @@ public abstract class Tree {
                 .orElse(null);
 
         if (entry != null) {
-            LOG.debug("Node - depth: " + depth + "; rules: " + ruleSetSize + "; threshold: " + entry.getKey() + "; maximum child size: " + maximumSize(entry) +
+            LOG.trace("Node - depth: " + depth + "; rules: " + ruleSetSize + "; threshold: " + entry.getKey() + "; maximum child size: " + maximumSize(entry) +
                                "; lt: " + entry.getValue().lt.size() +
                                "; eq: " + entry.getValue().eq.size() + "; gt: " + entry.getValue().gt.size() + "; na: " + entry.getValue().na.size());
             var lt = of(entry.getValue().lt, entry.getKey().lt(bounds), depth + 1, filterService);
@@ -98,7 +100,7 @@ public abstract class Tree {
 
             return node(entry.getKey(), lt, eq, gt, na);
         } else {
-            LOG.debug("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
+            LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
             return leaf(rules, filterService, bounds);
         }
 
@@ -146,19 +148,19 @@ public abstract class Tree {
         }
 
         public final int minDepth, maxDepth, sumDepth;
-        public final long minRuleSetSize, maxRuleSetSize, sumRuleSetSize;
+        public final long minLeafSize, maxLeafSize, sumLeafSize;
         public final int nodes;
         public final int leaves;
         public final int choices;
         public final int minComp, maxComp, sumComp;
 
-        public Info(int minDepth, int maxDepth, int sumDepth, long minRuleSetSize, long maxRuleSetSize, long sumRuleSetSize, int nodes, int leaves, int choices, int minComp, int maxComp, int sumComp) {
+        public Info(int minDepth, int maxDepth, int sumDepth, long minLeafSize, long maxLeafSize, long sumLeafSize, int nodes, int leaves, int choices, int minComp, int maxComp, int sumComp) {
             this.minDepth = minDepth;
             this.maxDepth = maxDepth;
             this.sumDepth = sumDepth;
-            this.minRuleSetSize = minRuleSetSize;
-            this.maxRuleSetSize = maxRuleSetSize;
-            this.sumRuleSetSize = sumRuleSetSize;
+            this.minLeafSize = minLeafSize;
+            this.maxLeafSize = maxLeafSize;
+            this.sumLeafSize = sumLeafSize;
             this.nodes = nodes;
             this.leaves = leaves;
             this.choices = choices;
@@ -167,8 +169,8 @@ public abstract class Tree {
             this.sumComp = sumComp;
         }
 
-        public Info(long ruleSetSize) {
-            this(0, 0, 0, ruleSetSize, ruleSetSize, ruleSetSize, 0, 1, 0, 0, 0, 0);
+        public Info(long leafSize) {
+            this(0, 0, 0, leafSize, leafSize, leafSize, 0, 1, 0, 0, 0, 0);
         }
 
         @Override
@@ -180,9 +182,9 @@ public abstract class Tree {
                    ", comp(min/max/avg)=" + minComp +
                    "/" + maxComp +
                    "/" + String.format("%.2f", (double)sumComp / leaves) +
-                   ", ruleSetSize(min/max/avg)=" + minRuleSetSize +
-                   "/" + maxRuleSetSize +
-                   "/" + String.format("%.2f", (double)sumRuleSetSize / leaves) +
+                   ", ruleSetSize(min/max/avg)=" + minLeafSize +
+                   "/" + maxLeafSize +
+                   "/" + String.format("%.2f", (double) sumLeafSize / leaves) +
                    ", nodes=" + nodes +
                    ", leaves=" + leaves +
                    ", choices=" + choices +
@@ -202,9 +204,9 @@ public abstract class Tree {
                     1 + Math.min(Math.min(lt.info.minDepth, eq.info.minDepth), gt.info.minDepth),
                     1 + Math.max(Math.max(lt.info.maxDepth, eq.info.maxDepth), gt.info.maxDepth),
                     leaves + lt.info.sumDepth + eq.info.sumDepth + gt.info.sumDepth,
-                    Math.min(Math.min(lt.info.minRuleSetSize, eq.info.minRuleSetSize), gt.info.minRuleSetSize),
-                    Math.max(Math.max(lt.info.maxRuleSetSize, eq.info.maxRuleSetSize), gt.info.maxRuleSetSize),
-                    lt.info.sumRuleSetSize + eq.info.sumRuleSetSize + gt.info.sumRuleSetSize,
+                    Math.min(Math.min(lt.info.minLeafSize, eq.info.minLeafSize), gt.info.minLeafSize),
+                    Math.max(Math.max(lt.info.maxLeafSize, eq.info.maxLeafSize), gt.info.maxLeafSize),
+                    lt.info.sumLeafSize + eq.info.sumLeafSize + gt.info.sumLeafSize,
                     1 + lt.info.nodes + eq.info.nodes + gt.info.nodes,
                     leaves,
                     lt.info.choices + eq.info.choices + gt.info.choices,
@@ -226,9 +228,9 @@ public abstract class Tree {
                     1 + Math.min(Math.min(Math.min(lt.info.minDepth, eq.info.minDepth), gt.info.minDepth), na.info.minDepth),
                     1 + Math.max(Math.max(Math.max(lt.info.maxDepth, eq.info.maxDepth), gt.info.maxDepth), na.info.maxDepth),
                     leaves + lt.info.sumDepth + eq.info.sumDepth + gt.info.sumDepth + na.info.sumDepth,
-                    Math.min(Math.min(Math.min(lt.info.minRuleSetSize, eq.info.minRuleSetSize), gt.info.minRuleSetSize), na.info.minRuleSetSize),
-                    Math.max(Math.max(Math.max(lt.info.maxRuleSetSize, eq.info.maxRuleSetSize), gt.info.maxRuleSetSize), na.info.maxRuleSetSize),
-                    lt.info.sumRuleSetSize + eq.info.sumRuleSetSize + gt.info.sumRuleSetSize + na.info.sumRuleSetSize,
+                    Math.min(Math.min(Math.min(lt.info.minLeafSize, eq.info.minLeafSize), gt.info.minLeafSize), na.info.minLeafSize),
+                    Math.max(Math.max(Math.max(lt.info.maxLeafSize, eq.info.maxLeafSize), gt.info.maxLeafSize), na.info.maxLeafSize),
+                    lt.info.sumLeafSize + eq.info.sumLeafSize + gt.info.sumLeafSize + na.info.sumLeafSize,
                     1 + lt.info.nodes + eq.info.nodes + gt.info.nodes + na.info.nodes,
                     leaves,
                     1 + lt.info.choices + eq.info.choices + gt.info.choices + na.info.choices,
@@ -452,11 +454,11 @@ public abstract class Tree {
         }
 
         public final static class WithClassifiers extends Leaf {
-            public final List<Classifier> classifiers;
+            public final Classifiers classifiers;
 
             public WithClassifiers(List<Classifier> classifiers) {
                 super(Info.forLeaf(classifiers.size()));
-                this.classifiers = classifiers;
+                this.classifiers = new Classifiers(true, classifiers);
             }
 
             public WithClassifiers(Classifier classifier) {
@@ -465,7 +467,12 @@ public abstract class Tree {
 
             @Override
             public Classifiers classifiers(ClassificationRequest request) {
-                return new Classifiers(true, classifiers);
+                return classifiers;
+            }
+
+            @VisibleForTesting
+            public Collection<Classifier> classifiers() {
+                return classifiers.classifiers;
             }
 
             @Override

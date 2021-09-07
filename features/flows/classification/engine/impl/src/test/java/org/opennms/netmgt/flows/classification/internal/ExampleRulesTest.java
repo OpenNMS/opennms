@@ -100,10 +100,10 @@ public class ExampleRulesTest {
 
             @Override
             public Void visit(Tree.Leaf.WithClassifiers leaf) {
-                if (leaf.classifiers.stream().anyMatch(c -> c.result.name.equals("Skype_Lync_Application_Sharing"))) {
+                if (leaf.classifiers().stream().anyMatch(c -> c.result.name.equals("Skype_Lync_Application_Sharing"))) {
 //                if (leaf.classifiers.size() >= 3) {
                     System.out.println(steps.stream().map(s -> "(" + s + ")").collect(Collectors.joining(", ")));
-                    leaf.classifiers.forEach(c -> System.out.println("  " + c));
+                    leaf.classifiers().forEach(c -> System.out.println("  " + c));
                 }
                 return null;
             }

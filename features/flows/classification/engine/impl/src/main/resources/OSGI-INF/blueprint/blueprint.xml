@@ -56,6 +56,9 @@
         <argument ref="classificationMetricRegistry"/>
         <argument ref="defaultClassificationEngine" />
     </bean>
+    <bean id="asyncReloadingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.AsyncReloadingClassificationEngine">
+        <argument ref="timingClassificationEngine" />
+    </bean>
     <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
         <argument ref="timingClassificationEngine"/>
         <argument ref="sessionUtils" />
@@ -81,7 +84,7 @@
         <bean class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationService">
             <argument ref="classificationRuleDao"/>
             <argument ref="classificationGroupDao"/>
-            <argument ref="timingClassificationEngine"/>
+            <argument ref="asyncReloadingClassificationEngine"/>
             <argument ref="cachingFilterService" />
             <argument ref="sessionUtils"/>
         </bean>
