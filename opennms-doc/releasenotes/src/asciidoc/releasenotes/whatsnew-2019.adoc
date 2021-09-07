@@ -61,6 +61,10 @@ For more complicated integrations, we also have a new API -- `AlarmLifecycleList
 
 In addition to publishing events, alarms, and node inventory to Kafka, we now link:https://issues.opennms.org/browse/NMS-10215[publish collected time-series data to the Kafka bus] as well.
 
+==== Minion
+
+The Sink API on the Minion has been enhanced to support buffering messages to the filesystem in cases where ActiveMQ or Kafka get disconnected from OpenNMS.
+
 ==== Sentinel
 
 In addition to the Minion, we have added a new container-based subsystem called "Sentinel."
@@ -312,6 +316,20 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/23.0.4/releasenotes/releasenotes.html[Horizon 23]
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
+
+[[releasenotes-changelog-Meridian-2019.1.23]]
+
+==== Release Meridian-2019.1.23
+
+Release 2019.1.23 contains a few small bug fixes, including a CVE dependency update.
+
+The codename for 2019.1.23 is link:$$https://wikipedia.org/wiki/WASP-6b$$[_Boinayel_].
+
+===== Bug
+
+* Syslog messages missing nodelabel, location, and interface (Issue http://issues.opennms.org/browse/NMS-13485[NMS-13485])
+* Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
+* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
 
 [[releasenotes-changelog-Meridian-2019.1.22]]
 
