@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -388,10 +388,10 @@ public abstract class CriteriaBehaviors {
 
         SNMP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifAdminStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
-        SNMP_INTERFACE_BEHAVIORS.put("ifAlias", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifAlias")));
-        SNMP_INTERFACE_BEHAVIORS.put("ifDescr", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifDescr")));
+        SNMP_INTERFACE_BEHAVIORS.put("ifAlias", new StringCriteriaBehavior("ifAlias"));
+        SNMP_INTERFACE_BEHAVIORS.put("ifDescr", new StringCriteriaBehavior("ifDescr"));
         SNMP_INTERFACE_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
-        SNMP_INTERFACE_BEHAVIORS.put("ifName", new StringCriteriaBehavior(Aliases.snmpInterface.prop("ifName")));
+        SNMP_INTERFACE_BEHAVIORS.put("ifName", new StringCriteriaBehavior("ifName"));
         SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifType", new CriteriaBehavior<Integer>(INT_CONVERTER));
