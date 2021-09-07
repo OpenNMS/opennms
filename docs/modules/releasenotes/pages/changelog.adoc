@@ -9,16 +9,16 @@ update related to a CVE.
 
 The codename for 2021.1.4 is link:$$https://wikipedia.org/wiki/Sputnik_19$$[_Sputnik 19_].
 
-==== Release Meridian-2021.1.4
+== Release Meridian-2021.1.4
 
-===== Bug
+=== Bug
 
 * OpenNMS Admin Guide HostResourceSwRunMonitor service-name not exact match string (Issue http://issues.opennms.org/browse/NMS-8968[NMS-8968])
 * Syslog messages missing nodelabel, location, and interface (Issue http://issues.opennms.org/browse/NMS-13485[NMS-13485])
 * Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
 * missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
 
-===== Enhancement
+=== Enhancement
 
 * Update Provisiond Docs (Issue http://issues.opennms.org/browse/NMS-13446[NMS-13446])
 * Update table formatting in docs.  (Issue http://issues.opennms.org/browse/NMS-13472[NMS-13472])
