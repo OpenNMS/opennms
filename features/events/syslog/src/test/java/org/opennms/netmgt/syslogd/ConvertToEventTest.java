@@ -68,6 +68,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,7 @@ public class ConvertToEventTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConvertToEventTest.class);
     private static final SyslogConfigBean radixConfig = new SyslogConfigBean();
+    private LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
 
     /**
      * Set up before any tests are executed.
@@ -132,7 +134,8 @@ public class ConvertToEventTest {
                 pkt.getAddress(),
                 pkt.getPort(),
                 data,
-                config
+                config,
+                    locationAwareDnsLookupClient
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {
@@ -154,7 +157,8 @@ public class ConvertToEventTest {
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
                 SyslogdTestUtils.toByteBuffer("<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet"),
-                config
+                config,
+                    locationAwareDnsLookupClient
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {
@@ -176,7 +180,8 @@ public class ConvertToEventTest {
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
                 SyslogdTestUtils.toByteBuffer("<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!"),
-                config
+                config,
+                    locationAwareDnsLookupClient
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {
@@ -314,6 +319,7 @@ public class ConvertToEventTest {
     }
 
     private static Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp) {
+        LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
         try {
             ConvertToEvent convert = new ConvertToEvent(
                     DistPollerDao.DEFAULT_DIST_POLLER_ID,
@@ -322,8 +328,8 @@ public class ConvertToEventTest {
                     9999,
                     SyslogdTestUtils.toByteBuffer(syslog),
                     receivedTimestamp,
-                    config
-            );
+                    config,
+                    locationAwareDnsLookupClient, null);
             Event event = convert.getEvent();
             LOG.info("Generated event ({}): {}", name, event.toString());
             return event;
