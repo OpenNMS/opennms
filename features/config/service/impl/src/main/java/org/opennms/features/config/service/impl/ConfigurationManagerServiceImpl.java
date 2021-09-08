@@ -42,6 +42,7 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -110,7 +111,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configSchema.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        if (this.getJSONConfiguration(configName, configId) != null) {
+        if (this.getJSONConfiguration(configName, configId).isPresent()) {
             throw new IllegalArgumentException(String.format(
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
@@ -147,8 +148,17 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public JSONObject getJSONConfiguration(final String configName, final String configId) throws IOException {
-        return configStoreDao.getConfig(configName, configId).isEmpty() ? null : configStoreDao.getConfig(configName, configId).get() ;
+    public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
+        return configStoreDao.getConfig(configName, configId);
+    }
+
+    @Override
+    public String getJSONStrConfiguration(String configName, String configId) throws IOException {
+        Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
+        if(config.isEmpty()){
+            throw new RuntimeException("Config not found!");
+        }
+        return config.get().toString();
     }
 
     @Override

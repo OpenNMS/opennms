@@ -45,6 +45,7 @@ import org.opennms.features.config.dao.api.ConfigSchema;
  * Responsible for managing Schemas and Configurations.
  * A Schema is a set of rules that constrain the data of a Configuration.
  * A Configuration is the data that defines the runtime behaviour of a service together with the code of that service.
+ * @apiNote Due to the classloading behaviour. Do not use any non-primitive API parameters via OSGi interface. It will subject to <b>FAIL</b>!!!
  */
 public interface ConfigurationManagerService {
 
@@ -97,7 +98,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
-                             Object configObject) throws IOException;
+                             Object configObject) throws IOException, IllegalArgumentException;
 
     /**
      * get config as configObject by configName, configId and Config class
@@ -120,7 +121,14 @@ public interface ConfigurationManagerService {
      * @return JSONObject
      * @throws IOException
      */
-    JSONObject getJSONConfiguration(String configName, String configId) throws IOException;
+    Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+
+    /**
+     * Use for osgi API
+     * @see #getJSONStrConfiguration(String, String)
+     * @return config in json string
+     */
+    String getJSONStrConfiguration(String configName, String configId) throws IOException;
 
     /**
      * get config as xml by configName, configId
@@ -221,8 +229,6 @@ public interface ConfigurationManagerService {
      */
     Set<String> getConfigIds(String configName) throws IOException;
 
-    //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
-    //    ConfigData getSchemaForConfiguration(final String configId);
 // TODO: next phase for xml conversion work
 //    /** add: inserts a child into a parent element */
 //    void addConfiguration(final String configId, final String path, final String content);

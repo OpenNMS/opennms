@@ -28,13 +28,9 @@
 
 package org.opennms.features.config.rest.impl;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,17 +64,15 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
      * @return
      */
     @Override
-    public Response getSchema(String configName) {
+    public Response getRawSchema(String configName) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             if (schema.isEmpty()) {
-                // TODO: Freddy remove in PE-54 (It is for testing)
-                configurationManagerService.registerSchema(configName, 29, 0, 0, ProvisiondConfiguration.class);
-                schema = configurationManagerService.getRegisteredSchema(configName);
-                configurationManagerService.registerConfiguration(configName, "default", new ProvisiondConfiguration());
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(schema.get()).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -113,16 +107,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getConfig(String configName, String configId) {
         try {
-            JSONObject config = configurationManagerService.getJSONConfiguration(configName, configId);
-//            if(config.isEmpty()){
-//                return Response.noContent().build();
-//            }
-            LOG.debug("HERE !!!!! 111");
-            String jsonStr = config.toString();
-            LOG.debug("HERE !!!!! " + jsonStr);
+            String jsonStr = configurationManagerService.getJSONStrConfiguration(configName, configId);
             return Response.ok(jsonStr).build();
-        } catch (IOException e) {
-            LOG.error(e.getMessage());
+        } catch (Exception e) {
+            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -130,10 +118,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response addConfig(String configName, String configId, String jsonStr) {
         try {
-            JSONObject json = new JSONObject(jsonStr);
-            configurationManagerService.registerConfiguration(configName, configId, json);
+            configurationManagerService.registerConfiguration(configName, configId, jsonStr);
             return Response.ok().build();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -141,10 +129,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response updateConfig(String configName, String configId, String jsonStr) {
         try {
-            JSONObject json = new JSONObject(jsonStr);
-            configurationManagerService.updateConfiguration(configName, configId, json);
+            configurationManagerService.updateConfiguration(configName, configId, jsonStr);
             return Response.ok().build();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -154,7 +142,8 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         try {
             configurationManagerService.unregisterConfiguration(configName, configId);
             return Response.ok().build();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -164,7 +153,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         try {
             return Response.ok(configurationManagerService.getConfigNames()).build();
         } catch (IOException | RuntimeException e) {
-            LOG.error(e.getMessage());
+            LOG.error("listConfigs: " + e.getMessage());
             return Response.serverError().build();
         }
     }

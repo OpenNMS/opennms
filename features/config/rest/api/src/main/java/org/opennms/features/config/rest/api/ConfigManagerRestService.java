@@ -54,7 +54,7 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/schema/raw/{configName}")
-    Response getSchema(@PathParam("configName") String configName);
+    Response getRawSchema(@PathParam("configName") String configName);
 
     /**
      * get filtered OpenApi schema

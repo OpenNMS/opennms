@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.UnmarshalException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -160,11 +161,11 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void updateConfig(String configName, String configId, Object config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         JSONObject json = this.validateConfigWithConvert(configName, config);
         configs.put(configId, json);
@@ -181,10 +182,10 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void deleteConfig(String configName, String configId) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         if (configData.get().getConfigs().remove(configId) == null) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         this.putConfig(configName, configData.get());
     }
@@ -229,14 +230,28 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
             throws IOException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
-        if (configObject instanceof JSONObject) {
-            JSONObject json = (JSONObject) configObject;
-            Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json.toString());
-            this.validateConfig(schema, tmpConfigObject);
-            return json;
-        } else {
-            this.validateConfig(schema, configObject);
-            return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
+        try {
+            if (configObject instanceof String) {
+                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject((String) configObject);
+                this.validateConfig(schema, tmpConfigObject);
+                return new JSONObject((String) configObject);
+            } else if (configObject instanceof JSONObject) {
+                JSONObject json = (JSONObject) configObject;
+                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json.toString());
+                this.validateConfig(schema, tmpConfigObject);
+                return json;
+            } else {
+                String json = schema.get().getConverter().jaxbObjectToJson(configObject);
+                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json);
+                this.validateConfig(schema, tmpConfigObject);
+                return new JSONObject(json);
+            }
+        }catch(RuntimeException e){
+            // make it error easier to understand
+            if(e.getCause() instanceof UnmarshalException){
+                throw new RuntimeException("Input format error ! " + e.getMessage());
+            }
+            throw e;
         }
     }
 
