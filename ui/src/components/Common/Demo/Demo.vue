@@ -64,6 +64,11 @@
   <hr />
 <label>selected radio button values : {{city}}</label>
 
+<hr />
+<div>
+  <RadioButtonGroup name="cityGroup" :radioValues="categories" @selectedRadioVal="selectedValue"/>
+  <label>selected radio button values : {{cityGroupName}}</label>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -75,12 +80,14 @@ import FieldSet from '../FieldSet.vue';
 import TimePicker from '../TimePicker.vue'
 import Button from '../Button.vue';
 import RadioButton from '../RadioButton.vue';
+import RadioButtonGroup from '../RadioButtonFieldSet.vue';
 
 const city = ref('');
 const showInputText = ref('');
 const selectedCity1 = ref('');
 const showTimePicker = ref('');
 const buttonLabel = ref('Save');
+const cityGroupName = ref('');
 const pcontent = ref('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
 const cities = ref( [
   { name: 'New York', code: 'NY' },
@@ -89,4 +96,16 @@ const cities = ref( [
   { name: 'Istanbul', code: 'IST' },
   { name: 'Paris', code: 'PRS' }
 ]);
+
+const categories = ref([
+    {name: 'Accounting', key: 'A'}, 
+    {name: 'Marketing', key: 'M'}, 
+    {name: 'Production', key: 'P'}, 
+    {name: 'Research', key: 'R'}
+]);
+const selectedValue = (val : string) => {
+  console.log('selected value :',val);
+  cityGroupName.value = val;  
+}
+
 </script>
