@@ -56,8 +56,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"})
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class ConfigurationManagerServiceImplTest {
@@ -127,9 +132,9 @@ public class ConfigurationManagerServiceImplTest {
      */
     @Test(expected = RuntimeException.class)
     public void testUpdateInvalidateConfiguration() throws IOException {
-        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
-        json.get().put("importThreads", -1);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, json);
+        ProvisiondConfiguration config = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
+        config.setImportThreads(-1L);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, config);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }
