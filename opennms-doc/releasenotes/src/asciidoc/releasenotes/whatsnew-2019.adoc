@@ -329,7 +329,6 @@ The codename for 2019.1.23 is link:$$https://wikipedia.org/wiki/WASP-6b$$[_Boina
 
 * Syslog messages missing nodelabel, location, and interface (Issue http://issues.opennms.org/browse/NMS-13485[NMS-13485])
 * Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
-* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
 
 [[releasenotes-changelog-Meridian-2019.1.22]]
 
