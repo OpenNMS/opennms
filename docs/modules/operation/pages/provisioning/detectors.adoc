@@ -1,7 +1,7 @@
 [[ga-detectors]]
 = Detectors
 
-This section describes the available service detectors that the Provisiond service can use to automatically add services to nodes for monitoring and collecting metrics.
+Detectors can be used within the provisioning process to detect available services on nodes automatically.
 
 [[ga-provisioning-meta-data]]
 == Metadata DSL
@@ -13,3 +13,8 @@ During evaluation of an expression, the following scopes are available:
 
 * Node metadata
 * Interface metadata
+
+
+== Supported detectors
+
+The supported detectors can be found in xref:reference:provisioning/detectors[provisioning detectors reference section].
