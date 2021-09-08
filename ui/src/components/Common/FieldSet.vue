@@ -3,8 +3,7 @@
 		<slot></slot>
 	</Fieldset>
 </template>
-<script setup lang="ts">	
-	import FieldSet from 'primevue/fieldset'	
+<script setup lang="ts">		
 </script>
 
 <style lang="scss">

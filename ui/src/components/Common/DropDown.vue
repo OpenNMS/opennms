@@ -11,7 +11,6 @@
 
 <script setup lang="ts">
 import Dropdown from 'primevue/dropdown';
-
 const props = defineProps({
     placeholder: {
         type: String,
