@@ -43,15 +43,15 @@ const defaultColDef = ref({
   sortable: true,
 })
 
-const interestedNodesID = computed(() => {
+let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
-const rowData = ref(getGridRowDataFromInterestedNodes());
+let rowData = ref(getGridRowDataFromInterestedNodes());
 
 function getGridRowDataFromInterestedNodes() {
   return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
-    id: node.id,
+    id: +node.id,
     foreignSource: node.foreignSource,
     foreignId: node.foreignId,
     lable: node.label,
@@ -75,7 +75,7 @@ function onGridReady(params: any) {
 watch(
   () => interestedNodesID.value,
   (newValue, oldValue) => {
-    console.log("I'm changed from " + oldValue + " to " + newValue)
+    console.log("MapNodes page. I'm changed from " + oldValue + " to " + newValue)
     gridApi.setRowData(
       getGridRowDataFromInterestedNodes()
     );
@@ -94,8 +94,9 @@ function clearFilters() {
 }
 
 function confirmFilters() {
-  let ids: any = [];
-  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id));
+  let ids: string[] = [];
+  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()));
+  console.log("ids = " + ids)
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
@@ -109,7 +110,7 @@ const columnDefs = ref([
     field: "id",
     headerTooltip: "ID",
     filter: "agNumberColumnFilter",
-    comparator: (valueA, valueB) => {
+    comparator: (valueA: number, valueB: number) => {
       return valueA - valueB;
     },
   },

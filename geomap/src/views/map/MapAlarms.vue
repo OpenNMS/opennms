@@ -50,15 +50,15 @@ const defaultColDef = ref({
   sortable: true,
 })
 
-const interestedNodesID = computed(() => {
+let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
-const rowData = ref(getAlarmsFromSelectedNodes());
+let rowData = ref(getAlarmsFromSelectedNodes());
 
 let gridApi = ref({});
 
-function onGridReady(params) {
+function onGridReady(params: any) {
   gridApi = params.api
 }
 
@@ -75,11 +75,11 @@ watch(
 function getAlarmsFromSelectedNodes() {
       let alarms = store.getters['mapModule/getAlarmsFromSelectedNodes'];
       return alarms.map((alarm: Alarm) => ({
-        id: alarm.id,
+        id: +alarm.id,
         severity: alarm.severity,
         node: alarm.nodeLabel,
         uei: alarm.uei,
-        count: alarm.count,
+        count: +alarm.count,
         lastEventTime: alarm.lastEvent.time,
         logMessage: alarm.logMessage,
       }));
@@ -124,7 +124,7 @@ const columnDefs = ref([
         checkboxSelection: true,
         headerCheckboxSelectionFilteredOnly: true,
         filter: "agNumberColumnFilter",
-        comparator: (valueA, valueB) => {
+        comparator: (valueA: number, valueB: number) => {
           return valueA - valueB;
         },
       },
@@ -153,7 +153,7 @@ const columnDefs = ref([
         field: "count",
         headerTooltip: "Count",
         filter: "agNumberColumnFilter",
-        comparator: (valueA, valueB) => {
+        comparator: (valueA: number, valueB: number) => {
           return valueA - valueB;
         },
       },
