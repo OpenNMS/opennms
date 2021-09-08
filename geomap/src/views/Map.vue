@@ -31,6 +31,8 @@ store.dispatch("mapModule/getAlarms", {
   limit: 5000,
   offset: 0,
 });
+
+store.dispatch("mapModule/getNodesGraphEdges");
 </script>
 
 <style scoped>

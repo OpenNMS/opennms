@@ -1,24 +1,28 @@
 <template>
   <div class="leaflet">
     <div class="geo-map">
-    <l-map
-      v-model:zoom="zoom"
-      :zoomAnimation="true"
-      :center="openNMSHeadQuarter"
-    >
-      <l-tile-layer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      ></l-tile-layer>
-      <l-control-layers />
+      <l-map v-model:zoom="zoom" :zoomAnimation="true" :center="openNMSHeadQuarter">
+        <l-tile-layer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          layer-type="base"
+          name="OpenStreetMap"
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        ></l-tile-layer>
 
-      <l-marker
-        v-for="(node, index) in interestedNodes"
-        :key="index"
-        :lat-lng="getCoordinateFromNode(node)"
-      ></l-marker>
-    </l-map>
-  </div>
+        <l-marker
+          v-for="(node, index) in interestedNodes"
+          :key="index"
+          :lat-lng="getCoordinateFromNode(node)"
+        ></l-marker>
+        
+        <l-polyline
+          v-for="(coordinatePair, index) in edges"
+          :key="index"
+          :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+          color="green"
+        />
+      </l-map>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -27,10 +31,9 @@ import {
   LMap,
   LTileLayer,
   LMarker,
-  LControlLayers,
   // LTooltip,
   // LPopup,
-  // LPolyline,
+  LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useStore } from "vuex";
@@ -45,20 +48,40 @@ let interestedNodes = computed(() => {
 })
 
 function getCoordinateFromNode(node: any) {
-      let coordinate = [];
-      coordinate.push(node.assetRecord.latitude);
-      coordinate.push(node.assetRecord.longitude);
-      return coordinate;
+  let coordinate: string[] = [];
+  coordinate.push(node.assetRecord.latitude);
+  coordinate.push(node.assetRecord.longitude);
+  return coordinate;
 }
 
 let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
+let edges = computed(() => {
+  let ids = interestedNodesID.value;
+  let interestedNodesCoordinateMap = getInterestedNodesCoordinateMap();
+
+  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0]) && ids.includes(edge[1]))
+    .map((edge: [number, number]) => {
+      let edgeCoordinatesPair = [];
+      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]));
+      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]));
+      return edgeCoordinatesPair
+    });
+})
+
+function getInterestedNodesCoordinateMap() {
+  var map = new Map();
+  interestedNodes.value.forEach((node: any) => {
+    map.set(node.id, getCoordinateFromNode(node));
+  });
+  return map;
+}
+
 watch(
   () => interestedNodesID.value,
   (newValue, oldValue) => {
-    console.log("LeafletMap page. I'm changed from " + oldValue + " to " + newValue)
   }
 )
 

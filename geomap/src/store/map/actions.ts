@@ -18,7 +18,7 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
         context.commit("SAVE_NODES_TO_STATE", nodes),
         context.commit("SAVE_INTERESTED_NODES_ID", nodes.map(node => node.id))
     }
-  }
+}
 
 const getAlarms = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getAlarms(queryParameters)
@@ -31,24 +31,21 @@ const resetInterestedNodesID = ({ commit, state }) => {
     commit("SAVE_INTERESTED_NODES_ID", state.nodesWithCoordinates.map(node => node.id))
 }
 
-// const getNodesGraph = ({ commit }) => {
-//     return API.getNodesGraph()
-//         .then(response => {
-//             let edges = []
-//             response.data.edges.forEach((e) => {
-//                 let edge = []
-//                 edge.push(e.source.id)
-//                 edge.push(e.target.id)
-//                 edges.push(edge)
-//             });
-//             commit("SET_NODE_EDGES", edges)
-//         })
-//         .catch(error => {
-//             throw (error)
-//         })
-// }
+const getNodesGraphEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
+    const resp = await API.getGraphNodesNodes(queryParameters)
+    if (resp) {
+        let edges: [number, number][] = [];
+        resp.edges.forEach((e) => {
+            let edge: [number, number]
+            edge = [e.source.id, e.target.id]
+            edges.push(edge)
+        });
 
-const setInterestedNodesId = ( context: VuexContext , ids: number[]) => {
+        context.commit("SAVE_NODE_EDGES", edges)
+    }
+}
+
+const setInterestedNodesId = (context: VuexContext, ids: number[]) => {
     context.commit("SAVE_INTERESTED_NODES_ID", ids)
 }
 
@@ -57,6 +54,6 @@ export default {
     getNodes,
     getAlarms,
     resetInterestedNodesID,
-    // getNodesGraph,
+    getNodesGraphEdges,
     setInterestedNodesId
 }
