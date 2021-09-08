@@ -81,6 +81,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
