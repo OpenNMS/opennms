@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <version>${osgiCompendiumVersion}</version>
             <scope>provided</scope>
         </dependency>
