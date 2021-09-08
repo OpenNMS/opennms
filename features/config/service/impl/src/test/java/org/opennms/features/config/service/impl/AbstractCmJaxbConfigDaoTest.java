@@ -58,6 +58,7 @@ import static org.mockito.Mockito.doAnswer;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:mock-dao.xml",
+        "classpath*:/META-INF/opennms/applicationContext-config-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
