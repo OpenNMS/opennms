@@ -42,12 +42,12 @@ const router = createRouter({
       component: provisionD,
       children: [
         {
-          path: '/reqDefinition',
+          path: '/provisionConfig/reqDefinition',
           name: 'req',
           component: reqDefForm
         },
         {
-          path: '/threadPools',
+          path: '/provisionConfig/threadPools',
           name: 'thread',
           component: threadPoolsForm
         }

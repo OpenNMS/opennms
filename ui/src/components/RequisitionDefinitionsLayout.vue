@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="btnAction">
-            <Button :label="buttonAction[index]" @click="clickAction(index)"></Button>
+            <Button :icon="icon" :label="buttonAction[index]" @click="clickAction(index)"></Button>
         </div>
         <div class="reqDef">
             <div class="dataTable" v-if="index === 0">
@@ -23,14 +23,17 @@ import reqDefinitionFrom from './ReqDefinitionForm.vue'
 
 const buttonAction = ref(['ADD NEW', 'BACK']);
 const index = ref(0);
+const icon = ref('pi pi-plus');
 
 const clickAction = (val: any) => {
     switch (val) {
         case 0:
             index.value = 1;
+            icon.value = 'pi pi-arrow-left';
             break;
         case 1:
             index.value = 0;
+            icon.value = 'pi pi-plus';
             break;
     }
 }
