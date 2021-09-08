@@ -242,8 +242,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
                 return json;
             } else {
                 String json = schema.get().getConverter().jaxbObjectToJson(configObject);
-                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json);
-                this.validateConfig(schema, tmpConfigObject);
+                this.validateConfig(schema, configObject);
                 return new JSONObject(json);
             }
         }catch(RuntimeException e){
