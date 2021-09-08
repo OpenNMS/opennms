@@ -86,3 +86,7 @@ The supported properties are:
 * all node asset record fields (for example: username, password)
 
 Parameters that support placeholder substitution have a kbd:[{}] icon beside them in the *Configuration and use* section of the monitor documentation.
+
+== Supported monitors
+
+The supported monitors and how to configure them can be found in xref:reference:service-assurance/monitors[service monitor reference section].
