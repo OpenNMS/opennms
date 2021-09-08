@@ -98,6 +98,7 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.HwEntity;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
@@ -342,9 +343,11 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         assertThat(nodes.get(0), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory().getChildrenList().size(), equalTo(2));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
+        List<OpennmsModelProtos.HwEntity> hwEntityList = nodes.get(0).getHwInventory().getChildrenList();
+        OpennmsModelProtos.HwEntity hwEntity = hwEntityList.stream().filter(entity -> entity.getChildrenCount() > 0).findFirst().get();
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
 
         // Now delete the alarm directly in the database
         alarmDao.delete(alarm);

@@ -29,6 +29,7 @@
 package org.opennms.features.kafka.producer;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,10 +156,16 @@ public class ProtobufMapperIT {
         Assert.assertThat(node, Matchers.notNullValue());
         assertThat(node.getHwInventory(), not(nullValue()));
         assertThat(node.getHwInventory().getChildrenList().size(), equalTo(2));
-        // Children is always sorted so they should come in same order always.
-        assertThat(node.getHwInventory().getChildren(0).getChildren(0).getChildren(0).getEntPhysicalClass(), equalTo("port"));
-        assertThat(node.getHwInventory().getChildren(0).getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
-        assertThat(node.getHwInventory().getChildren(0).getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
-        assertThat(node.getHwInventory().getChildren(0).getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
+        List<OpennmsModelProtos.HwEntity> hwEntityList = node.getHwInventory().getChildrenList();
+        OpennmsModelProtos.HwEntity hwEntity = hwEntityList.stream().filter(entity -> entity.getChildrenCount() > 0).findFirst().get();
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntPhysicalClass(), equalTo("port"));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
+    }
+
+    @After
+    public void destroy() {
+         databasePopulator.resetDatabase();
     }
 }
