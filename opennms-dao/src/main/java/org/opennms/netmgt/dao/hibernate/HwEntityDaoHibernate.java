@@ -97,13 +97,9 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
 
     private void findChildren(HwEntity parent, List<HwEntity> hwEntityList) {
 
-        Set<HwEntity> children = hwEntityList.stream().filter(hwEntity -> {
-                    if (hwEntity.getParentId() != null) {
-                        return hwEntity.getParentId().equals(parent.getId());
-                    }
-                    return false;
-                }
-        ).collect(Collectors.toSet());
+        Set<HwEntity> children = hwEntityList.stream().filter(hwEntity ->
+                        hwEntity.getParentId() != null && hwEntity.getParentId().equals(parent.getId()))
+                .collect(Collectors.toSet());
         children.forEach(hwEntity ->  {
             List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(hwEntity);
             hwEntity.addHwEntityAliasList(hwEntityAliases);
