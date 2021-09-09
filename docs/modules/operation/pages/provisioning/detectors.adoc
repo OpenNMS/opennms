@@ -1,7 +1,7 @@
 [[ga-detectors]]
 = Detectors
 
-Detectors can be used within the provisioning process to detect available services on nodes automatically.
+Use detectors within the provisioning process to detect available services on nodes automatically.
 
 == Supported detectors
 
