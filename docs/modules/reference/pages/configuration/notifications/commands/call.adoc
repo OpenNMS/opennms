@@ -1,0 +1,7 @@
+[[ref-notifications-strategy-call]]
+
+= Call Notifications 
+
+`callHomePhone`, `callMobilePhone`, and `callWorkPhone`::
+    Ring one of the phone numbers configured in the user's contact information.
+    All three are implemented using the in-process Asterisk notification strategy, and differ only in which contact field is used.

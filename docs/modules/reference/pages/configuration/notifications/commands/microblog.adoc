@@ -1,0 +1,7 @@
+[[ref-notifications-strategy-microblog]]
+
+= MircoBlog Notifications 
+
+`microblogDM`, `microblogReply`, and `microblogUpdate`::
+    Sends a notice to a user as a direct message, at a user via an at-reply, or to everybody as an update via a microblog service with a Twitter v1-compatible API.
+    Each command is implemented with a separate, in-process notification strategy.

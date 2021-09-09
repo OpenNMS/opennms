@@ -189,8 +189,6 @@
 ** xref:notifications/getting-started.adoc[]
 ** xref:notifications/concepts.adoc[]
 ** xref:notifications/bonus-strategies.adoc[]
-*** xref:notifications/strategies/mattermost.adoc[]
-*** xref:notifications/strategies/slack.adoc[]
 
 * xref:bsm/introduction.adoc[]
 ** xref:bsm/business-service-hierarchy.adoc[]

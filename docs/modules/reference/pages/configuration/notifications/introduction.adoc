@@ -1,0 +1,11 @@
+[[ref-notification-command]]
+= Notification Commands
+
+This section describes all available built-in notification commands.
+Notification commands are customizable and extensible by editing the `notificationCommands.xml` file.
+
+For information on how to extend the functionality of these monitors, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.
+
+NOTE: Use external binary notification commands sparingly to avoid fork-bombing your {page-component-title} system.
+Originally, all notification commands were external.
+Today only the `numericPage` and `textPage` commands use external programs to do their work.

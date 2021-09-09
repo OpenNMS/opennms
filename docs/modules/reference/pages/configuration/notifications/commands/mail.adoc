@@ -1,0 +1,8 @@
+[[ref-notifications-strategy-mail]]
+
+= Mail Notifications 
+
+`javaEmail` and `javaPagerEmail`::
+    By far the most commonly used commands, these deliver a notice to a user's `email` or `pagerEmail` contact field value.
+    By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, SMS notifications are trivially easy to configure.
+    Both are implemented using the in-process JavaMail notification strategy.

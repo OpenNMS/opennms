@@ -1,0 +1,7 @@
+[[ref-notifications-strategy-irc]]
+
+= IRC Notifications 
+
+`ircCat`::
+    Conveys a notice to an instance of the IRCcat Internet Relay Chat bot.
+    Implemented by the in-process IRCcat notification strategy.

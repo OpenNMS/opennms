@@ -1,0 +1,7 @@
+[[ref-notifications-strategy-xmpp]]
+
+= XMPP Notifications 
+
+`xmppGroupMessage` and `xmppMessage`::
+    Sends a message to an XMPP group or user.
+    Implemented with the in-process XMPP notification strategy.

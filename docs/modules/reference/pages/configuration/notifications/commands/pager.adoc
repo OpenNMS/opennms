@@ -1,0 +1,7 @@
+[[ref-notifications-strategy-pager]]
+
+= Pager Notifications 
+
+`numericPage` and `textPage`::
+    Sends a notice to a user's numeric or alphanumeric pager.
+    Implemented as an external command using the `qpage` utility.

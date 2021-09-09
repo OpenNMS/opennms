@@ -1,5 +1,4 @@
-
-[[ga-notifications-strategy-mattermost]]
+[[ref-notifications-strategy-mattermost]]
 = Mattermost
 
 If your organization uses the Mattermost team communications platform, you can configure {page-component-title} to send notices to any Mattermost channel via an incoming webhook.
@@ -67,7 +66,7 @@ IMPORTANT: To improve the layout, the property names have been shortened to thei
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings via <<system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+Configure the system proxy settings via <<operation:system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
 | true
 | true
 |===

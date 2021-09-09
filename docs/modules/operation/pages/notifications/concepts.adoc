@@ -115,35 +115,7 @@ If `off`, notices will never be sent to such a target; if `on`, they will always
 == Notification Commands
 
 A Notification Command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
-The following notification commands are included in the default configuration:
 
-`callHomePhone`, `callMobilePhone`, and `callWorkPhone`::
-    Ring one of the phone numbers configured in the user's contact information.
-    All three are implemented using the in-process Asterisk notification strategy, and differ only in which contact field is used.
+=== Supported notification commands
 
-`ircCat`::
-    Conveys a notice to an instance of the IRCcat Internet Relay Chat bot.
-    Implemented by the in-process IRCcat notification strategy.
-
-`javaEmail` and `javaPagerEmail`::
-    By far the most commonly used commands, these deliver a notice to a user's `email` or `pagerEmail` contact field value.
-    By configuring a user's `pagerEmail` contact field value to target an email-to-SMS gateway, SMS notifications are trivially easy to configure.
-    Both are implemented using the in-process JavaMail notification strategy.
-
-`microblogDM`, `microblogReply`, and `microblogUpdate`::
-    Sends a notice to a user as a direct message, at a user via an at-reply, or to everybody as an update via a microblog service with a Twitter v1-compatible API.
-    Each command is implemented with a separate, in-process notification strategy.
-
-`numericPage` and `textPage`::
-    Sends a notice to a user's numeric or alphanumeric pager.
-    Implemented as an external command using the `qpage` utility.
-
-`xmppGroupMessage` and `xmppMessage`::
-    Sends a message to an XMPP group or user.
-    Implemented with the in-process XMPP notification strategy.
-
-Notification commands are customizable and extensible by editing the `notificationCommands.xml` file.
-
-NOTE: Use external binary notification commands sparingly to avoid fork-bombing your {page-component-title} system.
-Originally, all notification commands were external.
-Today only the `numericPage` and `textPage` commands use external programs to do their work.
+For information on supported notification commands and how to configure them, see xref:reference:configuration/notifications/introduction.adoc[notification commands reference section].
