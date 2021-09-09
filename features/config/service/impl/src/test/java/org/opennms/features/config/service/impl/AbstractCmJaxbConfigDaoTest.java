@@ -87,7 +87,7 @@ public class AbstractCmJaxbConfigDaoTest {
     }
 
     @Test
-    public void testProvisiondCmJaxbConfigDao() throws IOException {
+    public void testProvisiondCmJaxbConfigDao() {
         // test get config
         ProvisiondConfiguration pconfig = provisiondCmJaxbConfigTestDao.getConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
         Assert.assertTrue("getConfig fail!", pconfig != null);

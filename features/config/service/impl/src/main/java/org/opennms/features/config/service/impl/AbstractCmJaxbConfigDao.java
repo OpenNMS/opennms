@@ -92,11 +92,16 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @return ConfigObject
      * @throws IOException
      */
-    protected ENTITY_CLASS loadConfig(final String configId) throws IOException {
+    protected ENTITY_CLASS loadConfig(final String configId) {
         long startTime = System.currentTimeMillis();
 
         LOG.debug("Loading {} configuration from {}", description, configId);
-        Optional<ENTITY_CLASS> configOptional = configurationManagerService.getConfiguration(this.getConfigName(), configId, entityClass);
+        Optional<ENTITY_CLASS> configOptional = null;
+        try {
+            configOptional = configurationManagerService.getConfiguration(this.getConfigName(), configId, entityClass);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (configOptional.isEmpty()) {
             throw new RuntimeException("NOT_FOUND: configName=" + this.getConfigName() + " configId=" + configId);
         }
@@ -118,7 +123,6 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
                 }
             }
         }
-        lastKnownEntityMap.put(configId, config);
         return config;
     }
 
@@ -127,8 +131,10 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      *
      * @return config object
      */
-    public ENTITY_CLASS getConfig(String configId) throws IOException {
-        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
+    public ENTITY_CLASS getConfig(String configId) {
+        ENTITY_CLASS config = lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
+        lastKnownEntityMap.put(configId, config);
+        return config;
     }
 
     /**
