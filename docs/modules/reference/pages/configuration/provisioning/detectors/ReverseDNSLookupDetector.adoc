@@ -19,4 +19,4 @@ This detector tries to detect if a given IP address can be found in PTR records.
 
 == Examples
 
-Use the Reverse DNS Lookup detector in <<provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.
+Use the Reverse DNS Lookup detector in <<operation:provisioning/auto-discovery.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> to discover IP addresses that only resolve FQDN.
