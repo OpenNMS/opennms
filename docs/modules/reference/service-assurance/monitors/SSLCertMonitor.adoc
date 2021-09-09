@@ -74,9 +74,9 @@ An additional preliminary message and response regular expression pair is availa
 | n/a
 |===
 
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer.
 The STARTTLS support has been tested only with a single XMPP server.

@@ -97,9 +97,9 @@ Only pap is currently supported.
 | Username for the tunnelled pap authentication when using EAP-TTLS.
 | Inner-OpenNMS
 |===
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 Sample configuration shows how to configure the monitor in `poller-configuration.xml`.

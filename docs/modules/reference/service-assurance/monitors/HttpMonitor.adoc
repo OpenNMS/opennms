@@ -102,9 +102,9 @@ The user and password parameters are ignored when the basic-authentication param
 | n/a
 |===
 
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

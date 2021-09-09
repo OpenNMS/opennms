@@ -76,7 +76,7 @@ image::service-assurance/monitors/01_strafeping.png[]
 | 64
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

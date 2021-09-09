@@ -53,7 +53,7 @@ Connection closed by foreign host.
 | false
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

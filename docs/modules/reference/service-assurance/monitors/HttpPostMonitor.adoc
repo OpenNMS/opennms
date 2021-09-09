@@ -79,9 +79,9 @@ Valid options: `true` or `false`
 The system proxy settings can be configured in <<system-properties/introduction.adoc#system-properties[system properties]
 | false
 |===
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

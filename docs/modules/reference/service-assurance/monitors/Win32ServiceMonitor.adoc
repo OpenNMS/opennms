@@ -34,7 +34,7 @@ Short names such as you might use with net start will not work here.
 | Server
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 === Non-English Windows
 The service-name is sometimes encoded in languages other than English.

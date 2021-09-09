@@ -27,7 +27,7 @@ The monitor opens a TCP socket and tests the greeting banner returns with ICA; o
 | 1494
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 WARNING: If you use session reliability to configure the MetaFrame Presentation Server Client, the TCP port is 2598 instead of 1494.
          Find more information on http://support.citrix.com/article/CTX104147[CTX104147].

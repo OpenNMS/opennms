@@ -73,11 +73,11 @@ Both operands and the operator are added to the message.
 | 0
 |===
 
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Available action parameters and their default operand
 [options="header"]

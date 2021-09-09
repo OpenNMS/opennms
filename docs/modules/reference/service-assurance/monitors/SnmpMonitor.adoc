@@ -147,7 +147,7 @@ See also the match-all, minimum, and maximum parameters.
 | false
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables that can be used in the reason-template parameter
 [options="header"]

@@ -45,7 +45,7 @@ Use this parameter with the password parameter to perform authentication.
 |n/a
 |===
 
-kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 

@@ -67,7 +67,7 @@ Defaults to hrSwRunStatus and should never be changed under normal circumstances
 | .1.3.6.1.2.1.25.4.2.1.7
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 
