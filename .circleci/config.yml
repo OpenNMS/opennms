@@ -595,6 +595,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - features/ui-prototype
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -605,6 +606,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - features/ui-prototype
       - horizon-rpm-build:
           requires:
             - build
@@ -703,6 +705,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - features/ui-prototype
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
@@ -712,6 +715,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - features/ui-prototype
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
