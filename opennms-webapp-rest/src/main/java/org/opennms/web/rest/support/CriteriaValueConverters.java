@@ -134,4 +134,20 @@ public abstract class CriteriaValueConverters {
         }
     };
 
+    public static final Function<String,String> STRING_CONVERTER = new Function<String,String>() {
+        @Override
+        public String apply(final String t) {
+            return t;
+        }
+
+        /**
+         * Override {@link #toString()} on this functional interface
+         * to make it identifiable inside a debugger.
+         */
+        @Override
+        public String toString() {
+            return "STRING_CONVERTER";
+        }
+    };
+
 }
