@@ -75,6 +75,7 @@
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
                         <feature>http</feature>
                         <feature>http-whiteboard</feature>
+                        <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
