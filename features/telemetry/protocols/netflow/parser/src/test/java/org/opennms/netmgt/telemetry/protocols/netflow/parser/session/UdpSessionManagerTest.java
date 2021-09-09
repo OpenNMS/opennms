@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.netflow.parser;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -36,6 +36,10 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
@@ -157,6 +161,46 @@ public class UdpSessionManagerTest {
         Assert.assertEquals(shouldMatch ? 2 : 0, result.size());
         Assert.assertEquals(shouldMatch, result.contains(new StringValue("additionalField1", Optional.empty(), "additionalValue1")));
         Assert.assertEquals(shouldMatch, result.contains(new StringValue("additionalField2", Optional.empty(), "additionalValue2")));
+    }
+
+    /**
+     * see NMS-13539
+     */
+    @Test
+    public void optionsRemovalTest() {
+        final UdpSessionManager.SessionKey sessionKey = new Netflow9UdpParser.SessionKey(remoteAddress1.getAddress(), localAddress1);
+
+        final UdpSessionManager udpSessionManager = new UdpSessionManager(Duration.ofMinutes(0), () -> new SequenceNumberTracker(32));
+        final Session session = udpSessionManager.getSession(sessionKey);
+
+        final List<Scope> scopes = new ArrayList<>();
+        scopes.add(scope("scope1", null));
+        scopes.add(scope("scope2", null));
+
+        final List<Field> fields = new ArrayList<>();
+        fields.add(field("field1", null));
+        fields.add(field("field2", null));
+
+        final Template template = Template.builder(100, Template.Type.OPTIONS_TEMPLATE).withFields(fields).withScopes(scopes).build();
+        session.addTemplate(observationId1, template);
+
+        final List<Value<?>> scopesValue = new ArrayList<>();
+        scopesValue.add(value("scope1", "scopeValue1"));
+        scopesValue.add(value("scope2", "scopeValue2"));
+
+        final List<Value<?>> fieldsValue = new ArrayList<>();
+        fieldsValue.add(value("additionalField1", "additionalValue1"));
+        fieldsValue.add(value("additionalField2", "additionalValue2"));
+
+        session.addOptions(observationId1, templateId1, scopesValue, fieldsValue);
+
+        Assert.assertTrue(udpSessionManager.options.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        Assert.assertTrue(udpSessionManager.templates.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+
+        udpSessionManager.doHousekeeping();
+
+        Assert.assertFalse(udpSessionManager.options.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        Assert.assertFalse(udpSessionManager.templates.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
     }
 
     @Test
