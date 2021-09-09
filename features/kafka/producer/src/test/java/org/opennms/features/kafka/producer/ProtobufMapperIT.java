@@ -75,7 +75,7 @@ import static org.opennms.features.kafka.producer.KafkaForwarderIT.getHwEntityPo
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext = false)
+@JUnitTemporaryDatabase(dirtiesContext = false, reuseDatabase = false)
 public class ProtobufMapperIT {
 
     @Autowired
@@ -162,10 +162,5 @@ public class ProtobufMapperIT {
         assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
         assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
         assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
-    }
-
-    @After
-    public void destroy() {
-         databasePopulator.resetDatabase();
     }
 }
