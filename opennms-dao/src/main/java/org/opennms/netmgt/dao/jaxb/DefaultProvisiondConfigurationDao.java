@@ -45,8 +45,8 @@ import java.util.List;
  */
 public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> implements ProvisiondConfigurationDao {
 
-    private final String configName = "Provisiond";
-    private final String defaultConfigId = "default";
+    private static final String CONFIG_NAME = "provisiond";
+    private static final String DEFAULT_CONFIG_ID = "default";
 
     /**
      * <p>Constructor for DefaultProvisiondConfigurationDao.</p>
@@ -163,11 +163,11 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
 
     @Override
     public String getConfigName() {
-        return configName;
+        return CONFIG_NAME;
     }
 
     @Override
     protected String getDefaultConfigId() {
-        return defaultConfigId;
+        return DEFAULT_CONFIG_ID;
     }
 }

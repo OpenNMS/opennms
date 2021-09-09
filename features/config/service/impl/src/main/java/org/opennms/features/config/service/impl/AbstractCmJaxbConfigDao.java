@@ -128,12 +128,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * @return config object
      */
     public ENTITY_CLASS getConfig(String configId) throws IOException {
-        ENTITY_CLASS lastKnownEntity = lastKnownEntityMap.get(configId);
-        if (lastKnownEntity == null) {
-            return this.loadConfig(configId);
-        } else {
-            return lastKnownEntity;
-        }
+        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
     }
 
     /**
