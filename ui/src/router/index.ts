@@ -32,11 +32,6 @@ const router = createRouter({
       component: DataTableDemo
     },
     {
-      path: '/dataTableDemo/edit/:id',
-      name: 'Edit',
-      component: EditNode
-    },
-    {
       path: '/provisionConfig',
       name: 'provisionD',
       component: provisionD,
@@ -50,6 +45,11 @@ const router = createRouter({
           path: '/provisionConfig/threadPools',
           name: 'thread',
           component: threadPoolsForm
+        },
+        {
+          path: '/provisionConfig/reqDefinition/edit/:id',
+          name: 'Edit',
+          component: EditNode
         }
       ]
     },

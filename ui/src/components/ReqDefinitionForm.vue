@@ -7,7 +7,6 @@
 <style scoped>
 .title{
     font-size: 18px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
     text-align: center;
 }
