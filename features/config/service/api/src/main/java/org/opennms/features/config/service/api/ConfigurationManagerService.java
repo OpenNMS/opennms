@@ -45,6 +45,7 @@ import org.opennms.features.config.dao.api.ConfigSchema;
  * Responsible for managing Schemas and Configurations.
  * A Schema is a set of rules that constrain the data of a Configuration.
  * A Configuration is the data that defines the runtime behaviour of a service together with the code of that service.
+ *
  * @apiNote Due to the classloading behaviour. Do not use any non-primitive API parameters via OSGi interface. It will subject to <b>FAIL</b>!!!
  */
 public interface ConfigurationManagerService {
@@ -125,8 +126,9 @@ public interface ConfigurationManagerService {
 
     /**
      * Use for osgi API
-     * @see #getJSONStrConfiguration(String, String)
+     *
      * @return config in json string
+     * @see #getJSONStrConfiguration(String, String)
      */
     String getJSONStrConfiguration(String configName, String configId) throws IOException;
 
@@ -169,6 +171,7 @@ public interface ConfigurationManagerService {
         int majorVersion;
         int minorVersion;
         int patchVersion;
+
         public Version(int majorVersion, int minorVersion, int patchVersion) {
             this.majorVersion = majorVersion;
             this.minorVersion = minorVersion;

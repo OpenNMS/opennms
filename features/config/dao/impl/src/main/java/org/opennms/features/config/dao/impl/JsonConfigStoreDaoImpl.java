@@ -167,8 +167,21 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (!configs.containsKey(configId)) {
             throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
-        JSONObject json = this.validateConfigWithConvert(configName, config);
-        configs.put(configId, json);
+        JSONObject existingJson = configs.get(configId);
+        JSONObject newJson;
+        if (config instanceof String) {
+            newJson = new JSONObject((String) config);
+        } else if (config instanceof JSONObject) {
+            newJson = (JSONObject) config;
+        } else {
+            Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+            newJson = new JSONObject(schema.get().getConverter().jaxbObjectToJson(config));
+        }
+        // copy all first level keys' value into existing config
+        newJson.keySet().forEach((key) -> {
+            existingJson.put(key, newJson.get(key));
+        });
+        this.validateConfigWithConvert(configName, existingJson);
         this.putConfig(configName, configData.get());
     }
 
@@ -245,9 +258,9 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
                 this.validateConfig(schema, configObject);
                 return new JSONObject(json);
             }
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             // make it error easier to understand
-            if(e.getCause() instanceof UnmarshalException){
+            if (e.getCause() instanceof UnmarshalException) {
                 throw new RuntimeException("Input format error ! " + e.getMessage());
             }
             throw e;

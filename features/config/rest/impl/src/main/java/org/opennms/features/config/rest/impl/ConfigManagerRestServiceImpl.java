@@ -109,8 +109,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         try {
             String jsonStr = configurationManagerService.getJSONStrConfiguration(configName, configId);
             return Response.ok(jsonStr).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
-            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -121,7 +123,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             configurationManagerService.registerConfiguration(configName, configId, jsonStr);
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -132,7 +134,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             configurationManagerService.updateConfiguration(configName, configId, jsonStr);
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -143,7 +145,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             configurationManagerService.unregisterConfiguration(configName, configId);
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: " + configName + " configId:" + configId + " " + e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }

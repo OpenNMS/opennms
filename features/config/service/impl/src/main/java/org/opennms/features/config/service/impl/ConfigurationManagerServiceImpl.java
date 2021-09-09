@@ -28,13 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -42,7 +35,6 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -135,12 +127,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             throws IOException {
         Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
         if (configSchema.isEmpty()) {
-            LOG.error("Fail to get schema for configName: " + configName + " configId: " + configId);
+            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
             return Optional.empty();
         }
         Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
         if (config.isEmpty()) {
-            LOG.error("Fail to get config for configName: " + configName + " configId: " + configId);
+            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
             return Optional.empty();
         }
         JSONObject json = config.get();
@@ -153,10 +145,10 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public String getJSONStrConfiguration(String configName, String configId) throws IOException {
+    public String getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
         Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
         if(config.isEmpty()){
-            throw new RuntimeException("Config not found!");
+            throw new IllegalArgumentException(configName + ":" + configId);
         }
         return config.get().toString();
     }
@@ -165,16 +157,16 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
         Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
         if (configSchema.isEmpty()) {
-            LOG.error("Fail to get schema for configName: " + configName + " configId: " + configId);
+            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
             return Optional.empty();
         }
         Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
         if (config.isEmpty()) {
-            LOG.error("Fail to get config for configName: " + configName + " configId: " + configId);
+            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
             return Optional.empty();
         }
         JSONObject json = config.get();
-        return (Optional<String>) Optional.of(configSchema.get().getConverter().jsonToXml(json.toString()));
+        return Optional.of(configSchema.get().getConverter().jsonToXml(json.toString()));
     }
 
     @Override
