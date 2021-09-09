@@ -21,7 +21,7 @@ Now, with the JNA ICMP implementation, the IcmpMonitor is remote-enabled under m
 
 == Configuration and use
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

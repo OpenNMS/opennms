@@ -60,7 +60,7 @@ NRPE uses SSL with anonymous DH and the following cipher suite: TLS_DH_anon_WITH
 | true
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Example: Using check_apt with NRPE
 

@@ -76,7 +76,7 @@ See http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine
 | n/a
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

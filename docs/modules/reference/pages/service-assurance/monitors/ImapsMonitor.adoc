@@ -28,7 +28,7 @@ All ImapMonitor parameters apply, so refer to <<service-assurance/monitors/ImapM
 | 993
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

@@ -138,7 +138,7 @@ The rrd-base-name Base name of the RRD file (minus the `.rrd` or `.jrb` file ext
 | n/a
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Optional variables for use in the configuration
 [options="header"]

@@ -52,7 +52,7 @@ By default any banner result is valid.
 | *
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 This example shows how to test if the Independent Computing Architecture (ICA) service is available on TCP port 1494.

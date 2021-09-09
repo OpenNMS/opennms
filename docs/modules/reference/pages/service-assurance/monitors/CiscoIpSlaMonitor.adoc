@@ -46,7 +46,7 @@ If the RTT_LATEST_OPERSENSE returns with `overThreshold(3)`, the service is mark
 | n/a
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Example for HTTP and ICMP echo reply
 
