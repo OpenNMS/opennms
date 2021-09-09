@@ -18,7 +18,7 @@ const buttonLabel = ref('Back To Node Table')
 
 //Routing Back to Table
 const onBackClick = () => {
-    router.push("/dataTableDemo");
+    router.push("/provisionConfig/reqDefinition");
 }
 
 </script>
