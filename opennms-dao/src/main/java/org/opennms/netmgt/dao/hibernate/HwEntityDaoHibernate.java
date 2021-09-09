@@ -30,9 +30,8 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.HwEntityDao;
-import org.opennms.netmgt.model.HwEntity;
-import org.opennms.netmgt.model.HwEntityAlias;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -65,17 +64,35 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     }
 
     @Override
-    public HwEntity findRootEntityByNodeId(Integer nodeId) {
-        List<HwEntity> entityList = getHibernateTemplate().execute(session -> (List<HwEntity>)
+    public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
+        List<OnmsHwEntity> entityList = getHibernateTemplate().execute(session -> (List<OnmsHwEntity>)
                 session.createSQLQuery("select * FROM hwEntity where nodeid = " + nodeId)
                         .setResultTransformer(
                                 new ResultTransformer() {
                                     @Override
                                     public Object transformTuple(Object[] tuple, String[] strings) {
-                                        return new HwEntity((Integer) tuple[0], (Integer) tuple[1], (Integer) tuple[2], (Integer) tuple[3], (Integer) tuple[4],
-                                                (String) tuple[5], (String) tuple[6], (String) tuple[7], (String) tuple[8], (String) tuple[9],
-                                                (String) tuple[10], (String) tuple[11], (String) tuple[12], (String) tuple[13], (String) tuple[14],
-                                                (String) tuple[15], (String) tuple[16], (Boolean) tuple[17], (Date) tuple[18], (String) tuple[19]);
+                                        OnmsHwEntity onmsHwEntity = new OnmsHwEntity();
+                                        onmsHwEntity.setId((Integer) tuple[0]);
+                                        onmsHwEntity.setParentId((Integer) tuple[1]);
+                                        onmsHwEntity.setNodeId((Integer) tuple[2]);
+                                        onmsHwEntity.setEntPhysicalIndex((Integer) tuple[3]);
+                                        onmsHwEntity.setEntPhysicalParentRelPos((Integer) tuple[4]);
+                                        onmsHwEntity.setEntPhysicalName((String) tuple[5]);
+                                        onmsHwEntity.setEntPhysicalDescr((String) tuple[6]);
+                                        onmsHwEntity.setEntPhysicalAlias((String) tuple[7]);
+                                        onmsHwEntity.setEntPhysicalVendorType((String) tuple[8]);
+                                        onmsHwEntity.setEntPhysicalClass((String) tuple[9]);
+                                        onmsHwEntity.setEntPhysicalMfgName((String) tuple[10]);
+                                        onmsHwEntity.setEntPhysicalModelName((String) tuple[11]);
+                                        onmsHwEntity.setEntPhysicalHardwareRev((String) tuple[12]);
+                                        onmsHwEntity.setEntPhysicalFirmwareRev((String) tuple[13]);
+                                        onmsHwEntity.setEntPhysicalSoftwareRev((String) tuple[14]);
+                                        onmsHwEntity.setEntPhysicalSerialNum((String) tuple[15]);
+                                        onmsHwEntity.setEntPhysicalAssetID((String) tuple[16]);
+                                        onmsHwEntity.setEntPhysicalIsFRU((Boolean) tuple[17]);
+                                        onmsHwEntity.setEntPhysicalMfgDate((Date) tuple[18]);
+                                        onmsHwEntity.setEntPhysicalUris((String) tuple[19]);
+                                        return onmsHwEntity;
                                     }
 
                                     @Override
@@ -84,38 +101,44 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
                                     }
                                 }
                         ).list());
-        Optional<HwEntity> optionalHwEntity =  entityList.stream().filter(hwEntity -> hwEntity.getParentId() == null).findFirst();
+
+        Optional<OnmsHwEntity> optionalHwEntity =  entityList.stream().filter(hwEntity -> hwEntity.getParentId() == null).findFirst();
         if(optionalHwEntity.isPresent()) {
-            HwEntity parent = optionalHwEntity.get();
-            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(parent);
-            parent.addHwEntityAliasList(hwEntityAliases);
+            OnmsHwEntity parent = optionalHwEntity.get();
+            List<OnmsHwEntityAlias> hwEntityAliases = findHwEntityAlias(parent);
+            parent.addHwEntAliasList(hwEntityAliases);
             findChildren(parent, entityList);
             return parent;
         }
         return null;
     }
 
-    private void findChildren(HwEntity parent, List<HwEntity> hwEntityList) {
+    private void findChildren(OnmsHwEntity parent, List<OnmsHwEntity> hwEntityList) {
 
-        Set<HwEntity> children = hwEntityList.stream().filter(hwEntity ->
+        Set<OnmsHwEntity> children = hwEntityList.stream().filter(hwEntity ->
                         hwEntity.getParentId() != null && hwEntity.getParentId().equals(parent.getId()))
                 .collect(Collectors.toSet());
         children.forEach(hwEntity ->  {
-            List<HwEntityAlias> hwEntityAliases = findHwEntityAlias(hwEntity);
-            hwEntity.addHwEntityAliasList(hwEntityAliases);
+            List<OnmsHwEntityAlias> onmsHwEntityAliases = findHwEntityAlias(hwEntity);
+            hwEntity.addHwEntAliasList(onmsHwEntityAliases);
             findChildren(hwEntity, hwEntityList);
-            parent.addChild(hwEntity);
+            parent.addChildEntity(hwEntity);
         });
     }
 
-    private List<HwEntityAlias> findHwEntityAlias(HwEntity parent) {
-         List<HwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
-                 (List<HwEntityAlias>) session.createSQLQuery(
+    private List<OnmsHwEntityAlias> findHwEntityAlias(OnmsHwEntity parent) {
+         List<OnmsHwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
+                 (List<OnmsHwEntityAlias>) session.createSQLQuery(
                  "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getId())
                  .setResultTransformer(new ResultTransformer() {
              @Override
              public Object transformTuple(Object[] tuple, String[] strings) {
-                 return new HwEntityAlias((Integer) tuple[0], (Integer) tuple[1], (Integer) tuple[2], (String) tuple[3]);
+                 OnmsHwEntityAlias onmsHwEntityAlias = new OnmsHwEntityAlias();
+                 onmsHwEntityAlias.setId((Integer) tuple[0]);
+                 onmsHwEntityAlias.setHwEntityId((Integer) tuple[1]);
+                 onmsHwEntityAlias.setIndex((Integer) tuple[2]);
+                 onmsHwEntityAlias.setOid((String) tuple[3]);
+                 return onmsHwEntityAlias;
              }
 
              @Override

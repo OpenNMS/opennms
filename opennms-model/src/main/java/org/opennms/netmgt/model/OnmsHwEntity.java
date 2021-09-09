@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -136,6 +137,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     /** The OpenNMS node. */
     private OnmsNode m_node;
 
+    private Integer m_nodeId;
+
     /** The custom hardware attributes. */
     private SortedSet<OnmsHwEntityAlias> m_entAliases = new TreeSet<>();
 
@@ -144,6 +147,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
 
     /** The entity's parent. */
     private OnmsHwEntity m_parent;
+
+    private Integer m_parentId;
 
     /** The entity's children. */
     private SortedSet<OnmsHwEntity> m_children = new TreeSet<>();
@@ -200,6 +205,10 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
 
     public void addEntAliases(SortedSet<OnmsHwEntityAlias> entAliases) {
         m_entAliases.addAll(entAliases);
+    }
+
+    public void addHwEntAliasList(List<OnmsHwEntityAlias> entityAliasList) {
+        m_entAliases.addAll(entityAliasList);
     }
 
     /**
@@ -605,6 +614,15 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         this.m_parent = parent;
     }
 
+    public void setParentId(Integer parentId) {
+        this.m_parentId = parentId;
+    }
+
+    @Transient
+    public Integer getParentId() {
+        return m_parentId;
+    }
+
     /**
      * Gets the parent id.
      *
@@ -664,9 +682,9 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     }
 
     /**
-     * Removes the child by index.
+     * Removes the child.
      *
-     * @param entPhysicalIndex the entity physical index
+     * @param  child child entity
      */
     public void removeChild(OnmsHwEntity child) {
         if (m_children != null) m_children.remove(child);
@@ -698,6 +716,15 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         for (OnmsHwEntity child : m_children) {
             child.setNode(node);
         }
+    }
+
+    @Transient
+    public Integer getNodeId() {
+        return m_nodeId;
+    }
+
+    public void setNodeId(Integer m_nodeId) {
+        this.m_nodeId = m_nodeId;
     }
 
     /**

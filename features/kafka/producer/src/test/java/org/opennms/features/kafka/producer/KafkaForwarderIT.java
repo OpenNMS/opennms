@@ -98,7 +98,6 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.model.HwEntity;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;

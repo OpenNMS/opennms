@@ -38,7 +38,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.HwEntity;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
@@ -181,14 +180,14 @@ public class HwEntityDaoIT implements InitializingBean {
         OnmsHwEntity chassisEntity = m_hwEntityDao.findEntityByIndex(node.getId(), 3);
         Assert.assertThat(chassisEntity.getEntAliases(), Matchers.hasSize(1));
         // Test valid findRootEntityByNodeId
-        HwEntity entity1 = m_hwEntityDao.findRootEntityByNodeId(node.getId());
+        OnmsHwEntity entity1 = m_hwEntityDao.findRootEntityByNodeId(node.getId());
         Assert.assertNotNull(entity1);
         Assert.assertNotNull(entity1.getNodeId());
         Assert.assertEquals(entity1.getNodeId(), node.getId());
         Assert.assertEquals(2, entity1.getChildren().size());
         Assert.assertEquals("chassis", entity1.getEntPhysicalClass());
-        HwEntity m2Entity = entity1.getChildren().stream().filter(child -> child.getEntPhysicalIndex() == 3).findFirst().get();
-        Assert.assertThat(m2Entity.getHwEntityAliasList(), Matchers.hasSize(1));
+        OnmsHwEntity m2Entity = entity1.getChildren().stream().filter(child -> child.getEntPhysicalIndex() == 3).findFirst().get();
+        Assert.assertThat(m2Entity.getEntAliases(), Matchers.hasSize(1));
 
         // Test invalid findRootByNodeId
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));

@@ -29,7 +29,6 @@
 package org.opennms.features.kafka.producer;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,7 +91,6 @@ public class ProtobufMapperIT {
 
     @Autowired
     private SessionUtils sessionUtils;
-
 
     private ProtobufMapper protobufMapper;
 

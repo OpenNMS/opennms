@@ -31,8 +31,6 @@ package org.opennms.netmgt.dao.mock;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.HwEntityDao;
-import org.opennms.netmgt.model.HwEntity;
-import org.opennms.netmgt.model.HwEntityAlias;
 import org.opennms.netmgt.model.OnmsHwEntity;
 
 public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> implements HwEntityDao {
@@ -60,38 +58,13 @@ public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> impl
 	}
 
 	@Override
-	public HwEntity findRootEntityByNodeId(Integer nodeId) {
+	public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
 		for (final OnmsHwEntity entity : findAll()) {
 			if (entity.getNode().getId().equals(nodeId) && entity.getParent() == null) {
-				Integer entityNodeId = entity.getNode() != null ? entity.getNode().getId() : null;
-				HwEntity hwEntity = new HwEntity(entity.getId(), null, entityNodeId, entity.getEntPhysicalIndex());
-				addHwEntityAlias(entity, hwEntity);
-				addChildren(entity, hwEntity);
-				return hwEntity;
+				return entity;
 			}
 		}
 		return null;
-	}
-
-	private void addChildren(OnmsHwEntity entity, HwEntity hwEntity) {
-		entity.getChildren().forEach(child -> {
-			Integer childEntityNodeId = child.getNode() != null ? child.getNode().getId() : null;
-			Integer childEntityParentId = child.getParent() != null ? child.getParent().getId() : null;
-			HwEntity hwEntityChild = new HwEntity(child.getId(), childEntityParentId, childEntityNodeId, entity.getEntPhysicalIndex());
-			hwEntity.addChild(hwEntityChild);
-			addHwEntityAlias(child, hwEntityChild);
-			addChildren(child, hwEntityChild);
-		});
-	}
-
-	private void addHwEntityAlias(OnmsHwEntity entity, HwEntity hwEntity) {
-		entity.getEntAliases().forEach(onmsHwEntityAlias -> {
-			OnmsHwEntity onmsHwEntity = onmsHwEntityAlias.getHwEntity();
-			Integer hwEntityId = onmsHwEntity != null ? onmsHwEntity.getId() : null;
-			HwEntityAlias hwEntityAlias = new HwEntityAlias(onmsHwEntityAlias.getId(), hwEntityId,
-					onmsHwEntityAlias.getIndex(), onmsHwEntityAlias.getOid());
-			hwEntity.addHwEntityAlias(hwEntityAlias);
-		});
 	}
 
 	@Override

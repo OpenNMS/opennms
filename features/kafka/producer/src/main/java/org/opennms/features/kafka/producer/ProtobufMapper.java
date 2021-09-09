@@ -43,8 +43,6 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.util.SnmpInfo;
-import org.opennms.netmgt.model.HwEntity;
-import org.opennms.netmgt.model.HwEntityAlias;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -147,49 +145,11 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
 
-        HwEntity rootEntity = hwEntityDao.findRootEntityByNodeId(node.getId());
+        OnmsHwEntity rootEntity = hwEntityDao.findRootEntityByNodeId(node.getId());
+
         if (rootEntity != null) {
             builder.setHwInventory(toHwEntity(rootEntity));
         }
-
-        return builder;
-    }
-
-    public static OpennmsModelProtos.HwEntity.Builder toHwEntity(HwEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder();
-
-        if (entity.getId() != null) {
-            builder.setEntityId(entity.getId());
-        }
-        if (entity.getEntPhysicalIndex() != null) {
-            builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
-        }
-        if (entity.getEntPhysicalClass() != null) {
-            builder.setEntPhysicalClass(entity.getEntPhysicalClass());
-        }
-        if (entity.getEntPhysicalDescr() != null) {
-            builder.setEntPhysicalDescr(entity.getEntPhysicalDescr());
-        }
-        if (entity.getEntPhysicalIsFRU() != null) {
-            builder.setEntPhysicalIsFru(entity.getEntPhysicalIsFRU());
-        }
-        if (entity.getEntPhysicalName() != null) {
-            builder.setEntPhysicalName(entity.getEntPhysicalName());
-        }
-        if (entity.getEntPhysicalVendorType() != null) {
-            builder.setEntPhysicalVendorType(entity.getEntPhysicalVendorType());
-        }
-        // Add aliases
-        entity.getHwEntityAliasList()
-                .stream()
-                .forEach(alias -> builder.addEntHwAlias(toHwAlias(alias)));
-        // Add children
-        entity.getChildren()
-                .stream()
-                .forEach(child -> builder.addChildren(toHwEntity(child)));
 
         return builder;
     }
@@ -235,16 +195,6 @@ public class ProtobufMapper {
     }
 
     public static OpennmsModelProtos.HwAlias.Builder toHwAlias(OnmsHwEntityAlias alias) {
-        if (alias == null) {
-            return null;
-        }
-        final OpennmsModelProtos.HwAlias.Builder builder = OpennmsModelProtos.HwAlias.newBuilder()
-                .setIndex(alias.getIndex())
-                .setOid(alias.getOid());
-        return builder;
-    }
-
-    public static OpennmsModelProtos.HwAlias.Builder toHwAlias(HwEntityAlias alias) {
         if (alias == null) {
             return null;
         }
