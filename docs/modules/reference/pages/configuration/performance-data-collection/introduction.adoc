@@ -1,0 +1,6 @@
+[[ref-performance-data-collectors]]
+= Performance data collectors
+
+This section describes all available built-in performance data collectors.
+You can configure them to allow complex monitoring to meet the needs of your environment.
+For information on how to extend the functionality of these monitors, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.
