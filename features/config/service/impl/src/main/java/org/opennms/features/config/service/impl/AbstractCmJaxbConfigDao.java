@@ -116,6 +116,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
                 if (!onReloadCausedChangeCallbacks.isEmpty()) {
                     LOG.debug("Calling onReloaded callbacks");
                     try {
+                        //TODO: Freddy PE-13 reconsider the possiblility of exception during loop
                         onReloadCausedChangeCallbacks.forEach(c -> c.accept(config));
                     } catch (Exception e) {
                         LOG.warn("Encountered exception while calling onReloaded callbacks", e);
