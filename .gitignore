@@ -60,5 +60,8 @@ __pycache__
 # Ignore jenv local version files
 .java-version
 
+# code validation uses npm/prettier/etc.
+node_modules
+
 # Ignore secure vault
 opennms-base-assembly/src/main/filtered/etc/scv.jce

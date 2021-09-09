@@ -1,0 +1,25 @@
+{
+    "name": "opennms",
+    "version": "1.0.0",
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://www.opennms.com/",
+    "bugs": {
+        "url": "https://issues.opennms.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/OpenNMS/opennms.git"
+    },
+    "devDependencies": {
+        "@softwareventures/precise-commits": "^2.0.22",
+        "husky": "^8.0.1",
+        "prettier": "^2.7.1",
+        "prettier-plugin-java": "^1.6.2"
+    },
+    "scripts": {
+        "prepare": "husky install",
+        "pre-commit": "npm run precise-commits",
+        "precise-commits": "precise-commits",
+        "prettier": "prettier"
+    }
+}
