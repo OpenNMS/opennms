@@ -14,7 +14,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
-* xref:configuration/notifications/intruduction.adoc[]
+* xref:configuration/notifications/introduction.adoc[]
 ** xref:configuration/notifications/commands/call.adoc[]
 ** xref:configuration/notifications/commands/irc.adoc[]
 ** xref:configuration/notifications/commands/mail.adoc[]
