@@ -167,7 +167,7 @@ admin@opennms>
 === Uses
 The following places allow the use the Metadata DSL:
 
-* <<provisioning/detectors/detectors.adoc#ga-provisioning-meta-data,Provisioning Detectors>>
+* <<reference:configuration/provisioning/introduction.adoc#ref-provisioning-meta-data,Provisioning Detectors>>
 * <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service Assurance>>
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance Management>>
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>
