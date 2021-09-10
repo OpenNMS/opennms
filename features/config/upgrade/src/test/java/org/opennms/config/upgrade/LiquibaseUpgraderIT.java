@@ -28,6 +28,7 @@
 
 package org.opennms.config.upgrade;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,10 +70,15 @@ import liquibase.exception.ValidationFailedException;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations = {
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",})
+        "classpath:/META-INF/opennms/applicationContext-config-service.xml"})
+
 @JUnitTemporaryDatabase
 public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryDatabase> {
+
+    private final static String SCHEMA_NAME = "provisiond";
+    private final static String CONFIG_ID = "providiond";
 
     private DataSource dataSource;
     private Connection connection;
@@ -97,12 +103,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException {
         try {
-//            ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
-              LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
-              liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
-//            ConfigSchema schema = new ConfigSchema("provisiond-liqui-test", 1, 0, 0,
-//                    ProvisiondConfiguration.class, new ValidateUsingConverter<>(ProvisiondConfiguration.class));
-//            when(cm.getRegisteredSchema("provisiond-liqui-test")).thenReturn(Optional.of(schema));
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
             // check if CM was called for schema
             verify(cmSpy).registerSchema(anyString(),
@@ -115,6 +117,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
             checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+
+            // check for the data itself
+            assertFalse(this.cm.getRegisteredSchema(SCHEMA_NAME).isEmpty());
+            assertFalse(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isEmpty());
         } finally {
             this.db.cleanUp();
         }

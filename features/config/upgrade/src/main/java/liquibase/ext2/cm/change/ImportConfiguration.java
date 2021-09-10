@@ -64,7 +64,7 @@ public class ImportConfiguration extends AbstractCmChange {
 
         try {
             if(db.getConfigurationManager().getRegisteredSchema(this.schemaId).isEmpty()){
-                validationErrors.addError(String.format("Unknown schema %s. Register schma first.", this.schemaId));
+                validationErrors.addError(String.format("Unknown schema %s. Register schema first.", this.schemaId));
             }
         } catch(Exception e) {
             validationErrors.addError(String.format("Can not load schema with name %s: %s", this.schemaId, e.getMessage()));
