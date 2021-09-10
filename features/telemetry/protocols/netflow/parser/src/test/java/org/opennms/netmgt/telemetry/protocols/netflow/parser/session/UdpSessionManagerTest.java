@@ -51,6 +51,10 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionM
 
 import io.netty.buffer.ByteBuf;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+
 public class UdpSessionManagerTest {
 
     final InetSocketAddress localAddress1 = new InetSocketAddress("10.10.10.10", 10001);
@@ -194,13 +198,13 @@ public class UdpSessionManagerTest {
 
         session.addOptions(observationId1, templateId1, scopesValue, fieldsValue);
 
-        Assert.assertTrue(udpSessionManager.options.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
-        Assert.assertTrue(udpSessionManager.templates.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        assertThat(udpSessionManager.options.keySet(), hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        assertThat(udpSessionManager.templates.keySet(), hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
 
         udpSessionManager.doHousekeeping();
 
-        Assert.assertFalse(udpSessionManager.options.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
-        Assert.assertFalse(udpSessionManager.templates.keySet().contains(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        assertThat(udpSessionManager.options.keySet(), not(hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id))));
+        assertThat(udpSessionManager.templates.keySet(), not(hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id))));
     }
 
     @Test
