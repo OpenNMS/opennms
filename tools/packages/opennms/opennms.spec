@@ -534,16 +534,6 @@ else
 		install --builder smart --threads ${CCI_MAXCPU:-2}
 fi
 
-cd opennms-tools
-	../compile.pl -N \
-		$OPTS_SKIP_TESTS \
-		$OPTS_SETTINGS_XML \
-		$OPTS_ENABLE_SNAPSHOTS \
-		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-		-Dinstall.version="%{version}-%{release}" \
-		-Dopennms.home="%{instprefix}" \
-		install --builder smart --threads ${CCI_MAXCPU:-2}
-cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl \
