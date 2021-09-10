@@ -99,6 +99,11 @@ public class ConfigurationManagerServiceProvisiondMock implements ConfigurationM
     }
 
     @Override
+    public String getJSONStrConfiguration(String configName, String configId) throws IOException {
+        return null;
+    }
+
+    @Override
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
         return Optional.empty();
     }
@@ -116,5 +121,10 @@ public class ConfigurationManagerServiceProvisiondMock implements ConfigurationM
     @Override
     public void unregisterSchema(String configName) throws IOException {
 
+    }
+
+    @Override
+    public Set<String> getConfigIds(String configName) throws IOException {
+        return null;
     }
 }
