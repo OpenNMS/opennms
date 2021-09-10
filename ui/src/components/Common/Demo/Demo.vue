@@ -14,9 +14,9 @@
     id="inputNumber01"
     mode="decimal"
     showButtons
-    :min="minVal"
-    :max="maxVal"
-    :step="stepVal"
+    :min=5
+    :max=10
+    :step=2
     v-model="showInputNumber"
   />
   <p>Input Text :: {{ showInputNumber }}</p>
@@ -87,15 +87,12 @@ import { ref } from 'vue'
 import InputText from '../InputText.vue'
 import InputNumber from '../InputNumber.vue'
 import DropDown from '../DropDown.vue'
-import FieldSet from '../FieldSet.vue';
+import FieldSet from '../FieldSet.vue'
 import TimePicker from '../TimePicker.vue'
-import Button from '../Button.vue';
-import RadioButton from '../RadioButton.vue';
-import RadioButtonGroup from '../RadioButtonFieldSet.vue';
+import Button from '../Button.vue'
+import RadioButton from '../RadioButton.vue'
+import RadioButtonGroup from '../RadioButtonFieldSet.vue'
 
-const minVal = ref(5);
-const maxVal = ref(10);
-const stepVal = ref(2);
 const city = ref('');
 const showInputText = ref('');
 const showInputNumber = ref();
