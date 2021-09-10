@@ -28,20 +28,10 @@
 
 package org.opennms.netmgt.telemetry.listeners;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Objects;
-
-import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
-import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -57,9 +47,24 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
+import org.opennms.netmgt.telemetry.api.receiver.Listener;
+import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
 
 public class UdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     private final String name;
     private final List<UdpParser> parsers;
@@ -191,7 +196,7 @@ public class UdpListener implements Listener {
                 @Override
                 public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                     LOG.warn("Invalid packet: {}", cause.getMessage());
-                    LOG.debug("", cause);
+                    RATE_LIMITED_LOG.debug("", cause);
                 }
             });
         }
