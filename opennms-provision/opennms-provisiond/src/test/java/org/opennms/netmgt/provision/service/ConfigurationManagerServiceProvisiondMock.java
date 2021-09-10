@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.mock;
-
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
+package org.opennms.netmgt.provision.service;
 
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.springframework.stereotype.Component;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.provisiond.RequisitionDef;
+import org.quartz.CronExpression;
 
-@Component
-public class ConfigurationmanagerServiceMock implements ConfigurationManagerService {
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.Set;
+
+public class ConfigurationManagerServiceProvisiondMock implements ConfigurationManagerService {
     @Override
     public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
 
@@ -80,7 +81,16 @@ public class ConfigurationmanagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass) throws IOException {
-        return Optional.empty();
+        if (entityClass.equals(ProvisiondConfiguration.class)) {
+            Optional<ProvisiondConfiguration> entity = Optional.of(new ProvisiondConfiguration());
+            RequisitionDef requisitionDef =  new RequisitionDef();
+            requisitionDef.setImportName("test");
+            requisitionDef.setCronSchedule("1 * * * * *");
+            entity.get().addRequisitionDef(requisitionDef);
+            return (Optional<ENTITY>) entity;
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

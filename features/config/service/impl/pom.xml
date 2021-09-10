@@ -131,6 +131,7 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-model</artifactId>
         <version>${project.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms.features.distributed</groupId>
@@ -186,13 +187,14 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-dao-mock</artifactId>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
