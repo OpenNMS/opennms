@@ -45,6 +45,8 @@ import org.opennms.features.config.dao.api.ConfigSchema;
  * Responsible for managing Schemas and Configurations.
  * A Schema is a set of rules that constrain the data of a Configuration.
  * A Configuration is the data that defines the runtime behaviour of a service together with the code of that service.
+ *
+ * @apiNote Due to the classloading behaviour. Do not use any non-primitive API parameters via OSGi interface. It will subject to <b>FAIL</b>!!!
  */
 public interface ConfigurationManagerService {
 
@@ -55,7 +57,7 @@ public interface ConfigurationManagerService {
      * @param majorVersion
      * @param minorVersion
      * @param patchVersion
-     * @param entityClass (Must have ValidateUsing annotation)
+     * @param entityClass  (Must have ValidateUsing annotation)
      * @param <ENTITY>
      * @throws IOException
      * @throws JAXBException
@@ -78,16 +80,15 @@ public interface ConfigurationManagerService {
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
 
     /**
-     * register a new configuration by JSONObject.
+     * register a new configuration by config object.
      * It will make sure the configId is not duplicated !!!
      *
      * @param configName
      * @param configId
-     * @param configObject
+     * @param configObject (config object / JSONObject)
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, Object configObject)
-            throws IOException;
+    void registerConfiguration(String configName, String configId, Object configObject) throws IOException;
 
     /**
      * remove configure from service
@@ -98,8 +99,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
-                                         Object configObject)
-            throws IOException;
+                             Object configObject) throws IOException, IllegalArgumentException;
 
     /**
      * get config as configObject by configName, configId and Config class
@@ -125,6 +125,14 @@ public interface ConfigurationManagerService {
     Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
 
     /**
+     * Use for osgi API
+     *
+     * @return config in json string
+     * @see #getJSONStrConfiguration(String, String)
+     */
+    String getJSONStrConfiguration(String configName, String configId) throws IOException;
+
+    /**
      * get config as xml by configName, configId
      *
      * @param configName
@@ -145,6 +153,7 @@ public interface ConfigurationManagerService {
 
     /**
      * get a list of registered configName
+     *
      * @return configName set
      * @throws IOException
      */
@@ -158,11 +167,11 @@ public interface ConfigurationManagerService {
      */
     void unregisterSchema(String configName) throws IOException;
 
-
     final class Version {
         int majorVersion;
         int minorVersion;
         int patchVersion;
+
         public Version(int majorVersion, int minorVersion, int patchVersion) {
             this.majorVersion = majorVersion;
             this.minorVersion = minorVersion;
@@ -215,8 +224,14 @@ public interface ConfigurationManagerService {
                     .toString();
         }
     }
-    //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
-    //    ConfigData getSchemaForConfiguration(final String configId);
+
+    /**
+     * return configIds by configName
+     *
+     * @param configName
+     */
+    Set<String> getConfigIds(String configName) throws IOException;
+
 // TODO: next phase for xml conversion work
 //    /** add: inserts a child into a parent element */
 //    void addConfiguration(final String configId, final String path, final String content);

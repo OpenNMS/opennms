@@ -123,8 +123,8 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration pConfig = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
         pConfig.setImportThreads(12L);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, pConfig);
-        JSONObject jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
-        Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get("importThreads"));
+        Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
 
     /**
@@ -133,8 +133,8 @@ public class ConfigurationManagerServiceImplTest {
      */
     @Test(expected = RuntimeException.class)
     public void testUpdateInvalidateConfiguration() throws IOException {
-        JSONObject json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
-        json.put("importThreads", -1);
+        Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
+        json.get().put("importThreads", -1);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());

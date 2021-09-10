@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.UnmarshalException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -160,14 +161,27 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void updateConfig(String configName, String configId, Object config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         Map<String, JSONObject> configs = configData.get().getConfigs();
         if (!configs.containsKey(configId)) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
-        JSONObject jsonObject = this.validateConfigWithConvert(configName, config);
-        configs.put(configId, jsonObject);
+        JSONObject existingJson = configs.get(configId);
+        JSONObject newJson;
+        if (config instanceof String) {
+            newJson = new JSONObject((String) config);
+        } else if (config instanceof JSONObject) {
+            newJson = (JSONObject) config;
+        } else {
+            Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
+            newJson = new JSONObject(schema.get().getConverter().jaxbObjectToJson(config));
+        }
+        // copy all first level keys' value into existing config
+        newJson.keySet().forEach((key) -> {
+            existingJson.put(key, newJson.get(key));
+        });
+        this.validateConfigWithConvert(configName, existingJson);
         this.putConfig(configName, configData.get());
     }
 
@@ -181,10 +195,10 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public void deleteConfig(String configName, String configId) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         if (configData.get().getConfigs().remove(configId) == null) {
-            throw new IllegalArgumentException("Config not found for service" + configName + " " + configId + " configId");
+            throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         this.putConfig(configName, configData.get());
     }
@@ -206,23 +220,51 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     private void putSchema(ConfigSchema<?> configSchema) throws IOException {
         long timestamp = jsonStore.put(configSchema.getName(), mapper.writeValueAsString(configSchema), CONTEXT_SCHEMA);
-        if(timestamp < 0){
+        if (timestamp < 0) {
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
     }
 
     private void putConfig(String configName, ConfigData<JSONObject> configData) throws IOException {
         long timestamp = jsonStore.put(configName, mapper.writeValueAsString(configData), CONTEXT_CONFIG);
-        if(timestamp < 0){
+        if (timestamp < 0) {
             throw new RuntimeException("Fail to put data in JsonStore!");
         }
     }
 
+    /**
+     * convert (it will skip convert it JSONObject passed) and validate
+     *
+     * @param configName
+     * @param configObject (config object / JSONObject)
+     * @return
+     * @throws IOException
+     */
     private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
             throws IOException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
-        this.validateConfig(schema, configObject);
-        return new JSONObject(schema.get().getConverter().jaxbObjectToJson(configObject));
+        try {
+            if (configObject instanceof String) {
+                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject((String) configObject);
+                this.validateConfig(schema, tmpConfigObject);
+                return new JSONObject((String) configObject);
+            } else if (configObject instanceof JSONObject) {
+                JSONObject json = (JSONObject) configObject;
+                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json.toString());
+                this.validateConfig(schema, tmpConfigObject);
+                return json;
+            } else {
+                String json = schema.get().getConverter().jaxbObjectToJson(configObject);
+                this.validateConfig(schema, configObject);
+                return new JSONObject(json);
+            }
+        } catch (RuntimeException e) {
+            // make it error easier to understand
+            if (e.getCause() instanceof UnmarshalException) {
+                throw new RuntimeException("Input format error ! " + e.getMessage());
+            }
+            throw e;
+        }
     }
 
     private void validateConfigData(final String configName, final ConfigData<JSONObject> configData)
