@@ -78,11 +78,12 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * get configs data by configName
      * It gives the raw ConfigData object.
      * If you only want to get the specific config, you should use getConfig(String, String)
-     * @see #getConfig(String, String)
-     * @see ConfigData
+     *
      * @param configName
      * @return config object
      * @throws IOException
+     * @see #getConfig(String, String)
+     * @see ConfigData
      */
     Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(String configName) throws IOException;
 
@@ -100,7 +101,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      *
      * @param configName
      * @param configId
-     * @param configObject
+     * @param configObject (entityBean/String(json)/JSONObject)
      * @throws IOException
      */
     void addConfig(String configName, String configId, Object configObject) throws IOException;
@@ -108,11 +109,12 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
     Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
 
     /**
-     * update config to a registered service name
+     * update config to a registered service name, if the configObject is String / JSONObject, it can be partial data and
+     * copy into existing config.
      *
      * @param configName
      * @param configId
-     * @param configObject
+     * @param configObject (entityBean/String(json)/JSONObject)
      * @throws IOException
      */
     void updateConfig(String configName, String configId, Object configObject) throws IOException;

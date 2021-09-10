@@ -1777,7 +1777,6 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
-        <feature>org.json</feature>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
@@ -1791,7 +1790,6 @@
         <bundle>wrap:mvn:io.swagger.core.v3/swagger-models/${swaggerVersion}</bundle>
         <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
-        <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>

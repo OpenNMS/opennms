@@ -28,13 +28,9 @@
 
 package org.opennms.features.config.rest.api;
 
-import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigSchema;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
 @Path("/cm")
 @Produces("application/json")
@@ -52,33 +48,74 @@ public interface ConfigManagerRestService {
     Response listConfigs();
 
     /**
-     * get raw OpenApi schema
+     * get raw OpenApi schema (for debug use, <b>SHOULD REMOVE BEFORE PRODUCTION</b>)
      * @param configName
      * @return
      */
     @GET
-    @Path("/schema/{configName}/raw")
-    Response getRawOpenApiSchema(@PathParam("configName") String configName);
+    @Path("/schema/raw/{configName}")
+    Response getRawSchema(@PathParam("configName") String configName);
 
     /**
      * get filtered OpenApi schema
      * @param configName
-     * @param type
+     * @param acceptType
      * @return
      */
     @GET
     @Path("/schema/{configName}")
     Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType);
 
+    /**
+     * get configIds
+     * @param configName
+     * @return
+     */
     @GET
     @Path("/{configName}")
-    ConfigSchema getSchema(@PathParam("configName") String configName);
+    Response getConfigIds(@PathParam("configName") String configName);
 
+    /**
+     * get config by configName and configId
+     * @param configName
+     * @param configId
+     * @return
+     */
     @GET
     @Path("/{configName}/{configId}")
-    ConfigData getConfigFile(@PathParam("configName") String configName, @PathParam("configId") String filename);
+    Response getConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 
+    /**
+     * add new config by
+     * @param configName
+     * @param configId
+     * @param jsonStr
+     * @return
+     */
     @POST
-    @Path("/{configName}/{configId}/attach")
-    ConfigData getView(@PathParam("configName") String configName, @PathParam("configId") String filename, Map<String, Object> inputParameters);
+    @Path("/{configName}/{configId}")
+    Response addConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
+
+    /**
+     *
+     * @param configName
+     * @param configId
+     * @param jsonStr
+     * @return
+     */
+    @PUT
+    @Path("/{configName}/{configId}")
+    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
+
+
+    /**
+     * delete config by configName and configId
+     * @param configName
+     * @param configId
+     * @return
+     */
+    @DELETE
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("/{configName}/{configId}")
+    Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
 }
