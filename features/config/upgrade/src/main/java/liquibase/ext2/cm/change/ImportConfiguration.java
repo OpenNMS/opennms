@@ -63,14 +63,6 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         try {
-            if(db.getConfigurationManager().getRegisteredSchema(this.schemaId).isEmpty()){
-                validationErrors.addError(String.format("Unknown schema %s. Register schema first.", this.schemaId));
-            }
-        } catch(Exception e) {
-            validationErrors.addError(String.format("Can not load schema with name %s: %s", this.schemaId, e.getMessage()));
-        }
-
-        try {
             File file = ResourceUtils.getFile(this.filePath);
             if(!file.canRead()) {
                 validationErrors.addError(String.format("Can not find file %s", this.filePath));

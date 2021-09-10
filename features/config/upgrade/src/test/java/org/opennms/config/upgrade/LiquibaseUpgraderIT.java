@@ -28,7 +28,6 @@
 
 package org.opennms.config.upgrade;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +46,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +71,7 @@ import liquibase.exception.ValidationFailedException;
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
 @ContextConfiguration(locations = {
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-config-service.xml"})
 
@@ -78,7 +79,7 @@ import liquibase.exception.ValidationFailedException;
 public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
     private final static String SCHEMA_NAME = "provisiond";
-    private final static String CONFIG_ID = "providiond";
+    private final static String CONFIG_ID = "provisiond";
 
     private DataSource dataSource;
     private Connection connection;
@@ -93,11 +94,23 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, IOException {
         this.db = new DBUtils();
         this.connection = dataSource.getConnection();
         db.watch(connection);
         cmSpy = spy(cm);
+        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME).isEmpty());
+        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isEmpty());
+    }
+
+    @After
+    public void tearDown() throws SQLException, IOException {
+        if(cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent()) {
+            this.cm.unregisterConfiguration(SCHEMA_NAME, CONFIG_ID);
+        }
+        if(cm.getRegisteredSchema(SCHEMA_NAME).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME);
+        }
     }
 
     @Test
@@ -112,15 +125,15 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
                     eq(ProvisiondConfiguration.class));
 
             // check if CM was called for config
-            verify(cmSpy).registerConfiguration(eq("provisiond-liqui-test"), eq("provisiond"), any());
+            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME), eq("provisiond"), any());
 
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
             checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
 
             // check for the data itself
-            assertFalse(this.cm.getRegisteredSchema(SCHEMA_NAME).isEmpty());
-            assertFalse(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isEmpty());
+            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME).isPresent());
+            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent());
         } finally {
             this.db.cleanUp();
         }
@@ -144,7 +157,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             ConfigurationManagerService cm = null; // will lead to Nullpointer
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-ok2.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
         } finally {
             this.db.cleanUp();
         }
