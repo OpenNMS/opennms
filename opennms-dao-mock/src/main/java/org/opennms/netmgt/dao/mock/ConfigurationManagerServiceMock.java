@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.netmgt.dao.mock;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -42,7 +42,7 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConfigurationmanagerServiceMock implements ConfigurationManagerService {
+public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
     @Override
     public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
 

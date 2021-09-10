@@ -28,22 +28,15 @@
 
 package org.opennms.netmgt.provision.service;
 
-import static org.junit.Assert.fail;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import com.google.common.collect.Lists;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -51,22 +44,22 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.ListenerManager;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerListener;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -84,6 +77,8 @@ import com.google.common.collect.Lists;
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
+@JUnitTemporaryDatabase
+@Transactional
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class ImportSchedulerIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ImportSchedulerIT.class);
@@ -109,7 +104,7 @@ public class ImportSchedulerIT implements InitializingBean {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
     }
 
@@ -131,7 +126,7 @@ public class ImportSchedulerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
+    public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException, IOException {
         
         RequisitionDef def = m_dao.getDefs().get(0);
         
@@ -216,7 +211,7 @@ public class ImportSchedulerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    public void buildImportSchedule() throws SchedulerException, InterruptedException {
+    public void buildImportSchedule() throws SchedulerException, InterruptedException, IOException {
         // Add a simple definition to the configuration that attempts
         // to import a non existent file every 5 seconds
         RequisitionDef def = new RequisitionDef();

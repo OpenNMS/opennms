@@ -8,6 +8,6 @@
     ">
     <!-- this context contains only the ConfigurationmanagerService, can be used when applicationContext-mockDao is not needed -->
     <context:annotation-config />
-    <bean id="configManager" class="org.opennms.netmgt.dao.mock.ConfigurationmanagerServiceMock" />
+    <bean id="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock" />
 
 </beans>
