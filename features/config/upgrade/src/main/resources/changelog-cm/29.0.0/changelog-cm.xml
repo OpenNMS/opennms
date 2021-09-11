@@ -9,7 +9,7 @@
 
     <changeSet author="pschweizer" id="1.0-register-schema-provisiond">
         <cm:registerSchema id="provisiond" version="1.0.0" entityClass="org.opennms.netmgt.config.provisiond.ProvisiondConfiguration"/>
-        <cm:importConfig schemaId="provisiond" configId="provisiond" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
+        <cm:importConfig schemaId="provisiond" configId="default" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
     </changeSet>
 
 </databaseChangeLog>
