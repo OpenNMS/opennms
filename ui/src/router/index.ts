@@ -4,9 +4,9 @@ import NodeDetails from '@/containers/NodeDetails.vue'
 import Demo from '../components/Common/Demo/Demo.vue'
 import DataTableDemo from '../components/Common/Demo/DataTableDemo.vue'
 import EditNode from '../components/Common/Demo/EditNode.vue'
-import provisionD from '../components/ProvisionD-Config.vue'
-import reqDefForm from '../components/RequisitionDefinitionsLayout.vue'
-import threadPoolsForm from '../components/ThreadPools.vue'
+import ProvisionDConfig from '../components/Configuration/ProvisionDConfig.vue'
+import RequisitionDefinitionsLayout from '../components/Configuration/RequisitionDefinitionsLayout.vue'
+import ThreadPools from '../components/Configuration/ThreadPools.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -33,22 +33,22 @@ const router = createRouter({
     },
     {
       path: '/provisionConfig',
-      name: 'provisionD',
-      component: provisionD,
+      name: 'provisionDConfig',
+      component: ProvisionDConfig,
       children: [
         {
-          path: '/provisionConfig/reqDefinition',
-          name: 'req',
-          component: reqDefForm
+          path: '',
+          name: 'requisitionDefinitionsLayout',
+          component: RequisitionDefinitionsLayout
         },
         {
-          path: '/provisionConfig/threadPools',
-          name: 'thread',
-          component: threadPoolsForm
+          path: '/threadPools',
+          name: 'threadPools',
+          component: ThreadPools
         },
         {
-          path: '/provisionConfig/reqDefinition/edit/:id',
-          name: 'Edit',
+          path: '/edit/:id',
+          name: 'reqDefEdit',
           component: EditNode
         }
       ]

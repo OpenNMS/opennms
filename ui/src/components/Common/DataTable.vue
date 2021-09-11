@@ -104,7 +104,7 @@ const rowsPerPage = computed(() => {
 const onClickHandle = (selectedName: any, paramId: any) => {
     switch (selectedName) {
         case "edit":
-            router.push({ path: `/provisionConfig/reqDefinition/${selectedName}/${paramId}` });
+            router.push({ path: `/${selectedName}/${paramId}` });
             break;
         case "delete":
             confirm(`Please confirm delete id ${paramId}?`);

@@ -5,10 +5,10 @@
         </div>
         <div class="reqDef">
             <div class="dataTable" v-if="index === 0">
-                <dataTableDemo></dataTableDemo>
+                <DataTableDemo></DataTableDemo>
             </div>
             <div v-else>
-                <reqDefinitionFrom></reqDefinitionFrom>
+                <ReqDefinitionForm></ReqDefinitionForm>
             </div>
         </div>
     </div>
@@ -17,9 +17,9 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
-import Button from './Common/Button.vue'
-import dataTableDemo from './Common/Demo/DataTableDemo.vue'
-import reqDefinitionFrom from './ReqDefinitionForm.vue'
+import Button from '../Common/Button.vue'
+import DataTableDemo from '../Common/Demo/DataTableDemo.vue'
+import ReqDefinitionForm from './ReqDefinitionForm.vue'
 
 const buttonAction = ref(['ADD NEW', 'BACK']);
 const index = ref(0);
