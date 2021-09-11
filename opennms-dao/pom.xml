@@ -95,6 +95,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.upgrade</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.criteria</artifactId>
     </dependency>
