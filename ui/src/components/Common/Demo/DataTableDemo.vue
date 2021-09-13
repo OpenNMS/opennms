@@ -1,7 +1,6 @@
 <template>
     <div>
         <DataTable 
-        tableHeader="Node Table" 
         :value="nodeDataValue" 
         :customData="customData" 
         :rowsPerPageOptions = '[5,3,1]'

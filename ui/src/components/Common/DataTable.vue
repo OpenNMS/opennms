@@ -1,6 +1,6 @@
 <template>
     <div>
-        <DataTable
+        <PrimeVueDataTable
             :showGridlines="showGridlines"
             :loading="loading"
             :value="dataValue"
@@ -31,14 +31,14 @@
                     <Button :label="columnName" @click="onClickHandle(columnName, data.id)"></Button>
                 </template>
             </Column>
-        </DataTable>
+        </PrimeVueDataTable>
     </div>
 </template>
 
 <script setup lang="ts">
 
 import { computed, ref } from 'vue';
-import DataTable from 'primevue/datatable';
+import PrimeVueDataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import router from '@/router';
 import Button from "./Button.vue";
@@ -104,7 +104,7 @@ const rowsPerPage = computed(() => {
 const onClickHandle = (selectedName: any, paramId: any) => {
     switch (selectedName) {
         case "edit":
-            router.push({ path: `/dataTableDemo/${selectedName}/${paramId}` });
+            router.push({ path: `/${selectedName}/${paramId}` });
             break;
         case "delete":
             confirm(`Please confirm delete id ${paramId}?`);

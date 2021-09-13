@@ -14,9 +14,9 @@
     id="inputNumber01"
     mode="decimal"
     showButtons
-    :min=5
-    :max=10
-    :step=2
+    :min="5"
+    :max="10"
+    :step="2"
     v-model="showInputNumber"
   />
   <p>Input Text :: {{ showInputNumber }}</p>
@@ -115,8 +115,8 @@ const categories = ref([
   { name: 'Production', key: 'P' },
   { name: 'Research', key: 'R' }
 ]);
+
 const selectedValue = (val: string) => {
-  console.log('selected value :', val);
   cityGroupName.value = val;
 }
 

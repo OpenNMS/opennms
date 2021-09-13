@@ -4,6 +4,9 @@ import NodeDetails from '@/containers/NodeDetails.vue'
 import Demo from '../components/Common/Demo/Demo.vue'
 import DataTableDemo from '../components/Common/Demo/DataTableDemo.vue'
 import EditNode from '../components/Common/Demo/EditNode.vue'
+import ProvisionDConfig from '../components/Configuration/ProvisionDConfig.vue'
+import RequisitionDefinitionsLayout from '../components/Configuration/RequisitionDefinitionsLayout.vue'
+import ThreadPools from '../components/Configuration/ThreadPools.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -29,9 +32,26 @@ const router = createRouter({
       component: DataTableDemo
     },
     {
-      path: '/dataTableDemo/edit/:id',
-      name: 'Edit',
-      component: EditNode
+      path: '/provisionConfig',
+      name: 'provisionDConfig',
+      component: ProvisionDConfig,
+      children: [
+        {
+          path: '',
+          name: 'requisitionDefinitionsLayout',
+          component: RequisitionDefinitionsLayout
+        },
+        {
+          path: '/threadPools',
+          name: 'threadPools',
+          component: ThreadPools
+        },
+        {
+          path: '/edit/:id',
+          name: 'reqDefEdit',
+          component: EditNode
+        }
+      ]
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
