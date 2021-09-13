@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -61,6 +61,11 @@ import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
 
     private final String name;
     private final List<UdpParser> parsers;
@@ -201,7 +206,7 @@ public class UdpListener implements Listener {
                 @Override
                 public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                     LOG.warn("Invalid packet: {}", cause.getMessage());
-                    LOG.debug("", cause);
+                    RATE_LIMITED_LOG.debug("", cause);
                 }
             });
         }
