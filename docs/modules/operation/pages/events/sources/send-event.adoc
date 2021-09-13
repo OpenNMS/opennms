@@ -1,0 +1,85 @@
+
+[[send-event]]
+
+= send-event.pl script
+
+Use the send-event.pl script to send an event to OpenNMS.
+It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
+
+#why do you use it?#
+
+#include some use cases - example, what it does#
+
+Format: `bin/send-event.pl <uei> [host:port] [options]`
+
+uei: required : universal event identifier
+host:port - hostname to send the event to (default: local host)
+
+#where do we find the UEIs?#
+
+.Optional `send-event.pl` script options
+[options="header, autowidth"]
+[cols="2,3"]
+|===
+
+| Name/Alias
+| Description
+
+| -d (--description)
+| A description for the event browser.
+
+| -f (--ifindex)
+| ifIndex of the associated service.
+
+| -h (--help)
+| Help message.
+
+| -i (--interface)
+| IP address of associated interface.
+
+| -l (--logmsg)
+| A short log message for the event browser #(secure field by default).#
+
+| -n (--nodeid)
+| Database ID of associated node (or use parameters foreignSource, foreignId).
+
+| -p (-parameter)
+| Parameter in key=value form.
+For example, `-p 'url http://www.google.com/'`
+Note that if a URL contains a percentage sign (%) you must escape it with another percentage sign.
+#where do parameters come from?#
+
+| -s (--service)
+| Name of the associated service
+
+| -x (--severity)
+| Severity of the event: +
+1=Indeterminate +
+2=Cleared +
+3=Normal +
+4=Warning +
+5=Minor +
+6=Major +
+7=Critical +
+
+| -t (--timezone)
+| The time zone you are in.
+
+| -v (--verbose)
+| Print raw XML that is generated.
+
+| -V (--version)
+| Print version and exit successfully.
+
+|===
+
+percentage sign is used for parameter replacement in the event's description.
+
+== Example
+
+`$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`
+
+
+
+
+
