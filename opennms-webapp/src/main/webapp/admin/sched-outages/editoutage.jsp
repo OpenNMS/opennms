@@ -56,6 +56,7 @@
         java.text.SimpleDateFormat
         "
 %>
+<%@ page import="org.opennms.netmgt.config.poller.outages.Time" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -326,7 +327,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 			theOutage.setType(WebSecurityUtils.sanitizeString(request.getParameter("outageType")));
 	    }
 	}
-	
+
+	boolean timeSpanError = false;
+
 	String isFormSubmission = request.getParameter("formSubmission");
 	if ("true".equals(isFormSubmission)) {
 
@@ -492,9 +495,9 @@ Could not find an outage to edit because no outage name parameter was specified 
 				theOutage.clearNodes();
 				theOutage.addInterface(matchAnyInterface);
 			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
+				org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
+
 				if (theOutage.getType().equalsIgnoreCase("specific")) {
-					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
-	
 					StringBuffer timeBuffer = new StringBuffer(17);
 					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseStartDay")));
 					timeBuffer.append("-");
@@ -522,11 +525,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					timeBuffer.append(":");
 					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
 					newTime.setEnds(timeBuffer.toString());
-	
-					theOutage.addTime(newTime);
 				} else {
-					org.opennms.netmgt.config.poller.outages.Time newTime = new org.opennms.netmgt.config.poller.outages.Time();
-	
 					if (theOutage.getType().equalsIgnoreCase("monthly")) {
 						newTime.setDay(WebSecurityUtils.sanitizeString(request.getParameter("chooseDayOfMonth")));
 					} else if (theOutage.getType().equalsIgnoreCase("weekly")) {
@@ -548,7 +547,18 @@ Could not find an outage to edit because no outage name parameter was specified 
 					timeBuffer.append(":");
 					timeBuffer.append(WebSecurityUtils.sanitizeString(request.getParameter("chooseFinishSecond")));
 					newTime.setEnds(timeBuffer.toString());
-					
+				}
+
+				boolean entryAlreadyExists = false;
+				for(Time time : theOutage.getTimes()) {
+					if (time.equals(newTime)) {
+						entryAlreadyExists = true;
+						break;
+					}
+				}
+				if (entryAlreadyExists) {
+					timeSpanError = true;
+				} else {
 					theOutage.addTime(newTime);
 				}
 			} else {
@@ -1013,6 +1023,10 @@ function updateOutageTypeDisplay(selectElement) {
 				<% if (theOutage.getTimes().size() == 0) { %>
 					<tr>
 						<td><span class="text-danger">You must have at least one time span defined.</span></td>
+					</tr>
+				<% } else if (timeSpanError) { %>
+					<tr>
+						<td><span class="text-danger">You can add each time span only once.</span></td>
 					</tr>
 				<% } %>
 			</table>

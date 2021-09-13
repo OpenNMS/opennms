@@ -26,32 +26,5 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-import java.net.UnknownHostException;
-
-import org.junit.Test;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.config.wsman.credentials.Definition;
-import org.opennms.netmgt.config.wsman.SystemDefinition;
-import org.opennms.netmgt.model.OnmsNode;
-
-public class WSManDataCollectionConfigDaoJaxbTest {
-
-    @Test
-    public void canEvaluteSystemDefinitionRules() throws UnknownHostException {
-        OnmsNode node = mock(OnmsNode.class);
-        CollectionAgent agent = mock(CollectionAgent.class);
-        Definition config = new Definition();
-        config.setProductVendor("Dell Inc.");
-        config.setProductVersion(" iDRAC 6");
-
-        SystemDefinition sysDef = new SystemDefinition();
-        sysDef.addRule("#productVendor matches 'Dell.*' and #productVersion matches '.*DRAC.*'");
-        
-        assertTrue("agent should be matched", WSManDataCollectionConfigDaoJaxb.isAgentSupportedBySystemDefinition(sysDef, agent, config, node));
-    }
-}
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://xmlns.opennms.org/xsd/config/wsman", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+package org.opennms.netmgt.config.wsman.credentials;
