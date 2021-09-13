@@ -14,7 +14,7 @@ When a counter reaches the upper limit, the value resets to zero and continues t
 == Gauge
 
 The gauges type represents values that may fluctuate up or down to reflect the current state of a given metric.
-This type may be presented from the device with a non-negative number with a maximum of either a 32-bit or 64-bit upper limit.
+The device may present this type with a non-negative number with a maximum of either a 32-bit or 64-bit upper limit.
 {page-component-title} stores both of these the same, and you can use `GAUGE`, `GAUGE32`, and `GAUGE64` interchangeably in data collection definitions to refer to this data type.
 
 == Integer
