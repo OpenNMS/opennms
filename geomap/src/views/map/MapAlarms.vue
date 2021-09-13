@@ -37,18 +37,12 @@ import { AgGridVue } from "ag-grid-vue3";
 import { useStore } from "vuex";
 import { computed, watch } from 'vue'
 import { Alarm, Node } from "@/types";
+import SeverityFloatingFilter from "./SeverityFloatingFilter.vue"
+import NumberFloatingFilterComponent from "./NumberFloatingFilterComponent.vue"
 
 const store = useStore();
 
 const gridOptions = ref({})
-
-const defaultColDef = ref({
-  floatingFilter: true,
-  resizable: true,
-  enableBrowserTooltips: true,
-  filter: "agTextColumnFilter",
-  sortable: true,
-})
 
 let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
@@ -115,6 +109,14 @@ function reset() {
   store.dispatch("mapModule/resetInterestedNodesID");
 }
 
+const defaultColDef = ref({
+  floatingFilter: true,
+  resizable: true,
+  enableBrowserTooltips: true,
+  filter: "agTextColumnFilter",
+  sortable: true,
+})
+
 const columnDefs = ref([
       {
         headerName: "ID",
@@ -132,6 +134,10 @@ const columnDefs = ref([
         headerName: "SEVERITY",
         field: "severity",
         headerTooltip: "Severity",
+        floatingFilterComponentFramework: SeverityFloatingFilter,
+        floatingFilterComponentParams: {
+            suppressFilterButton: true,
+          },
       },
       {
         headerName: "Node",
@@ -152,7 +158,6 @@ const columnDefs = ref([
         headerName: "COUNT",
         field: "count",
         headerTooltip: "Count",
-        filter: "agNumberColumnFilter",
         comparator: (valueA: number, valueB: number) => {
           return valueA - valueB;
         },
