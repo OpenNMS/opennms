@@ -1,0 +1,32 @@
+[
+    {
+        "name": "VMWare",
+        "id": "111",
+        "value": "vmware"
+    },
+    {
+        "name": "File",
+        "id": "112",
+        "value": "file"
+    },
+    {
+        "name": "DNS",
+        "id": "113",
+        "value": "dns"
+    },
+    {
+        "name": "HTTP",
+        "id": "114",
+        "value": "http"
+    },
+    {
+        "name": "HTTPS",
+        "id": "115",
+        "value": "https"
+    },
+    {
+        "name": "Requisition",
+        "id": "116",
+        "value": "requisition"
+    }
+]
