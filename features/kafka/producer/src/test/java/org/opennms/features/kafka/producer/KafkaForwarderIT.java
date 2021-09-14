@@ -235,7 +235,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao, 5);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -342,9 +342,11 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         assertThat(nodes.get(0), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
         assertThat(nodes.get(0).getHwInventory().getChildrenList().size(), equalTo(2));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
-        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
+        List<OpennmsModelProtos.HwEntity> hwEntityList = nodes.get(0).getHwInventory().getChildrenList();
+        OpennmsModelProtos.HwEntity hwEntity = hwEntityList.stream().filter(entity -> entity.getChildrenCount() > 0).findFirst().get();
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
+        assertThat(hwEntity.getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
 
         // Now delete the alarm directly in the database
         alarmDao.delete(alarm);
@@ -612,9 +614,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     }
 
-    private OnmsHwEntity getHwEntityChassis(OnmsNode node) {
+    static OnmsHwEntity getHwEntityChassis(OnmsNode node) {
         final OnmsHwEntity chassis = new OnmsHwEntity();
         chassis.setNode(node);
+        chassis.setEntPhysicalIndex(40);
         chassis.setEntPhysicalClass("chassis");
         chassis.setEntPhysicalDescr("ME-3400EG-2CS-A");
         chassis.setEntPhysicalFirmwareRev("12.2(60)EZ1");
@@ -627,9 +630,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         chassis.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.3.760");
         return chassis;
     }
-    private OnmsHwEntity getHwEntityPowerSupply(OnmsNode node) {
+    static OnmsHwEntity getHwEntityPowerSupply(OnmsNode node) {
         final OnmsHwEntity powerSupply = new OnmsHwEntity();
         powerSupply.setNode(node);
+        powerSupply.setEntPhysicalIndex(39);
         powerSupply.setEntPhysicalClass("powerSupply");
         powerSupply.setEntPhysicalDescr("ME-3400EG-2CS-A - Fan 0");
         powerSupply.setEntPhysicalIsFRU(false);
@@ -637,9 +641,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         powerSupply.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.7.81");
         return powerSupply;
     }
-    private OnmsHwEntity getHwEntityModule(OnmsNode node) {
+    static OnmsHwEntity getHwEntityModule(OnmsNode node) {
         final OnmsHwEntity module = new OnmsHwEntity();
         module.setNode(node);
+        module.setEntPhysicalIndex(37);
         module.setEntPhysicalClass("module");
         module.setEntPhysicalDescr("ME-3400EG-2CS-A - Power Supply 0");
         module.setEntPhysicalIsFRU(false);
@@ -648,9 +653,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         module.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.6.223");
         return module;
     }
-    private OnmsHwEntity getHwEntityContainer(OnmsNode node) {
+    static OnmsHwEntity getHwEntityContainer(OnmsNode node) {
         OnmsHwEntity container = new OnmsHwEntity();
         container.setNode(node);
+        container.setEntPhysicalIndex(36);
         container.setEntPhysicalClass("container");
         container.setEntPhysicalDescr("GigabitEthernet Container");
         container.setEntPhysicalIsFRU(false);
@@ -658,9 +664,10 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         container.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.5.115");
         return container;
     }
-    private OnmsHwEntity getHwEntityPort(OnmsNode node) {
+    static OnmsHwEntity getHwEntityPort(OnmsNode node) {
         final OnmsHwEntity port = new OnmsHwEntity();
         port.setNode(node);
+        port.setEntPhysicalIndex(35);
         port.setEntPhysicalAlias("10104");
         port.setEntPhysicalClass("port");
         port.setEntPhysicalDescr("1000BaseBX10-U SFP");
@@ -670,7 +677,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         port.setEntPhysicalName("GigabitEthernet0/4");
         port.setEntPhysicalSerialNum("L03C2AC0179");
         port.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.10.253");
-        port.setEntAliases(new TreeSet<>(Arrays.asList(new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104"))));
+        OnmsHwEntityAlias onmsHwEntityAlias = new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104");
+        onmsHwEntityAlias.setHwEntity(port);
+        port.setEntAliases(new TreeSet<>(Arrays.asList(onmsHwEntityAlias)));
         return port;
     }
     
