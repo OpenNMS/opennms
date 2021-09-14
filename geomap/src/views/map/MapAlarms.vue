@@ -38,7 +38,6 @@ import { useStore } from "vuex";
 import { computed, watch } from 'vue'
 import { Alarm, Node } from "@/types";
 import SeverityFloatingFilter from "./SeverityFloatingFilter.vue"
-import NumberFloatingFilterComponent from "./NumberFloatingFilterComponent.vue"
 
 const store = useStore();
 
@@ -129,9 +128,24 @@ const columnDefs = ref([
     floatingFilterComponentParams: {
       suppressFilterButton: true,
     },
-    comparator: (valueA: string, valueB: string) => {
-      return valueA - valueB;
-    },
+    filterParams: {
+      textCustomComparator: (filter, value, filterText) => {
+        const filterTextUpperCase = filterText.toUpperCase();
+        const valueUpperCase = value.toString().toUpperCase();
+        enum ALARM_SEVERITY {
+          'INDETERMINATE',
+          'CLEARED',
+          'NORMAL',
+          'WARNING',
+          'MINOR',
+          'MAJOR',
+          'CRITICAL'
+        }
+        if (filter === 'contains') {
+          return ALARM_SEVERITY[valueUpperCase] >= ALARM_SEVERITY[filterTextUpperCase]
+        }
+      }
+    }
   },
   {
     headerName: "Node",
