@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.syslogd;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import java.util.Objects;
 
-import java.net.UnknownHostException;
+public class HostNameWithLocationKey {
 
-import org.junit.Test;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.config.wsman.credentials.Definition;
-import org.opennms.netmgt.config.wsman.SystemDefinition;
-import org.opennms.netmgt.model.OnmsNode;
+    private final String hostName;
 
-public class WSManDataCollectionConfigDaoJaxbTest {
+    private final String location;
 
-    @Test
-    public void canEvaluteSystemDefinitionRules() throws UnknownHostException {
-        OnmsNode node = mock(OnmsNode.class);
-        CollectionAgent agent = mock(CollectionAgent.class);
-        Definition config = new Definition();
-        config.setProductVendor("Dell Inc.");
-        config.setProductVersion(" iDRAC 6");
+    public HostNameWithLocationKey(String hostName, String location) {
+        this.hostName = hostName;
+        this.location = location;
+    }
 
-        SystemDefinition sysDef = new SystemDefinition();
-        sysDef.addRule("#productVendor matches 'Dell.*' and #productVersion matches '.*DRAC.*'");
-        
-        assertTrue("agent should be matched", WSManDataCollectionConfigDaoJaxb.isAgentSupportedBySystemDefinition(sysDef, agent, config, node));
+    public String getHostName() {
+        return hostName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HostNameWithLocationKey that = (HostNameWithLocationKey) o;
+        return Objects.equals(hostName, that.hostName) && Objects.equals(location, that.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hostName, location);
     }
 }
