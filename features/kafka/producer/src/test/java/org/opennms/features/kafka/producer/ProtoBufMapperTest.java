@@ -68,7 +68,7 @@ import org.opennms.topologies.service.api.EdgeMockUtil;
 public class ProtoBufMapperTest {
 
     private final ProtobufMapper protobufMapper = new ProtobufMapper(mock(EventConfDao.class), mock(HwEntityDao.class),
-            mock(SessionUtils.class), mock(NodeDao.class), 1);
+            mock(SessionUtils.class), mock(NodeDao.class),  1);
 
     /**
      * Tests that the mapper can handle related alarms.
