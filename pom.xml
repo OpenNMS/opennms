@@ -1400,7 +1400,8 @@
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jackson2Version>2.10.5</jackson2Version>
+    <jackson2Version>2.12.4</jackson2Version>
+    <snakeyamlVersion>1.29</snakeyamlVersion>
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
@@ -1472,6 +1473,9 @@
     <sonarVersion>3.7.0.1746</sonarVersion>
     <spockVersion>1.1-groovy-2.4</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
+    <swaggerVersion>2.1.5</swaggerVersion>
+    <swaggerParserVersion>2.0.24</swaggerParserVersion>
+    <swaggerRequestValidatorVersion>2.15.1</swaggerRequestValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
@@ -1510,6 +1514,9 @@
     <nodeVersion>v12.19.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
     <yarnVersion>v1.22.10</yarnVersion>
+
+    <!-- configuration manager -->
+    <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
@@ -3766,6 +3773,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${jackson2Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.12</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
