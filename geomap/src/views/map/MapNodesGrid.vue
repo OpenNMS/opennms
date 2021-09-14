@@ -3,7 +3,6 @@
     <div class="button-group">
       <span class="buttons">
         <button v-on:click="clearFilters()">Clear Filters</button>
-        <!-- <button v-on:click="showTopology()">Show Topology</button> -->
         <button v-on:click="confirmFilters()">Apply filter</button>
         <button v-on:click="reset()">Reset</button>
       </span>

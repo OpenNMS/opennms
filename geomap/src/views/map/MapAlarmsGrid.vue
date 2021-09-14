@@ -144,6 +144,7 @@ const columnDefs = ref([
         if (filter === 'contains') {
           return ALARM_SEVERITY[valueUpperCase] >= ALARM_SEVERITY[filterTextUpperCase]
         }
+        return true;
       }
     }
   },
