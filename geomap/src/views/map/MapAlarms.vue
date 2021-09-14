@@ -67,29 +67,20 @@ watch(
 )
 
 function getAlarmsFromSelectedNodes() {
-      let alarms = store.getters['mapModule/getAlarmsFromSelectedNodes'];
-      return alarms.map((alarm: Alarm) => ({
-        id: +alarm.id,
-        severity: alarm.severity,
-        node: alarm.nodeLabel,
-        uei: alarm.uei,
-        count: +alarm.count,
-        lastEventTime: alarm.lastEvent.time,
-        logMessage: alarm.logMessage,
-      }));
+  let alarms = store.getters['mapModule/getAlarmsFromSelectedNodes'];
+  return alarms.map((alarm: Alarm) => ({
+    id: +alarm.id,
+    severity: alarm.severity,
+    node: alarm.nodeLabel,
+    uei: alarm.uei,
+    count: +alarm.count,
+    lastEventTime: alarm.lastEvent.time,
+    logMessage: alarm.logMessage,
+  }));
 }
 
 function clearFilters() {
-  //TODO: make this smarter
-  gridApi.getFilterInstance("id").setModel(null);
-  gridApi.getFilterInstance("severity").setModel(null);
-  gridApi.getFilterInstance("node").setModel(null);
-  gridApi.getFilterInstance("lable").setModel(null);
-  gridApi.getFilterInstance("uei").setModel(null);
-  gridApi.getFilterInstance("count").setModel(null);
-  gridApi.getFilterInstance("lastEventTime").setModel(null);
-  gridApi.getFilterInstance("logMessage").setModel(null);
-  gridApi.onFilterChanged();
+  gridApi.setFilterModel(null);
 }
 
 function confirmFilters() {
@@ -100,8 +91,8 @@ function confirmFilters() {
   let distictNodesLable = [...new Set(nodesLable)];
   let ids = [];
   ids = store.getters['mapModule/getInterestedNodes']
-    .filter((node:Node) => distictNodesLable.includes(node.label))
-    .map((node:Node) => node.id);
+    .filter((node: Node) => distictNodesLable.includes(node.label))
+    .map((node: Node) => node.id);
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
@@ -118,65 +109,68 @@ const defaultColDef = ref({
 })
 
 const columnDefs = ref([
-      {
-        headerName: "ID",
-        field: "id",
-        headerTooltip: "ID",
-        headerCheckboxSelection: true,
-        checkboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        filter: "agNumberColumnFilter",
-        comparator: (valueA: number, valueB: number) => {
-          return valueA - valueB;
-        },
-      },
-      {
-        headerName: "SEVERITY",
-        field: "severity",
-        headerTooltip: "Severity",
-        floatingFilterComponentFramework: SeverityFloatingFilter,
-        floatingFilterComponentParams: {
-            suppressFilterButton: true,
-          },
-      },
-      {
-        headerName: "Node",
-        field: "node",
-        headerTooltip: "Node",
-      },
-      {
-        headerName: "UEI",
-        field: "lable",
-        headerTooltip: "Lable",
-      },
-      {
-        headerName: "LABLE SOURCE",
-        field: "uei",
-        headerTooltip: "UEI",
-      },
-      {
-        headerName: "COUNT",
-        field: "count",
-        headerTooltip: "Count",
-        comparator: (valueA: number, valueB: number) => {
-          return valueA - valueB;
-        },
-      },
-      {
-        headerName: "LAST EVENT TIME",
-        field: "lastEventTime",
-        headerTooltip: "Last Event Time",
-        filter: "agDateColumnFilter",
-        cellRenderer: (data: any) => {
-          return data.value ? new Date(data.value).toLocaleDateString() : "";
-        },
-      },
-      {
-        headerName: "LOG MESSAGE",
-        field: "logMessage",
-        headerTooltip: "Log Message",
-      },
-    ]
+  {
+    headerName: "ID",
+    field: "id",
+    headerTooltip: "ID",
+    headerCheckboxSelection: true,
+    checkboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    filter: "agNumberColumnFilter",
+    comparator: (valueA: number, valueB: number) => {
+      return valueA - valueB;
+    },
+  },
+  {
+    headerName: "SEVERITY",
+    field: "severity",
+    headerTooltip: "Severity",
+    floatingFilterComponentFramework: SeverityFloatingFilter,
+    floatingFilterComponentParams: {
+      suppressFilterButton: true,
+    },
+    comparator: (valueA: string, valueB: string) => {
+      return valueA - valueB;
+    },
+  },
+  {
+    headerName: "Node",
+    field: "node",
+    headerTooltip: "Node",
+  },
+  {
+    headerName: "UEI",
+    field: "lable",
+    headerTooltip: "Lable",
+  },
+  {
+    headerName: "LABLE SOURCE",
+    field: "uei",
+    headerTooltip: "UEI",
+  },
+  {
+    headerName: "COUNT",
+    field: "count",
+    headerTooltip: "Count",
+    comparator: (valueA: number, valueB: number) => {
+      return valueA - valueB;
+    },
+  },
+  {
+    headerName: "LAST EVENT TIME",
+    field: "lastEventTime",
+    headerTooltip: "Last Event Time",
+    filter: "agDateColumnFilter",
+    cellRenderer: (data: any) => {
+      return data.value ? new Date(data.value).toLocaleDateString() : "";
+    },
+  },
+  {
+    headerName: "LOG MESSAGE",
+    field: "logMessage",
+    headerTooltip: "Log Message",
+  },
+]
 )
 </script>
 

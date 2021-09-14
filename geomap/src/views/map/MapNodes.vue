@@ -83,14 +83,7 @@ watch(
 )
 
 function clearFilters() {
-  //TODO: make this smarter
-  gridApi.getFilterInstance("id").setModel(null);
-  gridApi.getFilterInstance("foreignSource").setModel(null);
-  gridApi.getFilterInstance("lable").setModel(null);
-  gridApi.getFilterInstance("lableSource").setModel(null);
-  gridApi.getFilterInstance("foreignId").setModel(null);
-  gridApi.getFilterInstance("lastCapabilitiesScan").setModel(null);
-  gridApi.onFilterChanged();
+  gridApi.setFilterModel(null);
 }
 
 function confirmFilters() {
