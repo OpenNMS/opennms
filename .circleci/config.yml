@@ -70,7 +70,7 @@ aliases:
            MINION_IMAGE_VERSION="bleeding"
           ;;
         *)
-          MINION_IMAGE_VERSION=b<< pipeline.number >>
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
