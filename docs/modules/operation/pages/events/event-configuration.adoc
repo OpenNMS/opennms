@@ -75,6 +75,12 @@ You can include various tokens in the description, log message, operator instruc
 These tokens will be replaced by values from the current event when the text for the event is constructed.
 Not all events will have values for all tokens, and some refer specifically to information available only in events derived from SNMP traps.
 
+Note that parameter descriptions use the percentage sign (%) as a replacement variable.
+If a literal % sign appears in your description, you must escape it with a %.
+For example:
+
+`'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
+
 `%eventid%`::
     The event's numeric database ID.
 `%uei%`::

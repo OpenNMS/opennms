@@ -1,29 +1,41 @@
 
 [[send-event]]
+= send-event.pl utility
 
-= send-event.pl script
-
-Use the send-event.pl script to send an event to OpenNMS.
+The send-event.pl utility lets you create and send an event to {page-component-title} without using the OpenNMS component.
 It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
+You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts.
 
-#why do you use it?#
+For example:
 
-#include some use cases - example, what it does#
+* create a new suspect event every time you add a new resource
+* clear out alarms
+* open a ticket in your integrated ticketing system
+* order new ink cartridges when your printer is out of toner
 
 Format: `bin/send-event.pl <uei> [host:port] [options]`
 
-uei: required : universal event identifier
-host:port - hostname to send the event to (default: local host)
+The `host:port` defines the hostname and port to send the event; by default the local host.
 
-#where do we find the UEIs?#
+Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
+See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
 
-.Optional `send-event.pl` script options
+.`send-event.pl` parameters
 [options="header, autowidth"]
-[cols="2,3"]
+[cols="3,3"]
 |===
 
 | Name/Alias
 | Description
+
+2+|*Required*
+
+| uei
+| The universal event identifier (UEI) indicates the type of event.
+View UEIs in the eventd-configuration.xml file.
+You can also define your own UEIs.
+
+2+|*Optional*
 
 | -d (--description)
 | A description for the event browser.
@@ -32,22 +44,21 @@ host:port - hostname to send the event to (default: local host)
 | ifIndex of the associated service.
 
 | -h (--help)
-| Help message.
+| Help message for the script.
+(The content from this table.)
 
 | -i (--interface)
 | IP address of associated interface.
 
 | -l (--logmsg)
-| A short log message for the event browser #(secure field by default).#
+| A short log message for the event browser (secure field by default).
 
 | -n (--nodeid)
-| Database ID of associated node (or use parameters foreignSource, foreignId).
+| Database ID of associated node (or use foreignSource, foreignId parameters).
 
 | -p (-parameter)
 | Parameter in key=value form.
-For example, `-p 'url http://www.google.com/'`
-Note that if a URL contains a percentage sign (%) you must escape it with another percentage sign.
-#where do parameters come from?#
+For example, `-p 'url http://www.opennms.com/'`
 
 | -s (--service)
 | Name of the associated service
@@ -73,13 +84,12 @@ Note that if a URL contains a percentage sign (%) you must escape it with anothe
 
 |===
 
-percentage sign is used for parameter replacement in the event's description.
+Note that parameter descriptions use the percentage sign (%) as a replacement variable.
+If a literal % sign appears in your description, you must escape it with a %.
+For example:
+
+`'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
 == Example
 
 `$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`
-
-
-
-
-

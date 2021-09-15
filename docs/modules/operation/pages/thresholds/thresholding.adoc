@@ -110,13 +110,13 @@ Since our default polling period is 5 minutes, a value of 3 means {page-componen
  | leave blank
 
 | Triggered UEI
-| A custom uniform event identifier (UEI) sent into the events system when the threshold is triggered.
+| A custom universal event identifier (UEI) sent into the events system when the threshold is triggered.
 A custom UEI for each threshold makes it easier to <<threshold-notification, create notifications>>.
 If left blank, it defaults to the standard thresholds UEIs.
 | leave blank
 
 | Re-armed UEI
-| A custom uniform event identifier (UEI) sent into the events system when the threshold is re-armed.
+| A custom universal event identifier (UEI) sent into the events system when the threshold is re-armed.
  | leave blank
 
 |===
