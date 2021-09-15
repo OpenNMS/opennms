@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,16 +46,22 @@ public class UpgradeConfigService implements InitializingBean {
 
     private final ConfigurationManagerService cm;
     private final DataSource dataSource;
+    private final boolean skipConfigUpgrades;
 
     @Inject
     public UpgradeConfigService(final ConfigurationManagerService cm,
-                                final DataSource dataSource) {
+                                final DataSource dataSource,
+                                @Value( "${skipConfigUpgrades:false}" )
+                                final boolean skipConfigUpgrades) {
         this.cm = cm;
         this.dataSource = dataSource;
+        this.skipConfigUpgrades = skipConfigUpgrades;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+        if (!skipConfigUpgrades) { // TODO: Patrick discuss with Jesse: ok?
+            new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+        }
     }
 }

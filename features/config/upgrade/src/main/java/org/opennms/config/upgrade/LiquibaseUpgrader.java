@@ -38,6 +38,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.executor.ExecutorService;
+import liquibase.ext2.cm.change.ImportConfiguration;
 import liquibase.ext2.cm.change.RegisterSchema;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.executor.CmExecutor;
@@ -66,6 +67,7 @@ public class LiquibaseUpgrader {
 
         // Register our extensions.
         ChangeFactory.getInstance().register(RegisterSchema.class);
+        ChangeFactory.getInstance().register(ImportConfiguration.class);
         // Liqui 4.4.3: Scope.getCurrentScope().getSingleton(liquibase.change.ChangeFactory.class).register(new RegisterSchema());
         ExecutorService.getInstance().clearExecutor(db);
         CmExecutor executor = new CmExecutor();
