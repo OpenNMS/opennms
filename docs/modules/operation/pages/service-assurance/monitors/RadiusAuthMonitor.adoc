@@ -34,10 +34,10 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.protocols.radius.monitor.RadiusAuthMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.protocols.radius.monitor.RadiusAuthMonitor`
 |===
 
 == Configuration and use
@@ -46,27 +46,56 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter        | Description                                                               | Default 
-| timeout        | Time in milliseconds to wait for the RADIUS service.                                            | 5000
-| retry          | Placeholder for the second optional monitor parameter description.                      | 0
-| authport       | RADIUS authentication port.                                                                     |1812
-| acctport      | RADIUS accounting port.                                                                         | 1813
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time in milliseconds to wait for the RADIUS service.
+| 5000
+
+| retry
+| Placeholder for the second optional monitor parameter description.
+| 0
+
+| authport
+| RADIUS authentication port.
+| 1812
+
+| acctport
+| RADIUS accounting port.
+| 1813
+
 | user kbd:[{}]
-           | Username to test the authentication.                                                               | OpenNMS
+| Username to test the authentication.
+| OpenNMS
+
 | password kbd:[{}]
-       | Password to test the authentication.                                                               | OpenNMS
+| Password to test the authentication.
+| OpenNMS
+
 | secret kbd:[{}]
-         | The RADIUS shared secret used for communication between the client/NAS
-                     and the RADIUS server.                                                                          | secret
-| authtype       | RADIUS authentication type. The following authentication types are supported:
-                     chap, pap, mschapv1, mschapv2, eapmd5, eapmschapv2, eapttls.                         | pap
+| The RADIUS shared secret used for communication between the client/NAS and the RADIUS server.
+| secret
+
+| authtype
+| RADIUS authentication type.
+The following authentication types are supported:
+chap, pap, mschapv1, mschapv2, eapmd5, eapmschapv2, eapttls.
+| pap
+
 | nasid kbd:[{}]
-         | The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier]
-                     originating the Access-Request.                                                                 | opennms
-| inner-protocol | When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
-                     Only pap is currently supported.                                                                | pap
+| The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier] originating the Access-Request.
+| opennms
+
+| inner-protocol
+| When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
+Only pap is currently supported.
+| pap
+
 | inner-user kbd:[{}]
-    | Username for the tunnelled pap authentication when using EAP-TTLS.                              | Inner-OpenNMS
+| Username for the tunnelled pap authentication when using EAP-TTLS.
+| Inner-OpenNMS
 |===
 kbd:[{}] _indicates the parameter supports <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
 

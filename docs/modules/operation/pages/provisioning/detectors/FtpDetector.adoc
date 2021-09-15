@@ -10,13 +10,19 @@ It finds the FTP server on multiple ports and can also use login credentials for
 | Implementation | `org.opennms.netmgt.provision.detector.simple.FtpDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the FTP Service Detector
-[options="header, %autowidth"]
+.Optional parameters for the FTP service detector
+[options="header, autowidth"]
+[cols="1,3,1"]
 |===
-| Parameter            | Description   | Required | Default value
-| `port`               | Port to query | optional | `21`
+| Parameter
+| Description
+| Default
+
+| port
+| Port to query.
+| 21
 |===
 
 == Example Configuration
