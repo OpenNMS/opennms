@@ -52,8 +52,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
-import net.jqwik.api.Tuple;
-
+/**
+ * Use the Java Microbenchmarking Harness (JMH) to measure classification performance.
+ * <p>
+ * Rule sets are loaded from csv files and classification is done with randomly generated flows based on the
+ * protocols, ports, and addresses found in the loaded rule sets.
+ */
 public class ClassificationEngineBenchmark {
 
     // the number of classification request that are processed in a single benchmark method call
@@ -61,31 +65,12 @@ public class ClassificationEngineBenchmark {
     //    the number of classifications per second
     private static final int BATCH_SIZE = 1000;
 
-    // number of batches of different classification requests
-    // -> the @Param annotation of the BState.index member must be set correspondingly
-    //    (e.g. if BATCHES = 3 then @Param({"0", "1", "2"})
-    private static final int BATCHES = 3;
-
     // the benchmark is run for different rule sets
     private static final String EXAMPLE_RULES_RESOURCE = "/example-rules.csv";
     private static final String PRE_DEFINED_RULES_RESOURCE = "/pre-defined-rules.csv";
 
     public static void main(String[] args) throws Exception {
         org.openjdk.jmh.Main.main(args);
-    }
-
-    private static class Init {
-
-        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> exampleRulesData = load(EXAMPLE_RULES_RESOURCE);
-        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> preDefineRulesData = load(PRE_DEFINED_RULES_RESOURCE);
-
-        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> load(String rulesResource) {
-            var rules = getRules(rulesResource);
-            var classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
-            var requests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).limit(BATCHES * BATCH_SIZE).collect(Collectors.toList());
-            return Tuple.of(classificationEngine, requests);
-        }
-
     }
 
     public static List<Rule> getRules(String resource) {
@@ -102,35 +87,28 @@ public class ClassificationEngineBenchmark {
     @State(Scope.Benchmark)
     public static class BState {
 
-        /**
-         * Corresponds to {@link #BATCHES}
-         */
-        @Param({"0", "1", "2"})
+        @Param({"0", "1"})
         public int index;
 
         @Param({EXAMPLE_RULES_RESOURCE, PRE_DEFINED_RULES_RESOURCE})
         public String ruleSet;
 
+        private ClassificationEngine classificationEngine;
+        private List<ClassificationRequest> classificationRequests;
+
         @Setup
         public void setup() {
-            // trigger initialization
-            Init.exampleRulesData.size();
+            var rules = getRules(ruleSet);
+            classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
+            classificationRequests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).skip(index * BATCH_SIZE).limit(BATCH_SIZE).collect(Collectors.toList());
         }
 
         public List<ClassificationRequest> requests() {
-            switch (ruleSet) {
-                case EXAMPLE_RULES_RESOURCE: return Init.exampleRulesData.get2().subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
-                case PRE_DEFINED_RULES_RESOURCE: return Init.preDefineRulesData.get2().subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
-                default: throw new RuntimeException("unexpected rule set: " + ruleSet);
-            }
+            return classificationRequests;
         }
 
         public ClassificationEngine classificationEngine() {
-            switch (ruleSet) {
-                case EXAMPLE_RULES_RESOURCE: return Init.exampleRulesData.get1();
-                case PRE_DEFINED_RULES_RESOURCE: return Init.preDefineRulesData.get1();
-                default: throw new RuntimeException("unexpected rule set: " + ruleSet);
-            }
+            return classificationEngine;
         }
 
     }
