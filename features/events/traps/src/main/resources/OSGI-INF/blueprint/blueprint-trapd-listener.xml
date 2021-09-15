@@ -22,6 +22,7 @@
 
 	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+	<reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
 	<!-- Camel Event for unmarshalling processor -->
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
@@ -53,5 +54,6 @@
 		<argument ref="trapdConfig"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>
+		<property name="twinSubscriber" ref="twinSubscriber"/>
 	</bean>
 </blueprint>
