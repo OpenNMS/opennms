@@ -45,8 +45,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -93,6 +95,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+    private final ThreadFactory nodeUpdateThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("kafka-producer-node-update-%d")
+            .build();
 
     private final ProtobufMapper protobufMapper;
     private final NodeCache nodeCache;
@@ -134,18 +139,20 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private BlockingDeque<KafkaRecord> kafkaSendDeque;
     private final ExecutorService kafkaSendQueueExecutor =
             Executors.newSingleThreadExecutor(runnable -> new Thread(runnable, "KafkaSendQueueProcessor"));
+    private final ExecutorService nodeUpdateExecutor;
 
     private String encoding = "UTF8";
     private int numEventListenerThreads = 4;
 
     public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
-                                OnmsTopologyDao topologyDao) {
+                                OnmsTopologyDao topologyDao, int nodeAsyncUpdateThreads) {
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.topologyDao = Objects.requireNonNull(topologyDao);
+        this.nodeUpdateExecutor = Executors.newFixedThreadPool(nodeAsyncUpdateThreads, nodeUpdateThreadFactory);
     }
 
     public void init() throws IOException {
@@ -182,6 +189,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     public void destroy() {
         kafkaSendQueueExecutor.shutdownNow();
+        nodeUpdateExecutor.shutdownNow();
 
         if (producer != null) {
             producer.close();
@@ -248,7 +256,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Node handling
         if (forwardNodes && event.getNodeid() != null && event.getNodeid() != 0) {
-            maybeUpdateNode(event.getNodeid());
+            updateNodeAsynchronously(event.getNodeid());
         }
 
         // Forward!
@@ -325,7 +333,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Node handling
         if (forwardNodes && alarm.getNodeId() != null) {
-            maybeUpdateNode(alarm.getNodeId());
+            updateNodeAsynchronously(alarm.getNodeId());
         }
 
         // Forward!
@@ -340,6 +348,13 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             // We've got an ACK from the server that the alarm was forwarded
             // Let other threads know when we've successfully forwarded an alarm
             forwardedAlarm.countDown();
+        });
+    }
+
+    private void updateNodeAsynchronously(long nodeId) {
+        // Updating node asynchronously will unblock event consumption.
+        nodeUpdateExecutor.execute(() -> {
+            maybeUpdateNode(nodeId);
         });
     }
 
@@ -685,7 +700,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         public void visit(OnmsTopologyVertex vertex) {
             // Node handling
             if (forwardNodes && vertex.getNodeid() != null) {
-                maybeUpdateNode(vertex.getNodeid());
+                updateNodeAsynchronously(vertex.getNodeid());
             }
         }
 
