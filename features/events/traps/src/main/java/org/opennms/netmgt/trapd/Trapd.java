@@ -44,8 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Throwables;
-
 /**
  * <p>
  * The Trapd listens for SNMP traps on the standard port(162). Creates a
@@ -125,7 +123,7 @@ public class Trapd extends AbstractServiceDaemon {
             m_twinSession.publish(TrapListenerConfig.from(m_config));
         } catch (IOException e) {
             LOG.error("Failed to register twin for trap listener config", e);
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
