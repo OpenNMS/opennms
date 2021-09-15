@@ -270,6 +270,7 @@ public class ConvertToEvent {
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("Exception while resolving hostname {} at location {}", hostName, location);
+                Thread.currentThread().interrupt();
             }
         }
         InetAddress hostInetAddress = null;

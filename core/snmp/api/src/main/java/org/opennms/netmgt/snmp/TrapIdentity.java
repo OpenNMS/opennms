@@ -137,7 +137,7 @@ public class TrapIdentity {
                 // the last two subids
                 setEnterpriseId(snmpTrapOidValue.substring(0, nextToLastIndex));
                 // Parse full trap oid with sub-id
-                setTrapOID(snmpTrapOidValue.substring(0, snmpTrapOidValue.length()));
+                setTrapOID(snmpTrapOidValue);
             } else {
                 setEnterpriseId(snmpTrapOidValue.substring(0, lastIndex));
             }

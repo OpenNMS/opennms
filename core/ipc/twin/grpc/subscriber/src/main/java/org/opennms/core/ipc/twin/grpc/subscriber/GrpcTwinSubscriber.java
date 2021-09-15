@@ -139,6 +139,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
             }
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error while attempting to send Twin Request with key {}", twinRequestProto.getConsumerKey(), e);
+            Thread.currentThread().interrupt();
         }
         retrySendRpcRequest(twinRequestProto);
     }
