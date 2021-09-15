@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     }
 
     @Override
-    public Response getOpenApiSchema(String configName, String acceptType) {
+    public Response getOpenApiSchema(String configName, String acceptType, HttpServletRequest request) {
         try {
             Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(configName);
             if (schema.isEmpty()) {
@@ -86,7 +87,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             String outStr = configSwaggerConverter.convertToString(schema.get().getConverter().getValidationSchema().getConfigItem(),
-                    BASE_PATH + schema.get().getName(), acceptType);
+                    request.getContextPath() + BASE_PATH + schema.get().getName(), acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
             LOG.error(e.getMessage());
