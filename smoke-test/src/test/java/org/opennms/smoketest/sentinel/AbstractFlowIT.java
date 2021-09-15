@@ -45,7 +45,6 @@ import org.opennms.netmgt.flows.rest.classification.RuleDTO;
 import org.opennms.netmgt.flows.rest.classification.RuleDTOBuilder;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.opennms.smoketest.junit.SentinelTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -68,7 +67,8 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.DeleteIndex;
 
-@Category(SentinelTests.class)
+@Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@Category(org.opennms.smoketest.junit.SentinelTests.class)
 public abstract class AbstractFlowIT {
 
     @Rule
