@@ -22,7 +22,7 @@ As discussed in the <<events/anatomy-events.adoc#events, Events>>, events are ce
 Almost everything that happens in the system is the result of, or the cause of, one or more events; Every notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 
-Every event has a UEI (Universal Event Identifier), a string uniquely identifying the event's type.
+Every event has a UEI (Unique Event Identifier), a string uniquely identifying the event's type.
 UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
 Most notifications are triggered by an exact UEI match (though they may also be triggered with partial UEI matches using regular expression syntax).
 

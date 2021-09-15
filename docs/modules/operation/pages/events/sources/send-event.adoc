@@ -31,7 +31,7 @@ See also xref:events/event-configuration.adoc#ga-events-event-configuration[Even
 2+|*Required*
 
 | uei
-| The universal event identifier (UEI) indicates the type of event.
+| The unique event identifier (UEI) indicates the type of event.
 View UEIs in the eventd-configuration.xml file.
 You can also define your own UEIs.
 
