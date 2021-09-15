@@ -135,6 +135,6 @@ public class IpValue implements RuleValue<IPAddress, IpValue> {
                 l.add(r);
             }
         }
-        return ranges.size() == l.size() ? this : new IpValue(l);
+        return l.isEmpty() ? null : ranges.size() == l.size() ? this : new IpValue(l);
     }
 }

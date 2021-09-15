@@ -52,6 +52,8 @@ import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
+import net.jqwik.api.Tuple;
+
 public class ClassificationEngineBenchmark {
 
     // the number of classification request that are processed in a single benchmark method call
@@ -61,9 +63,12 @@ public class ClassificationEngineBenchmark {
 
     // number of batches of different classification requests
     // -> the @Param annotation of the BState.index member must be set correspondingly
+    //    (e.g. if BATCHES = 3 then @Param({"0", "1", "2"})
     private static final int BATCHES = 3;
 
-    private static final String RULES_RESOURCE = "/example-rules.csv";
+    // the benchmark is run for different rule sets
+    private static final String EXAMPLE_RULES_RESOURCE = "/example-rules.csv";
+    private static final String PRE_DEFINED_RULES_RESOURCE = "/pre-defined-rules.csv";
 
     public static void main(String[] args) throws Exception {
         org.openjdk.jmh.Main.main(args);
@@ -71,15 +76,16 @@ public class ClassificationEngineBenchmark {
 
     private static class Init {
 
-        private static ClassificationEngine classificationEngine, oldCe;
+        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> exampleRulesData = load(EXAMPLE_RULES_RESOURCE);
+        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> preDefineRulesData = load(PRE_DEFINED_RULES_RESOURCE);
 
-        private static List<ClassificationRequest> requests;
-
-        static {
-            final List<Rule> rules = getRules(RULES_RESOURCE);
-            classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
-            requests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).limit(BATCHES * BATCH_SIZE).collect(Collectors.toList());
+        private static Tuple.Tuple2<ClassificationEngine, List<ClassificationRequest>> load(String rulesResource) {
+            var rules = getRules(rulesResource);
+            var classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
+            var requests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).limit(BATCHES * BATCH_SIZE).collect(Collectors.toList());
+            return Tuple.of(classificationEngine, requests);
         }
+
     }
 
     public static List<Rule> getRules(String resource) {
@@ -99,17 +105,32 @@ public class ClassificationEngineBenchmark {
         /**
          * Corresponds to {@link #BATCHES}
          */
-        @Param({"0", "1", "2", "3", "4"})
+        @Param({"0", "1", "2"})
         public int index;
+
+        @Param({EXAMPLE_RULES_RESOURCE, PRE_DEFINED_RULES_RESOURCE})
+        public String ruleSet;
 
         @Setup
         public void setup() {
             // trigger initialization
-            Init.requests.size();
+            Init.exampleRulesData.size();
         }
 
         public List<ClassificationRequest> requests() {
-            return Init.requests.subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
+            switch (ruleSet) {
+                case EXAMPLE_RULES_RESOURCE: return Init.exampleRulesData.get2().subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
+                case PRE_DEFINED_RULES_RESOURCE: return Init.preDefineRulesData.get2().subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
+                default: throw new RuntimeException("unexpected rule set: " + ruleSet);
+            }
+        }
+
+        public ClassificationEngine classificationEngine() {
+            switch (ruleSet) {
+                case EXAMPLE_RULES_RESOURCE: return Init.exampleRulesData.get1();
+                case PRE_DEFINED_RULES_RESOURCE: return Init.preDefineRulesData.get1();
+                default: throw new RuntimeException("unexpected rule set: " + ruleSet);
+            }
         }
 
     }
@@ -118,9 +139,10 @@ public class ClassificationEngineBenchmark {
     @Fork(value = 1)
     @Warmup(iterations = 1)
     @Measurement(iterations = 2)
-    public void byNew(BState state, Blackhole blackhole) {
+    public void classify(BState state, Blackhole blackhole) {
+        var classificationEngine = state.classificationEngine();
         for (var cr: state.requests()) {
-            var app = Init.classificationEngine.classify(cr);
+            var app = classificationEngine.classify(cr);
             blackhole.consume(app);
         }
     }
