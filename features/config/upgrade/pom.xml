@@ -52,6 +52,12 @@
 
         <!-- tests -->
         <dependency>
+            <groupId>org.opennms.features.config.service</groupId>
+            <artifactId>org.opennms.features.config.service.impl</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
