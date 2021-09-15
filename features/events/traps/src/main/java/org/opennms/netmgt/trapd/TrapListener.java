@@ -52,8 +52,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Throwables;
-
 public class TrapListener implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
 
@@ -140,7 +138,7 @@ public class TrapListener implements TrapNotificationListener {
         try {
             m_twinSubscription.close();
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         this.close();
@@ -185,6 +183,14 @@ public class TrapListener implements TrapNotificationListener {
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = Objects.requireNonNull(distPollerDao);
+    }
+
+    public TwinSubscriber getTwinSubscriber() {
+        return this.m_twinSubscriber;
+    }
+
+    public void setTwinSubscriber(final TwinSubscriber twinSubscriber) {
+        this.m_twinSubscriber = Objects.requireNonNull(twinSubscriber);
     }
 
     private void restartWithNewConfig(final TrapdConfigBean newConfig) {
