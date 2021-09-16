@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
 
     private static final int SLEEP_TIME = 2000;
