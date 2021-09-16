@@ -28,7 +28,9 @@
 
 package org.opennms.features.config.rest.api;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -64,7 +66,7 @@ public interface ConfigManagerRestService {
      */
     @GET
     @Path("/schema/{configName}")
-    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType);
+    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
 
     /**
      * get configIds
