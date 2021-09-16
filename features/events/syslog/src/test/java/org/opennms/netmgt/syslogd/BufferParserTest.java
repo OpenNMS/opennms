@@ -40,6 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.time.ZonedDateTimeBuilder;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchChar;
 import org.opennms.netmgt.syslogd.ParserStageSequenceBuilder.MatchMonth;
 import org.opennms.netmgt.xml.event.Event;
@@ -57,6 +59,8 @@ import org.slf4j.LoggerFactory;
 public class BufferParserTest {
 
 	final static Logger LOG = LoggerFactory.getLogger(BufferParserTest.class);
+
+	private LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
 
 	@Test
 	public void testSizeOfEmptyParser() {
@@ -241,7 +245,8 @@ public class BufferParserTest {
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					9999,
 					incoming, 
-					config
+					config,
+						locationAwareDnsLookupClient
 				);
 				Event convertedEvent = convertToEvent.getEvent();
 			}
@@ -261,7 +266,8 @@ public class BufferParserTest {
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					9999,
 					incoming, 
-					config
+					config,
+						locationAwareDnsLookupClient
 				);
 				Event convertedEvent = convertToEvent.getEvent();
 			}
@@ -468,7 +474,7 @@ public class BufferParserTest {
 	 * being taken into account in the {@code equals()} method for
 	 * the parser stages.
 	 * 
-	 * @see https://issues.opennms.org/browse/NMS-9522
+	 * @see http://issues.opennms.org/browse/NMS-9522
 	 */
 	@Test
 	public void testHostnameVersusTimezoneNms9522() {
