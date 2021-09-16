@@ -44,9 +44,9 @@ import com.google.common.collect.Sets;
 
 public class MemoryTwinPublisher implements TwinPublisher {
 
-    private final Map<SessionKey, SessionImpl> sessions = Maps.newConcurrentMap();
+    private final Map<SessionKey, SessionImpl<?>> sessions = Maps.newConcurrentMap();
 
-    private final Set<Subscription> pending = Sets.newConcurrentHashSet();
+    private final Set<Subscription<?>> pending = Sets.newConcurrentHashSet();
 
     public MemoryTwinPublisher() {
     }
@@ -91,7 +91,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
                     throw new IllegalStateException("Session has different class: " + sessionKey);
                 }
 
-                session.subscribe(subscription);
+                session.subscribe((Subscription<T>) subscription);
                 pending.remove();
             }
         }
@@ -103,7 +103,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         final var subscription = new Subscription<T>(key, location, clazz, consumer);
 
         // If the key is already registered, we subscribe to the session and publish the current value.
-        // Otherwise the subscription is stored as pending.
+        // Otherwise, the subscription is stored as pending.
         this.findSession(new SessionKey(key, location), clazz)
             .ifPresentOrElse((session) -> session.subscribe(subscription),
                              () -> this.pending.add(subscription));
@@ -114,10 +114,6 @@ public class MemoryTwinPublisher implements TwinPublisher {
     public static class SessionKey {
         public final String key;
         public final String location;
-
-        public SessionKey(final String key) {
-            this(key, null);
-        }
 
         public SessionKey(final String key, final String location) {
             this.key = Objects.requireNonNull(key);
