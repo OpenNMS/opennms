@@ -1378,6 +1378,8 @@
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
+    <felixFrameworkVersion>6.0.5</felixFrameworkVersion>
+    <felixWebconsoleVersion>4.6.2</felixWebconsoleVersion>
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
@@ -1419,7 +1421,7 @@
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
-    <karafVersion>4.3.2</karafVersion>
+    <karafVersion>4.3.3</karafVersion>
     <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
