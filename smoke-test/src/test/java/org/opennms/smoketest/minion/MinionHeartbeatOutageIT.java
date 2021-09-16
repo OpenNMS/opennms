@@ -50,7 +50,6 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
@@ -64,7 +63,8 @@ import org.opennms.smoketest.utils.TestContainerUtils;
  * 
  * @author Seth
  */
-@Category(MinionTests.class)
+@Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@Category(org.opennms.smoketest.junit.MinionTests.class)
 public class MinionHeartbeatOutageIT {
 
     @Rule

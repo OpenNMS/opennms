@@ -57,6 +57,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.collect.Lists;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     private static int DEFAULT_WAIT_TIME = 2000;
