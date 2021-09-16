@@ -49,4 +49,5 @@
 
   <bean id="discoveryFactory" class="org.opennms.netmgt.provision.persist.MockDiscoveryConfigurationFactory" />
 
+  <bean name="configurationManagerService" class="org.opennms.netmgt.provision.service.ConfigurationManagerServiceProvisiondMock"/>
 </beans>

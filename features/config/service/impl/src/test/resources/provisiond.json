@@ -1,0 +1,20 @@
+{
+  "importThreads": 11,
+  "scanThreads": 10,
+  "rescanThreads": 10,
+  "writeThreads": 8,
+  "requistion-dir": "/opt/opennms/etc/imports",
+  "foreign-source-dir": "/opt/opennms/etc/foreign-sources",
+  "requisition-def": [
+    {
+      "import-url-resource": "dns://localhost/localhost",
+      "import-name": "localhost",
+      "cron-schedule": "0 0 0 * * ? *"
+    },
+    {
+      "import-url-resource": "vmware://ip-address-or-hostname/foreignSource-Name?parameters",
+      "import-name": "the-import-name-to-use",
+      "cron-schedule": "0 0 0 * * ? *"
+    }
+  ]
+}

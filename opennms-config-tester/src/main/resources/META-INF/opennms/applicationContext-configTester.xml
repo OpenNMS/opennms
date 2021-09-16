@@ -350,7 +350,6 @@
   <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
 
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>
 
   <bean id="rancidAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

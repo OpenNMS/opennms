@@ -38,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,6 +75,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -122,6 +124,8 @@ public class OpenConfigIT {
 
     private File rrdBaseDir;
 
+    private int port;
+
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
@@ -140,7 +144,8 @@ public class OpenConfigIT {
 
         // Resync after adding nodes/interfaces
         interfaceToNodeCache.dataSourceSync();
-        server = new OpenConfigTestServer();
+        this.port = OpenConfigTestServer.getAvailablePort(new AtomicInteger(50054), 51000);
+        server = new OpenConfigTestServer(this.port);
         server.start();
     }
 
@@ -196,7 +201,8 @@ public class OpenConfigIT {
         if (jti) {
             connectorPackage.getParameters().add(new Parameter("mode", "JTI"));
         }
-        connectorPackage.getParameters().add(new Parameter("port", "50052"));
+        String port = Integer.toString(this.port);
+        connectorPackage.getParameters().add(new Parameter("port", port));
         connectorPackage.getParameters().add(new Parameter("group1","paths", "/interfaces"));
         connectorPackage.getParameters().add(new Parameter("group1", "frequency", "5000"));
         connectorConfig.getPackages().add(connectorPackage);

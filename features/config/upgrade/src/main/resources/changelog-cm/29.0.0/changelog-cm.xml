@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="pschweizer" id="1.0-register-schema-provisiond">
+        <cm:registerSchema id="provisiond" version="1.0.0" entityClass="org.opennms.netmgt.config.provisiond.ProvisiondConfiguration"/>
+        <cm:importConfig schemaId="provisiond" configId="default" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

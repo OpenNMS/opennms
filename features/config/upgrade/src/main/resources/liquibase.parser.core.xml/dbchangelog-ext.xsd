@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            xmlns="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+            elementFormDefault="qualified">
+
+    <xsd:element name="registerSchema">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required"/>
+            <xsd:attribute name="version" type="xsd:string" use="required"/>
+            <xsd:attribute name="entityClass" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="importConfig">
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="configId" type="xsd:string" use="required"/>
+            <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

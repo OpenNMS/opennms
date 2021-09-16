@@ -1776,6 +1776,23 @@
     <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
     </feature>
+    <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
+        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:org.yaml/snakeyaml/${snakeyamlVersion}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
+        <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
+        <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
+        <bundle>wrap:mvn:com.atlassian.oai/swagger-request-validator-core/${swaggerRequestValidatorVersion}</bundle>
+        <bundle>wrap:mvn:io.swagger.core.v3/swagger-models/${swaggerVersion}</bundle>
+        <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
+    </feature>
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
