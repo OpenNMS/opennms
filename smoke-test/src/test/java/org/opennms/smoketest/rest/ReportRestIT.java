@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.OnmsUser;
 import io.restassured.http.ContentType;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ReportRestIT extends AbstractRestIT {
 
     private final static String REPORT_ID = "local_Early-Morning-Report";
