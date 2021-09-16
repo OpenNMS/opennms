@@ -2,7 +2,7 @@
 [[send-event]]
 = send-event.pl utility
 
-The send-event.pl utility lets you create and send an event to {page-component-title} without using the OpenNMS component.
+The send-event.pl utility lets you create and send an event to trigger processes inside of {page-component-title}.
 It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
 You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
 
@@ -21,8 +21,8 @@ Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-co
 See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
 
 .`send-event.pl` parameters
-[options="header, autowidth"]
-[cols="3,3"]
+[options="header"]
+[cols="1,3"]
 |===
 
 | Name/Alias
@@ -84,12 +84,15 @@ For example, `-p 'url http://www.opennms.com/'`
 
 |===
 
-Note that parameter descriptions use the percentage sign (%) as a replacement variable.
+Note that parameter descriptions use the percentage sign (%) as a delimiter to mark a replacement variable.
+(See xref:events/event-configuration.adoc#replacement-tokens[Replacement tokens].)
 If a literal % sign appears in your description, you must escape it with a %.
 For example:
 
 `'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
 == Example
+
+Send an event to reload the configuration of Eventd.
 
 `$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`

@@ -33,7 +33,3 @@
 | no
 | yes
 |===
-
-== send-event.pl utility
-
-Use the send-event.pl utility to
