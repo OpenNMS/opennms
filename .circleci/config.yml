@@ -571,7 +571,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-flaky:
           requires:
-            - horizon-rpm-build
+            - meridian-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
           filters:
