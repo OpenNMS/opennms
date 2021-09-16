@@ -4,7 +4,7 @@
 
 The send-event.pl utility lets you create and send an event to {page-component-title} without using the OpenNMS component.
 It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
-You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts.
+You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
 
 For example:
 
