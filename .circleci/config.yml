@@ -63,6 +63,9 @@ aliases:
         "release-"*)
            MINION_IMAGE_VERSION="release-candidate"
           ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
         "develop")
            MINION_IMAGE_VERSION="bleeding"
           ;;
