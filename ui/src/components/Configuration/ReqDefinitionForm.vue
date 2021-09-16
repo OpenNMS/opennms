@@ -31,13 +31,16 @@
 
                 <div class="p-field">
                     <label for="advOps">Advanced Options</label>
-                    <div class="inline-display" v-for="add in addAnotherArr">
-                        <span
-                            v-if="add.id !== 0"
-                            class="pi pi-times width100 align-R"
-                            style="font-size: 12px;"
-                            @click="closeIcon(add.id)"
-                        ></span>
+                    <div class v-for="add in addAnotherArr">
+                        <p style="direction: rtl;margin: 0 0 1% 0;">
+                            <Button
+                                v-if="add.id !== 0"
+                                icon="pi pi-times"
+                                style="font-size: 12px;"
+                                @click="closeIcon(add.id)"
+                                label
+                            ></Button>
+                        </p>
                         <DropDown
                             :id="add.id"
                             v-model="add.dropdownVal"
@@ -46,21 +49,27 @@
                             optionValue="value"
                             :filter="true"
                         ></DropDown>
-                        <p>
-                            <InputText v-model="add.advTextVal" />
+                        <p style="margin:2% 0 1% 0;">
+                            <InputText
+                                v-model="add.advTextVal"
+                                placeholder="please enter parameter"
+                            />
                         </p>
                     </div>
-                    <label class="width100">
-                        <span @click="addAnother">
-                            <i class="pi pi-plus" style="font-size: 12px;margin: 2px;"></i>
-                            Add Another
-                        </span>
+                    <div class="width100">
+                        <Button
+                            @click="addAnother"
+                            label="Add Another"
+                            icon="pi pi-plus"
+                            style="font-size: 12px;
+                             width: fit-content;"
+                        ></Button>
                         <a class="viewDoc">View Documentation</a>
-                    </label>
+                    </div>
                 </div>
 
-                <div class="p-field p-col-6">
-                    <p class="generatedUrl">URL</p>
+                <div class="p-field">
+                    <p>URL</p>
                 </div>
 
                 <div class="p-field">
@@ -117,7 +126,7 @@ const advancedDropdown: any = ref([]);
 
 const minVal = ref(1);
 const count = ref(0);
-const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": `selectedAdvDropdown${count.value}`, "advTextVal": '' }]);
+const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
 
 onMounted(() => {
     //service call for data
@@ -166,7 +175,7 @@ onMounted(() => {
 
 const addAnother = () => {
     if (addAnotherArr.value.length < 5) {
-        let addObj = { "id": ++count.value, "dropdownVal": `selectedAdvDropdown${++count.value}`, "advTextVal": `please enter parameter` };
+        let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
         addAnotherArr.value.push(addObj);
     } else {
         alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
@@ -179,12 +188,14 @@ const closeIcon = (id: any) => {
 }
 
 const onSave = () => {
-
+    console.log("Add another dropdown values", addAnotherArr.value)
 }
 
 </script>
 
 <style lang="scss" scoped>
+@import "../Common/common.scss";
+
 $title-font: 18px;
 .title {
     font-size: $title-font;
@@ -203,28 +214,17 @@ $title-font: 18px;
 
 .viewDoc {
     float: right;
-}
-
-.generatedUrl {
-    margin-top: 0;
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .inline-display {
     display: inline;
 }
 
-.align-R {
-    text-align: right;
-}
-
 .inputNumberSection {
     width: 30%;
     height: 30%;
     margin: 1%;
-}
-
-.required:after {
-    content: " *";
-    color: red;
 }
 </style>
