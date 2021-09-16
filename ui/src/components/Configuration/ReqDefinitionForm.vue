@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <p class="title">New Requisition Definition</p>
+    <p class="title">New Requisition Definition</p>
+    <div class="p-col-9">
         <div class="form">
             <div class="p-fluid">
                 <div class="p-field">
@@ -47,23 +47,20 @@
                             :filter="true"
                         ></DropDown>
                         <p>
-                            <InputText
-                                v-model="add.advTextVal"
-                                @focusout="advParam(add.dropdownVal, add.advTextVal)"
-                            />
+                            <InputText v-model="add.advTextVal" />
                         </p>
                     </div>
                     <label class="width100">
                         <span @click="addAnother">
-                            <i class="pi pi-plus" style="font-size: 12px;margin: 2px;"></i>Add Another
+                            <i class="pi pi-plus" style="font-size: 12px;margin: 2px;"></i>
+                            Add Another
                         </span>
                         <a class="viewDoc">View Documentation</a>
                     </label>
                 </div>
 
-                <div class="p-field">
-                    <p class="generatedUrl">URL : {{ generatedURL }}</p>
-                    <Button label="Generate URL" @click="generateURL" :disabled="disableBtn"></Button>
+                <div class="p-field p-col-6">
+                    <p class="generatedUrl">URL</p>
                 </div>
 
                 <div class="p-field">
@@ -75,21 +72,21 @@
                         optionValue="value"
                         :filter="true"
                     ></DropDown>
-                    <p>
+                    <p class="p-field p-col-6">
                         Every
                         <span>
                             <InputNumber
                                 class="inputNumberSection"
                                 showButtons
-                                v-model="selectedInputNumber"
                                 :min="minVal"
+                                v-model="selectedInputNumber"
                             />
                         </span>
                         {{ selectedPeriod }}
                     </p>
                 </div>
 
-                <div class="p-field">
+                <div class="p-field p-col-2">
                     <Button label="Save" icon="pi pi-save" @click="onSave"></Button>
                 </div>
             </div>
@@ -106,25 +103,21 @@ import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
 
-const minVal = ref(1);
-const disableBtn = ref(true);
-
 const nameVal = ref('');
 const hostVal = ref('');
 const foreignSourceVal = ref('');
 
 const selectedType = ref('');
 const selectedPeriod = ref('');
-const selectedInputNumber = ref('');
+const selectedInputNumber = ref();
 
 const types: any = ref([]);
 const schedulePeriod: any = ref([]);
 const advancedDropdown: any = ref([]);
+
+const minVal = ref(1);
 const count = ref(0);
 const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": `selectedAdvDropdown${count.value}`, "advTextVal": '' }]);
-
-const paramUrl = ref('');
-const generatedURL = ref('');
 
 onMounted(() => {
     //service call for data
@@ -172,61 +165,21 @@ onMounted(() => {
 });
 
 const addAnother = () => {
-    console.log('add another clicked');
     if (addAnotherArr.value.length < 5) {
-        let counterVal = ++count.value;
-        let addObj = { "id": counterVal, "dropdownVal": `selectedAdvDropdown${counterVal}`, "advTextVal": `Enter param ${counterVal}` };
+        let addObj = { "id": ++count.value, "dropdownVal": `selectedAdvDropdown${++count.value}`, "advTextVal": `please enter parameter` };
         addAnotherArr.value.push(addObj);
-        console.log("Add ID addAnotherArr", addAnotherArr.value);
     } else {
-        alert(`Max allowed limit is ${count.value}`);
+        alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
     }
-
 }
 
 const closeIcon = (id: any) => {
     const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
-    console.log("Remove ID ::", id, findIndex);
     addAnotherArr.value.splice(findIndex, 1);
-    console.log("Remove ID from addAnotherArr ::", addAnotherArr.value);
-}
-
-const advParam = (paramDrop: any, paramText: any) => {
-    console.log(paramDrop, paramText);
-    let text = paramText;
-    if (text === '') {
-        paramUrl.value += `?${paramDrop}=${text}`;
-    } else {
-        console.log(text)
-        paramUrl.value += `?${paramDrop}=${text}`;
-    }
-}
-
-const generateURL = () => {
-    let mandateCondition = nameVal.value !== '' && hostVal.value !== '' && foreignSourceVal.value !== '' && selectedType.value !== '';
-    if (mandateCondition) {
-        disableBtn.value = false;
-    } else {
-        disableBtn.value = true;
-    }
 }
 
 const onSave = () => {
-    console.log("add another array value", addAnotherArr.value);
-    // console.log(
-    //     `{
-    //     Name: ${nameVal.value},
-    //     Type:${selectedType.value}
-    //     Host: ${hostVal.value},
-    //     Foreign Source:${foreignSourceVal.value},
-    //     advDropdownVal:{
-    //         Dropdwon: ${selectedAdvDropdown.value},
-    //         DropdownText:${advDropdownText.value}
-    //     },
-    //     Schedule Period:${selectedPeriod.value}
-    //     }
-    //     `
-    // )
+
 }
 
 </script>
@@ -237,6 +190,7 @@ $title-font: 18px;
     font-size: $title-font;
     font-weight: bold;
     text-align: left;
+    margin-top: 0;
 }
 
 .p-dropdown {
