@@ -25,7 +25,7 @@ Reload event loads changed configuration parameters of existing monitors.
 | yes
 
 | response-graph.properties
-| Graph definition for response time graphs from monitors
+| Graph definition for response time graphs from monitors.
 | no
 | no
 
