@@ -71,6 +71,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     private static final String CONTAINER_ID = "test";
