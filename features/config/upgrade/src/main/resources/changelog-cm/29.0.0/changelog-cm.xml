@@ -19,5 +19,9 @@
         <cm:registerSchema id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="05e182a8a059a6464f894ffd7d32f3b9f1b023a9e8da2593e238c79bae36359f" rootElement="discovery-configuration"/>
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
+    <changeSet author="ssuman" id="1.0-register-schema-enlinkd">
+        <cm:registerSchema id="enlinkd" version="1.0.0" entityClass="org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration"/>
+        <cm:importConfig schemaId="enlinkd" configId="default" filePath="file:${opennms.home}/etc/enlinkd-configuration.xml"/>
+    </changeSet>
 
 </databaseChangeLog>

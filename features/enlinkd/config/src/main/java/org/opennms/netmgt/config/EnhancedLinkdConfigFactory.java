@@ -61,24 +61,26 @@ import org.slf4j.LoggerFactory;
  */
 public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager {
     private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdConfigFactory.class);
+    private static final String CONFIG_NAME = "enlinkd";
+    private static final String DEFAULT_CONFIG_ID = "default";
     
-    public EnhancedLinkdConfigFactory() throws IOException {
+    /*public EnhancedLinkdConfigFactory() throws IOException {
         reload();
-    }
+    }*/
 
     /**
      * <p>Constructor for LinkdConfigFactory.</p>
      *
-     * @param currentVersion a long.
+   //  * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    public EnhancedLinkdConfigFactory(final InputStream stream) throws IOException {
+    /*public EnhancedLinkdConfigFactory(final InputStream stream) throws IOException {
         reloadXML(stream);
-    }
+    }*/
 
     /** {@inheritDoc} */
-    protected synchronized void saveXml(String xml) throws IOException {
+    /*protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
@@ -89,14 +91,14 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
             fileWriter.close();
             LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
         }
-    }
+    }*/
 
     /**
      * <p>reload</p>
      *
      * @throws java.io.IOException if any.
      */
-    public void reload() throws IOException {
+    /*public void reload() throws IOException {
         getWriteLock().lock();
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
@@ -115,28 +117,28 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
             getWriteLock().unlock();
         }
     }
-        
+        */
     /**
      * <p>reloadXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    protected void reloadXML(final InputStream stream) throws IOException {
+    /*protected void reloadXML(final InputStream stream) throws IOException {
         getWriteLock().lock();
         try(final Reader reader = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(EnlinkdConfiguration.class, reader);
         } finally {
             getWriteLock().unlock();
         }
-    }
+    }*/
 
     /**
      * Saves the current in-memory configuration to disk
      *
      * @throws java.io.IOException if any.
      */
-    public void save() throws IOException {
+    /*public void save() throws IOException {
         getWriteLock().lock();
         
         try {
@@ -148,5 +150,15 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
         } finally {
             getWriteLock().unlock();
         }
+    }*/
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }
