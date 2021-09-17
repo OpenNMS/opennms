@@ -49,5 +49,6 @@ const clickAction = (val: any) => {
 
 .reqDef {
     display: inline-block;
+    width: 100%;
 }
 </style>

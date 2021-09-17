@@ -1,0 +1,12 @@
+[
+    {
+        "name": "importIPv4Only",
+        "id": "211",
+        "value": "importIPv4Only"
+    },
+    {
+        "name": "importIPv6Only",
+        "id": "212",
+        "value": "importIPv6Only"
+    }
+]
