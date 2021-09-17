@@ -47,8 +47,6 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * enhanced linkd service from the enlinkd-configuration xml file.
@@ -66,12 +64,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     private static final String CONFIG_NAME = "enlinkd";
     private static final String DEFAULT_CONFIG_ID = "default";
     
-    public EnhancedLinkdConfigFactory() {
-        // move to postConstruct to prevent dao bean not ready
-    }
-
-    @PostConstruct
-    public void postConstruct() throws IOException {
+    public EnhancedLinkdConfigFactory() throws IOException {
         reload();
     }
 
@@ -122,6 +115,6 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
 
     @Override
     public void reload() throws IOException {
-        m_config = this.loadConfig(this.getDefaultConfigId());
+        this.loadConfig(this.getDefaultConfigId());
     }
 }
