@@ -1149,5 +1149,17 @@
       <name>Sonatype Public Maven Repository</name>
       <url>https://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
     </repository>
+    <repository>
+      <id>opennms-maven-3rdparty</id>
+      <url>https://packages.opennms.com/public/3rdparty/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
   </repositories>
 </project>
