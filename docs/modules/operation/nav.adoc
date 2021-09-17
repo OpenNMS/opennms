@@ -188,7 +188,6 @@
 * xref:notifications/introduction.adoc[]
 ** xref:notifications/getting-started.adoc[]
 ** xref:notifications/concepts.adoc[]
-** xref:notifications/bonus-strategies.adoc[]
 
 * xref:bsm/introduction.adoc[]
 ** xref:bsm/business-service-hierarchy.adoc[]
