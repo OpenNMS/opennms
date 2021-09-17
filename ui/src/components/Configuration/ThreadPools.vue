@@ -1,44 +1,31 @@
 <template>
-  <br />
-    <label class="p-col-9" for="import">Import</label>
-    <br />
-    <InputNumber
-      id="import"
-      class="p-col-9"
-      mode="decimal"
-      />
-    <br />
-
-    <label class="p-col-9" for="scan">Scan</label>
-    <br />
-    <InputNumber
-      id="scan"
-      class="p-col-9"
-      mode="decimal"
-    />
-    <br />
-
-    <label class="p-col-9" for="rescan">Rescan</label>
-    <br />
-    <InputNumber
-    class="p-col-9"
-      mode="decimal"
-    />
-    <br />
-
-    <label class="p-col-9" for="write">Write</label>
-    <br />
-    <InputNumber
-    class="p-col-9"
-      mode="decimal"      
-    />    
-    <br />
-  <br />
-  <Button label="Save" ></Button>
+  <div class="p-col-9">
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="import" class="required">Import</label>
+        <InputNumber id="import" mode="decimal" />
+      </div>
+      <div class="p-field">
+        <label for="scan" class="required">Scan</label>
+        <InputNumber id="scan" mode="decimal" />
+      </div>
+      <div class="p-field">
+        <label for="rescan" class="required">Rescan</label>
+        <InputNumber mode="decimal" />
+      </div>
+      <div class="p-field">
+        <label for="write" class="required">Write</label>
+        <InputNumber mode="decimal" />
+      </div>
+      <div class="p-field p-col-2">
+        <Button label="Save" icon="pi pi-save"></Button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {reactive, toRef} from 'vue'
+import { reactive, toRef } from 'vue'
 import InputNumber from '../Common/InputNumber.vue'
 import Button from '../Common/Button.vue'
 
@@ -57,3 +44,7 @@ const threadpool = reactive({
 });
 
 </script>
+
+<style lang="scss" scoped>
+@import "../Common/common.scss";
+</style>

@@ -169,7 +169,7 @@ onMounted(() => {
             });
 
     } catch {
-        console.error("Error in API")
+        console.error("Error in API");
     }
 });
 
@@ -188,7 +188,7 @@ const closeIcon = (id: any) => {
 }
 
 const onSave = () => {
-    console.log("Add another dropdown values", addAnotherArr.value)
+
 }
 
 </script>
