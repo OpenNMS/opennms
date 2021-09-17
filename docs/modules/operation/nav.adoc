@@ -245,9 +245,6 @@
 ** xref:system-properties/system-proxies.adoc[]
 
 * xref:ticketing/introduction.adoc[]
-** xref:ticketing/jira.adoc[]
-** xref:ticketing/remedy.adoc[]
-** xref:ticketing/tsrm.adoc[]
 
 * xref:rmi.adoc[]
 * xref:workarounds/snmp.adoc[]

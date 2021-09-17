@@ -28,3 +28,8 @@ If enabled, various links to control the issue state appear on the alarm details
 | A template to generate a link to the issue; for example, `\http://issues.opennms.org/browse/$\{id}`
 | $\{id}
 |===
+
+
+== Supported Ticketer
+
+For information on supported ticketer and how to configure them, see xref:reference:configuration/ticketing/introduction.adoc[ticketer reference section].

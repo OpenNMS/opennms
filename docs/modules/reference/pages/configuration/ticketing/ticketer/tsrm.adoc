@@ -1,11 +1,11 @@
 
 
-[[ga-ticketing-tsrm]]
+[[ref-ticketing-tsrm]]
 = TSRM Ticketing Plugin
 
 The TSRM ticketing plugin creates TSRM incidents in response to {page-component-title} alarms.
 
-[[ga-ticketing-tsrm-setup]]
+[[ref-ticketing-tsrm-setup]]
 == Setup
 
 To enable the plugin start by setting following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:

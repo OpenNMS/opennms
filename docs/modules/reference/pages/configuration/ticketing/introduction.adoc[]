@@ -1,0 +1,6 @@
+[[ref-ticketer]]
+= Ticketer
+
+This section describes all available built-in Ticketer.
+
+For information on how to extend the functionality of these ticketer or creating new ones, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.

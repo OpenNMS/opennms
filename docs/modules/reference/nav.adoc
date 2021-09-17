@@ -14,4 +14,8 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
+** xref:configuration/ticketing/introduction.adoc[]
+*** xref:configuration/ticketing/jira.adoc[]
+*** xref:configuration/ticketing/remedy.adoc[]
+*** xref:configuration/ticketing/tsrm.adoc[]
 * xref:glossary.adoc[]

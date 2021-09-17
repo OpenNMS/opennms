@@ -1,5 +1,5 @@
 
-[[ga-ticketing-remedy]]
+[[ref-ticketing-remedy]]
 = Remedy Ticketing Plugin
 
 The Remedy ticketing plugin creates requests in the BMC Remedy ARS Help Desk Module in response to {page-component-title} alarms.
@@ -24,7 +24,7 @@ Currently supported Remedy product versions:
 | HDI Web Service    | Same as Help Desk Module
 |===
 
-[[ga-ticketing-remedy-setup]]
+[[ref-ticketing-remedy-setup]]
 == Setup
 
 The Remedy ticketing plugin and its dependencies are part of the {page-component-title} core packages.

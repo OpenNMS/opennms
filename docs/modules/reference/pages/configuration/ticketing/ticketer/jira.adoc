@@ -1,10 +1,10 @@
 
-[[ga-ticketing-jira]]
+[[ref-ticketing-jira]]
 = Jira Ticketing Plugin
 
 The Jira ticketing plugin creates JIRA issues in response to {page-component-title} alarms.
 
-[[ga-ticketing-jira-setup]]
+[[ref-ticketing-jira-setup]]
 == Setup
 
 First, you need to install the `opennms-plugin-ticketer-jira` package for your system.
@@ -239,7 +239,7 @@ ticket.addAttribute("customfield_10101", "2016-12-06"); <9>
 <9> Sets the value to `2016-12-06`.
 
 
-[[ga-ticketing-jira-troubleshooting]]
+[[ref-ticketing-jira-troubleshooting]]
 == Troubleshooting
 
 When troubleshooting, consult the following log files:
