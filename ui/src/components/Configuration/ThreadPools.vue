@@ -43,7 +43,7 @@
         <p class="p-error">{{ validationVar.write?.$errors[0]?.$message }}</p>
       </div>
       <div class="p-field p-col-2">
-        <Button label="Save" :disabled="validationVar.$invalid" @click="onchange()"></Button>
+        <Button icon="pi pi-save" label="Save" :disabled="validationVar.$invalid" @click="onchange()"></Button>
       </div>
     </div>
   </div>
