@@ -185,6 +185,6 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-   //protected abstract void saveXml(final String xml) throws IOException;
+
     
 }

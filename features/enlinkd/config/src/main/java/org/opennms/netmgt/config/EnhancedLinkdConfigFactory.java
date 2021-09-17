@@ -64,9 +64,9 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     private static final String CONFIG_NAME = "enlinkd";
     private static final String DEFAULT_CONFIG_ID = "default";
     
-    /*public EnhancedLinkdConfigFactory() throws IOException {
+    public EnhancedLinkdConfigFactory() throws IOException {
         reload();
-    }*/
+    }
 
     /**
      * <p>Constructor for LinkdConfigFactory.</p>
@@ -75,82 +75,32 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    /*public EnhancedLinkdConfigFactory(final InputStream stream) throws IOException {
-        reloadXML(stream);
-    }*/
+
 
     /** {@inheritDoc} */
-    /*protected synchronized void saveXml(String xml) throws IOException {
-        if (xml != null) {
-            long timestamp = System.currentTimeMillis();
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-            LOG.debug("saveXml: saving config file at {}: {}", timestamp, cfgFile.getPath());
-            final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-            LOG.debug("saveXml: finished saving config file: {}", cfgFile.getPath());
-        }
-    }*/
+
 
     /**
      * <p>reload</p>
      *
      * @throws java.io.IOException if any.
      */
-    /*public void reload() throws IOException {
-        getWriteLock().lock();
-        try {
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ENLINKD_CONFIG_FILE_NAME);
-           LOG.debug("init: config file path: {}", cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
-                reloadXML(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
-                }
-            }
-            LOG.debug("init: finished loading config file: {}", cfgFile.getPath());
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-        */
+
+
     /**
      * <p>reloadXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    /*protected void reloadXML(final InputStream stream) throws IOException {
-        getWriteLock().lock();
-        try(final Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(EnlinkdConfiguration.class, reader);
-        } finally {
-            getWriteLock().unlock();
-        }
-    }*/
+
 
     /**
      * Saves the current in-memory configuration to disk
      *
      * @throws java.io.IOException if any.
      */
-    /*public void save() throws IOException {
-        getWriteLock().lock();
-        
-        try {
-            // marshall to a string first, then write the string to the file. This
-            // way the original config isn't lost if the xml from the marshall is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            JaxbUtils.marshal(m_config, stringWriter);
-            saveXml(stringWriter.toString());        
-        } finally {
-            getWriteLock().unlock();
-        }
-    }*/
+
 
     @Override
     public String getConfigName() {
@@ -160,5 +110,11 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     @Override
     protected String getDefaultConfigId() {
         return DEFAULT_CONFIG_ID;
+    }
+
+
+    @Override
+    public void reload() throws IOException {
+        this.loadConfig(this.getDefaultConfigId());
     }
 }

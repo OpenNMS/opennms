@@ -135,7 +135,7 @@ public interface EnhancedLinkdConfig {
      *
      * @throws java.io.IOException if any.
      */
-    //void reload() throws IOException;
+    void reload() throws IOException;
     
     /**
      * <p>save</p>
