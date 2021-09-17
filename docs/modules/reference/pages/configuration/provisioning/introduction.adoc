@@ -1,5 +1,5 @@
 [[ref-detectors]]
- Detectors
+= Detectors
 
 This section describes all available built-in provisioning detectors.
 You can configure them to allow complex detection to meet the needs of your environment.
