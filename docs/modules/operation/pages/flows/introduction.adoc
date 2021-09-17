@@ -3,7 +3,7 @@
 = Flow Support
 
 {page-component-title} supports receiving, decoding, and persisting flow information sent from your network devices.
-A list of currently supported protocols is available in the <<telemetryd/protocols/introduction.adoc#protocol-ref, Telemetry>> section.
+A list of currently supported protocols is available in the <<telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section.
 While flows offer a great breadth of information, the current focus of the support in {page-component-title} is aimed at:
 
 * Network diagnostic: viewing the top protocols and top talkers within the context of a particular network interface.

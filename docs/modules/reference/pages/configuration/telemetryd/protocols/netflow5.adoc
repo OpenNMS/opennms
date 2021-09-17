@@ -1,7 +1,7 @@
 
 = NetFlow v5
 
-See <<flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
 
 
 [[telemetryd-netflow5-parser-udp]]

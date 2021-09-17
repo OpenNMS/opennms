@@ -76,7 +76,7 @@ Once configured, an icon will appear on the top-right corner of a resource graph
 In this example, we enable a generic listener for the NetFlow v5 protocol on Minion.
 
 IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
-See the examples in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#listener-ref, Telemetryd Listener Reference>> for details.
+See the examples in `$OPENNMS_HOME/etc/telemetryd-configuration.xml`, or <<telemetryd/listener/introduction.adoc#ref-listener, Telemetryd Listener Reference>> for details.
 
 To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
 
