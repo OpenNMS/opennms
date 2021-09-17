@@ -1,0 +1,8 @@
+
+[[ref-policies]]
+= Policies
+
+This section describes all available built-in provisioning policies.
+You can configure them to allow node modifications or change provisioning behavior to meet the needs of your environment.
+For information on how to extend the functionality of these policies, see the xref:development:overview/overview.adoc#overview[Development section] to contribute to the project.
+
