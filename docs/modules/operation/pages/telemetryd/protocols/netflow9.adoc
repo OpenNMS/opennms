@@ -21,18 +21,44 @@ The Netflow v9 UDP parser supports protocol detection.
 === Configuration and use
 
 .Optional parameters for the Netflow v9 UDP parser
-[options="header, autowidth"]
+[options="header" cols="1,3,1"]
 |===
-| Parameter                     | Default    | Description
-| templateTimeout               | 30 minutes | Templates must be redeclared in the given duration or they will be dropped.
-| maxClockSkew                  | 0          | The maximum delta in seconds between exporter and Minion timestamps.
-| clockSkewEventRate            | 3600       | Used to rate-limit clock skew events in seconds.
-| dnsLookupsEnabled             | true       | Used to enable or disable DNS resolution for flows.
-| sequenceNumberPatience        | 32         | A value > 1 enables checking for sequence number completeness.
-                                                The value gives the size of the history buffer allowing flows to be processed out of order.
-| flowActiveTimeoutFallback     | none       | Fallback value for active flow timeout, if value is not included in exported flows.
-| flowInactiveTimeoutFallback   | none       | Fallback value for inactive flow timeout, if value is not included in exported flows.
-| flowSamplingIntervalFallback  | none       | Fallback value for sampling interval, if value is not included in exported flows.
+| Parameter
+| Description
+| Default
+
+| templateTimeout
+| Templates must be redeclared in the given duration or they will be dropped.
+| 30 minutes
+
+| maxClockSkew
+| The maximum delta in seconds between exporter and Minion timestamps.
+| 0
+
+| clockSkewEventRate
+| Used to rate-limit clock skew events in seconds.
+| 3600
+
+| dnsLookupsEnabled
+| Used to enable or disable DNS resolution for flows.
+| true
+
+| sequenceNumberPatience
+| A value > 1 enables checking for sequence number completeness.
+ The value gives the size of the history buffer allowing flows to be processed out of order.
+| 32
+
+| flowActiveTimeoutFallback
+| Fallback value for active flow timeout, if value is not included in exported flows.
+| none
+
+| flowInactiveTimeoutFallback
+| Fallback value for inactive flow timeout, if value is not included in exported flows.
+| none
+
+| flowSamplingIntervalFallback
+| Fallback value for sampling interval, if value is not included in exported flows.
+| none
 |===
 
 NOTE: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters.

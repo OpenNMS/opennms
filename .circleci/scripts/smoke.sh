@@ -66,7 +66,7 @@ else
   while read -r TEST_CLASS
   do
     echo "###### Testing: ${TEST_CLASS}"
-    ../compile.pl -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dtest.fork.count=0 -Dit.test="$TEST_CLASS" "-Psmoke.$SUITE" install verify
+    ../compile.pl -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dtest.fork.count=0 -Dit.test="$TEST_CLASS" '-P!smoke.all' "-Psmoke.$SUITE" install verify
   done < /tmp/this_node_it_tests
 fi
 
