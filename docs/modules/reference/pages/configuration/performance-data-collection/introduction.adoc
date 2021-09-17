@@ -1,5 +1,5 @@
 [[ref-performance-data-collectors]]
-= Performance data collectors
+= Collectors
 
 This section describes all available built-in performance data collectors.
 You can configure them to allow complex monitoring to meet the needs of your environment.
