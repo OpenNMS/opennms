@@ -47,7 +47,8 @@ Before creating a threshold, you need to make sure you are collecting the metric
 [[metric-collect]]
 === Determine you are collecting metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default.
-We are also using data collected via SNMP. (For information on other collectors, see <<performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
+We are also using data collected via SNMP. 
+(For information on other collectors, see <<performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
 
 . In the {page-component-title} UI, choose *Reports>Resource Graphs*.
 . Select one of the listed resources.
