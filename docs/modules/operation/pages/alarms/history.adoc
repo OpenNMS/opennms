@@ -106,7 +106,9 @@ In addition to those mentioned in <<elasticsearch/introduction.adoc#ga-elasticse
 [options="header"]
 [cols="1,3,2"]
 |===
-| Property | Description | Default
+| Property
+| Description
+| Default
 
 | indexAllUpdates
 | Index every alarm update, including simple event reductions.

@@ -8,10 +8,10 @@ This monitor implements the same <<service-assurance/monitors/introduction.adoc#
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.LdapsMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LdapsMonitor`
 |===
 
 == Configuration and use
@@ -20,8 +20,13 @@ This monitor implements the same <<service-assurance/monitors/introduction.adoc#
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                                                |Default
-| port                 | The destination port where connections are attempted. | 636
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port where connections are attempted.
+| 636
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
