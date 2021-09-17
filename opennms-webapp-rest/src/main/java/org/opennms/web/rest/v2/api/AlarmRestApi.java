@@ -62,7 +62,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Response.class))),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad input request",
                     content = @Content)
@@ -77,7 +77,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Response.class))),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad input request",
                     content = @Content)
@@ -91,7 +91,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Response.class))),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId);
@@ -103,7 +103,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Response.class))),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response removeJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId);
@@ -145,24 +145,17 @@ public interface AlarmRestApi {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get all types of alaram", description = "Get all types of alaram  ", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
+    @Operation(summary = "Get all alarms", description = "Get all types of alarms  ", tags = {"Alarms"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content),
+            @ApiResponse(responseCode = "204", description = "No alarms found", content = @Content)
     })
     Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) ;
 
     @GET
     @Path("count")
     @Produces({MediaType.TEXT_PLAIN})
-    @Operation(summary = "Get alarams count", description = "Get a count's all types of alarams", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
+    @Operation(summary = "Get total count of alarms", description = "Get total count of alarms", tags = {"Alarms"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content)
     })
     Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) ;
 
@@ -171,10 +164,8 @@ public interface AlarmRestApi {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Get the properties", description = "Get all types of properties", tags = {"Alarms"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm properties not found",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content),
+            @ApiResponse(responseCode = "204", description = "Alarm properties not found", content = @Content)
     })
     Response getProperties(@QueryParam("q") final String query) ;
 
@@ -185,7 +176,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm property not found",
+            @ApiResponse(responseCode = "204", description = "Alarm property not found",
                     content = @Content)
     })
     Response getPropertyValues(@PathParam("propertyId") final String propertyId, @QueryParam("q") final String query, @QueryParam("limit") final Integer limit) ;
@@ -193,18 +184,18 @@ public interface AlarmRestApi {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    @Operation(summary = "Get id of alaram", description = "Get id of alaram", tags = {"Alarms"})
+    @Operation(summary = "Get the alarms specified by the given ID", description = "Get the alarms specified by the given ID", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm id not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response get(@Context final UriInfo uriInfo, @PathParam("id") final String id) ;
 
     @POST
     @Path("{id}")
-    @Operation(summary = "Create an alaram", description = "Create an alaram by id", tags = {"Alarms"})
+    @Operation(summary = "Create an alarms", description = "Create an alarms by id", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
@@ -215,7 +206,7 @@ public interface AlarmRestApi {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Create an alaram", description = "Create an alaram", tags = {"Alarms"})
+    @Operation(summary = "Create an alarms", description = "Create an alarms", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
@@ -226,7 +217,7 @@ public interface AlarmRestApi {
 
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Operation(summary = "Create many alaram", description = "Create many alaram", tags = {"Alarms"})
+    @Operation(summary = "Create many alarms", description = "Create many alarms", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
@@ -242,7 +233,7 @@ public interface AlarmRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final Integer id, final OnmsAlarm object);
@@ -250,32 +241,32 @@ public interface AlarmRestApi {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{id}")
-    @Operation(summary = "Update  an alarm properties", description = "Update an alaram properties by id", tags = {"Alarms"})
+    @Operation(summary = "Update  an alarm properties", description = "Update an alarms properties by id", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final String id, final MultivaluedMapImpl params) ;
 
     @DELETE
-    @Operation(summary = " Delete Many  alaram", description = "Delete Many  alaram", tags = {"Alarms"})
+    @Operation(summary = " Delete Many  alarms", description = "Delete Many  alarms", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarms not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) ;
 
     @DELETE
     @Path("{id}")
-    @Operation(summary = "Delete an  alaram", description = "Delete an  alaram by id", tags = {"Alarms"})
+    @Operation(summary = "Delete an  alarms", description = "Delete an  alarms by id", tags = {"Alarms"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
+            @ApiResponse(responseCode = "204", description = "No alarms found",
                     content = @Content)
     })
     Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final String id) ;
