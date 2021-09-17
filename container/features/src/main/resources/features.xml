@@ -1323,7 +1323,6 @@
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <!-- Dependencies -->
-        <feature>http-whiteboard</feature>
         <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
