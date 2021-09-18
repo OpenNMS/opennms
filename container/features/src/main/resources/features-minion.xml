@@ -7,6 +7,7 @@
 >
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/spring-legacy</repository>
 
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
       <feature>opennms-distributed-core-api</feature>
