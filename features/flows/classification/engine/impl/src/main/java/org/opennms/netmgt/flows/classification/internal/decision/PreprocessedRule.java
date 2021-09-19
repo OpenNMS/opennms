@@ -110,4 +110,15 @@ public class PreprocessedRule {
         return Classifier.of(this, filterService, bounds);
     }
 
+    public PreprocessedRule reverse() {
+        return new PreprocessedRule(
+                ruleDefinition.reversedRule(),
+                protocol,
+                dstPort,
+                srcPort,
+                dstAddr,
+                srcAddr
+        );
+    }
+
 }
