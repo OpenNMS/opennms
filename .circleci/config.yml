@@ -64,11 +64,14 @@ aliases:
         "release-"*)
            MINION_IMAGE_VERSION="release-candidate"
           ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
         "develop")
            MINION_IMAGE_VERSION="bleeding"
           ;;
         *)
-          MINION_IMAGE_VERSION=b<< pipeline.number >>
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
@@ -88,6 +91,7 @@ aliases:
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
       docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -911,7 +915,6 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-
       - run:
           name: Collect Artifacts
           command: |
