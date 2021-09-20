@@ -33,6 +33,7 @@ yarn-error.log
 /opennms-alarms/jms-northbounder/activemq-data/
 ui/node_modules/
 ui/package-lock.json
+node_modules
 
 # Ignore Visual Studio Code
 .factorypath
