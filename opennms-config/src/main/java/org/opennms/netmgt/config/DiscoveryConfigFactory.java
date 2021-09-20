@@ -188,7 +188,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-   /*protected void saveXml(final String xml) throws IOException {
+   protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = null;
             getWriteLock().lock();
@@ -201,14 +201,14 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
                 getWriteLock().unlock();
             }
         }
-    }*/
+    }
     /**
      * <p>saveConfiguration</p>
      *
      * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
      * @throws java.io.IOException if any.
      */
-  /*public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
+  public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
         getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
@@ -223,7 +223,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
             getWriteLock().unlock();
         }
     }
-*/
     /**
      * <pre>
      * The file URL is read and a 'specific IP' is added for each entry
