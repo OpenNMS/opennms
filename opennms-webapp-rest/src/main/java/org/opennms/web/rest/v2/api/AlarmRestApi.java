@@ -264,10 +264,8 @@ public interface AlarmRestApi {
     @Path("{id}")
     @Operation(summary = "Delete an  alarms", description = "Delete an  alarms by id", tags = {"Alarms"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Alarm not found", content = @Content)
     })
     Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final String id) ;
 
