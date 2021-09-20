@@ -1,0 +1,5 @@
+
+[[threshold-notification]]
+= Create a Notification on a Threshold Event
+
+A custom UEI for each threshold makes it easier to <<notifications/introduction.adoc#ga-notifications-introduction, create notifications>>.
