@@ -53,8 +53,6 @@ async function onLeafletReady() {
   await nextTick();
   leafletObject.value = map.value.leafletObject;
   leafletReady.value = true;
-  console.log("Calling leafletReady map value",map.value);
-  console.log("Calling leaflet leafletObject",leafletObject);
 }
 
 
