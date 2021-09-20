@@ -150,7 +150,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @throws java.io.IOException if any.
      */
     public void reload() throws IOException {
-        
+
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
