@@ -65,6 +65,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.Definition;
 import org.opennms.netmgt.config.discovery.Detector;
@@ -87,13 +88,15 @@ import com.google.common.base.Strings;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
-public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
+public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryConfiguration> implements DiscoveryConfigurationFactory {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigFactory.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
     private Map<String, List<String>> m_urlSpecifics = new HashMap<>();
     private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
+    private static final String CONFIG_NAME = "discovery";
+    private static final String DEFAULT_CONFIG_ID = "default";
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -113,7 +116,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      */
     private DiscoveryConfiguration m_config;
 
-    /**
+    /**l
      * @deprecated Inject this value instead of using singleton access.
      */
     public static DiscoveryConfigFactory getInstance() {
@@ -121,10 +124,12 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     }
 
     public DiscoveryConfigFactory() throws IOException {
+        super(DiscoveryConfiguration.class, "discovery Configuration");
         reload();
     }
 
     public DiscoveryConfigFactory (DiscoveryConfiguration config) {
+        super(DiscoveryConfiguration.class, "discovery Configuration");
         m_config = config;
     }
 
@@ -144,7 +149,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public synchronized void reload() throws IOException {
+    public void reload() throws IOException {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
@@ -183,7 +188,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    protected void saveXml(final String xml) throws IOException {
+   /*protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = null;
             getWriteLock().lock();
@@ -196,14 +201,14 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 getWriteLock().unlock();
             }
         }
-    }
+    }*/
     /**
      * <p>saveConfiguration</p>
      *
      * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
      * @throws java.io.IOException if any.
      */
-    public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
+  /*public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
         getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
@@ -218,7 +223,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             getWriteLock().unlock();
         }
     }
-
+*/
     /**
      * <pre>
      * The file URL is read and a 'specific IP' is added for each entry
@@ -791,5 +796,15 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }
