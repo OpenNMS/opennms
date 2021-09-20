@@ -34,12 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -51,6 +52,7 @@ import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.v2.api.IpInterfaceRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,9 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
  * based on a given criteria.</p>
  */
 @Component
-@Path("ipinterfaces")
 @Transactional
-public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterface,SearchBean,Integer,String> {
+public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterface,SearchBean,Integer,String> implements IpInterfaceRestApi {
 
     @Autowired
     private IpInterfaceDao m_dao;
@@ -139,5 +140,30 @@ public class IpInterfaceRestService extends AbstractDaoRestService<OnmsIpInterfa
 			return iface;
         }
         throw new WebApplicationException("More than one IP address matches " + ipAddress, Status.BAD_REQUEST);
+    }
+
+    @Override
+    public Response get(UriInfo uriInfo, SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response get(UriInfo uriInfo, String id) {
+        return super.get(uriInfo, id);
+    }
+
+    @Override
+    public Response getProperties(String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    public Response getPropertyValues(String propertyId, String query, Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
     }
 }
