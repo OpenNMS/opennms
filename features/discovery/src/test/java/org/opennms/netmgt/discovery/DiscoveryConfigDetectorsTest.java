@@ -61,7 +61,7 @@ public class DiscoveryConfigDetectorsTest {
         IncludeUrl includeUrl = new IncludeUrl();
         includeUrl.setUrl(url.toString());
         config.getDefinitions().get(0).addIncludeUrl(includeUrl);
-        configFactory.saveConfiguration(config);
+        //configFactory.saveConfiguration(config);
         configFactory.reload();
 
         //Test specifics from definition.
