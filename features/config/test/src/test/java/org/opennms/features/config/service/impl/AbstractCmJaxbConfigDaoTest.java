@@ -94,17 +94,17 @@ public class AbstractCmJaxbConfigDaoTest {
         ProvisiondConfiguration pconfig = provisiondCmJaxbConfigTestDao.getConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
         Assert.assertTrue("getConfig fail!", pconfig != null);
 
-        // test callback
-        ProvisiondCallback callback = Mockito.mock(ProvisiondCallback.class);
-        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(callback);
+//        // test callback
+//        ProvisiondCallback callback = Mockito.mock(ProvisiondCallback.class);
+//        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(callback);
+//
+//        doAnswer(invocationOnMock -> {
+//            Assert.assertTrue("accept".equals(invocationOnMock.getMethod().getName()));
+//            Assert.assertTrue(invocationOnMock.getArgument(0) instanceof ProvisiondConfiguration);
+//            return null;
+//        }).when(callback).accept(any());
 
-        doAnswer(invocationOnMock -> {
-            Assert.assertTrue("accept".equals(invocationOnMock.getMethod().getName()));
-            Assert.assertTrue(invocationOnMock.getArgument(0) instanceof ProvisiondConfiguration);
-            return null;
-        }).when(callback).accept(any());
-
-        provisiondCmJaxbConfigTestDao.loadConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
+//        provisiondCmJaxbConfigTestDao.loadConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
     }
 
     class ProvisiondCallback implements Consumer<ProvisiondConfiguration> {

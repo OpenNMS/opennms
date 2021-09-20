@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
 
@@ -63,6 +64,8 @@ public interface ConfigurationManagerService {
      * @throws IOException
      */
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
+
+    void registerReloadConsumer(String configName, Consumer<ConfigUpdateInfo> consumer);
 
     /**
      * register a new configuration by config object.

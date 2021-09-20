@@ -28,9 +28,15 @@
 
 package org.opennms.features.config.service.impl;
 
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.DefaultUpdateNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,7 +62,6 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
     private Class<ENTITY_CLASS> entityClass;
     private String description;
-    private final Collection<Consumer<ENTITY_CLASS>> onReloadCausedChangeCallbacks = new ArrayList<>();
     private ConcurrentHashMap<String, ENTITY_CLASS> lastKnownEntityMap = new ConcurrentHashMap<>();
 
     /**
@@ -66,6 +71,9 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      */
     abstract protected String getConfigName();
 
+    Consumer<ConfigUpdateInfo> getUpdateNotifier(){
+        return new DefaultUpdateNotifier<>(this);
+    }
 
     /**
      * The default configId when getConfig without passing configId
@@ -76,14 +84,16 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
-     *
+     * It will use {@link org.opennms.features.config.service.util.DefaultUpdateNotifier},
+     * override getUpdateNotifier if you need to change.
+     * @see #getUpdateNotifier()
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
      */
     public AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
-        super();
         this.entityClass = entityClass;
         this.description = description;
+        this.addOnReloadedCallback(getUpdateNotifier());
     }
 
     /**
@@ -110,26 +120,20 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         if (configOptional.isEmpty()) {
             throw new RuntimeException("NOT_FOUND: configName=" + this.getConfigName() + " configId=" + configId);
         }
-        ENTITY_CLASS config = configOptional.get();
+        final ENTITY_CLASS config = configOptional.get();
         long endTime = System.currentTimeMillis();
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
         // If the config is not load in the first time, we will trigger the callbacks for this change
         ENTITY_CLASS lastKnownEntity = lastKnownEntityMap.get(configId);
+
         if (lastKnownEntity != null) {
-            synchronized (onReloadCausedChangeCallbacks) {
-                if (!onReloadCausedChangeCallbacks.isEmpty()) {
-                    LOG.debug("Calling onReloaded callbacks");
-                    try {
-                        //TODO: Freddy PE-13 reconsider the possibility of exception during loop
-                        onReloadCausedChangeCallbacks.forEach(c -> c.accept(config));
-                    } catch (Exception e) {
-                        LOG.warn("Encountered exception while calling onReloaded callbacks", e);
-                    }
-                }
-            }
+            BeanUtils.copyProperties(lastKnownEntity, config);
+            return lastKnownEntity;
+        } else {
+            lastKnownEntityMap.put(configId, config);
+            return config;
         }
-        return config;
     }
 
     /**
@@ -155,11 +159,8 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     /**
      * @param callback a callback that will be called when the entity maintained by this DAO is reloaded
      */
-    public void addOnReloadedCallback(Consumer<ENTITY_CLASS> callback) {
+    public void addOnReloadedCallback(Consumer<ConfigUpdateInfo> callback) {
         Objects.requireNonNull(callback);
-
-        synchronized (onReloadCausedChangeCallbacks) {
-            onReloadCausedChangeCallbacks.add(callback);
-        }
+        configurationManagerService.registerReloadConsumer(this.getConfigName(), callback);
     }
 }
