@@ -49,6 +49,6 @@ public class DefaultUpdateNotifier<ENTITY_CLASS> implements Consumer<ConfigUpdat
     @Override
     public void accept(ConfigUpdateInfo configUpdateInfo) {
         // trigger to reload, which will replace the entity in lastKnownEntityMap
-        abstractCmJaxbConfigDao.getConfig(configUpdateInfo.getConfigId());
+        abstractCmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
     }
 }

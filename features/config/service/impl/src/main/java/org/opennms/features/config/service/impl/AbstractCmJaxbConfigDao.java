@@ -57,7 +57,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
-    @Autowired
     private ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
@@ -93,17 +92,23 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     public AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
         this.entityClass = entityClass;
         this.description = description;
+    }
+
+    @Autowired
+    public void setConfigurationManagerService(ConfigurationManagerService configurationManagerService) {
+        this.configurationManagerService = configurationManagerService;
+        // make sure configurationManagerService is injected
         this.addOnReloadedCallback(getUpdateNotifier());
     }
 
     /**
-     * loadConfig from CM. If the config is already stored in cache, it will also trigger reload callback
+     * loadConfig from database by CM. If it is already in cache, it will update the cache.
      *
      * @param configId
      * @return ConfigObject
      * @throws IOException
      */
-    protected ENTITY_CLASS loadConfig(final String configId) {
+    public ENTITY_CLASS loadConfig(final String configId) {
         long startTime = System.currentTimeMillis();
 
         LOG.debug("Loading {} configuration from {}", description, configId);
@@ -124,27 +129,14 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         long endTime = System.currentTimeMillis();
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
-        // If the config is not load in the first time, we will trigger the callbacks for this change
-        ENTITY_CLASS lastKnownEntity = lastKnownEntityMap.get(configId);
-
-        if (lastKnownEntity != null) {
-            BeanUtils.copyProperties(lastKnownEntity, config);
-            return lastKnownEntity;
-        } else {
-            lastKnownEntityMap.put(configId, config);
-            return config;
-        }
-    }
-
-    /**
-     * get default config object
-     *
-     * @return config object
-     */
-    public ENTITY_CLASS getConfig(String configId) {
-        ENTITY_CLASS config = lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
-        lastKnownEntityMap.put(configId, config);
-        return config;
+        return lastKnownEntityMap.compute(configId, (k, v)->{
+            if(v != null){
+                BeanUtils.copyProperties(v, config);
+                return v;
+            } else {
+                return v;
+            }
+        });
     }
 
     /**

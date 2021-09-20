@@ -91,7 +91,7 @@ public class AbstractCmJaxbConfigDaoTest {
     @Test
     public void testProvisiondCmJaxbConfigDao() {
         // test get config
-        ProvisiondConfiguration pconfig = provisiondCmJaxbConfigTestDao.getConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
+        ProvisiondConfiguration pconfig = provisiondCmJaxbConfigTestDao.loadConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
         Assert.assertTrue("getConfig fail!", pconfig != null);
 
 //        // test callback
