@@ -1518,13 +1518,6 @@
     <!-- configuration manager -->
     <xmlschemaVersion>2.2.5</xmlschemaVersion>
 
-    <!-- configuration manager -->
-    <xmlschemaVersion>2.2.5</xmlschemaVersion>
-    <yarnVersion>v1.22.10</yarnVersion>
-
-    <!-- configuration manager -->
-    <xmlschemaVersion>2.2.5</xmlschemaVersion>
-
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
     <ci.rerunFailingTestsCount>0</ci.rerunFailingTestsCount>

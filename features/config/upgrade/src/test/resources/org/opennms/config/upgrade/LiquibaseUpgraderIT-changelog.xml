@@ -9,6 +9,6 @@
 
     <changeSet author="pschweizer" id="1.0-register-schema-provisiond">
         <cm:registerSchema id="provisiond" version="1.0.0" entityClass="org.opennms.netmgt.config.provisiond.ProvisiondConfiguration"/>
-        <cm:importConfig schemaId="provisiond" configId="provisiond" filePath="file:../service/impl/src/test/resources/provisiond-configuration.xml"/>
+        <cm:importConfig schemaId="provisiond" configId="provisiond" filePath="file:../test/src/test/resources/provisiond-configuration.xml"/>
     </changeSet>
 </databaseChangeLog>

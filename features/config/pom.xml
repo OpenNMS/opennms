@@ -15,6 +15,8 @@
     <module>dao</module>
     <module>rest</module>
     <module>upgrade</module>
+    <!-- to store service & dao's unit test to prevent circular dependency problem -->
+    <module>test</module>
   </modules>
   <properties>
     <!-- Misc. -->
