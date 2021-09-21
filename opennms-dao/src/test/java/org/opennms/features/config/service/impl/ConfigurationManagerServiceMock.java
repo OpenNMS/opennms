@@ -35,7 +35,6 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -44,18 +43,14 @@ import org.springframework.stereotype.Component;
 //Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
-    @Override
-    public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
+
+    /** Registers a new schema. The schema name must not have been used before. */
+    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{
 
     }
 
-    @Override
-    public <ENTITY> void registerSchema(String configName, Version version, Class<ENTITY> entityClass) throws IOException, JAXBException {
-
-    }
-
-    @Override
-    public void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, ConfigConverter converter) throws IOException {
+    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
+    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{
 
     }
 
@@ -65,7 +60,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(String configName, String configId, Object configObject) throws IOException {
+    public void registerConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
 
     }
 
@@ -75,13 +70,8 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, Object configObject) throws IOException {
+    public void updateConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
 
-    }
-
-    @Override
-    public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass) throws IOException {
-        return Optional.empty();
     }
 
     @Override

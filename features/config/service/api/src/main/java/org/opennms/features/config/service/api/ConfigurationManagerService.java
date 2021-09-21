@@ -37,7 +37,6 @@ import java.util.StringJoiner;
 import javax.xml.bind.JAXBException;
 
 import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 
@@ -50,25 +49,11 @@ import org.opennms.features.config.dao.api.ConfigSchema;
  */
 public interface ConfigurationManagerService {
 
-    /**
-     * Register a service to use config manager
-     *
-     * @param configName
-     * @param majorVersion
-     * @param minorVersion
-     * @param patchVersion
-     * @param entityClass  (Must have ValidateUsing annotation)
-     * @param <ENTITY>
-     * @throws IOException
-     * @throws JAXBException
-     */
-    <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion,
-                                 int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException;
+    /** Registers a new schema. The schema name must not have been used before. */
+    void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
 
-    <ENTITY> void registerSchema(String configName, Version version, Class<ENTITY> entityClass) throws IOException, JAXBException;
-
-    void registerSchema(String configName, int majorVersion, int minorVersion,
-                        int patchVersion, ConfigConverter converter) throws IOException;
+    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
+    void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
 
     /**
      * Get the registered Schema
@@ -88,7 +73,7 @@ public interface ConfigurationManagerService {
      * @param configObject (config object / JSONObject)
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, Object configObject) throws IOException;
+    void registerConfiguration(String configName, String configId, JSONObject configObject) throws IOException;
 
     /**
      * remove configure from service
@@ -99,20 +84,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
-                             Object configObject) throws IOException, IllegalArgumentException;
-
-    /**
-     * get config as configObject by configName, configId and Config class
-     *
-     * @param configName
-     * @param configId
-     * @param entityClass
-     * @param <ENTITY>
-     * @return configObject
-     * @throws IOException
-     */
-    <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
-            throws IOException;
+                             JSONObject configObject) throws IOException, IllegalArgumentException;
 
     /**
      * get config as json by configName, configId

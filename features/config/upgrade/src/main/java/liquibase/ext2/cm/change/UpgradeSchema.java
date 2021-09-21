@@ -26,42 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.config.upgrade;
-
-import javax.inject.Inject;
-import javax.sql.DataSource;
+package liquibase.ext2.cm.change;
 
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-/**
- * Checks for config upgrades and executes them at startup of OpenNMS.
- * Runs at every start of the application.
- * Uses liquibase as underlying technology.
- */
-@Component
-public class UpgradeConfigService implements InitializingBean {
+import liquibase.change.ChangeMetaData;
+import liquibase.change.DatabaseChange;
 
-    private final ConfigurationManagerService cm;
-    private final DataSource dataSource;
-    private final boolean skipConfigUpgrades;
+/** Used in changelog.xml */
+@DatabaseChange(name = "upgradeSchema", description = "Upgrades a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
+public class UpgradeSchema extends AbstractSchemaChange {
 
-    @Inject
-    public UpgradeConfigService(final ConfigurationManagerService cm,
-                                final DataSource dataSource,
-                                @Value( "${skipConfigUpgrades:false}" )
-                                final boolean skipConfigUpgrades) {
-        this.cm = cm;
-        this.dataSource = dataSource;
-        this.skipConfigUpgrades = skipConfigUpgrades;
+    protected String getChangeName() {
+        return "Upgrade";
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (!skipConfigUpgrades) {
-            new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
-        }
+    protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
+        return () -> m.upgradeSchema(id, xsdName, this.rootElement);
     }
 }
+
+

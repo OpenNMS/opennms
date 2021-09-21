@@ -28,20 +28,22 @@
 
 package org.opennms.features.config.rest.impl;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
+import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -113,7 +115,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
-            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -121,10 +123,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response addConfig(String configName, String configId, String jsonStr) {
         try {
-            configurationManagerService.registerConfiguration(configName, configId, jsonStr);
+            configurationManagerService.registerConfiguration(configName, configId, new JSONObject(jsonStr));
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -132,10 +134,10 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response updateConfig(String configName, String configId, String jsonStr) {
         try {
-            configurationManagerService.updateConfiguration(configName, configId, jsonStr);
+            configurationManagerService.updateConfiguration(configName, configId, new JSONObject(jsonStr));
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
@@ -146,7 +148,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             configurationManagerService.unregisterConfiguration(configName, configId);
             return Response.ok().build();
         } catch (Exception e) {
-            LOG.error("configName: {}, configId: {}", configName, configId, e.getMessage());
+            LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }

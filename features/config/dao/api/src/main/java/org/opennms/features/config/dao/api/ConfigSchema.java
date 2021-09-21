@@ -27,15 +27,16 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.api;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
-
 /**
  * This class include meta-data of the config
  */
+// TODO: Patrick: remove version
 public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private String name;
     private int majorVersion;
@@ -45,13 +46,10 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private T converter;
 
     @JsonCreator
-    public ConfigSchema(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
-                        @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,
+    public ConfigSchema(@JsonProperty("name") String name,
                         @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
         this.name = name;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-        this.patchVersion = patchVersion;
+        this.converterClass = converterClass;
         this.setConverter(converter);
     }
 

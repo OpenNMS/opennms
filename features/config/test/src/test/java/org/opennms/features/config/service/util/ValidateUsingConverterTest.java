@@ -28,11 +28,19 @@
 
 package org.opennms.features.config.service.util;
 
-import com.google.common.io.Resources;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.bind.JAXBException;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ValidationSchema;
-import org.opennms.features.config.dao.api.XmlValidationSchema;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
@@ -40,12 +48,7 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import com.google.common.io.Resources;
 
 @JUnitConfigurationEnvironment
 public class ValidateUsingConverterTest {
@@ -64,18 +67,18 @@ public class ValidateUsingConverterTest {
         JSONAssert.assertEquals(expectedJson, convertedJson, true);
 
         // Verify the rendered JSON
-        final ProvisiondConfiguration objectFromMappedJson = converter.jsonToJaxbObject(convertedJson);
+        final ProvisiondConfiguration objectFromMappedJson = JaxbUtils.unmarshal(ProvisiondConfiguration.class, converter.jsonToXml(convertedJson));
 
         Assert.assertEquals("json importThreads Value is not correct", 11L, (long) objectFromMappedJson.getImportThreads());
         Assert.assertTrue("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromMappedJson.getForeignSourceDir()));
 
         // compare Object from json to object from source xml
-        final ProvisiondConfiguration objectFromSourceXml = converter.xmlToJaxbObject(sourceXml);
+        final ProvisiondConfiguration objectFromSourceXml = JaxbUtils.unmarshal(ProvisiondConfiguration.class, sourceXml);
         assertThat(objectFromMappedJson, equalTo(objectFromSourceXml));
 
         // check xml > json > xml > object
         String convertedXml = converter.jsonToXml(convertedJson);
-        ProvisiondConfiguration objectFromConvertedXml = converter.xmlToJaxbObject(convertedXml);
+        ProvisiondConfiguration objectFromConvertedXml =  JaxbUtils.unmarshal(ProvisiondConfiguration.class, convertedXml);
         Assert.assertEquals("Object ImportThreads Value is not correct", 11L, (long) objectFromConvertedXml.getImportThreads());
         Assert.assertTrue("Object ForeignSourceDir is not correct. " + objectFromConvertedXml.getForeignSourceDir(), FOREIGN_SOURCES.equals(objectFromConvertedXml.getForeignSourceDir()));
     }
@@ -98,7 +101,7 @@ public class ValidateUsingConverterTest {
         test.setUseAddressFromVarbind(true);
         converter.validate(test);
         String xmlStr = converter.jaxbObjectToXml(test);
-        FakeXsdForTest convertedTest = converter.xmlToJaxbObject(xmlStr);
+        FakeXsdForTest convertedTest =  JaxbUtils.unmarshal(FakeXsdForTest.class, xmlStr);
         Assert.assertEquals("Trap port is wrong after conversion!",
                 1024, convertedTest.getSnmpTrapPort());
         Assert.assertEquals("SnmpTrapAddress is wrong after conversion!",
@@ -132,7 +135,6 @@ public class ValidateUsingConverterTest {
         final String invalidJson = Resources.toString(
                 Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
         ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
-        ProvisiondConfiguration test = converter.jsonToJaxbObject(invalidJson);
-        converter.validate(test);
+        converter.validate(converter.jsonToXml(invalidJson), ConfigConverter.SCHEMA_TYPE.XML);
     }
 }

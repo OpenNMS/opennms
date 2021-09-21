@@ -28,9 +28,13 @@
 
 package org.opennms.features.config.dao.impl;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.UnmarshalException;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -43,11 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.UnmarshalException;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
 public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
@@ -100,7 +102,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new IllegalArgumentException("Invalid schema for configName: " + configName);
         }
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
-        ConfigSchema<?> schema = (ConfigSchema) mapper.readValue(jsonStr.get(), javaType);
+        ConfigSchema<?> schema = mapper.readValue(jsonStr.get(), javaType);
         return Optional.ofNullable(schema);
     }
 
@@ -134,7 +136,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void addConfig(String configName, String configId, Object configObject) throws IOException {
+    public void addConfig(String configName, String configId, JSONObject configObject) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             configData = Optional.of(new ConfigData<>());
@@ -158,7 +160,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public void updateConfig(String configName, String configId, Object config) throws IOException {
+    public void updateConfig(String configName, String configId, JSONObject config) throws IOException {
         Optional<ConfigData<JSONObject>> configData = this.getConfigData(configName);
         if (configData.isEmpty()) {
             throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
@@ -168,18 +170,10 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
         JSONObject existingJson = configs.get(configId);
-        JSONObject newJson;
-        if (config instanceof String) {
-            newJson = new JSONObject((String) config);
-        } else if (config instanceof JSONObject) {
-            newJson = (JSONObject) config;
-        } else {
-            Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
-            newJson = new JSONObject(schema.get().getConverter().jaxbObjectToJson(config));
-        }
+
         // copy all first level keys' value into existing config
-        newJson.keySet().forEach((key) -> {
-            existingJson.put(key, newJson.get(key));
+        config.keySet().forEach((key) -> {
+            existingJson.put(key, config.get(key));
         });
         this.validateConfigWithConvert(configName, existingJson);
         this.putConfig(configName, configData.get());
@@ -240,24 +234,12 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
      * @return
      * @throws IOException
      */
-    private JSONObject validateConfigWithConvert(final String configName, final Object configObject)
+    private JSONObject validateConfigWithConvert(final String configName, final JSONObject configObject)
             throws IOException {
         Optional<ConfigSchema<?>> schema = this.getConfigSchema(configName);
         try {
-            if (configObject instanceof String) {
-                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject((String) configObject);
-                this.validateConfig(schema, tmpConfigObject);
-                return new JSONObject((String) configObject);
-            } else if (configObject instanceof JSONObject) {
-                JSONObject json = (JSONObject) configObject;
-                Object tmpConfigObject = schema.get().getConverter().jsonToJaxbObject(json.toString());
-                this.validateConfig(schema, tmpConfigObject);
-                return json;
-            } else {
-                String json = schema.get().getConverter().jaxbObjectToJson(configObject);
                 this.validateConfig(schema, configObject);
-                return new JSONObject(json);
-            }
+                return configObject;
         } catch (RuntimeException e) {
             // make it error easier to understand
             if (e.getCause() instanceof UnmarshalException) {
@@ -275,24 +257,24 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new RuntimeException("Schema not found!");
         }
         configData.getConfigs().forEach((key, config) -> {
-            Object configObject = schema.get().getConverter().jsonToJaxbObject(config.toString());
-            this.validateConfig(schema, configObject);
+            this.validateConfig(schema, config);
         });
     }
 
-    private void validateConfig(final Optional<ConfigSchema<?>> schema, final Object configObject) {
+    private void validateConfig(final Optional<ConfigSchema<?>> schema, final JSONObject configObject) {
         try {
             if (schema.isEmpty()) {
                 LOG.error("Schema not found!");
                 throw new RuntimeException("Schema not found!");
             }
-            ConfigConverter converter = schema.get().getConverter();
-            if (!converter.validate(configObject)) {
-                LOG.error("Config validation error! ", schema.get().getName());
+            ConfigConverter<?> converter = schema.get().getConverter();
+            // TODO: Patrick: make this work for all SCHEMA_TYPEs
+            if (!converter.validate(converter.jsonToXml(configObject.toString()), ConfigConverter.SCHEMA_TYPE.XML)) {
+                LOG.error("Config validation error!: {} ", schema.get().getName());
                 throw new RuntimeException("Fail to validate xml! May be schema issue.");
             }
         } catch (Exception e) {
-            LOG.error("Config validation fail! ", schema.get().getConverter().jaxbObjectToJson(configObject));
+            LOG.error("Config validation fail!: {}", configObject, e);
             throw new RuntimeException(e);
         }
     }

@@ -28,32 +28,36 @@
 
 package org.opennms.features.config.dao.impl.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.io.Resources;
-import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.core.xml.ValidateUsing;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ValidationSchema;
-import org.opennms.features.config.dao.api.XmlValidationSchema;
-import org.opennms.features.config.dao.api.XmlSchema;
-import org.opennms.features.config.dao.api.util.XsdModelConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ValidationSchema;
+import org.opennms.features.config.dao.api.XmlSchema;
+import org.opennms.features.config.dao.api.XmlValidationSchema;
+import org.opennms.features.config.dao.api.util.XsdModelConverter;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.io.Resources;
 
 /**
  * It handles all kinds of xml <> json conventions
@@ -67,7 +71,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     private XmlMapper<CONFIG_CLASS> xmlMapper;
     private String xsdName;
     private String rootElement;
-    private XmlAccessType xmlAccessorType;
     private XmlValidationSchema validationSchema;
     private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
@@ -77,6 +80,7 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
      * @param configurationClass opennms config configObject class
      * @throws IllegalArgumentException if you provide invalid config configObject class
      */
+    @Deprecated
     public ValidateUsingConverter(Class<CONFIG_CLASS> configurationClass)
             throws IllegalArgumentException, IOException, JAXBException {
         if (!configurationClass.isAnnotationPresent(ValidateUsing.class)) {
@@ -93,12 +97,20 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
         }
         this.xsdName = configurationClass.getAnnotation(ValidateUsing.class).value();
         this.rootElement = configurationClass.getAnnotation(XmlRootElement.class).name();
-        this.xmlAccessorType = configurationClass.getAnnotation(XmlAccessorType.class).value();
         this.configurationClass = configurationClass;
         this.validationSchema = this.readXmlSchema();
         this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
     }
 
+    public ValidateUsingConverter(final String xsdName,
+                                  final String rootElement)
+            throws IllegalArgumentException, IOException, JAXBException {
+        this.xsdName = Objects.requireNonNull(xsdName);
+        this.rootElement = Objects.requireNonNull(rootElement);
+        this.validationSchema = this.readXmlSchema();
+        this.configurationClass = (Class<CONFIG_CLASS>) ProvisiondConfiguration.class; // TODO: Patrick workaround needs to be removed
+        this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
+    }
 
     /**
      * For object mapper use
@@ -118,7 +130,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
 
         this.xsdName = xsdName;
         this.rootElement = rootElement;
-        this.xmlAccessorType = xmlAccessorType;
         this.configurationClass = configurationClass;
         this.validationSchema = validationSchema;
         this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
@@ -180,11 +191,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public String jaxbObjectToJson(final CONFIG_CLASS configObject) {
-        return xmlMapper.jaxbObjectToJson(configObject);
-    }
-
-    @Override
     public String jaxbObjectToXml(CONFIG_CLASS configObject) {
         return xmlMapper.jaxbObjectToXml(configObject);
     }
@@ -195,8 +201,12 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public CONFIG_CLASS xmlToJaxbObject(final String xmlStr) {
-        return xmlMapper.xmlToJaxbObject(xmlStr);
+    public boolean validate(String config, SCHEMA_TYPE type) throws RuntimeException {
+        if(SCHEMA_TYPE.XML == type) {
+            return xmlMapper.validate(config);
+        } else {
+            throw new IllegalArgumentException("Implement me");
+        }
     }
 
     @Override
@@ -209,12 +219,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
         return xmlMapper.jsonToXml(jsonStr);
     }
 
-    @Override
-    public CONFIG_CLASS jsonToJaxbObject(final String jsonStr) {
-        return xmlMapper.jsonToJaxbObject(jsonStr);
-    }
-
-    @Override
     public Class<CONFIG_CLASS> getConfigurationClass() {
         return configurationClass;
     }

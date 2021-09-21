@@ -27,6 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,12 +47,6 @@ import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -65,8 +65,7 @@ public class ConfigStoreDaoImplTest {
     public void testData() throws IOException, JAXBException {
         // register
         ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
-        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, majorVersion,
-                0, 0, ValidateUsingConverter.class, converter);
+        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, ValidateUsingConverter.class, converter);
 
         configStoreDao.register(configSchema);
 
@@ -88,8 +87,7 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, majorVersion,
-                0, 0, ValidateUsingConverter.class, converter);
+        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, ValidateUsingConverter.class, converter);
         configStoreDao.register(configSchema2);
         configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);
@@ -103,7 +101,8 @@ public class ConfigStoreDaoImplTest {
         // add config
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
-        configStoreDao.addConfig(configName, filename + "_2", config2);
+        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(converter.jaxbObjectToXml(config2)));
+        configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
 

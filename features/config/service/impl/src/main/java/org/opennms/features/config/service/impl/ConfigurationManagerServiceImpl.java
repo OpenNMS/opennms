@@ -28,6 +28,16 @@
 
 package org.opennms.features.config.service.impl;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -35,16 +45,10 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -56,31 +60,45 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public <ENTITY> void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                                        final int patchVersion, Class<ENTITY> entityClass)
+    public void registerSchema(String configName, String xsdName, String topLevelElement)
             throws IOException, JAXBException {
-        ValidateUsingConverter<ENTITY> converter = new ValidateUsingConverter<>(entityClass);
-        this.registerSchema(configName, majorVersion, minorVersion, patchVersion, converter);
-    }
-
-    @Override
-    public <ENTITY> void registerSchema(final String configName, final Version version, Class<ENTITY> entityClass)
-            throws IOException, JAXBException {
-        this.registerSchema(configName, version.getMajorVersion(), version.getMinorVersion(), version.getPatchVersion(), entityClass);
-    }
-
-    @Override
-    public void registerSchema(final String configName, final int majorVersion, final int minorVersion,
-                               final int patchVersion, final ConfigConverter converter)
-            throws IOException {
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(xsdName, topLevelElement);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
         if (this.getRegisteredSchema(configName).isPresent()) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
         }
+        final ConfigSchema configSchema = new ConfigSchema(configName, converter.getClass(), converter);
+        configStoreDao.register(configSchema);
+    }
 
-        final ConfigSchema configSchema = new ConfigSchema(configName, majorVersion, minorVersion, patchVersion,
+    @Override
+    public void upgradeSchema(String configName, String xsdName, String topLevelElement)
+            throws IOException, JAXBException {
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(xsdName, topLevelElement);
+
+        Objects.requireNonNull(configName);
+        Objects.requireNonNull(converter);
+        if (this.getRegisteredSchema(configName).isEmpty()) {
+            throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
+        }
+
+        final ConfigSchema configSchema = new ConfigSchema(configName,
                 converter.getClass(), converter);
+        Map<String, JSONObject> configs = configStoreDao
+                .getConfigs(configName)
+                .orElse(Collections.emptyMap());
+
+        // Validate to check all of the existing configuration matches the new schema. If not => throw Exception
+        for(Map.Entry<String, JSONObject> config : configs.entrySet()) {
+            String xml = converter.jsonToXml(config.getValue().toString()); // TODO: Patrick: we should find a better solution
+            if(converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)){
+                throw new IllegalArgumentException(
+                        String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));
+            }
+        }
+
+        // all good => save new schema version.
         configStoreDao.register(configSchema);
     }
 
@@ -94,7 +112,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, final String configId, Object configObject)
+    public void registerConfiguration(final String configName, final String configId, JSONObject configObject)
             throws IOException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
@@ -118,25 +136,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, Object object) throws IOException {
-        configStoreDao.updateConfig(configName, configId, object);
-    }
-
-    @Override
-    public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
-            throws IOException {
-        Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
-        if (configSchema.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
-        if (config.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        JSONObject json = config.get();
-        return (Optional<ENTITY>) Optional.of(configSchema.get().getConverter().jsonToJaxbObject(json.toString()));
+    public void updateConfiguration(String configName, String configId, JSONObject config) throws IOException {
+        configStoreDao.updateConfig(configName, configId, config);
     }
 
     @Override

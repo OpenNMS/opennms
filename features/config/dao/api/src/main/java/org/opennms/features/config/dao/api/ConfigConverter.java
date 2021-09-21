@@ -28,23 +28,18 @@
 
 package org.opennms.features.config.dao.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.IOException;
 import java.net.URL;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface ConfigConverter<CONFIG_CLASS> {
     enum SCHEMA_TYPE {XML, JSON, PROPERTY};
 
+    @Deprecated
     boolean validate(CONFIG_CLASS obj);
 
-    /**
-     * convert xml into config object
-     *
-     * @param xmlStr input xml string
-     * @return configClass instance
-     */
-    CONFIG_CLASS xmlToJaxbObject(String xmlStr);
+    boolean validate(String config, SCHEMA_TYPE type);
 
     /**
      * convert xml string to json string
@@ -62,37 +57,8 @@ public interface ConfigConverter<CONFIG_CLASS> {
      */
     String jsonToXml(String jsonStr);
 
-    /**
-     * convert json string to config object
-     *
-     * @param jsonStr input json config
-     * @return config object
-     */
-    CONFIG_CLASS jsonToJaxbObject(String jsonStr);
-
-
-    /**
-     * convert config object to json string
-     *
-     * @param configObject
-     * @return json string
-     */
-    String jaxbObjectToJson(CONFIG_CLASS configObject);
-
-    /**
-     * convert config object to xml string
-     *
-     * @param configObject
-     * @return json string
-     */
+    @Deprecated
     String jaxbObjectToXml(CONFIG_CLASS configObject);
-
-    /**
-     * get the configuration class register with the converter
-     *
-     * @return configuration class
-     */
-    Class<CONFIG_CLASS> getConfigurationClass();
 
     /**
      * @return ServiceSchema

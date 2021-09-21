@@ -63,15 +63,13 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     }
 
+    /** Registers a new schema. The schema name must not have been used before. */
     @Override
-    public <ENTITY> void registerSchema(String configName, Version version, Class<ENTITY> entityClass) throws IOException, JAXBException {
+    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
 
-    }
-
+    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
     @Override
-    public void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, ConfigConverter converter) throws IOException {
-
-    }
+    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
 
     @Override
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException {
@@ -79,7 +77,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(String configName, String configId, Object configObject) throws IOException {
+    public void registerConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
 
     }
 
@@ -89,7 +87,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, Object configObject) throws IOException {
+    public void updateConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
 
     }
 

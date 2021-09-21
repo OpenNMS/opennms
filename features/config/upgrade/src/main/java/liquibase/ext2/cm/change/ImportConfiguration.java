@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
+import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
@@ -86,7 +87,7 @@ public class ImportConfiguration extends AbstractCmChange {
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
                         String xmlStr = Files.readString(ResourceUtils.getFile(this.filePath).toPath());
-                        Object configObject = configSchema.get().getConverter().xmlToJaxbObject(xmlStr);
+                        JSONObject configObject = new JSONObject(configSchema.get().getConverter().xmlToJson(xmlStr));
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

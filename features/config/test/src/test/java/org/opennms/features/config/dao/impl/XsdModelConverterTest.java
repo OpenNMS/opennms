@@ -28,25 +28,24 @@
 
 package org.opennms.features.config.dao.impl;
 
+import java.io.IOException;
+
+import javax.xml.bind.JAXBException;
+
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-
 
 public class XsdModelConverterTest {
     final String configName = "testConfigName";
-    final int majorVersion = 29;
 
     @Test
     public void testData() throws IOException, JAXBException {
         // register
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
-        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, majorVersion,
-                0, 0, ValidateUsingConverter.class, converter);
+        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>("provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, ValidateUsingConverter.class, converter);
         configSchema.getConverter().getValidationSchema().getConfigItem();
 
     }

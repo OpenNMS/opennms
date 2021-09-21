@@ -28,6 +28,22 @@
 
 package org.opennms.features.config.dao.impl.util;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
 import org.eclipse.persistence.internal.oxm.ByteArraySource;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -40,17 +56,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.*;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
+// TODO: Patrick remove class generics
 public class XmlMapper<CONFIG_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlMapper.class);
 
@@ -69,6 +75,11 @@ public class XmlMapper<CONFIG_CLASS> {
         jc = JaxbUtils.getContextFor(configurationClass);
         unmarshaller = jc.createUnmarshaller();
         marshaller = jc.createMarshaller();
+    }
+
+    public boolean validate(String configAsXml) throws RuntimeException {
+        CONFIG_CLASS config = this.xmlToJaxbObject(configAsXml);
+        return validate(config);
     }
 
     public boolean validate(CONFIG_CLASS obj) throws RuntimeException {
