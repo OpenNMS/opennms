@@ -151,7 +151,9 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      */
     public void reload() throws IOException {
 
-        try {
+        this.loadConfig(this.getDefaultConfigId());
+
+       /* try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
             final FileSystemResource resource = new FileSystemResource(cfgFile);
@@ -170,7 +172,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
         } catch (IOException e) {
             LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
             throw e;
-        }
+        }*/
     }
 
     /**
