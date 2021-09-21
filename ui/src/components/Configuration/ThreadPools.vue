@@ -43,7 +43,7 @@
         <p class="p-error">{{ validationVar.write?.$errors[0]?.$message }}</p>
       </div>
       <div class="p-field p-col-2">
-        <Button icon="pi pi-save" label="Save" :disabled="validationVar.$invalid" @click="onchange()"></Button>
+        <Button icon="pi pi-save" label="Save" :disabled="validationVar.$invalid" @click="onSave()"></Button>
       </div>
     </div>
   </div>
@@ -56,19 +56,13 @@ import Button from '../Common/Button.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, minValue, numeric, maxValue } from '@vuelidate/validators'
 
-interface ThreadPoolProps {
-  import?: number,
-  scan?: number,
-  rescan?: number,
-  write?: number
-}
-
 const threadpool = reactive({
   import: 0,
   scan: 0,
   rescan: 0,
   write: 0
 });
+
 const rules = {
   import: { required, numeric, minValue: minValue(0), maxValue: maxValue(10) },
   scan: { required, numeric, minValue: minValue(0), maxValue: maxValue(10) },
@@ -83,10 +77,11 @@ const validationVar = useVuelidate(rules, {
   write: toRef(threadpool, "write")
 });
 
-
-const onchange = () => {
-  validationVar.value.$touch();
-  if (validationVar.value.$invalid) return;
+const onSave = () => {  
+    threadpool.import = validationVar.value.import.$model;
+    threadpool.scan = validationVar.value.scan.$model;
+    threadpool.rescan = validationVar.value.rescan.$model;
+    threadpool.write = validationVar.value.write.$model; 
 }
 </script>
 
