@@ -54,7 +54,6 @@
 *** xref:thresholds/metadata.adoc[]
 *** xref:thresholds/datasource.adoc[]
 *** xref:thresholds/thresh-group.adoc[]
-*** xref:thresholds/notification.adoc[]
 ** xref:thresholds/thresh-service.adoc[]
 ** xref:thresholds/troubleshoot.adoc[]
 
