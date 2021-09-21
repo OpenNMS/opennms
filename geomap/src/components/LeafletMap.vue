@@ -40,11 +40,9 @@ import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
-/* @vue-leaflet/vue-leaflet */
 
 const zoom = ref(7);
 let leafletReady = ref(false);
-// let leafletReady:boolean;
 let leafletObject = ref('');
 let visible = ref(false);
 let map: any = ref();
@@ -54,7 +52,6 @@ async function onLeafletReady() {
   leafletObject.value = map.value.leafletObject;
   leafletReady.value = true;
 }
-
 
 //  const openNMSHeadQuarter = ref([27.175014, -78.042152])
 //  const markerLatLng = [47.7515953048815, 8.757179159967961];
