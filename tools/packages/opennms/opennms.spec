@@ -195,6 +195,8 @@ Requires(pre):	%{name}-plugin-provisioning-snmp-asset
 Requires:	%{name}-plugin-provisioning-snmp-asset
 Requires(pre):	%{name}-plugin-provisioning-wsman-asset
 Requires:	%{name}-plugin-provisioning-wsman-asset
+Requires(pre):	%{name}-plugin-provisioning-snmp-metadata
+Requires:	%{name}-plugin-provisioning-snmp-metadata
 Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
@@ -319,6 +321,20 @@ Requires:       %{name}-core = %{version}-%{release}
 %description plugin-provisioning-wsman-asset
 The WSMAN asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from WSMAN WQL queries.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-snmp-metadata
+Summary:        SNMP Metadata Provisioning Adapter
+Group:          Applications/System
+Requires(pre):  %{name}-core = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-snmp-metadata
+The SNMP Metadata provisioning adapter responds to provisioning events by updating metadata
+fields with data fetched from SNMP queries.
 
 %{extrainfo}
 %{extrainfo2}
@@ -636,6 +652,7 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-metadata-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -662,6 +679,7 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-metadata-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -797,6 +815,12 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-wsman-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/wsman-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/wsman-asset-adapter-configuration.xml
+
+%files plugin-provisioning-snmp-metadata
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-snmp-metadata-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/snmp-metadata-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-metadata-adapter-configuration.xml
 
 %files plugin-provisioning-snmp-hardware-inventory
 %defattr(664 root root 775)

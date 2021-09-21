@@ -43,9 +43,67 @@
                 org.springframework.web.context.WebApplicationContext,
                 org.springframework.web.context.support.WebApplicationContextUtils"
 %>
+<%@ page import="org.opennms.netmgt.model.OnmsMetaData" %>
+<%@ page import="org.opennms.netmgt.model.snmpmetadata.SnmpMetadataEntry" %>
+<%@ page import="org.opennms.netmgt.model.snmpmetadata.SnmpMetadataObject" %>
+<%@ page import="org.opennms.netmgt.model.snmpmetadata.SnmpMetadataTable" %>
+<%@ page import="org.opennms.netmgt.model.snmpmetadata.SnmpMetadataBase" %>
+<%@ page import="org.opennms.netmgt.model.snmpmetadata.SnmpMetadataValue" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
+    public void printSnmpMetadata(final JspWriter out, final SnmpMetadataBase object) throws Exception {
+        if (object instanceof SnmpMetadataObject) {
+            final SnmpMetadataObject snmpMetadataObject = (SnmpMetadataObject) object;
+            final String parentCls = snmpMetadataObject.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataObject.getParent().getId();
+            out.println("<tr class='treegrid-" + snmpMetadataObject.getId() + parentCls + "'>");
+            out.println("<td>" + snmpMetadataObject.getName() + "</td><td>");
+            out.println("<table class=\"table table-sm table-bordered\">");
+            for (final SnmpMetadataValue snmpMetadataValue : snmpMetadataObject.getValues()) {
+                out.println("<tr>");
+                printSnmpMetadata(out, snmpMetadataValue);
+                out.println("</tr>");
+            }
+            out.println("</table></td></tr>");
+            for (final SnmpMetadataObject nextSnmpMetadataObject : snmpMetadataObject.getObjects()) {
+                printSnmpMetadata(out, nextSnmpMetadataObject);
+            }
+            for (final SnmpMetadataTable nextSnmpMetadataTable : snmpMetadataObject.getTables()) {
+                printSnmpMetadata(out, nextSnmpMetadataTable);
+            }
+        }
+
+        if (object instanceof SnmpMetadataValue) {
+            final SnmpMetadataValue snmpMetadataValue = (SnmpMetadataValue) object;
+            out.println("<td width='50%'>" + snmpMetadataValue.getValue() + "&nbsp;</td>");
+        }
+
+        if (object instanceof SnmpMetadataEntry) {
+            SnmpMetadataEntry snmpMetadataEntry = (SnmpMetadataEntry) object;
+            final String parentCls = snmpMetadataEntry.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataEntry.getParent().getId();
+            out.println("<tr class='treegrid-" + snmpMetadataEntry.getId() + parentCls + "'>");
+            out.println("<td>" + ((SnmpMetadataTable)snmpMetadataEntry.getParent()).getName() +"[" + snmpMetadataEntry.getIndex() + "]" + "</td><td><table class=\"table table-sm table-bordered\">");
+            for(final SnmpMetadataValue snmpMetadataValue : snmpMetadataEntry.getValues()) {
+                out.println("<tr><th>" + snmpMetadataValue.getName() + "</th>");
+                printSnmpMetadata(out, snmpMetadataValue);
+                out.println("</tr>");
+            }
+            out.println("</table></td></tr>");
+        }
+
+        if (object instanceof SnmpMetadataTable) {
+            final SnmpMetadataTable snmpMetadataTable = (SnmpMetadataTable) object;
+            final String parentCls = snmpMetadataTable.getParent() == null ? "" : " treegrid-parent-" + snmpMetadataTable.getParent().getId();
+            out.println("<tr class='treegrid-" + snmpMetadataTable.getId() + parentCls + "'>");
+            out.println("<td>" + snmpMetadataTable.getName() + "</td><td><table class=\"table table-sm table-bordered\">");
+            out.println("</table></td></tr>");
+
+            for (final SnmpMetadataEntry snmpMetadataEntry : snmpMetadataTable.getEntries()) {
+                printSnmpMetadata(out, snmpMetadataEntry);
+            }
+        }
+    }
+
     private HwEntityDao hwEntityDao;
 
     public void init() throws ServletException {
@@ -101,6 +159,16 @@
 <%
     OnmsNode node = ElementUtil.getNodeByParams(request, getServletContext());
     OnmsHwEntity root = hwEntityDao.findRootByNodeId(node.getId());
+    List<OnmsMetaData> onmsMetaDataList = node.getMetaData();
+    boolean snmpHardware = false;
+
+    for(final OnmsMetaData onmsMetaData : onmsMetaDataList) {
+        if ("snmp-hardware".equals(onmsMetaData.getContext())) {
+            snmpHardware = true;
+            break;
+        }
+    }
+
     String nodeBreadCrumb = "<a href='element/node.jsp?node=" + node.getId()  + "'>Node</a>";
 %>
 
@@ -119,8 +187,14 @@
 <br/>
 <table class="table table-sm table-hover tree">
   <% if (root == null) { %>
+    <% if (!snmpHardware) { %>
       <br/>
       <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>
+    <% } else {
+        SnmpMetadataBase obj = SnmpMetadataObject.fromOnmsMetadata(onmsMetaDataList, "snmp-hardware");
+        printSnmpMetadata(out, obj);
+       }
+    %>
   <% } else {
        printTree(out, root);
      }

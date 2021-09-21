@@ -114,7 +114,8 @@ install: build
 	mv debian/temp/lib/opennms-reverse-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-reverse-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-wsman-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-wsman-asset-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-snmp-metadata-provisioning-adapter*.jar       debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-hardware-inventory/usr/share/java/opennms/
 	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 	mv debian/temp/etc/snmp-hardware-inventory-adapter-configuration.xml     debian/opennms-plugin-provisioning-snmp-hardware-inventory/etc/opennms/
