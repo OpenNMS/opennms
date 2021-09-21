@@ -603,7 +603,6 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-                - jira/NMS-13568-meridian
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -614,7 +613,6 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-                - jira/NMS-13568-meridian
       - meridian-rpm-build:
           requires:
             - build
