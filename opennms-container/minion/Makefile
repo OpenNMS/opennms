@@ -13,7 +13,7 @@ DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKERX_INSTANCE        := env-minion-oci
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms
-DOCKER_PROJECT          := minion
+DOCKER_PROJECT          := meridian-minion
 DOCKER_TAG              := $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(DOCKER_PROJECT):$(VERSION)
 DOCKER_ARCH             := linux/amd64
 DOCKER_FLAGS            := --output=type=docker,dest=images/minion.oci

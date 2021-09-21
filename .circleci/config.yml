@@ -80,7 +80,7 @@ aliases:
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
-      echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
+      echo "export MINION_IMAGE=docker.io/opennms/meridian-minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
   - &setup_dct_key
     name: Setup DCT key
@@ -90,7 +90,7 @@ aliases:
       # the key that is used to sign single-arch images
       echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
       # the key that is used by Notary to sign the multi-arch minion image
-      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      echo "$DCT_REPO_MERIDIAN_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MERIDIAN_MINION_KEY_NAME.key
       chmod 600 $KEY_FOLDER/*
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
@@ -603,6 +603,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - jira/NMS-13568-meridian
       - minion-image-multi-arch:
           context: "docker-content-trust"
           requires:
@@ -613,6 +614,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
+                - jira/NMS-13568-meridian
       - meridian-rpm-build:
           requires:
             - build
@@ -1071,7 +1073,7 @@ jobs:
             # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
             #
             # -> use the targets key of the minion repository to sign the multi-arch image instead
-            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MERIDIAN_MINION_KEY_PASSPHRASE}"
             notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
             echo "Done!"
             # notary -s https://notary.docker.io list "${IMAGE}"
