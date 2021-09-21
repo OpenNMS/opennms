@@ -16,4 +16,4 @@ image:thresholding/Graphs.png[]
 
 . Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
 
-. Note the name of the data source, and type it in the *Datasource* field when you xref:create-thresh.adoc#threshold-create[create your threshold].
+. Note the name of the data source, and type it in the *Datasource* field when you xref:thresholds/create-thresh.adoc#threshold-create[create your threshold].

@@ -7,7 +7,7 @@ The following shell commands help debug and manage thresholding.
 
 Use `opennms:threshold-enumerate`:
 
-[source]
+[source, console]
 ----
 admin@opennms> opennms:threshold-enumerate
 Index   State Key
@@ -24,7 +24,7 @@ Indexes are scoped to the particular shell session and provided as an alternativ
 
 Use `opennms:threshold-details`:
 
-[source]
+[source, console]
 ----
 admin@opennms> opennms:threshold-details 1
 multiplier=1.333
@@ -33,7 +33,7 @@ previousTriggeringSample=28.862826722171075
 interpolatedExpression='hrStorageUsed / hrStorageSize * 100.0'
 ----
 
-[source]
+[source, console]
 ----
 admin@opennms> opennms:threshold-details 2
 exceededCount=0
@@ -47,7 +47,7 @@ Note that different types of thresholds display different properties.
 
 Use `opennms:threshold-clear`:
 
-[source]
+[source, console]
 ----
 admin@opennms> opennms:threshold-clear 2
 ----
@@ -56,7 +56,7 @@ admin@opennms> opennms:threshold-clear 2
 
 Use `opennms:threshold-clear-all`:
 
-[source]
+[source, console]
 ----
 admin@opennms> opennms:threshold-clear-all
 Clearing all thresholding states....done

@@ -15,13 +15,17 @@ During evaluation of an expression, the following scopes are available:
 
 Metadata is also supported in Value, Re-arm, and Trigger fields for Single-DS and expression-based thresholds.
 
-For more information on metadata and how to define it, see <<metadata.adoc,Metadata>>.
+NOTE: For more information on metadata and how to define it, see <<meta-data.adoc#metadata-overview
+, Metadata>>.
+
+
+== Example
 
 This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
 
 The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
 
-Before using metatdata in a threshold, you need to add the metatdata context pair, in this case, a requisition key called userLimit (see <<meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
+Before using metadata in a threshold, you need to add the metadata context pair, in this case, a requisition key called userLimit (see <<meta-data.adoc#ga-metadata-webui, Adding metadata through the web UI>>).
 
 . Click the gear icon in the top-right menu.
 . Under *Performance Measurement*, choose *Configure Thresholds*.

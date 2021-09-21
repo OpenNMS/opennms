@@ -43,15 +43,15 @@ In this case, we want to trigger an event when the number of logged-in users exc
 | Re-arm
 | The value below which we want the system to re-arm.
 In this case, once the number of logged-in users falls below two.
- | 2
+| 2
 
 | Trigger| The number of consecutive times the threshold value can occur before the system triggers an event.
 Since our default polling period is 5 minutes, a value of 3 means {page-component-title} would create a threshold event if there are more than 2 users for 15 minutes.
- | 3
+| 3
 
 | Description
 | Optional text to describe your threshold.
- | leave blank
+| leave blank
 
 | Triggered UEI
 | A custom unique event identifier (UEI) sent into the events system when the threshold is triggered.
@@ -61,7 +61,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 
 | Re-armed UEI
 | A custom unique event identifier (UEI) sent into the events system when the threshold is re-armed.
- | leave blank
+| leave blank
 
 |===
 
@@ -136,11 +136,13 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 | Trigger an alert when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 
 | Triggered UEI
-| See the table in xref:threshold-create[Create a threshold] for details.
+| A custom unique event identifier (UEI) sent into the events system when the threshold is triggered.
+A custom UEI for each threshold makes it easier to xref:thresholds/notification.adoc#threshold-notification[create notifications].
+If left blank, it defaults to the standard thresholds UEIs.
 | leave blank
 
 | Re-armed UEI
-| See the table in xref:threshold-create[Create a threshold] for details.
+| A custom unique event identifier (UEI) sent into the events system when the threshold is re-armed.
 | leave blank
 
 |===
