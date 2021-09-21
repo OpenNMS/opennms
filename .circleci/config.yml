@@ -65,7 +65,8 @@ aliases:
            MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
           ;;
         "release-"*)
-           MINION_IMAGE_VERSION="release-candidate"
+           VERSION="$(.circleci/scripts/pom2version.sh ../../pom.xml)"
+           MINION_IMAGE_VERSION="release-candidate-${VERSION%.*.*}"
           ;;
         "foundation-"20[1-2][0-9])
            MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
