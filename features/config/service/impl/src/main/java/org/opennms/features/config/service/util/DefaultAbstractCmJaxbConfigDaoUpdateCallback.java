@@ -28,21 +28,20 @@
 
 package org.opennms.features.config.service.util;
 
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
  * It is default update notifier for AbstractCmJaxbConfigDao.
- *
+ *`
  * @param <ENTITY_CLASS>
  */
-public class DefaultUpdateNotifier<ENTITY_CLASS> implements Consumer<ConfigUpdateInfo> {
+public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<ENTITY_CLASS> implements Consumer<ConfigUpdateInfo> {
     private AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao;
 
-    public DefaultUpdateNotifier(AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao) {
+    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao) {
         this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
     }
 

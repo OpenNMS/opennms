@@ -134,6 +134,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     /**
      * It will be trigger when a config is updated.
+     *
      * @param configUpdateInfo
      */
     private void triggerReloadConsumer(ConfigUpdateInfo configUpdateInfo) {
@@ -182,7 +183,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     public void updateConfiguration(String configName, String configId, JsonAsString config) throws IOException {
         configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
         Optional<JSONObject> jsonConfig = this.getJSONConfiguration(configName, configId);
-        ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId, jsonConfig.get());
+        ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
         this.triggerReloadConsumer(updateInfo);
     }
 

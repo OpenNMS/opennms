@@ -28,20 +28,13 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-
-import javax.xml.bind.JAXBException;
-
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
@@ -49,12 +42,22 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -84,7 +87,7 @@ public class ConfigurationManagerServiceImplTest {
     }
 
     @After
-    public void after() throws IOException{
+    public void after() throws IOException {
         configManagerService.unregisterSchema(CONFIG_NAME);
     }
 
@@ -105,6 +108,7 @@ public class ConfigurationManagerServiceImplTest {
 
     /**
      * it is expected to have exception due to not xsd validation. importThreads > 0
+     *
      * @throws IOException
      */
     @Test(expected = RuntimeException.class)
@@ -132,8 +136,23 @@ public class ConfigurationManagerServiceImplTest {
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
 
+    private class TestCallback implements Consumer<ConfigUpdateInfo> {
+        @Override
+        public void accept(ConfigUpdateInfo info) {}
+    }
+
+    @Test
+    public void testRegisterNewCallback() throws IOException {
+        TestCallback callback = Mockito.mock(TestCallback.class);
+        ProvisiondConfiguration pConfig = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
+        configManagerService.registerReloadConsumer(CONFIG_NAME, callback);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, pConfig);
+        Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
+    }
+
     /**
      * it is expected to have exception due to not xsd validation. importThreads > 0
+     *
      * @throws IOException
      */
     @Test(expected = RuntimeException.class)

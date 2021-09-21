@@ -30,12 +30,13 @@ package org.opennms.features.config.service.impl;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.util.DefaultUpdateNotifier;
+import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,6 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
+    @Autowired
     private ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
@@ -70,8 +72,12 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      */
     abstract protected String getConfigName();
 
-    Consumer<ConfigUpdateInfo> getUpdateNotifier(){
-        return new DefaultUpdateNotifier<>(this);
+    /**
+     * It will provide the default callback for all ConfigDao, override if you needed
+     * @return Consumer
+     */
+    Consumer<ConfigUpdateInfo> getUpdateCallback(){
+        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
     }
 
     /**
@@ -83,9 +89,9 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
-     * It will use {@link org.opennms.features.config.service.util.DefaultUpdateNotifier},
-     * override getUpdateNotifier if you need to change.
-     * @see #getUpdateNotifier()
+     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
+     * override getUpdateCallback if you need to change.
+     * @see #getUpdateCallback()
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
      */
@@ -94,19 +100,26 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         this.description = description;
     }
 
-    @Autowired
-    public void setConfigurationManagerService(ConfigurationManagerService configurationManagerService) {
-        this.configurationManagerService = configurationManagerService;
-        // make sure configurationManagerService is injected
-        this.addOnReloadedCallback(getUpdateNotifier());
+    /**
+     * Add default callback
+     */
+    @PostConstruct
+    public void postConstruct() {
+        this.addOnReloadedCallback(getUpdateCallback());
     }
 
+    /**
+     * It will load the default config
+     * @return ConfigObject
+     */
+    public ENTITY_CLASS loadConfig(){
+        return this.loadConfig(this.getDefaultConfigId());
+    }
     /**
      * loadConfig from database by CM. If it is already in cache, it will update the cache.
      *
      * @param configId
      * @return ConfigObject
-     * @throws IOException
      */
     public ENTITY_CLASS loadConfig(final String configId) {
         long startTime = System.currentTimeMillis();
@@ -131,12 +144,26 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
         return lastKnownEntityMap.compute(configId, (k, v)->{
             if(v != null){
-                BeanUtils.copyProperties(v, config);
+                BeanUtils.copyProperties(config, v);
                 return v;
             } else {
-                return v;
+                return config;
             }
         });
+    }
+
+    public void updateConfig(final String configId, Object config) throws IOException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, config);
+    }
+
+    /**
+     * it will update the default config
+     * @see #updateConfig(String, Object)
+     * @param config
+     * @throws IOException
+     */
+    public void updateConfig(Object config) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), config);
     }
 
     /**

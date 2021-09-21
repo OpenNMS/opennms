@@ -51,10 +51,18 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -89,28 +97,19 @@ public class AbstractCmJaxbConfigDaoTest {
     }
 
     @Test
-    public void testProvisiondCmJaxbConfigDao() {
+    public void testProvisiondCmJaxbConfigDao() throws IOException {
         // test get config
         ProvisiondConfiguration pconfig = provisiondCmJaxbConfigTestDao.loadConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
         Assert.assertTrue("getConfig fail!", pconfig != null);
+        Assert.assertTrue("import thread is wrong", pconfig.getImportThreads() == 11);
 
-//        // test callback
-//        ProvisiondCallback callback = Mockito.mock(ProvisiondCallback.class);
-//        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(callback);
-//
-//        doAnswer(invocationOnMock -> {
-//            Assert.assertTrue("accept".equals(invocationOnMock.getMethod().getName()));
-//            Assert.assertTrue(invocationOnMock.getArgument(0) instanceof ProvisiondConfiguration);
-//            return null;
-//        }).when(callback).accept(any());
+        // test callback update reference config entity object
+        DefaultAbstractCmJaxbConfigDaoUpdateCallback callback = Mockito.mock(DefaultAbstractCmJaxbConfigDaoUpdateCallback.class);
+        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(callback);
+        provisiondCmJaxbConfigTestDao.updateConfig("{\"importThreads\": 12}");
+        Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
 
-//        provisiondCmJaxbConfigTestDao.loadConfig(provisiondCmJaxbConfigTestDao.getDefaultConfigId());
-    }
+        Assert.assertTrue("import thread is wrong (after callback)", pconfig.getImportThreads() == 12);
 
-    class ProvisiondCallback implements Consumer<ProvisiondConfiguration> {
-        @Override
-        public void accept(ProvisiondConfiguration provisiondConfiguration) {
-            System.out.println("ProvisiondCallback fired!!!");
-        }
     }
 }

@@ -28,17 +28,13 @@
 
 package org.opennms.features.config.service.api;
 
-import org.json.JSONObject;
-
 public class ConfigUpdateInfo {
     private String configName;
     private String configId;
-    private JSONObject config;
 
-    public ConfigUpdateInfo(String configName, String configId, JSONObject config) {
+    public ConfigUpdateInfo(String configName, String configId) {
         this.configName = configName;
         this.configId = configId;
-        this.config = config;
     }
 
     public String getConfigName() {
@@ -47,9 +43,5 @@ public class ConfigUpdateInfo {
 
     public String getConfigId() {
         return configId;
-    }
-
-    public JSONObject getConfig() {
-        return config;
     }
 }
