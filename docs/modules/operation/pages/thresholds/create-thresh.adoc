@@ -55,7 +55,7 @@ Since our default polling period is 5 minutes, a value of 3 means {page-componen
 
 | Triggered UEI
 | A custom unique event identifier (UEI) sent into the events system when the threshold is triggered.
-A custom UEI for each threshold makes it easier to xref:thresholds/notification.adoc#threshold-notification[create notifications].
+A custom UEI for each threshold makes it easier to xref:notifications/introduction.adoc#ga-notifications-introduction[create notifications].
 If left blank, it defaults to the standard thresholds UEIs.
 | leave blank
 
