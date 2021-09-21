@@ -9,7 +9,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, 
+    "skipLibCheck": true,
     "lib": ["esnext", "dom"],
     "paths": {
       "@/*": [
