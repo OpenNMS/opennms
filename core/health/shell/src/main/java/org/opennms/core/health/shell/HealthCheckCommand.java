@@ -28,6 +28,7 @@
 
 package org.opennms.core.health.shell;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -59,6 +60,9 @@ public class HealthCheckCommand implements Action {
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
     public long timeout = 5L * 1000L;
 
+    @Option(name = "--maxAge", description = "Maximum age of cached health check responses in milliseconds. Defaults to zero, i.e. cached responses of health checks are not considered.")
+    public long maxAgeMs = 0;
+
     @Reference
     private BundleContext bundleContext;
 
@@ -74,6 +78,7 @@ public class HealthCheckCommand implements Action {
         // Perform check
         final Context context = new Context();
         context.setTimeout(timeout);
+        context.setMaxAge(Duration.ofMillis(maxAgeMs));
         final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
         final Health health = future.get();
 

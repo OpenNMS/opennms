@@ -33,6 +33,8 @@ package org.opennms.core.health.api;
  */
 public class Response {
 
+    public static Response SUCCESS = new Response(Status.Success);
+
     // The status
     private final Status status;
 
