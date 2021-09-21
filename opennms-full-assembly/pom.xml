@@ -348,8 +348,7 @@
                 <feature>http</feature>
                 <feature>http-whiteboard</feature>
                 <feature>instance</feature>
-                <feature>jaas-boot</feature>
-                <feature>jaas</feature>
+                <feature>jaas-deployer</feature>
                 <feature>jasypt-encryption</feature>
                 <!-- TODO: Should we import both versions of Jetty? -->
                 <feature>jetty/8.1.14.v20131031</feature>
