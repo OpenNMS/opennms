@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,50 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.impl;
+package org.opennms.core.rpc.echo;
 
-import java.util.concurrent.Callable;
+import static org.opennms.core.rpc.echo.EchoRpcModule.RPC_MODULE_ID;
 
-import org.opennms.core.health.api.CachingHealthCheck;
+import java.util.concurrent.CompletableFuture;
+
 import org.opennms.core.health.api.HealthCheckResponseCache;
 import org.opennms.core.health.api.Response;
-import org.opennms.distributed.core.api.RestClient;
+import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 
-/**
- * A rest client that informs a {@link CachingHealthCheck} about the success / failure of service calls.
- */
-public class HealthTrackingRestClient implements RestClient {
-    private final RestClient delegate;
+public class HealthTrackingEchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoResponse> {
+
+    private final EchoRpcModule delegate;
     private final HealthCheckResponseCache healthCheckResponseCache;
 
-    public HealthTrackingRestClient(RestClient delegate, HealthCheckResponseCache healthCheckResponseCache) {
+    public HealthTrackingEchoRpcModule(
+            EchoRpcModule delegate,
+            HealthCheckResponseCache healthCheckResponseCache
+    ) {
+        super(EchoRequest.class, EchoResponse.class);
         this.delegate = delegate;
         this.healthCheckResponseCache = healthCheckResponseCache;
     }
 
-    private <T> T callAndInformCachingHealthCheck(Callable<T> callable) throws Exception {
-        try {
-            var v = callable.call();
-            healthCheckResponseCache.setResponse(Response.SUCCESS);
-            return v;
-        } catch (Exception e) {
-            healthCheckResponseCache.setResponse(new Response(e));
-            throw e;
-        }
-
-    }
     @Override
-    public String getVersion() throws Exception {
-        return callAndInformCachingHealthCheck(delegate::getVersion);
+    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+        healthCheckResponseCache.setResponse(Response.SUCCESS);
+        return delegate.execute(request);
     }
 
     @Override
-    public void ping() throws Exception {
-        callAndInformCachingHealthCheck(() -> { delegate.ping(); return null; });
+    public String getId() {
+        return RPC_MODULE_ID;
     }
 
     @Override
-    public String getSnmpV3Users() throws Exception {
-        return callAndInformCachingHealthCheck(delegate::getSnmpV3Users);
+    public EchoResponse createResponseWithException(Throwable ex) {
+        return delegate.createResponseWithException(ex);
     }
+
 }

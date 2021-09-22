@@ -28,7 +28,14 @@
 
 package org.opennms.core.health.api;
 
-/**
- * A health check that caches responses.
- */
-public interface CachingHealthCheck extends HealthCheck, HealthCheckResponseCache {}
+public interface HealthCheckResponseCache {
+
+    /**
+     * Sets the cached response for {@link HealthCheck#perform(Context)} calls.
+     * <p>
+     * A {@link CachingHealthCheck} saves the current time as the timestamp of the given response.
+     * When the health check is performed the {@link Context#getMaxAge()} property is checked if
+     * the cached response can be used.
+     */
+    void setResponse(Response response);
+}
