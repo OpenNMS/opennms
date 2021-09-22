@@ -26,54 +26,55 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.impl;
+package org.opennms.core.health.api;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import org.opennms.core.health.api.CachingHealthCheck;
-import org.opennms.core.health.api.Context;
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
+/**
+ * A health that does no action by its own but relies on being informed about healthiness.
+ */
+public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
-public class DefaultCachingHealthCheck implements CachingHealthCheck {
+    private final String description;
+    private final List<String> tags;
 
-    private final HealthCheck delegate;
+    private Response cachedResponse = null;
+    private Instant cachedResponseTimestamp = null;
 
-    private volatile Response cachedResponse = null;
-    private volatile Instant cachedResponseTimestamp = null;
-
-    public DefaultCachingHealthCheck(HealthCheck delegate) {
-        this.delegate = delegate;
+    public DefaultPassiveHealthCheck(
+            String description,
+            List<String> tags,
+            Status initialStatus
+    ) {
+        this.description = description;
+        this.tags = tags;
+        setResponse(new Response(initialStatus));
     }
 
     @Override
-    public void setResponse(Response response) {
+    public synchronized void setResponse(Response response) {
         cachedResponse = response;
         cachedResponseTimestamp = Instant.now();
-
     }
 
     @Override
     public String getDescription() {
-        return delegate.getDescription();
+        return description;
     }
 
     @Override
     public List<String> getTags() {
-        return delegate.getTags();
+        return tags;
     }
 
     @Override
-    public Response perform(Context context) throws Exception {
-        if (cachedResponseTimestamp != null &&
-            Duration.between(cachedResponseTimestamp, Instant.now()).compareTo(context.getMaxAge()) < 0) {
+    public synchronized Response perform(Context context) throws Exception {
+        if (Duration.between(cachedResponseTimestamp, Instant.now()).compareTo(context.getMaxAge()) < 0) {
             return cachedResponse;
         } else {
-            var r = delegate.perform(context);
-            setResponse(r);
-            return r;
+            return new Response(Status.Failure, String.format("did not receive a recent response"));
         }
     }
 

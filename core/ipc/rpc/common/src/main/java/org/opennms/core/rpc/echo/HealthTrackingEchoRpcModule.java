@@ -52,7 +52,9 @@ public class HealthTrackingEchoRpcModule extends AbstractXmlRpcModule<EchoReques
 
     @Override
     public CompletableFuture<EchoResponse> execute(EchoRequest request) {
-        healthCheckResponseCache.setResponse(Response.SUCCESS);
+        if (healthCheckResponseCache != null) {
+            healthCheckResponseCache.setResponse(Response.SUCCESS);
+        }
         return delegate.execute(request);
     }
 

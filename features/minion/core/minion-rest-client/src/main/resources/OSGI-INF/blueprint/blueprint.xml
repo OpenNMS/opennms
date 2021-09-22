@@ -18,22 +18,21 @@
         <argument value="opennms.http"/>
     </bean>
 
-    <bean id="nonCachingHealthCheck" class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
-        <argument ref="restClient"/>
-    </bean>
-
-    <bean id="cachingHealthCheck" class="org.opennms.core.health.impl.DefaultCachingHealthCheck" >
-        <argument ref="nonCachingHealthCheck"/>
-    </bean>
+    <reference id="healthCheckResponseCacheRef" availability="optional" filter="(alias=opennms.passiveRestConnectionHealthCheck)"
+               interface="org.opennms.core.health.api.HealthCheckResponseCache" />
 
     <bean id="healthTrackingRestClient" class="org.opennms.distributed.core.impl.HealthTrackingRestClient">
         <argument ref="restClient"/>
-        <argument ref="cachingHealthCheck"/>
+        <argument ref="healthCheckResponseCacheRef"/>
     </bean>
 
     <service ref="healthTrackingRestClient" interface="org.opennms.distributed.core.api.RestClient"/>
 
     <!-- ReST Health Check -->
-    <service interface="org.opennms.core.health.api.HealthCheck" ref="cachingHealthCheck"/>
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
+            <argument ref="restClient"/>
+        </bean>
+    </service>
 
 </blueprint>

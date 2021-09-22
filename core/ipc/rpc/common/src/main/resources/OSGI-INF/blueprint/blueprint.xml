@@ -7,14 +7,14 @@
 
     <bean id="echoRpcModule" class="org.opennms.core.rpc.echo.EchoRpcModule" />
 
-    <bean id="cachingHealthCheck" class="org.opennms.core.rpc.echo.EchoRpcHealthCheck"/>
+    <reference id="healthCheckResponseCacheRef" availability="optional" filter="(alias=opennms.passiveEchoRpcHealthCheck)"
+               interface="org.opennms.core.health.api.HealthCheckResponseCache" />
 
     <bean id="healthTrackingEchoRpcModule" class="org.opennms.core.rpc.echo.HealthTrackingEchoRpcModule" >
         <argument ref="echoRpcModule"/>
-        <argument ref="cachingHealthCheck"/>
+        <argument ref="healthCheckResponseCacheRef"/>
     </bean>
 
     <service ref="healthTrackingEchoRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
-    <service ref="cachingHealthCheck" interface="org.opennms.core.health.api.HealthCheck"/>
 
 </blueprint>
