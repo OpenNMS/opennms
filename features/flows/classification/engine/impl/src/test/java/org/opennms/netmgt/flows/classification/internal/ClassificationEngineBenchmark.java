@@ -52,6 +52,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
+/**
+ * Use the Java Microbenchmarking Harness (JMH) to measure classification performance.
+ * <p>
+ * Rule sets are loaded from csv files and classification is done with randomly generated flows based on the
+ * protocols, ports, and addresses found in the loaded rule sets.
+ */
 public class ClassificationEngineBenchmark {
 
     // the number of classification request that are processed in a single benchmark method call
@@ -59,27 +65,12 @@ public class ClassificationEngineBenchmark {
     //    the number of classifications per second
     private static final int BATCH_SIZE = 1000;
 
-    // number of batches of different classification requests
-    // -> the @Param annotation of the BState.index member must be set correspondingly
-    private static final int BATCHES = 3;
-
-    private static final String RULES_RESOURCE = "/example-rules.csv";
+    // the benchmark is run for different rule sets
+    private static final String EXAMPLE_RULES_RESOURCE = "/example-rules.csv";
+    private static final String PRE_DEFINED_RULES_RESOURCE = "/pre-defined-rules.csv";
 
     public static void main(String[] args) throws Exception {
         org.openjdk.jmh.Main.main(args);
-    }
-
-    private static class Init {
-
-        private static ClassificationEngine classificationEngine, oldCe;
-
-        private static List<ClassificationRequest> requests;
-
-        static {
-            final List<Rule> rules = getRules(RULES_RESOURCE);
-            classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
-            requests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).limit(BATCHES * BATCH_SIZE).collect(Collectors.toList());
-        }
     }
 
     public static List<Rule> getRules(String resource) {
@@ -96,20 +87,28 @@ public class ClassificationEngineBenchmark {
     @State(Scope.Benchmark)
     public static class BState {
 
-        /**
-         * Corresponds to {@link #BATCHES}
-         */
-        @Param({"0", "1", "2", "3", "4"})
+        @Param({"0", "1"})
         public int index;
+
+        @Param({EXAMPLE_RULES_RESOURCE, PRE_DEFINED_RULES_RESOURCE})
+        public String ruleSet;
+
+        private ClassificationEngine classificationEngine;
+        private List<ClassificationRequest> classificationRequests;
 
         @Setup
         public void setup() {
-            // trigger initialization
-            Init.requests.size();
+            var rules = getRules(ruleSet);
+            classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
+            classificationRequests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).skip(index * BATCH_SIZE).limit(BATCH_SIZE).collect(Collectors.toList());
         }
 
         public List<ClassificationRequest> requests() {
-            return Init.requests.subList(index * BATCH_SIZE, (index + 1) * BATCH_SIZE);
+            return classificationRequests;
+        }
+
+        public ClassificationEngine classificationEngine() {
+            return classificationEngine;
         }
 
     }
@@ -118,9 +117,10 @@ public class ClassificationEngineBenchmark {
     @Fork(value = 1)
     @Warmup(iterations = 1)
     @Measurement(iterations = 2)
-    public void byNew(BState state, Blackhole blackhole) {
+    public void classify(BState state, Blackhole blackhole) {
+        var classificationEngine = state.classificationEngine();
         for (var cr: state.requests()) {
-            var app = Init.classificationEngine.classify(cr);
+            var app = classificationEngine.classify(cr);
             blackhole.consume(app);
         }
     }

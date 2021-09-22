@@ -82,9 +82,10 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         final var rules = ruleProvider.getRules();
         rules.forEach(rule -> {
             try {
-                preprocessedRules.add(PreprocessedRule.of(rule));
+                final var preprocessedRule = PreprocessedRule.of(rule);
+                preprocessedRules.add(preprocessedRule);
                 if (rule.canBeReversed()) {
-                    preprocessedRules.add(PreprocessedRule.of(rule.reversedRule()));
+                    preprocessedRules.add(preprocessedRule.reverse());
                 }
             } catch (Exception ex) {
                 LoggerFactory.getLogger(getClass()).error("Rule {} is not valid. Ignoring rule.", rule, ex);
