@@ -496,7 +496,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
             execute(() -> findElementById("classification-submit")).click();
 
             await()
-                    .atMost(100, TimeUnit.SECONDS)
+                    // reloading the classification engine sometimes takes insanely long on CI
+                    // (this is further aggravated by the fact that one reload may be under way and another one may be pending)
+                    .atMost(150, TimeUnit.SECONDS)
                     .pollInterval(2, TimeUnit.SECONDS)
                     .untilAsserted(assertion);
         }

@@ -67,7 +67,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     );
 
     private State state = State.READY;
-    private Exception reloadException;
+    private Throwable reloadException;
 
     public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
         this.delegate = delegate;
@@ -108,7 +108,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
             } else {
                 LOG.debug("classification engine reloaded");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error("reload of classification engine failed", e);
             if (onReloadFailed(e)) {
                 LOG.debug("another classification engine reload is required");
@@ -129,7 +129,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         }
     }
 
-    private synchronized boolean onReloadFailed(Exception e) {
+    private synchronized boolean onReloadFailed(Throwable e) {
         if (state == State.NEED_ANOTHER_RELOAD) {
             setState(State.RELOADING);
             return true;
@@ -157,8 +157,14 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         switch (state) {
             case READY:
             case FAILED:
-                setState(State.RELOADING);
-                executorService.submit(this::doReload);
+                try {
+                    executorService.submit(this::doReload);
+                    setState(State.RELOADING);
+                } catch (Throwable t) {
+                    LOG.error("could not submit reload task", t);
+                    this.reloadException = t;
+                    setState(State.FAILED);
+                }
                 break;
             case RELOADING:
                 setState(State.NEED_ANOTHER_RELOAD);

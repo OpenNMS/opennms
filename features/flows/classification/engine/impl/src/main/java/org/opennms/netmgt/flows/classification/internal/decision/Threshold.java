@@ -29,6 +29,7 @@ package org.opennms.netmgt.flows.classification.internal.decision;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -135,7 +136,17 @@ public abstract class Threshold<T extends Comparable<T>> {
                 na.add(rule);
             }
         }
-        return new Matches(lt, eq, gt, na);
+        return new Matches(optimize(lt), optimize(eq), optimize(gt), optimize(na));
+    }
+
+    private static <T> List<T> optimize(List<T> list) {
+        if (list.isEmpty()) {
+            return Collections.emptyList();
+        } else if (list.size() == 1) {
+            return Collections.singletonList(list.get(0));
+        } else {
+            return list;
+        }
     }
 
     /**
