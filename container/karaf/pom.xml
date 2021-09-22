@@ -73,8 +73,6 @@
                         <feature>system</feature>
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
-                        <feature>http</feature>
-                        <feature>http-whiteboard</feature>
                         <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
                     <libraries>
