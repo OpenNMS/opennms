@@ -191,7 +191,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @param xml a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-   protected void saveXml(final String xml) throws IOException {
+/*   protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = null;
             getWriteLock().lock();
@@ -204,7 +204,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
                 getWriteLock().unlock();
             }
         }
-    }
+    }*/
     /**
      * <p>saveConfiguration</p>
      *
@@ -212,7 +212,8 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @throws java.io.IOException if any.
      */
   public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
-        getWriteLock().lock();
+      this.updateConfig(configuration);
+       /* getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
             // way the original config
@@ -224,7 +225,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
             saveXml(xml);
         } finally {
             getWriteLock().unlock();
-        }
+        }*/
     }
     /**
      * <pre>
