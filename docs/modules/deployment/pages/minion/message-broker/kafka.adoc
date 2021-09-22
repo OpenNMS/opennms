@@ -55,7 +55,7 @@ opennms:scv-set opennms.http my-minion-user my-minion-password<1>
 ----
 <1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance.
 
-The credentials are encrypted on disk in `$MINION_HOME/etc/scv.jce`.
+NOTE: The credentials are encrypted on disk in `$\{MINION_HOME}/etc/scv.jce`.
 
 .Configure the Kafka endpoints for RPC feature
 [source, karaf]

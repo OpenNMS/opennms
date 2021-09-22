@@ -66,7 +66,7 @@ opennms:scv-set opennms.http my-sentinel-user my-sentinel-password<1>
 ----
 <1> Set the credentials for the REST endpoint created in your {page-component-title} Core instance
 
-NOTE: The credentials are encrypted on disk in `$SENTINEL_HOME/etc/scv.jce`.
+NOTE: The credentials are encrypted on disk in `$\{SENTINEL_HOME}/etc/scv.jce`.
 
 Exit the Karaf Shell with kbd:[Ctrl+d]
 
