@@ -267,7 +267,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
                 LOG.error("Schema not found!");
                 throw new RuntimeException("Schema not found!");
             }
-            ConfigConverter<?> converter = schema.get().getConverter();
+            ConfigConverter converter = schema.get().getConverter();
             // TODO: Patrick: make this work for all SCHEMA_TYPEs
             if (!converter.validate(converter.jsonToXml(configObject.toString()), ConfigConverter.SCHEMA_TYPE.XML)) {
                 LOG.error("Config validation error!: {} ", schema.get().getName());

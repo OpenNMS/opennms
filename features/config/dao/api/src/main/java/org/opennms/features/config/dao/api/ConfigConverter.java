@@ -33,11 +33,8 @@ import java.net.URL;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public interface ConfigConverter<CONFIG_CLASS> {
+public interface ConfigConverter {
     enum SCHEMA_TYPE {XML, JSON, PROPERTY};
-
-    @Deprecated
-    boolean validate(CONFIG_CLASS obj);
 
     boolean validate(String config, SCHEMA_TYPE type);
 
@@ -56,9 +53,6 @@ public interface ConfigConverter<CONFIG_CLASS> {
      * @return xml string
      */
     String jsonToXml(String jsonStr);
-
-    @Deprecated
-    String jaxbObjectToXml(CONFIG_CLASS configObject);
 
     /**
      * @return ServiceSchema

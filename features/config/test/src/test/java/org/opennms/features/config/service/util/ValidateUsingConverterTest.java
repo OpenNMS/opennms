@@ -56,7 +56,7 @@ public class ValidateUsingConverterTest {
 
     @Test
     public void testConverter() throws IOException, JAXBException {
-        final ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
+        final ValidateUsingConverter converter = new ValidateUsingConverter("provisiond-configuration.xsd", "provisiond-configuration");
         final String sourceXml = Resources.toString(
                 Resources.getResource("provisiond-configuration.xml"), StandardCharsets.UTF_8);
         final String expectedJson = Resources.toString(
@@ -86,21 +86,21 @@ public class ValidateUsingConverterTest {
     @Test
     public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
-        ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
+        ValidateUsingConverter converter = new ValidateUsingConverter("trapd-configuration.xsd", "trapd-configuration");
         ValidationSchema schema = converter.getValidationSchema();
         Assert.assertNotNull("Fail to find schema!!!", schema);
     }
 
     @Test
     public void testValidate() throws JAXBException, IOException {
-        ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
+        ValidateUsingConverter converter = new ValidateUsingConverter("trapd-configuration.xsd", "trapd-configuration");
         FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("SecurityName");
         test.addSnmpv3User(user);
         test.setUseAddressFromVarbind(true);
-        converter.validate(test);
-        String xmlStr = converter.jaxbObjectToXml(test);
+        String xmlStr = JaxbUtils.marshal(test);
+        converter.validate(xmlStr, ConfigConverter.SCHEMA_TYPE.XML);
         FakeXsdForTest convertedTest =  JaxbUtils.unmarshal(FakeXsdForTest.class, xmlStr);
         Assert.assertEquals("Trap port is wrong after conversion!",
                 1024, convertedTest.getSnmpTrapPort());
@@ -108,7 +108,7 @@ public class ValidateUsingConverterTest {
                 "127.0.0.1", convertedTest.getSnmpTrapAddress());
         Assert.assertEquals("Snmpv3User is wrong after conversion!",
                 "SecurityName", convertedTest.getSnmpv3User(0).getSecurityName());
-        converter.validate(convertedTest);
+        converter.validate(xmlStr, ConfigConverter.SCHEMA_TYPE.XML);
     }
 
     /**
@@ -118,10 +118,10 @@ public class ValidateUsingConverterTest {
      */
     @Test(expected = RuntimeException.class)
     public void testValidateFail() throws JAXBException, IOException {
-        ValidateUsingConverter<FakeXsdForTest> converter = new ValidateUsingConverter<>(FakeXsdForTest.class);
+        ValidateUsingConverter converter = new ValidateUsingConverter("trapd-configuration.xsd", "trapd-configuration");
         FakeXsdForTest test = new FakeXsdForTest();
         test.setSnmpTrapPort(-1);
-        converter.validate(test);
+        converter.validate(JaxbUtils.marshal(test), ConfigConverter.SCHEMA_TYPE.XML);
     }
 
     /**
@@ -134,7 +134,7 @@ public class ValidateUsingConverterTest {
     public void testJsonValidateFail() throws JAXBException, IOException {
         final String invalidJson = Resources.toString(
                 Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
+        ValidateUsingConverter converter = new ValidateUsingConverter("provisiond-configuration.xsd", "provisiond-configuration");
         converter.validate(converter.jsonToXml(invalidJson), ConfigConverter.SCHEMA_TYPE.XML);
     }
 }

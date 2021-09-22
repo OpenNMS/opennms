@@ -91,7 +91,6 @@ public class ConfigurationManagerServiceImplTest {
     public void testRegisterSchema() throws IOException {
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", configSchema.isPresent());
-        Assert.assertTrue(CONFIG_NAME + " fail to register", "0.0.0".equals(configSchema.get().getVersion()));
         Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof ValidateUsingConverter);
     }
 
@@ -113,7 +112,7 @@ public class ConfigurationManagerServiceImplTest {
         config.setImportThreads(-1L);
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         ConfigConverter converter = configSchema.get().getConverter();
-        JSONObject json = new JSONObject(converter.xmlToJson(converter.jaxbObjectToXml(config)));
+        JSONObject json = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config)));
         configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_2", json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
@@ -127,7 +126,7 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration pConfig = configManagerService.getXmlConfiguration(CONFIG_NAME, CONFIG_ID)
                 .map(s -> JaxbUtils.unmarshal(ProvisiondConfiguration.class, s)).get();
         pConfig.setImportThreads(12L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(converter.jaxbObjectToXml(pConfig))));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(JaxbUtils.marshal(pConfig))));
         Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
@@ -143,7 +142,7 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration config = configManagerService.getXmlConfiguration(CONFIG_NAME, CONFIG_ID)
                 .map(s -> JaxbUtils.unmarshal(ProvisiondConfiguration.class, s)).get();
         config.setImportThreads(-1L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(converter.jaxbObjectToXml(config))));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config))));
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }

@@ -45,7 +45,6 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -62,7 +61,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void registerSchema(String configName, String xsdName, String topLevelElement)
             throws IOException, JAXBException {
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(xsdName, topLevelElement);
+        ValidateUsingConverter converter = new ValidateUsingConverter(xsdName, topLevelElement);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
         if (this.getRegisteredSchema(configName).isPresent()) {
@@ -75,7 +74,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void upgradeSchema(String configName, String xsdName, String topLevelElement)
             throws IOException, JAXBException {
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(xsdName, topLevelElement);
+        ValidateUsingConverter converter = new ValidateUsingConverter(xsdName, topLevelElement);
 
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
@@ -91,7 +90,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
         // Validate to check all of the existing configuration matches the new schema. If not => throw Exception
         for(Map.Entry<String, JSONObject> config : configs.entrySet()) {
-            String xml = converter.jsonToXml(config.getValue().toString()); // TODO: Patrick: we should find a better solution
+            String xml = converter.jsonToXml(config.getValue().toString());
             if(!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)){
                 throw new IllegalArgumentException(
                         String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));

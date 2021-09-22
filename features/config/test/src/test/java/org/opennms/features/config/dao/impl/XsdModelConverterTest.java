@@ -35,7 +35,6 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 
 
 public class XsdModelConverterTest {
@@ -44,7 +43,7 @@ public class XsdModelConverterTest {
     @Test
     public void testData() throws IOException, JAXBException {
         // register
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>("provisiond-configuration.xsd", "provisiond-configuration");
+        ValidateUsingConverter converter = new ValidateUsingConverter("provisiond-configuration.xsd", "provisiond-configuration");
         ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, ValidateUsingConverter.class, converter);
         configSchema.getConverter().getValidationSchema().getConfigItem();
 
