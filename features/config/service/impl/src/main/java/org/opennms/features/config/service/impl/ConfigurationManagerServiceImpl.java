@@ -92,7 +92,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         // Validate to check all of the existing configuration matches the new schema. If not => throw Exception
         for(Map.Entry<String, JSONObject> config : configs.entrySet()) {
             String xml = converter.jsonToXml(config.getValue().toString()); // TODO: Patrick: we should find a better solution
-            if(converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)){
+            if(!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)){
                 throw new IllegalArgumentException(
                         String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));
             }
