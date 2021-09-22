@@ -50,6 +50,9 @@ import java.util.List;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,9 +69,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.MigrationFailedException;
-import liquibase.exception.ValidationFailedException;
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
@@ -109,10 +123,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
     @After
     public void tearDown() throws SQLException, IOException {
-        if(cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent()) {
+        if (cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent()) {
             this.cm.unregisterConfiguration(SCHEMA_NAME, CONFIG_ID);
         }
-        if(cm.getRegisteredSchema(SCHEMA_NAME).isPresent()) {
+        if (cm.getRegisteredSchema(SCHEMA_NAME).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME);
         }
         for(Path path: pathsToDelete) {
@@ -164,9 +178,14 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Test
-    public void shouldAbortInCaseOfErrorDuringRun() {
+    public void shouldAbortInCaseOfErrorDuringRun() throws SQLException{
         try {
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(null);
+            // Make sure it trigger Liquibase logic
+            PreparedStatement statement = connection.prepareStatement("TRUNCATE " + TABLE_NAME_DATABASECHANGELOG);
+            statement.execute();
+            ConfigurationManagerService cm = null; // will lead to Nullpointer
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
                     () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {

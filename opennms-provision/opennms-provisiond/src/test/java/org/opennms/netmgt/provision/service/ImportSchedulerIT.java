@@ -77,8 +77,6 @@ import static org.junit.Assert.fail;
         "classpath:/mockForeignSourceContext.xml",
         "classpath:/importerServiceTest.xml"
 })
-@JUnitTemporaryDatabase
-@Transactional
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 public class ImportSchedulerIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ImportSchedulerIT.class);
