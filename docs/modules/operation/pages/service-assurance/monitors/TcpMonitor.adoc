@@ -19,10 +19,10 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.TcpMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.TcpMonitor`
 |===
 
 == Configuration and Use
@@ -31,14 +31,25 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter | Description                                                                                        | Default
+| Parameter
+| Description
+| Default
+
 3+|*Required*
 
-| port    | TCP port of the application.                                                                       | -1
+| port
+| TCP port of the application.
+| -1
+
 3+|*Optional*
-| retry   | Number of retries before the service is marked as down.                                          | 0
-| banner  | Evaluation of the service connection banner with regular expression. By default any banner result
-              is valid.                                                                                          | *
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+| banner
+| Evaluation of the service connection banner with regular expression.
+By default any banner result is valid.
+| *
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

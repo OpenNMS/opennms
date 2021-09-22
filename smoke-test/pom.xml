@@ -6,10 +6,12 @@
   <version>27.1.2-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
+    <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <updatePolicy>never</updatePolicy>
     <camelVersion>2.19.1</camelVersion>
+    <surefireVersion>2.18</surefireVersion>
     <failsafeVersion>2.22.2</failsafeVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.10.0</jackson2Version>
@@ -52,6 +54,15 @@
           </configuration>
         </plugin>
         <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefireVersion}</version>
+          <configuration>
+            <!-- skips surefire tests without skipping failsafe tests.
+                 Property value seems to magically default to false -->
+            <skipTests>${skip.surefire.tests}</skipTests>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${failsafeVersion}</version>
@@ -61,7 +72,7 @@
             <!--
               Configure failsafe to put reports in the surefire unit test directory so that
               Bamboo and Sonar tally the test results properly.
-  
+
               https://jira.atlassian.com/browse/BAM-15446
             -->
             <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
@@ -180,6 +191,23 @@
   </build>
   <profiles>
     <profile>
+      <id>smoke.all</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <excludedGroups></excludedGroups>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>smoke.core</id>
       <build>
         <plugins>
@@ -187,7 +215,24 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <excludedGroups>org.opennms.smoketest.junit.MinionTests,org.opennms.smoketest.junit.SentinelTests</excludedGroups>
+              <excludedGroups>org.opennms.smoketest.junit.FlakyTests,org.opennms.smoketest.junit.MinionTests,org.opennms.smoketest.junit.SentinelTests</excludedGroups>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>smoke.flaky</id>
+      <properties>
+        <skip.surefire.tests>true</skip.surefire.tests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <groups>org.opennms.smoketest.junit.FlakyTests</groups>
             </configuration>
           </plugin>
         </plugins>
@@ -195,6 +240,9 @@
     </profile>
     <profile>
       <id>smoke.minion</id>
+      <properties>
+        <skip.surefire.tests>true</skip.surefire.tests>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -209,6 +257,9 @@
     </profile>
     <profile>
       <id>smoke.sentinel</id>
+      <properties>
+        <skip.surefire.tests>true</skip.surefire.tests>
+      </properties>
       <build>
         <plugins>
           <plugin>

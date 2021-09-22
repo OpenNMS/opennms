@@ -18,9 +18,19 @@ The VmwareCollector collects performance metrics for managed entities from vCent
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter              | Description                                 | Default
+| Parameter
+| Description
+| Default
+
 3+| *Required*
-| collection             | The name of the VMWare Collection to use.   | n/a
+
+| collection
+| The name of the VMWare Collection to use.
+| n/a
+
 3+| *Optional*
-|  timeout               | Connection timeout in milliseconds          | 3000
+
+| timeout
+| Connection timeout in milliseconds
+| 3000
 |===

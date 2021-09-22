@@ -20,18 +20,38 @@ Attributes are extracted from the HTTP responses using a regular expression.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter            | Description                                                                                | Default
+| Parameter
+| Description
+| Default
+
 3+| *Required*
 
-| collection           | The name of the HTTP Collection to use.                                                    | n/a
+| collection
+| The name of the HTTP Collection to use.
+| n/a
+
 3+| *Optional*
 
-| thresholding-enabled | Whether collected performance data should be tested against thresholds.                    | true
-| port                 | Override the default port in all of the URIs                                               | 80
-| timeout              | Connection and socket timeout in milliseconds                                              | 3000
-| retry                | Number of retries                                                                          | 2
-| use-system-proxy     | Should the system-wide proxy settings be used? Configure system proxy settings
-                           via <<operation:system-properties/introduction.adoc#system-properties, system properties>>. | false
+| thresholding-enabled
+| Whether collected performance data should be tested against thresholds.
+| true
+
+| port
+| Override the default port in all of the URIs.
+| 80
+
+| timeout
+| Connection and socket timeout in milliseconds
+| 3000
+
+| retry
+| Number of retries
+| 2
+
+| use-system-proxy
+| Should the system-wide proxy settings be used? Configure system proxy settings
+via <<operation:system-properties/introduction.adoc#system-properties, system properties>>.
+| false
 |===
 
 == HTTP collection configuration

@@ -34,12 +34,23 @@ During the EnLink discovery process, informational and error output is logged to
 
 .Global log and configuration files for Enlinkd
 [options="header"]
-[cols="1,1,3"]
+[cols="1,3,1"]
 |===
-| File                      | Location             | Description
-| enlinkd-configuration.xml | $OPENNMS_HOME/etc   | Global configuration for the daemon process
-| enlinkd.log               | $OPENNMS_HOME/logs  | Global Enlinkd log file
-| log4j2.xml                | $OPENNMS_HOME/etc   | Configuration file to set the log level for Enlinkd.
+| File
+| Description
+| Location
+
+| enlinkd-configuration.xml
+| Global configuration for the daemon process
+| $OPENNMS_HOME/etc
+
+| enlinkd.log
+| Global Enlinkd log file
+| $OPENNMS_HOME/logs
+
+| log4j2.xml
+| Configuration file to set the log level for Enlinkd.
+| $OPENNMS_HOME/etc
 |===
 
 .Configuration file for Enlinkd
@@ -69,21 +80,61 @@ NOTE: If multiple protocols are enabled, the links will be discovered for each e
 [options="header"]
 [cols="1,3,1"]
 |===
-| Attribute              | Description | Default
+| Attribute
+| Description
+| Default
+
 3+| *Integer*
-| threads              | Number of parallel threads collectors, updaters, and discovery use. | 5
-| initial_sleep_time   | Time in milliseconds to wait to start collectors after {page-component-title} is started. | 60000
-| rescan_interval      | Interval in milliseconds for collectors. | 86400000
-| topology_interval    | Interval in milliseconds for updater. | 30000
-| bridge_topology_interval    | Interval in milliseconds for discovery. | 300000
-| max_bft              | The maximum number of bridge forwarding tables (BFTs) stored in memory for discovery. | 100
-| discovery-bridge-threads | The number of threads used for discovery. | 1
+
+| threads
+| Number of parallel threads collectors, updaters, and discovery use.
+| 5
+
+| initial_sleep_time
+| Time in milliseconds to wait to start collectors after {page-component-title} is started.
+| 60000
+
+| rescan_interval
+| Interval in milliseconds for collectors.
+| 86400000
+
+| topology_interval
+| Interval in milliseconds for updater.
+| 30000
+
+| bridge_topology_interval
+| Interval in milliseconds for discovery.
+| 300000
+
+| max_bft
+| The maximum number of bridge forwarding tables (BFTs) stored in memory for discovery.
+| 100
+
+| discovery-bridge-threads
+| The number of threads used for discovery.
+| 1
+
 3+| *Boolean*
-| use-cdp-discovery    | Enable or disable discovery based on CDP information. | true
-| use-bridge-discovery | Enable or disable discovery based on the bridge information. | true
-| use-lldp-discovery   | Enable or disable discovery based on LLDP information. | true
-| use-ospf-discovery   | Enable or disable discovery based on OSPF information. | true
-| use-isis-discovery   | Enable or disable discovery based on IS-IS information. | true
+
+| use-cdp-discovery
+| Enable or disable discovery based on CDP information.
+| true
+
+| use-bridge-discovery
+| Enable or disable discovery based on the bridge information.
+| true
+
+| use-lldp-discovery
+| Enable or disable discovery based on LLDP information.
+| true
+
+| use-ospf-discovery
+| Enable or disable discovery based on OSPF information.
+| true
+
+| use-isis-discovery
+| Enable or disable discovery based on IS-IS information.
+| true
 |===
 
 The discovery for bridge first start is scheduled at `initial_sleep_time + bridge_topology_interval`.

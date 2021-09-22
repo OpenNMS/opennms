@@ -7,9 +7,10 @@ The service is considered available when the node sends back an echo-reply ICMP 
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
+| Class Name
+| `org.opennms.netmgt.poller.monitors.IcmpMonitor`
 |===
 
 == Configuration and use
@@ -17,14 +18,30 @@ The service is considered available when the node sends back an echo-reply ICMP 
 .Optional monitor-specific parameters for the IcmpMonitor
 [options="header"]
 [cols="1,3,2"]
-
 |===
-| Parameter               | Description                                                 | Default
-| timeout               | Time in milliseconds to wait for a response.                | 800
-| allow-fragmentation   | Whether to set the "Don't Fragment" bit on outgoing packets. | true
-| dscp                  | DSCP traffic-control value.                                 | 0
-| packet-size           | Number of bytes of the ICMP packet to send.                 | 64
-| thresholding-enabled  | Enables ICMP thresholding.                                  | true
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time in milliseconds to wait for a response.
+| 800
+
+| allow-fragmentation
+| Whether to set the "Don't Fragment" bit on outgoing packets.
+| true
+
+| dscp
+| DSCP traffic-control value.
+| 0
+
+| packet-size
+| Number of bytes of the ICMP packet to send.
+| 64
+
+| thresholding-enabled
+| Enables ICMP thresholding.
+| true
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
