@@ -37,18 +37,11 @@ import { AgGridVue } from "ag-grid-vue3";
 import { useStore } from "vuex";
 import { computed, watch } from 'vue'
 import { Alarm, Node } from "@/types";
+import SeverityFloatingFilter from "../../components/SeverityFloatingFilter.vue"
 
 const store = useStore();
 
 const gridOptions = ref({})
-
-const defaultColDef = ref({
-  floatingFilter: true,
-  resizable: true,
-  enableBrowserTooltips: true,
-  filter: "agTextColumnFilter",
-  sortable: true,
-})
 
 let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
@@ -73,29 +66,20 @@ watch(
 )
 
 function getAlarmsFromSelectedNodes() {
-      let alarms = store.getters['mapModule/getAlarmsFromSelectedNodes'];
-      return alarms.map((alarm: Alarm) => ({
-        id: +alarm.id,
-        severity: alarm.severity,
-        node: alarm.nodeLabel,
-        uei: alarm.uei,
-        count: +alarm.count,
-        lastEventTime: alarm.lastEvent.time,
-        logMessage: alarm.logMessage,
-      }));
+  let alarms = store.getters['mapModule/getAlarmsFromSelectedNodes'];
+  return alarms.map((alarm: Alarm) => ({
+    id: +alarm.id,
+    severity: alarm.severity,
+    node: alarm.nodeLabel,
+    uei: alarm.uei,
+    count: +alarm.count,
+    lastEventTime: alarm.lastEvent.time,
+    logMessage: alarm.logMessage,
+  }));
 }
 
 function clearFilters() {
-  //TODO: make this smarter
-  gridApi.getFilterInstance("id").setModel(null);
-  gridApi.getFilterInstance("severity").setModel(null);
-  gridApi.getFilterInstance("node").setModel(null);
-  gridApi.getFilterInstance("lable").setModel(null);
-  gridApi.getFilterInstance("uei").setModel(null);
-  gridApi.getFilterInstance("count").setModel(null);
-  gridApi.getFilterInstance("lastEventTime").setModel(null);
-  gridApi.getFilterInstance("logMessage").setModel(null);
-  gridApi.onFilterChanged();
+  gridApi.setFilterModel(null);
 }
 
 function confirmFilters() {
@@ -106,8 +90,8 @@ function confirmFilters() {
   let distictNodesLable = [...new Set(nodesLable)];
   let ids = [];
   ids = store.getters['mapModule/getInterestedNodes']
-    .filter((node:Node) => distictNodesLable.includes(node.label))
-    .map((node:Node) => node.id);
+    .filter((node: Node) => distictNodesLable.includes(node.label))
+    .map((node: Node) => node.id);
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
@@ -115,63 +99,93 @@ function reset() {
   store.dispatch("mapModule/resetInterestedNodesID");
 }
 
+const defaultColDef = ref({
+  floatingFilter: true,
+  resizable: true,
+  enableBrowserTooltips: true,
+  filter: "agTextColumnFilter",
+  sortable: true,
+})
+
 const columnDefs = ref([
-      {
-        headerName: "ID",
-        field: "id",
-        headerTooltip: "ID",
-        headerCheckboxSelection: true,
-        checkboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        filter: "agNumberColumnFilter",
-        comparator: (valueA: number, valueB: number) => {
-          return valueA - valueB;
-        },
-      },
-      {
-        headerName: "SEVERITY",
-        field: "severity",
-        headerTooltip: "Severity",
-      },
-      {
-        headerName: "Node",
-        field: "node",
-        headerTooltip: "Node",
-      },
-      {
-        headerName: "UEI",
-        field: "lable",
-        headerTooltip: "Lable",
-      },
-      {
-        headerName: "LABLE SOURCE",
-        field: "uei",
-        headerTooltip: "UEI",
-      },
-      {
-        headerName: "COUNT",
-        field: "count",
-        headerTooltip: "Count",
-        filter: "agNumberColumnFilter",
-        comparator: (valueA: number, valueB: number) => {
-          return valueA - valueB;
-        },
-      },
-      {
-        headerName: "LAST EVENT TIME",
-        field: "lastEventTime",
-        headerTooltip: "Last Event Time",
-        filter: "agDateColumnFilter",
-        cellRenderer: (data: any) => {
-          return data.value ? new Date(data.value).toLocaleDateString() : "";
-        },
-      },
-      {
-        headerName: "LOG MESSAGE",
-        field: "logMessage",
-        headerTooltip: "Log Message",
-      },
-    ]
+  {
+    headerName: "ID",
+    field: "id",
+    headerTooltip: "ID",
+    headerCheckboxSelection: true,
+    checkboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    filter: "agNumberColumnFilter",
+    comparator: (valueA: number, valueB: number) => {
+      return valueA - valueB;
+    },
+  },
+  {
+    headerName: "SEVERITY",
+    field: "severity",
+    headerTooltip: "Severity",
+    floatingFilterComponentFramework: SeverityFloatingFilter,
+    floatingFilterComponentParams: {
+      suppressFilterButton: true,
+    },
+    filterParams: {
+      textCustomComparator: (filter, value, filterText) => {
+        const filterTextUpperCase = filterText.toUpperCase();
+        const valueUpperCase = value.toString().toUpperCase();
+        enum ALARM_SEVERITY {
+          'INDETERMINATE',
+          'CLEARED',
+          'NORMAL',
+          'WARNING',
+          'MINOR',
+          'MAJOR',
+          'CRITICAL'
+        }
+        if (filter === 'contains') {
+          return ALARM_SEVERITY[valueUpperCase] >= ALARM_SEVERITY[filterTextUpperCase]
+        }
+        return true;
+      }
+    }
+  },
+  {
+    headerName: "Node",
+    field: "node",
+    headerTooltip: "Node",
+  },
+  {
+    headerName: "UEI",
+    field: "lable",
+    headerTooltip: "Lable",
+  },
+  {
+    headerName: "LABLE SOURCE",
+    field: "uei",
+    headerTooltip: "UEI",
+  },
+  {
+    headerName: "COUNT",
+    field: "count",
+    headerTooltip: "Count",
+    comparator: (valueA: number, valueB: number) => {
+      return valueA - valueB;
+    },
+  },
+  {
+    headerName: "LAST EVENT TIME",
+    field: "lastEventTime",
+    headerTooltip: "Last Event Time",
+    filter: "agDateColumnFilter",
+    cellRenderer: (data: any) => {
+      return data.value ? new Date(data.value).toLocaleDateString() : "";
+    },
+  },
+  {
+    headerName: "LOG MESSAGE",
+    field: "logMessage",
+    headerTooltip: "Log Message",
+  },
+]
 )
 </script>
 

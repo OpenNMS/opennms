@@ -3,7 +3,6 @@
     <div class="button-group">
       <span class="buttons">
         <button v-on:click="clearFilters()">Clear Filters</button>
-        <!-- <button v-on:click="showTopology()">Show Topology</button> -->
         <button v-on:click="confirmFilters()">Apply filter</button>
         <button v-on:click="reset()">Reset</button>
       </span>
@@ -83,14 +82,7 @@ watch(
 )
 
 function clearFilters() {
-  //TODO: make this smarter
-  gridApi.getFilterInstance("id").setModel(null);
-  gridApi.getFilterInstance("foreignSource").setModel(null);
-  gridApi.getFilterInstance("lable").setModel(null);
-  gridApi.getFilterInstance("lableSource").setModel(null);
-  gridApi.getFilterInstance("foreignId").setModel(null);
-  gridApi.getFilterInstance("lastCapabilitiesScan").setModel(null);
-  gridApi.onFilterChanged();
+  gridApi.setFilterModel(null);
 }
 
 function confirmFilters() {
