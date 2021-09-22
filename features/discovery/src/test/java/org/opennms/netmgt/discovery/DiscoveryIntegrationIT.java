@@ -32,8 +32,15 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
+
+import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +49,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
@@ -58,14 +67,18 @@ import org.springframework.test.context.ContextConfiguration;
  * 
  * @author Seth
  */
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:mock-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-config-service.xml",
+        "classpath:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -76,8 +89,6 @@ import org.springframework.test.context.ContextConfiguration;
         // Override the Pinger with a Pinger that always returns true
         "classpath:/applicationContext-testPinger.xml"
 })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class DiscoveryIntegrationIT {
 
     private static final String CUSTOM_LOCATION = "my-custom-location";
@@ -94,6 +105,14 @@ public class DiscoveryIntegrationIT {
     @Autowired
     private DiscoveryTaskExecutor m_taskExecutor;
 
+    @Autowired
+    private ConfigurationManagerService configurationManagerService;
+
+    @Autowired
+    private DiscoveryCmJaxbConfigTestDao discoveryCmJaxbConfigDao;
+
+
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "INFO");
@@ -102,6 +121,17 @@ public class DiscoveryIntegrationIT {
         m_discovery.setEventForwarder(m_eventIpcManager);
     }
 
+    @Before
+    public void init() throws IOException, JAXBException {
+        configurationManagerService.registerSchema(discoveryCmJaxbConfigDao.getConfigName(),
+                29, 0, 0, DiscoveryConfiguration.class);
+        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("discovery-configuration.xml");
+        Optional<ConfigSchema<?>> configSchema = configurationManagerService.getRegisteredSchema(discoveryCmJaxbConfigDao.getConfigName());
+        String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
+        Object configObject = configSchema.get().getConverter().xmlToJaxbObject(xmlStr);
+        configurationManagerService.registerConfiguration(discoveryCmJaxbConfigDao.getConfigName(),
+                discoveryCmJaxbConfigDao.getDefaultConfigId(), configObject);
+    }
     @Test
     public void testDiscovery() throws Exception {
         // Add a range of localhost IP addresses to ping
