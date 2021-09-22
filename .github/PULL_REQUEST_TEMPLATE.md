@@ -1,10 +1,12 @@
 ### All Contributors
 
 * [ ] Have you read and followed our [Contribution Guidelines](https://github.com/OpenNMS/opennms/blob/develop/CONTRIBUTING.md)?
+* [ ] Have you (electronically) signed the [OpenNMS Contributor Agreement](https://cla-assistant.io/OpenNMS/opennms)?
 * [ ] Have you [made an issue in the OpenNMS issue tracker](https://issues.opennms.org)?<br>If so, you should:
   1. update the title of this PR to be of the format: `${JIRA-ISSUE-NUMBER}: subject of pull request`
   2. update the JIRA link at the bottom of this comment to refer to the real issue number
   3. prefix your commit messages with the issue number, if possible
+  If you're not sure how to do this, we can help you get things set up properly.
 * [ ] Have you made a comment in that issue which points back to this PR?
 * [ ] Have you updated the JIRA link at the bottom of this comment to link to your issue?
 * [ ] If this is a new or updated feature, is there documentation for the new behavior?
