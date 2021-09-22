@@ -13,7 +13,9 @@
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
-        ></l-marker>
+add         >
+        <l-popup> {{ node.label }} </l-popup>
+        </l-marker>
         
         <l-polyline
           v-for="(coordinatePair, index) in edges"
@@ -32,7 +34,7 @@ import {
   LTileLayer,
   LMarker,
   // LTooltip,
-  // LPopup,
+  LPopup,
   LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
