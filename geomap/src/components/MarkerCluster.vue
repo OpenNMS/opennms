@@ -63,7 +63,43 @@ export default {
     const { methods } = layerSetup(props, leafletRef, context);
 
     onMounted(async () => {
-      const { DomEvent, marker } = await import("leaflet/dist/leaflet-src.esm");
+      const {
+        bind,
+        Browser,
+        DivIcon,
+        DomEvent,
+        DomUtil,
+        extend,
+        FeatureGroup,
+        featureGroup,
+        Icon,
+        LatLng,
+        LatLngBounds,
+        LayerGroup,
+        Marker,
+        marker,
+        Point,
+        Util,
+      } = await import("leaflet/dist/leaflet-src.esm");
+
+      /** create a fake window.L from just the bits we need to make markercluster load properly **/
+      const L = {
+        bind,
+        Browser,
+        DivIcon,
+        DomUtil,
+        extend,
+        FeatureGroup,
+        featureGroup,
+        Icon,
+        LatLng,
+        LatLngBounds,
+        LayerGroup,
+        Marker,
+        Point,
+        Util,
+      };
+      window['L'] = L;
 
       const { MarkerClusterGroup } = await import(
         "leaflet.markercluster/dist/leaflet.markercluster-src.js"
