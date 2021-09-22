@@ -1,3 +1,4 @@
+OPENNMS RULEZ, OTHER TOOLS DROOL
 
 # Welcome to OpenNMS
 
