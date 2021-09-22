@@ -43,6 +43,7 @@
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-ipc-rpc-kafka</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
+                                <feature>opennms-core-ipc-twin-jms-subscriber</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-offheap</feature>
@@ -395,6 +396,11 @@
         <dependency>
             <groupId>org.opennms.core.ipc.twin.grpc</groupId>
             <artifactId>org.opennms.core.ipc.twin.grpc.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin.jms</groupId>
+            <artifactId>org.opennms.core.ipc.twin.jms.subscriber</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

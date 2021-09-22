@@ -1779,4 +1779,15 @@
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-core-ipc-twin-jms-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: JMS :: Subscriber" version="${project.version}">
+        <feature>camel-blueprint</feature>
+        <feature>camel-jms</feature>
+        <feature>guava</feature>
+        <feature>opennms-core-camel</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin.jms/org.opennms.core.ipc.twin.jms.subscriber/${project.version}</bundle>
+    </feature>
 </features>

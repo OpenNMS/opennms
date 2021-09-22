@@ -80,24 +80,9 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     public void start() throws IOException {
         // Twin inherits all properties from ipc client except for port.
         clientProperties = GrpcIpcUtils.getPropertiesFromConfig(configAdmin, GrpcIpcUtils.GRPC_CLIENT_PID);
-/*        String host = PropertiesUtils.getProperty(clientProperties, GRPC_HOST, GrpcIpcUtils.DEFAULT_GRPC_HOST);
-        boolean tlsEnabled = PropertiesUtils.getProperty(clientProperties, GrpcIpcUtils.TLS_ENABLED, false);
-        int maxInboundMessageSize = PropertiesUtils.getProperty(clientProperties, GrpcIpcUtils.GRPC_MAX_INBOUND_SIZE, GrpcIpcUtils.DEFAULT_MESSAGE_SIZE);*/
 
         channel = GrpcIpcUtils.getChannel(clientProperties, this.port);
-/*        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, this.port)
-                .keepAliveWithoutCalls(true)
-                .maxInboundMessageSize(maxInboundMessageSize);
 
-        if (tlsEnabled) {
-            channel = channelBuilder
-                    .negotiationType(NegotiationType.TLS)
-                    .sslContext(GrpcIpcUtils.buildSslContext(clientProperties).build())
-                    .build();
-            LOG.info("TLS enabled on Twin gRPC Subscriber");
-        } else {
-            channel = channelBuilder.usePlaintext().build();
-        }*/
         asyncStub = OpenNMSTwinIpcGrpc.newStub(channel);
         LOG.info("Started Twin gRPC Subscriber at location {} with systemId {}", getMinionIdentity().getLocation(), getMinionIdentity().getId());
 

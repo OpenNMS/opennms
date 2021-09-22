@@ -38,6 +38,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
+import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequestBean;
 import org.opennms.core.ipc.twin.common.TwinResponseBean;
 import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
@@ -71,7 +72,8 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             .build();
     private final ExecutorService twinRpcExecutor = Executors.newCachedThreadPool(twinRpcThreadFactory);
 
-    public GrpcTwinPublisher(ConfigurationAdmin configAdmin, int port) {
+    public GrpcTwinPublisher(LocalTwinSubscriber twinSubscriber, ConfigurationAdmin configAdmin, int port) {
+        super(twinSubscriber);
         this.configAdmin = configAdmin;
         this.port = port;
     }

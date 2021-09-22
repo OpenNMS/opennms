@@ -6,6 +6,7 @@ spring/${springVersion}
 spring-jms/${springVersion}
 opennms-core-ipc-rpc-jms
 opennms-core-ipc-sink-camel
+opennms-core-ipc-twin-jms-subscriber
 opennms-syslogd-listener-camel-netty
 opennms-trapd-listener
 opennms-events-sink-dispatcher

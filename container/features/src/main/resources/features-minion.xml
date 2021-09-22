@@ -170,7 +170,7 @@
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.subscriber/${project.version}</bundle>
     </feature>
-    
+
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
         <feature>minion-core-api</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
