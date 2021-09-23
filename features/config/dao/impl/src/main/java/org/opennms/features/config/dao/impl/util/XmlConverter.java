@@ -56,10 +56,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.io.Resources;
 
 /**
- * It handles all kinds of xml <> json conventions
- *
+ * It handles all kinds of xml <> json conventions.
  */
-public class ValidateUsingConverter implements ConfigConverter {
+public class XmlConverter implements ConfigConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
     private XmlMapper xmlMapper;
     private String xsdName;
@@ -67,8 +66,8 @@ public class ValidateUsingConverter implements ConfigConverter {
     private XmlValidationSchema validationSchema;
     private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
-    public ValidateUsingConverter(final String xsdName,
-                                  final String rootElement)
+    public XmlConverter(final String xsdName,
+                        final String rootElement)
             throws IllegalArgumentException, IOException, JAXBException {
         this.xsdName = Objects.requireNonNull(xsdName);
         this.rootElement = Objects.requireNonNull(rootElement);
@@ -85,7 +84,7 @@ public class ValidateUsingConverter implements ConfigConverter {
      * @throws JAXBException
      */
     @JsonCreator
-    public ValidateUsingConverter(
+    public XmlConverter(
             @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
             @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
             @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {

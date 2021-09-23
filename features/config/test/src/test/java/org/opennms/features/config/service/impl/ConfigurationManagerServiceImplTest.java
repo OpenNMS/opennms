@@ -48,8 +48,9 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class ConfigurationManagerServiceImplTest {
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
-        JSONObject json = new JSONObject(configSchema.get().getConverter().xmlToJson(xmlStr));
+        JsonAsString json = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
         configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, json);
     }
 
@@ -91,7 +92,7 @@ public class ConfigurationManagerServiceImplTest {
     public void testRegisterSchema() throws IOException {
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", configSchema.isPresent());
-        Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof ValidateUsingConverter);
+        Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof XmlConverter);
     }
 
     @Test
@@ -112,7 +113,7 @@ public class ConfigurationManagerServiceImplTest {
         config.setImportThreads(-1L);
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         ConfigConverter converter = configSchema.get().getConverter();
-        JSONObject json = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config)));
+        JsonAsString json = new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(config)));
         configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_2", json);
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config should not store", configData.get().getConfigs().size() == 1);
@@ -126,7 +127,7 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration pConfig = configManagerService.getXmlConfiguration(CONFIG_NAME, CONFIG_ID)
                 .map(s -> JaxbUtils.unmarshal(ProvisiondConfiguration.class, s)).get();
         pConfig.setImportThreads(12L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(JaxbUtils.marshal(pConfig))));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(pConfig))));
         Optional<JSONObject> jsonAfterUpdate = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertEquals("Incorrect importThreads", 12, jsonAfterUpdate.get().get("importThreads"));
     }
@@ -142,17 +143,19 @@ public class ConfigurationManagerServiceImplTest {
         ProvisiondConfiguration config = configManagerService.getXmlConfiguration(CONFIG_NAME, CONFIG_ID)
                 .map(s -> JaxbUtils.unmarshal(ProvisiondConfiguration.class, s)).get();
         config.setImportThreads(-1L);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config))));
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(config))));
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);
         Assert.assertTrue("Config not found", configData.isPresent());
     }
 
     @Test
     public void testRemoveEverything() throws IOException {
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
+        ConfigConverter converter = configSchema.get().getConverter();
         configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
         Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
-        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, new JSONObject(json));
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(new ProvisiondConfiguration()))));
         configManagerService.unregisterSchema(CONFIG_NAME);
         Optional<ConfigSchema<?>> schemaAfterDeregister = configManagerService.getRegisteredSchema(CONFIG_NAME);
         Optional<ConfigData<JSONObject>> configAfterDeregister = configManagerService.getConfigData(CONFIG_NAME);

@@ -33,9 +33,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -87,7 +87,7 @@ public class ImportConfiguration extends AbstractCmChange {
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
                         String xmlStr = Files.readString(ResourceUtils.getFile(this.filePath).toPath());
-                        JSONObject configObject = new JSONObject(configSchema.get().getConverter().xmlToJson(xmlStr));
+                        JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

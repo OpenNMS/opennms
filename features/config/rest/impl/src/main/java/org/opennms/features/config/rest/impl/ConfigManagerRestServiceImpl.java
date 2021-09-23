@@ -37,10 +37,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +123,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response addConfig(String configName, String configId, String jsonStr) {
         try {
-            configurationManagerService.registerConfiguration(configName, configId, new JSONObject(jsonStr));
+            configurationManagerService.registerConfiguration(configName, configId, new JsonAsString(jsonStr));
             return Response.ok().build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);
@@ -134,7 +134,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response updateConfig(String configName, String configId, String jsonStr) {
         try {
-            configurationManagerService.updateConfiguration(configName, configId, new JSONObject(jsonStr));
+            configurationManagerService.updateConfiguration(configName, configId, new JsonAsString(jsonStr));
             return Response.ok().build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);

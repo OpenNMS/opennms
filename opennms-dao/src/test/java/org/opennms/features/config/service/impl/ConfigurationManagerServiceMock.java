@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.springframework.stereotype.Component;
 
 //Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency
@@ -60,7 +61,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
+    public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
 
     }
 
@@ -70,7 +71,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JSONObject configObject) throws IOException {
+    public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
 
     }
 

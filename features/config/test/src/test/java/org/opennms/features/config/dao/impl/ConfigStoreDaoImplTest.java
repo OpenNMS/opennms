@@ -43,7 +43,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +64,8 @@ public class ConfigStoreDaoImplTest {
     @Test
     public void testData() throws IOException, JAXBException {
         // register
-        ValidateUsingConverter converter = new ValidateUsingConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, ValidateUsingConverter.class, converter);
+        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
 
         configStoreDao.register(configSchema);
 
@@ -87,7 +87,7 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, ValidateUsingConverter.class, converter);
+        ConfigSchema<XmlConverter> configSchema2 = new ConfigSchema<>(configName2, XmlConverter.class, converter);
         configStoreDao.register(configSchema2);
         configStoreDao.updateConfigSchema(configSchema2);
         Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(configName2);

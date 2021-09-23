@@ -40,7 +40,6 @@ import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
 
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,6 +50,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,7 @@ public class AbstractCmJaxbConfigDaoTest {
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
         Optional<ConfigSchema<?>> configSchema = configurationManagerService.getRegisteredSchema(provisiondCmJaxbConfigTestDao.getConfigName());
         String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
-        JSONObject configObject = new JSONObject(configSchema.get().getConverter().xmlToJson(xmlStr));
+        JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
         configurationManagerService.registerConfiguration(provisiondCmJaxbConfigTestDao.getConfigName(),
                 provisiondCmJaxbConfigTestDao.getDefaultConfigId(), configObject);
     }

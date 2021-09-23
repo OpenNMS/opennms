@@ -73,7 +73,7 @@ public interface ConfigurationManagerService {
      * @param configObject (config object / JSONObject)
      * @throws IOException
      */
-    void registerConfiguration(String configName, String configId, JSONObject configObject) throws IOException;
+    void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException;
 
     /**
      * remove configure from service
@@ -84,7 +84,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
-                             JSONObject configObject) throws IOException, IllegalArgumentException;
+                             JsonAsString configObject) throws IOException, IllegalArgumentException;
 
     /**
      * get config as json by configName, configId

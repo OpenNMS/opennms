@@ -43,8 +43,9 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void registerSchema(String configName, String xsdName, String topLevelElement)
             throws IOException, JAXBException {
-        ValidateUsingConverter converter = new ValidateUsingConverter(xsdName, topLevelElement);
+        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
         if (this.getRegisteredSchema(configName).isPresent()) {
@@ -74,7 +75,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void upgradeSchema(String configName, String xsdName, String topLevelElement)
             throws IOException, JAXBException {
-        ValidateUsingConverter converter = new ValidateUsingConverter(xsdName, topLevelElement);
+        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
 
         Objects.requireNonNull(configName);
         Objects.requireNonNull(converter);
@@ -111,7 +112,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      * {@inheritDoc}
      */
     @Override
-    public void registerConfiguration(final String configName, final String configId, JSONObject configObject)
+    public void registerConfiguration(final String configName, final String configId, JsonAsString configObject)
             throws IOException {
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
@@ -125,7 +126,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
 
-        configStoreDao.addConfig(configName, configId, configObject);
+        configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
     }
 
@@ -135,8 +136,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, JSONObject config) throws IOException {
-        configStoreDao.updateConfig(configName, configId, config);
+    public void updateConfiguration(String configName, String configId, JsonAsString config) throws IOException {
+        configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
     }
 
     @Override
