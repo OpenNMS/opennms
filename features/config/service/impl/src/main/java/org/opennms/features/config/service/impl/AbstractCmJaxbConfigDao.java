@@ -51,7 +51,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
-    private ConfigurationManagerService configurationManagerService;
+    protected ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
     private String description;

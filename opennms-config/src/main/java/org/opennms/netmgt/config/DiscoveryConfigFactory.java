@@ -28,59 +28,34 @@
 
 package org.opennms.netmgt.config;
 
-import static java.util.Spliterator.IMMUTABLE;
-import static java.util.Spliterator.ORDERED;
+import com.google.common.base.Strings;
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.IteratorUtils;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.config.discovery.*;
+import org.opennms.netmgt.model.discovery.IPPollAddress;
+import org.opennms.netmgt.model.discovery.IPPollRange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import javax.annotation.PostConstruct;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.IteratorUtils;
-import org.opennms.core.utils.LocationUtils;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
-import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
-import org.opennms.netmgt.config.discovery.Definition;
-import org.opennms.netmgt.config.discovery.Detector;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.discovery.ExcludeRange;
-import org.opennms.netmgt.config.discovery.IncludeRange;
-import org.opennms.netmgt.config.discovery.IncludeUrl;
-import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.model.discovery.IPPollAddress;
-import org.opennms.netmgt.model.discovery.IPPollRange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
-
-import com.google.common.base.Strings;
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.ORDERED;
 
 /**
  * This class is used to load the configuration for the OpenNMS
@@ -125,12 +100,18 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
 
     public DiscoveryConfigFactory() throws IOException {
         super(DiscoveryConfiguration.class, "discovery Configuration");
-        reload();
+        // reload move to postConstruct
     }
 
     public DiscoveryConfigFactory (DiscoveryConfiguration config) {
         super(DiscoveryConfiguration.class, "discovery Configuration");
         m_config = config;
+    }
+
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        reload();
+        System.out.println(configurationManagerService);
     }
 
     public Lock getReadLock() {
@@ -150,9 +131,17 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @throws java.io.IOException if any.
      */
     public void reload() throws IOException {
-
-        this.loadConfig(this.getDefaultConfigId());
-
+        this.m_config = this.loadConfig(this.getDefaultConfigId());
+        try {
+            clearUrlSpecifics();
+            clearExcludeRanges();
+            getInitialSleepTime();
+            getRestartSleepTime();
+            getIntraPacketDelay();
+            getConfiguredAddresses();
+        } catch (final Throwable e) {
+            throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
+        }
        /* try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
@@ -807,7 +796,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
     }
 
     @Override
-    protected String getDefaultConfigId() {
+    public String getDefaultConfigId() {
         return DEFAULT_CONFIG_ID;
     }
 }
