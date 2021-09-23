@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
-       xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  ">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <bean name="discoveryCmJaxbConfigDao" class="org.opennms.netmgt.discovery.DiscoveryCmJaxbConfigTestDao">
-
-    </bean>
+	<bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
+	<bean id="configurationManagerService" class="org.opennms.netmgt.discovery.ConfigurationManagerServiceMock" />
 
 </beans>
