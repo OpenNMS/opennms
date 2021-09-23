@@ -194,17 +194,6 @@ public interface AlarmRestApi {
     Response get(@Context final UriInfo uriInfo, @PathParam("id") final String id) ;
 
     @POST
-    @Path("{id}")
-    @Operation(summary = "Create an alarms", description = "Create an alarms by id", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "400", description = "Bad input request",
-                    content = @Content)
-    })
-    Response createSpecific() ;
-
-    @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(summary = "Create an alarms", description = "Create an alarms", tags = {"Alarms"})
     @ApiResponses(value = {
@@ -214,60 +203,5 @@ public interface AlarmRestApi {
                     content = @Content)
     })
     Response create(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, AlarmDTO object) ;
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Operation(summary = "Create many alarms", description = "Create many alarms", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "400", description = "Bad input request",
-                    content = @Content)
-    })
-    Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext, final MultivaluedMapImpl params) ;
-
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Path("{id}")
-    @Operation(summary = "Update  an alarm", description = "Update an alarm by id", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
-    })
-    Response update(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final Integer id, final OnmsAlarm object);
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("{id}")
-    @Operation(summary = "Update  an alarm properties", description = "Update an alarms properties by id", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
-    })
-    Response updateProperties(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final String id, final MultivaluedMapImpl params) ;
-
-    @DELETE
-    @Operation(summary = " Delete Many  alarms", description = "Delete Many  alarms", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found",
-                    content = @Content)
-    })
-    Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @Context final SearchContext searchContext) ;
-
-    @DELETE
-    @Path("{id}")
-    @Operation(summary = "Delete an  alarms", description = "Delete an  alarms by id", tags = {"Alarms"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Alarm not found", content = @Content)
-    })
-    Response delete(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("id") final String id) ;
-
 
 }

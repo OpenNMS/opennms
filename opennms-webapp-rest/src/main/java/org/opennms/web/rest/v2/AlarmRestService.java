@@ -347,17 +347,6 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     }
 
     @Override
-    public Response updateProperties(SecurityContext securityContext, UriInfo uriInfo, String id, MultivaluedMapImpl params) {
-        return super.updateProperties(securityContext, uriInfo, Integer.parseInt(id), params);
-    }
-
-    @Override
-    public Response delete(SecurityContext securityContext, UriInfo uriInfo, String id) {
-        return super.delete(securityContext, uriInfo, Integer.parseInt(id));
-    }
-
-
-    @Override
     public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
         return super.getCount(uriInfo, searchContext);
     }
