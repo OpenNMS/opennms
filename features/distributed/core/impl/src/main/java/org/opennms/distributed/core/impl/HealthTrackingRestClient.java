@@ -36,7 +36,7 @@ import org.opennms.core.health.api.Response;
 import org.opennms.distributed.core.api.RestClient;
 
 /**
- * A rest client that informs a {@link CachingHealthCheck} about the success / failure of service calls.
+ * A rest client that informs a {@link HealthCheckResponseCache} about the success / failure of service calls.
  */
 public class HealthTrackingRestClient implements RestClient {
     private final RestClient delegate;
@@ -50,10 +50,14 @@ public class HealthTrackingRestClient implements RestClient {
     private <T> T callAndInformCachingHealthCheck(Callable<T> callable) throws Exception {
         try {
             var v = callable.call();
-            healthCheckResponseCache.setResponse(Response.SUCCESS);
+            if (healthCheckResponseCache != null) {
+                healthCheckResponseCache.setResponse(Response.SUCCESS);
+            }
             return v;
         } catch (Exception e) {
-            healthCheckResponseCache.setResponse(new Response(e));
+            if (healthCheckResponseCache != null) {
+                healthCheckResponseCache.setResponse(new Response(e));
+            }
             throw e;
         }
 

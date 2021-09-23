@@ -32,10 +32,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A health that does no action by its own but relies on being informed about healthiness.
  */
 public class DefaultPassiveHealthCheck implements CachingHealthCheck {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultPassiveHealthCheck.class);
 
     private final String description;
     private final List<String> tags;
@@ -55,6 +60,7 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
     @Override
     public synchronized void setResponse(Response response) {
+        LOG.debug("cache response - healthCheck: {}; status: {}; msg: {}", description, response.getStatus(), response.getMessage());
         cachedResponse = response;
         cachedResponseTimestamp = Instant.now();
     }
@@ -74,7 +80,7 @@ public class DefaultPassiveHealthCheck implements CachingHealthCheck {
         if (Duration.between(cachedResponseTimestamp, Instant.now()).compareTo(context.getMaxAge()) < 0) {
             return cachedResponse;
         } else {
-            return new Response(Status.Failure, String.format("did not receive a recent response"));
+            return new Response(Status.Failure, String.format("did not receive a recent response - maxAge: %s", context.getMaxAge()));
         }
     }
 

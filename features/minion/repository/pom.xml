@@ -74,6 +74,7 @@
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
                                 <featue>minion-rest-service</featue>
+                                <feature>minion-health-check</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>

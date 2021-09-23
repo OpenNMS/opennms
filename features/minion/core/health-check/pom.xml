@@ -29,22 +29,4 @@
             </plugin>
         </plugins>
     </build>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>core-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.features.distributed</groupId>-->
-<!--            <artifactId>core-impl</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.features.scv</groupId>-->
-<!--            <artifactId>org.opennms.features.scv.api</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-    </dependencies>
 </project>

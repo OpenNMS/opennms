@@ -35,8 +35,15 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.core.health.api.HealthCheckResponseCache;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * An echo rpc module that informs a {@link HealthCheckResponseCache} about the success / failure of service calls.
+ */
 public class HealthTrackingEchoRpcModule extends AbstractXmlRpcModule<EchoRequest, EchoResponse> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(HealthTrackingEchoRpcModule.class);
 
     private final EchoRpcModule delegate;
     private final HealthCheckResponseCache healthCheckResponseCache;
@@ -52,6 +59,7 @@ public class HealthTrackingEchoRpcModule extends AbstractXmlRpcModule<EchoReques
 
     @Override
     public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+        LOG.debug("received echo request - id: {]", request.getId());
         if (healthCheckResponseCache != null) {
             healthCheckResponseCache.setResponse(Response.SUCCESS);
         }
