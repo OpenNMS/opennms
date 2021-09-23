@@ -66,21 +66,6 @@
                   <classifier>karaf-extensions</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.build.outputDirectory}/karaf/standard.xml</file>
-                  <type>xml</type>
-                  <classifier>standard</classifier>
-                </artifact>
-                <artifact>
-                  <file>${project.build.outputDirectory}/karaf/spring.xml</file>
-                  <type>xml</type>
-                  <classifier>spring</classifier>
-                </artifact>
-                <artifact>
-                  <file>${project.build.outputDirectory}/karaf/spring-legacy.xml</file>
-                  <type>xml</type>
-                  <classifier>spring-legacy</classifier>
-                </artifact>
-                <artifact>
                   <file>${project.build.outputDirectory}/features.xml</file>
                   <type>xml</type>
                   <classifier>features</classifier>
