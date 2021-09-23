@@ -76,7 +76,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath*:/META-INF/opennms/applicationContext-enhancedLinkdTest.xml"
+        "classpath*:/META-INF/opennms/applicationContext-enhancedLinkdTest.xml",
+        "classpath:META-INF/mock-dao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

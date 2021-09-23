@@ -26,24 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service;
+package org.opennms.netmgt.enlinkd;
 
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
-import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.quartz.CronExpression;
+import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.Set;
 
-public class ConfigurationManagerServiceProvisiondMock implements ConfigurationManagerService {
+public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
     @Override
     public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
 
@@ -75,22 +72,18 @@ public class ConfigurationManagerServiceProvisiondMock implements ConfigurationM
     }
 
     @Override
-    public void updateConfiguration(String configName, String configId, Object configObject) throws IOException {
+    public void updateConfiguration(String configName, String configId, Object configObject) throws IOException, IllegalArgumentException {
 
     }
 
+    private EnlinkdConfiguration config;
+
     @Override
     public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass) throws IOException {
-        if (entityClass.equals(ProvisiondConfiguration.class)) {
-            Optional<ProvisiondConfiguration> entity = Optional.of(new ProvisiondConfiguration());
-            RequisitionDef requisitionDef =  new RequisitionDef();
-            requisitionDef.setImportName("test");
-            requisitionDef.setCronSchedule("1 * * * * *");
-            entity.get().addRequisitionDef(requisitionDef);
-            return (Optional<ENTITY>) entity;
-        } else {
-            return Optional.empty();
+        if (config == null) {
+            config = new EnlinkdConfiguration();
         }
+        return (Optional<ENTITY>) Optional.of(config);
     }
 
     @Override
