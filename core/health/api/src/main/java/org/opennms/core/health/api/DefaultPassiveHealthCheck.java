@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A health that does no action by its own but relies on being informed about healthiness.
+ * A health check that does no action by its own but relies on being informed about healthiness.
  */
 public class DefaultPassiveHealthCheck implements CachingHealthCheck {
 
