@@ -36,7 +36,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <bootRepositories>
-                        <descriptor>mvn:org.apache.karaf.features/spring/4.2.9/xml/features</descriptor>
+                        <!--Karaf standard features-->
+                        <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
                         <!-- OPENNMS: Add the OpenNMS Minion feature repository -->
