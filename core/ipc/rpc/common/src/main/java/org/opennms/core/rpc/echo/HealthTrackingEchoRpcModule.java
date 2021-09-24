@@ -59,7 +59,7 @@ public class HealthTrackingEchoRpcModule extends AbstractXmlRpcModule<EchoReques
 
     @Override
     public CompletableFuture<EchoResponse> execute(EchoRequest request) {
-        LOG.debug("received echo request - id: {]", request.getId());
+        LOG.debug("received echo request - receivedTime: {]", request.getId());
         if (healthCheckResponseCache != null) {
             healthCheckResponseCache.setResponse(Response.SUCCESS);
         }

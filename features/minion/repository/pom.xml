@@ -428,6 +428,11 @@
             <artifactId>minion-rest-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>health-check</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
