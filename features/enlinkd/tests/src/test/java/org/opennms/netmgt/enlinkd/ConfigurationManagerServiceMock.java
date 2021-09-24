@@ -26,32 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd;
+package org.opennms.netmgt.provision.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
-import org.springframework.stereotype.Component;
+import org.quartz.CronExpression;
 
-@Component
-public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
-    private EnlinkdConfiguration config;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.Set;
 
+public class ConfigurationManagerServiceProvisiondMock implements ConfigurationManagerService {
     @Override
     public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
 
@@ -89,21 +81,17 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass) throws IOException {
-        if(config != null)
-            return (Optional<ENTITY>) Optional.of(config);
-        try {
-            InputStream in = EnLinkdBuilderITCase.class.getResourceAsStream("/mock/etc/enlinkd-configuration.xml");
-
-            String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
-            System.out.println(xmlStr);
-            ValidateUsingConverter<EnlinkdConfiguration> convert = new ValidateUsingConverter(EnlinkdConfiguration.class);
-            config = convert.xmlToJaxbObject(xmlStr);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (entityClass.equals(ProvisiondConfiguration.class)) {
+            Optional<ProvisiondConfiguration> entity = Optional.of(new ProvisiondConfiguration());
+            RequisitionDef requisitionDef =  new RequisitionDef();
+            requisitionDef.setImportName("test");
+            requisitionDef.setCronSchedule("1 * * * * *");
+            entity.get().addRequisitionDef(requisitionDef);
+            return (Optional<ENTITY>) entity;
+        } else {
+            return Optional.empty();
         }
-        return (Optional<ENTITY>) Optional.of(config);
     }
-
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
