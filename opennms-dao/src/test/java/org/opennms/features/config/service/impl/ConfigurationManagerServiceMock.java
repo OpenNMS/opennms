@@ -41,6 +41,7 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.stereotype.Component;
 
+//Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
     @Override
