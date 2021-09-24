@@ -32,8 +32,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.internal.value.ProtocolValue;
@@ -71,12 +71,12 @@ public class PreprocessedRule {
 
     private static Stream<Threshold> addressThresholds(
             IpValue value,
-            Function<IPAddress, Threshold> thresholdCreator
+            Function<IpAddr, Threshold> thresholdCreator
     ) {
         return value == null ? Stream.empty() : value
                 .getIpAddressRanges()
                 .stream()
-                .flatMap(range -> Stream.of(range.getBegin(), range.getEnd()))
+                .flatMap(range -> Stream.of(range.begin, range.end))
                 .map(thresholdCreator);
     }
 
