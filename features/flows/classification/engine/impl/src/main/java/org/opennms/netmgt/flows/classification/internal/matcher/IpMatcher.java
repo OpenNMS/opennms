@@ -39,18 +39,17 @@ import com.google.common.base.Function;
 class IpMatcher implements Matcher {
 
     // Extracts the value from the ClassificationRequest. Allows to easily distinguish between srcAddress and dstAddress
-    private final Function<ClassificationRequest, String> valueExtractor;
+    private final Function<ClassificationRequest, IpAddr> valueExtractor;
     private final IpValue value;
 
-    protected IpMatcher(IpValue input, Function<ClassificationRequest, String> valueExtractor) {
+    protected IpMatcher(IpValue input, Function<ClassificationRequest, IpAddr> valueExtractor) {
         this.value = input;
         this.valueExtractor = Objects.requireNonNull(valueExtractor);
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        final String currentAddressValue = valueExtractor.apply(request);
-        var addr = IpAddr.of(currentAddressValue);
+        var addr = valueExtractor.apply(request);
         final boolean matches = value.isInRange(addr);
         return matches;
     }

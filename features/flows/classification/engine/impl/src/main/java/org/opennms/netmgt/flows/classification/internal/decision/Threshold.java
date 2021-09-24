@@ -374,14 +374,14 @@ public abstract class Threshold<T extends Comparable<T>> {
     public static abstract class Address extends Threshold<IpAddr> {
         protected final IpAddr address;
         private final Function<PreprocessedRule, IpValue> getRuleAddress;
-        private final Function<ClassificationRequest, String> getRequestAddress;
+        private final Function<ClassificationRequest, IpAddr> getRequestAddress;
 
         public Address(
                 Function<Bounds, Bound<IpAddr>> getBound,
                 BiFunction<Bounds, Bound<IpAddr>, Bounds> setBound,
                 IpAddr address,
                 Function<PreprocessedRule, IpValue> getRuleAddress,
-                Function<ClassificationRequest, String> getRequestAddress
+                Function<ClassificationRequest, IpAddr> getRequestAddress
         ) {
             super(getBound, setBound);
             this.address = address;
@@ -423,7 +423,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public final Order compare(ClassificationRequest request) {
             var s = getRequestAddress.apply(request);
             if (s != null) {
-                var c = IpAddr.of(s).compareTo(address);
+                var c = s.compareTo(address);
                 return c < 0 ? Order.LT : c == 0 ? Order.EQ : Order.GT;
             } else {
                 return Order.NA;

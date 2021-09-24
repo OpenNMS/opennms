@@ -263,7 +263,7 @@ public class RandomClassificationEngineTest {
                 addressesArb,
                 addressesArb
         ).as((protocol, srcPort, dstPort, srcAddr, dstAddr) ->
-                new ClassificationRequest("default", srcPort, srcAddr.toString(), dstPort, dstAddr.toString(), Protocols.getProtocol(protocol))
+                new ClassificationRequest("default", srcPort, srcAddr, dstPort, dstAddr, Protocols.getProtocol(protocol))
         );
     }
 
