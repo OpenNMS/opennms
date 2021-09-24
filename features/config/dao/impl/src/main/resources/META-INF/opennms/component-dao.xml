@@ -11,4 +11,10 @@
     <constructor-arg name="jsonStore" ref="jsonStore" />
   </bean>
   <onmsgi:service interface="org.opennms.features.config.dao.api.ConfigStoreDao" ref="jsonConfigStoreDao" />
+
+
+  <bean name="keyHandler" class="org.opennms.features.config.dao.impl.KeyHandlerImpl">
+    <constructor-arg name="configStoreDao" ref="jsonConfigStoreDao" />
+  </bean>
+  <onmsgi:service interface="org.opennms.features.config.dao.api.KeyHandler" ref="keyHandler" />
 </beans>
