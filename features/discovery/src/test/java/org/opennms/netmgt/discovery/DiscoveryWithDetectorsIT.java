@@ -67,7 +67,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath:/applicationContext-discovery-mock.xml",
         // Override the Pinger with a Pinger that always returns true
-        "classpath:/applicationContext-testPinger.xml"
+        "classpath:/applicationContext-testPinger.xml",
+        "classpath:mock-dao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -87,6 +88,9 @@ public class DiscoveryWithDetectorsIT {
     @Autowired
     private ServiceDetectorRegistryImpl serviceDetectorRegistry;
 
+    @Autowired
+    DiscoveryConfigFactory configFactory;
+
 
     @Test(timeout = 30000)
     public void testDiscoveryWithMockDetector() throws IOException, InterruptedException {
@@ -95,7 +99,6 @@ public class DiscoveryWithDetectorsIT {
         String resourcePath = DiscoveryConfigDetectorsTest.class.getResource("/etc/discovery-configuration.xml").getPath();
         Path etcPath = Paths.get(resourcePath).getParent().getParent();
         System.setProperty("opennms.home", etcPath.toString());
-        DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory();
         m_discovery.setDiscoveryFactory(configFactory);
         serviceDetectorRegistry.onBind(new MockServiceDetectorFactory1(), new HashMap());
         serviceDetectorRegistry.onBind(new MockServiceDetectorFactory2(), new HashMap());
