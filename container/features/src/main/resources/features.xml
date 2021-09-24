@@ -1779,6 +1779,24 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
+        <feature>opennms-bridge-http-service</feature>
+    </feature>
+
+
+    <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
+        <!--<feature>pax-http</feature>-->
+        <!--<bundle start-level="30">mvn:org.apache.karaf.http/org.apache.karaf.http.core/4.2.11</bundle>-->
+        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
+        <!--<bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>-->
+        <capability>http-service;provider:=pax-http</capability>
+        <conditional>
+            <condition>webconsole</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.11</bundle>
+        </conditional>
+    </feature>
+
     <!-- Spring 4.2.x support -->
 
     <feature name="spring" description="Spring 4.2.x support" version="4.2.9.RELEASE_1">
