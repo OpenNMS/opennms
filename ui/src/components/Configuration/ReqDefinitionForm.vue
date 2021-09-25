@@ -5,7 +5,11 @@
             <div class="p-fluid">
                 <div class="p-field">
                     <label for="name" class="required">Name</label>
-                    <InputText id="name" v-model="model.reqDef.name.$model" />
+                    <InputText
+                        id="name"
+                        v-model="model.reqDef.name.$model"
+                        :class="{ 'p-invalid': model.reqDef.name.$error }"
+                    />
                     <ValidationMessage :model="model.reqDef.name"></ValidationMessage>
                 </div>
 
@@ -25,6 +29,7 @@
                     <InputText
                         id="host"
                         v-model="model.reqDef.host.$model"
+                        :class="{ 'p-invalid': model.reqDef.host.$error }"
                         placeholder="(0-255).(0-255).(0-255).(0-255)"
                     />
                     <ValidationMessage :model="model.reqDef.host"></ValidationMessage>
@@ -32,7 +37,11 @@
 
                 <div class="p-field">
                     <label for="foreignSource" class="required">Foreign Source</label>
-                    <InputText id="foreignSource" v-model="model.reqDef.foreignSource.$model" />
+                    <InputText
+                        id="foreignSource"
+                        v-model="model.reqDef.foreignSource.$model"
+                        :class="{ 'p-invalid': model.reqDef.foreignSource.$error }"
+                    />
                     <ValidationMessage :model="model.reqDef.foreignSource"></ValidationMessage>
                 </div>
 
