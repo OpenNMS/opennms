@@ -9,6 +9,8 @@
     "test": "vite-jest"
   },
   "dependencies": {
+    "@vuelidate/core": "^2.0.0-alpha.4",
+    "@vuelidate/validators": "^2.0.0-alpha.2",
     "axios": "^0.21.1",
     "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
@@ -32,7 +34,7 @@
     "jest-environment-jsdom": "^27.0.6",
     "prettier": "^2.3.2",
     "typescript": "^4.3.5",
-    "vite": "^2.4.4",
+    "vite": "^2.5.7",
     "vite-jest": "^0.0.3",
     "vue-tsc": "^0.2.2"
   }

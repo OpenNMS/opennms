@@ -3,7 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        ">
-
     <!-- Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency -->
     <bean id="configurationManagerService" class = "org.opennms.features.config.service.impl.ConfigurationManagerServiceMock"/>
 

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.config</groupId>
-  <artifactId>org.opennms.features.test</artifactId>
+  <artifactId>org.opennms.features.config.test</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS :: Features :: Config :: Test</name>
   <properties>
