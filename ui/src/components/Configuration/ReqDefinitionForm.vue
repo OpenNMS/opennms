@@ -1,17 +1,18 @@
 <template>
     <p class="title">New Requisition Definition</p>
     <div class="p-col-9">
-        <div class="form">
+        <form @submit.prevent="onSave">
             <div class="p-fluid">
                 <div class="p-field">
                     <label for="name" class="required">Name</label>
-                    <InputText id="name" v-model="nameVal" />
+                    <InputText id="name" v-model="model.reqDef.name.$model" />
+                    <ValidationMessage :model="model.reqDef.name"></ValidationMessage>
                 </div>
 
                 <div class="p-field">
                     <label for="type" class="required">Type</label>
                     <DropDown
-                        v-model="selectedType"
+                        v-model="model.reqDef.type.$model"
                         :options="types"
                         optionLabel="name"
                         optionValue="value"
@@ -21,12 +22,18 @@
 
                 <div class="p-field">
                     <label for="host" class="required">Host</label>
-                    <InputText id="host" v-model="hostVal" />
+                    <InputText
+                        id="host"
+                        v-model="model.reqDef.host.$model"
+                        placeholder="(0-255).(0-255).(0-255).(0-255)"
+                    />
+                    <ValidationMessage :model="model.reqDef.host"></ValidationMessage>
                 </div>
 
                 <div class="p-field">
                     <label for="foreignSource" class="required">Foreign Source</label>
-                    <InputText id="foreignSource" v-model="foreignSourceVal" />
+                    <InputText id="foreignSource" v-model="model.reqDef.foreignSource.$model" />
+                    <ValidationMessage :model="model.reqDef.foreignSource"></ValidationMessage>
                 </div>
 
                 <div class="p-field">
@@ -47,7 +54,6 @@
                             :options="advancedDropdown"
                             optionLabel="name"
                             optionValue="value"
-                            :filter="true"
                         ></DropDown>
                         <p style="margin:2% 0 1% 0;">
                             <InputText
@@ -69,13 +75,21 @@
                 </div>
 
                 <div class="p-field">
-                    <p>URL</p>
+                    <p>
+                        <b>URL :</b>
+                        {{ generatedURL }}
+                    </p>
+                    <Button
+                        :label="urlBtnTitle"
+                        @click="generateURL"
+                        :disabled="model.reqDef.type.$invalid || model.reqDef.host.$invalid || model.reqDef.foreignSource.$invalid"
+                    ></Button>
                 </div>
 
                 <div class="p-field">
                     <label for="type" class="required">Schedule Period</label>
                     <DropDown
-                        v-model="selectedPeriod"
+                        v-model="model.reqDef.schedulePeriod.$model"
                         :options="schedulePeriod"
                         optionLabel="name"
                         optionValue="value"
@@ -88,117 +102,178 @@
                                 class="inputNumberSection"
                                 showButtons
                                 :min="minVal"
-                                v-model="selectedInputNumber"
+                                v-model="model.reqDef.schedulePeriodNumber.$model"
                             />
                         </span>
-                        {{ selectedPeriod }}
+                        {{ model.reqDef.schedulePeriod.$model }}
                     </p>
                 </div>
 
                 <div class="p-field p-col-2">
-                    <Button label="Save" icon="pi pi-save" @click="onSave"></Button>
+                    <Button
+                        label="Save"
+                        icon="pi pi-save"
+                        type="submit"
+                        :disabled="model.reqDef.$invalid"
+                    ></Button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { apiTypes, apiPeriod, apiAdvDropdown } from '../Common/Demo/apiService'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
+import State from '../state'
+import ValidationMessage from '../ValidationMessage.vue'
 
-const nameVal = ref('');
-const hostVal = ref('');
-const foreignSourceVal = ref('');
+export default {
+    components: {
+        InputText,
+        DropDown,
+        Button,
+        InputNumber,
+        ValidationMessage,
+    },
+    setup() {
+        const reqDefinition = reactive(State);
 
-const selectedType = ref('');
-const selectedPeriod = ref('');
-const selectedInputNumber = ref();
+        const types: any = ref([]);
+        const schedulePeriod: any = ref([]);
+        const advancedDropdown: any = ref([]);
 
-const types: any = ref([]);
-const schedulePeriod: any = ref([]);
-const advancedDropdown: any = ref([]);
+        const minVal = ref(1);
+        const count = ref(0);
+        const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
 
-const minVal = ref(1);
-const count = ref(0);
-const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
+        const urlBtnTitle: any = ref('Generate URL');
+        const generatedURL: any = ref('');
+        const advString: any = ref([]);
 
-onMounted(() => {
-    //service call for data
-    try {
+        const model = State.toModel();
 
-        //Types
-        apiTypes.then((response: any) => {
-            //data come form api
-            let dataLen = response.data.length;
-            if (dataLen > 0) {
-                types.value = response.data;
+        //Dropdown API Data
+        onMounted(() => {
+            //service call for data
+            try {
+
+                //Types
+                apiTypes.then((response: any) => {
+                    //data come form api
+                    let dataLen = response.data.length;
+                    if (dataLen > 0) {
+                        types.value = response.data;
+                    }
+                })
+                    .catch((err: any) => {
+                        console.error("apiTypes Error ==>", err);
+                    });
+
+                // Schedule Period
+                apiPeriod.then((response: any) => {
+                    //data come form api
+                    let dataLen = response.data.length;
+                    if (dataLen > 0) {
+                        schedulePeriod.value = response.data;
+                    }
+                })
+                    .catch((err: any) => {
+                        console.error("apiPeriod Error ==>", err);
+                    });
+
+                // Advanced Dropdown
+                apiAdvDropdown.then((response: any) => {
+                    //data come form api
+                    let dataLen = response.data.length;
+                    if (dataLen > 0) {
+                        advancedDropdown.value = response.data;
+                    }
+                })
+                    .catch((err: any) => {
+                        console.error("apiAdvDropdown Error ==>", err);
+                    });
+
+            } catch {
+                console.error("Error in API");
             }
-        })
-            .catch((err: any) => {
-                console.error("apiTypes Error ==>", err);
-            });
+        });
 
-        // Schedule Period
-        apiPeriod.then((response: any) => {
-            //data come form api
-            let dataLen = response.data.length;
-            if (dataLen > 0) {
-                schedulePeriod.value = response.data;
+        //Add another parameter - max 1 allowed
+        const addAnother = () => {
+            if (addAnotherArr.value.length < 2) {
+                let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
+                addAnotherArr.value.push(addObj);
+            } else {
+                alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
             }
-        })
-            .catch((err: any) => {
-                console.error("apiPeriod Error ==>", err);
-            });
+        };
 
-        // Advanced Dropdown
-        apiAdvDropdown.then((response: any) => {
-            //data come form api
-            let dataLen = response.data.length;
-            if (dataLen > 0) {
-                advancedDropdown.value = response.data;
+        //Dismiss dropdown
+        const closeIcon = (id: any) => {
+            const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
+            addAnotherArr.value.splice(findIndex, 1);
+        };
+
+        //Show Generated URL
+        const generateURL = () => {
+            urlBtnTitle.value = 'Refresh URL';
+
+            if (addAnotherArr.value[0].dropdownVal != '') {
+                advString.value = [];
+                addAnotherArr.value.forEach((ele: any) => {
+                    let param = "?" + ele.dropdownVal + "=" + ele.advTextVal;
+                    advString.value.push(param);
+                });
+                generatedURL.value =
+                    reqDefinition.reqDef.type + "://"
+                    + reqDefinition.reqDef.host + "/"
+                    + reqDefinition.reqDef.foreignSource
+                    + advString.value.join('');
+            } else {
+                generatedURL.value =
+                    reqDefinition.reqDef.type + "://"
+                    + reqDefinition.reqDef.host + "/"
+                    + reqDefinition.reqDef.foreignSource
             }
-        })
-            .catch((err: any) => {
-                console.error("apiAdvDropdown Error ==>", err);
-            });
+        }
 
-    } catch {
-        console.error("Error in API");
+        //Save 
+        const onSave = () => {
+            console.log("generatedURL", generatedURL.value)
+            console.log('onSave Obj', JSON.stringify(reqDefinition));
+        };
+
+        return {
+            minVal,
+            schedulePeriod,
+            types,
+            advancedDropdown,
+            addAnotherArr,
+            reqDefinition,
+            model,
+            generatedURL,
+            advString,
+            urlBtnTitle,
+            addAnother,
+            closeIcon,
+            generateURL,
+            onSave
+        }
     }
-});
 
-const addAnother = () => {
-    if (addAnotherArr.value.length < 5) {
-        let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
-        addAnotherArr.value.push(addObj);
-    } else {
-        alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
-    }
-}
-
-const closeIcon = (id: any) => {
-    const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
-    addAnotherArr.value.splice(findIndex, 1);
-}
-
-const onSave = () => {
-
-}
-
+};
 </script>
 
 <style lang="scss" scoped>
 @import "../Common/common.scss";
-
-$title-font: 18px;
 .title {
-    font-size: $title-font;
+    font-size: 18px;
     font-weight: bold;
     text-align: left;
     margin-top: 0;
