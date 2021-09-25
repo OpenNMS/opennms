@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Seconds",
+        "id": "301",
+        "value": "seconds"
+    },
+    {
+        "name": "Minutes",
+        "id": "302",
+        "value": "minutes"
+    },
+    {
+        "name": "Days",
+        "id": "303",
+        "value": "days"
+    },
+    {
+        "name": "Weeks",
+        "id": "304",
+        "value": "weeks"
+    },
+    {
+        "name": "Months",
+        "id": "305",
+        "value": "months"
+    }
+]
