@@ -28,23 +28,21 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.springframework.stereotype.Component;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
@@ -54,14 +52,10 @@ import java.util.Set;
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
 
     private String configFile;
+    private Optional<String> configOptional;
 
     public void setConfigFile(String configFile) {
         this.configFile = configFile;
-    }
-
-    @Override
-    public <ENTITY> void registerSchema(String configName, int majorVersion, int minorVersion, int patchVersion, Class<ENTITY> entityClass) throws IOException, JAXBException {
-
     }
 
     /** Registers a new schema. The schema name must not have been used before. */
@@ -92,29 +86,6 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     }
 
-    private Optional<?> configOptional;
-
-    @Override
-    public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass) throws IOException {
-        if (configOptional != null) {
-            return (Optional<ENTITY>) configOptional;
-        }
-        if (configFile != null) {
-            InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
-            String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
-            JaxbUtils.unmarshal(entityClass, xmlStr);
-            configOptional = Optional.of(JaxbUtils.unmarshal(entityClass, xmlStr));
-        } else {
-            try {
-                Constructor constructor = entityClass.getConstructor();
-                configOptional = Optional.of(constructor.newInstance());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return (Optional<ENTITY>) configOptional;
-    }
-
     @Override
     public Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException {
         return Optional.empty();
@@ -127,7 +98,17 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        return Optional.empty();
+        if (configOptional != null) {
+            return configOptional;
+        }
+        if (configFile == null) {
+            this.configOptional = Optional.empty();
+        } else {
+            InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+            String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
+            configOptional = Optional.of(xmlStr);
+        }
+        return configOptional;
     }
 
     @Override
