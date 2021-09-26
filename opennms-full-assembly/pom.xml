@@ -372,7 +372,26 @@
                 <feature>wrapper</feature>
 
                 <!-- Karaf Spring features -->
-                <feature>spring$/{springVersion}</feature>
+                <feature>spring/3.1.4.RELEASE</feature>
+                <feature>spring/3.2.18.RELEASE_1</feature>
+                <feature>spring/4.0.9.RELEASE_1</feature>
+                <feature>spring-jms/4.0.9.RELEASE_1</feature>
+                <feature>spring/4.1.9.RELEASE_1</feature>
+                <feature>spring-jms/4.1.9.RELEASE_1</feature>
+                <feature>spring/4.2.9.RELEASE_1</feature>
+                <feature>spring/4.3.14.RELEASE_1</feature>
+                <feature>spring/${springVersion}</feature>
+                <feature>spring-aspects/${springVersion}</feature>
+                <feature>spring-instrument/${springVersion}</feature>
+                <feature>spring-jdbc/${springVersion}</feature>
+                <feature>spring-jms/${springVersion}</feature>
+                <feature>spring-orm/${springVersion}</feature>
+                <feature>spring-oxm/${springVersion}</feature>
+                <feature>spring-test/${springVersion}</feature>
+                <feature>spring-tx/${springVersion}</feature>
+                <feature>spring-web/${springVersion}</feature>
+                <feature>spring-web-portlet/${springVersion}</feature>
+                <feature>spring-websocket/${springVersion}</feature>
 
                 <!-- All of the OpenNMS features -->
                 <feature>activemq-broker</feature>
