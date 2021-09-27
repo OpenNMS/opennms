@@ -76,7 +76,7 @@ import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
         // Override the Pinger with a Pinger that always returns true
         "classpath:/applicationContext-testPinger.xml",
 
-        "classpath:mock-dao.xml"
+        "classpath:discovery-configuration-managerservice-mock.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
