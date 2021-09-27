@@ -30,7 +30,7 @@
                         id="host"
                         v-model="model.reqDef.host.$model"
                         :class="{ 'p-invalid': model.reqDef.host.$error }"
-                        placeholder="(0-255).(0-255).(0-255).(0-255)"
+                        :placeholder="hostPlaceholder"
                     />
                     <ValidationMessage :model="model.reqDef.host"></ValidationMessage>
                 </div>
@@ -48,7 +48,7 @@
                 <div class="p-field">
                     <label for="advOps">Advanced Options</label>
                     <div class v-for="add in addAnotherArr">
-                        <p style="direction: rtl;margin: 0 0 1% 0;">
+                        <p class="adv">
                             <Button
                                 v-if="add.id !== 0"
                                 icon="pi pi-times"
@@ -64,7 +64,7 @@
                             optionLabel="name"
                             optionValue="value"
                         ></DropDown>
-                        <p style="margin:2% 0 1% 0;">
+                        <p class="mtb">
                             <InputText
                                 v-model="add.advTextVal"
                                 placeholder="please enter parameter"
@@ -166,7 +166,9 @@ export default {
         const generatedURL: any = ref('');
         const advString: any = ref([]);
 
-        const urlIcon:any= ref('pi pi-check-circle')
+        const urlIcon: any = ref('pi pi-check-circle');
+
+        const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
         const model = State.toModel();
 
@@ -272,6 +274,7 @@ export default {
             model,
             generatedURL,
             advString,
+            hostPlaceholder,
             urlIcon,
             urlBtnTitle,
             addAnother,
@@ -292,25 +295,27 @@ export default {
     text-align: left;
     margin-top: 0;
 }
-
 .p-dropdown {
     width: inherit;
 }
-
 .width100 {
     width: 100%;
 }
-
 .viewDoc {
     float: right;
     font-size: 14px;
     cursor: pointer;
 }
-
+.adv {
+    direction: rtl;
+    margin: 0 0 1% 0;
+}
+.mtb {
+    margin: 2% 0 1% 0;
+}
 .inline-display {
     display: inline;
 }
-
 .inputNumberSection {
     width: 30%;
     height: 30%;
