@@ -70,7 +70,7 @@ With `strict-timeout = false` the next attempt starts right after a failure.
 
 | use-system-proxy
 | Should the system-wide proxy settings be used? 
-Configure the system proxy settings via <<operation:system-properties/introduction.adoc#system-properties, system properties>>
+Configure the system proxy settings via <<operation:system-properties/introduction.adoc#system-properties, system properties>>.
 | false
 |===
 
