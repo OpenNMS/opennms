@@ -109,7 +109,7 @@ public class HealthCheckCommand implements Action {
         final CompletableFuture<Health> future = healthCheckService
                 .performAsyncHealthCheck(context,
                         healthCheck -> System.out.print(String.format(descFormat, healthCheck.getDescription())),
-                        response -> {
+                        (healthCheck, response) -> {
                             final Status status = response.getStatus();
                             final Color statusColor = determineColor(status);
                             final String statusText = String.format(statusFormat, Colorizer.colorize(status.name(), statusColor));

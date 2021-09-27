@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -86,12 +87,12 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     @Override
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer, List<String> tags) {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, BiConsumer<HealthCheck, Response> onFinishConsumer, List<String> tags) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
-        final Consumer<Response> consumer = response -> {
-            health.withResponse(response);
-            onFinishConsumer.accept(response);
+        final BiConsumer<HealthCheck, Response> consumer = (healthCheck, response) -> {
+            health.withResponse(healthCheck, response);
+            onFinishConsumer.accept(healthCheck, response);
         };
         try {
             // Fail if no checks are available
@@ -118,7 +119,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
     }
 
     // Asynchronously run all checks
-    private void runChecks(Context context, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
+    private void runChecks(Context context, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, BiConsumer<HealthCheck, Response> onFinishConsumer) {
         Future<Response> currentFuture = null;
         for (HealthCheck check : checks) {
             try {
@@ -140,18 +141,18 @@ public class DefaultHealthCheckService implements HealthCheckService {
                 });
                 final Response response = currentFuture.get(context.getTimeout(), TimeUnit.MILLISECONDS);
                 if (onFinishConsumer != null) {
-                    onFinishConsumer.accept(response);
+                    onFinishConsumer.accept(check, response);
                 }
             } catch (TimeoutException timeoutException) {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
                 }
-                onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + " ms"));
+                onFinishConsumer.accept(check, new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + " ms"));
             } catch (Exception ex) {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
                 }
-                onFinishConsumer.accept(new Response(ex));
+                onFinishConsumer.accept(check, new Response(ex));
             }
         }
     }
