@@ -60,19 +60,16 @@ aliases:
   - &setup_dct_env
     name: Setup DCT environment
     command: |
+      POM_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
       case "${CIRCLE_BRANCH}" in
         "master-"*)
-           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+          MINION_IMAGE_VERSION="${POM_VERSION}"
           ;;
         "release-"*)
-           VERSION="$(.circleci/scripts/pom2version.sh ../../pom.xml)"
-           MINION_IMAGE_VERSION="release-candidate-${VERSION%.*.*}"
+          MINION_IMAGE_VERSION="release-candidate-${POM_VERSION%.*.*}"
           ;;
         "foundation-"20[1-2][0-9])
-           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
-          ;;
-        "develop")
-           MINION_IMAGE_VERSION="bleeding"
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
           ;;
         *)
           MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
