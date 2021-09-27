@@ -78,7 +78,7 @@ You can configure a path outage for an individual node or create a rule-based co
 
 == Additional notification methods
 
-Horizon includes newer notification methods that currently require manual steps to activate.
+{page-component-title} includes newer notification methods that currently require manual steps to activate.
 See xref:reference:configuration/notifications/command/mattermost.adoc[Mattermost] and xref:reference:configuration/notifications/command/slack.adoc[Slack] notifications for how to configure for these methods.
 
 
