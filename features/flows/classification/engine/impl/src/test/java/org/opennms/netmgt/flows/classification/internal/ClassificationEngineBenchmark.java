@@ -97,7 +97,7 @@ public class ClassificationEngineBenchmark {
         private List<ClassificationRequest> classificationRequests;
 
         @Setup
-        public void setup() {
+        public void setup() throws InterruptedException {
             var rules = getRules(ruleSet);
             classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
             classificationRequests = RandomClassificationEngineTest.streamOfclassificationRequests(rules, 123456l).skip(index * BATCH_SIZE).limit(BATCH_SIZE).collect(Collectors.toList());

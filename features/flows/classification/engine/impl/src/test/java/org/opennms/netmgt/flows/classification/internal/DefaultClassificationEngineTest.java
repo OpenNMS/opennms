@@ -59,7 +59,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
-    public void verifyRuleEngineBasic() {
+    public void verifyRuleEngineBasic() throws InterruptedException {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
             Lists.newArrayList(
                     new RuleBuilder().withName("rule1").withPosition(1).withSrcPort(80).build(),
@@ -75,7 +75,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
-    public void verifyRuleEngineWithOmnidirectionals() {
+    public void verifyRuleEngineWithOmnidirectionals() throws InterruptedException {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
                 Lists.newArrayList(
                         new RuleBuilder().withName("rule1").withSrcPort(80).withOmnidirectional(true).build(),
@@ -102,7 +102,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
-    public void verifyRuleEngineExtended() {
+    public void verifyRuleEngineExtended() throws InterruptedException {
         // Define Rule set
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
                 new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
@@ -188,7 +188,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
-    public void verifyAddressRuleWins() {
+    public void verifyAddressRuleWins() throws InterruptedException {
         final ClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
             new RuleBuilder().withName("HTTP").withDstPort(80).withPosition(1).build(),
             new RuleBuilder().withName("XXX2").withSrcAddress("192.168.2.1").withSrcPort(4789).build(),
@@ -206,7 +206,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test
-    public void verifyAllPortsToEnsureEngineIsProperlyInitialized() {
+    public void verifyAllPortsToEnsureEngineIsProperlyInitialized() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>(), FilterService.NOOP);
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(classificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
@@ -215,7 +215,7 @@ public class DefaultClassificationEngineTest {
 
     // See NMS-12429
     @Test
-    public void verifyDoesNotRunOutOfMemory() {
+    public void verifyDoesNotRunOutOfMemory() throws InterruptedException {
         final List<Rule> rules = Lists.newArrayList();
         for (int i=0; i<100; i++) {
             final Rule rule = new RuleBuilder().withName("rule1").withPosition(i+1).withProtocol("UDP").withDstAddress("192.168.0." + i).build();
@@ -226,7 +226,7 @@ public class DefaultClassificationEngineTest {
     }
 
     @Test(timeout=5000)
-    public void verifyInitializesQuickly() {
+    public void verifyInitializesQuickly() throws InterruptedException {
         new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("Test", "0-10000")), FilterService.NOOP);
     }
 }

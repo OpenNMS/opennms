@@ -53,7 +53,7 @@ import com.google.common.collect.Lists;
 public class DocumentEnricherTest {
 
     @Test
-    public void verifyCacheUsage() {
+    public void verifyCacheUsage() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
         final NodeDao nodeDao = factory.getNodeDao();
@@ -118,7 +118,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testCreateClassificationRequest() {
+    public void testCreateClassificationRequest() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
 
@@ -147,7 +147,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testDirection() {
+    public void testDirection() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         final DocumentEnricher enricher = factory.getEnricher();
 
@@ -196,7 +196,7 @@ public class DocumentEnricherTest {
     }
 
     @Test
-    public void testClockCorrection() {
+    public void testClockCorrection() throws InterruptedException {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory(2400_000L);
         final DocumentEnricher enricher = factory.getEnricher();
 

@@ -60,7 +60,7 @@ public class ElasticFlowRepositoryIT {
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
 
     @Test(expected=PersistenceException.class)
-    public void verifyThrowsPersistenceException() throws IOException, FlowException {
+    public void verifyThrowsPersistenceException() throws IOException, FlowException, InterruptedException {
         // Stub request
         stubFor(post("/_bulk")
                     .willReturn(aResponse()
