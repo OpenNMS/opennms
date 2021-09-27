@@ -89,6 +89,7 @@
                         {{ generatedURL }}
                     </p>
                     <Button
+                        :icon="urlIcon"
                         :label="urlBtnTitle"
                         @click="generateURL"
                         :disabled="model.reqDef.type.$invalid || model.reqDef.host.$invalid || model.reqDef.foreignSource.$invalid"
@@ -165,6 +166,8 @@ export default {
         const generatedURL: any = ref('');
         const advString: any = ref([]);
 
+        const urlIcon:any= ref('pi pi-check-circle')
+
         const model = State.toModel();
 
         //Dropdown API Data
@@ -231,6 +234,7 @@ export default {
 
         //Show Generated URL
         const generateURL = () => {
+            urlIcon.value = 'pi pi-refresh';
             urlBtnTitle.value = 'Refresh URL';
 
             if (addAnotherArr.value[0].dropdownVal != '') {
@@ -268,6 +272,7 @@ export default {
             model,
             generatedURL,
             advString,
+            urlIcon,
             urlBtnTitle,
             addAnother,
             closeIcon,
