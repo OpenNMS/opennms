@@ -18,10 +18,17 @@ Currently supported Remedy product versions:
 [options="header"]
 [cols="1,1"]
 |===
-| Product            | Version
-| Remedy ARS         | 7.6.04 Service Pack 2
-| Help Desk Module   | 7.6.04 Service Pack 1
-| HDI Web Service    | Same as Help Desk Module
+| Product
+| Version
+
+| Remedy ARS
+| 7.6.04 Service Pack 2
+
+| Help Desk Module
+| 7.6.04 Service Pack 1
+
+| HDI Web Service
+| Same as Help Desk Module
 |===
 
 [[ref-ticketing-remedy-setup]]

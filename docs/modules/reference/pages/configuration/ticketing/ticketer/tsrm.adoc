@@ -19,11 +19,20 @@ Configure the plugin options by setting the following properties in `$\{OPENNMS_
 
 [options="header, autowidth"]
 |===
-| Name                     | Description
-| `tsrm.url`               | TSRM Endpoint URL
-| `tsrm.ssl.strict`        | Strict SSL Check (true/false)
-| `tsrm.status.open`       | TSRM status for open ticket
-| `tsrm.status.close`      | TSRM status for close ticket
+| Name
+| Description
+
+| tsrm.url
+| TSRM Endpoint URL
+
+| tsrm.ssl.strict
+| Strict SSL Check (true/false)
+
+| tsrm.status.open
+| TSRM status for open ticket
+
+| tsrm.status.close
+| TSRM status for close ticket
 |===
 
 Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
