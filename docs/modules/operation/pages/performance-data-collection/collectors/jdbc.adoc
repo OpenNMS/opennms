@@ -30,16 +30,37 @@ Instead, you must use the service parameters to set the JDBC connection settings
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter            | Description                                                      | Default
-3+|*Required*
-| collection           | The name of the JDBC Collection to use.                          | n/a
-3+|*Optional*
-| data-source          | Use an existing datasource defined in `opennms-datasources.xml`. | NO_DATASOURCE_FOUND
+| Parameter
+| Description
+| Default
 
-| driver               | Driver class name                                                | org.postgresql.Driver
-| url                  | JDBC URL                                                         | jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/opennms
-| user                 | JDBC username                                                    | postgres
-| password             | JDBC password                                                    | n/a
+3+|*Required*
+
+| collection
+| The name of the JDBC Collection to use.
+| n/a
+
+3+|*Optional*
+
+| data-source
+| Use an existing datasource defined in `opennms-datasources.xml`.
+| NO_DATASOURCE_FOUND
+
+| driver
+| Driver class name
+| org.postgresql.Driver
+
+| url
+| JDBC URL
+| jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/opennms
+
+| user
+| JDBC username
+| postgres
+
+| password
+| JDBC password
+| n/a
 |===
 
 == JDBC collection configuration

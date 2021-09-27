@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -55,8 +56,8 @@ import com.google.common.collect.Maps;
 
 public class UdpSessionManager {
 
-    private final Map<TemplateKey, TimeWrapper<Template>> templates = Maps.newHashMap();
-    private final Map<TemplateKey, Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>>> options = Maps.newHashMap();
+    final Map<TemplateKey, TimeWrapper<Template>> templates = Maps.newHashMap();
+    final Map<TemplateKey, Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>>> options = Maps.newHashMap();
     private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
     private final Duration timeout;
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
@@ -68,7 +69,16 @@ public class UdpSessionManager {
 
     public void doHousekeeping() {
         final Instant timeout = Instant.now().minus(this.timeout);
-        UdpSessionManager.this.templates.entrySet().removeIf(e -> e.getValue().time.isBefore(timeout));
+        this.removeTemplateIf(e -> e.getValue().time.isBefore(timeout));
+    }
+
+    private void removeTemplateIf(final Predicate<Map.Entry<TemplateKey, TimeWrapper<Template>>> predicate) {
+        final List<TemplateKey> toBeRemoved = UdpSessionManager.this.templates.entrySet().stream()
+                .filter(predicate)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        toBeRemoved.forEach(UdpSessionManager.this.templates::remove);
+        toBeRemoved.forEach(UdpSessionManager.this.options::remove);
     }
 
     public Session getSession(final SessionKey sessionKey) {
@@ -150,7 +160,7 @@ public class UdpSessionManager {
         }
     }
 
-    private final static class TemplateKey {
+    final static class TemplateKey {
         public final DomainKey observationDomainId;
         public final int templateId;
 
@@ -195,7 +205,7 @@ public class UdpSessionManager {
         private final SessionKey sessionKey;
 
         public UdpSession(final SessionKey sessionKey) {
-            this.sessionKey = sessionKey;
+            this.sessionKey = Objects.requireNonNull(sessionKey);
         }
 
         @Override
@@ -208,11 +218,13 @@ public class UdpSessionManager {
         public void removeTemplate(final long observationDomainId, final int templateId) {
             final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, templateId);
             UdpSessionManager.this.templates.remove(key);
+            UdpSessionManager.this.options.remove(key);
         }
 
         @Override
         public void removeAllTemplate(final long observationDomainId, final Template.Type type) {
-            UdpSessionManager.this.templates.entrySet().removeIf(e -> e.getKey().observationDomainId.observationDomainId == observationDomainId && e.getValue().wrapped.type == type);
+            final DomainKey domainKey = new DomainKey(this.sessionKey, observationDomainId);
+            UdpSessionManager.this.removeTemplateIf(e -> domainKey.equals(e.getKey().observationDomainId) && e.getValue().wrapped.type == type);
         }
 
         @Override
