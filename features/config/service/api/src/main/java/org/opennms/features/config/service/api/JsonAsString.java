@@ -26,26 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.impl;
+package org.opennms.features.config.service.api;
 
-import java.io.IOException;
+import com.google.common.base.Objects;
 
-import javax.xml.bind.JAXBException;
+/**
+ * Ideally we would use JSONObject instead. BUT: we can't make Osgi and Spring to load only once. We run into
+ * classloader problems when calling ConfigurationManagerService from Osgi. This is a workaround to still be type safe.
+ * */
+public class JsonAsString {
+    private final String json;
+    public JsonAsString (final String json) {
+        this.json = json;
+    }
 
-import org.junit.Test;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+    @Override
+    public String toString() {
+        return json;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JsonAsString that = (JsonAsString) o;
+        return Objects.equal(json, that.json);
+    }
 
-public class XsdModelConverterTest {
-    final String configName = "testConfigName";
-
-    @Test
-    public void testData() throws IOException, JAXBException {
-        // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-        configSchema.getConverter().getValidationSchema().getConfigItem();
-
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(json);
     }
 }

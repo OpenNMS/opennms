@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.impl;
+package org.opennms.features.config.dao.impl.util;
 
-import java.io.IOException;
+// Reverse engineering the naming conventions of Jaxb Dynamic classes.
+public class TopLevelElementToClass {
 
-import javax.xml.bind.JAXBException;
+    public static String topLevelElementToClass(String toplevelElement) {
+        // Java classes start with capital letters:
+        String s = toplevelElement.substring(0,1).toUpperCase() + toplevelElement.substring(1);
 
-import org.junit.Test;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
-
-
-public class XsdModelConverterTest {
-    final String configName = "testConfigName";
-
-    @Test
-    public void testData() throws IOException, JAXBException {
-        // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-        configSchema.getConverter().getValidationSchema().getConfigItem();
-
+        //replace dash
+        s = s.replace("-c", "C");
+        return s;
     }
 }

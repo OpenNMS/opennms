@@ -8,7 +8,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet author="pschweizer" id="1.0-register-schema-provisiond">
-        <cm:registerSchema id="provisiond" version="1.0.0" entityClass="org.opennms.netmgt.config.provisiond.ProvisiondConfiguration"/>
+        <cm:registerSchema id="provisiond" xsdName="provisiond-configuration.xsd" rootElement="provisiond-configuration"/>
         <cm:importConfig schemaId="provisiond" configId="default" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
     </changeSet>
 

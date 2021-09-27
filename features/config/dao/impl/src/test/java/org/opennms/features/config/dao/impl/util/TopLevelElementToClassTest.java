@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.dao.impl;
+package org.opennms.features.config.dao.impl.util;
 
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
+import static org.junit.Assert.assertEquals;
+import static org.opennms.features.config.dao.impl.util.TopLevelElementToClass.topLevelElementToClass;
 
 import org.junit.Test;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
 
-
-public class XsdModelConverterTest {
-    final String configName = "testConfigName";
+public class TopLevelElementToClassTest {
 
     @Test
-    public void testData() throws IOException, JAXBException {
-        // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-        configSchema.getConverter().getValidationSchema().getConfigItem();
-
+    public void shouldConvert() {
+        assertEquals("VacuumdConfiguration", topLevelElementToClass("VacuumdConfiguration"));
+        assertEquals("ProvisiondConfiguration", topLevelElementToClass("provisiond-configuration"));
     }
 }
