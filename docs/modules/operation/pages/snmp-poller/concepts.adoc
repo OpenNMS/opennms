@@ -199,7 +199,7 @@ Defaults to "2".
 
 Besides enabling the service and configuring packages and interfaces to match your use case, you must add a policy that enables polling to the foreign source definition of the import requisition(s) for the devices on which you want to use this feature.
 
-Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the "<<reference:configuration/provisioning/policies/snmp-interface.adoc#snmp-interface-policy, Matching SNMP Interface Policy>>" to manage which SNMP interfaces this service polls along with the appropriate `matchBehavior` and parameters for your use case.
+Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the <<reference:configuration/provisioning/policies/snmp-interface.adoc#snmp-interface-policy, matching SNMP interface policy>> to manage which SNMP interfaces this service polls along with the appropriate `matchBehavior` and parameters for your use case.
 
 As an example, you could create a policy named pollVoIPDialPeers that marks interfaces with `ifType 104` to be polled.
 Set the `action` to `ENABLE_POLLING` and `matchBehavior` to `ALL_PARAMETERS`.
