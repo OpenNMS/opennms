@@ -108,7 +108,7 @@ Configuration in poller-configuration.xml is as follows:
     <parameter key="timeout" value="3000"/>
     <parameter key="port" value="443"/>
     <parameter key="days" value="30"/>
-    <parameter key="server-name" value="$\{nodelabel}.example.com"/>
+    <parameter key="server-name" value="${nodelabel}.example.com"/>
 </service>
 <service name="XMPP-STARTTLS-5222" interval="7200000" user-defined="false" status="on">
     <parameter key="retry" value="2"/>
