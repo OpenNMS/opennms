@@ -129,4 +129,4 @@ Once created, you can add nodes to the requisition.
 
 * xref:provisioning/directed-discovery.adoc#directed-discovery[Manually specify nodes to add to a requisition]
 * xref:provisioning/auto-discovery.adoc#auto-discovery[Automatically discover nodes to add to a requisition]
-* Customize a requisition with xref:provisioning/detectors/detectors.adoc#ga-detectors[detectors] and xref:configuration/provisioning/policies.adoc#policies[policies]
+* Customize a requisition with xref:reference:configuration/provisioning/detectors/detectors.adoc[detectors] and xref:reference:configuration/provisioning/policies/introduction.adoc[policies]
