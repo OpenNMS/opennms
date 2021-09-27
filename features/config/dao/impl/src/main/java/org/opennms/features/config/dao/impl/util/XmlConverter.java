@@ -28,100 +28,71 @@
 
 package org.opennms.features.config.dao.impl.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.io.Resources;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.annotation.XmlAccessType;
+
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.core.xml.ValidateUsing;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ValidationSchema;
-import org.opennms.features.config.dao.api.XmlValidationSchema;
 import org.opennms.features.config.dao.api.XmlSchema;
+import org.opennms.features.config.dao.api.XmlValidationSchema;
 import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.io.Resources;
 
 /**
- * It handles all kinds of xml <> json conventions
- *
- * @param <CONFIG_CLASS>
+ * It handles all kinds of xml <> json conventions.
  */
-public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CONFIG_CLASS> {
+public class XmlConverter implements ConfigConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
-
-    private Class<CONFIG_CLASS> configurationClass;
-    private XmlMapper<CONFIG_CLASS> xmlMapper;
+    private XmlMapper xmlMapper;
     private String xsdName;
     private String rootElement;
-    private XmlAccessType xmlAccessorType;
     private XmlValidationSchema validationSchema;
     private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
-    /**
-     * It only supports using ValidateUsing annotation, assume xsd file is unique in classpath
-     *
-     * @param configurationClass opennms config configObject class
-     * @throws IllegalArgumentException if you provide invalid config configObject class
-     */
-    public ValidateUsingConverter(Class<CONFIG_CLASS> configurationClass)
+    public XmlConverter(final String xsdName,
+                        final String rootElement)
             throws IllegalArgumentException, IOException, JAXBException {
-        if (!configurationClass.isAnnotationPresent(ValidateUsing.class)) {
-            LOG.error("It need annotation ValidateUsing! " + configurationClass.getName());
-            throw new IllegalArgumentException("It need annotation ValidateUsing!");
-        }
-        if (!configurationClass.isAnnotationPresent(XmlRootElement.class)) {
-            LOG.error("It need annotation XmlRootElement! " + configurationClass.getName());
-            throw new IllegalArgumentException("It need annotation XmlRootElement!");
-        }
-        if (!configurationClass.isAnnotationPresent(XmlAccessorType.class)) {
-            LOG.error("It need annotation XmlAccessorType! " + configurationClass.getName());
-            throw new IllegalArgumentException("It need annotation XmlAccessorType!");
-        }
-        this.xsdName = configurationClass.getAnnotation(ValidateUsing.class).value();
-        this.rootElement = configurationClass.getAnnotation(XmlRootElement.class).name();
-        this.xmlAccessorType = configurationClass.getAnnotation(XmlAccessorType.class).value();
-        this.configurationClass = configurationClass;
+        this.xsdName = Objects.requireNonNull(xsdName);
+        this.rootElement = Objects.requireNonNull(rootElement);
         this.validationSchema = this.readXmlSchema();
-        this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
+        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
     }
-
 
     /**
      * For object mapper use
      * @param xsdName
      * @param rootElement
-     * @param configurationClass
      * @param xmlAccessorType
      * @param validationSchema
      * @throws JAXBException
      */
     @JsonCreator
-    public ValidateUsingConverter(
+    public XmlConverter(
             @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
-            @JsonProperty("configurationClass") Class<CONFIG_CLASS> configurationClass,
             @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
             @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {
 
         this.xsdName = xsdName;
         this.rootElement = rootElement;
-        this.xmlAccessorType = xmlAccessorType;
-        this.configurationClass = configurationClass;
         this.validationSchema = validationSchema;
-        this.xmlMapper = new XmlMapper<>(validationSchema.getSchema(), configurationClass);
+        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
     }
     /**
      * It searches the xsd defined in configuration class and load into schema.
@@ -180,23 +151,12 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     }
 
     @Override
-    public String jaxbObjectToJson(final CONFIG_CLASS configObject) {
-        return xmlMapper.jaxbObjectToJson(configObject);
-    }
-
-    @Override
-    public String jaxbObjectToXml(CONFIG_CLASS configObject) {
-        return xmlMapper.jaxbObjectToXml(configObject);
-    }
-
-    @Override
-    public boolean validate(CONFIG_CLASS configObject) throws RuntimeException {
-        return xmlMapper.validate(configObject);
-    }
-
-    @Override
-    public CONFIG_CLASS xmlToJaxbObject(final String xmlStr) {
-        return xmlMapper.xmlToJaxbObject(xmlStr);
+    public boolean validate(String config, SCHEMA_TYPE type) throws RuntimeException {
+        if(SCHEMA_TYPE.XML == type) {
+            return xmlMapper.validate(config);
+        } else {
+            throw new IllegalArgumentException("Implement me");
+        }
     }
 
     @Override
@@ -207,16 +167,6 @@ public class ValidateUsingConverter<CONFIG_CLASS> implements ConfigConverter<CON
     @Override
     public String jsonToXml(final String jsonStr) {
         return xmlMapper.jsonToXml(jsonStr);
-    }
-
-    @Override
-    public CONFIG_CLASS jsonToJaxbObject(final String jsonStr) {
-        return xmlMapper.jsonToJaxbObject(jsonStr);
-    }
-
-    @Override
-    public Class<CONFIG_CLASS> getConfigurationClass() {
-        return configurationClass;
     }
 
     @Override

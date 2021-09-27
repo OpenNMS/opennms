@@ -305,6 +305,17 @@ public abstract class JaxbUtils {
         return filter;
     }
 
+    public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {
+        XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
+
+        LOG.trace("namespace filter for namesapce {}: {}", namespace, filter);
+        final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        filter.setParent(xmlReader);
+        return filter;
+    }
+
     public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
         final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
 

@@ -38,10 +38,14 @@ import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -58,7 +62,6 @@ import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -87,6 +90,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Autowired
     private ConfigurationManagerService cm;
     private ConfigurationManagerService cmSpy;
+    private List<Path> pathsToDelete = new ArrayList<>();
 
     @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
@@ -111,6 +115,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         if(cm.getRegisteredSchema(SCHEMA_NAME).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME);
         }
+        for(Path path: pathsToDelete) {
+            Files.deleteIfExists(path);
+        }
     }
 
     @Test
@@ -121,8 +128,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check if CM was called for schema
             verify(cmSpy).registerSchema(anyString(),
-                    eq(new ConfigurationManagerService.Version(1, 0, 0)),
-                    eq(ProvisiondConfiguration.class));
+                    eq("provisiond-configuration.xsd"),
+                    eq("provisiond-configuration"));
 
             // check if CM was called for config
             verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME), eq("provisiond"), any());
@@ -134,6 +141,11 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check for the data itself
             assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME).isPresent());
             assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent());
+
+            // check if CM was called for schema
+            verify(cmSpy).upgradeSchema(anyString(),
+                    eq("provisiond-configuration_v2.xsd"),
+                    eq("provisiond-configuration"));
         } finally {
             this.db.cleanUp();
         }
@@ -154,10 +166,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldAbortInCaseOfErrorDuringRun() {
         try {
-            ConfigurationManagerService cm = null; // will lead to Nullpointer
-            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(null);
             assertThrowsException(MigrationFailedException.class,
-                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", connection));
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {
             this.db.cleanUp();
         }

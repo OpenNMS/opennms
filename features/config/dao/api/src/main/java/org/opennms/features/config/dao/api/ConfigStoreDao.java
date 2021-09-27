@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.json.JSONObject;
+
 /**
  * It handles storing config data in database by generic datatype
  * It also validation config before persist. (add & update)
@@ -104,7 +106,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configObject (entityBean/String(json)/JSONObject)
      * @throws IOException
      */
-    void addConfig(String configName, String configId, Object configObject) throws IOException;
+    void addConfig(String configName, String configId, JSONObject configObject) throws IOException;
 
     Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
 
@@ -117,8 +119,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configObject (entityBean/String(json)/JSONObject)
      * @throws IOException
      */
-    void updateConfig(String configName, String configId, Object configObject) throws IOException;
-
+    void updateConfig(String configName, String configId, JSONObject config) throws IOException;
     /**
      * **replace** all configs for the registered service name
      *
