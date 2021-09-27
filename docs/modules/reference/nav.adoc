@@ -14,7 +14,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
-* xref:configuration/provisioning/introduction.adoc[]
+* xref:configuration/provisioning/detectors.adoc[]
 ** xref:configuration/provisioning/detectors/ActiveMQDetector.adoc[]
 ** xref:configuration/provisioning/detectors/BgpSessionDetector.adoc[]
 ** xref:configuration/provisioning/detectors/BsfDetector.adoc[]

@@ -9,7 +9,7 @@ The metadata is a simple triad of strings containing a context, a key and the as
 Each node, each interface and each service can have an arbitrary number of metadata elements assigned to it.
 The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
-The association of metadata with nodes, interfaces, and services happens during provisioning with the use of <<reference:configuration/provisioning/introduction.adoc#ref-provisioning-meta-data, detectors>>.
+The association of metadata with nodes, interfaces, and services happens during provisioning with the use of <<reference:configuration/provisioning/detectors.adoc#ref-provisioning-meta-data, detectors>>.
 Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development:rest/meta-data.adoc#metadata-rest[ReST endpoints].
 
 A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) lets users access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
@@ -167,7 +167,7 @@ admin@opennms>
 === Uses
 The following places allow the use the Metadata DSL:
 
-* <<reference:configuration/provisioning/introduction.adoc#ref-provisioning-meta-data,Provisioning Detectors>>
+* <<reference:configuration/provisioning/detectors.adoc#ref-provisioning-meta-data,Provisioning Detectors>>
 * <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service Assurance>>
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance Management>>
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>

@@ -14,5 +14,5 @@ Use this detector to find and assign services based on HTTPS.
 
 .Parameters for the HTTPS service detector
 |===
-| Parameters for the HTTPS detector are the same parameters as the <<provisioning/detectors/HttpDetector.adoc#HttpDetector, HttpDetector>>.
+| Parameters for the HTTPS detector are the same parameters as the <<configuration/provisioning/detectors/HttpDetector.adoc#HttpDetector, HttpDetector>>.
 |===
