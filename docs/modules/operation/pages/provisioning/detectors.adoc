@@ -5,7 +5,7 @@ Use detectors within the provisioning process to detect available services on no
 
 == Supported detectors
 
-For information on supported detectors and how to configure them, see xref:reference:configuration/provisioning/introduction.adoc[provisioning detectors reference section].54
+For information on supported detectors and how to configure them, see xref:reference:configuration/provisioning/introduction.adoc[provisioning detectors reference section].
 
 [[ga-detector-provisioning-meta-data]]
 == Metadata DSL
