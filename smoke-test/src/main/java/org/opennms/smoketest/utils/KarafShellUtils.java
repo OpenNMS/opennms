@@ -50,7 +50,7 @@ public class KarafShellUtils {
         try (final SshClient sshClient = new SshClient(sshAddr, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
             // Issue the 'opennms:health-check' command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms:health-check");
+            pipe.println("opennms:health-check --maxAge 60000");
             pipe.println("logout");
 
             await().atMost(2, TimeUnit.MINUTES).until(sshClient.isShellClosedCallable());
