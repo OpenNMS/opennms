@@ -79,6 +79,6 @@ You can configure a path outage for an individual node or create a rule-based co
 == Additional notification methods
 
 {page-component-title} includes newer notification methods that currently require manual steps to activate.
-See xref:reference:configuration/notifications/command/mattermost.adoc[Mattermost] and xref:reference:configuration/notifications/command/slack.adoc[Slack] notifications for how to configure for these methods.
+See xref:reference:configuration/notifications/commands/mattermost.adoc[Mattermost] and xref:reference:configuration/notifications/commands/slack.adoc[Slack] notifications for how to configure for these methods.
 
 
