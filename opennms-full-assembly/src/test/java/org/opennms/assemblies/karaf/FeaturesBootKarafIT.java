@@ -51,6 +51,7 @@ public class FeaturesBootKarafIT extends OnmsKarafTestCase {
 	@Test
 	public void testInstallAllOpenNMSFeatures() {
 		final String version = getOpenNMSVersion();
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("spring-legacy").getURL());
 		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 
 		for (String feature : new String[] {
