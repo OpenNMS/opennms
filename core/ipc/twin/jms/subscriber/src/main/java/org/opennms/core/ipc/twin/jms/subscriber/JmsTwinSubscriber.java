@@ -77,6 +77,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     @Override
     protected void sendRpcRequest(TwinRequestBean twinRequest) {
         TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+        LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
         template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
             @Override
             public void onComplete(Exchange exchange) {
@@ -136,6 +137,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     public void process(Exchange exchange) throws Exception {
         byte[] sinkUpdateBytes = exchange.getIn().getBody(byte[].class);
         TwinResponseBean twinResponseBean = mapTwinResponseToProto(sinkUpdateBytes);
+        LOG.trace("Received TwinResponse as sink update {}", twinResponseBean);
         accept(twinResponseBean);
     }
 

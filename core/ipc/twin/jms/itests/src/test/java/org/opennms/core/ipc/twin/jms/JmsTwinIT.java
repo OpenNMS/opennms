@@ -32,6 +32,7 @@ import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -57,10 +58,12 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -77,6 +80,8 @@ import static org.hamcrest.Matchers.notNullValue;
 public class JmsTwinIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
+
+    private AtomicBoolean blueprintLoaded = new AtomicBoolean(false);
 
     @ClassRule
     public static ActiveMQBroker s_broker = new ActiveMQBroker();
@@ -119,12 +124,19 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "classpath:/OSGI-INF/blueprint/blueprint-twin-subscriber.xml";
+        // Blueprint gets loaded twice which leads to multiple copies of TwinSubscriber.
+        // To avoid it, we try to load actual blueprint only once.
+        if(blueprintLoaded.get()) {
+            blueprintLoaded.set(true);
+            return "classpath:/OSGI-INF/blueprint/blueprint-twin-subscriber.xml";
+        }
+        return "classpath:/OSGI-INF/blueprint/blueprint-empty.xml";
     }
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        blueprintLoaded.set(false);
         subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
     }
 
@@ -133,6 +145,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
      */
     @Test
     public void testPublishSubscribe() throws Exception {
+        //subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
         assertThat(subscriber, notNullValue());
         final var session = publisher.register("test", String.class);
         session.publish("Test1");
@@ -141,6 +154,125 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         await().until(tracker::getLog, contains("Test1"));
     }
+
+
+    /**
+     * Tests that a publisher can update an object and the subscriber will receives all versions.
+     */
+    @Test
+    public void testUpdates() throws Exception {
+        //subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+
+        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+
+        await().until(tracker::getLog, contains("Test1"));
+        session.publish("Test2");
+        session.publish("Test3");
+        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+    }
+
+    /**
+     * Tests that subscription can be closed before registration.
+     */
+    @Test
+    public void testSubscriberCloseBeforeRegister() throws Exception {
+
+        final var tracker1 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        tracker1.close();
+
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+
+        final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        await().until(tracker2::getLog, contains("Test1"));
+
+        assertThat(tracker1.getLog(), empty());
+    }
+
+    /**
+     * Tests that a subscriber can register before a publisher exists.
+     */
+    @Test
+    public void testSubscribeBeforePublish() throws Exception {
+        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker::getLog, contains("Test1", "Test2"));
+    }
+
+    /**
+     * Tests that subscription can be closed and reopened.
+     */
+    @Test
+    public void testSubscriberClose() throws Exception {
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+
+        final var tracker1 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        await().until(tracker1::getLog, contains("Test1"));
+
+        tracker1.close();
+
+        session.publish("Test2");
+        session.publish("Test3");
+
+        final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        await().until(tracker2::getLog, hasItems("Test3"));
+
+        assertThat(tracker1.getLog(), contains("Test1"));
+    }
+
+    /**
+     * Tests that subscription works if publisher gets restarted.
+     */
+    @Test
+    public void testPublisherRestart() throws Exception {
+        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker::getLog, contains("Test1", "Test2"));
+
+        ((JmsTwinPublisher) publisher).destroy();
+        ((JmsTwinPublisher) publisher).init();
+        session.publish("Test3");
+
+        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+    }
+
+    /**
+     * Tests that multiple subscriptions exists for the same key.
+     */
+    @Test
+    public void testMultipleSubscription() throws Exception {
+        final var tracker1 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+
+        final var session = this.publisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+
+        session.publish("Test3");
+
+        await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker2::getLog, hasItems("Test2", "Test3"));
+    }
+
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+
 
 
 }

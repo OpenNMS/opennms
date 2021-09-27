@@ -25,10 +25,10 @@
 
     <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
 
-<!--    &lt;!&ndash; Reduces the graceful shutdown time from 300 to 15 seconds. &ndash;&gt;
+    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
         <property name="timeout" value="15"/>
-    </bean>-->
+    </bean>
 
     <camelContext id="twinRpcServer" xmlns="http://camel.apache.org/schema/spring">
         <!-- Exchanges may contain credentials, so avoid logging them -->

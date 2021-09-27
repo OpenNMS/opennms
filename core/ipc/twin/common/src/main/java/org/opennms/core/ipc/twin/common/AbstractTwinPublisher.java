@@ -46,9 +46,10 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     private final Map<SessionKey, byte[]> objMap = new ConcurrentHashMap<>();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
-    private LocalTwinSubscriber localTwinSubscriber;
+    private final LocalTwinSubscriber localTwinSubscriber;
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
+        Objects.requireNonNull(localTwinSubscriber);
         this.localTwinSubscriber = localTwinSubscriber;
     }
 
@@ -60,7 +61,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     @Override
     public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
         SessionKey sessionKey = new SessionKey(key, location);
-        LOG.info("Registered a session with key {}", sessionKey);
+        LOG.debug("Registered a session with key {}", sessionKey);
         return new SessionImpl<>(sessionKey);
     }
 
@@ -82,21 +83,19 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
 
         @Override
         public void publish(T obj) throws IOException {
-            LOG.info("Published an object update for the session with key {}", sessionKey.toString());
+            LOG.debug("Published an object update for the session with key {}", sessionKey.toString());
             byte[] value = objectMapper.writeValueAsBytes(obj);
             objMap.put(sessionKey, value);
             TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, value);
             // Handle local updates for the twin.
-            if (localTwinSubscriber != null) {
-                localTwinSubscriber.accept(twinResponseBean);
-            }
+            localTwinSubscriber.accept(twinResponseBean);
             handleSinkUpdate(twinResponseBean);
         }
 
         @Override
         public void close() throws IOException {
-            LOG.info("Closed session with key {} ", sessionKey);
             objMap.remove(sessionKey);
+            LOG.debug("Closed session with key {} ", sessionKey);
         }
     }
 
