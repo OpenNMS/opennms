@@ -65,7 +65,8 @@ IMPORTANT: To improve the layout, the property names have been shortened to thei
 | \https://example.org/assets/icon.png
 
 | useSystemProxy
-| Should the system-wide proxy settings be used? Configure the system proxy settings via <<operation:system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+| Should the system-wide proxy settings be used? 
+Configure the system proxy settings via <<operation:system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
 | true
 | true
 |===
