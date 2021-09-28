@@ -14,7 +14,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
-* xref:configuration/provisioning/introduction.adoc[]
+* xref:configuration/provisioning/policies.adoc[]
 ** xref:configuration/provisioning/policies/ip-interface.adoc[]
 ** xref:configuration/provisioning/policies/metadata.adoc[]
 ** xref:configuration/provisioning/policies/node-category.adoc[]
