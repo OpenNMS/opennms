@@ -14,4 +14,4 @@ String values are assumed to be a substring match, unless the parameter is prefi
 
 == Supported policies
 
-For information on supported policies and how to configure them, see xref:reference:configuration/provisioning/introduction.adoc[policies reference section].
+For information on supported policies and how to configure them, see xref:reference:configuration/provisioning/policies.adoc[policies reference section].
