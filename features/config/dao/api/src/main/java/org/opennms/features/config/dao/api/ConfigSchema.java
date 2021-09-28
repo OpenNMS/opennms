@@ -27,31 +27,24 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class include meta-data of the config
  */
 public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private String name;
-    private int majorVersion;
-    private int minorVersion;
-    private int patchVersion;
     private Class<T> converterClass;
     private T converter;
 
     @JsonCreator
-    public ConfigSchema(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
-                        @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,
+    public ConfigSchema(@JsonProperty("name") String name,
                         @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
         this.name = name;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-        this.patchVersion = patchVersion;
+        this.converterClass = converterClass;
         this.setConverter(converter);
     }
 
@@ -61,35 +54,6 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getMajorVersion() {
-        return majorVersion;
-    }
-
-    public void setMajorVersion(int majorVersion) {
-        this.majorVersion = majorVersion;
-    }
-
-    public int getMinorVersion() {
-        return minorVersion;
-    }
-
-    public void setMinorVersion(int minorVersion) {
-        this.minorVersion = minorVersion;
-    }
-
-    public int getPatchVersion() {
-        return patchVersion;
-    }
-
-    public void setPatchVersion(int patchVersion) {
-        this.patchVersion = patchVersion;
-    }
-
-    @JsonIgnore
-    public String getVersion() {
-        return majorVersion + "." + minorVersion + "." + patchVersion;
     }
 
     public Class<T> getConverterClass() {

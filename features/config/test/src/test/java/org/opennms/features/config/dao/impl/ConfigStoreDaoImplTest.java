@@ -27,26 +27,27 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -56,7 +57,6 @@ import java.util.Set;
 @JUnitTemporaryDatabase
 public class ConfigStoreDaoImplTest {
     final String configName = "testConfigName";
-    final int majorVersion = 29;
     final String filename = "testFilename";
     @Autowired
     private ConfigStoreDao configStoreDao;
@@ -64,9 +64,8 @@ public class ConfigStoreDaoImplTest {
     @Test
     public void testData() throws IOException, JAXBException {
         // register
-        ValidateUsingConverter<ProvisiondConfiguration> converter = new ValidateUsingConverter<>(ProvisiondConfiguration.class);
-        ConfigSchema<ValidateUsingConverter> configSchema = new ConfigSchema<>(configName, majorVersion,
-                0, 0, ValidateUsingConverter.class, converter);
+        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
 
         configStoreDao.register(configSchema);
 
@@ -88,13 +87,10 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<ValidateUsingConverter> configSchema2 = new ConfigSchema<>(configName2, majorVersion,
-                0, 0, ValidateUsingConverter.class, converter);
+        ConfigSchema<XmlConverter> configSchema2 = new ConfigSchema<>(configName2, XmlConverter.class, converter);
         configStoreDao.register(configSchema2);
-        configSchema2.setMajorVersion(30);
         configStoreDao.updateConfigSchema(configSchema2);
         Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(configName2);
-        Assert.assertEquals("FAIL TO updateConfigSchema", tmpConfigSchema2.get().getVersion(), "30.0.0");
 
         // list all
         Optional<Set<String>> all = configStoreDao.getConfigNames();
@@ -103,7 +99,8 @@ public class ConfigStoreDaoImplTest {
         // add config
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
-        configStoreDao.addConfig(configName, filename + "_2", config2);
+        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config2)));
+        configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
 

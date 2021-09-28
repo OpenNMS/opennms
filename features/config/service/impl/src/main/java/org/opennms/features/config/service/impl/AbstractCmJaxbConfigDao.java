@@ -28,11 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +35,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>Abstract AbstractCmJaxbConfigDao class.</p>
@@ -96,12 +97,16 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         long startTime = System.currentTimeMillis();
 
         LOG.debug("Loading {} configuration from {}", description, configId);
-        Optional<ENTITY_CLASS> configOptional = null;
+        Optional<ENTITY_CLASS> configOptional;
+
         try {
-            configOptional = configurationManagerService.getConfiguration(this.getConfigName(), configId, entityClass);
+            configOptional = configurationManagerService
+                    .getXmlConfiguration(this.getConfigName(), configId)
+                    .map(s -> JaxbUtils.unmarshal(entityClass, s));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         if (configOptional.isEmpty()) {
             throw new RuntimeException("NOT_FOUND: configName=" + this.getConfigName() + " configId=" + configId);
         }
@@ -116,7 +121,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
                 if (!onReloadCausedChangeCallbacks.isEmpty()) {
                     LOG.debug("Calling onReloaded callbacks");
                     try {
-                        //TODO: Freddy PE-13 reconsider the possiblility of exception during loop
+                        //TODO: Freddy PE-13 reconsider the possibility of exception during loop
                         onReloadCausedChangeCallbacks.forEach(c -> c.accept(config));
                     } catch (Exception e) {
                         LOG.warn("Encountered exception while calling onReloaded callbacks", e);

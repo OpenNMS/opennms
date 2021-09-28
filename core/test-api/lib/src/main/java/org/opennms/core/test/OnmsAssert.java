@@ -28,11 +28,12 @@
 
 package org.opennms.core.test;
 
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
-import static org.junit.Assert.fail;
 
 public abstract class OnmsAssert {
 
@@ -42,7 +43,7 @@ public abstract class OnmsAssert {
         Assert.assertTrue(aList.containsAll(bList) && bList.containsAll(aList));
     }
 
-    public static void assertThrowsException(Class<? extends Throwable> expectedException, Runnable function) {
+    public static void assertThrowsException(Class<? extends Throwable> expectedException, RunnableWithException function) {
         try {
             function.run();
         } catch(Exception e) {
@@ -52,6 +53,11 @@ public abstract class OnmsAssert {
             return;
         }
         fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
+    }
+
+    @FunctionalInterface
+    public interface RunnableWithException {
+        void run() throws Exception;
     }
 
 }
