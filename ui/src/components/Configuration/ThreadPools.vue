@@ -50,11 +50,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRef } from 'vue'
+import { onMounted, reactive, toRef, ref } from 'vue'
 import InputNumber from '../Common/InputNumber.vue'
 import Button from '../Common/Button.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, minValue, numeric, maxValue } from '@vuelidate/validators'
+import { apigetProvisionD } from '../Common/Demo/apiService';
+
 
 const threadpool = reactive({
   import: 0,
@@ -76,13 +78,24 @@ const validationVar = useVuelidate(rules, {
   rescan: toRef(threadpool, "rescan"),
   write: toRef(threadpool, "write")
 });
-
+let mainObj= ref('');
 const onSave = () => {  
     threadpool.import = validationVar.value.import.$model;
     threadpool.scan = validationVar.value.scan.$model;
     threadpool.rescan = validationVar.value.rescan.$model;
     threadpool.write = validationVar.value.write.$model; 
 }
+onMounted(() => {
+    //service call for data
+    apigetProvisionD.then((response: any) => {
+        //data come form api
+        if (response) {
+          console.log('ProvisionD API data', response);
+        }
+    }).catch((err) => {
+        console.error("error ==>", err);
+    });
+})
 </script>
 
 <style lang="scss" scoped>
