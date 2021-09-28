@@ -748,6 +748,7 @@ rm -rf %{buildroot}
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
+%attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
 
 %files jmx-config-generator
 %attr(755,root,root) %{bindir}/jmx-config-generator
