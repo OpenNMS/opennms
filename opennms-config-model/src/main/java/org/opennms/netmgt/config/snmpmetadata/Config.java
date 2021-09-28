@@ -49,9 +49,6 @@ public class Config implements Container {
     @XmlAttribute(name = "tree")
     private String tree;
 
-    @XmlAttribute(name = "context")
-    private String context;
-
     @XmlElement(name = "entry")
     private List<Entry> entries = new ArrayList<>();
 
@@ -87,21 +84,12 @@ public class Config implements Container {
         this.tree = tree;
     }
 
-    public String getContext() {
-        return this.context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
-    }
-
     @Override
     public String toString() {
         return "Config{" +
                 "name='" + name + '\'' +
                 ", sysObjectId='" + sysObjectId + '\'' +
                 ", tree='" + tree + '\'' +
-                ", context='" + context + '\'' +
                 ", entries=" + entries +
                 '}';
     }
@@ -111,11 +99,11 @@ public class Config implements Container {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Config config = (Config) o;
-        return Objects.equals(name, config.name) && Objects.equals(sysObjectId, config.sysObjectId) && Objects.equals(tree, config.tree) && Objects.equals(context, config.context) && Objects.equals(entries, config.entries);
+        return Objects.equals(name, config.name) && Objects.equals(sysObjectId, config.sysObjectId) && Objects.equals(tree, config.tree) && Objects.equals(entries, config.entries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, sysObjectId, tree, context, entries);
+        return Objects.hash(name, sysObjectId, tree, entries);
     }
 }

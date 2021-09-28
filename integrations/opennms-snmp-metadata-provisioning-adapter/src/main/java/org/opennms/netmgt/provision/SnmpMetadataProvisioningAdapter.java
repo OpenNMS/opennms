@@ -69,6 +69,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
     private static final Logger LOG = LoggerFactory.getLogger(SnmpMetadataProvisioningAdapter.class);
     public static final String PREFIX = "Provisiond.";
     public static final String NAME = "SnmpMetadataProvisioningAdapter";
+    public static final String CONTEXT = "snmp";
     private NodeDao nodeDao;
     private SnmpAgentConfigFactory snmpConfigDao;
     private LocationAwareSnmpClient locationAwareSnmpClient;
@@ -104,7 +105,8 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
         // retrieve the node
         final OnmsNode node = nodeDao.get(nodeId);
         if (node == null) {
-            throw new ProvisioningAdapterException("Failed to return node for given nodeId: " + nodeId);
+            LOG.debug("Failed to return node for given nodeId: {}" + nodeId);
+            return;
         }
 
         // retrieve primary interface
@@ -120,7 +122,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
         try {
             // now get the sysObjectId
             if (node.getSysObjectId() == null) {
-                LOG.warn("Node {} does not support SNMP. Skipping...", nodeId);
+                LOG.debug("Node {} does not support SNMP. Skipping...", nodeId);
                 return;
             }
 
@@ -146,28 +148,20 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
             final String locationName = (location == null) ? null : location.getLocationName();
             final SnmpAgentConfig agentConfig = snmpConfigDao.getAgentConfig(ipAddress, locationName);
 
+            final List<OnmsMetaData> results = new ArrayList<>();
+
             for (final Config config : configs) {
                 final SnmpObjId rootOId = SnmpObjId.get(config.getTree());
 
                 final CompletableFuture<List<SnmpResult>> resultFuture = locationAwareSnmpClient.walk(agentConfig, rootOId)
                         .withDescription("walk" + "_" + config.getName() + "_" + node.getLabel())
-                        .withLocation(node.getLocation() != null ? node.getLocation().getLocationName() : null)
+                        .withLocation(locationName)
                         .execute();
 
                 try {
-
-                    final List<OnmsMetaData> results = new ArrayList<>();
-
                     for (final Entry entry : config.getEntries()) {
-                        results.addAll(processEntry(config.getContext(), rootOId.append(entry.getTree()), config.getName(), entry, resultFuture.get(), new ArrayList<>()));
+                        results.addAll(processEntry(CONTEXT, rootOId.append(entry.getTree()), config.getName(), entry, resultFuture.get(), new ArrayList<>()));
                     }
-
-                    results.addAll(node.getMetaData().stream()
-                            .filter(m -> !m.getContext().equals(config.getContext()))
-                            .collect(Collectors.toList()));
-
-                    node.setMetaData(results);
-                    nodeDao.saveOrUpdate(node);
                 } catch (ExecutionException e) {
                     LOG.error("Aborting SNMP walk for " + agentConfig, e);
                     throw new SnmpMetadataException("Agent failed for OId " + config.getTree() + ": " + e.getMessage());
@@ -175,6 +169,13 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
                     throw new SnmpMetadataException("SNMP walk interrupted, exiting");
                 }
             }
+
+            results.addAll(node.getMetaData().stream()
+                    .filter(m -> !m.getContext().equals(CONTEXT))
+                    .collect(Collectors.toList()));
+
+            node.setMetaData(results);
+            nodeDao.saveOrUpdate(node);
 
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, PREFIX + NAME);
             ebldr.setNodeid(nodeId);

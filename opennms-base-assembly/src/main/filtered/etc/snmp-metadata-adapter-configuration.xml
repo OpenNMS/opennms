@@ -1,11 +1,11 @@
 <snmp-metadata-config>
 
     <!--
-        This configuration represents the jnxBoxAnatomy definition taken from the Juniper Enterprise Chassis MIB. The
-        special context "snmp-hardware" allow this data to be also displayed in the Web UI via the "Hardware Info" link
+        This configuration represents the jnxBoxAnatomy definition taken from the Juniper Enterprise Chassis MIB.
+        The special context "snmp" allow this data to be also displayed in the Web UI via the "Hardware Info" link
         on the node page.
     -->
-    <config context="snmp-hardware" tree=".1.3.6.1.4.1.2636.3.1" name="jnxBoxAnatomy" sysObjectId="~^\.1\.3\.6\.1\.4\.1\.2636\.1\.1\.1\..*">
+    <config tree=".1.3.6.1.4.1.2636.3.1" name="jnxBoxAnatomy" sysObjectId="~^\.1\.3\.6\.1\.4\.1\.2636\.1\.1\.1\..*">
         <entry tree=".1" name="jnxBoxClass"/>
         <entry tree=".2" name="jnxBoxDescr"/>
         <entry tree=".3" name="jnxBoxSerialNo"/>

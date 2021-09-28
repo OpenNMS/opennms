@@ -50,29 +50,17 @@ public class SnmpMetadataRestService {
 
     /** The node DAO. */
     @Autowired
-    private NodeDao m_nodeDao;
+    private NodeDao nodeDao;
 
     @GET
     @Path("{nodeCriteria}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getSnmpMetadata(@PathParam("nodeCriteria") String nodeCriteria) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        final OnmsNode node = nodeDao.get(nodeCriteria);
         if (node == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        final SnmpMetadataBase snmpMetadataBase = SnmpMetadataObject.fromOnmsMetadata(node.getMetaData(), "snmp-hardware");
-        return Response.ok(snmpMetadataBase).build();
-    }
-
-    @GET
-    @Path("{nodeCriteria}/{context}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getSnmpMetadata(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context) {
-        final OnmsNode node = m_nodeDao.get(nodeCriteria);
-        if (node == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        final SnmpMetadataBase snmpMetadataBase = SnmpMetadataObject.fromOnmsMetadata(node.getMetaData(), context);
+        final SnmpMetadataBase snmpMetadataBase = SnmpMetadataObject.fromOnmsMetadata(node.getMetaData(), "snmp");
         return Response.ok(snmpMetadataBase).build();
     }
 }

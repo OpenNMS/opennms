@@ -49,9 +49,9 @@ import java.util.stream.Collectors;
 @XmlRootElement(name = "snmp-metadata-object")
 public class SnmpMetadataObject extends SnmpMetadataBase {
     @XmlTransient
-    final static Pattern PATTERN_1 = Pattern.compile("[^.]+\\[[^\\[]+\\]|[^.]+|[^.]+$");
+    final static Pattern PATTERN_KEY = Pattern.compile("[^.]+\\[[^\\[]+\\]|[^.]+|[^.]+$");
     @XmlTransient
-    final static Pattern PATTERN_2 = Pattern.compile("(.*)\\[(.*)\\]$");
+    final static Pattern PATTERN_INDEX = Pattern.compile("(.*)\\[(.*)\\]$");
     private String name;
     private List<SnmpMetadataObject> objects = new ArrayList<>();
     private List<SnmpMetadataValue> values = new ArrayList<>();
@@ -159,7 +159,7 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
     public static SnmpMetadataBase fromOnmsMetadata(final List<OnmsMetaData> onmsMetaData, final String context) {
         final Map<String, String> map = onmsMetaData.stream()
                 .filter(m -> context.equals(m.getContext()))
-                .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));
+                .collect(Collectors.toMap(OnmsMetaData::getKey, OnmsMetaData::getValue));
         return createStructuredMetaData(new SnmpMetadataObject(context), map, null);
     }
 
@@ -189,17 +189,15 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
                 }
             }
 
-            final Matcher matcher = PATTERN_1.matcher(key);
+            final Matcher matcher = PATTERN_KEY.matcher(key);
 
             if (matcher.find() && !Strings.isNullOrEmpty(matcher.group())) {
-                if (!prefixes.contains(matcher.group())) {
-                    prefixes.add(matcher.group());
-                }
+                prefixes.add(matcher.group());
             }
         }
 
         for (final String p : prefixes) {
-            final Matcher matcher = PATTERN_2.matcher(p);
+            final Matcher matcher = PATTERN_INDEX.matcher(p);
             if (matcher.find()) {
                 final String newPrefix = (prefix == null ? "" : prefix + ".") + matcher.group(1);
                 final SnmpMetadataTable table = ((SnmpMetadataObject) structure).addTable(matcher.group(1));
@@ -207,7 +205,7 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
                 for (final Map.Entry<String, String> dataEntry : data.entrySet()) {
                     String key = dataEntry.getKey();
                     if (!Strings.isNullOrEmpty(newPrefix)) {
-                        if (!dataEntry.getKey().startsWith(newPrefix)) {
+                        if (!key.startsWith(newPrefix)) {
                             continue;
                         }
                         if (key.length() > newPrefix.length()) {

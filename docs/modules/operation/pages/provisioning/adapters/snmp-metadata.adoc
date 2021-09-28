@@ -1,15 +1,15 @@
 = SNMP Metadata Adapter
 
 The SNMP Metadata adapter can be used to enrich a node with data gathered from SNMP.
-This data is stored in the node's metadata and can be displayed in the Web UI and also queried via ReST.
-One use-case is to add hardware inventory data for a SNMP-enabled node.
+This data is stored in the node's metadata context `snmp` and can be displayed in the Web UI and also queried via ReST.
+The use-case is to add hardware inventory data for a SNMP-enabled node.
 The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used to configure this adapter:
 
 [source, xml]
 ----
 <snmp-metadata-config>
 
-    <config context="myContext" tree=".1.2.3.4" name="myHardware" sysObjectId="~^\.4\.3\.2\.1.*">
+    <config tree=".1.2.3.4" name="myHardware" sysObjectId="~^\.4\.3\.2\.1.*">
         <entry tree=".1" name="someKey"/>
         <entry tree=".2" name="otherKey"/>
         <entry tree=".3.1" name="aTable">
@@ -26,7 +26,7 @@ The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used 
 The config's sysObjectId attribute is compared with the System Object Id of the node.
 By prepending a tilde symbol (`~`), a regular expression can be specified to check the node's System Object Id.
 The example above will query nodes with System Object Ids matching the regular expression `^4\.3\.2\.1.*`.
-The data will be searched in the SNMP sub-tree `.1.2.3.4` and be stored in the node's metadata context `myContext`.
+The data will be searched in the SNMP sub-tree `.1.2.3.4` and be stored in the node's metadata context `snmp`.
 The top-level element will be named `myHardware`.
 
 Based on this example and under the assumption that a node provides corresponding data, the following metadata entries will be produced:
@@ -34,12 +34,12 @@ Based on this example and under the assumption that a node provides correspondin
 [options="header, autowidth"]
 |===
 | Context | Key | Value
-| myContext |myHardware.someKey | someValue
-| myContext |myHardware.otherKey | otherValue
-| myContext |myHardware.aTable[.1].anEntryIndex | 1
-| myContext |myHardware.aTable[.1].anEntryValue | aValue1
-| myContext |myHardware.aTable[.1].anotherEntryValue | anotherValue1
-| myContext |myHardware.aTable[.2].anEntryIndex | 2
-| myContext |myHardware.aTable[.2].anEntryValue | aValue2
-| myContext |myHardware.aTable[.2].anotherEntryValue | anotherValue2
+| snmp |myHardware.someKey | someValue
+| snmp |myHardware.otherKey | otherValue
+| snmp |myHardware.aTable[.1].anEntryIndex | 1
+| snmp |myHardware.aTable[.1].anEntryValue | aValue1
+| snmp |myHardware.aTable[.1].anotherEntryValue | anotherValue1
+| snmp |myHardware.aTable[.2].anEntryIndex | 2
+| snmp |myHardware.aTable[.2].anEntryValue | aValue2
+| snmp |myHardware.aTable[.2].anotherEntryValue | anotherValue2
 |===
