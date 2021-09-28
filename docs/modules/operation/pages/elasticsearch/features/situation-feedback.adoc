@@ -6,29 +6,21 @@ NOTE: Full documentation on situation feedback is available  <<alarm-correlation
 
 When persisting `Situation Feedback`, feedback on each related alarm is represented by a document as follows:
 
-[options="header, %autowidth"]
+[options="header, autowidth"]
 |===
 | Field | Description
 
-|`@timestamp`
-| Timestamp, in milliseconds, when the feedback was submitted.
+| @timestamp | Timestamp, in milliseconds, when the feedback was submitted.
 
-|`situation_key`
-| The reduction key of the situation.
+| situation_key | The reduction key of the situation.
 
-|`alarm_key`
-| The reduction key of the related alarm.
+| alarm_key | The reduction key of the related alarm.
 
-|`feedback_type`
-| One of `CORRECT`, `FALSE_POSITIVE` or `FALSE_NEGATIVE`
+| feedback_type | One of `CORRECT`, `FALSE_POSITIVE`, or `FALSE_NEGATIVE`
 
-|`situation_fingerprint`
-| A hash calculated on the situation when the feedback was submitted.
+| situation_fingerprint | A hash calculated on the situation when the feedback was submitted.
 
-|`reason`
-| A text string provided with the feedback.
+| reason | A text string provided with the feedback.
 
-|`user`
-| The user who submitted the feedback.
-
+| user | The user who submitted the feedback.
 |===

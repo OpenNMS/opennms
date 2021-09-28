@@ -23,7 +23,7 @@ However, users can modify the default sound setting for the duration of their lo
 
 By default {page-component-title} displays the alarm list page with acknowledged and unacknowledged alarms listed in separate search tabs.
 In a number of operational environments it is useful to see all of the alarms on the same page with unacknowledged alarms flashing to indicate that they have not yet been noticed by one of the team.
-This allows everyone to see at a glance the real-time status of all alarms and which alarms still need attention.
+This lets everyone see the real-time status of all alarms and which alarms still need attention.
 
 The figure <<ga-alarm-sounds-ui, Alarm Sounds View>> also shows the alarm list page when flashing unacknowledged alarms are enabled.
 Alarms that are unacknowledged flash steadily.
@@ -60,8 +60,8 @@ opennms.alarmlist.sound.enable=true
 opennms.alarmlist.sound.status=off
 
 # By default the alarm list page displays acknowledged and unacknowledged alarms in separate search tabs
-# Some users have asked to be able to see both on the same page. This option allows the alarm list page
-# to display acknowledged and unacknowledged alarms on the same list but unacknowledged alarms
+# Some users have asked to be able to see both on the same page. This option lets the alarm list page
+# display acknowledged and unacknowledged alarms on the same list but unacknowledged alarms
 # flash until they are acknowledged.
 #
 opennms.alarmlist.unackflash=true

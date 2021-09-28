@@ -42,5 +42,9 @@
       <artifactId>opennms-web-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+    </dependency>
   </dependencies>
 </project>

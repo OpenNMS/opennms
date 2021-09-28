@@ -36,9 +36,9 @@ JAEGER_AGENT_HOST=my-jaeger-host<2>
 
 TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
 
-NOTE: The Jaeger service name is the `Instance-ID` of the Core server.
+NOTE: The Jaeger service name is the `Instance-ID` of the Core instance.
 
-.Restart _{page-component-title}_ Core server to apply the changes
+.Restart {page-component-title} Core instance to apply the changes
 [source, console]
 ----
 sudo systemctl restart opennms

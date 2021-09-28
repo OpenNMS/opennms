@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -81,7 +82,7 @@ public class IfTttTrigger {
     }
 
     public void trigger() {
-        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build()) {
             LOG.debug("Sending '" + event + "' event to IFTTT.");
 
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));

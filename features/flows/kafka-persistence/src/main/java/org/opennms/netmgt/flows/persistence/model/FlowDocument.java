@@ -530,6 +530,32 @@ private static final long serialVersionUID = 0L;
             clockCorrection_ = input.readUInt64();
             break;
           }
+          case 370: {
+            com.google.protobuf.UInt32Value.Builder subBuilder = null;
+            if (dscp_ != null) {
+              subBuilder = dscp_.toBuilder();
+            }
+            dscp_ = input.readMessage(com.google.protobuf.UInt32Value.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(dscp_);
+              dscp_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 378: {
+            com.google.protobuf.UInt32Value.Builder subBuilder = null;
+            if (ecn_ != null) {
+              subBuilder = ecn_.toBuilder();
+            }
+            ecn_ = input.readMessage(com.google.protobuf.UInt32Value.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(ecn_);
+              ecn_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -2118,6 +2144,82 @@ private static final long serialVersionUID = 0L;
     return clockCorrection_;
   }
 
+  public static final int DSCP_FIELD_NUMBER = 46;
+  private com.google.protobuf.UInt32Value dscp_;
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   * @return Whether the dscp field is set.
+   */
+  @java.lang.Override
+  public boolean hasDscp() {
+    return dscp_ != null;
+  }
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   * @return The dscp.
+   */
+  @java.lang.Override
+  public com.google.protobuf.UInt32Value getDscp() {
+    return dscp_ == null ? com.google.protobuf.UInt32Value.getDefaultInstance() : dscp_;
+  }
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.UInt32ValueOrBuilder getDscpOrBuilder() {
+    return getDscp();
+  }
+
+  public static final int ECN_FIELD_NUMBER = 47;
+  private com.google.protobuf.UInt32Value ecn_;
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   * @return Whether the ecn field is set.
+   */
+  @java.lang.Override
+  public boolean hasEcn() {
+    return ecn_ != null;
+  }
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   * @return The ecn.
+   */
+  @java.lang.Override
+  public com.google.protobuf.UInt32Value getEcn() {
+    return ecn_ == null ? com.google.protobuf.UInt32Value.getDefaultInstance() : ecn_;
+  }
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.UInt32ValueOrBuilder getEcnOrBuilder() {
+    return getEcn();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -2263,6 +2365,12 @@ private static final long serialVersionUID = 0L;
     }
     if (clockCorrection_ != 0L) {
       output.writeUInt64(45, clockCorrection_);
+    }
+    if (dscp_ != null) {
+      output.writeMessage(46, getDscp());
+    }
+    if (ecn_ != null) {
+      output.writeMessage(47, getEcn());
     }
     unknownFields.writeTo(output);
   }
@@ -2438,6 +2546,14 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeUInt64Size(45, clockCorrection_);
     }
+    if (dscp_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(46, getDscp());
+    }
+    if (ecn_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(47, getEcn());
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -2610,6 +2726,16 @@ private static final long serialVersionUID = 0L;
         .equals(other.getConvoKey())) return false;
     if (getClockCorrection()
         != other.getClockCorrection()) return false;
+    if (hasDscp() != other.hasDscp()) return false;
+    if (hasDscp()) {
+      if (!getDscp()
+          .equals(other.getDscp())) return false;
+    }
+    if (hasEcn() != other.hasEcn()) return false;
+    if (hasEcn()) {
+      if (!getEcn()
+          .equals(other.getEcn())) return false;
+    }
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -2761,6 +2887,14 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + CLOCK_CORRECTION_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getClockCorrection());
+    if (hasDscp()) {
+      hash = (37 * hash) + DSCP_FIELD_NUMBER;
+      hash = (53 * hash) + getDscp().hashCode();
+    }
+    if (hasEcn()) {
+      hash = (37 * hash) + ECN_FIELD_NUMBER;
+      hash = (53 * hash) + getEcn().hashCode();
+    }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -3082,6 +3216,18 @@ private static final long serialVersionUID = 0L;
 
       clockCorrection_ = 0L;
 
+      if (dscpBuilder_ == null) {
+        dscp_ = null;
+      } else {
+        dscp_ = null;
+        dscpBuilder_ = null;
+      }
+      if (ecnBuilder_ == null) {
+        ecn_ = null;
+      } else {
+        ecn_ = null;
+        ecnBuilder_ = null;
+      }
       return this;
     }
 
@@ -3252,6 +3398,16 @@ private static final long serialVersionUID = 0L;
       result.flowLocality_ = flowLocality_;
       result.convoKey_ = convoKey_;
       result.clockCorrection_ = clockCorrection_;
+      if (dscpBuilder_ == null) {
+        result.dscp_ = dscp_;
+      } else {
+        result.dscp_ = dscpBuilder_.build();
+      }
+      if (ecnBuilder_ == null) {
+        result.ecn_ = ecn_;
+      } else {
+        result.ecn_ = ecnBuilder_.build();
+      }
       onBuilt();
       return result;
     }
@@ -3442,6 +3598,12 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getClockCorrection() != 0L) {
         setClockCorrection(other.getClockCorrection());
+      }
+      if (other.hasDscp()) {
+        mergeDscp(other.getDscp());
+      }
+      if (other.hasEcn()) {
+        mergeEcn(other.getEcn());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -8683,6 +8845,316 @@ private static final long serialVersionUID = 0L;
       clockCorrection_ = 0L;
       onChanged();
       return this;
+    }
+
+    private com.google.protobuf.UInt32Value dscp_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder> dscpBuilder_;
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     * @return Whether the dscp field is set.
+     */
+    public boolean hasDscp() {
+      return dscpBuilder_ != null || dscp_ != null;
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     * @return The dscp.
+     */
+    public com.google.protobuf.UInt32Value getDscp() {
+      if (dscpBuilder_ == null) {
+        return dscp_ == null ? com.google.protobuf.UInt32Value.getDefaultInstance() : dscp_;
+      } else {
+        return dscpBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public Builder setDscp(com.google.protobuf.UInt32Value value) {
+      if (dscpBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        dscp_ = value;
+        onChanged();
+      } else {
+        dscpBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public Builder setDscp(
+        com.google.protobuf.UInt32Value.Builder builderForValue) {
+      if (dscpBuilder_ == null) {
+        dscp_ = builderForValue.build();
+        onChanged();
+      } else {
+        dscpBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public Builder mergeDscp(com.google.protobuf.UInt32Value value) {
+      if (dscpBuilder_ == null) {
+        if (dscp_ != null) {
+          dscp_ =
+            com.google.protobuf.UInt32Value.newBuilder(dscp_).mergeFrom(value).buildPartial();
+        } else {
+          dscp_ = value;
+        }
+        onChanged();
+      } else {
+        dscpBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public Builder clearDscp() {
+      if (dscpBuilder_ == null) {
+        dscp_ = null;
+        onChanged();
+      } else {
+        dscp_ = null;
+        dscpBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public com.google.protobuf.UInt32Value.Builder getDscpBuilder() {
+      
+      onChanged();
+      return getDscpFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    public com.google.protobuf.UInt32ValueOrBuilder getDscpOrBuilder() {
+      if (dscpBuilder_ != null) {
+        return dscpBuilder_.getMessageOrBuilder();
+      } else {
+        return dscp_ == null ?
+            com.google.protobuf.UInt32Value.getDefaultInstance() : dscp_;
+      }
+    }
+    /**
+     * <pre>
+     * DSCP; upper 6 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder> 
+        getDscpFieldBuilder() {
+      if (dscpBuilder_ == null) {
+        dscpBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder>(
+                getDscp(),
+                getParentForChildren(),
+                isClean());
+        dscp_ = null;
+      }
+      return dscpBuilder_;
+    }
+
+    private com.google.protobuf.UInt32Value ecn_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder> ecnBuilder_;
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     * @return Whether the ecn field is set.
+     */
+    public boolean hasEcn() {
+      return ecnBuilder_ != null || ecn_ != null;
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     * @return The ecn.
+     */
+    public com.google.protobuf.UInt32Value getEcn() {
+      if (ecnBuilder_ == null) {
+        return ecn_ == null ? com.google.protobuf.UInt32Value.getDefaultInstance() : ecn_;
+      } else {
+        return ecnBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public Builder setEcn(com.google.protobuf.UInt32Value value) {
+      if (ecnBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ecn_ = value;
+        onChanged();
+      } else {
+        ecnBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public Builder setEcn(
+        com.google.protobuf.UInt32Value.Builder builderForValue) {
+      if (ecnBuilder_ == null) {
+        ecn_ = builderForValue.build();
+        onChanged();
+      } else {
+        ecnBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public Builder mergeEcn(com.google.protobuf.UInt32Value value) {
+      if (ecnBuilder_ == null) {
+        if (ecn_ != null) {
+          ecn_ =
+            com.google.protobuf.UInt32Value.newBuilder(ecn_).mergeFrom(value).buildPartial();
+        } else {
+          ecn_ = value;
+        }
+        onChanged();
+      } else {
+        ecnBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public Builder clearEcn() {
+      if (ecnBuilder_ == null) {
+        ecn_ = null;
+        onChanged();
+      } else {
+        ecn_ = null;
+        ecnBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public com.google.protobuf.UInt32Value.Builder getEcnBuilder() {
+      
+      onChanged();
+      return getEcnFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    public com.google.protobuf.UInt32ValueOrBuilder getEcnOrBuilder() {
+      if (ecnBuilder_ != null) {
+        return ecnBuilder_.getMessageOrBuilder();
+      } else {
+        return ecn_ == null ?
+            com.google.protobuf.UInt32Value.getDefaultInstance() : ecn_;
+      }
+    }
+    /**
+     * <pre>
+     * ECN; lower 2 bits of TOS
+     * </pre>
+     *
+     * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder> 
+        getEcnFieldBuilder() {
+      if (ecnBuilder_ == null) {
+        ecnBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.google.protobuf.UInt32Value, com.google.protobuf.UInt32Value.Builder, com.google.protobuf.UInt32ValueOrBuilder>(
+                getEcn(),
+                getParentForChildren(),
+                isClean());
+        ecn_ = null;
+      }
+      return ecnBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

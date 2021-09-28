@@ -39,7 +39,7 @@ public class IpValueTest {
 
     @Test
     public void verifyRangedValues() {
-        final IpValue ipValue = new IpValue("10.1.1.1-10.1.1.100");
+        final IpValue ipValue = IpValue.of("10.1.1.1-10.1.1.100");
         final IPAddressRange range = new IPAddressRange("10.1.1.1", "10.1.1.100");
         for (IPAddress address : range) {
             assertThat(ipValue.isInRange(address.toUserString()), is(true));
@@ -48,7 +48,7 @@ public class IpValueTest {
 
     @Test
     public void verifySingleValue() {
-        final IpValue ipValue = new IpValue("192.168.0.1");
+        final IpValue ipValue = IpValue.of("192.168.0.1");
         assertThat(ipValue.isInRange("192.168.0.0"), is(false));
         assertThat(ipValue.isInRange("192.168.0.1"), is(true));
         assertThat(ipValue.isInRange("192.168.0.2"), is(false));
@@ -56,7 +56,7 @@ public class IpValueTest {
 
     @Test
     public void verifyMultiValues() {
-        final IpValue ipValue = new IpValue("192.168.0.1, 192.168.0.2, 192.168.0.10");
+        final IpValue ipValue = IpValue.of("192.168.0.1, 192.168.0.2, 192.168.0.10");
         assertThat(ipValue.isInRange("192.168.0.0"), is(false));
         assertThat(ipValue.isInRange("192.168.0.1"), is(true));
         assertThat(ipValue.isInRange("192.168.0.2"), is(true));
@@ -83,7 +83,7 @@ public class IpValueTest {
 
     @Test
     public void verifyCIDRValue() {
-        final IpValue ipValue = new IpValue("10.0.0.5,192.168.0.0/24");
+        final IpValue ipValue = IpValue.of("10.0.0.5,192.168.0.0/24");
         for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
             assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
         }
@@ -105,7 +105,7 @@ public class IpValueTest {
 
     @Test
     public void verifyCIDRValue_2() {
-        final IpValue ipValue = new IpValue("192.168.0.17/16");
+        final IpValue ipValue = IpValue.of("192.168.0.17/16");
         for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.255.255")) {
             assertThat(ipValue.isInRange(ipAddress.toUserString()), is(true));
         }
@@ -115,32 +115,32 @@ public class IpValueTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyCIDRValueNotAllowedInRange() {
-        new IpValue("192.0.0.0/8-192.168.0.0/24");
+        IpValue.of("192.0.0.0/8-192.168.0.0/24");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyWildcard() {
-        new IpValue("*");
+        IpValue.of("*");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddress() {
-        new IpValue("300.400.500.600");
+        IpValue.of("300.400.500.600");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddressRanges() {
-        new IpValue("192.168.0.1-a.b.c.d");
+        IpValue.of("192.168.0.1-a.b.c.d");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void verifyInvalidIpAddressRangeEndIsBefore() {
-        new IpValue("192.168.10.255-192.168.0.1");
+        IpValue.of("192.168.10.255-192.168.0.1");
     }
 
     @Test
     public void verifySingleValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1");
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1");
         assertThat(value.isInRange("2001:0DB8:0:CD30::1"), is(true));
         assertThat(value.isInRange("2001:0DB8:0:CD30::2"), is(false));
         assertThat(value.isInRange("192.168.0.1"), is(false)); // incompatible, should be false
@@ -148,7 +148,7 @@ public class IpValueTest {
 
     @Test
     public void verifyRangedValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1-2001:0DB8:0:CD30::FFFF");
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1-2001:0DB8:0:CD30::FFFF");
         for (IPAddress address : new IPAddressRange("2001:0DB8:0:CD30::1", "2001:0DB8:0:CD30::FFFF")) {
             assertThat(value.isInRange(address.toUserString()), is(true));
         }
@@ -156,7 +156,7 @@ public class IpValueTest {
 
     @Test
     public void verifyCIDRValueIpV6() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/120");
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1/120");
         for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::FF")) {
             assertThat(value.isInRange(ipAddress.toUserString()), is(true));
         }
@@ -165,7 +165,7 @@ public class IpValueTest {
 
     @Test
     public void verifyCIDRValueIpV6_2() {
-        final IpValue value = new IpValue("2001:0DB8:0:CD30::1/127");
+        final IpValue value = IpValue.of("2001:0DB8:0:CD30::1/127");
         for (IPAddress ipAddress : new IPAddressRange("2001:0DB8:0:CD30::0", "2001:0DB8:0:CD30::1")) {
             assertThat(value.isInRange(ipAddress.toUserString()), is(true));
         }

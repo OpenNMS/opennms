@@ -171,21 +171,25 @@
     <span>On-Call Role Schedule</span>
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="addEntryForm">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<input type="hidden" name="operation" value="addEntry"/>
 					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="date"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="editEntryForm">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 					<input type="hidden" name="operation" value="editEntry"/>
 					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="schedIndex"/>

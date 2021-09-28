@@ -15,7 +15,7 @@ User maintenance describes additional tasks and information related to users.
 === Changing your password
 
 . Log in with user name and old password.
-. Choose *Change Password* from the drop-down below your login name. 
+. Choose *Change Password* from the list below your login name. 
 . Specify your current password then set the new password and confirm it.
 . Click *Submit*.
 . Log out and log in with your new password.

@@ -86,14 +86,18 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     static final String ALIAS = "minion";
 
     private final StackModel model;
-    private final MinionProfile profile;
 
-    public MinionContainer(StackModel model, MinionProfile profile) {
+    private final String id;
+    private final String location;
+    private final GenericContainer container;
+
+    private MinionContainer(final StackModel model, final String id, final String location) {
         super("minion");
         this.model = Objects.requireNonNull(model);
-        this.profile = Objects.requireNonNull(profile);
+        this.id = Objects.requireNonNull(id);
+        this.location = Objects.requireNonNull(location);
 
-        GenericContainer container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
+        this.container = withExposedPorts(MINION_DEBUG_PORT, MINION_SSH_PORT, MINION_SYSLOG_PORT, MINION_SNMP_TRAP_PORT, MINION_TELEMETRY_FLOW_PORT, MINION_TELEMETRY_IPFIX_TCP_PORT, MINION_TELEMETRY_JTI_PORT, MINION_TELEMETRY_NXOS_PORT, MINION_JETTY_PORT)
                 .withCreateContainerCmdModifier(cmd -> {
                     final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
@@ -109,6 +113,13 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                 .withCommand("-c")
                 .waitingFor(new WaitForMinion(this));
 
+        // Help make development/debugging easier
+        DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
+    }
+
+    public MinionContainer(final StackModel model, final MinionProfile profile) {
+        this(model, profile.getId(), profile.getLocation());
+
         container.addFileSystemBind(writeMinionConfig(profile).toString(),
                 "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -116,11 +127,16 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "*:" + MINION_DEBUG_PORT);
         }
-
-        // Help make development/debugging easier
-        DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
     }
-    
+
+    public MinionContainer(final StackModel model, final Map<String, String> configuration) {
+        this(model, configuration.get("MINION_ID"), configuration.get("MINION_LOCATION"));
+
+        for(final Map.Entry<String, String> entry : configuration.entrySet()) {
+            container.addEnv(entry.getKey(), entry.getValue());
+        }
+    }
+
     private Path writeMinionConfig(MinionProfile profile) {
         try {
             final Path minionConfig = createTempDirectory(ALIAS).toAbsolutePath().resolve("minion-config.yaml");
@@ -212,7 +228,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
 
 
     public String getLocation() {
-        return profile.getLocation();
+        return this.location;
     }
 
     public InetSocketAddress getNetworkProtocolAddress(NetworkProtocol protocol) {
@@ -285,6 +301,6 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     }
 
     public String getId() {
-        return profile.getId();
+        return this.id;
     }
 }

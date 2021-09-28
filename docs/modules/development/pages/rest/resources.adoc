@@ -10,15 +10,15 @@ This service is especially useful in conjunction with the Measurements API.
 |===
 | Resource                                | Description
 | `/resources`                            | Retrieve the full tree of resources in the system (expensive, use with care).
-| `/resources/\{resourceid\}`             | Retrieve the tree of resources starting with the named resource ID.
-| `/resources/fornode/\{nodecriteria\}`   | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple.
+| `/resources/\{resourceid}`              | Retrieve the tree of resources starting with the named resource ID.
+| `/resources/fornode/\{nodecriteria}`    | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple.
 |===
 
 == DELETEs (Removing Data)
 [options="header", cols="5,10"]
 |===
 | Resource                    | Description
-| `/resources/\{resourceid\}` | Delete resource with the named resource ID, and all its child resources, if any.
+| `/resources/\{resourceid}`  | Delete resource with the named resource ID, and all its child resources, if any.
 |===
 
 The following table shows all supported query string parameters and their default values.

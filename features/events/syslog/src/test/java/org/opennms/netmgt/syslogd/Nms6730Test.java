@@ -34,14 +34,18 @@ import static org.junit.Assert.fail;
 import java.nio.ByteBuffer;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
 /**
  * @author Seth
  */
 public class Nms6730Test {
+
+	private LocationAwareDnsLookupClient locationAwareDnsLookupClient = Mockito.mock(LocationAwareDnsLookupClient.class);
 
 	@Test
 	public void testCustomSyslogParser() throws Exception {
@@ -66,7 +70,8 @@ public class Nms6730Test {
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					514,
 					incoming,
-					config
+					config,
+						locationAwareDnsLookupClient
 				);
 				assertEquals("this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 			} catch (MessageDiscardedException e) {
@@ -83,7 +88,8 @@ public class Nms6730Test {
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
 				colonNoSpace,
-				config
+				config,
+					locationAwareDnsLookupClient
 			);
 			assertEquals("procname:this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 		}
@@ -96,7 +102,8 @@ public class Nms6730Test {
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
 				spaceBeforeColon,
-				config
+				config,
+					locationAwareDnsLookupClient
 			);
 			assertEquals("proc name: this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 		}
@@ -122,7 +129,8 @@ public class Nms6730Test {
 					InetAddressUtils.ONE_TWENTY_SEVEN,
 					514,
 					incoming,
-					config
+					config,
+						locationAwareDnsLookupClient
 				);
 				assertEquals("this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 			} catch (MessageDiscardedException e) {
@@ -138,7 +146,8 @@ public class Nms6730Test {
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
 				colonNoSpace,
-				config
+				config,
+					locationAwareDnsLookupClient
 			);
 			assertEquals("procname:this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 		}
@@ -151,7 +160,8 @@ public class Nms6730Test {
 				InetAddressUtils.ONE_TWENTY_SEVEN,
 				514,
 				spaceBeforeColon,
-				config
+				config,
+					locationAwareDnsLookupClient
 			);
 			assertEquals("proc name: this is [my] message", convertToEvent.getEvent().getLogmsg().getContent());
 		}

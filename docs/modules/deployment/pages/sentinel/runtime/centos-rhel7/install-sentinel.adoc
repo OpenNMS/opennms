@@ -4,28 +4,39 @@
 sudo yum -y install java-11-openjdk-headless
 ----
 
-.Add repository and import GPG key
-[source, console]
-----
-sudo yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
-----
+ifeval::["{page-component-title}" == "Horizon"]
+include::../../../repos/rhel-centos/horizon-rhel7.adoc[]
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+include::../../../repos/rhel-centos/meridian-rhel7.adoc[]
+endif::[]
 
 .Installing the of {page-component-title} Sentinel
 [source, console]
 ----
+ifeval::["{page-component-title}" == "Horizon"]
 sudo yum -y install opennms-sentinel
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum -y install meridian-sentinel
+endif::[]
 ----
 
-TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
-     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
 
 .Disable auto updates for {page-component-title} Sentinel
 [source, console]
 ----
 sudo yum -y install yum-utils
+ifeval::["{page-component-title}" == "Horizon"]
 sudo yum-config-manager --disable opennms-repo-stable-*
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo yum-config-manager --disable meridian
+endif::[]
 ----
 
 .Verify directory structure with the tree command

@@ -5,12 +5,12 @@ OPENNMS_BINDIR="${install.bin.dir}"
 
 JINTEROP_DEPS_JAR=`ls -1 "$OPENNMS_HOME"/lib/j-interop-ng-deps-*.jar | head -n 1`
 JINTEROP_JAR=`ls -1 "$OPENNMS_HOME"/lib/j-interop-*.jar | head -n 1`
-JCIFS_JAR=`ls -1 "$OPENNMS_HOME"/lib/jcifs-*.jar | head -n 1`
+JCIFS_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.dependencies.jcifs-shaded-*.jar | head -n 1`
 WMI_JAR=`ls -1 "$OPENNMS_HOME"/lib/opennms-wmi-*.jar | head -n 1`
 LOG4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/log4j-*.jar | head -n 1`
 SLF4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-api-*.jar | head -n 1`
 COMMONS_CLI_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-cli-*.jar | head -n 1`
-BC_JAR=`ls -1 "$OPENNMS_HOME"/lib/bcprov-*.jar | head -n 1`
+BC_JAR=`find "$OPENNMS_HOME"/system -name bcprov-*.jar | head -n 1`
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Xmx256m \

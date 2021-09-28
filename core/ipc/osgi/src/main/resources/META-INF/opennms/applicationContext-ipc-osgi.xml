@@ -17,6 +17,9 @@
   <bean id="osgiRpcServer" class="org.opennms.core.ipc.osgi.OsgiIpcManager" primary="true">
   </bean>
 
+  <bean id="osgiTwinPublisher" class="org.opennms.core.ipc.twin.osgi.OsgiTwinPublisher" primary="true">
+  </bean>
+
   <bean id="osgiLocalDispatcherFactory" class="org.opennms.core.ipc.osgi.OsgiLocalDispatcherFactory" >
     <property name="metrics" ref="osgiLocalSinkMetricRegistry"/>
   </bean>

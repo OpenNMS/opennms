@@ -1,19 +1,9 @@
 [[basic-deployment]]
-= Basic {page-component-title} Deployment
+= Basic {page-component-title} deployment
 
-A basic {page-component-title} deployment installs and configures the core product, which includes PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 
+A basic {page-component-title} deployment installs and configures the core software, which includes PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface: 
 
 image::deployment/core/opennms-arch.png[]
-
-{page-component-title} is a modular and event-driven architecture.
-Development and design of OpenNMS follows the FCAPS principle. 
-It defines the standard functionalities of network management applications and covers several administrative entities:
-
-* Fault management 
-* Configuration management
-* Accounting management
-* Performance management
-* Security management
 
 OpenNMS contains a set of daemons for specific metwork management use cases.
 

@@ -971,4 +971,58 @@ public interface FlowDocumentOrBuilder extends
    * @return The clockCorrection.
    */
   long getClockCorrection();
+
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   * @return Whether the dscp field is set.
+   */
+  boolean hasDscp();
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   * @return The dscp.
+   */
+  com.google.protobuf.UInt32Value getDscp();
+  /**
+   * <pre>
+   * DSCP; upper 6 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value dscp = 46;</code>
+   */
+  com.google.protobuf.UInt32ValueOrBuilder getDscpOrBuilder();
+
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   * @return Whether the ecn field is set.
+   */
+  boolean hasEcn();
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   * @return The ecn.
+   */
+  com.google.protobuf.UInt32Value getEcn();
+  /**
+   * <pre>
+   * ECN; lower 2 bits of TOS
+   * </pre>
+   *
+   * <code>.google.protobuf.UInt32Value ecn = 47;</code>
+   */
+  com.google.protobuf.UInt32ValueOrBuilder getEcnOrBuilder();
 }

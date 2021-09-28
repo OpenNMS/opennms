@@ -180,6 +180,17 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     }
 
     @Override
+    public String getDescription() {
+        return "SFlow";
+    }
+
+    @Override
+    public Object dumpInternalState() {
+        // There is no internal state
+        return null;
+    }
+
+    @Override
     public void start(final ScheduledExecutorService executorService) {
         executor = new ThreadPoolExecutor(
                 // corePoolSize must be > 0 since we use the RejectedExecutionHandler to block when the queue is full

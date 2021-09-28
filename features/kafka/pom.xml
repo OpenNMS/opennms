@@ -18,6 +18,7 @@
 
   <modules>
     <module>producer</module>
+    <module>consumer</module>
   </modules>
 
 </project>

@@ -41,8 +41,8 @@ class IpMatcher implements Matcher {
     private final Function<ClassificationRequest, String> valueExtractor;
     private final IpValue value;
 
-    protected IpMatcher(String input, Function<ClassificationRequest, String> valueExtractor) {
-        this.value = new IpValue(input);
+    protected IpMatcher(IpValue input, Function<ClassificationRequest, String> valueExtractor) {
+        this.value = input;
         this.valueExtractor = Objects.requireNonNull(valueExtractor);
     }
 

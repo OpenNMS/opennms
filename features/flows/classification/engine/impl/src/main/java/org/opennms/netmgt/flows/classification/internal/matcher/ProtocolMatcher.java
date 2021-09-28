@@ -28,43 +28,25 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
-import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
-import org.opennms.netmgt.flows.classification.internal.value.StringValue;
+import org.opennms.netmgt.flows.classification.internal.value.ProtocolValue;
 
 public class ProtocolMatcher implements Matcher {
 
-    private final List<Protocol> protocols = new ArrayList<>();
+    private final Set<Integer> protocols;
+
+    public ProtocolMatcher(ProtocolValue protocols) {
+        this.protocols = protocols.getProtocols();
+    }
 
     public ProtocolMatcher(String protocols) {
-        final StringValue stringValue = new StringValue(protocols);
-        this.protocols.addAll(stringValue.splitBy(",")
-                .stream()
-                .map(p -> Protocols.getProtocol(p.getValue()))
-                .filter(p -> p != null)
-                .collect(Collectors.toList()));
-    }
-
-    public ProtocolMatcher(int protocol) {
-        this(Protocols.getProtocol(protocol));
-    }
-
-    public ProtocolMatcher(Protocol protocol) {
-        this.protocols.add(Objects.requireNonNull(protocol));
+        this(ProtocolValue.of(protocols));
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        return protocols
-                .stream()
-                .filter(p -> p.getDecimal() == request.getProtocol().getDecimal())
-                .findAny()
-                .isPresent();
+        return protocols.contains(request.getProtocol().getDecimal());
     }
 }

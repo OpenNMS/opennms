@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
@@ -53,9 +54,11 @@ import com.google.common.collect.Lists;
 public class NodeGeolocationSearchProvider implements SearchProvider {
 
     private final NodeDao nodeDao;
+    private final EntityScopeProvider entityScopeProvider;
 
-    public NodeGeolocationSearchProvider(NodeDao nodeDao) {
+    public NodeGeolocationSearchProvider(final NodeDao nodeDao, final EntityScopeProvider entityScopeProvider) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
         final List<OnmsNode> matchingNodes = nodeDao.findMatching(criteria);
         final List<SearchResultItem> results = matchingNodes.stream()
             .map(node -> {
-                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node).build();
+                final SearchResultItem result = new SearchResultItemBuilder().withOnmsNode(node, entityScopeProvider).build();
                 final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
                 final List<Matcher> matcherList = Lists.newArrayList(
                         new Matcher("Country", geolocation.getCountry()),

@@ -65,7 +65,9 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private static final String EXPRESSION_ARG = "expression";
     
     private static final String SERVICES_ARG = "services";
-    
+
+    private static final String LOCATION_ARG = "location";
+
     private static final String FID_HASH_SRC_ARG = "foreignidhashsource";
     
     private static final String[] HASH_IP_KEYWORDS = { "ip", "addr" };
@@ -101,6 +103,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         m_request.setZone(parseZone(url));
         m_request.setForeignSource(parseForeignSource(url));
         m_request.setExpression(determineExpressionFromUrl(url));
+        m_request.setLocation(determineLocationFromUrl(url));
         m_request.setForeignIdHashSource(getForeignIdHashSource());
         m_request.setServices(Arrays.asList(getServices()));
 
@@ -218,6 +221,15 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         }
     }
 
+    protected static String determineLocationFromUrl(URL url) {
+        LOG.info("determineLocationFromUrl: finding regex as parameter in query string of URL: {}", url);
+        if(getUrlArgs(url) == null) {
+            return null;
+        } else {
+            return getUrlArgs(url).get(LOCATION_ARG);
+        }
+    }
+
     private static List<String> tokenizeQueryArgs(String query) throws IllegalArgumentException {
         
         if (query == null) {
@@ -269,7 +281,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         }
 
         final String query = url.getQuery();
-        if ((query != null) && (determineExpressionFromUrl(url) == null) && (getArgs().get(SERVICES_ARG) == null) && (getArgs().get(FID_HASH_SRC_ARG) == null)) {
+        if ((query != null) && (determineExpressionFromUrl(url) == null) && (determineLocationFromUrl(url) == null) && (getArgs().get(SERVICES_ARG) == null) && (getArgs().get(FID_HASH_SRC_ARG) == null)) {
             throw new MalformedURLException("The specified DNS URL contains an invalid query string: "+url);
         }
     }

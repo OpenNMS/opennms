@@ -53,6 +53,45 @@ defaults: &defaults
       type: string
       default: ""
 
+aliases:
+  - &setup_dct_env
+    name: Setup DCT environment
+    command: |
+      case "${CIRCLE_BRANCH}" in
+        "master-"*)
+           MINION_IMAGE_VERSION="$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml)"
+          ;;
+        "release-"*)
+           MINION_IMAGE_VERSION="release-candidate"
+          ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
+        "develop")
+           MINION_IMAGE_VERSION="bleeding"
+          ;;
+        *)
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
+          ;;
+      esac
+      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
+      echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
+      echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
+  - &setup_dct_key
+    name: Setup DCT key
+    command: |
+      KEY_FOLDER=~/.docker/trust/private
+      mkdir -p $KEY_FOLDER
+      # the key that is used to sign single-arch images
+      echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      # the key that is used by Notary to sign the multi-arch minion image
+      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+      chmod 600 $KEY_FOLDER/*
+      # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
+      # that is required for loading the
+      docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -408,7 +447,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -423,8 +462,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -539,6 +577,30 @@ workflows:
       - tarball-assembly:
           requires:
             - build
+      - minion-image-single-arch:
+          matrix:
+            parameters:
+              architecture: [linux/amd64,linux/arm64,linux/arm/v7]
+          context: "docker-content-trust"
+          requires:
+            - tarball-assembly
+            - smoke-test-minion
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+      - minion-image-multi-arch:
+          context: "docker-content-trust"
+          requires:
+            - minion-image-single-arch
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
       - horizon-rpm-build:
           requires:
             - build
@@ -568,6 +630,21 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
       - smoke-test-core:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-flaky:
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -653,40 +730,22 @@ workflows:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - minion-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - sentinel-deb-build:
           requires:
             - integration-test
           filters:
             branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /.*smoke.*/
-                - /.*debian.*/
+              ignore:
+                - /^merge-foundation.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -695,6 +754,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -716,6 +776,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -729,6 +790,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -745,6 +807,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -840,19 +903,6 @@ jobs:
               javadoc:aggregate --batch-mode
             date
       - run:
-          name: Collect Artifacts
-          command: |
-            mkdir -p target/{artifacts,tarballs}
-            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
-            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp target/*-source.tar.gz ./target/artifacts/
-      - run:
           name: Build Minion OCI
           command: |
             cd opennms-container/minion
@@ -864,42 +914,28 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-
-            # Build for multiple architectures only in release branches and push images with manifest to a registry
-            # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
-            case "${CIRCLE_BRANCH}" in
-              "master-"*)
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="$(../pom2version.py ../../pom.xml)" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "release-"*)
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="release-candidate" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "develop")
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="bleeding" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              *)
-                echo "No branch to push to registry."
-                ;;
-            esac
+      - run:
+          name: Collect Artifacts
+          command: |
+            mkdir -p target/{artifacts,config-schema,tarballs}
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
+            pushd target/site/apidocs
+              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+            popd
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp target/*-source.tar.gz ./target/artifacts/
+            cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
           destination: artifacts
+      - store_artifacts:
+          when: always
+          path: ~/project/target/config-schema
+          destination: config-schema
       - store_artifacts:
           when: always
           path: ~/project/target/tarballs
@@ -907,14 +943,100 @@ jobs:
       - store_artifacts:
           path: ~/project/opennms-container/minion/images/minion.oci
           destination: minion.oci
+      - cache-workflow-assets:
+          cache_prefix: minion-config-schema
+          source_path: target/config-schema/
       - cache-oci:
           key: minion
           path: opennms-container/minion/images/
-      # any idea why we persisted this? seems like nothing later uses it
-      #- persist_to_workspace:
-      #    root: ~/
-      #    paths:
-      #      - project/target/tarballs
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz
+
+  minion-image-single-arch:
+    parameters:
+      architecture:
+        type: string
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: multiarch/qemu-user-static
+          command: docker run --privileged multiarch/qemu-user-static --reset -p yes
+      - run:
+          name: Install Docker buildx
+          command: |
+            sudo wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo chmod a+x /usr/local/bin/docker-buildx
+            sudo systemctl restart docker
+      - dockerhub-login
+      - run: *setup_dct_env
+      - run: *setup_dct_key
+      - run:
+          name: Single-arch build & push
+          command: |
+            cd opennms-container/minion
+            ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            TAG="${MINION_IMAGE_VERSION}-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_FLAGS=--load \
+                 VERSION="${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}"
+            docker push ${MINION_IMAGE}:${TAG}
+
+  minion-image-multi-arch:
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+    steps:
+      - attach_workspace:
+          at: ~/
+      - dockerhub-login
+      - run: *setup_dct_env
+      - run: *setup_dct_key
+      - run:
+          name: Install notary
+          command: |
+            sudo wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -O /usr/local/bin/notary
+            sudo chmod a+x /usr/local/bin/notary
+      - run:
+          name: Create & push multi-arch manifest
+          command: |
+            IMAGE_REF="${MINION_IMAGE}:${MINION_IMAGE_VERSION}"
+            docker manifest create ${IMAGE_REF} \
+              ${IMAGE_REF}-linux-amd64 \
+              ${IMAGE_REF}-linux-arm64 \
+              ${IMAGE_REF}-linux-arm-v7 \
+              --amend
+            SHA_256="$(docker manifest push "${IMAGE_REF}" --purge | cut -d ':' -f 2)"
+            echo "Manifest SHA-256: ${SHA_256}"
+            echo "Image-Ref: ${IMAGE_REF}"
+            MANIFEST_FROM_REG="$(docker manifest inspect "${IMAGE_REF}" -v)";
+            BYTES_SIZE="$(printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor.size' | uniq)";
+            echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
+            echo "Manifest contents:\n";
+            printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
+            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+            echo "Sign ${SHA_256} with the notary"
+            # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
+            # -> the following lines can not be used:
+            #
+            # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
+            #
+            # -> use the targets key of the minion repository to sign the multi-arch image instead
+            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+            echo "Done!"
+            # notary -s https://notary.docker.io list "${IMAGE}"
 
   horizon-rpm-build:
     executor: centos-build-executor
@@ -1197,7 +1319,7 @@ jobs:
       - save-sonar-cache
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1206,9 +1328,20 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: core
+  smoke-test-flaky:
+    executor: smoke-test-executor
+    parallelism: 5
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 4
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1219,7 +1352,7 @@ jobs:
           suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 8
+    parallelism: 5
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1370,6 +1503,8 @@ jobs:
           cache_prefix: rpm-minion
       - restore-workflow-assets:
           cache_prefix: rpm-sentinel
+      - restore-workflow-assets:
+          cache_prefix: minion-config-schema
       - run:
           name: Publish Packages
           command: |

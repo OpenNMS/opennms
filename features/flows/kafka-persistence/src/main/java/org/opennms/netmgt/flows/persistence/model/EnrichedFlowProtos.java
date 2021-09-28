@@ -64,7 +64,7 @@ public final class EnrichedFlowProtos {
       "\n\022flowdocument.proto\032\036google/protobuf/wr" +
       "appers.proto\"[\n\010NodeInfo\022\026\n\016foreign_sour" +
       "ce\030\001 \001(\t\022\022\n\nforegin_id\030\002 \001(\t\022\017\n\007node_id\030" +
-      "\003 \001(\r\022\022\n\ncategories\030\004 \003(\t\"\304\r\n\014FlowDocume" +
+      "\003 \001(\r\022\022\n\ncategories\030\004 \003(\t\"\233\016\n\014FlowDocume" +
       "nt\022\021\n\ttimestamp\030\001 \001(\004\022/\n\tnum_bytes\030\002 \001(\013" +
       "2\034.google.protobuf.UInt64Value\022\035\n\tdirect" +
       "ion\030\003 \001(\0162\n.Direction\022\023\n\013dst_address\030\004 \001" +
@@ -108,19 +108,21 @@ public final class EnrichedFlowProtos {
       "Locality\022\037\n\014dst_locality\030* \001(\0162\t.Localit" +
       "y\022 \n\rflow_locality\030+ \001(\0162\t.Locality\022\021\n\tc" +
       "onvo_key\030, \001(\t\022\030\n\020clock_correction\030- \001(\004" +
-      "*$\n\tDirection\022\013\n\007INGRESS\020\000\022\n\n\006EGRESS\020\001*\246" +
-      "\002\n\021SamplingAlgorithm\022\016\n\nUNASSIGNED\020\000\022#\n\037" +
-      "SYSTEMATIC_COUNT_BASED_SAMPLING\020\001\022\"\n\036SYS" +
-      "TEMATIC_TIME_BASED_SAMPLING\020\002\022\036\n\032RANDOM_" +
-      "N_OUT_OF_N_SAMPLING\020\003\022\"\n\036UNIFORM_PROBABI" +
-      "LISTIC_SAMPLING\020\004\022\034\n\030PROPERTY_MATCH_FILT" +
-      "ERING\020\005\022\030\n\024HASH_BASED_FILTERING\020\006\022<\n8FLO" +
-      "W_STATE_DEPENDENT_INTERMEDIATE_FLOW_SELE" +
-      "CTION_PROCESS\020\007*6\n\016NetflowVersion\022\006\n\002V5\020" +
-      "\000\022\006\n\002V9\020\001\022\t\n\005IPFIX\020\002\022\t\n\005SFLOW\020\003*#\n\010Local" +
-      "ity\022\n\n\006PUBLIC\020\000\022\013\n\007PRIVATE\020\001BB\n*org.open" +
-      "nms.netmgt.flows.persistence.modelB\022Enri" +
-      "chedFlowProtosP\001b\006proto3"
+      "\022*\n\004dscp\030. \001(\0132\034.google.protobuf.UInt32V" +
+      "alue\022)\n\003ecn\030/ \001(\0132\034.google.protobuf.UInt" +
+      "32Value*$\n\tDirection\022\013\n\007INGRESS\020\000\022\n\n\006EGR" +
+      "ESS\020\001*\246\002\n\021SamplingAlgorithm\022\016\n\nUNASSIGNE" +
+      "D\020\000\022#\n\037SYSTEMATIC_COUNT_BASED_SAMPLING\020\001" +
+      "\022\"\n\036SYSTEMATIC_TIME_BASED_SAMPLING\020\002\022\036\n\032" +
+      "RANDOM_N_OUT_OF_N_SAMPLING\020\003\022\"\n\036UNIFORM_" +
+      "PROBABILISTIC_SAMPLING\020\004\022\034\n\030PROPERTY_MAT" +
+      "CH_FILTERING\020\005\022\030\n\024HASH_BASED_FILTERING\020\006" +
+      "\022<\n8FLOW_STATE_DEPENDENT_INTERMEDIATE_FL" +
+      "OW_SELECTION_PROCESS\020\007*6\n\016NetflowVersion" +
+      "\022\006\n\002V5\020\000\022\006\n\002V9\020\001\022\t\n\005IPFIX\020\002\022\t\n\005SFLOW\020\003*#" +
+      "\n\010Locality\022\n\n\006PUBLIC\020\000\022\013\n\007PRIVATE\020\001BB\n*o" +
+      "rg.opennms.netmgt.flows.persistence.mode" +
+      "lB\022EnrichedFlowProtosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -138,7 +140,7 @@ public final class EnrichedFlowProtos {
     internal_static_FlowDocument_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FlowDocument_descriptor,
-        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "SrcNode", "ExporterNode", "DestNode", "Application", "Host", "Location", "SrcLocality", "DstLocality", "FlowLocality", "ConvoKey", "ClockCorrection", });
+        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "SrcNode", "ExporterNode", "DestNode", "Application", "Host", "Location", "SrcLocality", "DstLocality", "FlowLocality", "ConvoKey", "ClockCorrection", "Dscp", "Ecn", });
     com.google.protobuf.WrappersProto.getDescriptor();
   }
 

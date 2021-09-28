@@ -10,13 +10,12 @@ The second, `resourceLabel`, defines the template used when displaying each uniq
 
 There are two types of strategy definitions for resource types, persistence selector and storage strategies.
 The persistence selector strategy filters the group indexes down to a subset for storage on disk.
-The storage strategy is used to convert an index into a resource path label for persistence.
-There are two special resource types that do not have a resource-type definition.
-They are `node` and `ifIndex`.
+The storage strategy converts an index into a resource path label for persistence.
+There are two special resource types that do not have a resource-type definition: `node` and `ifIndex`.
 
-Resource types can be defined inside files in either `$\{OPENNMS_HOME}/etc/resource-types.d` or `$\{OPENNMS_HOME}/etc/datacollection`, with the latter being specific for SNMP.
+Define resource types inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific to SNMP.
 
-Here is the diskIOIndex resource type definition from `$\{OPENNMS_HOME}/etc/datacollection/netsnmp.xml`:
+Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
 
 [source, xml]
 ----
@@ -33,22 +32,22 @@ Here is the diskIOIndex resource type definition from `$\{OPENNMS_HOME}/etc/data
 </resourceType>
 ----
 
-== Persistence Selector Strategies
+== Persistence selector strategies
 .Persistence Selector Strategies
 [options="header, autowidth"]
 |===
 | Class                                                              | Description
-| org.opennms.netmgt.collection.support.PersistAllSelectorStrategy   | Persist All indexes
-| org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
+| org.opennms.netmgt.collection.support.PersistAllSelectorStrategy   | Persist all indexes
+| org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation.
 |===
 
 === PersistRegexSelectorStrategy
 
-The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
-On evaluation, this expression should return either true, persist index to storage, or false, discard data.
+The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expression.
+On evaluation, this expression should return either true (persist index to storage) or false (discard data).
 
 
-== Storage Strategies
+== Storage strategies
 .Storage Strategies
 [options="header, autowidth"]
 |===
@@ -57,9 +56,9 @@ On evaluation, this expression should return either true, persist index to stora
 | org.opennms.netmgt.collection.support.JexlIndexStorageStrategy  | Value after JexlExpression evaluation
 | org.opennms.netmgt.collection.support.ObjectNameStorageStrategy | Value after JexlExpression evaluation
 | org.opennms.netmgt.dao.support.FrameRelayStorageStrategy        | interface label + '.' + dlci
-| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
-| org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for UNIX file systems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for UNIX file systems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for UNIX file systems.
 |===
 
 === IndexStorageStrategy
@@ -73,13 +72,14 @@ The JexlIndexStorageStrategy takes two parameters, `index-format` which is requi
 [options="header, autowidth"]
 |===
 | Parameter    | Description
-| index-format | The JexlExpression to evaluate
+| index-format | The JexlExpression to evaluate.
 | clean-output | Boolean to indicate whether the index value is cleaned up.
 |===
 
-If the index value will be cleaned up, then it will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores. All equal signs are removed.
+If the index value will be cleaned up, then it will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.
+All equal signs are removed.
 
-This class can be extended to create custom storage strategies by overriding the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
+To extend this class to create custom storage strategies, override the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
 [source, java]
 ----
 public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
@@ -98,17 +98,19 @@ public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
 
 === ObjectNameStorageStrategy
 
-The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext which can then be used in the `index-format` template.
-The original index string is converted to an ObjectName and can be referenced as `$\{objectname}`. The _domain_ from the ObjectName can be referenced as `$\{domain}`. All _key properties_
-from the ObjectName can also be referenced by `$\{key}`.
+The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext, which can then be used in the `index-format` template.
+The original index string is converted to an ObjectName and can be referenced as `$\{objectname}`.
+The domain from the ObjectName can be referenced as `$\{domain}`.
+All key properties from the ObjectName can also be referenced by `$\{key}`.
 
-This storage strategy is meant to be used with JMX MBean datacollections where multiple MBeans can return the same set of attributes. As of OpenNMS Horizon 20, this is only supported using a HTTP to JMX proxy and using the XmlCollector as the JmxCollector does not yet support indexed groups.
+Use this storage strategy with JMX MBean datacollections where multiple MBeans can return the same set of attributes.
+As of OpenNMS Horizon 20, this is only supported using an HTTP to JMX proxy; using the XmlCollector as the JmxCollector does not yet support indexed groups.
 
 Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a storage strategy like this:
 [source, xml]
 ----
 <storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
-  <parameter key="index-format" value="$\{domain}_${type}_$\{name\}" />
+  <parameter key="index-format" value="$\{domain}_${type}_$\{name}" />
   <parameter key="clean-output" value="true" />
 </storageStrategy>
 ----
@@ -121,7 +123,8 @@ The FrameRelayStorageStrategy takes no parameters.
 === HostFileSystemStorageStrategy
 
 The HostFileSystemStorageStrategy takes no parameters.
-This class is marked as deprecated, and can be replaced with:
+This class is marked as deprecated.
+Replace with the following:
 
 [source, xml]
 ----
@@ -139,9 +142,9 @@ This class is marked as deprecated, and can be replaced with:
 [options="header, autowidth"]
 |===
 | Parameter           | Description
-| sibling-column-name | Alternate string value to use for index
-| replace-first       | Regex Pattern, replaces only the first match
-| replace-all         | Regex Pattern, replaces all matches
+| sibling-column-name | Alternate string value to use for index.
+| replace-first       | Regex pattern, replaces only the first match.
+| replace-all         | Regex pattern, replaces all matches.
 |===
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.

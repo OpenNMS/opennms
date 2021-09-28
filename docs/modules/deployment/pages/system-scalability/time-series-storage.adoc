@@ -14,7 +14,7 @@ The following implementations are installed by default:
                 Data is stored on the local file system of the {page-component-title} node.
                 Depending on I/O capabilities it works good for small to medium sized installations.
 | Newts       | link:http://opennms.github.io/newts/[Newts] is a database schema for link:http://cassandra.apache.org[Cassandra].
-                The time series is stored on a dedicated _Cassandra_ cluster which gives growth flexibility and allows to persist time series data in a large scale.
+                The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist in a large scale.
 |===
 
 You can use time series storage integrations with plugins that were based on our OpenNMS Integration API (OIA).

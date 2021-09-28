@@ -11,11 +11,11 @@ The figure <<ga-alarm-notes-ui, Alarm Detail View>> shows the component to add t
 .Alarm Detail View
 image:alarms/01_alarm-notes.png[]
 
-Alarm Notes allows you to add two types of notes on an existing alarm or alarm class:
+Alarm notes let you add two types of notes on an existing alarm or alarm class:
 
-* Sticky Memo: A user defined note for a specific instance of an alarm.
+* Sticky Memo: A user-defined note for a specific instance of an alarm.
                  Deleting the alarm will also delete the sticky memo.
-* Journal Memo: A user defined note for a whole class of alarms based on the resolved reduction key.
+* Journal Memo: A user-defined note for a whole class of alarms based on the resolved reduction key.
                   The journal memo will be shown for all alarms matching a specific reduction key.
                   Deleting an alarm doesn't remove the journal memo, they can be removed by pressing the "Clear" button on an alarm with the existing journal memo.
 

@@ -28,10 +28,46 @@
 
 package org.opennms.core.rpc.utils.mate;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 public interface Scope {
-    Optional<String> get(final ContextKey contextKey);
+    Optional<ScopeValue> get(final ContextKey contextKey);
     Set<ContextKey> keys();
+
+    public static class ScopeValue {
+        public final ScopeName scopeName;
+        public final String value;
+
+        public ScopeValue(final ScopeName scopeName, final String value) {
+            this.scopeName = Objects.requireNonNull(scopeName);
+            this.value = Objects.requireNonNull(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScopeValue that = (ScopeValue) o;
+            return scopeName == that.scopeName && value.equals(that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(scopeName, value);
+        }
+
+        @Override
+        public String toString() {
+            return "ScopeValue{" +
+                    "scopeName=" + scopeName +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+
+    public enum ScopeName {
+        DEFAULT, NODE, INTERFACE, SERVICE;
+    }
 }

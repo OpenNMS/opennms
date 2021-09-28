@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,14 @@
 
 package org.opennms.web.rest.support;
 
+import static org.opennms.web.rest.support.CriteriaValueConverters.BOOLEAN_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.CHARACTER_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.DATE_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.FLOAT_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.INET_ADDRESS_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.INT_CONVERTER;
 import static org.opennms.web.rest.support.CriteriaValueConverters.LONG_CONVERTER;
+import static org.opennms.web.rest.support.CriteriaValueConverters.STRING_CONVERTER;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -197,6 +200,7 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("suppressedTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
         ALARM_BEHAVIORS.put("suppressedUntil", new CriteriaBehavior<Date>(DATE_CONVERTER));
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
+        ALARM_BEHAVIORS.put("TTicketId", new CriteriaBehavior<String>(STRING_CONVERTER));
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
 
         // Situation Behaviours
@@ -293,6 +297,7 @@ public abstract class CriteriaBehaviors {
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("snmpPrimary", new CriteriaBehavior<Character>(CHARACTER_CONVERTER));
 
         MONITORED_SERVICE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         MONITORED_SERVICE_BEHAVIORS.put("lastFail", new CriteriaBehavior<Date>(DATE_CONVERTER));
@@ -306,6 +311,8 @@ public abstract class CriteriaBehaviors {
         NODE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         NODE_BEHAVIORS.put("createTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
         NODE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        NODE_BEHAVIORS.put("lastEgressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        NODE_BEHAVIORS.put("lastIngressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
 
         // Add aliases with join conditions when joining in the many-to-many node-to-category relationship
         CriteriaBehavior<Integer> categoryId = new CriteriaBehavior<Integer>(Aliases.category.prop("id"), INT_CONVERTER, (b,v,c,w) -> {
@@ -384,10 +391,16 @@ public abstract class CriteriaBehaviors {
 
         SNMP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifAdminStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifAlias", new CriteriaBehavior<String>(STRING_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifDescr", new CriteriaBehavior<String>(STRING_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifName", new CriteriaBehavior<String>(STRING_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifOperStatus", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("ifSpeed", new CriteriaBehavior<Long>(LONG_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("ifType", new CriteriaBehavior<Integer>(INT_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastEgressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        SNMP_INTERFACE_BEHAVIORS.put("lastIngressFlow", new CriteriaBehavior<Date>(DATE_CONVERTER));
         SNMP_INTERFACE_BEHAVIORS.put("lastSnmpPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
     }
 

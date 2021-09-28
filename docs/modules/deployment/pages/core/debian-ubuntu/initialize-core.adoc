@@ -1,7 +1,7 @@
 .Configure PostgreSQL database access
 [source, shell]
 ----
-sudo vi /usr/share/opennms/etc/opennms-datasources.xml
+sudo -u opennms vi /usr/share/opennms/etc/opennms-datasources.xml
 ----
 
 .Set credentials to access the PostgreSQL database
@@ -22,13 +22,13 @@ sudo vi /usr/share/opennms/etc/opennms-datasources.xml
                     password="** YOUR-POSTGRES-PASSWORD **" /><5>
 ----
 
-<1> Set the database name _{page-component-title}_ should use
-<2> Set the user name to access the _opennms_ database table
-<3> Set the password to access the _opennms_ database table
-<4> Set the _postgres_ user for administrative access to PostgreSQL
-<5> Set the password for administrative access to PostgreSQL
+<1> Set the database name {page-component-title} should use.
+<2> Set the user name to access the opennms database table.
+<3> Set the password to access the opennms database table.
+<4> Set the postgres user for administrative access to PostgreSQL.
+<5> Set the password for administrative access to PostgreSQL.
 
-.Detect of _Java_ environment and persist in /usr/share/opennms/etc/java.conf
+.Detect Java environment and persist in /usr/share/opennms/etc/java.conf
 [source, console]
 ----
 sudo /usr/share/opennms/bin/runjava -s
@@ -40,11 +40,7 @@ sudo /usr/share/opennms/bin/runjava -s
 sudo /usr/share/opennms/bin/install -dis
 ----
 
-.Enable {page-component-title} core server on system boot and start immediately
-[source, console]
-----
-sudo systemctl enable --now opennms
-----
+NOTE: The core service user must be able to send ICMP echo requests.
+      During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot in `/etc/sysctl.d/99-opennms-non-root-icmp.conf` 
 
-TIP: By default OpenNMS SNMP trap daemon is listening on 162/udp and Syslog daemon is listening on 10514/udp.
-     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.
+TIP: If you are using Uncomplicated Firewall (UFW) as your host firewall, you can allow access to the web user interface with the command `sudo ufw allow 8980/tcp`.

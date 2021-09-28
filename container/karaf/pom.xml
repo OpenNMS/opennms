@@ -165,6 +165,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!--
@@ -184,6 +188,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -248,6 +256,10 @@
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -258,6 +270,10 @@
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -270,7 +286,7 @@
             <releases><enabled>true</enabled></releases>
             <id>central</id>
             <name>Maven Central</name>
-            <url>http://maven.opennms.org/content/repositories/central/</url>
+            <url>https://maven.opennms.org/content/repositories/central/</url>
         </repository>
     </repositories>
 </project>

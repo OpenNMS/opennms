@@ -72,6 +72,9 @@ public class DnsRequisitionRequest implements RequisitionRequest {
     @XmlAttribute(name = "expression")
     private String expression;
 
+    @XmlAttribute(name = "location")
+    private String location;
+
     @XmlAttribute(name = "foreign-id-hash-source")
     private ForeignIdHashSource foreignIdHashSource;
 
@@ -106,6 +109,7 @@ public class DnsRequisitionRequest implements RequisitionRequest {
             fallback = Boolean.valueOf(fallbackStr);
         }
         expression = parameters.get("expression");
+        location = parameters.get("location");
         final String foreignIdHashSourceStr = parameters.get("foreignIdHashSource");
         if (foreignIdHashSourceStr != null) {
             foreignIdHashSource = ForeignIdHashSource.valueOf(foreignIdHashSourceStr);
@@ -168,8 +172,16 @@ public class DnsRequisitionRequest implements RequisitionRequest {
         return expression;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
     public void setExpression(String expression) {
         this.expression = expression;
+    }
+
+    public void setLocation(final String location) {
+        this.location = location;
     }
 
     public ForeignIdHashSource getForeignIdHashSource() {
@@ -198,13 +210,14 @@ public class DnsRequisitionRequest implements RequisitionRequest {
                 && Objects.equals(zone, castOther.zone) && Objects.equals(foreignSource, castOther.foreignSource)
                 && Objects.equals(serial, castOther.serial) && Objects.equals(fallback, castOther.fallback)
                 && Objects.equals(expression, castOther.expression)
+                && Objects.equals(location, castOther.location)
                 && Objects.equals(foreignIdHashSource, castOther.foreignIdHashSource)
                 && Objects.equals(services, castOther.services);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(host, port, zone, foreignSource, serial, fallback, expression, foreignIdHashSource,
+        return Objects.hash(host, port, zone, foreignSource, serial, fallback, expression, location, foreignIdHashSource,
                 services);
     }
 

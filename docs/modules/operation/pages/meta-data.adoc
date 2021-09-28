@@ -9,10 +9,10 @@ The metadata is a simple triad of strings containing a context, a key and the as
 Each node, each interface and each service can have an arbitrary number of metadata elements assigned to it.
 The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
-The association of metadata with nodes, interfaces and services happens during <<provisioning/meta-data.adoc#ga-provisioning-meta-data[provisioning].
+The association of metadata with nodes, interfaces, and services happens during <<provisioning/detectors/detectors.adoc#ga-provisioning-meta-data, provisioning>>.
 Users can add, query, modify, or delete metadata through the requisition editor in the web UI, or through the xref:development:rest/meta-data.adoc#metadata-rest[ReST endpoints].
 
-A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
+A <<ga-meta-data-dsl, simple domain-specific language>> (DSL) lets users access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
 There is no limitation in defining metadata: users can decide how to define it and use it in expressions.
 
 View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI:
@@ -38,19 +38,19 @@ The following keys are available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key            | Description
-| `node:label`           | The node's label
-| `node:foreign-source`  | The node's foreign source name
-| `node:foreign-id`      | The node's foreign ID
-| `node:netbios-domain`  | The NetBIOS domain as provided by SNMP
-| `node:netbios-name`    | The NetBIOS name as provided by SNMP
-| `node:os`              | The node's operating system
-| `node:sys-name`        | The system name of the node
-| `node:sys-location`    | The system location of the node
-| `node:sys-contact`     | The system contact specified for the node
-| `node:sys-description` | The system description of the node
-| `node:location`        | The node's monitoring location name
-| `node:area`            | The node's monitoring location area
-| `node:geohash`         | A xref:https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
+| node:label             | The node's label
+| node:foreign-source    | The node's foreign source name
+| node:foreign-id        | The node's foreign ID
+| node:netbios-domain    | The NetBIOS domain as provided by SNMP
+| node:netbios-name      | The NetBIOS name as provided by SNMP
+| node:os                | The node's operating system
+| node:sys-name          | The system name of the node
+| node:sys-location      | The system location of the node
+| node:sys-contact       | The system contact specified for the node
+| node:sys-description   | The system description of the node
+| node:location          | The node's monitoring location name
+| node:area              | The node's monitoring location area
+| node:geohash           | A xref:https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
 |===
 
 === Interface context
@@ -61,13 +61,13 @@ The following keys are available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key                | Description
-| `interface:hostname`       | The hostname associated with the IP address of the interface
-| `interface:address`        | The IP address of the interface
-| `interface:netmask`        | The netmask of the interface
-| `interface:if-index`       | The SNMP interface index
-| `interface:if-alias`       | The SNMP interface alias
-| `interface:if-description` | The SNMP interface description
-| `interface:phy-addr`       | The physical address of the interface
+| interface:hostname         | The hostname associated with the IP address of the interface
+| interface:address          | The IP address of the interface
+| interface:netmask          | The netmask of the interface
+| interface:if-index         | The SNMP interface index
+| interface:if-alias         | The SNMP interface alias
+| interface:if-description   | The SNMP interface description
+| interface:phy-addr         | The physical address of the interface
 |===
 
 === Service context
@@ -78,7 +78,7 @@ The following key is available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key        | Description
-| `service:name`     | The full name of the service
+| service:name       | The full name of the service
 |===
 
 [[ga-metadata-webui]]
@@ -99,8 +99,8 @@ image:metadata/metadata_add.png[]
 
 [[ga-meta-data-dsl]]
 == The Metadata DSL
-The metadata DSL allows interpolation of metadata into a parameter.
-The syntax allows the use of patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+The metadata DSL lets you interpolate metadata into a parameter.
+The syntax lets you use patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
 
 Each expression can contain multiple references to metadata that will be replaced with the corresponding value during evaluation.
 Placeholders start with `${` and end with `}` containing a reference to a context-key pair.
@@ -161,15 +161,17 @@ fruits:
 ---
 Input: '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
 Output: 'red'
+Details:
+  Part: '${fruits:apple|fruits:banana|vegetables:tomato|blue}' => match='fruits:apple', value='red', scope='SERVICE'
 admin@opennms>
 ----
 
 === Uses
 The following places allow the use the Metadata DSL:
 
-* <<provisioning/auto-discovery-detectors.adoc#ga-provisioning-detectors-meta-data,Provisioning Detectors>>
+* <<provisioning/detectors/detectors.adoc#ga-provisioning-meta-data,Provisioning Detectors>>
 * <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service Assurance>>
 * <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance Management>>
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>
-* <<thresholds/thresholding.adoc#ga-threshhold-metadata, Expression-Based Thresholds>>
+* <<thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>
 * <<notifications/introduction.adoc#ga-notifications, Notifications>>

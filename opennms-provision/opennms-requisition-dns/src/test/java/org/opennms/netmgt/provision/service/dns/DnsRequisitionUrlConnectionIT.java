@@ -40,6 +40,7 @@ import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -54,6 +55,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 /**
  * This class tests the new "dns" protocol handling created for the Provisioner.
@@ -294,5 +296,96 @@ public class DnsRequisitionUrlConnectionIT {
     public void dwoToString() throws MalformedURLException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         Assert.assertEquals(TEST_URL, c.getURL().toString());
+    }
+
+    @Test
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name = "example.com", entries = {
+                    @DNSEntry(hostname = "www", data = "72.14.204.99")
+                    ,
+                    @DNSEntry(hostname = "monkey", data = "72.14.204.99")
+            })
+    })
+    public void testFixedLocation() throws IOException, JAXBException {
+        final String urlString = "dns://localhost:9153/example.com/?location=Fulda";
+        final Resource resource = new UrlResource(urlString);
+
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        Assert.assertNotNull(resource);
+
+        final InputStream resourceStream = resource.getInputStream();
+        final JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        final Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setSchema(null);
+        final Requisition requisition = (Requisition) unmarshaller.unmarshal(resourceStream);
+
+        Assert.assertEquals(3, requisition.getNodeCount());
+
+        for(final RequisitionNode node : requisition.getNodes()) {
+            Assert.assertEquals("Fulda", node.getLocation());
+        }
+
+        resourceStream.close();
+    }
+
+    @Test
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name = "hs-fulda.de", entries = {
+                    @DNSEntry(hostname = "g51onms.g51", data = "72.14.204.2"),
+                    @DNSEntry(hostname = "e46onms.e46", data = "72.14.204.3"),
+            })
+    })
+    public void testParsedLocation() throws IOException, JAXBException {
+        final String urlString = "dns://localhost:9153/hs-fulda.de/?expression=^.*\\.[a-z][0-9][0-9]\\.hs-fulda\\.de\\.$&location=~"+ URLEncoder.encode("^(?:.*\\.|)(.*?)\\.hs-fulda\\.de\\.$","UTF-8");
+        final Resource resource = new UrlResource(urlString);
+
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        Assert.assertNotNull(resource);
+
+        final InputStream resourceStream = resource.getInputStream();
+        final JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        final Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setSchema(null);
+        final Requisition requisition = (Requisition) unmarshaller.unmarshal(resourceStream);
+
+        Assert.assertEquals(2, requisition.getNodeCount());
+
+        final RequisitionNode node1 = requisition.getNodes().stream().filter(e->e.getNodeLabel().contains("e46")).findFirst().get();
+        final RequisitionNode node2 = requisition.getNodes().stream().filter(e->e.getNodeLabel().contains("g51")).findFirst().get();
+        Assert.assertEquals("e46", node1.getLocation());
+        Assert.assertEquals("g51", node2.getLocation());
+
+        resourceStream.close();
+    }
+
+    @Test
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name = "example.com", entries = {
+                    @DNSEntry(hostname = "www", data = "72.14.204.99")
+                    ,
+                    @DNSEntry(hostname = "monkey", data = "72.14.204.99")
+            })
+    })
+    public void testBrokenRegex() throws IOException, JAXBException {
+        final String urlString = "dns://localhost:9153/example.com/?location=~"+ URLEncoder.encode("^(.*\\.|)(.*?)\\.com\\.$","UTF-8");
+        final Resource resource = new UrlResource(urlString);
+
+        Assert.assertEquals(urlString, resource.getURL().toString());
+        Assert.assertNotNull(resource);
+
+        final InputStream resourceStream = resource.getInputStream();
+        final JAXBContext context = JAXBContext.newInstance(Requisition.class);
+        final Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setSchema(null);
+        final Requisition requisition = (Requisition) unmarshaller.unmarshal(resourceStream);
+
+        Assert.assertEquals(3, requisition.getNodeCount());
+
+        for(final RequisitionNode node : requisition.getNodes()) {
+            Assert.assertNull(node.getLocation());
+        }
+
+        Assert.assertEquals(3, requisition.getNodeCount());
+        resourceStream.close();
     }
 }

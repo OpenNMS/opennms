@@ -1,7 +1,7 @@
 = RRDtool
 
 In most Open Source applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for Time Series Data.
-This section describes how to install RRDtool and how to configure your {page-component-title} Core server to use it.
+This section describes how to install RRDtool and how to configure your {page-component-title} Core instance to use it.
 
 WARNING: Following this guide does not cover data migration from _JRobin_ to _RRDTool_.
 
@@ -47,7 +47,7 @@ TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, please adjust the path
      `snmp-adhoc-graph.properties`, +
      `snmp-graph.properties`.
 
-.Restart the {page-component-title} Core server to apply the configuration
+.Restart the {page-component-title} Core instance to apply the configuration
 [source, console]
 ----
 sudo systemctl restart opennms
@@ -101,7 +101,7 @@ TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, please adjust the path
      `snmp-adhoc-graph.properties`, +
      `snmp-graph.properties`.
 
-.Restart the {page-component-title} Core server to apply the configuration
+.Restart the {page-component-title} Core instance to apply the configuration
 [source, console]
 ----
 sudo systemctl restart opennms
@@ -154,7 +154,7 @@ TIP: If your RRDTool binary is not in `/usr/bin/rrdtool`, please adjust the path
      `snmp-adhoc-graph.properties`, +
      `snmp-graph.properties`.
 
-.Restart the {page-component-title} Core server to apply the configuration
+.Restart the {page-component-title} Core instance to apply the configuration
 [source, console]
 ----
 sudo systemctl restart opennms

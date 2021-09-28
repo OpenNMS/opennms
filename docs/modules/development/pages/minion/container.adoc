@@ -12,7 +12,7 @@ We clear the cache on every start by setting `karaf.clean.cache = true` in order
 == Karaf Extender
 
 The Karaf Extender was developed to make it easier to manage and extend the container using existing packaging tools.
-It allows packages to register *Maven Repositories*, *Karaf Feature Repositories* and *Karaf Features to Boot* by overlaying additional files, avoiding modifying any of the existing files.
+It lets packages to register *Maven Repositories*, *Karaf Feature Repositories* and *Karaf Features to Boot* by overlaying additional files, avoiding modifying any of the existing files.
 
 Here's an overview, used for reference, of the relevant directories that are (currently) present on a default install of the `opennms-minion` package:
 [source, shell]

@@ -29,18 +29,11 @@
 package org.opennms.netmgt.flows.api;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
-import org.opennms.netmgt.flows.filter.api.Filter;
-
-import com.google.common.collect.Table;
 
 /**
- * Primary interface used to persist and query flows.
+ * Primary interface used to persist flows.
  */
-public interface FlowRepository extends FlowQueryService {
+public interface FlowRepository {
 
     void persist(Collection<Flow> packets, FlowSource source) throws FlowException;
 }

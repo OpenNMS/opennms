@@ -134,4 +134,17 @@ public class ClassificationRequest {
     public int hashCode() {
         return Objects.hash(location, protocol, dstPort, dstAddress, srcPort, srcAddress, exporterAddress);
     }
+
+    @Override
+    public String toString() {
+        return "ClassificationRequest{" +
+               "location='" + location + '\'' +
+               ", protocol=" + protocol +
+               ", dstPort=" + dstPort +
+               ", dstAddress='" + dstAddress + '\'' +
+               ", srcPort=" + srcPort +
+               ", srcAddress='" + srcAddress + '\'' +
+               ", exporterAddress='" + exporterAddress + '\'' +
+               '}';
+    }
 }

@@ -10,9 +10,9 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 [options="header, %autowidth"]
 |===
-| Parameter           | Description
-| `/users`            | Get a list of users.
-| `/users/\{username\}` | Get a specific user, by username.
+| Parameter            | Description
+| `/users`             | Get a list of users.
+| `/users/\{username}` | Get a specific user, by username.
 |===
 
 == POSTs (Adding Data)
@@ -30,9 +30,9 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 [options="header, %autowidth"]
 |===
 | Parameter                                | Description
-| `/users/\{username\}`                    | Update an existing user's full-name, user-comments, password, passwordSalt, and duty-schedule values.
-                                         Note: If you are setting the password, you may also add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password; it will hash and salt the password when it is saved.
-| `/users/\{username\}/roles/\{rolename\}` | Add a security role to the user.
+| `/users/\{username}`                     | Update an existing user's full-name, user-comments, password, passwordSalt, and duty-schedule values.
+                                             Note: If you are setting the password, you may also add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password so it will hash and salt the password when it is saved.
+| `/users/\{username}/roles/\{rolename}`   | Add a security role to the user.
 |===
 
 == DELETEs (Removing Data)
@@ -40,6 +40,6 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 [options="header, %autowidth"]
 |===
 | Resource                                 | Description
-| `/users/\{username\}`                    | Delete a user.
-| `/users/\{username\}/roles/\{rolename\}` | Remove a security role from the user.
+| `/users/\{username}`                     | Delete a user.
+| `/users/\{username}/roles/\{rolename}`   | Remove a security role from the user.
 |===

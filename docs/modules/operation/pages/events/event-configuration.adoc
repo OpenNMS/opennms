@@ -43,22 +43,22 @@ These paths are resolved relative to the `$\{OPENNMS_HOME}/etc` directory; absol
 Each *tributary file* contains a top-level `<events>` element with one or more `<event>` child elements.
 Consider the following event definition:
 
-[source,xml]
+[source, xml]
 ----
-   <event>
-      <uei>uei.opennms.org/nodes/nodeLostService</uei>
-      <event-label>OpenNMS-defined node event: nodeLostService</event-label>
-      <descr>&lt;p>A %service% outage was identified on interface
-            %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
-            A new outage record has been created and service-level
-            availability calculations will be impacted until this outage is
-            resolved.&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            %service% outage identified on interface %interface%.
-        </logmsg>
-      <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
-   </event>
+<event>
+    <uei>uei.opennms.org/nodes/nodeLostService</uei>
+    <event-label>OpenNMS-defined node event: nodeLostService</event-label>
+    <descr>&lt;p>A %service% outage was identified on interface
+        %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
+        A new outage record has been created and service-level
+        availability calculations will be impacted until this outage is
+        resolved.&lt;/p></descr>
+    <logmsg dest="logndisplay">
+        %service% outage identified on interface %interface%.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+</event>
 ----
 
 Every event definition has this same basic structure.
@@ -70,15 +70,22 @@ Events whose severity is critical at the zoomed-in level of a single device may 
 Since an event with `Critical` severity can never have its alarms escalated, this severity level should usually be reserved for events that unequivocally indicate a truly critical impact to the business.
 Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
 
+[[replacement-tokens]]
 === Replacement tokens
 You can include various tokens in the description, log message, operator instruction, and automatic actions for each event.
 These tokens will be replaced by values from the current event when the text for the event is constructed.
 Not all events will have values for all tokens, and some refer specifically to information available only in events derived from SNMP traps.
 
+Note that parameter descriptions use the percentage sign (%) as a delimiter to mark a replacement variable.
+If a literal % sign appears in your description, you must escape it with a %.
+For example:
+
+`'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
+
 `%eventid%`::
     The event's numeric database ID.
 `%uei%`::
-    The universal event identifier for the event.
+    The unique event identifier for the event.
 `%source%`::
     The source of the event (which {page-component-title} service daemon created it).
 `%descr%`::
@@ -117,6 +124,8 @@ Not all events will have values for all tokens, and some refer specifically to i
     The host of the SNMP agent that generated the event.
 `%id%`::
     The SNMP enterprise OID for the event.
+`%trapoid%`::
+    Full trap OID for the event.
 `%idtext%`::
     The decoded (human-readable) SNMP Enterprise OID for the event.
 `%ifalias%`::
@@ -209,7 +218,7 @@ To change this setting, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and locate the fo
 
 [source,xml]
 ----
-        <KeyValuePair key="eventd"               value="WARN" />
+<KeyValuePair key="eventd"               value="WARN" />
 ----
 
 Changes to `log42.xml` will take effect within 60 seconds with no extra action needed.

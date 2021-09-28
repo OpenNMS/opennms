@@ -13,7 +13,7 @@
         {
           "term": {
             "aggregation_type": {
-              "value": "TOPK"
+              "value": "${aggregationType?json_string}"
             }
           }
         }
@@ -51,6 +51,16 @@
         "bytes_egress": {
           "sum": {
             "field": "bytes_egress"
+          }
+        },
+        "congestion_encountered": {
+          "max": {
+            "field": "congestion_encountered"
+          }
+        },
+        "non_ect": {
+          "max": {
+            "field": "non_ect"
           }
         }
       }

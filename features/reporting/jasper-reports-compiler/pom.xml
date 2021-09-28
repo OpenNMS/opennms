@@ -46,7 +46,7 @@
       <releases><enabled>true</enabled></releases>
       <id>jasperreports</id>
       <name>Jasper Reports Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/jasperreports/</url>
+      <url>https://maven.opennms.org/content/repositories/jasperreports/</url>
     </repository>
   </repositories>
 </project>

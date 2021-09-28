@@ -51,6 +51,7 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.rpc.utils.mate.MapScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -632,21 +633,10 @@ public final class BroadcastEventProcessor implements EventListener {
                         String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
                         if (scheduledOutageName != null) {
                             // This event occurred during a scheduled outage.
-                            // Must decide what to do
-                            if (autoAckExistsForEvent(event.getUei())) {
-                                // Defer starttime till the given outage ends -
-                                // if the auto ack catches the other event
-                                // before then,
-                                // then the page will not be sent
-                                Calendar endOfOutage = m_pollOutagesDao.getEndOfOutage(scheduledOutageName);
-                                startTime = endOfOutage.getTime().getTime();
-                            } else {
-                                // No auto-ack exists - there's no point
-                                // delaying the page, so just drop it (but leave
-                                // the database entry)
+                                // drop it (but leave the database entry)
                                 continue; // with the next notification (for
                                             // loop)
-                            }
+                            
                         }
 
                         List<NotificationTask> targetSiblings = new ArrayList<NotificationTask>();
@@ -775,7 +765,7 @@ public final class BroadcastEventProcessor implements EventListener {
             m_entityScopeProvider.getScopeForNode(nodeId),
             m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
             m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
-            MapScope.singleContext("notification",
+            MapScope.singleContext(Scope.ScopeName.SERVICE, "notification",
                     new ImmutableMap.Builder<String,String>()
                             .put("eventID", String.valueOf(event.getDbid()))
                             .put("eventUEI", event.getUei())

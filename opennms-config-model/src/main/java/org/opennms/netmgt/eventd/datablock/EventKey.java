@@ -99,6 +99,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      */
     public static final String TAG_SNMP_EID = "id";
 
+
+    public static final String TAG_SNMP_TRAPOID = "trapoid";
+
     /**
      * The SNMP specific xml tag
      */
@@ -400,6 +403,10 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         } else if (mename.equals(TAG_SNMP_EID)) {
             if (event.getSnmp() != null) {
                 retParmVal = event.getSnmp().getId();
+            }
+        } else if (mename.equals(TAG_SNMP_TRAPOID)) {
+            if (event.getSnmp() != null && event.getSnmp().hasTrapOID()) {
+                retParmVal = event.getSnmp().getTrapOID();
             }
         } else if (mename.equals(TAG_SNMP_SPECIFIC)) {
             org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();

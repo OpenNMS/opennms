@@ -114,7 +114,7 @@
       <releases><enabled>true</enabled></releases>
       <id>coova</id>
       <name>Coova Repository</name>
-      <url>http://maven.opennms.org/content/repositories/coova/</url>
+      <url>https://maven.opennms.org/content/repositories/coova/</url>
     </repository>
   </repositories>
 </project>

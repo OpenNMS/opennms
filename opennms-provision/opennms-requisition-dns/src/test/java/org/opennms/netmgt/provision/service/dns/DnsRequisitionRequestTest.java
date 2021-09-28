@@ -48,12 +48,13 @@ public class DnsRequisitionRequestTest extends XmlTestNoCastor<DnsRequisitionReq
         request.setZone("some-zone");
         request.setFallback(false);
         request.setForeignSource("f*s*");
+        request.setLocation("Fulda");
         request.setForeignIdHashSource(ForeignIdHashSource.IP_ADDRESS);
 
         return Arrays.asList(new Object[][] {
             {
                 request,
-                "<dns-requisition-request host=\"my-dns-server\" port=\"5353\" zone=\"some-zone\" foreign-source=\"f*s*\" fallback=\"false\" foreign-id-hash-source=\"IP_ADDRESS\"/>"
+                "<dns-requisition-request host=\"my-dns-server\" port=\"5353\" zone=\"some-zone\" foreign-source=\"f*s*\" fallback=\"false\" location=\"Fulda\" foreign-id-hash-source=\"IP_ADDRESS\"/>"
             }
         });
     }

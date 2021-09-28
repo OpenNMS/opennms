@@ -1,0 +1,28 @@
+
+[[confd-template-test]]
+= Test confd templates
+
+To locally test `confd` template changes, run a Minion container and map the corresponding files into the container. 
+The following procedure, which requires a Minion Docker container, might be useful:
+
+. Download a Minion Docker image from a build in CircleCI. 
+This can be found as an artifact of the `tarball-assembly` job. 
+. Load the image into Docker: `docker load minion.oci`.
+. Create a `docker-compose.yaml` file in the parent folder of the checked-out `opennms` repo. 
+See below for a sample compose file.
+. Start the image: `docker-compose up -d`.
+. Open a shell in the container using `docker exec -ti minion bash` or look at the logs `docker logs minion`.
+. If the result is not satisfactory, remove the container (`docker rm -f minion`), edit the files in your IDE, and restart the image.
+
+```yaml
+version: '3'
+services:
+  minion:
+    image: minion
+    container_name: minion
+    volumes:
+      - ${PWD}/minion-config.yaml:/opt/minion/minion-config.yaml
+      - ${PWD}/opennms/opennms-container/minion/container-fs/confd/conf.d/org.opennms.minion.process-env.toml:/opt/minion/confd/conf.d/org.opennms.minion.process-env.toml
+      - ${PWD}/opennms/opennms-container/minion/container-fs/confd/templates/org.opennms.minion.process-env.tmpl:/opt/minion/confd/templates/org.opennms.minion.process-env.tmpl
+      - ${PWD}/opennms/opennms-container/minion/container-fs/entrypoint.sh:/entrypoint.sh
+```

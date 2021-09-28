@@ -44,7 +44,6 @@ import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
@@ -68,7 +67,8 @@ import io.searchbox.core.SearchResult;
  * 
  * @author Seth
  */
-@Category(MinionTests.class)
+@Category(org.opennms.smoketest.junit.FlakyTests.class)
+//@Category(org.opennms.smoketest.junit.MinionTests.class)
 public class SyslogKafkaElasticsearchIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearchIT.class);

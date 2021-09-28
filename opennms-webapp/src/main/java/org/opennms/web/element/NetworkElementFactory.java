@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -149,6 +153,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Qualifier("pending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -222,7 +229,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public String getIpPrimaryAddress(int nodeId) {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class);
-        cb.and(new EqRestriction("node.id", nodeId), new EqRestriction("isSnmpPrimary", PrimaryType.PRIMARY));
+        cb.and(new EqRestriction("node.id", nodeId), new EqRestriction("snmpPrimary", PrimaryType.PRIMARY.getCharCode()));
         
         final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(cb.toCriteria());
         
@@ -1061,5 +1068,17 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
 
         return status;
+    }
+
+    public Scope getScopeForNode(final Integer nodeId) {
+        return this.m_entityScopeProvider.getScopeForNode(nodeId);
+    }
+
+    public Scope getScopeForInterface(final Integer nodeId, final String ipAddress) {
+        return this.m_entityScopeProvider.getScopeForInterface(nodeId, ipAddress);
+    }
+
+    public Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName) {
+        return this.m_entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
     }
 }

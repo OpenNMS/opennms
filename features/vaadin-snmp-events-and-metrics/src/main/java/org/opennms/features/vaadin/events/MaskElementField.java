@@ -109,6 +109,7 @@ public class MaskElementField extends CustomField<List<Maskelement>> implements 
                     field.addItem(Maskelement.TAG_SNMP_SPECIFIC);
                     field.addItem(Maskelement.TAG_SNMP_GENERIC);
                     field.addItem(Maskelement.TAG_SNMP_COMMUNITY);
+                    field.addItem(Maskelement.TAG_SNMP_TRAPOID);
                     return field;
                 }
                 if (propertyId.equals("mevalues")) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,18 @@ import org.opennms.core.utils.InetAddressUtils;
  */
 public abstract class CriteriaValueConverters {
 
+    public static final Function<String,Boolean> BOOLEAN_CONVERTER = new Function<String,Boolean>() {
+        @Override
+        public Boolean apply(final String t) {
+            return Boolean.parseBoolean(t);
+        }
+
+        @Override
+        public String toString() {
+            return "BOOLEAN_CONVERTER";
+        }
+    };
+
     public static final Function<String,Date> DATE_CONVERTER = new Function<String,Date>() {
         @Override
         public Date apply(String t) {
@@ -55,6 +67,22 @@ public abstract class CriteriaValueConverters {
         @Override
         public String toString() {
             return "DATE_CONVERTER";
+        }
+    };
+
+    public static final Function<String,Character> CHARACTER_CONVERTER = new Function<String,Character>() {
+        @Override
+        public Character apply(final String t) {
+            return t.charAt(0);
+        }
+
+        /**
+         * Override {@link #toString()} on this functional interface
+         * to make it identifiable inside a debugger.
+         */
+        @Override
+        public String toString() {
+            return "CHARACTER_CONVERTER";
         }
     };
 
@@ -119,6 +147,22 @@ public abstract class CriteriaValueConverters {
         @Override
         public String toString() {
             return "LONG_CONVERTER";
+        }
+    };
+
+    public static final Function<String,String> STRING_CONVERTER = new Function<String,String>() {
+        @Override
+        public String apply(final String t) {
+            return t;
+        }
+
+        /**
+         * Override {@link #toString()} on this functional interface
+         * to make it identifiable inside a debugger.
+         */
+        @Override
+        public String toString() {
+            return "STRING_CONVERTER";
         }
     };
 
