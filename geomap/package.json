@@ -13,7 +13,7 @@
     "ag-grid-vue3": "^26.0.0",
     "axios": "^0.21.1",
     "leaflet": "^1.7.1",
-    "leaflet.markercluster": "^1.5.1",
+    "leaflet.markercluster": "^1.5.0",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
     "splitpanes": "^3.0.6",
