@@ -40,8 +40,6 @@
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                         <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
-                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                     </bootRepositories>
                     <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
                     <!-- <descriptors>
