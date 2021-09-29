@@ -45,7 +45,7 @@ public class Response {
         this(status, null);
     }
 
-    public Response(Exception ex) {
+    public Response(Throwable ex) {
         this(Status.Failure, ex.getMessage());
     }
 

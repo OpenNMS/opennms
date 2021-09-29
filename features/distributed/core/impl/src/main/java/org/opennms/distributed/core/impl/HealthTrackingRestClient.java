@@ -54,7 +54,7 @@ public class HealthTrackingRestClient implements RestClient {
                 healthCheckResponseCache.setResponse(Response.SUCCESS);
             }
             return v;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (healthCheckResponseCache != null) {
                 healthCheckResponseCache.setResponse(new Response(e));
             }
