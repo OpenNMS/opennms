@@ -31,12 +31,12 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.v2.api.MinionRestApi;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +65,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="seth@opennms.org">Seth Leger</a>
  */
 @Component
-@Path("minions")
 @Transactional
-public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMinion,String,String> {
+public class MinionRestService extends AbstractDaoRestServiceWithDTO<OnmsMinion,OnmsMinion,OnmsMinion,String,String>  implements MinionRestApi
+{
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionRestService.class);
     private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
@@ -155,4 +156,48 @@ public class MinionRestService extends AbstractDaoRestService<OnmsMinion,OnmsMin
     protected OnmsMinion doGet(UriInfo uriInfo, String id) {
         return getDao().get(id);
     }
+
+    @Override
+    public Response create(SecurityContext securityContext, UriInfo uriInfo, OnmsMinion object) {
+        return  super.create(securityContext,uriInfo, object);
+    }
+
+    @Override
+    public Response update(SecurityContext securityContext, UriInfo uriInfo, String id, OnmsMinion object) {
+        return  super.update(securityContext, uriInfo, id, object);
+    }
+
+
+    @Override
+    public Response delete(SecurityContext securityContext, UriInfo uriInfo, String id) {
+        return super.delete(securityContext, uriInfo, id);
+    }
+
+
+    @Override
+    public Response get(UriInfo uriInfo, SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+    @Override
+    public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response getProperties(String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    public Response getPropertyValues(String propertyId, String query, Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    public OnmsMinion mapEntityToDTO(OnmsMinion entity) {
+        return entity;
+    }
+    public OnmsMinion mapDTOToEntity(OnmsMinion dto){
+        return dto;
+    }
+
 }
