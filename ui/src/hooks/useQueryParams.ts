@@ -1,4 +1,4 @@
-import { QueryParameters, SortProps } from '@/types'
+import { FeatherSortObject, QueryParameters } from '@/types'
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 
@@ -14,11 +14,11 @@ const useQueryParameters = (
 
   const updateQueryParameters = (updatedParams: QueryParameters) => (queryParameters.value = updatedParams)
 
-  const sort = (sortProps: SortProps) => {
+  const sort = (sortProps: FeatherSortObject) => {
     const updatedQueryParams = {
       ...queryParameters.value,
-      orderBy: sortProps.sortField,
-      order: sortProps.sortOrder === 1 ? ('asc' as 'asc') : ('desc' as 'desc')
+      orderBy: sortProps.property,
+      order: sortProps.value
     }
     queryParameters.value = updatedQueryParams
     store.dispatch(

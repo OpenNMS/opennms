@@ -57,6 +57,6 @@
   
 <style lang="scss" scoped>
 .search {
-  width: 500px;
+  margin-right: 20px;
 }
 </style>

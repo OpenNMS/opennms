@@ -1,4 +1,5 @@
 import { Commit, Dispatch } from 'vuex'
+import { SORT } from '@featherds/table'
 
 export interface VuexContext {
   commit: Commit
@@ -158,11 +159,16 @@ export interface QueryParameters {
   offset?: number
   _s?: string
   orderBy?: string
-  order?: 'asc' | 'desc'
+  order?: SORT
   [x: string]: any
 }
 
-export interface SortProps {
+export interface FeatherSortObject {
+  property: string
+  value: SORT
+}
+
+export interface SortProps extends FeatherSortObject {
   filters: Object
   first: Number
   multiSortMeta: Object
