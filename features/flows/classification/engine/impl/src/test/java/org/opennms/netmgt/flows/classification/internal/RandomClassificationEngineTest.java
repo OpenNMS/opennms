@@ -118,7 +118,7 @@ public class RandomClassificationEngineTest {
     @Property
     public boolean test(
             @ForAll("rulesAndRequests") Tuple.Tuple2<List<Rule>, List<ClassificationRequest>> rulesAndRequests
-    ) {
+    ) throws InterruptedException {
         LOG.debug("construct decision tree");
         if (LOG.isDebugEnabled()) {
             rulesAndRequests.get1().forEach(r -> {

@@ -64,11 +64,15 @@ public abstract class Tree {
      * Recursively constructs a decision tree consisting of nodes that split the given rules by thresholds
      * and leaves that contain the classifiers that were selected by the thresholds of their ancestor nodes.
      */
-    public static Tree of(List<PreprocessedRule> rules, FilterService filterService) {
+    public static Tree of(List<PreprocessedRule> rules, FilterService filterService) throws InterruptedException  {
         return of(rules, Bounds.ANY, 0, filterService);
     }
 
-    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) {
+    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+
         final var ruleSetSize = rules.size();
         if (ruleSetSize <= 1) {
             LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
