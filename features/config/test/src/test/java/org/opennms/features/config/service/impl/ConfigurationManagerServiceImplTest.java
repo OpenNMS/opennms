@@ -42,7 +42,6 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -144,9 +143,10 @@ public class ConfigurationManagerServiceImplTest {
     @Test
     public void testRegisterNewCallback() throws IOException {
         TestCallback callback = Mockito.mock(TestCallback.class);
-        ProvisiondConfiguration pConfig = configManagerService.getConfiguration(CONFIG_NAME, CONFIG_ID, ProvisiondConfiguration.class).get();
-        configManagerService.registerReloadConsumer(CONFIG_NAME, callback);
-        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, pConfig);
+        JSONObject json = configManagerService
+                .getJSONConfiguration(CONFIG_NAME, CONFIG_ID).get();
+        configManagerService.registerReloadConsumer(new ConfigUpdateInfo(CONFIG_NAME, CONFIG_ID), callback);
+        configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(json.toString()));
         Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
     }
 

@@ -28,23 +28,12 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
-import org.opennms.features.config.dao.impl.util.ValidateUsingConverter;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -62,8 +51,8 @@ import java.util.function.Consumer;
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceImpl.class);
     private final ConfigStoreDao<JSONObject> configStoreDao;
-    // This map contains key: configName value: list of Consumer
-    private final ConcurrentHashMap<String, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
+    // This map contains key: ConfigUpdateInfo value: list of Consumer
+    private final ConcurrentHashMap<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
 
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
         this.configStoreDao = configStoreDao;
@@ -100,9 +89,9 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
                 .orElse(Collections.emptyMap());
 
         // Validate to check all of the existing configuration matches the new schema. If not => throw Exception
-        for(Map.Entry<String, JSONObject> config : configs.entrySet()) {
+        for (Map.Entry<String, JSONObject> config : configs.entrySet()) {
             String xml = converter.jsonToXml(config.getValue().toString());
-            if(!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)){
+            if (!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)) {
                 throw new IllegalArgumentException(
                         String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));
             }
@@ -119,8 +108,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerReloadConsumer(String configName, Consumer<ConfigUpdateInfo> consumer) {
-        onloadNotifyMap.compute(configName, (k, v) -> {
+    public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+        onloadNotifyMap.compute(info, (k, v) -> {
             if (v == null) {
                 ArrayList<Consumer<ConfigUpdateInfo>> consumers = new ArrayList<>();
                 consumers.add(consumer);
@@ -139,7 +128,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
      */
     private void triggerReloadConsumer(ConfigUpdateInfo configUpdateInfo) {
         LOG.debug("Calling onReloaded callbacks");
-        onloadNotifyMap.computeIfPresent(configUpdateInfo.getConfigName(), (k, v) -> {
+        onloadNotifyMap.computeIfPresent(configUpdateInfo, (k, v) -> {
             v.forEach(c -> {
                 try {
                     c.accept(configUpdateInfo);
@@ -182,26 +171,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString config) throws IOException {
         configStoreDao.updateConfig(configName, configId, new JSONObject(config.toString()));
-        Optional<JSONObject> jsonConfig = this.getJSONConfiguration(configName, configId);
         ConfigUpdateInfo updateInfo = new ConfigUpdateInfo(configName, configId);
         this.triggerReloadConsumer(updateInfo);
-    }
-
-    @Override
-    public <ENTITY> Optional<ENTITY> getConfiguration(String configName, String configId, Class<ENTITY> entityClass)
-            throws IOException {
-        Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
-        if (configSchema.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
-        if (config.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
-            return Optional.empty();
-        }
-        JSONObject json = config.get();
-        return (Optional<ENTITY>) Optional.of(configSchema.get().getConverter().jsonToJaxbObject(json.toString()));
     }
 
     @Override

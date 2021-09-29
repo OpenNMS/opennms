@@ -28,13 +28,20 @@
 
 package org.opennms.features.config.service.api;
 
+import java.util.Objects;
+
 public class ConfigUpdateInfo {
     private String configName;
     private String configId;
 
-    public ConfigUpdateInfo(String configName, String configId) {
-        this.configName = configName;
-        this.configId = configId;
+    /**
+     * ConfigId is nullable, when it is null. It will reload all configIds.
+     * @param configName
+     * @param configId
+     */
+     public ConfigUpdateInfo(String configName, String configId) {
+        this.configName = Objects.requireNonNull(configName);
+        this.configId = Objects.requireNonNull(configId);
     }
 
     public String getConfigName() {
@@ -43,5 +50,19 @@ public class ConfigUpdateInfo {
 
     public String getConfigId() {
         return configId;
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.getConfigName() + this.getConfigId()).hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ConfigUpdateInfo)) {
+            return false;
+        }
+        return ((ConfigUpdateInfo) obj).getConfigName().equals(this.getConfigName())
+                && ((ConfigUpdateInfo) obj).getConfigId().equals(this.getConfigId());
     }
 }

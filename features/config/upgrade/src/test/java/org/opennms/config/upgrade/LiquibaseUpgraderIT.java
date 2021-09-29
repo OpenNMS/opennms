@@ -180,7 +180,6 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldAbortInCaseOfErrorDuringRun() throws SQLException{
         try {
-            LiquibaseUpgrader liqui = new LiquibaseUpgrader(null);
             // Make sure it trigger Liquibase logic
             PreparedStatement statement = connection.prepareStatement("TRUNCATE " + TABLE_NAME_DATABASECHANGELOG);
             statement.execute();

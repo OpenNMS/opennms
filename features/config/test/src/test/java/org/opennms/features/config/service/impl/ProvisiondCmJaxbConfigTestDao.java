@@ -30,6 +30,8 @@ package org.opennms.features.config.service.impl;
 
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 
+import javax.annotation.PostConstruct;
+
 public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
     public static final String CONFIG_NAME = "provisiond";
     public static final String CONFIG_ID = "default";
@@ -37,6 +39,7 @@ public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<Provi
     public ProvisiondCmJaxbConfigTestDao() {
         super(ProvisiondConfiguration.class, "Provisiond Configuration");
     }
+
     @Override
     protected String getConfigName() {
         return CONFIG_NAME;
@@ -47,4 +50,9 @@ public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<Provi
         return CONFIG_ID;
     }
 
+    @Override
+    @PostConstruct
+    public void postConstruct() {
+        this.addOnReloadedCallback(CONFIG_ID, getUpdateCallback());
+    }
 }

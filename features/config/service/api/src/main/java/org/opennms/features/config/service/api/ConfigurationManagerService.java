@@ -65,7 +65,7 @@ public interface ConfigurationManagerService {
      */
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
 
-    void registerReloadConsumer(String configName, Consumer<ConfigUpdateInfo> consumer);
+    void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
     /**
      * register a new configuration by config object.

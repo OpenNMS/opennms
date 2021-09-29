@@ -105,11 +105,10 @@ public class AbstractCmJaxbConfigDaoTest {
 
         // test callback update reference config entity object
         DefaultAbstractCmJaxbConfigDaoUpdateCallback callback = Mockito.mock(DefaultAbstractCmJaxbConfigDaoUpdateCallback.class);
-        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(callback);
+        provisiondCmJaxbConfigTestDao.addOnReloadedCallback(provisiondCmJaxbConfigTestDao.getDefaultConfigId(), callback);
         provisiondCmJaxbConfigTestDao.updateConfig("{\"importThreads\": 12}");
         Mockito.verify(callback, Mockito.atLeastOnce()).accept(Mockito.any());
 
         Assert.assertTrue("import thread is wrong (after callback)", pconfig.getImportThreads() == 12);
-
     }
 }

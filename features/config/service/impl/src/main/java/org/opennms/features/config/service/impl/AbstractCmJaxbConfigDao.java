@@ -28,8 +28,10 @@
 
 package org.opennms.features.config.service.impl;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,14 +42,9 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>Abstract AbstractCmJaxbConfigDao class.</p>
@@ -74,9 +71,10 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
     /**
      * It will provide the default callback for all ConfigDao, override if you needed
+     *
      * @return Consumer
      */
-    Consumer<ConfigUpdateInfo> getUpdateCallback(){
+    Consumer<ConfigUpdateInfo> getUpdateCallback() {
         return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
     }
 
@@ -91,9 +89,10 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * <p>Constructor for AbstractJaxbConfigDao.</p>
      * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
      * override getUpdateCallback if you need to change.
-     * @see #getUpdateCallback()
+     *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
+     * @see #getUpdateCallback()
      */
     public AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
         this.entityClass = entityClass;
@@ -104,17 +103,20 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      * Add default callback
      */
     @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(getUpdateCallback());
+    public void postConstruct() throws IOException {
+        Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
+        configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
     }
 
     /**
      * It will load the default config
+     *
      * @return ConfigObject
      */
-    public ENTITY_CLASS loadConfig(){
+    public ENTITY_CLASS loadConfig() {
         return this.loadConfig(this.getDefaultConfigId());
     }
+
     /**
      * loadConfig from database by CM. If it is already in cache, it will update the cache.
      *
@@ -142,8 +144,8 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         long endTime = System.currentTimeMillis();
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
-        return lastKnownEntityMap.compute(configId, (k, v)->{
-            if(v != null){
+        return lastKnownEntityMap.compute(configId, (k, v) -> {
+            if (v != null) {
                 BeanUtils.copyProperties(config, v);
                 return v;
             } else {
@@ -152,18 +154,19 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         });
     }
 
-    public void updateConfig(final String configId, Object config) throws IOException {
-        configurationManagerService.updateConfiguration(this.getConfigName(), configId, config);
+    public void updateConfig(final String configId, String configStr) throws IOException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(configStr));
     }
 
     /**
      * it will update the default config
-     * @see #updateConfig(String, Object)
-     * @param config
+     *
+     * @param configStr
      * @throws IOException
+     * @see #updateConfig(String, String)
      */
-    public void updateConfig(Object config) throws IOException {
-        this.updateConfig(this.getDefaultConfigId(), config);
+    public void updateConfig(String configStr) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), configStr);
     }
 
     /**
@@ -178,8 +181,8 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     /**
      * @param callback a callback that will be called when the entity maintained by this DAO is reloaded
      */
-    public void addOnReloadedCallback(Consumer<ConfigUpdateInfo> callback) {
+    public void addOnReloadedCallback(String configId, Consumer<ConfigUpdateInfo> callback) {
         Objects.requireNonNull(callback);
-        configurationManagerService.registerReloadConsumer(this.getConfigName(), callback);
+        configurationManagerService.registerReloadConsumer(new ConfigUpdateInfo(this.getConfigName(), configId), callback);
     }
 }
