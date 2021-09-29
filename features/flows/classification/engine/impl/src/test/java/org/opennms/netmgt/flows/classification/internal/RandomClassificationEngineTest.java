@@ -54,6 +54,7 @@ import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
+import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.internal.value.StringValue;
@@ -208,7 +209,7 @@ public class RandomClassificationEngineTest {
     public static Arbitrary<ClassificationRequest> classificationRequest(Collection<Rule> rules) {
         var protocols = new HashSet<Integer>();
         var ports = new HashSet<Integer>();
-        var addresses = new HashSet<IPAddress>();
+        var addresses = new HashSet<IpAddr>();
 
         for (var r : rules) {
             new StringValue(r.getProtocol())
@@ -232,29 +233,29 @@ public class RandomClassificationEngineTest {
                 IpValue.of(r.getSrcAddress())
                         .getIpAddressRanges()
                         .stream()
-                        .flatMap(range -> Stream.of(range.getBegin(), range.getEnd()))
+                        .flatMap(range -> Stream.of(range.begin, range.end))
                         .forEach(addresses::add);
             }
             if (StringUtils.isNoneBlank(r.getDstAddress())) {
                 IpValue.of(r.getDstAddress())
                         .getIpAddressRanges()
                         .stream()
-                        .flatMap(range -> Stream.of(range.getBegin(), range.getEnd()))
+                        .flatMap(range -> Stream.of(range.begin, range.end))
                         .forEach(addresses::add);
             }
         }
         return classificationRequest(protocols, ports, addresses);
     }
 
-    private static Arbitrary<ClassificationRequest> classificationRequest(Set<Integer> protocols, Set<Integer> ports, Set<IPAddress> addresses) {
+    private static Arbitrary<ClassificationRequest> classificationRequest(Set<Integer> protocols, Set<Integer> ports, Set<IpAddr> addresses) {
         final var protocolsArray = protocols.toArray(new Integer[0]);
         final var portsArray = ports.toArray(new Integer[0]);
-        final var addressesArray = addresses.toArray(new IPAddress[0]);
+        final var addressesArray = addresses.toArray(new IpAddr[0]);
         // in practice classification request will always have their protocol, src/dst port/addr being set
         // -> use zero as a default in case that a set is empty
         final var protocolsArb = protocolsArray.length == 0 ? Arbitraries.just(0) : Arbitraries.of(protocolsArray);
         final var portsArb = portsArray.length == 0 ? Arbitraries.just(0) : Arbitraries.of(portsArray);
-        final var addressesArb = addressesArray.length == 0 ? Arbitraries.just(new IPAddress("0.0.0.0")) : Arbitraries.of(addressesArray);
+        final var addressesArb = addressesArray.length == 0 ? Arbitraries.just(IpAddr.of("0.0.0.0")) : Arbitraries.of(addressesArray);
         return Combinators.combine(
                 protocolsArb,
                 portsArb,
@@ -262,7 +263,7 @@ public class RandomClassificationEngineTest {
                 addressesArb,
                 addressesArb
         ).as((protocol, srcPort, dstPort, srcAddr, dstAddr) ->
-                new ClassificationRequest("default", srcPort, srcAddr.toString(), dstPort, dstAddr.toString(), Protocols.getProtocol(protocol))
+                new ClassificationRequest("default", srcPort, srcAddr, dstPort, dstAddr, Protocols.getProtocol(protocol))
         );
     }
 

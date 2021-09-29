@@ -42,6 +42,9 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.IpAddr;
+import org.opennms.netmgt.flows.classification.internal.value.IpRange;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -50,6 +53,10 @@ import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import com.google.common.collect.Lists;
 
 public class DefaultClassificationEngineTest {
+
+    private static ClassificationRequest classificationRequest(String location, int srcPort, String srcAddress, int dstPort, String dstAddress, Protocol protocol) {
+        return new ClassificationRequest(location, srcPort, IpAddr.of(srcAddress), dstPort, IpAddr.of(dstAddress), protocol);
+    }
 
     @Test
     public void verifyRuleEngineBasic() {
@@ -109,12 +116,12 @@ public class DefaultClassificationEngineTest {
         );
 
         // Verify concrete mappings
-        assertEquals("SSH",         engine.classify(new ClassificationRequest("Default", 0, null,  22, "127.0.0.1", ProtocolType.TCP)));
-        assertEquals("HTTP_CUSTOM", engine.classify(new ClassificationRequest("Default", 0, null, 80, "192.168.0.1", ProtocolType.TCP)));
-        assertEquals("HTTP",        engine.classify(new ClassificationRequest("Default", 0, null, 80, "192.168.0.2", ProtocolType.TCP)));
-        assertEquals(null,          engine.classify(new ClassificationRequest("Default", 0, null, 5000, "localhost", ProtocolType.UDP)));
-        assertEquals(null,          engine.classify(new ClassificationRequest("Default", 0, null, 5000, "localhost", ProtocolType.TCP)));
-        assertEquals("OpenNMS",     engine.classify(new ClassificationRequest("Default", 0, null, 8980, "127.0.0.1", ProtocolType.TCP)));
+        assertEquals("SSH",         engine.classify(classificationRequest("Default", 0, null,  22, "127.0.0.1", ProtocolType.TCP)));
+        assertEquals("HTTP_CUSTOM", engine.classify(classificationRequest("Default", 0, null, 80, "192.168.0.1", ProtocolType.TCP)));
+        assertEquals("HTTP",        engine.classify(classificationRequest("Default", 0, null, 80, "192.168.0.2", ProtocolType.TCP)));
+        assertEquals(null,          engine.classify(classificationRequest("Default", 0, null, 5000, "localhost", ProtocolType.UDP)));
+        assertEquals(null,          engine.classify(classificationRequest("Default", 0, null, 5000, "localhost", ProtocolType.TCP)));
+        assertEquals("OpenNMS",     engine.classify(classificationRequest("Default", 0, null, 8980, "127.0.0.1", ProtocolType.TCP)));
         assertEquals("OpenNMS Monitor", engine.classify(
                 new ClassificationRequestBuilder()
                         .withLocation("Default")
@@ -147,9 +154,9 @@ public class DefaultClassificationEngineTest {
                 .withProtocol(ProtocolType.TCP).build()));
 
         // Verify IP Range
-        final IPAddressRange ipAddresses = new IPAddressRange("192.168.1.0", "192.168.1.255");
-        for (IPAddress ipAddress : ipAddresses) {
-            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress.toString(), ProtocolType.TCP);
+        var ipAddresses = IpRange.of("192.168.1.0", "192.168.1.255");
+        for (var ipAddress : ipAddresses) {
+            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress, ProtocolType.TCP);
             assertEquals("DUMMY", engine.classify(classificationRequest));
 
             // Populate src address and port. Result must be the same
@@ -159,13 +166,13 @@ public class DefaultClassificationEngineTest {
         }
 
         // Verify CIDR expression
-        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
-            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress.toString(), ProtocolType.TCP);
+        for (var ipAddress : IpRange.of("192.168.0.0", "192.168.0.255")) {
+            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress, ProtocolType.TCP);
             assertEquals("DUMMY", engine.classify(classificationRequest));
         }
 
         // Verify Port Range
-        IntStream.range(7000, 8000).forEach(i -> assertEquals("RANGE-TEST", engine.classify(new ClassificationRequest("Default", 0, null,  i, "192.168.0.2", ProtocolType.TCP))));
+        IntStream.range(7000, 8000).forEach(i -> assertEquals("RANGE-TEST", engine.classify(classificationRequest("Default", 0, null,  i, "192.168.0.2", ProtocolType.TCP))));
 
         // Verify Port Range with Src fields populated. Result must be the same
         IntStream.range(7000, 8000).forEach(src -> {
@@ -188,7 +195,7 @@ public class DefaultClassificationEngineTest {
             new RuleBuilder().withName("XXX").withDstAddress("192.168.2.1").build()
         ), FilterService.NOOP);
 
-        final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 80, "192.168.2.1", ProtocolType.TCP);
+        final ClassificationRequest classificationRequest = classificationRequest("Default", 0, null, 80, "192.168.2.1", ProtocolType.TCP);
         assertEquals("XXX", engine.classify(classificationRequest));
         assertEquals("XXX2", engine.classify(new ClassificationRequestBuilder()
                 .withLocation("Default")
@@ -202,7 +209,7 @@ public class DefaultClassificationEngineTest {
     public void verifyAllPortsToEnsureEngineIsProperlyInitialized() {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>(), FilterService.NOOP);
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
-            classificationEngine.classify(new ClassificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
+            classificationEngine.classify(classificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
         }
     }
 
@@ -215,7 +222,7 @@ public class DefaultClassificationEngineTest {
             rules.add(rule);
         }
         final DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
-        engine.classify(new ClassificationRequest("localhost", 1234, "127.0.0.1", 80, "192.168.0.1", Protocols.getProtocol("UDP")));
+        engine.classify(classificationRequest("localhost", 1234, "127.0.0.1", 80, "192.168.0.1", Protocols.getProtocol("UDP")));
     }
 
     @Test(timeout=5000)
