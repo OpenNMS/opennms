@@ -36,6 +36,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <bootRepositories>
+                        <!--Karaf standard features-->
+                        <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
                         <!-- OPENNMS: Replace the spring, and spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
