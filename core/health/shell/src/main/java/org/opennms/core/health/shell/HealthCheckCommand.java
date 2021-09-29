@@ -28,6 +28,7 @@
 
 package org.opennms.core.health.shell;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -58,6 +60,10 @@ public class HealthCheckCommand implements Action {
 
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
     public long timeout = 5L * 1000L;
+
+    @Option(name = "--tag", multiValued = true, description = "Tags of the health checks that are executed. If unset then all checks are executed.")
+    @Completion(HealthCheckTagCompleter.class)
+    public List<String> tags = new ArrayList<>();
 
     @Reference
     private BundleContext bundleContext;
@@ -114,7 +120,7 @@ public class HealthCheckCommand implements Action {
                             }
                             System.out.println();
                         },
-                        null);
+                        tags);
         return future;
     }
 
