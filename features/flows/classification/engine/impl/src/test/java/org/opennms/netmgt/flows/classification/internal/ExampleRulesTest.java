@@ -43,11 +43,11 @@ import org.opennms.netmgt.flows.classification.internal.decision.Tree;
 public class ExampleRulesTest {
 
     @Test
-    public void exampleRuleSet() {
+    public void exampleRuleSet() throws InterruptedException {
         testRuleSet("/example-rules.csv");
     }
 
-    public void testRuleSet(String resource) {
+    public void testRuleSet(String resource) throws InterruptedException {
         var rules = ClassificationEngineBenchmark.getRules(resource);
         var classificationEngine = new DefaultClassificationEngine(() -> rules, createNiceMock(FilterService.class));
 

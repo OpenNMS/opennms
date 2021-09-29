@@ -37,5 +37,5 @@ public interface ClassificationEngine {
 
     List<Rule> getInvalidRules();
 
-    void reload();
+    void reload() throws InterruptedException;
 }

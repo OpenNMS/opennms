@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.netmgt.flows.classification.internal.decision;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,11 +64,15 @@ public abstract class Tree {
      * Recursively constructs a decision tree consisting of nodes that split the given rules by thresholds
      * and leaves that contain the classifiers that were selected by the thresholds of their ancestor nodes.
      */
-    public static Tree of(List<PreprocessedRule> rules, FilterService filterService) {
+    public static Tree of(List<PreprocessedRule> rules, FilterService filterService) throws InterruptedException  {
         return of(rules, Bounds.ANY, 0, filterService);
     }
 
-    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) {
+    private static Tree of(List<PreprocessedRule> rules, Bounds bounds, int depth, FilterService filterService) throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+
         final var ruleSetSize = rules.size();
         if (ruleSetSize <= 1) {
             LOG.trace("Leaf - depth: " + depth + "; rules: " + ruleSetSize);
@@ -259,12 +262,10 @@ public abstract class Tree {
      * @return Returns <code>null</code> if the request does not match a rule
      */
     public final String classify(ClassificationRequest request) {
-        var classifiers = classifiers(request);
-        final Collection<Classifier> cs;
-        if (classifiers.ordered) {
-            cs = classifiers.classifiers;
-        } else {
-            cs = classifiers.classifiers.stream().sorted().collect(Collectors.toList());
+        Classifiers classifiers = classifiers(request);
+
+        if (classifiers == null) {
+            return null;
         }
 
         // classifiers are split according to their natural order (based on their groupPosition & position fields)
@@ -272,7 +273,8 @@ public abstract class Tree {
         //    at least one classification result
         Classifier firstInSplit = null;
         Classifier.Result result = null;
-        for (var c: cs) {
+        Classifier c;
+        while ((c = classifiers.next()) != null) {
             // detect group change
             if (firstInSplit == null) {
                 firstInSplit = c;
@@ -300,6 +302,9 @@ public abstract class Tree {
 
     protected abstract boolean isEmpty();
 
+    /**
+     * @return matching classifiers or {@code null}
+     */
     protected abstract Classifiers classifiers(ClassificationRequest request);
 
     public static abstract class Node extends Tree {
@@ -336,7 +341,7 @@ public abstract class Tree {
                     case GT:
                         return gt.classifiers(request);
                 }
-                return Classifiers.EMPTY;
+                return null;
             }
 
             @Override
@@ -372,11 +377,11 @@ public abstract class Tree {
                 // -> there are 5 aspects (src/dst port/addr and protocol)
                 switch (threshold.compare(request)) {
                     case LT:
-                        return lt.classifiers(request).add(na.classifiers(request));
+                        return merge(lt.classifiers(request), na.classifiers(request));
                     case EQ:
-                        return eq.classifiers(request).add(na.classifiers(request));
+                        return merge(eq.classifiers(request), na.classifiers(request));
                     case GT:
-                        return gt.classifiers(request).add(na.classifiers(request));
+                        return merge(gt.classifiers(request), na.classifiers(request));
                     case NA:
                         // if a request has no value corresponding to the threshold of this node then only the rules
                         // that did not include that value are considered
@@ -384,7 +389,7 @@ public abstract class Tree {
                         //    a request that has no corresponding value could match rules that constrain that value
                         return na.classifiers(request);
                     default:
-                        return Classifiers.EMPTY; // unexpected
+                        return null; // unexpected
                 }
             }
 
@@ -434,7 +439,7 @@ public abstract class Tree {
 
             @Override
             public Classifiers classifiers(ClassificationRequest request) {
-                return Classifiers.EMPTY;
+                return null;
             }
 
             @Override
@@ -454,11 +459,11 @@ public abstract class Tree {
         }
 
         public final static class WithClassifiers extends Leaf {
-            public final Classifiers classifiers;
+            public final List<Classifier> classifiers;
 
             public WithClassifiers(List<Classifier> classifiers) {
                 super(Info.forLeaf(classifiers.size()));
-                this.classifiers = new Classifiers(true, classifiers);
+                this.classifiers = classifiers;
             }
 
             public WithClassifiers(Classifier classifier) {
@@ -467,12 +472,12 @@ public abstract class Tree {
 
             @Override
             public Classifiers classifiers(ClassificationRequest request) {
-                return classifiers;
+                return new ListClassifiers(classifiers);
             }
 
             @VisibleForTesting
             public Collection<Classifier> classifiers() {
-                return classifiers.classifiers;
+                return classifiers;
             }
 
             @Override
@@ -495,30 +500,83 @@ public abstract class Tree {
 
     }
 
-    private static class Classifiers {
+    /**
+     * Allows to access classifiers sorted by their priorities.
+     */
+    private interface Classifiers {
 
-        private static Classifiers EMPTY = new Classifiers(true, Collections.emptyList());
+        /**
+         * @return the next classifier or {@code null} if no more classifiers are available
+         */
+        Classifier next();
 
-        // indicates if the classifiers collection is ordered
-        // -> allows to avoid unnecessary sorting
-        private final boolean ordered;
-        private final Collection<Classifier> classifiers;
+    }
 
-        private Classifiers(boolean ordered, Collection<Classifier> classifiers) {
-            this.ordered = ordered;
-            this.classifiers = classifiers;
+    public static Classifiers merge(Classifiers i1, Classifiers i2) {
+        if (i1 != null && i2 != null) {
+            return new MergeSortedClassifiers(i1, i2);
+        } else if (i1 != null) {
+            return i1;
+        } else {
+            return i2;
         }
-        public Classifiers add(Classifiers other) {
-            if (classifiers.isEmpty()) {
-                return other;
-            } else if (other.classifiers.isEmpty()) {
-                return this;
-            } else {
-                var c = new ArrayList<Classifier>(classifiers.size() + other.classifiers.size());
-                c.addAll(this.classifiers);
-                c.addAll(other.classifiers);
-                return new Classifiers(false, c);
+    }
+
+    private static class ListClassifiers implements Classifiers {
+        private final List<Classifier> list;
+        private int pos = 0;
+
+        public ListClassifiers(List<Classifier> list) {
+            this.list = list;
+        }
+
+        @Override
+        public Classifier next() {
+            return pos < list.size() ? list.get(pos++) : null;
+        }
+    }
+
+    private static class MergeSortedClassifiers implements Classifiers {
+        private Classifiers i1, i2;
+        private Classifier n1, n2;
+
+        public MergeSortedClassifiers(Classifiers i1, Classifiers i2) {
+            this.i1 = i1;
+            this.i2 = i2;
+        }
+
+        public Classifier next() {
+            if (n1 == null && i1 != null) {
+                n1 = i1.next();
+                if (n1 == null) {
+                    i1 = null;
+                }
             }
+            if (n2 == null && i2 != null) {
+                n2 = i2.next();
+                if (n2 == null) {
+                    i2 = null;
+                }
+            }
+            Classifier res;
+            if (n1 != null && n2 != null) {
+                if (n1.compareTo(n2) <= 0) {
+                    res = n1;
+                    n1 = null;
+                } else {
+                    res = n2;
+                    n2 = null;
+                }
+            } else if (n1 != null) {
+                res = n1;
+                n1 = null;
+            } else if (n2 != null) {
+                res = n2;
+                n2 = null;
+            } else {
+                res = null;
+            }
+            return res;
         }
     }
 
