@@ -60,8 +60,8 @@ public class HealthCheckCommand implements Action {
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
     public long timeout = 5L * 1000L;
 
-    @Option(name = "--maxAge", description = "Maximum age of cached health check responses in milliseconds. Defaults to zero, i.e. cached responses of health checks are not considered.")
-    public long maxAgeMs = 0;
+    @Option(name = "--maxAge", description = "Maximum age of cached health check responses in milliseconds. Defaults to 60,000.")
+    public long maxAgeMs = 60000;
 
     @Reference
     private BundleContext bundleContext;
