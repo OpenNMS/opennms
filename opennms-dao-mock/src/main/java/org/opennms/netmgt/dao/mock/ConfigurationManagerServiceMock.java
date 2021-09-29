@@ -78,6 +78,10 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
+    public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
+    }
+
+    @Override
     public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
     }
 
