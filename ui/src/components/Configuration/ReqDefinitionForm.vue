@@ -48,7 +48,7 @@
                 <div class="p-field">
                     <label for="advOps">Advanced Options</label>
                     <div class v-for="add in addAnotherArr">
-                        <p class="adv">
+                        <p class="closeBtn">
                             <Button
                                 v-if="add.id !== 0"
                                 icon="pi pi-times"
@@ -58,13 +58,12 @@
                             ></Button>
                         </p>
                         <DropDown
-                            :id="add.id"
                             v-model="add.dropdownVal"
                             :options="advancedDropdown"
                             optionLabel="name"
                             optionValue="value"
                         ></DropDown>
-                        <p class="mtb">
+                        <p class="inputText-margin">
                             <InputText
                                 v-model="add.advTextVal"
                                 placeholder="please enter parameter"
@@ -135,7 +134,7 @@
 <script lang="ts">
 
 import { onMounted, reactive, ref } from 'vue'
-import { apiTypes, apiPeriod, apiAdvDropdown } from '../Common/Demo/apiService'
+import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown } from '../Common/Demo/apiService'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
@@ -160,59 +159,27 @@ export default {
 
         const minVal = ref(1);
         const count = ref(0);
-        const addAnotherArr: any = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
+        const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
 
-        const urlBtnTitle: any = ref('Generate URL');
-        const generatedURL: any = ref('');
+        const urlBtnTitle = ref('Generate URL');
+        const generatedURL = ref('');
         const advString: any = ref([]);
 
-        const urlIcon: any = ref('pi pi-check-circle');
+        const urlIcon = ref('pi pi-check-circle');
 
         const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
         const model = State.toModel();
 
-        //Dropdown API Data
-        onMounted(() => {
-            //service call for data
+        // Dropdown API Data
+        onMounted(async () => {
             try {
-
                 //Types
-                apiTypes.then((response: any) => {
-                    //data come form api
-                    let dataLen = response.data.length;
-                    if (dataLen > 0) {
-                        types.value = response.data;
-                    }
-                })
-                    .catch((err: any) => {
-                        console.error("apiTypes Error ==>", err);
-                    });
-
+                types.value = await getDropdownTypes;
                 // Schedule Period
-                apiPeriod.then((response: any) => {
-                    //data come form api
-                    let dataLen = response.data.length;
-                    if (dataLen > 0) {
-                        schedulePeriod.value = response.data;
-                    }
-                })
-                    .catch((err: any) => {
-                        console.error("apiPeriod Error ==>", err);
-                    });
-
+                schedulePeriod.value = await getSchedulePeriod;
                 // Advanced Dropdown
-                apiAdvDropdown.then((response: any) => {
-                    //data come form api
-                    let dataLen = response.data.length;
-                    if (dataLen > 0) {
-                        advancedDropdown.value = response.data;
-                    }
-                })
-                    .catch((err: any) => {
-                        console.error("apiAdvDropdown Error ==>", err);
-                    });
-
+                advancedDropdown.value = await getAdvancedDropdown;
             } catch {
                 console.error("Error in API");
             }
@@ -306,11 +273,11 @@ export default {
     font-size: 14px;
     cursor: pointer;
 }
-.adv {
+.closeBtn {
     direction: rtl;
     margin: 0 0 1% 0;
 }
-.mtb {
+.inputText-margin {
     margin: 2% 0 1% 0;
 }
 .inline-display {

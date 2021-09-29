@@ -1,6 +1,6 @@
 <template>
     <div v-if="model.$invalid" class="p-mtb">
-        <li class="p-error" v-for="err in model.$errors" :key="err">{{ err.$message }}</li>
+        <p class="p-error errorMsg" v-for="err in model.$errors" :key="err">{{ err.$message }}</p>
     </div>
 </template>
 
@@ -16,8 +16,8 @@ export default {
 </script>
 
 <style scoped>
-li {
-    list-style-type: disc;
+.errorMsg {
+    margin: 0;
 }
 
 .p-mtb {

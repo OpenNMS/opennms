@@ -6,8 +6,41 @@ let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
 let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
 
 const nodeData = axios.get(url)
-const apiTypes = axios.get(typesUrl)
-const apiPeriod = axios.get(periodUrl)
-const apiAdvDropdown = axios.get(advDropdownUrl)
 
-export { nodeData, apiTypes, apiPeriod, apiAdvDropdown }
+const getDropdownTypes = axios
+  .get(typesUrl)
+  .then((response: any) => {
+    let dataLen = response.data.length
+    if (dataLen > 0) {
+      return response.data
+    }
+  })
+  .catch((err: any) => {
+    console.error('apiTypes Error ==>', err)
+  })
+
+const getSchedulePeriod = axios
+  .get(periodUrl)
+  .then((response: any) => {
+    let dataLen = response.data.length
+    if (dataLen > 0) {
+      return response.data
+    }
+  })
+  .catch((err: any) => {
+    console.error('apiPeriod Error ==>', err)
+  })
+
+const getAdvancedDropdown = axios
+  .get(advDropdownUrl)
+  .then((response: any) => {
+    let dataLen = response.data.length
+    if (dataLen > 0) {
+      return response.data
+    }
+  })
+  .catch((err: any) => {
+    console.error('apiAdvDropdown Error ==>', err)
+  })
+
+export { nodeData, getDropdownTypes, getSchedulePeriod, getAdvancedDropdown }
