@@ -99,7 +99,7 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("opennms:health-check --maxAge 60000");
+                        pipe.println("opennms:health-check");
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
