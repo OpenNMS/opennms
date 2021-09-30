@@ -41,12 +41,12 @@ public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<Provi
     }
 
     @Override
-    protected String getConfigName() {
+    public String getConfigName() {
         return CONFIG_NAME;
     }
 
     @Override
-    protected String getDefaultConfigId() {
+    public String getDefaultConfigId() {
         return CONFIG_ID;
     }
 
