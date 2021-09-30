@@ -3,6 +3,10 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-	<bean id="configurationManagerService" class="org.opennms.netmgt.enlinkd.ConfigurationManagerServiceMock" />
+	<bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+		<property name="configFile" value="enlinkd-configuration.xml"/>
+	</bean>
+
+	<!--<bean id="configurationManagerService" class="org.opennms.netmgt.enlinkd.ConfigurationManagerServiceMock" />-->
 
 </beans>
