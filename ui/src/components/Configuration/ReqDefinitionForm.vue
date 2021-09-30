@@ -131,7 +131,7 @@
     </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 
 import { onMounted, reactive, ref } from 'vue'
 import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown } from '../Common/Demo/apiService'
@@ -139,119 +139,89 @@ import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
-import State from '../state'
+import State from './formState'
 import ValidationMessage from '../ValidationMessage.vue'
 
-export default {
-    components: {
-        InputText,
-        DropDown,
-        Button,
-        InputNumber,
-        ValidationMessage,
-    },
-    setup() {
-        const reqDefinition = reactive(State);
+const reqDefinition = reactive(State);
 
-        const types: any = ref([]);
-        const schedulePeriod: any = ref([]);
-        const advancedDropdown: any = ref([]);
+const types: any = ref([]);
+const schedulePeriod: any = ref([]);
+const advancedDropdown: any = ref([]);
 
-        const minVal = ref(1);
-        const count = ref(0);
-        const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
+const minVal = ref(1);
+const count = ref(0);
+const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
 
-        const urlBtnTitle = ref('Generate URL');
-        const generatedURL = ref('');
-        const advString: any = ref([]);
+const urlBtnTitle = ref('Generate URL');
+const generatedURL = ref('');
+const advString: any = ref([]);
 
-        const urlIcon = ref('pi pi-check-circle');
+const urlIcon = ref('pi pi-check-circle');
 
-        const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
+const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
-        const model = State.toModel();
+const model = State.toModel();
 
-        // Dropdown API Data
-        onMounted(async () => {
-            try {
-                //Types
-                types.value = await getDropdownTypes;
-                // Schedule Period
-                schedulePeriod.value = await getSchedulePeriod;
-                // Advanced Dropdown
-                advancedDropdown.value = await getAdvancedDropdown;
-            } catch {
-                console.error("Error in API");
-            }
-        });
-
-        //Add another parameter - max 1 allowed
-        const addAnother = () => {
-            if (addAnotherArr.value.length < 2) {
-                let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
-                addAnotherArr.value.push(addObj);
-            } else {
-                alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
-            }
-        };
-
-        //Dismiss dropdown
-        const closeIcon = (id: any) => {
-            const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
-            addAnotherArr.value.splice(findIndex, 1);
-        };
-
-        //Show Generated URL
-        const generateURL = () => {
-            urlIcon.value = 'pi pi-refresh';
-            urlBtnTitle.value = 'Refresh URL';
-
-            if (addAnotherArr.value[0].dropdownVal != '') {
-                advString.value = [];
-                addAnotherArr.value.forEach((ele: any) => {
-                    let param = "?" + ele.dropdownVal + "=" + ele.advTextVal;
-                    advString.value.push(param);
-                });
-                generatedURL.value =
-                    reqDefinition.reqDef.type + "://"
-                    + reqDefinition.reqDef.host + "/"
-                    + reqDefinition.reqDef.foreignSource
-                    + advString.value.join('');
-            } else {
-                generatedURL.value =
-                    reqDefinition.reqDef.type + "://"
-                    + reqDefinition.reqDef.host + "/"
-                    + reqDefinition.reqDef.foreignSource
-            }
-        }
-
-        //Save 
-        const onSave = () => {
-            console.log("generatedURL", generatedURL.value)
-            console.log('onSave Obj', JSON.stringify(reqDefinition));
-        };
-
-        return {
-            minVal,
-            schedulePeriod,
-            types,
-            advancedDropdown,
-            addAnotherArr,
-            reqDefinition,
-            model,
-            generatedURL,
-            advString,
-            hostPlaceholder,
-            urlIcon,
-            urlBtnTitle,
-            addAnother,
-            closeIcon,
-            generateURL,
-            onSave
-        }
+// Dropdown API Data
+onMounted(async () => {
+    try {
+        //Types
+        types.value = await getDropdownTypes;
+        // Schedule Period
+        schedulePeriod.value = await getSchedulePeriod;
+        // Advanced Dropdown
+        advancedDropdown.value = await getAdvancedDropdown;
+    } catch {
+        console.error("Error in API");
     }
+});
 
+//Add another parameter - max 1 allowed
+const addAnother = () => {
+    if (addAnotherArr.value.length < 2) {
+        let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
+        addAnotherArr.value.push(addObj);
+    } else {
+        alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
+    }
 };
+
+//Dismiss dropdown
+const closeIcon = (id: any) => {
+    const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
+    addAnotherArr.value.splice(findIndex, 1);
+};
+
+//Show Generated URL
+const generateURL = () => {
+    urlIcon.value = 'pi pi-refresh';
+    urlBtnTitle.value = 'Refresh URL';
+
+    if (addAnotherArr.value[0].dropdownVal != '') {
+        advString.value = [];
+        addAnotherArr.value.forEach((ele: any) => {
+            let param = "?" + ele.dropdownVal + "=" + ele.advTextVal;
+            advString.value.push(param);
+        });
+        generatedURL.value =
+            reqDefinition.reqDef.type + "://"
+            + reqDefinition.reqDef.host + "/"
+            + reqDefinition.reqDef.foreignSource
+            + advString.value.join('');
+    } else {
+        generatedURL.value =
+            reqDefinition.reqDef.type + "://"
+            + reqDefinition.reqDef.host + "/"
+            + reqDefinition.reqDef.foreignSource
+    }
+}
+
+//Save 
+const onSave = () => {
+    console.log("generatedURL", generatedURL.value)
+    console.log('onSave Obj', JSON.stringify(reqDefinition));
+};
+
 </script>
 
 <style lang="scss" scoped>

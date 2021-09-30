@@ -1,7 +1,7 @@
 import useVuelidate from '@vuelidate/core'
 import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 import { ref } from 'vue'
-import { firstCharValidator, nameValidator, ipValidator } from '../Validators/CustomValidators'
+import { firstCharValidator, nameValidator, ipValidator } from '../../Validators/CustomValidators'
 
 export default class reqDefModel {
   name = ref('')

@@ -1,6 +1,6 @@
 import useVuelidate from '@vuelidate/core'
 import { reactive } from 'vue-demi'
-import reqDefModel from '../models/reqDefModel'
+import reqDefModel from '../ReqDefinitionFormModel'
 
 export default {
   reqDef: reactive(new reqDefModel()),
