@@ -6,7 +6,7 @@
         :max-zoom="19"
         v-model="zoom"
         :zoomAnimation="true"
-        :center="center"
+        :center="openNMSHeadQuarter"
         @ready="onLeafletReady"
       >
         <template v-if="leafletReady">
@@ -24,12 +24,18 @@
             :options="{ showCoverageOnHover: false, chunkedLoading: true }"
           >
             <l-marker
-              v-for="coordinate in coordinates"
-              :key="coordinate"
-              :lat-lng="coordinate.latlng"
-            >
-              <l-popup>{{ coordinate.popmessage }}</l-popup>
-            </l-marker>
+          v-for="(node, index) in interestedNodes"
+          :key="index"
+          :lat-lng="getCoordinateFromNode(node)"
+add         >
+        <l-popup> {{ node.label }} </l-popup>
+        </l-marker>
+        <l-polyline
+          v-for="(coordinatePair, index) in edges"
+          :key="index"
+          :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+          color="green"
+        />
           </marker-cluster>
         </template>
       </l-map>
@@ -37,7 +43,7 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { ref, nextTick } from "vue";
+import { computed, watch, ref, nextTick } from "vue";
 import "leaflet/dist/leaflet.css";
 import {
   LMap,
@@ -45,28 +51,62 @@ import {
   LMarker,
   LPopup,
   LControlLayers,
+  LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
+import { useStore } from "vuex";
 
-const zoom = ref(7);
-const center = ref({ lat: 51.289404225298256, lng: 9.697202050919614 });
 let leafletReady = ref(false);
 let leafletObject = ref("");
 let visible = ref(false);
 let map: any = ref();
+const store = useStore();
+const openNMSHeadQuarter = ref([35.849613, -78.794882])
+const zoom = ref(4)
 
-/*****Multiple Markers*****/
 
-const coordinates = [
-  { latlng: [47.7515953048815, 8.757179159967961], popmessage: "Street 01" },
-  { latlng: [54.379448751829784, 8.890621239746661], popmessage: "Street 02" },
-  { latlng: [48.41432462648719, 11.172363685423019], popmessage: "Street 03" },
-  { latlng: [54.34757868763789, 11.410597389004957], popmessage: "Street 04" },
-  { latlng: [51.741295879474464, 13.693138753473695], popmessage: "Street 05" },
-  { latlng: [53.574845165295145, 6.875185458821902], popmessage: "Street 06" },
-  { latlng: [51.42494690949777, 6.901031944520698], popmessage: "Street 07" },
-];
+let interestedNodes = computed(() => {
+  return store.getters['mapModule/getInterestedNodes'];
+})
+
+function getCoordinateFromNode(node: any) {
+  let coordinate: string[] = [];
+  coordinate.push(node.assetRecord.latitude);
+  coordinate.push(node.assetRecord.longitude);
+  return coordinate;
+}
+
+let interestedNodesID = computed(() => {
+  return store.getters['mapModule/getInterestedNodesID'];
+})
+
+let edges = computed(() => {
+  let ids = interestedNodesID.value;
+  let interestedNodesCoordinateMap = getInterestedNodesCoordinateMap();
+
+  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0]) && ids.includes(edge[1]))
+    .map((edge: [number, number]) => {
+      let edgeCoordinatesPair = [];
+      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]));
+      edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]));
+      return edgeCoordinatesPair
+    });
+})
+
+function getInterestedNodesCoordinateMap() {
+  var map = new Map();
+  interestedNodes.value.forEach((node: any) => {
+    map.set(node.id, getCoordinateFromNode(node));
+  });
+  return map;
+}
+
+watch(
+  () => interestedNodesID.value,
+  (newValue, oldValue) => {
+  }
+)
 
 async function onLeafletReady() {
   await nextTick();
@@ -94,6 +134,7 @@ const tileProviders = [
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
 ];
+
 </script>
 
 <style scoped>
