@@ -11,7 +11,7 @@
       <ag-grid-vue
         style="width: 100%; height: 600px"
         class="ag-theme-alpine"
-        rowSelection="single"
+        rowSelection="multiple"
         :columnDefs="columnDefs"
         @grid-ready="onGridReady"
         :rowData="rowData"
