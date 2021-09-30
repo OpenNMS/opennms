@@ -11,5 +11,9 @@
         <cm:registerSchema id="provisiond" version="1.0.0" entityClass="org.opennms.netmgt.config.provisiond.ProvisiondConfiguration"/>
         <cm:importConfig schemaId="provisiond" configId="default" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
     </changeSet>
+    <changeSet author="tmohanta" id="1.0-register-schema-discovery">
+        <cm:registerSchema id="discovery" version="1.0.0" entityClass="org.opennms.netmgt.config.discovery.DiscoveryConfiguration"/>
+        <cm:importConfig schemaId="discovery" configId="default" filePath="file:${opennms.home}/etc/discovery-configuration.xml"/>
+    </changeSet>
 
 </databaseChangeLog>
