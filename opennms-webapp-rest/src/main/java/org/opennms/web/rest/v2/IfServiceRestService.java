@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -56,6 +55,7 @@ import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.v2.api.IfServiceRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,9 +72,8 @@ import com.google.common.collect.Sets;
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("ifservices")
 @Transactional
-public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,SearchBean,Integer,String> {
+public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredService,SearchBean,Integer,String> implements IfServiceRestApi {
 
     @Autowired
     private MonitoredServiceDao m_dao;
@@ -174,5 +173,4 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
     protected OnmsMonitoredService doGet(UriInfo uriInfo, String serviceName) {
         throw new WebApplicationException(Response.status(Status.NOT_IMPLEMENTED).build());
     }
-
 }
