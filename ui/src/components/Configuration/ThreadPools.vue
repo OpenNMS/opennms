@@ -72,7 +72,7 @@ const rules = {
   write: { required, numeric, minValue: minValue(0), maxValue: maxValue(10) }
 };
 
-const validationVar = useVuelidate(rules, {
+let validationVar = useVuelidate(rules, {
   import: toRef(threadpool, "import"),
   scan: toRef(threadpool, "scan"),
   rescan: toRef(threadpool, "rescan"),
@@ -85,12 +85,16 @@ const onSave = () => {
     threadpool.rescan = validationVar.value.rescan.$model;
     threadpool.write = validationVar.value.write.$model; 
 }
-onMounted(() => {
+onMounted(async () => {
     //service call for data
-    apigetProvisionD.then((response: any) => {
+    await apigetProvisionD.then((response: any) => {
         //data come form api
-        if (response) {
-          console.log('ProvisionD API data', response);
+        if (response.status == 200) {
+            validationVar.value.import.$model = response.data.importThreads;
+            validationVar.value.scan.$model = response.data.scanThreads;
+            validationVar.value.rescan.$model = response.data.rescanThreads;
+            validationVar.value.write.$model = response.data.writeThreads; 
+            console.log('ProvisionD API data', response);
         }
     }).catch((err) => {
         console.error("error ==>", err);
