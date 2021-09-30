@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { reactive, computed } from 'vue'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { QueryParameters } from '@/types'
@@ -74,21 +74,23 @@ import { FeatherSortHeader, SORT } from "@featherds/table"
 import { FeatherSortObject } from '@/types'
 
 const store = useStore()
-const sortStates = reactive({
+const sortStates: any = reactive({
   label: SORT.ASCENDING,
   location: SORT.NONE,
   foreignSource: SORT.NONE,
   foreignId: SORT.NONE
 })
-const loading = ref(false)
 
 const sortChanged = (sortObj: FeatherSortObject) => {
-  (sortStates as any)[`${sortObj.property}`] = sortObj.value
+  for (const key in sortStates) {
+    sortStates[key] = SORT.NONE
+  }
+  sortStates[`${sortObj.property}`] = sortObj.value
   sort(sortObj)
 }
 
 const { queryParameters, updateQueryParameters, sort } = useQueryParameters({
-  limit: 5,
+  limit: 10,
   offset: 0,
   orderBy: 'label'
 }, 'nodesModule/getNodes')

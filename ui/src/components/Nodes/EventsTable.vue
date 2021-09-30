@@ -1,56 +1,44 @@
 <template>
-  <DataTable
-    :value="events"
-    showGridlines
-    data-key="id"
-    :loading="loading"
-    responsiveLayout="scroll"
-    @sort="sort"
-    :lazy="true"
-    :rowClass="getRowClass"
-  >
-    <template #header>Recent Events</template>
-
-    <template #empty>No data found.</template>
-
-    <template #loading>Loading data. Please wait.</template>
-
-    <template #footer>
-      <Pagination
-        :parameters="queryParameters"
-        @update-query-parameters="updateQueryParameters"
-        moduleName="eventsModule"
-        functionName="getEvents"
-        totalCountStateName="totalCount"
-      />
-    </template>
-
-    <Column field="id" header="Id" :sortable="true">
-      <template #body="{ data }">
-        <router-link :to="`/event/${data.id}`">{{ data.id }}</router-link>
-      </template>
-    </Column>
-
-    <Column field="createTime" header="Created">
-      <template #body="{ data }">{{ getFormattedCreatedTime(data.createTime) }}</template>
-    </Column>
-
-    <Column field="severity" header="Severity">
-      <template #body="{ data }">{{ data.severity }}</template>
-    </Column>
-
-    <Column field="logMessage" header="Message">
-      <template #body="{ data }">
-        <span v-html="data.logMessage" class="log-message"></span>
-      </template>
-    </Column>
-  </DataTable>
+  <div class="feather-row">
+    <div class="feather-col-12 title">Recent Events</div>
+  </div>
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <table class="tl1 tl2 tl3 tl4" summary="Recent Events">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Created</th>
+            <th scope="col">Severity</th>
+            <th scope="col">Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="event in events" :key="event.id" :class="getRowClass(event)">
+            <td>
+              <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
+            </td>
+            <td>{{ getFormattedCreatedTime(event.createTime) }}</td>
+            <td>{{ event.severity }}</td>
+            <td>
+              <span v-html="event.logMessage" class="log-message"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <Pagination
+    :parameters="queryParameters"
+    @update-query-parameters="updateQueryParameters"
+    moduleName="eventsModule"
+    functionName="getEvents"
+    totalCountStateName="totalCount"
+  />
 </template>
   
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { computed } from 'vue'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
@@ -60,8 +48,7 @@ import dayjs from 'dayjs'
 
 const store = useStore()
 const route = useRoute()
-const loading = ref(false)
-const { queryParameters, sort, updateQueryParameters } = useQueryParameters({
+const { queryParameters, updateQueryParameters } = useQueryParameters({
   limit: 5,
   offset: 0,
   _s: `node.id==${route.params.id}`
@@ -72,15 +59,24 @@ const getFormattedCreatedTime = (time: number) => dayjs(time).format()
 </script>
   
 <style lang="scss">
+@import "@featherds/table/scss/table";
+@import "@featherds/styles/mixins/typography";
+.title {
+  @include headline4();
+}
+table {
+  width: 100%;
+  @include table();
+}
 .log-message {
   p {
-    margin: 0px !important;
+    margin: 0px;
   }
 }
 .warning {
-  background: rgba(255, 175, 34, 0.5) !important;
+  background: rgba(255, 175, 34, 0.5);
 }
 .normal {
-  background: rgba(133, 217, 165, 0.5) !important;
+  background: rgba(133, 217, 165, 0.5);
 }
 </style>

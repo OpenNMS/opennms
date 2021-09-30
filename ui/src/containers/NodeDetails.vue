@@ -9,13 +9,13 @@
     </div>
     <div class="p-col-6">
       <NodeAvailabilityGraphVue />
-      <Panel header="Node Interfaces" class="node-interfaces">
+      <Panel header="Node Interfaces">
         <InterfacesTabsVue />
       </Panel>
     </div>
     <div class="p-col-6">
       <EventsTable />
-      <OutagesTable class="outages-table" />
+      <OutagesTable />
     </div>
   </div>
 </template>
@@ -33,9 +33,4 @@ const home = ref({ label: 'Nodes', to: '/' })
 const items = ref([{ label: 'Node Details', to: '#' }])
 </script>
   
-<style lang="scss" scoped>
-.node-interfaces,
-.outages-table {
-  margin-top: 20px;
-}
-</style>
+<style lang="scss" scoped></style>
