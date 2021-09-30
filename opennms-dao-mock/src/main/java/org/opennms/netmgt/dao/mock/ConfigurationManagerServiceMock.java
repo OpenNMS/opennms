@@ -31,8 +31,7 @@ package org.opennms.netmgt.dao.mock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.JAXBException;
 
@@ -127,7 +126,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() throws IOException {
-        return null;
+        return new HashSet<>();
     }
 
     @Override
@@ -137,6 +136,6 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigIds(String configName) throws IOException {
-        return null;
+        return new HashSet<>();
     }
 }

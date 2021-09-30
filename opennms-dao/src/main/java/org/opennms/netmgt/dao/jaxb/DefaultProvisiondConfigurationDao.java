@@ -63,7 +63,7 @@ public class DefaultProvisiondConfigurationDao extends AbstractCmJaxbConfigDao<P
      */
     @Override
     public ProvisiondConfiguration getConfig() throws IOException {
-        return this.loadConfig(this.getDefaultConfigId());
+        return this.getConfig(this.getDefaultConfigId());
     }
 
     /**

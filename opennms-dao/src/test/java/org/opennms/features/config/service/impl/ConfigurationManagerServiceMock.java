@@ -29,6 +29,7 @@
 package org.opennms.features.config.service.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -103,7 +104,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() throws IOException {
-        return null;
+        return new HashSet<>();
     }
 
     @Override
@@ -113,6 +114,6 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigIds(String configName) throws IOException {
-        return null;
+        return new HashSet<>();
     }
 }

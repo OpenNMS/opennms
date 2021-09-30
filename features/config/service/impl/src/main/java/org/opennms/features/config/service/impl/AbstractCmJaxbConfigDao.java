@@ -56,7 +56,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
-    private ConfigurationManagerService configurationManagerService;
+    protected ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
     private String description;
@@ -152,6 +152,21 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
                 return config;
             }
         });
+    }
+
+    /**
+     * It will the config in cache, if nothing found it will load from db.
+     * <b>Please notice that, config can be different in db.</b>
+     * @param configId
+     * @return config
+     */
+    public ENTITY_CLASS getConfig(String configId){
+        // cannot use computeIfAbsent, it will cause IllegalStateException
+        ENTITY_CLASS config = lastKnownEntityMap.get(configId);
+        if (config == null){
+            return this.loadConfig(configId);
+        }
+        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
     }
 
     public void updateConfig(final String configId, String configStr) throws IOException {
