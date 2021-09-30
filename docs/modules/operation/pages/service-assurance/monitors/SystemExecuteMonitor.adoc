@@ -9,10 +9,10 @@ If the banner is not available in the output, the status is determined as down.
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.SystemExecuteMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SystemExecuteMonitor`
 |===
 
 == Configuration and use
@@ -21,13 +21,26 @@ If the banner is not available in the output, the status is determined as down.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter | Description                                                                                               | Default
+| Parameter
+| Description
+| Default
+
 3+|*Required*
-| script  | The system call to run.                                                                               | n/a
+
+| script
+| The system call to run.
+| n/a
+
 3+|*Optional*
-| args    | The arguments to hand over to the system call. It supports variable replacement, see below.               | n/a
-| banner  | A string that is matched against the output of the system-call. If the output contains the banner, the
-              service is determined as UP.                                                                            | n/a
+
+| args
+| The arguments to hand over to the system call.
+It supports variable replacement, see below.
+| n/a
+| banner
+| A string that is matched against the output of the system-call.
+If the output contains the banner, the service is determined as UP.
+| n/a
 |===
 
 The parameter `args` supports variable replacement for the following set of variables.

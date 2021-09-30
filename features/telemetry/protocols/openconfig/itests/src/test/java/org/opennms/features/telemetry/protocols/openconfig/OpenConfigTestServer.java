@@ -30,10 +30,12 @@ package org.opennms.features.telemetry.protocols.openconfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.features.openconfig.proto.gnmi.Gnmi;
 import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
@@ -48,7 +50,7 @@ import io.grpc.stub.StreamObserver;
 
 public class OpenConfigTestServer {
 
-    private static int DEFAULT_SERVER_PORT = 50052;
+    private final int port;
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigTestServer.class);
     private Server server;
@@ -57,10 +59,13 @@ public class OpenConfigTestServer {
     private StreamObserver<Gnmi.SubscribeResponse> gnmiStream;
     private StreamObserver<Gnmi.SubscribeRequest> requestHandler;
 
+    public OpenConfigTestServer(int port) {
+        this.port = port;
+    }
 
     public void start() throws IOException {
 
-        NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(DEFAULT_SERVER_PORT))
+        NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
                 .addService(new TelemetryServer())
                 .addService(new GnmiServer());
         server = serverBuilder.build();
@@ -166,5 +171,16 @@ public class OpenConfigTestServer {
 
     protected void setErrorStream() {
         this.errorStream = true;
+    }
+
+    static int getAvailablePort(final AtomicInteger current, final int max) {
+        while (current.get() < max) {
+            try (final ServerSocket socket = new ServerSocket(current.get())) {
+                return socket.getLocalPort();
+            } catch (final Throwable e) {
+            }
+            current.incrementAndGet();
+        }
+        throw new IllegalStateException("Can't find an available network port");
     }
 }

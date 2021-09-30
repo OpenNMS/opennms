@@ -1,3 +1,13 @@
+opennms-sentinel (28.1.0-1) stable; urgency=medium
+
+  * New minor release. It contains a bunch of bug fixes and enhancements,
+    including a dependency update related to a CVE.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/28.1.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Sep 2021 15:12:00 -0400
+ 
 opennms-sentinel (28.0.2-1) stable; urgency=high
 
   * New minor release. It contains a bunch of bug fixes and enhancements, as

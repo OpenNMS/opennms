@@ -74,17 +74,37 @@ In JMX, access these via `org.apache.cassandra.metrics.DroppedMessage`.
 The number of dropped messages in the different message queues are good indicators whether a cluster can handle its load.
 
 [options="header"]
-[cols="1,2,3"]
+[cols="1,3,2"]
 |===
-| Name               | Stage                  | Description
-| Mutation         | MutationStage        | If a write message is processed after its timeout (write_request_timeout_in_ms), it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
-| Counter_Mutation | MutationStage        | If a write message is processed after its timeout (write_request_timeout_in_ms), it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
-| Read_Repair      | MutationStage        | Times out after write_request_timeout_in_ms.
-| Read             | ReadStage            | Times out after read_request_timeout_in_ms.
-                                                No point in servicing reads after that point since it would have returned an error to the client.
-| Range_Slice      | ReadStage            | Times out after range_request_timeout_in_ms.
-| Request_Response | RequestResponseStage | Times out after request_timeout_in_ms.
-                                                Response was completed and sent back but not before the timeout.
+| Name
+| Description
+| Stage
+
+| Mutation
+| If a write message is processed after its timeout (write_request_timeout_in_ms), it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| MutationStage
+
+| Counter_Mutation
+| If a write message is processed after its timeout (write_request_timeout_in_ms), it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| MutationStage
+
+| Read_Repair
+| Times out after write_request_timeout_in_ms.
+| MutationStage
+
+| Read
+| Times out after read_request_timeout_in_ms.
+No point in servicing reads after that point since it would have returned an error to the client.
+| ReadStage
+
+| Range_Slice
+| Times out after range_request_timeout_in_ms.
+| ReadStage
+
+| Request_Response
+| Times out after request_timeout_in_ms.
+Response was completed and sent back but not before the timeout.
+| RequestResponseStage
 |===
 
 == Thread pools

@@ -267,45 +267,107 @@ That is, missing includes here will still break the build!
 == Tables
 
 Use tables to represent structured information.
-A table is constructed in the following manner:
+In most cases, the "Description" field should appear in the column immediately following the item being described.
+
+Construct tables as follows:
 
 [source]
 ----
-[options="header, %autowidth"]
+[options="header", cols="1,3,1"]
 |===
-| Parameter     | Description                | Required | Default value
-| `myFirstParm` | my first long description  | required | `myDefault`
-| `myScndParm`  | my second long description | required | `myDefault`
+| Parameter
+| Description
+| Default
+
+| myFirstParm
+| my first long description
+| myDefault
+
+| myScndParm
+| my second long description
+| myDefault
 |===
 ----
 
 This is rendered as:
 
-[options="header, %autowidth"]
+[options="header", cols="1,3,1"]
+
 |===
-| Parameter     | Description                | Required | Default value
-| `myFirstParm` | my first long description  | required | `myDefault`
-| `myScndParm`  | my second long description | required | `myDefault`
+| Parameter
+| Description
+| Default
+
+| myFirstParm
+| my first long description
+| myDefault
+
+| myScndParm
+| my second long description
+| myDefault
 |===
 
-NOTE: Please align your columns in the AsciiDoc source for better readability when editing in text view.
-      If you have a very long description, break at 120 characters and align the text to improve source readability.
+With tables that are more than two columns, please use a separate line for each cell's content.
 
-.Example in AsciiDoc source for very long table descriptions
-image::docs/01_long-table-formatting.png[]
+For content that has required and optional elements, use the following format:
 
-this is rendered as:
-
-[options="header, %autowidth"]
+[source]
+----
+[options="header", cols="1,3,1"]
 |===
-| Parameter              | Description                                                                                 | Required | Default value
-| `basic-authentication` | Authentication credentials to perform basic authentication.
-                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945] section 11.1,
-                           without the Base64 encoding part. That's: be a string made of the concatenation of: +
-                           1- the user ID; +
-                           2- a colon; +
-                           3- the password. +
-                          `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-`
-| `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
-                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| myFirstParm
+| my first long description
+| myDefault
+
+| myScndParm
+| my second long description
+| myDefault
+
+3+| *Optional*
+
+| mythrdParm
+| my third long description
+| myDefault
+
+| myfourthParm
+| my fourth long description
+| myDefault
+
+|===
+----
+
+This renders as follows:
+
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| myFirstParm
+| my first long description
+| myDefault
+
+| myScndParm
+| my second long description
+| myDefault
+
+3+| *Optional*
+
+| mythrdParm
+| my third long description
+| myDefault
+
+| myfourthParm
+| my fourth long description
+| myDefault
+
 |===

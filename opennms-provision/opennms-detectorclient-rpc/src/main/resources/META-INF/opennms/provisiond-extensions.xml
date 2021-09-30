@@ -11,6 +11,5 @@
        ">
 
     <import resource="classpath:/META-INF/opennms/applicationContext-rpc-detect.xml" />
-    <import resource="classpath:/META-INF/opennms/applicationContext-rpc-dns.xml" />
 
 </beans>
