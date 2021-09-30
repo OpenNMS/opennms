@@ -1,7 +1,7 @@
 import { v2 } from './axiosInstances'
 import {
-    NodeApiResponse,
     QueryParameters,
+    AlarmApiResponse
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 

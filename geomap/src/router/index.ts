@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Map from "../views/Map.vue";
-import MapNodes from "../views/map/MapNodes.vue";
-import MapAlarms from "../views/map/MapAlarms.vue";
+import MapNodes from "../views/map/MapNodesGrid.vue";
+import MapAlarms from "../views/map/MapAlarmsGrid.vue";
 
 const routes = [
   {

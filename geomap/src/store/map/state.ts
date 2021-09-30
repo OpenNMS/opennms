@@ -3,7 +3,7 @@ import { Node, Alarm } from '@/types'
 export interface State {
     nodesWithCoordinates : Node[]
     alarms: Alarm[]
-    interestedNodesID: number[]
+    interestedNodesID: string[]
     edges: [number, number][]
 }
 
