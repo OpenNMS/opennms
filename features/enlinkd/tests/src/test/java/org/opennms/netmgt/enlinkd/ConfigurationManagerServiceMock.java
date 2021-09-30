@@ -93,7 +93,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             return (Optional<ENTITY>) Optional.of(config);
         try {
             InputStream in = EnLinkdBuilderITCase.class.getResourceAsStream("/mock/etc/enlinkd-configuration.xml");
-            //InputStream in = this.getClass().getClassLoader().getResourceAsStream("etc/discovery-configuration.xml");
+
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             System.out.println(xmlStr);
             ValidateUsingConverter<EnlinkdConfiguration> convert = new ValidateUsingConverter(EnlinkdConfiguration.class);
