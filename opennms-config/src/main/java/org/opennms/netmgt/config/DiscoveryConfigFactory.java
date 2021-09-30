@@ -100,7 +100,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
 
     public DiscoveryConfigFactory() throws IOException {
         super(DiscoveryConfiguration.class, "discovery Configuration");
-        // reload move to postConstruct
     }
 
     public DiscoveryConfigFactory (DiscoveryConfiguration config) {
@@ -111,7 +110,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
     @PostConstruct
     public void postConstruct() throws IOException {
         reload();
-        System.out.println(configurationManagerService);
     }
 
     public Lock getReadLock() {
@@ -142,26 +140,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
         } catch (final Throwable e) {
             throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
         }
-       /* try {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
-            LOG.debug("reload: config file path {}", cfgFile.getPath());
-            final FileSystemResource resource = new FileSystemResource(cfgFile);
-            m_config = JaxbUtils.unmarshal(DiscoveryConfiguration.class, resource);
-
-            try {
-                clearUrlSpecifics();
-                clearExcludeRanges();
-                getInitialSleepTime();
-                getRestartSleepTime();
-                getIntraPacketDelay();
-                getConfiguredAddresses();
-            } catch (final Throwable e) {
-                throw new IOException("An error occurred while validating the configuration: " + e.getMessage(), e);
-            }
-        } catch (IOException e) {
-            LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
-            throw e;
-        }*/
     }
 
     /**
@@ -175,26 +153,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
     }
 
     /**
-     * <p>saveXml</p>
-     *
-     * @param xml a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-/*   protected void saveXml(final String xml) throws IOException {
-        if (xml != null) {
-            Writer fileWriter = null;
-            getWriteLock().lock();
-            try {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), StandardCharsets.UTF_8);
-                fileWriter.write(xml);
-                fileWriter.flush();
-            } finally {
-                if (fileWriter != null ) IOUtils.closeQuietly(fileWriter);
-                getWriteLock().unlock();
-            }
-        }
-    }*/
-    /**
      * <p>saveConfiguration</p>
      *
      * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
@@ -202,19 +160,6 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      */
   public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
       this.updateConfig(configuration);
-       /* getWriteLock().lock();
-        try {
-            // marshal to a string first, then write the string to the file. This
-            // way the original config
-            // isn't lost if the XML from the marshal is hosed.
-            final StringWriter stringWriter = new StringWriter();
-            JaxbUtils.marshal(configuration, stringWriter);
-            final String xml = stringWriter.toString();
-            LOG.debug("saving configuration...");
-            saveXml(xml);
-        } finally {
-            getWriteLock().unlock();
-        }*/
     }
     /**
      * <pre>
