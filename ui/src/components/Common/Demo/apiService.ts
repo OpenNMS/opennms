@@ -1,22 +1,17 @@
 import axios from 'axios'
+import { axiosAuth } from './apiIinterceptor'
+
 
 let url = 'src/components/Common/Demo/MockupData/nodeData.json'
 let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
 let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
 let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
-let getProvisionD = 'http://20.102.41.29:8980/opennms/rest/cm/provisiond/default'
+let getProvisionD = '/opennms/rest/cm/provisiond/default'
 const nodeData = axios.get(url)
 const apiTypes = axios.get(typesUrl)
 const apiPeriod = axios.get(periodUrl)
 const  apiAdvDropdown = axios.get(advDropdownUrl)
 
-const apigetProvisionD =  axios.get(getProvisionD, {
-    headers: { "Authorization": "Basic " + btoa("admin:admin") }
-  }).then(function(response) {
-    console.log('Authenticated');
-    return response;
-  }).catch(function(error) {
-    console.log('Error on Authentication');
-  });
+const apigetProvisionD =  axiosAuth.get(getProvisionD)
 
   export { nodeData, apiTypes, apiPeriod, apiAdvDropdown, apigetProvisionD }
