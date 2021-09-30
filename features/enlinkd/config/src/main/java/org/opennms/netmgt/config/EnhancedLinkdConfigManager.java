@@ -57,11 +57,11 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *
-     //* @param stream a {@link java.io.InputStream} object.
+     * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
-        super(EnlinkdConfiguration.class ,"Enlinkd-Configuratio");
+        super(EnlinkdConfiguration.class ,"Enlinkd-Configuration");
     }
 
     public Lock getReadLock() {
@@ -178,13 +178,4 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
         if (m_config.getDiscoveryBridgeThreads() != null) return m_config.getDiscoveryBridgeThreads();
         return 1;
     }
-
-    /**
-     * <p>saveXml</p>
-     *
-     * @param xml a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-
-    
 }
