@@ -139,7 +139,7 @@ function submit() {
   })
   Promise.all(respCollection).then(function (result) {
     result.forEach(r => {
-      if (r == false) {
+      if (r === false) {
         numFail = numFail + 1;
       }
     })

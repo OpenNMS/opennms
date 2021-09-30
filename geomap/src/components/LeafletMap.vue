@@ -13,7 +13,7 @@
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
-        >
+            >
         <l-popup> {{ node.label }} </l-popup>
         </l-marker>
         

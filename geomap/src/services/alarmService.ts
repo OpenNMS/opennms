@@ -38,9 +38,7 @@ const modifyAlarm = async (alarmId: string, alarmQueryParameters: AlarmQueryPara
     }
 
     try {
-        console.log("endpointWithQueryString =" + endpointWithQueryString);
         const resp = await rest.put(endpointWithQueryString, "",)
-        console.log("response = " + JSON.stringify(resp))
         return resp.data
     } catch (err) {
         return false
