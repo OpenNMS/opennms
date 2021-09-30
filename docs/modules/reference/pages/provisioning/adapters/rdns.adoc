@@ -1,5 +1,5 @@
-[[adapter-Rdns]]
-= RDNS Adapter
+[[adapter-rdns]]
+= Reverse DNS
 
 The DDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 

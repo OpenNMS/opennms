@@ -1,5 +1,5 @@
 [[adapter-ddns]]
-= DDNS Adapter
+= Dynamic DNS
 
 The DDNS adapter uses the dynamic DNS protocol to send updated A/AAAA DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 
