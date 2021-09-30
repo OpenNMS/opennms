@@ -142,8 +142,6 @@ public interface EnhancedLinkdConfig {
      *
      * @throws java.io.IOException if any.
      */
-    //void save() throws IOException;
-
     /**
      * <p>getConfiguration</p>
      *
