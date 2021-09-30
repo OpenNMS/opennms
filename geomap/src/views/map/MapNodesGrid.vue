@@ -11,7 +11,7 @@
       <ag-grid-vue
         style="width: 100%; height: 600px"
         class="ag-theme-alpine"
-        rowSelection="multiple"
+        rowSelection="single"
         :columnDefs="columnDefs"
         @grid-ready="onGridReady"
         :rowData="rowData"
@@ -73,8 +73,7 @@ function onGridReady(params: any) {
 
 watch(
   () => interestedNodesID.value,
-  (newValue, oldValue) => {
-    console.log("MapNodes page. I'm changed from " + oldValue + " to " + newValue)
+  () => {
     gridApi.setRowData(
       getGridRowDataFromInterestedNodes()
     );

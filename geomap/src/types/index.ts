@@ -28,7 +28,7 @@ export interface MapNode {
 export interface Alarm {
   id: string
   severity: string
-  nodeId: number
+  nodeId: string
   nodeLabel: string
   uei: string
   count: number
@@ -114,4 +114,15 @@ export interface SortProps {
   rows: Number
   sortField: string
   sortOrder: 1 | -1
+}
+
+export interface AlarmQueryParameters {
+  ack?: boolean
+  clear?: boolean
+  escalate?: boolean
+}
+
+export interface AlarmModificationQueryVariable {
+  pathVariable: string
+  queryParameters:  AlarmQueryParameters
 }
