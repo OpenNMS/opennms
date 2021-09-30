@@ -148,7 +148,7 @@ function submit() {
     setTimeout(() => {
       GStore.flashMessage = ''
       window.location.reload()
-    }, 3000)  
+    }, 4000)  
   })
 }
 
@@ -271,7 +271,7 @@ const columnDefs = ref([
 
 #flashMessage {
   animation-name: bluefade;
-  animation-duration: 3s;
+  animation-duration: 4s;
   text-align: center;
 }
 .button-group {
