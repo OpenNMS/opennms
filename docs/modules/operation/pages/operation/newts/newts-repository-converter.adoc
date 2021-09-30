@@ -1,5 +1,5 @@
 
-RRD/JRB to Newts Migration Utility
+= RRD/JRB to Newts Migration Utility
 
 Use this utility to migrate existing RRDTool- or JRobin-based data to a Newts cluster.
 The migration process traverses the `share/rrd` directory and its subdirectories, reads the data and properties files, and persists this data to Newts.

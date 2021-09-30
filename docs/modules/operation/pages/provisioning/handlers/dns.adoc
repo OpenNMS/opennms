@@ -1,0 +1,81 @@
+
+[[dns-handler]]
+= DNS Handler
+
+The DNS handler requests a zone transfer (AXFR) from a DNS server.
+The A and AAAA records are retrieved and used to build an import requisition.
+This is useful for organizations that use DNS, possibly coupled with an IP management tool, as the database of record for nodes in the network.
+So, rather than ping sweeping the network or entering the nodes manually into the {page-component-title} Requisition UI, you can manage nodes via one or more DNS servers.
+
+The format of the URL for this protocol handler is: `dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]`
+
+DNS Import Examples:
+
+== Simple
+
+[source]
+----
+dns://my-dns-server/myzone.com
+----
+
+This URL imports all A and AAAA records from the zone `myzone.com` on the host `my-dns-server` via port 53 (default DNS port).
+Since the foreign source is not specified, it will be added to the default requisition.
+
+== Use a regular expression filter
+
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por-.*
+----
+
+This URL imports all nodes from the same server and zone, but only imports the nodes in the zone that match the regular expression `^port-.*`.
+The matching nodes will be assigned to a requisition named 'portland'.
+If your expression requires URL encoding, for example you need to use a `?` in the expression, it must be properly encoded.
+
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
+----
+
+== Location
+
+You can use the `location` parameter to assign a single location to all nodes in this requisition.
+This would apply only if you are using Minions in your network.
+
+[source]
+----
+dns://my-dns-server/myzone.com/portland/?location=Raleigh
+----
+
+By prefixing with a `~`, you can specify a URL-encoded regular expression to determine the location based on the host entries.
+The following example derives the location based on the subdomain.
+This example uses a URL-encoded regular expression `^(?:.*\.|)(.*?)\.hs-fulda\.de\.$` with exactly one capturing group containing the subdomain.
+
+[source]
+----
+dns://my-dns-server/hs-fulda.de/?location=~%5E%28%3F%3A.%2A%5C.%7C%29%28.%2A%3F%29%5C.hs-fulda%5C.de%5C.%24
+----
+
+This will associate nodes for the host entries `foo.e46.hs-fulda.de.` and `bar.e46.hs-fulda.de.` to the location `e46` while hosts like `aaa.g51.hs-fulda.de` and `bbb.g51.hs-fulda.de` will be assigned location `g51`.
+
+TIP: You can use online tools like https://www.urlencoder.org to encode your parameters.
+
+== DNS setup
+
+The DNS import handler performs an AXFR zone transfer request to collect DNS resource records for use in provisioning nodes.
+Zone transfers are designed for zone replication between DNS servers.
+You may want to provide additional security mechanisms to protect your DNS infrastructure.
+At a minimum, you should always restrict AXFR requests to only trusted IP addresses and/or use a hidden, read-only secondary DNS server for {page-component-title}.
+
+One suggestion is to set up a secondary DNS server on your {page-component-title} and configure the rest of the DNS servers to allow transfers to your {page-component-title} server.
+This allows you to point the DNS import handler to `localhost`.
+
+NOTE: There is no encryption or authentication available for AXFR transfer requests.
+Transaction signatures (TSIG) to prevent IP spoofing attempts are currently not supported by {page-component-title}.
+
+A quick way to test if zone transfers are working is:
+
+[source, console]
+----
+dig -t AXFR @<dnsServer> <zone>
+----

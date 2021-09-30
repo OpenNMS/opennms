@@ -5,7 +5,7 @@
         "node": "current",
         "browsers": [ "last 2 versions", "safari >= 7", "> 5%" ]
       },
-      "modules": "umd",
+      "modules": "auto",
       "useBuiltIns": "usage",
       "corejs": 3
     }],

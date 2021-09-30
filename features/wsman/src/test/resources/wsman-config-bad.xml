@@ -1,0 +1,6 @@
+<wsman-config xmlns="http://xmlns.opennms.org/xsd/config/wsman" retry="2" timeout="1500" gss-auth="true">
+  <definition ssl="false" port="5985" path="ws-man" username="Administrator" password="!Administrator#" product-vendor="Microsoft" product-version="OS: Vista">
+    blah blah some extra text nodes hello hi there
+    <specific>172.23.1.2</specific>
+  </definition>
+</wsman-config>

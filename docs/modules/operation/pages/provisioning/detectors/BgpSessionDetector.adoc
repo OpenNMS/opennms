@@ -12,12 +12,17 @@ The configured BGP peer session is detected when the return value is in the vali
 | Implementation | `org.opennms.netmgt.provision.detector.snmp.BgpSessionDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the BGP session detector
-
-[options="header, %autowidth"]
+.Required parameters for the BGP session detector
+[options="header, autowidth"]
+[cols="1,4,1"]
 |===
-| Parameter        | Description                       | Required | Default value
-| `bgpPeerIp`      | The IPv4 peer ID to query for.    | required | `-`
+| Parameter
+| Description
+| Default
+
+| bgpPeerIp
+| The IPv4 peer ID to query.
+| none
 |===

@@ -21,10 +21,10 @@ The VMware integration populates the following asset fields via Provisiond:
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.VmwareMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.VmwareMonitor`
 |===
 
 == Configuration and use
@@ -33,10 +33,21 @@ The VMware integration populates the following asset fields via Provisiond:
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter       | Description                                                     | Default
-| retry         | Number of retries before the service is marked as down.                                                           | 0
-| ignoreStandBy | Treat power state standBy as up.                                                                                | false
-| reportAlarms  | Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray). | n/a
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+
+| ignoreStandBy
+| Treat power state standBy as up.
+| false
+
+| reportAlarms
+| Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray).
+| n/a
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

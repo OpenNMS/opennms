@@ -64,11 +64,14 @@ aliases:
         "release-"*)
            MINION_IMAGE_VERSION="release-candidate"
           ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
         "develop")
            MINION_IMAGE_VERSION="bleeding"
           ;;
         *)
-          MINION_IMAGE_VERSION=b<< pipeline.number >>
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
@@ -88,6 +91,7 @@ aliases:
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
       docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -443,7 +447,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -458,8 +462,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -641,6 +644,21 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
+      - smoke-test-flaky:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
       - smoke-test-minion:
           requires:
             - horizon-rpm-build
@@ -736,6 +754,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -757,6 +776,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -770,6 +790,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -786,6 +807,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -892,7 +914,6 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-
       - run:
           name: Collect Artifacts
           command: |
@@ -1298,7 +1319,7 @@ jobs:
       - save-sonar-cache
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1307,6 +1328,17 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: core
+  smoke-test-flaky:
+    executor: smoke-test-executor
+    parallelism: 5
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
