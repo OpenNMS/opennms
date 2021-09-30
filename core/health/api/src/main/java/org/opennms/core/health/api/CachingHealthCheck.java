@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,33 +28,7 @@
 
 package org.opennms.core.health.api;
 
-import java.time.Duration;
-
 /**
- * A Context object to store all parameters required by the {@link HealthCheckService}
- * to calculate the overall {@link Health}.
- *
- * @author mvrueden
+ * A health check that caches responses.
  */
-public class Context {
-    // timout for executing a health check
-    private long timeout; // ms
-    // the maximum age that cached healthiness responses may have
-    private Duration maxAge = Duration.ZERO;
-
-    public void setTimeout(long timeoutInMs) {
-        this.timeout = timeoutInMs;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setMaxAge(Duration value) {
-        this.maxAge = value;
-    }
-
-    public Duration getMaxAge() {
-        return maxAge;
-    }
-}
+public interface CachingHealthCheck extends HealthCheck, HealthCheckResponseCache {}

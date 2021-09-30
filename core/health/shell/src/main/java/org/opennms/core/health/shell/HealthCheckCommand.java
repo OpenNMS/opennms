@@ -28,6 +28,7 @@
 
 package org.opennms.core.health.shell;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,6 +62,9 @@ public class HealthCheckCommand implements Action {
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
     public long timeout = 5L * 1000L;
 
+    @Option(name = "--maxAge", description = "Maximum age of cached health check responses in milliseconds. Defaults to 90,000.")
+    public long maxAgeMs = 90000;
+
     @Option(name = "--tag", multiValued = true, description = "Tags of the health checks that are executed. If unset then all checks are executed.")
     @Completion(HealthCheckTagCompleter.class)
     public List<String> tags = new ArrayList<>();
@@ -80,6 +84,7 @@ public class HealthCheckCommand implements Action {
         // Perform check
         final Context context = new Context();
         context.setTimeout(timeout);
+        context.setMaxAge(Duration.ofMillis(maxAgeMs));
         final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
         final Health health = future.get();
 
@@ -110,7 +115,7 @@ public class HealthCheckCommand implements Action {
         final CompletableFuture<Health> future = healthCheckService
                 .performAsyncHealthCheck(context,
                         healthCheck -> System.out.print(String.format(descFormat, healthCheck.getDescription())),
-                        response -> {
+                        (healthCheck, response) -> {
                             final Status status = response.getStatus();
                             final Color statusColor = determineColor(status);
                             final String statusText = String.format(statusFormat, Colorizer.colorize(status.name(), statusColor));
