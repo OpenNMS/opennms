@@ -14,4 +14,8 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
+* Provisioning
+** xref:provisioning/adapters/introduction.adoc[]
+*** xref:provisioning/adapters/ddns.adoc[]
+*** xref:provisioning/adapters/rdns.adoc[]
 * xref:glossary.adoc[]
