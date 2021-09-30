@@ -50,11 +50,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, toRef } from 'vue'
+import { onMounted, reactive, toRef, ref } from 'vue'
 import InputNumber from '../Common/InputNumber.vue'
 import Button from '../Common/Button.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, minValue, numeric, maxValue } from '@vuelidate/validators'
+import { apigetProvisionD } from '../Common/Demo/apiService';
+
 
 const threadpool = reactive({
   import: 0,
@@ -70,19 +72,34 @@ const rules = {
   write: { required, numeric, minValue: minValue(0), maxValue: maxValue(10) }
 };
 
-const validationVar = useVuelidate(rules, {
+let validationVar = useVuelidate(rules, {
   import: toRef(threadpool, "import"),
   scan: toRef(threadpool, "scan"),
   rescan: toRef(threadpool, "rescan"),
   write: toRef(threadpool, "write")
 });
-
+let mainObj= ref('');
 const onSave = () => {  
     threadpool.import = validationVar.value.import.$model;
     threadpool.scan = validationVar.value.scan.$model;
     threadpool.rescan = validationVar.value.rescan.$model;
     threadpool.write = validationVar.value.write.$model; 
 }
+onMounted(async () => {
+    //service call for data
+    await apigetProvisionD.then((response: any) => {
+        //data come form api
+        if (response.status == 200) {
+            validationVar.value.import.$model = response.data.importThreads;
+            validationVar.value.scan.$model = response.data.scanThreads;
+            validationVar.value.rescan.$model = response.data.rescanThreads;
+            validationVar.value.write.$model = response.data.writeThreads; 
+            console.log('ProvisionD API data', response);
+        }
+    }).catch((err) => {
+        console.error("error ==>", err);
+    });
+})
 </script>
 
 <style lang="scss" scoped>
