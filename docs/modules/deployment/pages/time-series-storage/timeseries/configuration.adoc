@@ -1,9 +1,7 @@
 
-= Configuration
+= Enable Time Series Integration Layer
 
-== Enabling Time Series Integration Layer
-
-{page-component-title} can be configured to use the Time Series Integration Layer by setting the following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
+Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 
 [source, properties]
 ----
@@ -34,11 +32,9 @@ To this end, set the following property in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, {page-component-title} begins persisting metrics using the Time Series Integration Layer when restarted.
+With these set, upon restart, {page-component-title} begins persisting metrics using the Time Series Integration Layer.
 
-The next section provides additional configuration options.
-
-== Configuration reference
+== Additional configuration options
 
 Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure and tune the Time Series Integration Layer.
 
@@ -50,7 +46,8 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | Default
 
 | org.opennms.timeseries.config.ring_buffer_size
-| Maximum number of records that can be held in the ring buffer. Must be a power of two.
+| Maximum number of records that can be held in the ring buffer.
+Must be a power of two.
 | 8192
 
 | org.opennms.timeseries.config.writer_threads
@@ -58,7 +55,8 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | 16
 
 | org.opennms.timeseries.query.minimum_step
-| Minimum step size in milliseconds. Used to prevent large queries.
+| Minimum step size in milliseconds.
+Used to prevent large queries.
 | 300000
 
 | org.opennms.timeseries.query.interval_divider
@@ -66,11 +64,14 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | 2
 
 | org.opennms.timeseries.query.heartbeat
-| Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your largest collection interval.
+| Duration in milliseconds.
+Used when no heartbeat is specified.
+Should generally be 1.5x your largest collection interval.
 | 450000
 
 | org.opennms.timeseries.query.parallelism
-| Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
+| Maximum number of threads that can be used to compute aggregates.
+Defaults to the number of available cores.
 | Number of cores
 
 | cache.timeseriesPersisterMetaTagCache.expireAfterRead
@@ -131,7 +132,7 @@ However, note that the memory the ring buffer uses is reserved, and larger value
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
-This might not be sufficient if you use the data outside of {page-component-title} as well.
+This might not be sufficient if you also use the data outside of {page-component-title}.
 Configure additional meta tags via a `.properties file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
 The configuration of the tags has the following form:

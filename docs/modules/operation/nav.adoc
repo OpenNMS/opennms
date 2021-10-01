@@ -276,14 +276,5 @@
 ** xref:admin/ssl/ssl.adoc[]
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/geocoder.adoc[]
-
 ** xref:admin/config-tester.adoc[]
-** xref:admin/newts/introduction.adoc[]
-*** xref:admin/newts/configuration.adoc[]
-*** xref:admin/newts/cassandra-jmx.adoc[]
-*** xref:admin/newts/cassandra-newts-jmx.adoc[]
-*** xref:admin/newts/newts-repository-converter.adoc[]
-
-** xref:admin/timeseries/introduction.adoc[]
-*** xref:admin/timeseries/configuration.adoc[]
 

@@ -1,4 +1,5 @@
 
+[[newts-monitor]]
 = Newts Monitoring
 
 This section describes the metrics {page-component-title} collects for monitoring the Newts keyspace from `org.apache.cassandra.metrics.Keyspace` on an Cassandra node.

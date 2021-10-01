@@ -1,4 +1,5 @@
 
+[[cassandra-monitor]]
 = Cassandra Monitoring
 
 This section describes some of the metrics {page-component-title} collects from a Cassandra cluster.
