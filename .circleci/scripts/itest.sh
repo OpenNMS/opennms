@@ -57,9 +57,9 @@ sudo killall -9 apt || true && \
                 debconf-utils
 
 # limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
-deb http://debian.opennms.org stable main' | sudo tee /etc/apt/sources.list
+echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted
+deb http://debian.opennms.org stable main" | sudo tee /etc/apt/sources.list
 
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
