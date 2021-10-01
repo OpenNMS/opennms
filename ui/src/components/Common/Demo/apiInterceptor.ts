@@ -1,9 +1,10 @@
 import axios from 'axios'
+import {BASE_REST_URL, BASE_REST_AUTH} from '../../../../devConfig'
 
 export const axiosAuth = axios.create();
 
-axiosAuth.defaults.baseURL = 'http://20.102.41.29:8980';
-axiosAuth.defaults.headers.common['Authorization'] = "Basic " + btoa("admin:admin");
+axiosAuth.defaults.baseURL = BASE_REST_URL
+axiosAuth.defaults.headers.common['Authorization'] = "Basic " + BASE_REST_AUTH
 
 axiosAuth.interceptors.request.use(function (config) {
     return config;
