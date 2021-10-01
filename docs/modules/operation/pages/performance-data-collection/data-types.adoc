@@ -37,7 +37,7 @@ The OctetString type represents arbitrary binary or textual data presented as a 
 == Opaque
 
 The Opaque type is provided solely for backward-compatibility.
-Do not use it for newly-defined object types.
+Do not use it for newly defined object types.
 
 == String
 
