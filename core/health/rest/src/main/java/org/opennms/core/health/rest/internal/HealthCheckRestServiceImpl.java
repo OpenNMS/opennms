@@ -29,23 +29,22 @@
 package org.opennms.core.health.rest.internal;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.rest.HealthCheckRestService;
+
+import io.vavr.control.Either;
 
 public class HealthCheckRestServiceImpl implements HealthCheckRestService {
 
@@ -61,8 +60,11 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     @Override
     public Response probeHealth(int timeoutInMs, int maxAgeMs, UriInfo uriInfo) {
         List<String> tags = uriInfo.getQueryParameters().get("tag");
-        final Health health = getHealthInternally(timeoutInMs, maxAgeMs, tags);
-        if (health.isSuccess()) {
+        var isSuccess = getHealthInternally(timeoutInMs, maxAgeMs, tags).fold(
+                errorMessage -> false,
+                health -> health.isSuccess()
+        );
+        if (isSuccess) {
             return Response.ok()
                     .header("Health", SUCCESS_MESSAGE)
                     .entity(SUCCESS_MESSAGE)
@@ -75,46 +77,52 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response getHealth(int timeoutInMs, int maxAgeMs, UriInfo uriInfo){
+    public Response getHealth(int timeoutInMs, int maxAgeMs, UriInfo uriInfo) {
         List<String> tags = uriInfo.getQueryParameters().get("tag");
-        final Health health = getHealthInternally(timeoutInMs, maxAgeMs, tags);
-
-        // Create response object
-        final JSONArray jsonResponseArray = new JSONArray();
-        for (var pair : health.getResponses()) {
-            final JSONObject eachJsonResponse = new JSONObject();
-            eachJsonResponse.put("status", pair.getRight().getStatus().name());
-            eachJsonResponse.put("description", pair.getLeft().getDescription());
-            eachJsonResponse.put("message", pair.getRight().getMessage());
-            jsonResponseArray.put(eachJsonResponse);
-        }
-        final JSONObject jsonHealth = new JSONObject();
-        jsonHealth.put("healthy", health.isSuccess());
-        jsonHealth.put("errorMessage", health.getErrorMessage());
-        jsonHealth.put("responses", jsonResponseArray);
+        var flagAndResponse = getHealthInternally(timeoutInMs, maxAgeMs, tags).fold(
+                errorMessage -> {
+                    final JSONObject jsonHealth = new JSONObject();
+                    final JSONArray jsonResponseArray = new JSONArray();
+                    jsonHealth.put("healthy", false);
+                    jsonHealth.put("errorMessage", errorMessage);
+                    jsonHealth.put("responses", jsonResponseArray);
+                    return Pair.of(false, jsonHealth);
+                },
+                health -> {
+                    final JSONObject jsonHealth = new JSONObject();
+                    final JSONArray jsonResponseArray = new JSONArray();
+                    jsonHealth.put("healthy", health.isSuccess());
+                    jsonHealth.put("errorMessage", (String) null);
+                    jsonHealth.put("responses", jsonResponseArray);
+                    for (var pair : health.getResponses()) {
+                        final JSONObject eachJsonResponse = new JSONObject();
+                        eachJsonResponse.put("status", pair.getRight().getStatus().name());
+                        eachJsonResponse.put("description", pair.getLeft().getDescription());
+                        eachJsonResponse.put("message", pair.getRight().getMessage());
+                        jsonResponseArray.put(eachJsonResponse);
+                    }
+                    return Pair.of(health.isSuccess(), jsonHealth);
+                }
+        );
 
         // Return response
         return Response.ok()
-                .header("Health", health.isSuccess() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
-                .entity(jsonHealth.toString())
+                .header("Health", flagAndResponse.getLeft() ? SUCCESS_MESSAGE : ERROR_MESSAGE)
+                .entity(flagAndResponse.getRight().toString())
                 .build();
     }
 
-    private Health getHealthInternally(int timeoutInMs, int maxAgeMs, List<String> tags){
-        try {
-            final Context context = new Context();
-            context.setTimeout(timeoutInMs);
-            context.setMaxAge(Duration.ofMillis(maxAgeMs));
-            final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
-                    context,
-                    healthCheck -> {},
-                    (healthCheck, response) -> {},
-                    tags
-            );
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    private Either<String, Health> getHealthInternally(int timeoutInMs, int maxAgeMs, List<String> tags) {
+        final Context context = new Context();
+        context.setTimeout(timeoutInMs);
+        context.setMaxAge(Duration.ofMillis(maxAgeMs));
+        return healthCheckService.performAsyncHealthCheck(context, null, tags).map(f -> {
+            try {
+                return f.toCompletableFuture().get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

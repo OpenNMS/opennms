@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,46 +28,25 @@
 
 package org.opennms.core.health.api;
 
-/**
- * The response of a health check.
- */
-public class Response {
+import static org.hamcrest.MatcherAssert.assertThat;
 
-    public static Response UNKNOWN = new Response(Status.Unknown);
-    public static Response SUCCESS = new Response(Status.Success);
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    // The status
-    private final Status status;
+import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-    // An optional (error) message
-    private final String message;
+public class HealthTest {
 
-    public Response(Status status) {
-        this(status, null);
-    }
-
-    public Response(Throwable ex) {
-        this(Status.Failure, ex.getMessage());
-    }
-
-    public Response(Status status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    public boolean isSuccess() {
-        return status == Status.Success;
-    }
-
-    public boolean isFailure() {
-        return !isSuccess();
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Status getStatus() {
-        return status;
+    @Test
+    public void findsWorst() {
+        var pairs = Stream.of(Status.values()).map(s -> Pair.<HealthCheck, Response>of(null, new Response(s))).collect(Collectors.toList());
+        var h1 = new Health(pairs).getWorst();
+        assertThat(h1.get().getRight().getStatus(), Matchers.is(Status.values()[Status.values().length - 1]));
+        Collections.reverse(pairs);
+        var h2 = new Health(pairs).getWorst();
+        assertThat(h2.get().getRight().getStatus(), Matchers.is(Status.values()[Status.values().length - 1]));
     }
 }
