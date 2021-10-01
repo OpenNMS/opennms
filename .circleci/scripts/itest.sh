@@ -62,11 +62,11 @@ deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
 deb http://debian.opennms.org stable main' | sudo tee /etc/apt/sources.list
 
 # install some keys
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
 
 # add the R repository
-sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 sudo apt-get update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
