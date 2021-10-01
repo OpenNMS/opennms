@@ -20,4 +20,5 @@
 *** xref:provisioning/adapters/hardware-inventory.adoc[]
 *** xref:provisioning/adapters/rdns.adoc[]
 *** xref:provisioning/adapters/snmp-asset.adoc[]
+*** xref:provisioning/adapters/wsman-asset.adoc[]
 * xref:glossary.adoc[]
