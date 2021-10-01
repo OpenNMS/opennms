@@ -149,6 +149,7 @@
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
 ** xref:performance-data-collection/collectd/configuration.adoc[]
+** xref:performance-data-collection/data-types.adoc[]
 ** xref:performance-data-collection/resource-types.adoc[]
 ** xref:performance-data-collection/collectors/collectors.adoc[]
 *** xref:performance-data-collection/collectors/http.adoc[]
