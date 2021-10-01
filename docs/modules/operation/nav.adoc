@@ -44,7 +44,6 @@
 ** xref:provisioning/integration.adoc[]
 ** xref:provisioning/scalability.adoc[]
 ** xref:provisioning/fine-grained.adoc[]
-** xref:provisioning/hardware-inventory.adoc[]
 ** xref:provisioning/snmp-profile.adoc[]
 
 * xref:thresholds/thresholding.adoc[]
