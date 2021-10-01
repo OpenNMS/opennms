@@ -16,10 +16,10 @@ IMPORTANT: This monitor does not check the status of the load-balanced service i
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor`
 |===
 
 == Configuration and use
@@ -28,11 +28,21 @@ IMPORTANT: This monitor does not check the status of the load-balanced service i
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter     | Description                                                     |Default
+| Parameter
+| Description
+| Default
+
 3+|*Required*
-| group-name | The name of the server group to check.                                        | n/a
+
+| group-name
+| The name of the server group to check.
+| n/a
+
 3+|*Optional*
-| group-health| The percentage of active servers vs. total servers of the group, as an integer.  | 60
+
+| group-health
+| The percentage of active servers versus total servers of the group, as an integer.
+| 60
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -51,7 +61,7 @@ Use a configuration like the following in `poller-configuration.xml`:
    <parameter key="group-health" value="70" />
 </service>
 
-<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor” />
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
 ----
 
 == Details about the used SNMP checks

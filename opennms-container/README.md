@@ -45,7 +45,7 @@ The build can be customized with `--build-arg key=value`.
 | `BUILD_DATE`         | Date the image is created in [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6) format | optional | `1970-01-01T00:00:00+0000`
 | `VERSION`            | Label for version number                                                      | optional | `-`
 | `SOURCE`             | Label for source code URL                                                     | optional | `-`
-| `REVISION`           | Label for revision, e.g. `git describe --always`                              | optional | `-`
+| `REVISION`           | Descriptive/unique label for the revision                                     | optional | `-`
 | `BUILD_JOB_ID`       | Label for build job from CI/CD                                                | optional | `-`
 | `BUILD_NUMBER`       | Label for build number from CI/CD                                             | optional | `-`
 | `BUILD_URL`          | Label for build URL from CI/CD                                                | optional | `-`

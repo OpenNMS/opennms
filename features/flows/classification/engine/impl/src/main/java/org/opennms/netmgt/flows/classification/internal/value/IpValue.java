@@ -28,36 +28,30 @@
 
 package org.opennms.netmgt.flows.classification.internal.value;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.flows.classification.IpAddr;
+import org.opennms.netmgt.flows.classification.internal.decision.Bound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+public class IpValue implements RuleValue<IpAddr, IpValue> {
 
-public class IpValue {
-
-    private static final Logger LOG = LoggerFactory.getLogger(IpValue.class);
-    private final List<IPAddressRange> ranges = Lists.newArrayList();
-
-    public IpValue(final String input) {
-        this(new StringValue(input));
+    public static IpValue of(final String input) {
+        return of(new StringValue(input));
     }
 
-    public IpValue(final StringValue input) {
+    public static IpValue of(final StringValue input) {
         Objects.requireNonNull(input);
-        parse(input);
-    }
-
-    private void parse(final StringValue input) {
         if (input.isNullOrEmpty()) {
             throw new IllegalArgumentException("input may not be null or empty");
         }
         final List<StringValue> actualValues = input.splitBy(",");
+        List<IpRange> ranges = new ArrayList<>();
         for (StringValue eachValue : actualValues) {
             // In case it is ranged, verify the range
             if (eachValue.isRanged()) {
@@ -72,21 +66,39 @@ public class IpValue {
                         throw new IllegalArgumentException("Ranged value may not contain a CIDR expression");
                     }
                 }
-                ranges.add(new IPAddressRange(rangedValues.get(0).getValue(), rangedValues.get(1).getValue()));
+                ranges.add(IpRange.of(rangedValues.get(0).getValue(), rangedValues.get(1).getValue()));
             } else if (eachValue.getValue().contains("/")) {
                 // Value may be a CIDR address - build range for it
                 ranges.add(parseCIDR(eachValue.getValue()));
             } else {
-                ranges.add(new IPAddressRange(eachValue.getValue()));
+                ranges.add(IpRange.of(eachValue.getValue()));
             }
         }
+        return new IpValue(ranges);
     }
 
-    public boolean isInRange(final String address) {
-        return ranges.stream().anyMatch(r -> r.contains(address));
+    private static final Logger LOG = LoggerFactory.getLogger(IpValue.class);
+
+    private final List<IpRange> ranges;
+
+    public IpValue(List<IpRange> ranges) {
+        this.ranges = ranges;
     }
 
-    public static IPAddressRange parseCIDR(final String cidr) {
+    public boolean isInRange(final IpAddr address) {
+        for (var r: ranges) {
+            if (r.contains(address)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<IpRange> getIpAddressRanges() {
+        return ranges;
+    }
+
+    public static IpRange parseCIDR(final String cidr) {
         final int slashIndex = cidr.indexOf('/');
         if (slashIndex == -1) {
             throw new IllegalArgumentException("Value is not a CIDR expression");
@@ -115,7 +127,18 @@ public class IpValue {
             }
         }
 
-        return new IPAddressRange(InetAddressUtils.toIpAddrString(lower),
+        return IpRange.of(InetAddressUtils.toIpAddrString(lower),
                                   InetAddressUtils.toIpAddrString(upper));
+    }
+
+    @Override
+    public IpValue shrink(Bound<IpAddr> bound) {
+        List<IpRange> l = new ArrayList<>(ranges.size());
+        for (var r: ranges) {
+            if (bound.overlaps(r.begin, r.end)) {
+                l.add(r);
+            }
+        }
+        return l.isEmpty() ? null : ranges.size() == l.size() ? this : new IpValue(l);
     }
 }

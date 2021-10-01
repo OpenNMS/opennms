@@ -130,12 +130,25 @@ To reduce the number of queries to the database, the data is cached.
 The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
 
 .Optional parameters for the node cache
-[options="header, autowidth"]
+[options="header" cols="1,3,1"]
 |===
-| Property                   | Default | Description
-| nodeCache.maximumSize      | 1000    | The maximum size of the cache.
-| nodeCache.expireAfterWrite | 300     | Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
-| nodeCache.recordStats      | true    | Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
+
+| Property
+| Description
+| Default
+
+| nodeCache.maximumSize
+| The maximum size of the cache.
+| 1000
+
+| nodeCache.expireAfterWrite
+| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+| 300
+
+| nodeCache.recordStats
+| Defines if cache statistics are exposed via JMX.
+Set to `false` to disable statistic recording.
+| true
 |===
 
 == Classification exporter filter cache configuration
@@ -147,16 +160,30 @@ A cache can be configured to cache the result to improve performance.
 The following cache properties are available to set in `$OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
 
 .Optional parameters for the classification engine filters
-[options="header, autowidth"]
+[options="header" cols="2,3,1"]
 |===
-| Property                                   | Default | Description
-| cache.classificationFilter.enabled         | false   | Enables or disables the cache.
-| cache.classificationFilter.maxSize         | 5000    | The maximum size of the cache.
-| cache.classificationFilter.expireAfterRead | 300     | Number of seconds until an entry in the node cache is evicted.
-                                                         Set to 0 to disable eviction.
-                                                         The timer is reset every time an entry is read.
-| nodeCache.recordStats                      | true    | Defines if cache statistics are exposed via JMX.
-                                                         Set to `false` to disable statistic recording.
+| Property
+| Description
+| Default
+
+| cache.classificationFilter.enabled
+| Enables or disables the cache.
+| false
+
+| cache.classificationFilter.maxSize
+| The maximum size of the cache.
+| 5000
+
+| cache.classificationFilter.expireAfterRead
+| Number of seconds until an entry in the node cache is evicted.
+Set to 0 to disable eviction.
+The timer is reset every time an entry is read.
+| 300
+
+| nodeCache.recordStats
+| Defines if cache statistics are exposed via JMX.
+Set to `false` to disable statistic recording.
+| true
 |===
 
 [[kafka-forwarder-config]]

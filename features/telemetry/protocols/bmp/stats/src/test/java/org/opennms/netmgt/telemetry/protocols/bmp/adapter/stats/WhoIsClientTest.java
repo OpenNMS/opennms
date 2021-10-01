@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
+@org.junit.Ignore("this test reaches out to the internet, we should change it to use a fake/test server")
 public class WhoIsClientTest {
 
 
