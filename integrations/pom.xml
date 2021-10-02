@@ -23,5 +23,6 @@
     <module>opennms-jasperstudio-extension</module>
     <module>opennms-vmware</module>
     <module>opennms-vtdxml-collector-handler</module>
+    <module>opennms-snmp-metadata-provisioning-adapter</module>
   </modules>
 </project>
