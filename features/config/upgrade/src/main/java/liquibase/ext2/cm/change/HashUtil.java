@@ -28,22 +28,18 @@
 
 package liquibase.ext2.cm.change;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import java.io.IOException;
+import java.net.URL;
 
-import liquibase.change.ChangeMetaData;
-import liquibase.change.DatabaseChange;
+import org.opennms.features.config.dao.api.util.SchemaUtil;
 
-/** Used in changelog.xml */
-@DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
-public class RegisterSchema extends AbstractSchemaChange {
+import com.google.common.hash.Hashing;
+import com.google.common.io.Resources;
 
-    protected String getChangeName() {
-        return "Register";
-    }
-
-    protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.registerSchema(id, xsdFileName, this.rootElement);
+public class HashUtil {
+    public static String getHash(String xsdFileName) throws IOException {
+        URL url = SchemaUtil.getSchemaPath(xsdFileName);
+        byte[] bytes = Resources.toByteArray(url);
+        return Hashing.sha256().hashBytes(bytes).toString();
     }
 }
-
-

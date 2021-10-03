@@ -8,7 +8,8 @@
     <xsd:element name="registerSchema">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="xsdName" type="xsd:string" use="required"/>
+            <xsd:attribute name="xsdFileName" type="xsd:string" use="required"/>
+            <xsd:attribute name="xsdFileHash" type="xsd:string" use="required"/>
             <xsd:attribute name="rootElement" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>

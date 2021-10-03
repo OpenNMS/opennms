@@ -28,6 +28,8 @@
 
 package liquibase.ext2.cm.change;
 
+import java.io.IOException;
+
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +45,35 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
 
     protected String id;
-    protected String xsdName;
+    protected String xsdFileName;
+    protected String xsdFileHash;
     protected String rootElement;
 
     @Override
     public ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
         checkRequiredField(validationErrors, "id", this.id);
-        checkRequiredField(validationErrors,"xsdName", this.xsdName);
+        checkRequiredField(validationErrors,"xsdFileName", this.xsdFileName);
         checkRequiredField(validationErrors,"rootElement", this.rootElement);
+        checkRequiredField(validationErrors,"xsdFileHash", this.xsdFileHash);
+        checkHash(validationErrors,this.xsdFileName, this.xsdFileHash);
         return validationErrors;
     }
 
     private void checkRequiredField(ValidationErrors validationErrors, String name, String value) {
         if(value == null || value.isBlank()) {
             validationErrors.addError(String.format("Attribute %s is missing", name));
+        }
+    }
+
+    private void checkHash(ValidationErrors validationErrors, String xsdFileName, String expectedXsdHash) {
+        try {
+            String actualHash = HashUtil.getHash(xsdFileName);
+            if(!actualHash.equals(xsdFileHash)) {
+                validationErrors.addError(String.format("The hashes for the schema file %s don't match." +
+                        " Expected from changelog: %s, actual: %s.%n", xsdFileName, expectedXsdHash, actualHash));
+            }
+        } catch (IOException e) {
+            validationErrors.addError(String.format("Attribute %s is missing", xsdFileName));
         }
     }
 
@@ -67,17 +84,19 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
     @Override
     public String getConfirmationMessage() {
         return String.format("%sed new schema with schemaName=%s, xsdName=%s, rootElement=%s",
-                getChangeName(), this.id, this.xsdName, this.rootElement);
+                getChangeName(), this.id, this.xsdFileName, this.rootElement);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
-                    LOG.info("{}ing new schema with schemaName={}, xsdName={}, rootElement={}",
+                    LOG.info("{}ing new schema with schemaName={}, xsdFileName={}, xsdHash={}, rootElement={}",
                             this.getChangeName(),
                             this.id,
-                            this.xsdName, this.rootElement);
+                            this.xsdFileName,
+                            this.xsdFileHash,
+                            this.rootElement);
                     try {
                         getCmFunction(m).doRun();
                     } catch (Exception e) {
@@ -96,12 +115,20 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
         this.id = id;
     }
 
-    public String getXsdName() {
-        return xsdName;
+    public String getXsdFileName() {
+        return xsdFileName;
     }
 
-    public void setXsdName(String xsdName) {
-        this.xsdName = xsdName;
+    public void setXsdFileName(String xsdFileName) {
+        this.xsdFileName = xsdFileName;
+    }
+
+    public String getXsdFileHash() {
+        return xsdFileHash;
+    }
+
+    public void setXsdFileHash(String xsdHash) {
+        this.xsdFileHash = xsdHash;
     }
 
     public String getRootElement() {

@@ -28,22 +28,21 @@
 
 package liquibase.ext2.cm.change;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import liquibase.change.ChangeMetaData;
-import liquibase.change.DatabaseChange;
+import java.io.IOException;
 
-/** Used in changelog.xml */
-@DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
-public class RegisterSchema extends AbstractSchemaChange {
+import org.junit.Test;
 
-    protected String getChangeName() {
-        return "Register";
-    }
+public class HashUtilTest {
 
-    protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.registerSchema(id, xsdFileName, this.rootElement);
+    @Test
+    public void shouldHash() throws IOException {
+        String xsdName = "provisiond-configuration.xsd";
+        String hash = HashUtil.getHash(xsdName);
+        assertNotNull(hash);
+        assertEquals(64, hash.length());
+        System.out.printf("Hash for content of %s: %s%n", xsdName, hash);
     }
 }
-
-
