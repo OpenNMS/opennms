@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,10 +39,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.snmp.SnmpV3User;
-
-import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "trap-listener-config")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -80,14 +77,8 @@ public class TrapListenerConfig {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                          .add("snmpV3Users", this.snmpV3Users)
-                          .toString();
-    }
-
-    public static TrapListenerConfig from(final TrapdConfig config) {
-        final TrapListenerConfig result = new TrapListenerConfig();
-        result.setSnmpV3Users(config.getSnmpV3Users());
-        return result;
+        return new StringJoiner(", ", TrapListenerConfig.class.getSimpleName() + "[", "]")
+                .add("snmpV3Users=" + snmpV3Users)
+                .toString();
     }
 }
