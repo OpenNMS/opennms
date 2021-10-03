@@ -1792,7 +1792,6 @@
         <feature>opennms-bridge-http-service</feature>
     </feature>
 
-
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
@@ -1837,5 +1836,10 @@
     <feature name="opennms-core-ipc-twin-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Subscriber">
         <feature>opennms-core-ipc-twin-kafka-common</feature>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 </features>
