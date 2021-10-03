@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

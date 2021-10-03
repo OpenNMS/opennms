@@ -40,6 +40,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,7 @@ public class Trapd extends AbstractServiceDaemon {
 
         try {
             m_twinSession = m_twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
-            m_twinSession.publish(TrapListenerConfig.from(m_config));
+            m_twinSession.publish(from(m_config));
         } catch (IOException e) {
             LOG.error("Failed to register twin for trap listener config", e);
             throw new RuntimeException(e);
@@ -236,7 +237,13 @@ public class Trapd extends AbstractServiceDaemon {
 
     public void publishListenerConfig() throws IOException {
         m_config = TrapdConfigFactory.getInstance();
-        m_twinSession.publish(TrapListenerConfig.from(m_config));
+        m_twinSession.publish(from(m_config));
+    }
+
+    public static TrapListenerConfig from(final TrapdConfig config) {
+        final TrapListenerConfig result = new TrapListenerConfig();
+        result.setSnmpV3Users(config.getSnmpV3Users());
+        return result;
     }
 
     public static String getLoggingCategory() {
