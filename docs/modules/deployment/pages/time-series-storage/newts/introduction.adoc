@@ -12,6 +12,7 @@ It also provides reference documentation for Newts:
 * xref:time-series-storage/newts/configuration.adoc#newts-reference[additional configuration options]
 * xref:time-series-storage/newts/cassandra-jmx.adoc#cassandra-monitor[information about the metrics] {page-component-title} collects from Cassandra
 * xref:time-series-storage/newts/cassandra-newts-jmx.adoc#newts-monitor[monitoring Newts]
+* xref:time-series-storage/newts/resourcecli.adoc[resource management]
 
 == Cassandra documentation
 
@@ -26,8 +27,10 @@ IMPORTANT: For simplicity we use the `$\{OPENNMS_HOME}/bin/newts init` command w
 
 == Before you begin
 
+Make sure you have the following:
+
 * A running instance of {page-component-title} running on Linux
-* Working data collection and response time metrics from Collectd and Pollerd
+* Working data collection and response time metrics from collectd and pollerd
 * Cassandra cluster with access to the Cassandra client port `9042/tcp`
 
 Note that you must make configurations in the `etc` directory relative to the {page-component-title} Core home directory.

@@ -69,10 +69,10 @@ Collects the following storage exception metrics from `org.apache.cassandra.metr
 
 == Dropped messages
 
-Measurement of messages that were DROPPABLE.
+Measurement of messages that were droppable.
 These ran after a given timeout set per message type so were discarded.
-In JMX, access these via `org.apache.cassandra.metrics.DroppedMessage`.
-The number of dropped messages in the different message queues are good indicators whether a cluster can handle its load.
+In JMX, access them via `org.apache.cassandra.metrics.DroppedMessage`.
+The number of dropped messages in the different message queues is a good indication of whether a cluster can handle its load.
 
 [options="header"]
 [cols="1,3,2"]
@@ -130,7 +130,7 @@ The documentation for Cassandra thread pool monitoring originated from the link:
 === Memtable FlushWriter
 
 Sort and write memtables to disk from `org.apache.cassandra.metrics.ThreadPools`.
-A majority of time this backing up is from overrunning disk capability.
+A majority of the time this backing up is from overrunning disk capability.
 Sorting can cause issues as well, usually accompanied with high load but a small amount of actual flushes (seen in cfstats).
 The cause can be from huge rows with large column names; in other words, something inserting many large values into a CQL collection.
 If overrunning disk capabilities, add nodes or tune the configuration.
@@ -141,14 +141,14 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 Operations after flushing the memtable.
 Discard commit log files that have had all data in them in sstables.
-Flushing non-cf backed secondary indexes.
+Flushing non-cf-backed secondary indexes.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
 === Anti-entropy stage
 
 Repairing consistency.
-Handle repair messages like merkle tree transfer (from validation compaction) and streaming.
+Handle repair messages like Merkle tree transfer (from validation compaction) and streaming.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
@@ -161,7 +161,7 @@ If you see issues with pending tasks, monitor logs for a message:
 Gossip stage has {} pending tasks; skipping status check ...
 ----
 
-Check NTP working correctly and attempt `nodetool resetlocalschema` or the more drastic deleting of system column family folder.
+Check that NTP works correctly and attempt `nodetool resetlocalschema` or the more drastic deletion of the system column family folder.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
@@ -179,7 +179,7 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 === Mutation stage
 
-Performing a local including:
+Performing a local insert/deletion including:
 
 * insert/updates
 * schema merges
@@ -211,8 +211,8 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 Performing read repairs.
 Chance of them occurring is configurable per column family with `read_repair_chance`.
-More likely to back up if using `CL.ONE` (and to lesser possibly other `non-CL.ALL` queries) for reads and using multiple data centers.
-It will then be kicked off asynchronously outside of the queries feedback loop.
+More likely to back up if using `CL.ONE` (and, to a lesser possibility, other `non-CL.ALL` queries) for reads and using multiple data centers.
+It will then kick off asynchronously outside of the queries feedback loop.
 Note that this is not likely to be a problem since it does not happen on all queries and quickly provides good connectivity between replicas.
 The repair being droppable also means that after `write_request_timeout_in_ms` it will be discarded, which further mitigates this.
 If pending grows, attempt to lower the rate for high-read `CFs`.

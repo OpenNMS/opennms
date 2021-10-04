@@ -2,7 +2,7 @@
 [[ga-operation-request-logging]]
 = Request Logging
 
-HTTP requests logs for Jetty can be enabled by uncommenting the following snippet in `etc/jetty.xml`:
+Enable HTTP requests logs for Jetty by uncommenting the following snippet in `etc/jetty.xml`:
 
 [source,xml]
 ----
@@ -25,7 +25,7 @@ HTTP requests logs for Jetty can be enabled by uncommenting the following snippe
 
 NOTE: If you do not have a `jetty.xml` in the `etc` directory, you can start by copying the example from `etc/examples/jetty.xml`.
 
-If you would like the include the usernames associated with the requests in the log file,  you must also uncomment the following snippet in `jetty-webapps/opennms/WEB-INF/web.xml`:
+To include the user names associated with the requests in the log file, you must also uncomment the following snippet in `jetty-webapps/opennms/WEB-INF/web.xml`:
 
 [source,xml]
 ----

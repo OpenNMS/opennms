@@ -75,11 +75,11 @@ Defaults to the number of available cores.
 | Number of cores
 
 | cache.timeseriesPersisterMetaTagCache.expireAfterRead
-| Expiry time in seconds for MetaTagCache.
+| Expiry time in seconds for MetaTagCache
 | 300
 
 | cache.timeseriesPersisterMetaTagCache.maximumSize
-| Maximum size for MetaTagCache.
+| Maximum size for MetaTagCache
 | 8192
 
 | cache.timeseriesPersisterMetaTagCache.recordStats
@@ -87,11 +87,11 @@ Defaults to the number of available cores.
 | true
 
 | cache.timeseriesSearcherCache.expireAfterRead
-| Expiry time in seconds for TimeseriesSearcherCache.
+| Expiry time in seconds for TimeseriesSearcherCache
 | 300
 
 | cache.timeseriesSearcherCache.maximumSize
-| Maximum size for TimeseriesSearcherCache.
+| Maximum size for TimeseriesSearcherCache
 | 8192
 
 | cache.timeseriesSearcherCache.recordStats
@@ -99,11 +99,11 @@ Defaults to the number of available cores.
 | true
 
 | cache.timeseriesMetaDataCache.expireAfterRead
-| Expiry time in seconds for TimeseriesMetaDataCache.
+| Expiry time in seconds for TimeseriesMetaDataCache
 | 300
 
 | cache.timeseriesMetaDataCache.maximumSize
-| Maximum size for TimeseriesMetaDataCache.
+| Maximum size for TimeseriesMetaDataCache
 | 8192
 
 | cache.timeseriesMetaDataCache.recordStats
@@ -139,9 +139,9 @@ The configuration of the tags has the following form:
 `prefix.tagKey=${query expression}`
 
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
-* The tagKey can by an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
+* The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
 * The query expression lets you query the value.
-Supports use of the link:#ga-meta-data-dsl[Metadata DSL].
+Supports use of the xref:operation:meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
 
 Examples:
 
@@ -152,7 +152,7 @@ Expose categories by setting `org.opennms.timeseries.tin.metatags.exposeCategori
 
 * `org.opennms.timeseries.tin.metatags.exposeCategories=true` +
 
-will lead to:
+Will lead to:
 
 ** `Tag("cat_myFirstCategory", "myFirstCategory")`
 ** `Tag("cat_mySecondCategory", "mySecondCategory")`
