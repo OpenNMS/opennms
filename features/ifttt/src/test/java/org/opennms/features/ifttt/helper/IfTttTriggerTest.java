@@ -27,13 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.ifttt.helper;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,6 +43,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.test.MockLogAppender;
 
+import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 public class IfTttTriggerTest {
     private static final String TEST_KEY = "abc123def456";
     private static final String TEST_EVENT = "xyz";
@@ -60,7 +58,7 @@ public class IfTttTriggerTest {
     }
 
     @Test
-    public void triggerTest() throws IOException {
+    public void triggerTest() throws IOException, Exception {
         final IfTttTrigger ifTttTrigger = new IfTttTrigger();
         final CloseableHttpResponse closeableHttpResponse = mock(CloseableHttpResponse.class);
 
@@ -82,6 +80,7 @@ public class IfTttTriggerTest {
         HttpClientBuilder httpClientBuilder = mock(HttpClientBuilder.class);
         when(HttpClients.custom()).thenReturn(httpClientBuilder);
         when(httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.setSSLContext(ifTttTrigger.getSslContext())).thenReturn(httpClientBuilder);
         when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
 
         ifTttTrigger.key(TEST_KEY).event(TEST_EVENT).value1("abc1").value2("will-be-overwritten").value2("abc2").value3("abc3").trigger();
