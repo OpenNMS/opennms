@@ -35,8 +35,6 @@ export default {
 
   props,
 
-  // emits: ['ready'],
-
   setup(props, context) {
     const leafletRef = ref({});
     const ready = ref(false);
@@ -49,16 +47,12 @@ export default {
       "setParentHtml",
       (html) => (leafletRef.value.getElement().innerHTML = html)
     );
-    // provide('setIcon', (newIcon) => leafletRef.value.setIcon && leafletRef.value.setIcon(newIcon))
     provide("addLayer", (layer) => {
-      // replace the provided addLayer function for child components of MarkerCluster so they add to the cluster rather than the map
       leafletRef.value.addLayer(layer.leafletObject);
     });
     provide("removeLayer", (layer) => {
       leafletRef.value.removeLayer(layer.leafletObject);
     });
-
-    // const {options, methods} = markerSetup(props, leafletRef, context)
 
     const { methods } = layerSetup(props, leafletRef, context);
 
