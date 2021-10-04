@@ -60,7 +60,7 @@ sudo killall -9 apt || true && \
                 debconf-utils
 
 # limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
+echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse'
 deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
 sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
