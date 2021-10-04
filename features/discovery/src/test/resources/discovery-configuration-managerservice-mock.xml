@@ -4,6 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
     <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
-    <bean id="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock" />
-
+    <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+        <property name="configFile" value="discovery-configuration.xml"/>
+    </bean>
 </beans>

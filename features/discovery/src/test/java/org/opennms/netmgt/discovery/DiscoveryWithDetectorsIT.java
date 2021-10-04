@@ -96,7 +96,7 @@ public class DiscoveryWithDetectorsIT {
     public void testDiscoveryWithMockDetector() throws IOException, InterruptedException {
         MockLogAppender.setupLogging(true, "INFO");
         m_discovery.setEventForwarder(m_eventIpcManager);
-        String resourcePath = DiscoveryConfigDetectorsTest.class.getResource("/etc/discovery-configuration.xml").getPath();
+        String resourcePath = DiscoveryConfigDetectorsTest.class.getResource("/mock/etc/discovery-configuration.xml").getPath();
         Path etcPath = Paths.get(resourcePath).getParent().getParent();
         System.setProperty("opennms.home", etcPath.toString());
         m_discovery.setDiscoveryFactory(configFactory);
