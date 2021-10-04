@@ -81,8 +81,6 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
 
-    private AtomicBoolean blueprintLoaded = new AtomicBoolean(false);
-
     @ClassRule
     public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
@@ -124,19 +122,14 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        // Blueprint gets loaded twice which leads to multiple copies of TwinSubscriber.
-        // To avoid it, we try to load actual blueprint only once.
-        if(blueprintLoaded.get()) {
-            blueprintLoaded.set(true);
-            return "classpath:/OSGI-INF/blueprint/blueprint-twin-subscriber.xml";
-        }
+        // Blueprint gets loaded by default from the dependencies.
+        // Specifying blueprint again is leading multiple Twin subscribers.
         return "classpath:/OSGI-INF/blueprint/blueprint-empty.xml";
     }
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        blueprintLoaded.set(false);
         subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
     }
 

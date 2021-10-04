@@ -61,7 +61,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     @Override
     public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
         SessionKey sessionKey = new SessionKey(key, location);
-        LOG.debug("Registered a session with key {}", sessionKey);
+        LOG.info("Registered a session with key {}", sessionKey);
         return new SessionImpl<>(sessionKey);
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
 
         @Override
         public void publish(T obj) throws IOException {
-            LOG.debug("Published an object update for the session with key {}", sessionKey.toString());
+            LOG.info("Published an object update for the session with key {}", sessionKey.toString());
             byte[] value = objectMapper.writeValueAsBytes(obj);
             objMap.put(sessionKey, value);
             TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, value);
@@ -95,7 +95,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         @Override
         public void close() throws IOException {
             objMap.remove(sessionKey);
-            LOG.debug("Closed session with key {} ", sessionKey);
+            LOG.info("Closed session with key {} ", sessionKey);
         }
     }
 

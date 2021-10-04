@@ -1790,4 +1790,14 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.jms/org.opennms.core.ipc.twin.jms.subscriber/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-core-ipc-jms" description="OpenNMS :: Core :: IPC :: JMS" version="${project.version}">
+        <feature>opennms-core-ipc-sink-camel</feature>
+        <feature>opennms-core-ipc-rpc-jms</feature>
+        <feature>opennms-core-ipc-twin-jms-subscriber</feature>
+    </feature>
+    <feature name="opennms-core-ipc-kafka" description="OpenNMS :: Core :: IPC :: Kafka" version="${project.version}">
+        <feature>opennms-core-ipc-sink-kafka</feature>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+    </feature>
 </features>

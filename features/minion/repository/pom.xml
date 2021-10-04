@@ -39,12 +39,9 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
-                                <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
-                                <feature>opennms-core-ipc-rpc-kafka</feature>
-                                <feature>opennms-core-ipc-sink-camel</feature>
-                                <feature>opennms-core-ipc-twin-jms-subscriber</feature>
-                                <feature>opennms-core-ipc-sink-kafka</feature>
+                                <feature>opennms-core-ipc-jms</feature>
+                                <feature>opennms-core-ipc-kafka</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-offheap</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>

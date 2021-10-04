@@ -87,7 +87,11 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         // If there is an existing object, send that update to subscriber.
         if (objMap.get(key) != null) {
             TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objMap.get(key));
-            accept(twinResponseBean);
+            try {
+                session.accept(twinResponseBean);
+            } catch (IOException e) {
+                LOG.error("Exception while sending response to consumer", e);
+            }
         }
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
@@ -120,7 +124,6 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 }
             }
         });
-
     }
 
     boolean isObjectUpdated(String key, byte[] updatedObject) {
