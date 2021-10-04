@@ -5,17 +5,17 @@ The WS-Man asset provisioning adapter performs WS-Man queries to populate asset 
 This can be very useful for automatically populating asset fields in a large number of managed systems.
 You can either fill in some of the existing asset fields (for example, `manufacturer`, `vendor`, `modelnumber`, and/or `serialnumber`) or construct a custom-formatted message for the comment field.
 
-The WS-Man asset provisioning adapter is invoked every time a node is added or updated by provisiond.
-With the default provisiond configuration, the update will take place once every 24 hours.
+The WS-Man asset provisioning adapter is invoked every time provisiond adds or updates a node.
+With the default provisiond configuration, the update takes place once every 24 hours.
 
-You can reload the provisiond SnmpAssetProvisioningAdapter with this command (or just restart OpenNMS)
+You can reload the provisiond WsmanAssetProvisioningAdapter with this command (or just restart OpenNMS)
 
 [source, console]
 ----
-${OPENNMS_HOME}/bin# ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond.SnmpAssetProvisioningAdapter'
+${OPENNMS_HOME}/bin# ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond.WsmanAssetProvisioningAdapter'
 ----
 
-NOTE: By default, the WSManAssetProvisionAdapter runs 5 minutes after a Provisiond `nodeScanCompleted` event is sent to indicate that Provisiond completed the import.
+NOTE: By default, the WSManAssetProvisionAdapter runs 5 minutes after a provisiond `nodeScanCompleted` event is sent to indicate that provisiond completed the import.
 
 == Installation
 

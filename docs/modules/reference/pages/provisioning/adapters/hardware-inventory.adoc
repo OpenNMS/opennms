@@ -8,7 +8,7 @@ The second type are vendor-specific Entity-MIBs, which some manufacturers provid
 
 These Entity-MIBs provide dynamic attributes to describe device components.
 This includes information such as model number, description, serial number, and more.
-The optional hardware inventory extension of the Provisiond service will add these fields to nodes in {page-component-title}.
+The optional hardware inventory extension of the provisiond service will add these fields to nodes in {page-component-title}.
 
 == Installation
 
