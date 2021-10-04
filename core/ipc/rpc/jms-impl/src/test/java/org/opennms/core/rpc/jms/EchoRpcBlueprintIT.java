@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.rpc.camel.MockMinionIdentity;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -69,6 +70,9 @@ public class EchoRpcBlueprintIT extends org.opennms.core.rpc.camel.EchoRpcBluepr
     @Autowired
     private OnmsDistPoller identity;
 
+    @Autowired
+    private TracerRegistry tracerRegistry;
+
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
@@ -79,6 +83,7 @@ public class EchoRpcBlueprintIT extends org.opennms.core.rpc.camel.EchoRpcBluepr
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
+        services.put(TracerRegistry.class.getName(), asService(tracerRegistry, null, null));
     }
 
     @Override

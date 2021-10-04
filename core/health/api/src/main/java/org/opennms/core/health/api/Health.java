@@ -33,6 +33,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * Represents the "Health", by holding a list of {@link Response}s.
  * It allows accessing the responses and also provides some helper methods (e.g. to get the worst response).
@@ -41,11 +43,11 @@ import java.util.Optional;
  */
 public class Health {
 
-    private List<Response> responses = new ArrayList<>();
+    private List<Pair<HealthCheck, Response>> responses = new ArrayList<>();
     private String errorMessage;
 
-    public Health withResponse(Response response) {
-        add(response);
+    public Health withResponse(HealthCheck healthCheck, Response response) {
+        add(healthCheck, response);
         return this;
     }
 
@@ -53,20 +55,17 @@ public class Health {
         if (responses.isEmpty() && errorMessage != null) {
             return false;
         }
-        return responses.stream().filter(r -> r.getStatus() != Status.Success).count() == 0;
+        return responses.stream().allMatch(r -> r.getRight().getStatus() == Status.Success);
     }
 
-    public Optional<Response> getWorst() {
-        if (responses.isEmpty()) {
-            return Optional.empty();
-        }
+    public Optional<Pair<HealthCheck, Response>> getWorst() {
         return responses.stream()
-                .sorted(Comparator.comparingInt(response -> -1 * response.getStatus().ordinal()))
+                .sorted(Comparator.comparingInt(pair -> -1 * pair.getRight().getStatus().ordinal()))
                 .findFirst();
     }
 
-    public void add(Response response) {
-        this.responses.add(response);
+    public void add(HealthCheck healthCheck, Response response) {
+        this.responses.add(Pair.of(healthCheck, response));
     }
 
     public void setError(String errorMessage) {
@@ -77,7 +76,7 @@ public class Health {
         return errorMessage;
     }
 
-    public List<Response> getResponses() {
+    public List<Pair<HealthCheck, Response>> getResponses() {
         return new ArrayList<>(responses);
     }
 }
