@@ -66,7 +66,7 @@ sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
 
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
