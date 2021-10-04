@@ -156,7 +156,7 @@ TIP: Alerts: pending > 15 || blocked > 0
 
 If you see issues with pending tasks, monitor logs for a message:
 
-[source]
+[source, console]
 ----
 Gossip stage has {} pending tasks; skipping status check ...
 ----

@@ -3,7 +3,7 @@
 
 The resourcecli tool simplifies the process of listing or manually deleting collected data (resources) of a {page-component-title} instance.
 
-With RRDTool- or JRobin-based storage, this process is easy: traverse the `share/rrd` directory and its subdirectories.
+With RRDTool- or JRobin-based storage, this process is easy: traverse the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories.
 The `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
 
 Newts-based storage stores and indexes the data remotely on a Cassandra cluster.
@@ -15,7 +15,7 @@ The resourcecli tool works with Newts-based storage as well as with RRDTool and 
 == Use
 The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory.
 
-[source, shell]
+[source, console]
 ----
 $ cd /path/to/opennms/bin
 $ ./resourcecli
@@ -66,7 +66,7 @@ The following global options are available in each of the subcommands of the too
 
 | --url VALUE
 | URL of the {page-component-title} instance to connect to.
-| http://localhost:8980/opennms
+| \http://localhost:8980/opennms
 |===
 
 == Subcommand: list
@@ -74,7 +74,7 @@ The following global options are available in each of the subcommands of the too
 This subcommand queries a {page-component-title} instance for its available resources.
 The following example queries the local {page-component-title} instance with the credentials `admin/secret`.
 
-[source, shell]
+[source, console]
 ----
 $ ./resourcecli --username admin --password secret list
 node[72]
@@ -96,9 +96,9 @@ node[70]
 This subcommand shows details for a given resource.
 The following example displays details for the resource identified by resourceId `node[70]`.
 
-[source, shell]
+[source, console]
 ----
-$ ./resourcecli --username admin --password secret show node\[70\]
+$ ./resourcecli --username admin --password secret show node[70]
 ID:         node[70]
 Name:       70
 Label:      MyRouter
@@ -138,10 +138,9 @@ Use this subcommand to delete a given resource and its child resources.
 The following example deletes the resource identified by resourceId `node[70]`.
 When successful, this command does not generate any output.
 
-[source, shell]
+[source, console]
 ----
-$ ./resourcecli --username admin --password secret delete node\[70\]
-$
+$ ./resourcecli --username admin --password secret delete node[70]
 ----
 
 The following options are available for the _delete_ subcommand:

@@ -26,7 +26,7 @@ sudo dnf -y install rrdtool jrrd2
 sudo vi etc/opennms.properties.d/timeseries.properties
 ----
 
-[source, timeseries.properties]
+[source, properties]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
 org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
@@ -82,7 +82,7 @@ sudo yum -y install rrdtool jrrd2
 sudo vi etc/opennms.properties.d/timeseries.properties
 ----
 
-[source, timeseries.properties]
+[source, properties]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
 org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
@@ -126,7 +126,7 @@ Debian/Ubuntu::
 +
 --
 .Install rrdtool and jrrd2
-[source, shell]
+[source, console]
 ----
 apt -y install rrdtool jrrd2
 ----
@@ -137,7 +137,7 @@ apt -y install rrdtool jrrd2
 sudo vi etc/opennms.properties.d/timeseries.properties
 ----
 
-[source, timeseries.properties]
+[source, properties]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
 org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>

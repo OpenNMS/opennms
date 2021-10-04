@@ -1,6 +1,6 @@
 
 [[newts-configure]]
-= Configure {page-component-title} Core using Newts
+= Configure {page-component-title} Core To Use Newts
 
 .Create a configuration file with the time series storage settings
 [source, console]
@@ -9,14 +9,14 @@ sudo vi etc/opennms.properties.d/timeseries.properties
 ----
 
 .Configure Newts as the time series strategy
-[source, timeseries.properties]
+[source, properties]
 ----
 # Configure storage strategy
 org.opennms.rrd.storeByForeignSource=true<1>
 org.opennms.timeseries.strategy=newts<2>
 
 # Configure Newts time series storage connection
-org.opennms.newts.config.hostname={cassandra-ip1,cassandra-ip2}<3>
+org.opennms.newts.config.hostname=cassandra-ip1,cassandra-ip2<3>
 org.opennms.newts.config.keyspace=newts<4>
 org.opennms.newts.config.port=9042<5>
 
@@ -66,3 +66,5 @@ systemctl restart opennms
 With this information set, upon restart, {page-component-title} will begin persisting metrics using the Newts engine.
 
 Go to the Node detail page from a SNMP-managed device and verify that you see response time graphs for ICMP and node-level performance data.
+Only metrics stored in Newts will be displayed in graphs.
+If you have data in RRD or JRB files, they will not be displayed unless they are xref:time-series-storage/newts/newts-repository-converter.adoc[migrated to Newts].

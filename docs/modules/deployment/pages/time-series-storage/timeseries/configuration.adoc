@@ -15,11 +15,11 @@ Here is an example of how to activate the `in memory time series` plugin:
 [source, console]
 ----
 clone & build:
-git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
-mvn install
+> git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
+> mvn install
 
 in Karaf shell:
-bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
+> bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
 ----
 
 For specific instructions, check your plugin description.
@@ -133,7 +133,7 @@ However, note that the memory the ring buffer uses is reserved, and larger value
 == Expose additional meta tags
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
 This might not be sufficient if you also use the data outside of {page-component-title}.
-Configure additional meta tags via a `.properties file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
 The configuration of the tags has the following form:
 `prefix.tagKey=${query expression}`
