@@ -49,6 +49,13 @@
 ** xref:provisioning/snmp-profile.adoc[]
 
 * xref:thresholds/thresholding.adoc[]
+** xref:thresholds/basic.adoc[]
+*** xref:thresholds/create-thresh.adoc[]
+*** xref:thresholds/metadata.adoc[]
+*** xref:thresholds/datasource.adoc[]
+*** xref:thresholds/thresh-group.adoc[]
+** xref:thresholds/thresh-service.adoc[]
+** xref:thresholds/troubleshoot.adoc[]
 
 * xref:webui/introduction.adoc[]
 ** xref:webui/surveillance-view.adoc[]
@@ -142,6 +149,7 @@
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectd/collection-packages.adoc[]
 ** xref:performance-data-collection/collectd/configuration.adoc[]
+** xref:performance-data-collection/data-types.adoc[]
 ** xref:performance-data-collection/resource-types.adoc[]
 ** xref:performance-data-collection/collectors/collectors.adoc[]
 *** xref:performance-data-collection/collectors/http.adoc[]
