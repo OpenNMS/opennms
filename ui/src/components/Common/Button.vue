@@ -1,46 +1,38 @@
 <template>
-    <Button :label="label" :icon='icon' :badge='badge' :class="selectedClass"></Button>
+  <FeatherButton
+    :icon="icon"
+    :primary="primary"
+    :secondary="secondary"
+    :text="text"
+    :disabled="disabled"
+    :asAnchor="asAnchor"
+  >
+    <slot></slot>
+  </FeatherButton>
 </template> 
 
 <script setup lang="ts">
+import { FeatherButton } from '@featherds/button'
 
-import Button from 'primevue/button';
-import { computed } from "vue";
-
-const props = defineProps({
-    label: {
-        type: String,
-        required: true
-    },
-    primeClass: {
-        type: String,
-        required: false
-    },
-    icon: {
-        type: String,
-        required: false
-    },
-    badge: {
-        type: String,
-        required: false
-    }
-});
-
-//computed
-const selectedClass = computed(() => {
-    switch (props.primeClass) {
-        case 'sm':
-            return 'p-button-sm'
-        case 'lg':
-            return 'p-button-lg'
-        case 'rounded':
-            return 'p-button-rounded'
-        case 'raised':
-            return 'p-button-raised'           
-        default:
-            return 'p-button'
-    }
+defineProps({
+  primary: {
+    type: Boolean
+  },
+  secondary: {
+    type: Boolean
+  },
+  icon: {
+    type: String,
+    required: false
+  },
+  text: {
+    type: Boolean
+  },
+  disabled: {
+    type: Boolean
+  },
+  asAnchor: {
+    type: Boolean
+  }
 })
-
-
 </script> 

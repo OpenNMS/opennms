@@ -1,24 +1,31 @@
 <template>
-    <RadioButton :id="id" :name="name" :value="value" />
+  <FeatherRadio
+    :label="label"
+    :modelValue="modelValue"
+    :hint="hint"
+    :error="error"
+    :vertical="vertical"
+  />
 </template> 
 
 <script setup lang="ts">
-
-import RadioButton from 'primevue/radiobutton';
-
-const props = defineProps({
-    id: {
-        type: String,
-        required: true
-    },
-    name: {
-        type: String,
-        default: 'text',
-        required: true
-    },
-    value: {
-        type: String,
-        required: true
-    }
-});
+import { FeatherRadio } from "@featherds/radio"
+defineProps({
+  label: {
+    type: String,
+    required: true
+  },
+  modelValue: {
+    type: String,
+  },
+  hint: {
+    type: String,
+  },
+  error: {
+    type: String,
+  },
+  vertical: {
+    type: Boolean,
+  }
+})
 </script> 

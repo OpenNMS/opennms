@@ -1,5 +1,6 @@
 <template>
   <FeatherPagination
+    v-if="totalCount"
     class="pagination"
     v-model="page"
     :pageSize="pageSize"

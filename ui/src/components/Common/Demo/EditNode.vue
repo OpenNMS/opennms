@@ -1,6 +1,6 @@
 <template>
     <p>
-        <Button :label="buttonLabel" primeClass="rounded" @click="onBackClick"></Button>
+        <Button :label="buttonLabel" @click="onBackClick"></Button>
     </p>
     <p>
         Edit Node ID ::

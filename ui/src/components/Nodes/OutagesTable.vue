@@ -1,37 +1,39 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 title">
-      Recent Outages
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-12 title">
+        Recent Outages
+      </div>
     </div>
-  </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <table class="tl1 tl2 tl3" summary="Outages">
-        <thead>
-          <tr>
-            <th scope="col">IP Address</th>
-            <th scope="col">Host Name</th>
-            <th scope="col">Service Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="outage in outages" :key="outage.id">
-            <td>{{ outage.ipAddress }}</td>
-            <td>{{ outage.hostname }}</td>
-            <td>{{ outage.serviceName }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <table class="tl1 tl2 tl3" summary="Outages">
+          <thead>
+            <tr>
+              <th scope="col">IP Address</th>
+              <th scope="col">Host Name</th>
+              <th scope="col">Service Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="outage in outages" :key="outage.id">
+              <td>{{ outage.ipAddress }}</td>
+              <td>{{ outage.hostname }}</td>
+              <td>{{ outage.serviceName }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <Pagination
+      :payload="payload"
+      :parameters="queryParameters"
+      @update-query-parameters="updateQueryParameters"
+      moduleName="nodesModule"
+      functionName="getNodeOutages"
+      totalCountStateName="outagesTotalCount"
+    />
   </div>
-  <Pagination
-    :payload="payload"
-    :parameters="queryParameters"
-    @update-query-parameters="updateQueryParameters"
-    moduleName="nodesModule"
-    functionName="getNodeOutages"
-    totalCountStateName="outagesTotalCount"
-  />
 </template>
 
 <script setup lang="ts">
@@ -50,11 +52,17 @@ const { queryParameters, updateQueryParameters } = useQueryParameters({
 const outages = computed(() => store.state.nodesModule.outages)
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/typography";
-.title {
-  @include headline4();
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+  margin-bottom: 15px;
+  .title {
+    @include headline3();
+  }
 }
 table {
   width: 100%;

@@ -1,40 +1,42 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 title">Recent Events</div>
-  </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <table class="tl1 tl2 tl3 tl4" summary="Recent Events">
-        <thead>
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Created</th>
-            <th scope="col">Severity</th>
-            <th scope="col">Message</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="event in events" :key="event.id" :class="getRowClass(event)">
-            <td>
-              <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
-            </td>
-            <td>{{ getFormattedCreatedTime(event.createTime) }}</td>
-            <td>{{ event.severity }}</td>
-            <td>
-              <span v-html="event.logMessage" class="log-message"></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-12 title">Recent Events</div>
     </div>
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <table class="tl1 tl2 tl3 tl4" summary="Recent Events">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Created</th>
+              <th scope="col">Severity</th>
+              <th scope="col">Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in events" :key="event.id" :class="getRowClass(event)">
+              <td>
+                <router-link :to="`/event/${event.id}`">{{ event.id }}</router-link>
+              </td>
+              <td>{{ getFormattedCreatedTime(event.createTime) }}</td>
+              <td>{{ event.severity }}</td>
+              <td>
+                <span v-html="event.logMessage" class="log-message"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <Pagination
+      :parameters="queryParameters"
+      @update-query-parameters="updateQueryParameters"
+      moduleName="eventsModule"
+      functionName="getEvents"
+      totalCountStateName="totalCount"
+    />
   </div>
-  <Pagination
-    :parameters="queryParameters"
-    @update-query-parameters="updateQueryParameters"
-    moduleName="eventsModule"
-    functionName="getEvents"
-    totalCountStateName="totalCount"
-  />
 </template>
   
 <script setup lang="ts">
@@ -58,11 +60,17 @@ const getRowClass = (data: Event) => data.severity.toLowerCase()
 const getFormattedCreatedTime = (time: number) => dayjs(time).format()
 </script>
   
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/typography";
-.title {
-  @include headline4();
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+  margin-bottom: 15px;
+  .title {
+    @include headline3();
+  }
 }
 table {
   width: 100%;
