@@ -8,7 +8,7 @@ You can either fill in some of the existing asset fields (for example, `manufact
 The WS-Man asset provisioning adapter is invoked every time provisiond adds or updates a node.
 With the default provisiond configuration, the update takes place once every 24 hours.
 
-You can reload the provisiond WsmanAssetProvisioningAdapter with this command (or just restart OpenNMS)
+You can reload the provisiond WsmanAssetProvisioningAdapter with this command (or just restart OpenNMS):
 
 [source, console]
 ----
