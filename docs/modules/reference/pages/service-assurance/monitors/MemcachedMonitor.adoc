@@ -87,7 +87,7 @@ The following metrics are collected:
 | Default
 
 | retry
-| Number of attempts to establish the Memcached connnection.
+| Number of attempts to establish the Memcached connection.
 | 0
 
 | port
