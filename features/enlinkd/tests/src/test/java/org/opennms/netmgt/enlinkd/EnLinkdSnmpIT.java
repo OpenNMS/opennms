@@ -74,25 +74,7 @@ import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
-import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -518,6 +500,139 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         } catch (final InterruptedException e) {
             assertEquals(false, true);
         }
+
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-13593.
+     *
+     * @see http://issues.opennms.org/browse/NMS-13593
+
+     *
+     * @throws Exception
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ZHBGO1Zsr001_IP, port=161, resource=ZHBGO1Zsr001_RESOURCE),
+            @JUnitSnmpAgent(host=ZHBGO1Zsr002_IP, port=161, resource=ZHBGO1Zsr002_RESOURCE)
+    })
+    public void testTimeTetraLldpWalk() throws Exception {
+        String trackerName01 = "lldpLocalGroup01";
+        SnmpAgentConfig  config01 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr001_IP));
+        String trackerName02 = "lldpLocalGroup02";
+        SnmpAgentConfig  config02 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr002_IP));
+        LldpLocalGroupTracker lldpLocalGroup01 = new LldpLocalGroupTracker();
+        LldpLocalGroupTracker lldpLocalGroup02 = new LldpLocalGroupTracker();
+        final List<LldpLink> links = new ArrayList<>();
+
+        try {
+            m_client.walk(config01,lldpLocalGroup01)
+                    .withDescription(trackerName01)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,lldpLocalGroup02)
+                    .withDescription(trackerName02)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement lldpElement01 = lldpLocalGroup01.getLldpElement();
+        LldpElement lldpElement02 = lldpLocalGroup02.getLldpElement();
+        System.err.println("01 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
+        System.err.println("01 local chassis id: " + lldpElement01.getLldpChassisId());
+        System.err.println("01 local sysname: " + lldpElement01.getLldpSysname());
+        System.err.println("02 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
+        System.err.println("02 local chassis id: " + lldpElement02.getLldpChassisId());
+        System.err.println("02 local sysname: " + lldpElement02.getLldpSysname());
+
+        assertEquals(ZHBGO1Zsr001_LLDP_ID, lldpElement01.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement01.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr001_NAME, lldpElement01.getLldpSysname());
+        assertEquals(ZHBGO1Zsr002_LLDP_ID, lldpElement02.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement02.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr002_NAME, lldpElement02.getLldpSysname());
+
+        LldpRemTableTracker lldpRemTable01 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                assertEquals(false, true);
+            }
+        };
+
+        LldpRemTableTracker lldpRemTable02 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                assertEquals(false, true);
+            }
+        };
+
+        try {
+            m_client.walk(config01,
+                            lldpRemTable01)
+                    .withDescription("lldpRemTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,
+                            lldpRemTable02)
+                    .withDescription("lldpRemTable02")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
+        TimeTetraLldpRemTableTracker timetetralldpRemTable01
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+
+
+                System.err.println("----------01 timetetra lldp rem----------------");
+                assertEquals(6, row.getColumnCount());
+                LldpLink link = row.getLldpLink();
+                links.add(link);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+        TimeTetraLldpRemTableTracker timetetralldpRemTable02
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+
+
+                System.err.println("----------02 timetetra lldp rem----------------");
+                assertEquals(6, row.getColumnCount());
+                LldpLink link = row.getLldpLink();
+                links.add(link);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+
+        try {
+            m_client.walk(config01,
+                            timetetralldpRemTable01)
+                    .withDescription("timetetralldpRemTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,
+                            timetetralldpRemTable02)
+                    .withDescription("timetetralldpRemTable02")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
+        assertEquals(7,links.size());
 
     }
 
