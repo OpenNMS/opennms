@@ -8,26 +8,47 @@ NOTE: If you use Kibana, make sure you are using the version that is compatible 
 
 == Configuration
 
-The configuration is held in `$OPENNMS_HOME/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+The configuration is held in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
 Please refer to <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Configuring Elasticsearch>> for information on how to configure Elasticsearch connection settings.
 
 Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:
 
 .Optional parameters for the Elasticsearch event forwarder
 [options="header"]
-[cols="1,1,5"]
+[cols="1,3,1"]
 |===
-| Parameter           | Default | Description
-| logEventDescription | true    | Whether to forward the event description field to Elasticsearch.
-                                  It can be disabled as it contains a long text field that can be redundant with the rest of the metadata included in the event.
-| archiveAssetData    | true    | If `true`, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms.
-                                  These are included only where the values are not null or empty strings in the table.+
-                                  asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid.
-| groupOidParameters  | false    | If `true`, all OIDs from the event parameters are stored in a single array `p_oids` instead of a flattened structure.
-| logAllEvents        | false    | If changed to `true`, then archive all events even if they have not been persisted in the {page-component-title} database.
-| batchSize           | 200      | Increase this value to enable batch inserts into Elasticsearch.
-                                   This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
-| batchInterval       | 500      | The maximum time interval in milliseconds between batch events (recommended: 500ms) when using a `batchSize` value greater than.
+| Parameter
+| Description
+| Default
+
+| logEventDescription
+| Whether to forward the event description field to Elasticsearch.
+It can be disabled as it contains a long text field that can be redundant with the rest of the metadata included in the event.
+| true
+
+| archiveAssetData
+| If `true`, the following attributes representing useful node asset fields from the node asset table are included in archived events and alarms.
+These are included only where the values are not null or empty strings in the table.+
+asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid.
+| true
+
+| groupOidParameters
+| If `true`, all OIDs from the event parameters are stored in a single array `p_oids` instead of a flattened structure.
+| false
+
+| logAllEvents
+| If changed to `true`, then archive all events even if they have not been persisted in the {page-component-title} database.
+| false
+
+| batchSize
+| Increase this value to enable batch inserts into Elasticsearch.
+This is the maximum size of a batch of events that is sent to Elasticsearch in a single connection.
+| 200
+
+| batchInterval
+| The maximum time interval in milliseconds between batch events (recommended: 500ms) when using a `batchSize` value greater than.
+| 500
+
 |===
 
 Once you are sure everything is correctly configured, you can activate the Event Forwarder by logging into the OSGi console and installing the feature: `opennms-es-rest`.

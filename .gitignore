@@ -24,6 +24,7 @@ build.properties
 .*launch
 nb-configuration.xml
 .idea
+.jqwik-database
 dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log
@@ -31,6 +32,8 @@ yarn-error.log
 /features/discovery/activemq-data
 /features/topology-map/org.opennms.features.topology.app/www-test/
 /opennms-alarms/jms-northbounder/activemq-data/
+/geomap/node_modules/
+/geomap/dist/
 
 # Ignore Visual Studio Code
 .factorypath

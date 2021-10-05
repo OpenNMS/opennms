@@ -22,7 +22,7 @@ s|Event Field       s|Example Event JSON                                        
 | eventseverity      | "eventseverity": "3"                                                                | long   | Event severity.
 | eventseverity_text | "eventseverity_text": "Normal"                                                      | string | Text representation of severity value.
 | eventsource        | "eventsource": "AlarmChangeNotifier"                                                | string | OpenNMS event source.
-| eventuei           | "eventuei": "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared"      | string | OpenNMS universal event identifier (UEI) of the event.
+| eventuei           | "eventuei": "uei.opennms.org/plugin/AlarmChangeNotificationEvent/AlarmCleared"      | string | OpenNMS unique event identifier (UEI) of the event.
 | id                 | "id": "1110"                                                                        | string | Event ID.
 | interface          | "interface": "127.0.0.1"                                                            | string | Interface of the event.
 | ipaddr             | "ipaddr": "127.0.0.1"                                                               | string | IP address of the event.

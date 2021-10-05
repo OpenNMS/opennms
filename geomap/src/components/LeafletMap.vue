@@ -1,49 +1,70 @@
 <template>
   <div class="leaflet">
     <div class="geo-map">
-      <l-map v-model:zoom="zoom" :zoomAnimation="true" :center="openNMSHeadQuarter">
-        <l-tile-layer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          layer-type="base"
-          name="OpenStreetMap"
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        ></l-tile-layer>
-
-        <l-marker
+      <l-map
+        ref="map"
+        :max-zoom="19"
+        v-model="zoom"
+        :zoomAnimation="true"
+        :center="openNMSHeadQuarter"
+        @ready="onLeafletReady"
+      >
+        <template v-if="leafletReady">
+          <l-control-layers />
+          <l-tile-layer
+            v-for="tileProvider in tileProviders"
+            :key="tileProvider.name"
+            :name="tileProvider.name"
+            :visible="tileProvider.visible"
+            :url="tileProvider.url"
+            :attribution="tileProvider.attribution"
+            layer-type="base"
+          />
+          <marker-cluster
+            :options="{ showCoverageOnHover: false, chunkedLoading: true }"
+          >
+            <l-marker
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
             >
         <l-popup> {{ node.label }} </l-popup>
         </l-marker>
-        
         <l-polyline
           v-for="(coordinatePair, index) in edges"
           :key="index"
           :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
           color="green"
         />
+          </marker-cluster>
+        </template>
       </l-map>
     </div>
   </div>
 </template>
-<script setup lang="ts">
-import { computed, watch, ref } from 'vue'
+<script setup lang ="ts">
+import { computed, watch, ref, nextTick } from "vue";
+import "leaflet/dist/leaflet.css";
 import {
   LMap,
   LTileLayer,
   LMarker,
-  // LTooltip,
   LPopup,
+  LControlLayers,
   LPolyline,
 } from "@vue-leaflet/vue-leaflet";
-import "leaflet/dist/leaflet.css";
+import MarkerCluster from "./MarkerCluster.vue";
+import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
 
+let leafletReady = ref(false);
+let leafletObject = ref("");
+let visible = ref(false);
+let map: any = ref();
 const store = useStore();
-
 const openNMSHeadQuarter = ref([35.849613, -78.794882])
 const zoom = ref(4)
+
 
 let interestedNodes = computed(() => {
   return store.getters['mapModule/getInterestedNodes'];
@@ -86,6 +107,33 @@ watch(
   (newValue, oldValue) => {
   }
 )
+
+async function onLeafletReady() {
+  await nextTick();
+  leafletObject.value = map.value.leafletObject;
+  if(leafletObject.value != undefined && leafletObject.value != null){
+    leafletReady.value = true;
+  }
+}
+
+/*****Tile Layer*****/
+
+const tileProviders = [
+  {
+    name: "OpenStreetMap",
+    visible: true,
+    attribution:
+      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  },
+  {
+    name: "OpenTopoMap",
+    visible: false,
+    url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    attribution:
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+  },
+];
 
 </script>
 

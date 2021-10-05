@@ -46,6 +46,17 @@ public interface HwEntityDao extends OnmsDao<OnmsHwEntity, Integer> {
     public OnmsHwEntity findRootByNodeId(Integer nodeId);
 
     /**
+     * Better performant than #findRootByNodeId.
+     * Useful when dealing with large trees. See NMS-13256
+     * Find root by node id
+     *
+     * @param nodeId the node id
+     * @return the OpenNMS hardware entity
+     */
+
+    public OnmsHwEntity findRootEntityByNodeId(Integer nodeId);
+
+    /**
      * Find entity by index.
      *
      * @param nodeId the node id

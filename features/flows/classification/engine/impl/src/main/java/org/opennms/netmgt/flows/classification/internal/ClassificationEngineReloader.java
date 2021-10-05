@@ -43,13 +43,17 @@ public class ClassificationEngineReloader {
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
-    public ClassificationEngineReloader(Identity identity, ClassificationEngine engine, String reloadIntervalString) {
+    public ClassificationEngineReloader(Identity identity, ClassificationEngine engine, String reloadIntervalString){
         if (identity != null) {
             final int reloadInterval = Integer.parseInt(reloadIntervalString);
             LOG.debug("Scheduling reload of classification engine every {} seconds", reloadInterval);
             executorService.scheduleWithFixedDelay(() -> {
                 LOG.debug("Performing reload of Classification Engine...");
-                engine.reload();
+                try {
+                    engine.reload();
+                } catch (InterruptedException e) {
+                    LOG.error("reload was interrupted", e);
+                }
                 LOG.debug("Reload of Classification Engine performed. Next reload will be in {} seconds", reloadInterval);
             }, reloadInterval, reloadInterval, TimeUnit.SECONDS);
         }

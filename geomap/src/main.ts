@@ -6,3 +6,4 @@ import store from "./store";
 const GStore = reactive({flashMessage: ''})
 
 createApp(App).use(store).use(router).provide('GStore', GStore).mount("#app");
+

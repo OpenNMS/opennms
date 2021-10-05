@@ -75,25 +75,75 @@ It is possible to use values or aggregated values in the title, subtitle and des
 The following table describes the available variable substitutions.
 
 .Variables usable in definition's title, subtitle and description fields
-[options="header, autowidth"]
+[options="header, autowidth" cols="1,3,1"]
 |===
-| Name                                       | Type      | Description
-| `$\{intmax}`                                | Integer | integer maximum value
-| `$\{doublemax}`                             | Double  | maximum value
-| `$\{intmin}`                                | Integer | integer minimum value
-| `$\{doublemin}`                             | Double  | minimum value
-| `$\{intavg}`                                | Integer | integer average value
-| `$\{doubleavg}`                             | Double  | average value
-| `$\{intsum}`                                | Integer | integer sum of values
-| `$\{doublesum}`                             | Double  | sum of value
-| `${intValue[]}`                            | Integer | array of integer result values for the given SQL query
-| `${doubleValue[]}`                         | Double  | array of result values for the given SQL query
-| `${intValueChange[]}`                      | Integer | array of integer value changes for the given SQL query
-| `${doubleValueChange[]}`                   | Double  | array of value changes for the given SQL query
-| `$\{intlastvalue}`                          | Integer | last integer value
-| `$\{doublelastvalue}`                       | Double  | last value
-| `$\{intlastvaluechange}`                    | Integer | last integer value change
-| `$\{doublelastvaluechange}`                 | Double  | last value change
+| Name
+| Description
+| Type
+
+| $\{intmax}
+| integer maximum value
+| Integer
+
+| $\{doublemax}
+| Double
+| maximum value
+
+| $\{intmin}
+| Integer
+| integer minimum value
+
+| $\{doublemin}
+| Double
+| minimum value
+
+| $\{intavg}
+| Integer
+| integer average value
+
+| $\{doubleavg}
+| Double
+| average value
+
+| $\{intsum}
+| Integer
+| integer sum of values
+
+| $\{doublesum}
+| Double
+| sum of value
+
+| ${intValue[]}
+| Integer
+| array of integer result values for the given SQL query
+
+| {doubleValue[]}
+| Double
+| array of result values for the given SQL query
+
+| ${intValueChange[]}
+| Integer
+| array of integer value changes for the given SQL query
+
+| ${doubleValueChange[]}
+| Double
+| array of value changes for the given SQL query
+
+| $\{intlastvalue}
+| Integer
+| last integer value
+
+| $\{doublelastvalue}
+| Double
+| last value
+
+| $\{intlastvaluechange}
+| Integer
+| last integer value change
+
+| $\{doublelastvaluechange}
+| Double
+| last value change
 |===
 
 You can also display a single graph in your JSP files by including the file `/trend/single-trend-box.jsp` and specifying the `name` parameter.
