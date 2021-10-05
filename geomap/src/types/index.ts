@@ -28,7 +28,7 @@ export interface MapNode {
 export interface Alarm {
   id: string
   severity: string
-  nodeId: string
+  nodeId: number
   nodeLabel: string
   uei: string
   count: number
