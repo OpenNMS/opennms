@@ -83,14 +83,14 @@ function clearFilters() {
 }
 
 function confirmFilters() {
-  let nodesLable: any = [];
+  let nodesLabel: any = [];
   gridApi.forEachNodeAfterFilter((node: any) => {
-    nodesLable.push(node.data.node);
+    nodesLabel.push(node.data.node);
   });
-  let distictNodesLable = [...new Set(nodesLable)];
+  let distictNodesLabel = [...new Set(nodesLabel)];
   let ids = [];
   ids = store.getters['mapModule/getInterestedNodes']
-    .filter((node: Node) => distictNodesLable.includes(node.label))
+    .filter((node: Node) => distictNodesLabel.includes(node.label))
     .map((node: Node) => node.id);
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
@@ -149,17 +149,12 @@ const columnDefs = ref([
     }
   },
   {
-    headerName: "Node",
+    headerName: "NODE",
     field: "node",
     headerTooltip: "Node",
   },
   {
     headerName: "UEI",
-    field: "lable",
-    headerTooltip: "Lable",
-  },
-  {
-    headerName: "LABLE SOURCE",
     field: "uei",
     headerTooltip: "UEI",
   },

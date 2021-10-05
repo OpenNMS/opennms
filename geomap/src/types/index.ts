@@ -12,8 +12,8 @@ export interface MapNode {
   coordinates: [number, number]
   foreignSource: string
   foreignId: string
-  lable: string
-  lableSource: any
+  label: string
+  labelSource: any
   lastCapabilitiesScan: string
   primaryInterface: number
   sysObjectid: string
@@ -50,7 +50,7 @@ export interface Node {
   lastEgressFlow: any
   lastIngressFlow: any
   //added by Jane
-  lableSource: string
+  labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
   sysObjectid: string
