@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,16 +48,14 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ExporterState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.OptionState;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.ParserState;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.state.TemplateState;
 
 public class UdpSessionManager {
-
-    final Map<TemplateKey, TimeWrapper<Template>> templates = Maps.newHashMap();
-    final Map<TemplateKey, Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>>> options = Maps.newHashMap();
-    private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
+    final Map<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
+    private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newConcurrentMap();
     private final Duration timeout;
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
 
@@ -72,13 +69,8 @@ public class UdpSessionManager {
         this.removeTemplateIf(e -> e.getValue().time.isBefore(timeout));
     }
 
-    private void removeTemplateIf(final Predicate<Map.Entry<TemplateKey, TimeWrapper<Template>>> predicate) {
-        final List<TemplateKey> toBeRemoved = UdpSessionManager.this.templates.entrySet().stream()
-                .filter(predicate)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-        toBeRemoved.forEach(UdpSessionManager.this.templates::remove);
-        toBeRemoved.forEach(UdpSessionManager.this.options::remove);
+    private void removeTemplateIf(final Predicate<Map.Entry<TemplateKey, TimeWrapper<TemplateOptions>>> predicate) {
+        UdpSessionManager.this.templates.entrySet().removeIf(predicate);
     }
 
     public Session getSession(final SessionKey sessionKey) {
@@ -86,7 +78,7 @@ public class UdpSessionManager {
     }
 
     public void drop(final SessionKey sessionKey) {
-        this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().observationDomainId.sessionKey, sessionKey));
+        removeTemplateIf(e -> Objects.equals(e.getKey().observationDomainId.sessionKey, sessionKey));
     }
 
     public int count() {
@@ -96,30 +88,28 @@ public class UdpSessionManager {
     public Object dumpInternalState() {
         final ParserState.Builder parser = ParserState.builder();
 
-        final Set<DomainKey> domains = this.templates.keySet().stream()
-                                                     .map(key -> key.observationDomainId)
-                                                     .collect(Collectors.toSet());
+        final Map<DomainKey, List<Map.Entry<TemplateKey, TimeWrapper<TemplateOptions>>>> sessions = this.templates.entrySet().stream()
+                .collect(Collectors.groupingBy(e -> e.getKey().observationDomainId));
 
-        domains.forEach(domain -> {
-            final String key = String.format("%s#%s", domain.sessionKey.getDescription(), domain.observationDomainId);
+        for (final var entry : sessions.entrySet()) {
+            final String key = String.format("%s#%s",
+                    entry.getKey().sessionKey.getDescription(),
+                    entry.getKey().observationDomainId);
 
             final ExporterState.Builder exporter = ExporterState.builder(key);
 
-            this.templates.entrySet().stream()
-                          .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
-                          .forEach(e -> exporter.withTemplate(TemplateState.builder(e.getKey().templateId)
-                                                                           .withInsertionTime(e.getValue().time)));
-
-            this.options.entrySet().stream()
-                        .filter(e -> Objects.equals(e.getKey().observationDomainId, domain))
-                        .forEach(e -> e.getValue().forEach((selectors, values) ->
-                                                                   exporter.withOptions(OptionState.builder(e.getKey().templateId)
-                                                                                                   .withInsertionTime(values.time)
-                                                                                                   .withSelectors(selectors)
-                                                                                                   .withValues(values.wrapped))));
+            entry.getValue().forEach(e -> {
+                exporter.withTemplate(TemplateState.builder(e.getKey().templateId).withInsertionTime(e.getValue().time));
+                e.getValue().wrapped.options.forEach((selectors, values) ->
+                        exporter.withOptions(OptionState.builder(e.getKey().templateId)
+                                .withInsertionTime(values.time)
+                                .withSelectors(selectors)
+                                .withValues(values.wrapped)));
+            });
 
             parser.withExporter(exporter);
-        });
+        }
+        ;
 
         return parser.build();
     }
@@ -151,7 +141,7 @@ public class UdpSessionManager {
 
             final DomainKey that = (DomainKey) o;
             return Objects.equals(this.observationDomainId, that.observationDomainId) &&
-                   Objects.equals(this.sessionKey, that.sessionKey);
+                    Objects.equals(this.sessionKey, that.sessionKey);
         }
 
         @Override
@@ -182,7 +172,7 @@ public class UdpSessionManager {
 
             final TemplateKey that = (TemplateKey) o;
             return Objects.equals(this.observationDomainId, that.observationDomainId) &&
-                   Objects.equals(this.templateId, that.templateId);
+                    Objects.equals(this.templateId, that.templateId);
         }
 
         @Override
@@ -191,13 +181,23 @@ public class UdpSessionManager {
         }
     }
 
-    private final static class TimeWrapper<T> {
+    public final static class TimeWrapper<T> {
         public final Instant time;
         public final T wrapped;
 
         private TimeWrapper(final T wrapped) {
             this.time = Instant.now();
             this.wrapped = wrapped;
+        }
+    }
+
+    public static class TemplateOptions {
+        public final Template template;
+        public final Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>> options;
+
+        public TemplateOptions(final Template template) {
+            this.template = Objects.requireNonNull(template);
+            this.options = Maps.newConcurrentMap();
         }
     }
 
@@ -211,20 +211,19 @@ public class UdpSessionManager {
         @Override
         public void addTemplate(final long observationDomainId, final Template template) {
             final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, template.id);
-            UdpSessionManager.this.templates.put(key, new TimeWrapper<>(template));
+            UdpSessionManager.this.templates.put(key, new TimeWrapper<>(new TemplateOptions(template)));
         }
 
         @Override
         public void removeTemplate(final long observationDomainId, final int templateId) {
             final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, templateId);
             UdpSessionManager.this.templates.remove(key);
-            UdpSessionManager.this.options.remove(key);
         }
 
         @Override
         public void removeAllTemplate(final long observationDomainId, final Template.Type type) {
             final DomainKey domainKey = new DomainKey(this.sessionKey, observationDomainId);
-            UdpSessionManager.this.removeTemplateIf(e -> domainKey.equals(e.getKey().observationDomainId) && e.getValue().wrapped.type == type);
+            UdpSessionManager.this.removeTemplateIf(e -> domainKey.equals(e.getKey().observationDomainId) && e.getValue().wrapped.template.type == type);
         }
 
         @Override
@@ -233,7 +232,7 @@ public class UdpSessionManager {
                                final Collection<Value<?>> scopes,
                                final List<Value<?>> values) {
             final TemplateKey key = new TemplateKey(this.sessionKey, observationDomainId, templateId);
-            UdpSessionManager.this.options.computeIfAbsent(key, (k) -> new HashMap<>()).put(new HashSet<>(scopes), new TimeWrapper<>(values));
+            UdpSessionManager.this.templates.get(key).wrapped.options.put(new HashSet<>(scopes), new TimeWrapper<>(values));
         }
 
         @Override
@@ -266,9 +265,9 @@ public class UdpSessionManager {
 
             @Override
             public Template lookupTemplate(final int templateId) throws MissingTemplateException {
-                final TimeWrapper<Template> templateWrapper = UdpSessionManager.this.templates.get(key(templateId));
-                if (templateWrapper != null) {
-                    return templateWrapper.wrapped;
+                final TimeWrapper<TemplateOptions> templateOptions = UdpSessionManager.this.templates.get(key(templateId));
+                if (templateOptions != null) {
+                    return templateOptions.wrapped.template;
                 } else {
                     throw new MissingTemplateException(templateId);
                 }
@@ -280,19 +279,19 @@ public class UdpSessionManager {
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-                for (final Map.Entry<TemplateKey, Map<Set<Value<?>>, TimeWrapper<List<Value<?>>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
-                                                                                                                        e -> Objects.equals(e.getKey().observationDomainId.sessionKey, UdpSession.this.sessionKey) &&
-                                                                                                                             Objects.equals(e.getKey().observationDomainId.observationDomainId, this.observationDomainId))) {
-                    final Template template = UdpSessionManager.this.templates.get(e.getKey()).wrapped;
+                for (final var e : Iterables.filter(UdpSessionManager.this.templates.entrySet(),
+                        e -> Objects.equals(e.getKey().observationDomainId.sessionKey, UdpSession.this.sessionKey) &&
+                                Objects.equals(e.getKey().observationDomainId.observationDomainId, this.observationDomainId))) {
+
+                    final Template template = e.getValue().wrapped.template;
 
                     if (scoped.containsAll(template.scopeNames)) {
                         // Found option template where scoped fields is subset of actual data fields
-
                         final Set<Value<?>> scopeValues = values.stream()
-                                                                .filter(s -> template.scopeNames.contains(s.getName()))
-                                                                .collect(Collectors.toSet());
+                                .filter(s -> template.scopeNames.contains(s.getName()))
+                                .collect(Collectors.toSet());
 
-                        final TimeWrapper<List<Value<?>>> optionValues = e.getValue().get(scopeValues);
+                        final TimeWrapper<List<Value<?>>> optionValues = e.getValue().wrapped.options.get(scopeValues);
                         if (optionValues != null) {
                             for (final Value<?> value : optionValues.wrapped) {
                                 options.put(value.getName(), value);
@@ -305,5 +304,4 @@ public class UdpSessionManager {
             }
         }
     }
-
 }
