@@ -88,27 +88,8 @@ public class IfTttTrigger {
         return this;
     }
 
-    public SSLContext getSslContext() {
-        if (sslContext == null) {
-            try {
-                sslContext = SSLContext.getInstance("SSL");
-            } catch (NoSuchAlgorithmException e) {
-                LOG.error("Error creating SSL context", e);
-                e.printStackTrace();
-            }
-            try {
-                sslContext.init(null, new TrustManager[]{ new RelaxedX509ExtendedTrustManager() }, new java.security.SecureRandom());
-            } catch (KeyManagementException e) {
-                LOG.error("Error creating TrustManager", e);
-                e.printStackTrace();
-            }
-        }
-
-        return sslContext;
-    }
-
     public void trigger() {
-        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setSSLContext(getSslContext()).build()) {
+        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(SSLContext.getInstance("Default")).build()) {
             LOG.debug("Sending '" + event + "' event to IFTTT.");
 
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));
@@ -123,7 +104,7 @@ public class IfTttTrigger {
             if (statusCode != 200) {
                 LOG.warn("Received HTTP Status {} for request to {} with body {}", statusCode, httpPost.getURI(), httpPost.getEntity());
             }
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             LOG.error("Error invoking request: {}", e);
         }
     }

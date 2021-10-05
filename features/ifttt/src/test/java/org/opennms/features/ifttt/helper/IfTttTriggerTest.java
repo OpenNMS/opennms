@@ -43,6 +43,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.test.MockLogAppender;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -80,7 +81,7 @@ public class IfTttTriggerTest {
         HttpClientBuilder httpClientBuilder = mock(HttpClientBuilder.class);
         when(HttpClients.custom()).thenReturn(httpClientBuilder);
         when(httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)).thenReturn(httpClientBuilder);
-        when(httpClientBuilder.setSSLContext(ifTttTrigger.getSslContext())).thenReturn(httpClientBuilder);
+        when(httpClientBuilder.setSSLContext(any())).thenReturn(httpClientBuilder);
         when(httpClientBuilder.build()).thenReturn(closeableHttpClient);
 
         ifTttTrigger.key(TEST_KEY).event(TEST_EVENT).value1("abc1").value2("will-be-overwritten").value2("abc2").value3("abc3").trigger();
