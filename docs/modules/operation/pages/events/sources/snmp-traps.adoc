@@ -24,5 +24,5 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
                      use-address-from-varbind="true" /><3>
 ----
 <1> Set the SNMP trap daemon listening port to 1162/udp
-<2> Don't create new nodes when receiving a SNMP Trap with an uknown source IP address
+<2> Don't create new nodes when receiving a SNMP Trap with an unknown source IP address
 <3> Try using the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address
