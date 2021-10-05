@@ -12,4 +12,9 @@
         <cm:importConfig schemaId="provisiond" configId="default" filePath="file:${opennms.home}/etc/provisiond-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="ssuman" id="1.0-register-schema-enlinkd">
+        <cm:registerSchema id="enlinkd" version="1.0.0" entityClass="org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration"/>
+        <cm:importConfig schemaId="enlinkd" configId="default" filePath="file:${opennms.home}/etc/enlinkd-configuration.xml"/>
+    </changeSet>
+
 </databaseChangeLog>
