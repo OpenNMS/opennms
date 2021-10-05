@@ -8,14 +8,15 @@ NOTE: To use HTTPS, use the Java command line tool `keytool`.
       To learn more about the keytool, see the link:https://docs.oracle.com/javase/6/docs/technotes/tools/windows/keytool.html[official documentation].
 
 [[ga-operation-standalone-https-jetty]]
-== Standalone HTTPS with Jetty
+== Secure {page-component-title} with HTTPS
 
-To configure {page-component-title} to protect web sessions with HTTPS, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to set up SSL with Jetty].
+To configure {page-component-title}'s built in Jetty process to protect web sessions with HTTPS, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to set up SSL with Jetty].
+Alternatively, you can configure Apache or link:https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[NGINX] to act as a reverse proxy.
 
 [[ga-operation-https-client]]
 == {page-component-title} as HTTPS client
 
-To establish secure HTTPS connections within Java, you need to set up a Java Truststore.
+To establish secure HTTPS connections from {page-component-title} to monitored nodes, you need to set up a Java Truststore.
 
 The Java Truststore contains all certificates a Java application should trust when making connections as a client to a server.
 
@@ -27,7 +28,7 @@ Use the following command to set up the Java Truststore.
 NOTE: If you do not have a Java Truststore set up yet, it is created automatically.
 
 .Import a certificate to the Java Truststore
-[source,shell]
+[source, console]
 ----
 keytool \
   -import \ <1>
@@ -35,11 +36,11 @@ keytool \
   -trustcacerts \ <3>
   -alias localhost \ <4>
   -file localhost.cert \ <5>
-  -keystore /$\{OPENNMS_HOME}/etc/trust-store.jks  <6>
+  -keystore /${OPENNMS_HOME}/etc/trust-store.jks  <6>
 ----
 <1> Define certificate or a certificate chain import.
 <2> Use verbose output.
-<3> Trust certificates from cacerts.
+<3> Trust certificates from `cacerts`.
 <4> The alias for the certificate to import; for example, the common name.
 <5> The certificate to import.
 <6> The location of the Java Truststore.

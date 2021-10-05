@@ -9,9 +9,9 @@ You can use the tool while OpenNMS is running to check configuration beforehand.
 
 Possible parameters:
 
-[source, bash]
+[source, console]
 ----
- $\{OPENNMS_HOME}/bin/config-tester -h
+# ${OPENNMS_HOME}/bin/config-tester -h
  usage: config-tester -a
                      OR: config-tester [config files]
                      OR: config-tester -l
