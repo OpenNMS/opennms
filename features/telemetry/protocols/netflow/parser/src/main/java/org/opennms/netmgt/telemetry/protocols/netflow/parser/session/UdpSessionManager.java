@@ -109,7 +109,6 @@ public class UdpSessionManager {
 
             parser.withExporter(exporter);
         }
-        ;
 
         return parser.build();
     }
@@ -141,7 +140,7 @@ public class UdpSessionManager {
 
             final DomainKey that = (DomainKey) o;
             return Objects.equals(this.observationDomainId, that.observationDomainId) &&
-                    Objects.equals(this.sessionKey, that.sessionKey);
+                   Objects.equals(this.sessionKey, that.sessionKey);
         }
 
         @Override
