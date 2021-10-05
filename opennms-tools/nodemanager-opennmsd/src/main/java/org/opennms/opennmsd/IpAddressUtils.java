@@ -35,7 +35,7 @@ public abstract class IpAddressUtils {
     /**
      * Converts the internet address to a long value so that it can be compared
      * using simple opertions. The address is converted in network byte order
-     * (big endin) and allows for comparisions like &lt;, &gt;, &lt;=, &gt;=,
+     * (big endin) and allows for comparisons like &lt;, &gt;, &lt;=, &gt;=,
      * ==, and !=.
      * 
      * @param addr

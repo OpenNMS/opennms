@@ -18,4 +18,4 @@ Custom filtering (i.e., which events to forward) and transformations (i.e., how 
 
 Generic implementations
 
-NOTE: Each componenent can be configured and setup independently, i.e., you can choose to only forward alarms.
+NOTE: Each component can be configured and setup independently, i.e., you can choose to only forward alarms.

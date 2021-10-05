@@ -6,7 +6,7 @@ We recommend that you do this to test major documentation changes, particularly 
 
 == Install Antora
 
-Antora is a documenation site generator based around the AsciiDoc format. 
+Antora is a documentation site generator based around the AsciiDoc format. 
 To install Antora, follow the https://docs.antora.org/antora/2.2/install/install-antora/[instructions] on the Antora website.  
 
 == Make a copy of the OpenNMS docs repository
