@@ -2349,6 +2349,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.assemblies</groupId>
         <artifactId>org.opennms.assemblies.webapp-full</artifactId>
         <version>${project.version}</version>

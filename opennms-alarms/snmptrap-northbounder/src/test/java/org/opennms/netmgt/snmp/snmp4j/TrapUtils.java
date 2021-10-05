@@ -32,7 +32,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier.Snmp4JV1TrapInformation;
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier.Snmp4JV2TrapInformation;
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -59,8 +59,8 @@ public abstract class TrapUtils {
                 data.addParameter("." + v.getOid().toString(), value.toDisplayString());
             }
             return data;
-        } else if (trapNotification instanceof Snmp4JV2TrapInformation) {
-            Snmp4JV2TrapInformation info = (Snmp4JV2TrapInformation) trapNotification;
+        } else if (trapNotification instanceof Snmp4JV2V3TrapInformation) {
+            Snmp4JV2V3TrapInformation info = (Snmp4JV2V3TrapInformation) trapNotification;
             TrapIdentity identity = info.getTrapIdentity();
             TrapData data = new TrapData(identity.getEnterpriseId(), identity.getGeneric(), identity.getSpecific());
             for (int i=0; i < info.getPduLength(); i++) {

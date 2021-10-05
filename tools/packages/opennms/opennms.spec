@@ -742,6 +742,7 @@ rm -rf %{buildroot}
 %attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
+%attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
 
 %files jmx-config-generator
 %defattr(644 opennms opennms 755)
