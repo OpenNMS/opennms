@@ -3,7 +3,7 @@
     <template v-for="item of items">
       <div class="link">
         <router-link :to="item.to">{{ item.label }}</router-link>
-        <FeatherIcon :icon="ChevronRight" :class="'link-icon' + ` ${item.position}`"/>
+        <FeatherIcon :icon="ChevronRight" :class="'link-icon' + ` ${item.position}`" />
       </div>
     </template>
   </div>
@@ -14,7 +14,7 @@ import { FeatherIcon } from "@featherds/icon"
 import ChevronRight from "@featherds/icon/navigation/ChevronRight"
 const items = [
   { label: 'Nodes', to: '/' },
-  { label: 'Node Details', to: '#', position: 'last' },
+  { label: 'Node Details', to: '#', position: 'last' }
 ]
 </script>
   

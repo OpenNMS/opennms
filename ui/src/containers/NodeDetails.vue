@@ -4,7 +4,7 @@
       <BreadCrumbs />
     </div>
   </div>
-  <div class="feather-row">
+  <div class="feather-row" style="flex-wrap: inherit;">
     <div class="feather-col-6">
       <NodeAvailabilityGraphVue />
       <InterfacesTabsVue />

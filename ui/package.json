@@ -11,6 +11,7 @@
   "dependencies": {
     "@featherds/app-bar": "^0.2.6",
     "@featherds/app-layout": "^0.2.6",
+    "@featherds/autocomplete": "^0.2.10",
     "@featherds/button": "^0.2.6",
     "@featherds/chips": "^0.2.6",
     "@featherds/dialog": "^0.2.6",
@@ -29,9 +30,6 @@
     "axios": "^0.21.1",
     "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
-    "primeflex": "^2.0.0",
-    "primeicons": "^4.1.0",
-    "primevue": "3.6.0",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "vite-svg-loader": "^2.2.0",

@@ -1,9 +1,7 @@
 <template>
   <div class="card">
     <div class="feather-row">
-      <div class="feather-col-12 title">
-        Recent Outages
-      </div>
+      <div class="feather-col-12 title">Recent Outages</div>
     </div>
     <div class="feather-row">
       <div class="feather-col-12">

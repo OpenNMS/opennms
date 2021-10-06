@@ -1,66 +1,65 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-3">
-      <FeatherInput @update:modelValue="searchFilterHandler" label="Search node label" />
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-3">
+        <FeatherInput
+          @update:modelValue="searchFilterHandler"
+          label="Search node label"
+        />
+      </div>
     </div>
-  </div>
-  <div class="feather-row">
-    <div class="feather-col-12">
-      <table class="tl1 tl2 tl3 tl4" summary="Instance Pools">
-        <thead>
-          <tr>
-            <FeatherSortHeader
-              scope="col"
-              property="label"
-              :sort="sortStates.label"
-              v-on:sort-changed="sortChanged">
-              Label
-            </FeatherSortHeader>
-            <FeatherSortHeader
-              scope="col"
-              property="location"
-              :sort="sortStates.location"
-              v-on:sort-changed="sortChanged">
-              Location
-            </FeatherSortHeader>
-            <FeatherSortHeader
-              scope="col"
-              property="foreignSource"
-              :sort="sortStates.foreignSource"
-              v-on:sort-changed="sortChanged">
-              Foreign Source
-            </FeatherSortHeader>
-            <FeatherSortHeader
-              scope="col"
-              property="foreignId"
-              :sort="sortStates.foreignId"
-              v-on:sort-changed="sortChanged">
-              Foreign Id
-            </FeatherSortHeader>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="node in nodes" :key="node.id">
-            <td>
-              <router-link :to="`/node/${node.id}`">
-                {{ node.label }}
-              </router-link>
-            </td>
-            <td>{{ node.location }}</td>
-            <td>{{ node.foreignSource }}</td>
-            <td>{{ node.foreignId }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <table class="tl1 tl2 tl3 tl4" summary="Instance Pools">
+          <thead>
+            <tr>
+              <FeatherSortHeader
+                scope="col"
+                property="label"
+                :sort="sortStates.label"
+                v-on:sort-changed="sortChanged"
+              >Label</FeatherSortHeader>
+              <FeatherSortHeader
+                scope="col"
+                property="location"
+                :sort="sortStates.location"
+                v-on:sort-changed="sortChanged"
+              >Location</FeatherSortHeader>
+              <FeatherSortHeader
+                scope="col"
+                property="foreignSource"
+                :sort="sortStates.foreignSource"
+                v-on:sort-changed="sortChanged"
+              >Foreign Source</FeatherSortHeader>
+              <FeatherSortHeader
+                scope="col"
+                property="foreignId"
+                :sort="sortStates.foreignId"
+                v-on:sort-changed="sortChanged"
+              >Foreign Id</FeatherSortHeader>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="node in nodes" :key="node.id">
+              <td>
+                <router-link :to="`/node/${node.id}`">{{ node.label }}</router-link>
+              </td>
+              <td>{{ node.location }}</td>
+              <td>{{ node.foreignSource }}</td>
+              <td>{{ node.foreignId }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <Pagination
+      :parameters="queryParameters"
+      @update-query-parameters="updateQueryParameters"
+      moduleName="nodesModule"
+      functionName="getNodes"
+      totalCountStateName="totalCount"
+    />
   </div>
-  <Pagination
-    :parameters="queryParameters"
-    @update-query-parameters="updateQueryParameters"
-    moduleName="nodesModule"
-    functionName="getNodes"
-    totalCountStateName="totalCount"
-  />
 </template>
 
 <script setup lang="ts">
@@ -103,8 +102,16 @@ const searchFilterHandler = (val: string = '') => {
 const nodes = computed(() => store.state.nodesModule.nodes)
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@featherds/table/scss/table";
+@import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/mixins/typography";
+.card {
+  @include elevation(2);
+  background: var(--feather-surface);
+  padding: 15px;
+  margin: 20px;
+}
 table {
   width: 100%;
   @include table();

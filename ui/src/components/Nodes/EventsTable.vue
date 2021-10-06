@@ -83,8 +83,10 @@ table {
 }
 .warning {
   background: rgba(255, 175, 34, 0.5);
+  color: var(--feather-state-color-on-surface)
 }
 .normal {
   background: rgba(133, 217, 165, 0.5);
+  color: var(--feather-state-color-on-surface)
 }
 </style>

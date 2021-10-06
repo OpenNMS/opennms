@@ -28,7 +28,7 @@ body {
   margin: 0px;
 }
 .logo {
-  color: white !important;
+  color: var(--feather-primary-text-on-color) !important;
 }
 a {
   text-decoration: none;
@@ -42,16 +42,6 @@ a {
 }
 .space-between {
   justify-content: space-between;
-}
-.space-evenly {
-  justify-content: space-evenly;
-}
-.top-10 {
-  margin-top: 10px;
-}
-.page {
-  max-width: 2400px;
-  margin: auto;
 }
 .pointer {
   cursor: pointer !important;

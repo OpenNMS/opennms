@@ -1,40 +1,38 @@
 <template>
   <div class="card">
-      <div class="title">
-        Availability (last 24 hours)
-      </div>
+    <div class="title">Availability (last 24 hours)</div>
 
-      <div class="flex-container availability-header">
-        <div>Availability</div>
-        <div class="timeline" ref="timeline">{{ availability.availability }}%</div>
-      </div>
+    <div class="flex-container availability-header">
+      <div>Availability</div>
+      <div class="timeline" ref="timeline">{{ availability.availability }}%</div>
+    </div>
 
-      <template v-for="ipinterface of availability.ipinterfaces">
-        <div v-if="ipinterface.services.length">
-          <hr class="divider"/>
-          <div class="flex-container">
-            <div class="service">{{ ipinterface.address }}</div>
-            <div class>
-              <img
-                :src="`${baseUrl}/opennms/rest/timeline/header/${startTime}/${endTime}/${width}`"
-                :data-imgsrc="`/opennms/rest/timeline/header/${startTime}/${endTime}/`"
-              />
-            </div>
+    <template v-for="ipinterface of availability.ipinterfaces">
+      <div v-if="ipinterface.services.length">
+        <hr class="divider" />
+        <div class="flex-container">
+          <div class="service">{{ ipinterface.address }}</div>
+          <div class>
+            <img
+              :src="`${baseUrl}/opennms/rest/timeline/header/${startTime}/${endTime}/${width}`"
+              :data-imgsrc="`/opennms/rest/timeline/header/${startTime}/${endTime}/`"
+            />
           </div>
         </div>
+      </div>
 
-        <template v-for="service of ipinterface.services">
-          <div class="flex-container">
-            <div class="service">{{ service.name }}</div>
-            <div>
-              <img
-                :src="`${baseUrl}/opennms/rest/timeline/image/${nodeId}/${ipinterface.address}/${service.name}/${startTime}/${endTime}/${width}`"
-              />
-            </div>
-            <div class="percentage">{{ service.availability }}%</div>
+      <template v-for="service of ipinterface.services">
+        <div class="flex-container">
+          <div class="service">{{ service.name }}</div>
+          <div>
+            <img
+              :src="`${baseUrl}/opennms/rest/timeline/image/${nodeId}/${ipinterface.address}/${service.name}/${startTime}/${endTime}/${width}`"
+            />
           </div>
-        </template>
+          <div class="percentage">{{ service.availability }}%</div>
+        </div>
       </template>
+    </template>
   </div>
 </template>
   
@@ -99,6 +97,6 @@ onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
   margin-left: 3px;
 }
 .divider {
-  width: 98%
+  width: 98%;
 }
 </style>

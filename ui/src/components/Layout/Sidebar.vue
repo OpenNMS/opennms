@@ -6,7 +6,7 @@
 </template>
     
 <script setup lang="ts">
-  import Link from './Link.vue'
+import Link from './Link.vue'
 </script>
     
 <style lang="scss">
