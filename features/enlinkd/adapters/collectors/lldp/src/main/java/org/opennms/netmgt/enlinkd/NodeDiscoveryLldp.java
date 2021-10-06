@@ -38,9 +38,7 @@ import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
@@ -158,19 +156,56 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                      getNodeId(), e.getMessage());
             return;
         }
-        
-        
-        final LldpLocPortGetter lldpLocPort = 
-                new LldpLocPortGetter(peer,
-                                getLocationAwareSnmpClient(),
-                                getLocation(),getNodeId());
-        for (LldpLink link: links) {
-            m_lldpTopologyService.store(getNodeId(),lldpLocPort.getLldpLink(link));
+        if (links.size() == 0) {
+            LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
+            TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
+               @Override
+                public void processLldpRemRow(LldpRemRow row) {
+                    links.add(row.getLldpLink());
+                }
+            };
+
+            try {
+                getLocationAwareSnmpClient().walk(peer,
+                                timeTetraLldpRemTableTracker)
+                        .withDescription("timeTetraLldpRemTable")
+                        .withLocation(getLocation())
+                        .execute()
+                        .get();
+            } catch (ExecutionException e) {
+                LOG.debug("run: node [{}]: ExecutionException: {}",
+                        getNodeId(), e.getMessage());
+                return;
+            } catch (final InterruptedException e) {
+                LOG.debug("run: node [{}]: InterruptedException: {}",
+                        getNodeId(), e.getMessage());
+                return;
+            }
+            LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", links.size());
+            storeTimeTetraLldpLinks(links, new TimeTetraLldpLocPortGetter(peer,
+                    getLocationAwareSnmpClient(),
+                    getLocation(), getNodeId()));
+        } else {
+            LOG.info("run: {} remote table entry found walking LLDP-MIB", links.size());
+            storeLldpLinks(links,
+                    new LldpLocPortGetter(peer,
+                            getLocationAwareSnmpClient(),
+                            getLocation(), getNodeId()));
         }
-        
         m_lldpTopologyService.reconcile(getNodeId(),now);
     }
 
+    private void storeTimeTetraLldpLinks(List<LldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
+        for (LldpLink link : links) {
+            m_lldpTopologyService.store(getNodeId(), timeTetraLldpLocPortGetter.getLldpLink(link));
+        }
+    }
+
+    private void storeLldpLinks(List<LldpLink> links, final LldpLocPortGetter lldpLocPortGetter) {
+        for (LldpLink link : links) {
+            m_lldpTopologyService.store(getNodeId(), lldpLocPortGetter.getLldpLink(link));
+        }
+    }
 	@Override
 	public String getName() {
 		return "NodeDiscoveryLldp";
