@@ -1,0 +1,50 @@
+[[data-types]]
+= Data Types
+
+{page-component-title} supports collecting a variety of different data types as defined by https://datatracker.ietf.org/doc/html/rfc2578#section-7.1[RFC 2578].
+When defining data collection definition files, use the closest match to the type of data provided by the node.
+
+== Counter
+
+The counter type represents values that continue to increase over time.
+The device may present this type with a non-negative integer with a maximum of either a 32-bit or 64-bit upper limit.
+{page-component-title} stores both of these the same, and you can use `COUNTER`, `COUNTER32`, and `COUNTER64` interchangeably in data collection definitions to refer to this data type.
+When a counter reaches the upper limit, the value resets to zero and continues to increment.
+
+== Gauge
+
+The gauges type represents values that may fluctuate up or down to reflect the current state of a given metric.
+The device may present this type with a non-negative number with a maximum of either a 32-bit or 64-bit upper limit.
+{page-component-title} stores both of these the same, and you can use `GAUGE`, `GAUGE32`, and `GAUGE64` interchangeably in data collection definitions to refer to this data type.
+
+== Integer
+
+The integer type represents values that represent a number between -2^31 and 2^31-1 (-2147483648 to 2147483647 decimal).
+{page-component-title} stores both of these the same, and you can use `INTEGER`, `INTEGER32`, and `INTEGER64` interchangeably in data collection definitions to refer to this data type.
+You can also use integers to represent a named-number enumeration status value.
+
+== IpAddress
+
+The IpAddress type represents a 32-bit internet address.
+
+NOTE: The IpAddress type is a tagged type for historical reasons.
+Use a `STRING` value to represent network addresses.
+
+== OctetString
+
+The OctetString type represents arbitrary binary or textual data presented as a hex string.
+
+== Opaque
+
+The Opaque type is provided solely for backward-compatibility.
+Do not use it for newly defined object types.
+
+== String
+
+String values are stored differently from the other numeric data types.
+Only the most recent string value is persisted to disk.
+Retrieve stored values with the xref:development:rest/resources.adoc[Resources API].
+
+== TimeTicks
+
+The timeticks type represents values comparing hundredths of seconds between two epoch timestamps.
