@@ -7,7 +7,16 @@ let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
 let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
 let getProvisionD = '/opennms/rest/cm/provisiond/default'
 const nodeData = axios.get(url)
-const apigetProvisionD = axiosAuth.get(getProvisionD)
+const apigetProvisionD = axiosAuth
+  .get(getProvisionD)
+  .then((response: any) => {
+    if (response.data) {
+      return response
+    }
+  })
+  .catch((err: any) => {
+    console.error('apiTypes Error ==>', err)
+  })
 
 const getDropdownTypes = axios
   .get(typesUrl)
