@@ -200,4 +200,9 @@
     <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
   </feature>
 
+  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+  </feature>
+
 </features>

@@ -3,10 +3,10 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:11.0.9.11-3.6.3-b5958
+      - image: opennms/build-env:11.0.12.0.7-3.6.3-b7295
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk11-b6222
+      - image: opennms/build-env:debian-jdk11-b7291
   docker-executor:
     docker:
       - image: docker:20.10.1-git
@@ -447,7 +447,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -462,8 +462,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -891,18 +890,25 @@ jobs:
               install --batch-mode
             # javadoc
             date
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
-              -Daether.connector.resumeDownloads=false \
-              -Daether.connector.basic.threads=1 \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-              -DmaxCpus=<< parameters.number-vcpu >> \
-              -Pbuild-bamboo \
-              -Prun-expensive-tasks \
-              -Dopennms.home=/opt/opennms \
-              javadoc:aggregate --batch-mode
-            date
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*)
+                ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+                  -DupdatePolicy=never \
+                  -Daether.connector.resumeDownloads=false \
+                  -Daether.connector.basic.threads=1 \
+                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                  -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+                  -DmaxCpus=<< parameters.number-vcpu >> \
+                  -Pbuild-bamboo \
+                  -Prun-expensive-tasks \
+                  -Dopennms.home=/opt/opennms \
+                  javadoc:aggregate --batch-mode
+                date
+                ;;
+              *)
+                echo "Skipping Javadoc compilation; it is enabled only on master/release branches."
+                ;;
+            esac
       - run:
           name: Build Minion OCI
           command: |
@@ -923,9 +929,11 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.flows.classification.internal.value;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.opennms.core.network.IPPortRange;
@@ -62,12 +61,17 @@ public class PortValue implements RuleValue<Integer, PortValue> {
         this.ranges = ranges;
     }
 
-    public Collection<IPPortRange> getPortRanges() {
+    public List<IPPortRange> getPortRanges() {
         return ranges;
     }
 
     public boolean matches(int port) {
-        return ranges.stream().anyMatch(r -> r.contains(port));
+        for (var r: ranges) {
+            if (r.contains(port)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
