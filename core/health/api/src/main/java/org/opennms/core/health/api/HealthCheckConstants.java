@@ -37,6 +37,7 @@ public final class HealthCheckConstants {
     public static final String MINION = "minion";
     public static final String ELASTIC = "elastic";
     public static final String BUNDLE = "bundle";
+    public static final String PASSIVE = "passive";
 
     private HealthCheckConstants() {
     }

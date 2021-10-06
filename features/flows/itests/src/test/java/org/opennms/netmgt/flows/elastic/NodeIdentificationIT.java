@@ -105,7 +105,7 @@ public class NodeIdentificationIT {
     }
 
     @Test
-    public void testSomething() {
+    public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
         final DocumentEnricher documentEnricher = new DocumentEnricher(
                 new MetricRegistry(), databasePopulator.getNodeDao(), interfaceToNodeCache, sessionUtils, classificationEngine,

@@ -55,8 +55,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGro
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultClassificationService implements ClassificationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultClassificationService.class);
 
     private final ClassificationRuleDao classificationRuleDao;
 
@@ -322,7 +326,11 @@ public class DefaultClassificationService implements ClassificationService {
 
     private <T> T runInTransactionAndThenReload(Supplier<T> supplier) {
         T res = runInTransaction(supplier);
-        classificationEngine.reload();
+        try {
+            classificationEngine.reload();
+        } catch (InterruptedException e) {
+            LOG.error("reload was interrupted", e);
+        }
         return res;
     }
 
