@@ -2,10 +2,7 @@
   <div class="card">
     <div class="feather-row">
       <div class="feather-col-3">
-        <FeatherInput
-          @update:modelValue="searchFilterHandler"
-          label="Search node label"
-        />
+        <FeatherInput @update:modelValue="searchFilterHandler" label="Search node label" />
       </div>
     </div>
     <div class="feather-row">
