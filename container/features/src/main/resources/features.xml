@@ -171,8 +171,8 @@
         <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
-    <feature name="javax.mail" version="1.4.5" description="javax.mail">
-        <bundle>mvn:javax.mail/mail/1.4.5</bundle>
+    <feature name="javax.mail" version="1.6.7" description="javax.mail">
+        <bundle>mvn:com.sun.mail/jakarta.mail/1.6.7</bundle>
     </feature>
     <feature name="javax.servlet" version="${servletApiVersion}" description="javax.servlet">
         <bundle start-level="30">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
