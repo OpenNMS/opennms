@@ -2479,12 +2479,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>javamail-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3800,9 +3794,9 @@
         <version>1.5.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>1.4.5</version>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>1.6.7</version>
       </dependency>
       <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
