@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -86,6 +82,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import static org.junit.Assert.*;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -109,6 +107,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         p.setProperty("log4j.logger.org.opennms.mock.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.core.test.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
@@ -522,7 +521,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config02 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr002_IP));
         LldpLocalGroupTracker lldpLocalGroup01 = new LldpLocalGroupTracker();
         LldpLocalGroupTracker lldpLocalGroup02 = new LldpLocalGroupTracker();
-        final List<LldpLink> links = new ArrayList<>();
+        final List<LldpLink> links01 = new ArrayList<>();
+        final List<LldpLink> links02 = new ArrayList<>();
 
         try {
             m_client.walk(config01,lldpLocalGroup01)
@@ -542,12 +542,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         LldpElement lldpElement01 = lldpLocalGroup01.getLldpElement();
         LldpElement lldpElement02 = lldpLocalGroup02.getLldpElement();
-        System.err.println("01 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
-        System.err.println("01 local chassis id: " + lldpElement01.getLldpChassisId());
-        System.err.println("01 local sysname: " + lldpElement01.getLldpSysname());
-        System.err.println("02 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
-        System.err.println("02 local chassis id: " + lldpElement02.getLldpChassisId());
-        System.err.println("02 local sysname: " + lldpElement02.getLldpSysname());
+        LOG.warn("01 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
+        LOG.warn("01 local chassis id: " + lldpElement01.getLldpChassisId());
+        LOG.warn("01 local sysname: " + lldpElement01.getLldpSysname());
+        LOG.warn("02 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
+        LOG.warn("02 local chassis id: " + lldpElement02.getLldpChassisId());
+        LOG.warn("02 local sysname: " + lldpElement02.getLldpSysname());
 
         assertEquals(ZHBGO1Zsr001_LLDP_ID, lldpElement01.getLldpChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement01.getLldpChassisIdSubType());
@@ -591,12 +591,11 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 = new TimeTetraLldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
-
-
-                System.err.println("----------01 timetetra lldp rem----------------");
                 assertEquals(6, row.getColumnCount());
                 LldpLink link = row.getLldpLink();
-                links.add(link);
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links01.add(link);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
@@ -605,11 +604,11 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
             public void processLldpRemRow(final LldpRemRow row) {
 
-
-                System.err.println("----------02 timetetra lldp rem----------------");
                 assertEquals(6, row.getColumnCount());
                 LldpLink link = row.getLldpLink();
-                links.add(link);
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links02.add(link);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
@@ -631,7 +630,80 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             assertEquals(false, true);
         }
 
-        assertEquals(7,links.size());
+        assertEquals(3,links01.size());
+        assertEquals(4,links02.size());
+
+        final LldpLocPortGetter lldpLocPort01 = new LldpLocPortGetter(config01,
+                m_client,
+                null,0);
+
+        final LldpLocPortGetter lldpLocPort02 = new LldpLocPortGetter(config02,
+                m_client,
+                null,1);
+
+        for (LldpLink link01: links01) {
+            assertNull(link01.getLldpPortId());
+            assertNull(link01.getLldpPortIdSubType());
+            assertNull(link01.getLldpPortDescr());
+
+            LldpLink updated = lldpLocPort01.getLldpLink(link01);
+            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
+            assertEquals("",updated.getLldpPortDescr());
+        }
+
+        for (LldpLink link02: links02) {
+            assertNull(link02.getLldpPortId());
+            assertNull(link02.getLldpPortIdSubType());
+            assertNull(link02.getLldpPortDescr());
+
+            LldpLink updated = lldpLocPort01.getLldpLink(link02);
+            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
+            assertEquals("",updated.getLldpPortDescr());
+        }
+
+        final TimeTetraLldpLocPortGetter ttlldpLocPort01 = new TimeTetraLldpLocPortGetter(config01,
+                m_client,
+                null,0);
+
+        final TimeTetraLldpLocPortGetter ttlldpLocPort02 = new TimeTetraLldpLocPortGetter(config02,
+                m_client,
+                null,1);
+
+        for (LldpLink link01: links01) {
+            assertEquals("\"Not Found On lldpLocPortTable\"",link01.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link01.getLldpPortIdSubType());
+            assertEquals("",link01.getLldpPortDescr());
+
+            LldpLink updated = ttlldpLocPort01.getLldpLink(link01);
+            assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+            assertNotEquals("",updated.getLldpPortDescr());
+            LOG.warn("01 ifindex {}",updated.getLldpPortIfindex());
+            LOG.warn("01 portid {}",updated.getLldpPortId());
+            LOG.warn("01 portdescr {}",updated.getLldpPortDescr());
+            LOG.warn("01 rem portid {}",updated.getLldpRemPortId());
+            LOG.warn("01 rem portdescr {}",updated.getLldpRemPortDescr());
+        }
+
+        for (LldpLink link02: links02) {
+            assertEquals("\"Not Found On lldpLocPortTable\"",link02.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link02.getLldpPortIdSubType());
+            assertEquals("",link02.getLldpPortDescr());
+
+            LldpLink updated = ttlldpLocPort02.getLldpLink(link02);
+            assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+            assertNotEquals("",updated.getLldpPortDescr());
+            LOG.warn("02 ifindex {}",updated.getLldpPortIfindex());
+            LOG.warn("02 portid {}",updated.getLldpPortId());
+            LOG.warn("02 portdescr {}",updated.getLldpPortDescr());
+            LOG.warn("02 rem portid {}",updated.getLldpRemPortId());
+            LOG.warn("02 rem portdescr {}",updated.getLldpRemPortDescr());
+
+        }
+
 
     }
 
