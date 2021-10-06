@@ -35,7 +35,7 @@ The following are standard parameters available on most resources (noted below):
 |===
 | Parameter   | Description
 | `limit`     | integer, limiting the number of results. This is particularly handy on events and notifications, where an accidental call with no limit could result in many thousands of results being returned, killing either the client or the server. If set to 0, then no limit applied.
-| `offset`    | integer, being the numeric offset into the result set from which results should start being returned. For exmpale, if there are 100 result entries, offset is 15, and limit is 10, then entries 15-24 will be returned. Used for pagination
+| `offset`    | integer, being the numeric offset into the result set from which results should start being returned. For example, if there are 100 result entries, offset is 15, and limit is 10, then entries 15-24 will be returned. Used for pagination
 2+| *Filtering*: All properties of the entity being accessed can be specified as parameters in either the URL (for GET) or the form value (for PUT and POST). If so, the value will be used to add a filter to the result. By default, the operation is equality, unless the `comparator` parameter is sent, in which case it applies to *all* comparisons in the filter. Multiple properties will result in an `AND` operation between the filter elements. Available comparators are:
 | `eq`        | Checks for equality
 | `ne`        | Checks for non-equality
@@ -66,7 +66,7 @@ Take `/events` as an example.
 | `/events?eventAckTime=notnull`                                                     | Returns the first 10 events that have a non-null Ack time (i.e., those that have been acknowledged).
 | `/events?eventAckTime=notnull&id=100&comparator=gt&limit=20`                       | Returns the first 20 events that have a non-null Ack time and an ID greater than 100. Note that the notnull value causes the comparator to be ignored for eventAckTime.
 | `/events?eventAckTime=2008-07-28T04:41:30.530%2B12:00&id=100&comparator=gt&limit=20` | Returns the first 20 events that have were acknowledged after 28th July 2008 at 4:41 a.m. (+12:00), and an ID greater than 100.  Note that the same comparator applies to both property comparisons. Also note that you must URL encode the plus sign when using GET.
-| `/events?orderBy=id&order=desc`                                                    | ReturnS the 10 latest events inserted (probably, unless you've been messing with the IDs).
+| `/events?orderBy=id&order=desc`                                                    | Returns the 10 latest events inserted (probably, unless you've been messing with the IDs).
 ifndef::opennms-prime[]
 | `/events?location.id=MINION`                                                       | Returns the first 10 events associated with some node in location 'MINION'
 endif::opennms-prime[]

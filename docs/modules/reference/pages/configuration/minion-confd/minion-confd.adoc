@@ -20,7 +20,7 @@ http-url: "<http url>"
 id: "<id>"
 location: "<location>"
 ```
-Writes specified configuartion to `etc/org.opennms.minion.controller.cfg`.
+Writes specified configuration to `etc/org.opennms.minion.controller.cfg`.
 
 === User/Password
 It is not possible to supply the http or broker username/password via yaml file for configuration via confd.
@@ -117,7 +117,7 @@ telemetry:
             NXOS-Listener:
                 class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
                 parameters:
-                    # List all the parameters you wish to specifiy here
+                    # List all the parameters you wish to specify here
                     port: 50002
                 parsers:
                     # List all the parsers you wish to specify here
