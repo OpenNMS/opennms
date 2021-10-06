@@ -128,7 +128,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
         // Check current type -> needs to be an object to create children
         // Special case where parent is a simple type with an attribute
-        if (currentConfigItem.isPrimitiveType(currentConfigItem.getType())) {
+        if (currentConfigItem.isPrimitiveType()) {
             // Make a duplicate of the current item for the primitive type; current then becomes an object with children
             ConfigItem child = new ConfigItem();
             child.setName(currentConfigItem.getName());
@@ -140,36 +140,63 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             currentConfigItem.setSchemaRef("");
             currentConfigItem.getChildren().add(child);
         }
+//        else {
+//            System.out.println("HERE!!!");
+//            System.out.println(xmlSchemaAttrInfo);
+//            System.out.println("ATT:" + xmlSchemaAttrInfo.getAttribute().getName());
+//            if(xmlSchemaAttrInfo.getAttribute().getRef().getTarget() != null)
+//                System.out.println("REF:" + xmlSchemaAttrInfo.getAttribute().getRef().getTarget().getName());
+//
+//
+//            System.out.println(xmlSchemaElement.getQName().getNamespaceURI());
+//
+//                       System.out.println("HERE!!! END");
+//
+//            ConfigItem child = new ConfigItem();
+//            child.setName(currentConfigItem.getName());
+//            child.setType(currentConfigItem.getType());
+//            child.setSchemaRef(currentConfigItem.getSchemaRef());
+//            child.setRequired(currentConfigItem.isRequired());
+//
+//            currentConfigItem.setType(ConfigItem.Type.OBJECT);
+//            currentConfigItem.setSchemaRef("");
+//            currentConfigItem.getChildren().add(child);
+//
+//        }
     }
 
     private static void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         if (facets != null) {
-            List<XmlSchemaRestriction> minfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
-            if ((minfacets != null) && (minfacets.size() > 0)) {
-                // Should only be one minimum specified
-                XmlSchemaRestriction minRestriction = minfacets.get(0);
-                Object minVal = minRestriction.getValue();
-                if (minVal instanceof String) {
-                    String minString = (String) minVal;
-                    long minLong = Long.valueOf(minString);
-                    item.setMin(minLong);
+            if(item.getType() == ConfigItem.Type.STRING){
+                List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
+                if ((patternFacets != null) && (patternFacets.size() > 0)) {
+                    XmlSchemaRestriction restriction = patternFacets.get(0);
+                    Object obj = restriction.getValue();
+                    if (obj instanceof String) {
+                        item.setPattern((String) obj);
+                    }
                 }
-            }
+            } else {
+                List<XmlSchemaRestriction> minfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
+                if ((minfacets != null) && (minfacets.size() > 0)) {
+                    // Should only be one minimum specified
+                    XmlSchemaRestriction minRestriction = minfacets.get(0);
+                    Object minVal = minRestriction.getValue();
+                    if (minVal instanceof String) {
+                        item.setMin(Long.valueOf((String) minVal));
+                    }
+                }
 
-            List<XmlSchemaRestriction> maxfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MAX);
-            if ((maxfacets != null) && (maxfacets.size() > 0)) {
-                // Should only be one minimum specified
-                XmlSchemaRestriction maxRestriction = maxfacets.get(0);
-                Object maxVal = maxRestriction.getValue();
-                if (maxVal instanceof String) {
-                    String maxString = (String) maxVal;
-                    long maxLong = Long.valueOf(maxString);
-                    if (maxLong != Integer.MAX_VALUE) {
-                        item.setMax(maxLong);
+                List<XmlSchemaRestriction> maxfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MAX);
+                if ((maxfacets != null) && (maxfacets.size() > 0)) {
+                    // Should only be one minimum specified
+                    XmlSchemaRestriction maxRestriction = maxfacets.get(0);
+                    Object maxVal = maxRestriction.getValue();
+                    if (maxVal instanceof String) {
+                        item.setMax(Long.valueOf((String) maxVal));
                     }
                 }
             }
-
         }
     }
 
@@ -215,6 +242,9 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         ConfigItem configItem = new ConfigItem();
         configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
+        if("operator".equals(configItem.getName())){
+            System.out.println("HERE!!!");
+        }
         configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
         configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
         configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse()));
