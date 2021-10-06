@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+    <xs:element name="snmp-metadata-config">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="config">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                  <xs:complexType mixed="true">
+                    <xs:sequence>
+                      <xs:element name="entry" maxOccurs="unbounded" minOccurs="0">
+                        <xs:complexType>
+                          <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                              <xs:attribute type="xs:float" name="tree" use="required"/>
+                              <xs:attribute type="xs:string" name="name" use="required"/>
+                              <xs:attribute type="xs:string" name="index" use="optional"/>
+                            </xs:extension>
+                          </xs:simpleContent>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute type="xs:string" name="tree" use="required"/>
+                    <xs:attribute type="xs:string" name="name" use="required"/>
+                    <xs:attribute type="xs:string" name="index" use="optional"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute type="xs:string" name="tree" use="required"/>
+              <xs:attribute type="xs:string" name="name" use="required"/>
+              <xs:attribute type="xs:string" name="sysObjectId" use="required"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+
+  <!--
+
+
+<xs:element name="snmp-metadata-adapter-configuration" type="snmpMetadataConfigurationDefinition"/>
+
+  <xs:complexType name="entryDefinition">
+    <xs:sequence>
+      <xs:element ref="entry" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="tree" type="xs:string"  use="required"/>
+    <xs:attribute name="index" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="configDefinition">
+  <xs:sequence>
+    <xs:element ref="entry" maxOccurs="unbounded" minOccurs="0"/>
+  </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="tree" type="xs:string"  use="required"/>
+    <xs:attribute name="index" type="xs:string"/>
+    <xs:attribute name="context" type="xs:string" use="required"/>
+    <xs:attribute name="sysObjectId" type="xs:string" use="required"/>
+  </xs:complexType>
+
+<xs:complexType name="snmpMetadataConfigurationDefinition">
+  <xs:sequence>
+    <xs:element ref="config" maxOccurs="unbounded" minOccurs="0"/>
+  </xs:sequence>
+</xs:complexType>
+
+  <xs:element name="config" type="configDefinition"/>
+  <xs:element name="entry" type="entryDefinition"/>
+-->
+
+

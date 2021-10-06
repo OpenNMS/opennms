@@ -63,7 +63,7 @@ Each polling package contains an RRD definition.
 </rrd>
 ----
 <1> Polling interval for all services in this polling package is reflected in the step of size 300 seconds.
-    All services in this package have to be polled in a 5-minute interval, otherwise response time measurements are not persiste correctly.
+    All services in this package have to be polled in a 5-minute interval, otherwise response time measurements are not persisted correctly.
 <2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
 <3> 12 steps average persisted 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
 <4> 288 steps average persisted 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
@@ -71,7 +71,7 @@ Each polling package contains an RRD definition.
 <6> 288 steps minimum from 24 h persisted for 366 d.
 
 WARNING: The RRD configuration and the service polling interval must be aligned.
-         #In other cases# the persisted response time data is not correctly displayed in the response time graph.
+         In other cases, the persisted response time data is not correctly displayed in the response time graph.
 
 IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
 
@@ -168,9 +168,9 @@ image::service-assurance/03_polling-package.png[]
 [[ga-pollerd-packages-patterns]]
 == Service Patterns
 
-Usually, the poller used to monitor a pervice is found by the matching the poller's name with the service name.
-In addition, you can find a matching poller if an additional element `pattern` is specified for the poller.
-If so, the poller is used for all services matching the RegEx pattern, too.
+Usually, the poller used to monitor a service is found by the matching the poller's name with the service name.
+There is an option for you to match poller if an additional element `pattern` is specified.
+If so, the poller is used for all services matching the RegEx pattern.
 
 The RegEx pattern lets you specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
@@ -190,19 +190,19 @@ There will be two variables (`${pattern:vhost}` and `${pattern:port}`), which yo
 
 Use the service pattern mechanism whenever there are multiple instances of a service on the same interface.
 By specifying a distinct service name for each instance, the services is identifiable, but there is no need to add a poller definition per service.
-Common use cases for such services are HTTP virtual hosts, where multiple web applications run on the same web server or BGP session monitoring where each router has multiple neighbours.
+Common use cases for such services are HTTP virtual hosts, where multiple web applications run on the same web server or BGP session monitoring where each router has multiple neighbors.
 
 [[ga-pollerd-packages-test-service-manually]]
 == Test Services on Manually
 
 For troubleshooting it is possible to run a test via the Karaf shell:
-[source]
+[source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
 
 Once in the shell, you can print show the commands help as follows:
-[source]
+[source, console]
 ----
 opennms> opennms:poll --help
 DESCRIPTION
@@ -244,7 +244,7 @@ OPTIONS
 The following example runs the ICMP monitor on a specific IP interface.
 
 .Run ICMP monitor configuration defined in specific Polling Package
-[source]
+[source, console]
 ----
 opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
@@ -253,7 +253,7 @@ The output is verbose, which lets you debug monitor configurations.
 Important output lines are shown as the following:
 
 .Important output testing a service on the CLI
-[source]
+[source, console]
 ----
 Package: example1 <1>
 Service: ICMP <2>
@@ -278,15 +278,17 @@ Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMon
 == Test filters on Karaf Shell
 
 Filters are ubiquitous in opennms configurations with <filter> syntax.
-Use this Karaf shell to verify filters. For more information, see https://wiki.opennms.org/wiki/Filters[Filters].
-[source]
+Use this Karaf shell to verify filters.
+For more information, see https://wiki.opennms.org/wiki/Filters[Filters].
+
+[source, console]
 ----
 ssh -p 8101 admin@localhost
 ----
 
 Once in the shell, print command help as follows:
 
-[source]
+[source, console]
 ----
 opennms> opennms:filter --help
 DESCRIPTION
@@ -299,12 +301,12 @@ ARGUMENTS
                 A filter Rule
 ----
 For ex: Run a filter rule that match a location
-[source]
+[source, console]
 ----
 opennms:filter  "location='MINION'"
 ----
 Output is displayed as follows
-[source]
+[source, console]
 ----
 nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
 	IpAddresses:
@@ -312,12 +314,12 @@ nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
 ----
 Another example: Run a filter that matches a node location and for a given IP address range.
 Refer to https://wiki.opennms.org/wiki/IPLIKE[IPLIKE] for more info on using IPLIKE syntax.
-[source]
+[source, console]
 ----
 opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 ----
 Output is displayed as follows:
-[source]
+[source, console]
 ----
 nodeId=3 nodeLabel=label1 location=Default
 	IpAddresses:

@@ -8,10 +8,10 @@ If the response is a valid NTP response, the service is considered available.
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.NtpMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.NtpMonitor`
 |===
 
 == Configuration and use
@@ -20,10 +20,21 @@ If the response is a valid NTP response, the service is considered available.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter | Description                                                | Default value
-| port    | The destination port to send the NTP.  | 123
-| retry   | Number of attempts to get a response.                      | 0
-| timeout | Time in milliseconds to wait for a response.               | 5000
+| Parameter
+| Description
+| Default
+
+| port
+| The destination port to send the NTP.
+| 123
+
+| retry
+| Number of attempts to get a response.
+| 0
+
+| timeout
+| Time in milliseconds to wait for a response.
+| 5000
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

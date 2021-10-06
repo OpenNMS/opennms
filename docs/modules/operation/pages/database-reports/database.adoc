@@ -146,15 +146,34 @@ Each data source should return a number of fields, which you can use in the repo
 The Measurement Datasource supports the following fields:
 
 [options="header"]
-[cols="1,1,3"]
+[cols="1,3,1"]
 |===
-| Field name  | Field type         | Field description
-| label  | java.lang.Double | Each source defined as `transient=false` can be used as a field.
-                                                        The name of the field is the label; for example, `IfInOctets`.
-| timestamp | java.util.Date   | The timestamp of the sample.
-| step      | java.lang.Long   | The step size of the response. Returns the same value for all rows.
-| start     | java.lang.Long   | The start timestamp in milliseconds of the response. Returns the same value for all rows.
-| end       | java.lang.Long   | The end timestamp in milliseconds of the response. Returns the same value for all rows.
+| Name
+| Description
+| Type
+
+
+| label
+| Each source defined as `transient=false` can be used as a field.
+The name of the field is the label; for example, `IfInOctets`.
+| java.lang.Double
+
+| timestamp
+| The timestamp of the sample.
+| java.util.Date
+
+| step
+| The step size of the response. Returns the same value for all rows.
+| java.lang.Long
+
+| start
+| The start timestamp in milliseconds of the response. Returns the same value for all rows.
+| java.lang.Long
+
+| end
+| The end timestamp in milliseconds of the response. Returns the same value for all rows.
+| java.lang.Long
+
 |===
 
 For more details about the response, see the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
@@ -179,7 +198,7 @@ In addition to the queryString, the following JasperReports parameters are suppo
 == Disable scheduler
 
 When you need to disable the scheduler executing the reports, set the system property `opennms.report.scheduler.enabled` to false.
-You can set this in `$OPENNMS_HOME/etc/opennms.properties` or `OPENNMS_HOME/etc/opennms.properties.d/<my-properties-file>.properties`.
+You can set this in a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
 [[ga-database-reports-helper-methods]]
 == Helper methods
@@ -188,30 +207,37 @@ There are a few helper methods to help create reports in {page-component-title}.
 
 These helpers come with the Measurement Datasource.
 
-.Supported helper methods
+.Supported helper methods for the `org.opennms.netmgt.jasper.helper.MeasurementsHelper` class
 [options="header"]
-[cols="2,2,2"]
+[cols="2,3a"]
 |===
-| Helper class                                          | Helper method                                                     | Description
-| `org.opennms.netmgt.jasper.helper.MeasurementsHelper` | `getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)` | Generates a node source descriptor according to the input parameters. Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned.
-                                                                                                                              `nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not null.
-                                                                                                                              Otherwise `node[nodeId]` is always returned. +
-                                                                                                                              +
-                                                                                                                              `nodeId` : String, the ID of the node +
-                                                                                                                              `foreignSource`: String, the foreign source of the node. May be null. +
-                                                                                                                              `foreignId`: String, the foreign ID of the node. May be null. +
-                                                                                                                              +
-                                                                                                                              For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptor use>>.
-| `org.opennms.netmgt.jasper.helper.MeasurementsHelper` | `getInterfaceDescriptor(snmpifname, snmpifdescr, snmphysaddr)`    | Returns the interface descriptor of a given interface; for example, `en0-005e607e9e00`.
-                                                                                                                              The input parameters are prioritized. If an `snmpifdescr` is specified, it is used instead of the `snmpifname`.
-                                                                                                                              If a `snmpifdescr` is defined, it will be appended to `snmpifname`/`snmpifdescr`. +
-                                                                                                                              +
-                                                                                                                              `snmpifname`: String, the interface name of the interface; for example, `en0`. May be null. +
-                                                                                                                              `snmpifdescr`: String, the description of the interface; for example, `en0`. May be null. +
-                                                                                                                              `snmphyaddr`: String, the MAC address of the interface; for example, `005e607e9e00`. May be null. +
-                                                                                                                              As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined. +
-                                                                                                                              +
-                                                                                                                              For more details, see <<ga-database-reports-interface-descriptor, Interface descriptor use>>.
+| Helper method
+| Description
+
+| getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)
+| Generates a node source descriptor according to the input parameters.
+Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned. +
+`nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not null.
+Otherwise, `node[nodeId]` is returned.
+
+* *nodeId*: String, the ID of the node.
+* *foreignSource*: String, the foreign source of the node. May be null.
+* *foreignId*: String, the foreign ID of the node. May be null.
+
+For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptor use>>.
+
+| getInterfaceDescriptor(snmpifname, snmpifdescr, snmpphysaddr)
+| Returns the interface descriptor of a given interface; for example, `en0-005e607e9e00`.
+The input parameters are prioritized. +
+If an `snmpifdescr` is specified, it is used instead of the `snmpifname`. +
+If an `snmpphysaddr` is defined, it will be appended to `snmpifname`/`snmpifdescr`.
+
+* *snmpifname*: String, the interface name of the interface; for example, `en0`. May be null.
+* *snmpifdescr*: String, the description of the interface; for example, `en0`. May be null.
+* *snmpphysaddr*: String, the MAC address of the interface; for example, `005e607e9e00`. May be null.
+As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined.
+
+For more details, see <<ga-database-reports-interface-descriptor, Interface descriptor use>>.
 |===
 
 [[ga-database-reports-node-source-descriptor]]
@@ -275,13 +301,13 @@ Please follow the instructions in this <<operation/ssl/ssl.adoc#ga-operation-ssl
 In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
 
 WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false", an accidentally insecure connection can be established to the Measurements API location.
-         An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false".
+An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false".
 
 [[ga-database-reports-limitations]]
 == Limitations
 
  * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
-   One does not have to use the data source, though.
+One does not have to use the data source, though.
 
 [[pdf-report]]
 == Create PDF reports from Grafana dashboards using {page-component-title}

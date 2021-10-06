@@ -47,18 +47,40 @@ cd ~/project
 ./.circleci/scripts/postgres.sh
 
 echo "#### Installing other dependencies"
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
-curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
-sudo add-apt-repository 'deb http://debian.opennms.org stable main'
+# limit the sources we need to update
+sudo rm -f /etc/apt/sources.list.d/*
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
             sudo apt update && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+                ca-certificates \
+                tzdata \
+                software-properties-common \
+                debconf-utils
+
+# install some keys
+curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
+
+# limit more sources and add mirrors
+echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
+sudo add-apt-repository 'deb http://debian.opennms.org stable main'
+
+# add the R repository
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+
+sudo apt-get update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
-            sudo apt -y install debconf-utils && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt install -f r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6 || exit 1
+            sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                r-base \
+                "rrdtool=$RRDTOOL_VERSION" \
+                jrrd2 \
+                jicmp \
+                jicmp6 \
+            || exit 1
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 echo "#### Building Assembly Dependencies"
