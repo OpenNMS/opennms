@@ -31,6 +31,7 @@
       <cm:property name="kafkaSendQueueCapacity" value="1000"/>
       <cm:property name="startAlarmSyncWithCleanState" value="false"/>
       <cm:property name="numEventListenerThreads" value="4"/>
+      <cm:property name="nodeAsyncUpdateThreads" value="10"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -64,6 +65,7 @@
     <argument ref="configAdmin"/>
     <argument ref="eventSubscriptionService"/>
     <argument ref="onmsTopologyDao"/>
+    <argument value="${nodeAsyncUpdateThreads}"/>
 
     <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
     <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>

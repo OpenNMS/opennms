@@ -41,13 +41,13 @@ class PortMatcher implements Matcher {
     private final Function<ClassificationRequest, Integer> valueExtractor;
     private final PortValue value;
 
-    protected PortMatcher(String ports, Function<ClassificationRequest, Integer> valueExtractor) {
-        this.value = new PortValue(ports);
+    protected PortMatcher(PortValue ports, Function<ClassificationRequest, Integer> valueExtractor) {
+        this.value = ports;
         this.valueExtractor = Objects.requireNonNull(valueExtractor);
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        return this.value.getPorts().contains(valueExtractor.apply(request));
+        return this.value.matches(valueExtractor.apply(request));
     }
 }

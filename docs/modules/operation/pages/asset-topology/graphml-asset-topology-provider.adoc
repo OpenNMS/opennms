@@ -12,7 +12,7 @@ This lets you order nodes physically and logically, which makes it easier to rep
 The structure of the generated topology is determined by the `assetLayers` configuration constant that users can set.
 To illustrate how this works, consider the following configuration:
 
-[source]
+[source, properties]
 ----
 assetLayers=asset-region,asset-building
 ----
@@ -99,7 +99,7 @@ Define filters using the same asset table keys that are available for the `asset
 
 Thus, the following configuration means include only nodes with region north or south but exclude all nodes with building 23.
 
-[source]
+[source, properties]
 ----
 filter=asset-region=north,south;asset-building=!23
 ----
@@ -108,7 +108,7 @@ Thus we can select based on multiple separate node categories.
 
 The following configuration means show routers and servers on all buildings except building 23.
 
-[source]
+[source, properties]
 ----
 filter=node-categories=routers,servers;asset-building=!23
 ----
@@ -124,7 +124,7 @@ You can also negate a regular expression by preceding it with !~.
 
 The following example matches against regions "Stuttgart" and "Isengard" and any building name that ends in 4.
 
-[source]
+[source, properties]
 ----
 filter=asset-region=~.*gar(t|d);asset-building=~.*4
 ----
@@ -136,18 +136,18 @@ The persisted definitions mean that it is possible to regenerate graphs without 
 
 The Asset Topology Provider persists GraphML graphs alongside any other GraphML graphs in the directory.
 
-[source]
+[source, path]
 ----
-$OPENNMS_HOME/etc/graphml
+${OPENNMS_HOME}/etc/graphml
 ----
 
 Note that if you use REST or any other means to generate other GraphML graphs, you should ensure that the providerIds and labels are distinct from those the Asset Topology Provider uses.
 
 The asset graph definitions for the Asset Topology Provider are persisted to the following xml configuration file:
 
-[source]
+[source, path]
 ----
-$OPENNMS_HOME/etc/org.opennms.features.topology.plugins.topo.asset.xml
+${OPENNMS_HOME}/etc/org.opennms.features.topology.plugins.topo.asset.xml
 ----
 
 Normally you should not edit this file directly but use the Karaf console or events to define new graphs.
@@ -200,35 +200,41 @@ ssh admin@localhost -p 8101
 
 The following commands are available
 
-[options="header"]
-[cols="1,3,3"]
+[options="header" "autowidth"]
+[cols="1,2,3"]
 |===
-| Command                    | Description               | Options
-| opennms:asset-topo-create  | Creates asset topology.   |
-(Uses the default settings if a particular setting is not included in the command.)
+| Command
+| Description
+| Options
 
--l, --label : Asset topology label (shows in topology menu) (Default: asset)
-
--i, --providerId : Unique providerId of asset topology (Default: Asset Topology Provider)
-
--f, --filter : Optional node filter (Default: empty filter; in other words, allow all nodes)
-
--a, --assetLayers : Comma-separated list of asset layers (Default: asset-region,asset-building,asset-rack)
-
--p, --preferredLayout : Preferred Layout (Default: Grid Layout)
-
--b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT)
+| opennms:asset-topo-create
+| Creates asset topology.
+| (Uses the default settings if a particular setting is not included in the command.) +
+-l, --label : Asset topology label (shows in topology menu) (Default: asset) +
+-i, --providerId : Unique providerId of asset topology (Default: Asset Topology Provider) +
+-f, --filter : Optional node filter (Default: empty filter; in other words, allow all nodes) +
+-a, --assetLayers : Comma-separated list of asset layers (Default: asset-region,asset-building,asset-rack) +
+-p, --preferredLayout : Preferred Layout (Default: Grid Layout) +
+-b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT) +
 
 If you simply type `asset-topology:create`, a default topology with providerId asset is created.
 
-| opennms:asset-topo-remove        | Removes asset topology.   |
--i, --providerId : Unique providerId of asset topology (Default: asset).
-| opennms:asset-topo-list        | Lists all asset topologies installed.   |
-all : display detailed view including --uriParams string
-| opennms:asset-topo-regenerate        | Regenerates the graphs for the given asset topology definition.   |
--i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
-| opennms:asset-topo-regenerateall        | Best-effort regeneration of all asset topologies.
-(If one graph fails, the command tries to complete the rest of the definitions.)   |
+| opennms:asset-topo-remove
+| Removes asset topology.
+| -i, --providerId : Unique providerId of asset topology (Default: asset).
+
+| opennms:asset-topo-list
+| Lists all asset topologies installed.
+| all : display detailed view including --uriParams string
+
+| opennms:asset-topo-regenerate
+| Regenerates the graphs for the given asset topology definition.
+| -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
+
+| opennms:asset-topo-regenerateall
+| Best-effort regeneration of all asset topologies.
+(If one graph fails, the command tries to complete the rest of the definitions.)
+|
 |===
 
 == Create asset-based topologies using {page-component-title} events
@@ -236,16 +242,16 @@ all : display detailed view including --uriParams string
 The Asset Topology Provider listens for events that trigger the generation and installation or removal of topologies.
 The Asset Topology Provider events are defined in the file:
 
-[source]
+[source, path]
 ----
-$OPENNMS_HOME/etc/events/GraphMLAssetPluginEvents.xml
+${OPENNMS_HOME}/etc/events/GraphMLAssetPluginEvents.xml
 ----
 
 These events use the default parameters if parameters are not supplied.
 
 To create a new topology from the current OpenNMS inventory, use the following:
 
-[source]
+[source, console]
 ----
 sudo ./send-event.pl  uei.opennms.plugins/assettopology/create localhost
 
@@ -261,7 +267,7 @@ other sample possible parameters are
 
 To uninstall an asset topology use
 
-[source]
+[source, console]
 ----
 (for default topology providerId)
 sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost
@@ -272,7 +278,7 @@ sudo ./send-event.pl  uei.opennms.plugins/assettopology/remove localhost -p 'pro
 
 To regenerate an existing asset topology use
 
-[source]
+[source, console]
 ----
 (for default topology providerId)
 sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost
@@ -283,7 +289,7 @@ sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerate localhost-p '
 
 To regenerate all existing asset topologies use
 
-[source]
+[source, console]
 ----
 sudo ./send-event.pl  uei.opennms.plugins/assettopology/regenerateall localhost
 ----

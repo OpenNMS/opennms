@@ -8,10 +8,10 @@ Optionally, the banner line the node provides may be parsed and compared against
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.SshMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SshMonitor`
 |===
 
 == Configuration and Use
@@ -20,14 +20,30 @@ Optionally, the banner line the node provides may be parsed and compared against
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter       | Description                                                                               | Default
-| banner        | Regular expression to be matched against the service's banner.                            | n/a
-| client-banner | The client banner that {page-component-title} uses to identify itself to the node. | SSH-1.99-OpenNMS_1.5
-| match        | Regular expression to match against the service's banner. +
-                    Deprecated, please use the banner parameter instead. +
-                    Note that this parameter does take precedence over the banner parameter.            | n/a
-| port          | TCP port to which SSH connection is tried.                                      | 22
-| retry         | Number of attempts to establish the SSH connection.                                    | 0
+| Parameter
+| Description
+| Default
+
+| banner
+| Regular expression to be matched against the service's banner.
+| n/a
+| client-banner
+| The client banner that {page-component-title} uses to identify itself to the node.
+| SSH-1.99-OpenNMS_1.5
+
+| match
+| Regular expression to match against the service's banner. +
+Deprecated, please use the banner parameter instead.
+Note that this parameter does take precedence over the banner parameter.
+| n/a
+
+| port
+| TCP port to which SSH connection is tried.
+| 22
+
+| retry
+| Number of attempts to establish the SSH connection.
+| 0
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
