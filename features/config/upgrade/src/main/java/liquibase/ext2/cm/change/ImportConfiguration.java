@@ -28,9 +28,10 @@
 
 package liquibase.ext2.cm.change;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigSchema;
@@ -48,14 +49,20 @@ import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 
+/**
+ * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
+ */
 @DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
+    private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private String schemaId;
     private String configId;
     private String filePath;
+    private Path archivePath;
+    private Path configFilePath;
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
@@ -63,15 +70,45 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("configId", this.configId);
         validationErrors.checkRequiredField("filePath", this.filePath);
 
+        Optional<Path> configPath = getConfigFile("file:${opennms.home}/etc/");
+        if (configPath.isEmpty() || !Files.exists(configPath.get())) {
+            // fallback
+            configPath = getConfigFile("classpath:defaults/");
+        }
+        if (configPath.isEmpty() || !Files.exists(configPath.get())) {
+            validationErrors.addError(String.format("Cannot find file %s in ${opennms.home}/etc/ or in classpath", this.filePath));
+        } else {
+            this.configFilePath = configPath.get();
+        }
+        checkArchiveDir(validationErrors);
+        return validationErrors;
+    }
+
+    Optional<Path> getConfigFile(String prefix) {
+        String path = prefix + this.filePath;
+        String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
+        path = path.replace("${"+SYSTEM_PROP_OPENNMS_HOME+"}", opennmsHome);
+
         try {
-            File file = ResourceUtils.getFile(this.filePath);
-            if(!file.canRead()) {
-                validationErrors.addError(String.format("Can not find file %s", this.filePath));
+            return Optional.of(ResourceUtils.getFile(path).toPath());
+        } catch(IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    void checkArchiveDir(ValidationErrors validationErrors) {
+        try {
+            String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
+            this.archivePath = Paths.get(opennmsHome, "etc_archive");
+            if (!Files.exists(this.archivePath)) {
+                Files.createDirectory(this.archivePath);
+            }
+            if(!Files.isWritable(this.archivePath)) {
+                validationErrors.addError(String.format("Archive directory %s is not writable.", this.archivePath));
             }
         } catch(Exception e) {
-            validationErrors.addError(String.format("Can not find file %s: %s", this.filePath, e.getMessage()));
+            validationErrors.addError(String.format("Can not find or create archive directory %s: %s", this.archivePath, e.getMessage()));
         }
-        return validationErrors;
     }
 
     @Override
@@ -86,9 +123,16 @@ public class ImportConfiguration extends AbstractCmChange {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
-                        String xmlStr = Files.readString(ResourceUtils.getFile(this.filePath).toPath());
+                        String xmlStr = Files.readString(configFilePath);
                         JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
+                        LOG.info("Configuration with id={} imported.", this.configId);
+                        if(configFilePath.toAbsolutePath().toString().contains("etc")) {
+                            // we imported a user defined config file => move to archive
+                            Path archiveFile = Path.of(this.archivePath + "/" + configFilePath.getFileName());
+                            Files.move(configFilePath, archiveFile); // move to archive
+                            LOG.info("Configuration file {} moved to {}", configFilePath, this.archivePath);
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
