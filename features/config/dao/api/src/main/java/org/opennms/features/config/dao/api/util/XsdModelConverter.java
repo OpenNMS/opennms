@@ -74,7 +74,6 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     @Override
     public void onEnterElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
         currentConfigItem = configItemsByQName.get(xmlSchemaElement.getQName());
-
         if (currentConfigItem == null) {
             ConfigItem.Type baseType = getConfigType(xmlSchemaTypeInfo.getBaseType().name());
             currentConfigItem = new ConfigItem();
@@ -125,7 +124,6 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     @Override
     public void onVisitAttribute(XmlSchemaElement xmlSchemaElement, XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         currentConfigItem.getChildren().add(getConfigItemForAttribute(xmlSchemaAttrInfo));
-
         // Check current type -> needs to be an object to create children
         // Special case where parent is a simple type with an attribute
         if (currentConfigItem.isPrimitiveType()) {
@@ -135,34 +133,10 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());
-
             currentConfigItem.setType(ConfigItem.Type.OBJECT);
             currentConfigItem.setSchemaRef("");
             currentConfigItem.getChildren().add(child);
         }
-//        else {
-//            System.out.println("HERE!!!");
-//            System.out.println(xmlSchemaAttrInfo);
-//            System.out.println("ATT:" + xmlSchemaAttrInfo.getAttribute().getName());
-//            if(xmlSchemaAttrInfo.getAttribute().getRef().getTarget() != null)
-//                System.out.println("REF:" + xmlSchemaAttrInfo.getAttribute().getRef().getTarget().getName());
-//
-//
-//            System.out.println(xmlSchemaElement.getQName().getNamespaceURI());
-//
-//                       System.out.println("HERE!!! END");
-//
-//            ConfigItem child = new ConfigItem();
-//            child.setName(currentConfigItem.getName());
-//            child.setType(currentConfigItem.getType());
-//            child.setSchemaRef(currentConfigItem.getSchemaRef());
-//            child.setRequired(currentConfigItem.isRequired());
-//
-//            currentConfigItem.setType(ConfigItem.Type.OBJECT);
-//            currentConfigItem.setSchemaRef("");
-//            currentConfigItem.getChildren().add(child);
-//
-//        }
     }
 
     private static void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
@@ -242,10 +216,11 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         ConfigItem configItem = new ConfigItem();
         configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
-        if("operator".equals(configItem.getName())){
-            System.out.println("HERE!!!");
+        if(xmlSchemaAttrInfo.getAttribute().getAnnotation() != null){
+            configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
+        } else if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation() != null){
+            configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation()));
         }
-        configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
         configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
         configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse()));
         configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
