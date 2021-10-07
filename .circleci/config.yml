@@ -703,7 +703,7 @@ workflows:
                 - develop
                 - /^master-.*/
                 - /^release-.*/
-                - /features\/CM-Phase1/
+                - /features\/CM-Phase2/
       - sentinel-publish-oci:
           requires:
             - sentinel-rpm-build
