@@ -58,6 +58,25 @@ public class Nms13593EnIT extends EnLinkdBuilderITCase {
         
 	Nms13593NetworkBuilder builder = new Nms13593NetworkBuilder();
     /*
+A:ZHBGO1Zsr001# show system lldp neighbor
+Link Layer Discovery Protocol (LLDP) System Information
+
+===============================================================================
+NB = nearest-bridge   NTPMR = nearest-non-tpmr   NC = nearest-customer
+===============================================================================
+Lcl Port      Scope Remote Chassis ID  Index  Remote Port     Remote Sys Name
+-------------------------------------------------------------------------------
+3/2/c1/1      NB    50:E0:EF:00:06:00  1      1/1/c1/1, 100-* esat-1
+3/2/c3/1      NB    50:E0:EF:00:06:00  2      1/1/c3/1, 100-* esat-1
+3/2/c5/1      NB    24:21:24:DA:F6:3F  3      3/2/c5/1        ZHBGO1Zsr002
+3/2/c6/1      NB    24:21:24:DA:F6:3F  4      3/2/c6/1        ZHBGO1Zsr002
+===============================================================================
+* indicates that the corresponding row element may have been truncated.
+Number of neighbors : 4
+
+two LLDP links must be found
+ZHBGO1Zsr001 (3/2/c5/1) -> ZHBGO1Zsr002 (3/2/c5/1)
+ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
 
      */
 
