@@ -32,7 +32,7 @@ Configure the plugin options by setting the following properties in `$\{OPENNMS_
 | TSRM status for open ticket
 
 | tsrm.status.close
-| TSRM status for close ticket
+| TSRM status for closed ticket
 |===
 
 Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
