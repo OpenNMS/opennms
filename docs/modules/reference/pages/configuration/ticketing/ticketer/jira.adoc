@@ -155,7 +155,7 @@ The following table describes valid values for an OpenNMS attribute.
 | Any string
 
 | date
-| Any date in the format of YYYY-MM-DD
+| Any date in the format YYYY-MM-DD
 
 | datetime
 | Any date-time in ISO 8601 format: YYYY-MM-DDThh:mm:ss.sTZD.
