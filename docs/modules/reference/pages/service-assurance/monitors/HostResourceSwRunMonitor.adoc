@@ -78,7 +78,7 @@ Define the configuration in `poller-configuration.xml` as follows:
 <service name="Process-httpd" interval="300000" user-defined="false" status="on">
     <parameter key="retry" value="3"/>
     <parameter key="timeout" value="3000"/>
-    <parameter key="service-name" value="httpd"/><1>
+    <parameter key="service-name" value="~.*httpd.*"/><1>
     <parameter key="run-level" value="3"/><2>
     <parameter key="match-all" value="true"/><3>
 </service>
