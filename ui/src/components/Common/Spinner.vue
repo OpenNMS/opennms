@@ -1,20 +1,37 @@
 <template>
-	<ProgressSpinner v-if="spinnerState" id="spinner" />
+  <transition name="fade">
+    <div class="spinner" v-if="spinnerState">
+      <FeatherSpinner />
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
-	import { computed } from 'vue'
-	import { useStore } from 'vuex'
-	import ProgressSpinner from 'primevue/progressspinner'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import { FeatherSpinner } from "@featherds/progress"
 
-	const store = useStore()
-	const spinnerState = computed(() => store.state.spinnerModule.spinnerState)
+const store = useStore()
+const spinnerState = computed(() => store.state.spinnerModule.spinnerState)
 </script>
 
-<style lang="scss">
-	#spinner {
-		position: absolute;
-		top: 40%;
-		left: 50%;
-	}
+<style scoped lang="scss">
+.spinner {
+  z-index: 2;
+  position: absolute;
+  width: 95%;
+  height: 90%;
+  background: transparent;
+}
+.spinner-container {
+  height: 75%;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
