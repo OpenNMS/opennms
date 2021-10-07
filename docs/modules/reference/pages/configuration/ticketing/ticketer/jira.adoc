@@ -7,7 +7,13 @@ The Jira ticketing plugin creates JIRA issues in response to {page-component-tit
 [[ref-ticketing-jira-setup]]
 == Setup
 
-First, you need to install the `opennms-plugin-ticketer-jira` package for your system.
+To install the opennms-plugin-ticketer-jira package:
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-ticketer-jira`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-ticketer-jira`
+
 The Jira ticketing plugin and its dependencies are not part of the core packages.
 
 To enable the plugin, start by setting following property in `$OPENNMS_HOME/etc/opennms.properties`:
