@@ -22,9 +22,14 @@ const getEdges = (state: State) => {
     return state.edges;
 }
 
+const getMapCenter = (state: State) => {
+    return state.mapCenter;
+}
+
 export default {
     getInterestedNodesID,
     getInterestedNodes,
     getAlarmsFromSelectedNodes,
-    getEdges
+    getEdges,
+    getMapCenter,
 }

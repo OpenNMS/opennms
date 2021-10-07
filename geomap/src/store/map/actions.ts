@@ -1,5 +1,5 @@
 import API from "@/services"
-import { QueryParameters, VuexContext } from '@/types'
+import { QueryParameters, VuexContext, Coordinates } from '@/types'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getNodes(queryParameters)
@@ -49,11 +49,16 @@ const setInterestedNodesId = (context: VuexContext, ids: number[]) => {
     context.commit("SAVE_INTERESTED_NODES_ID", ids)
 }
 
+const setMapCenter = (context: VuexContext, center: Coordinates) => {
+    context.commit("SAVE_MAP_CENTER", center)
+}
+
 
 export default {
     getNodes,
     getAlarms,
     resetInterestedNodesID,
     getNodesGraphEdges,
-    setInterestedNodesId
+    setInterestedNodesId,
+    setMapCenter,
 }

@@ -97,6 +97,13 @@ export interface Edge {
   source: { namespace: string, id: number }
   target: { namespace: string, id: number }
 }
+
+//added by jane
+export interface Coordinates {
+  latitude: number, 
+  longitude: number
+}
+
 export interface QueryParameters {
   limit?: number
   offset?: number
