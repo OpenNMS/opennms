@@ -5,7 +5,7 @@
         ref="map"
         v-model:center="center"
         :max-zoom="19"
-        :min-zoom="3"
+        :min-zoom="2"
         :zoom="zoom"
         :zoomAnimation="true"
         @ready="onLeafletReady"
@@ -69,7 +69,7 @@ let center = computed(() => {
   return [coordinates.latitude, coordinates.longitude];
 })
 
-let zoom = ref(4);
+let zoom = ref(2);
 
 let interestedNodes = computed(() => {
   return store.getters['mapModule/getInterestedNodes'];

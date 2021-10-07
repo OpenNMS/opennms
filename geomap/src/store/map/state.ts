@@ -13,7 +13,7 @@ const state: State = {
   alarms: [],
   interestedNodesID: [],
   edges: [],
-  mapCenter: { latitude: 35.849613, longitude: -78.794882 }, //OpenNMS Head Quarter
+  mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 }, 
 }
 
 export default state
