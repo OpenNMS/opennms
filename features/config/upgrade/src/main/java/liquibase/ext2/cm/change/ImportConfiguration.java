@@ -28,7 +28,11 @@
 
 package liquibase.ext2.cm.change;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +43,10 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
@@ -62,7 +69,8 @@ public class ImportConfiguration extends AbstractCmChange {
     private String configId;
     private String filePath;
     private Path archivePath;
-    private Path configFilePath;
+    private Path etcFile = null; // user defined file
+    private Resource configResource;
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
@@ -71,29 +79,18 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("filePath", this.filePath);
 
         String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        String prefix1 = "file:" + opennmsHome + "/etc/";
-        String prefix2 = "classpath:defaults/";
-        Optional<Path> configPath = getConfigFile(prefix1);
-        if (configPath.isEmpty() || !Files.exists(configPath.get())) {
-            // fallback: default config
-            configPath = getConfigFile(prefix2);
+        this.etcFile = Path.of(opennmsHome + "/etc/"+this.filePath);
+        configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
+        if (!configResource.isReadable()) {
+            configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
+            this.etcFile = null;
         }
-        if (configPath.isEmpty() || !Files.exists(configPath.get())) {
-            validationErrors.addError(String.format("Cannot find file %s in %s or in %s", this.filePath, prefix1, prefix2));
-        } else {
-            this.configFilePath = configPath.get();
+        if (!configResource.isReadable()) {
+            validationErrors.addError(String.format("Cannot read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
+                    opennmsHome, this.filePath, this.filePath));
         }
         checkArchiveDir(validationErrors);
         return validationErrors;
-    }
-
-    Optional<Path> getConfigFile(String prefix) {
-        String path = prefix + this.filePath;
-        try {
-            return Optional.of(ResourceUtils.getFile(path).toPath());
-        } catch(IOException e) {
-            return Optional.empty();
-        }
     }
 
     void checkArchiveDir(ValidationErrors validationErrors) {
@@ -123,21 +120,27 @@ public class ImportConfiguration extends AbstractCmChange {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
-                        String xmlStr = Files.readString(configFilePath);
+                        String xmlStr = asString(this.configResource);
                         JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                         LOG.info("Configuration with id={} imported.", this.configId);
-                        if(configFilePath.toAbsolutePath().toString().contains("etc")) {
+                        if(etcFile != null) {
                             // we imported a user defined config file => move to archive
-                            Path archiveFile = Path.of(this.archivePath + "/" + configFilePath.getFileName());
-                            Files.move(configFilePath, archiveFile); // move to archive
-                            LOG.info("Configuration file {} moved to {}", configFilePath, this.archivePath);
+                            Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
+                            Files.move(etcFile, archiveFile); // move to archive
+                            LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
                         }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 })
         };
+    }
+
+    private static String asString(Resource resource) throws IOException {
+        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
+            return FileCopyUtils.copyToString(reader);
+        }
     }
 
     public String getSchemaId() {
