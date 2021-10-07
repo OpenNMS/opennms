@@ -70,13 +70,16 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("configId", this.configId);
         validationErrors.checkRequiredField("filePath", this.filePath);
 
-        Optional<Path> configPath = getConfigFile("file:${opennms.home}/etc/");
+        String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
+        String prefix1 = "file:" + opennmsHome + "/etc/";
+        String prefix2 = "classpath:defaults/";
+        Optional<Path> configPath = getConfigFile(prefix1);
         if (configPath.isEmpty() || !Files.exists(configPath.get())) {
-            // fallback
-            configPath = getConfigFile("classpath:defaults/");
+            // fallback: default config
+            configPath = getConfigFile(prefix2);
         }
         if (configPath.isEmpty() || !Files.exists(configPath.get())) {
-            validationErrors.addError(String.format("Cannot find file %s in ${opennms.home}/etc/ or in classpath", this.filePath));
+            validationErrors.addError(String.format("Cannot find file %s in %s or in %s", this.filePath, prefix1, prefix2));
         } else {
             this.configFilePath = configPath.get();
         }
@@ -86,9 +89,6 @@ public class ImportConfiguration extends AbstractCmChange {
 
     Optional<Path> getConfigFile(String prefix) {
         String path = prefix + this.filePath;
-        String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
-        path = path.replace("${"+SYSTEM_PROP_OPENNMS_HOME+"}", opennmsHome);
-
         try {
             return Optional.of(ResourceUtils.getFile(path).toPath());
         } catch(IOException e) {
