@@ -52,7 +52,7 @@ The value gives the size of the history buffer allowing flows to be processed ou
 [[telemetryd-ipfix-parser-tcp]]
 == IPFIX TCP Parser
 
-The IPFIX TCP Parser accepts packets received by a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to a <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
+The IPFIX TCP parser accepts packets received by a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
 
 === Facts
 
