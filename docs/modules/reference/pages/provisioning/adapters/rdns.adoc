@@ -3,7 +3,7 @@
 
 The DDNS adapter uses the dynamic DNS protocol to send updated PTR DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 
-For every IP address found, there must be a valid reverse DNS zone created on your DNS server.
+For every IP address found, a corresponding reverse DNS zone must exist on your DNS server.
 
 == Installation
 
