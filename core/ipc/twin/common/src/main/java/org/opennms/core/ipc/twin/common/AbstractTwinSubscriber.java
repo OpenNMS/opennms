@@ -30,6 +30,7 @@ package org.opennms.core.ipc.twin.common;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +41,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonpatch.JsonPatch;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -53,7 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private final Multimap<String, SessionImpl<?>> sessionMap = LinkedListMultimap.create();
-    private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
+    private final Map<String, TwinTracker> objMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private MinionIdentity minionIdentity;
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
@@ -82,13 +85,12 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         String location = minionIdentity != null ? minionIdentity.getLocation() : null;
         TwinRequestBean twinRequestBean = new TwinRequestBean(key, location);
         sendRpcRequest(twinRequestBean);
-        byte[] objValue = objMap.get(key);
-        // If there is an existing object, send that update to subscriber.
-        if (objValue != null) {
-            TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objValue);
+        TwinTracker twinTracker = objMap.get(key);
+        // If there is an existing object, send that update to subscriber
+        if (twinTracker != null) {
             try {
-                session.accept(objValue);
-            } catch (IOException e) {
+                session.accept(twinTracker.getObj());
+            } catch (Exception e) {
                 LOG.error("Exception while sending response to consumer", e);
             }
         }
@@ -99,43 +101,74 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     protected void accept(TwinResponseBean twinResponse) {
 
         // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
-        if(twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
+        if (twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
             return;
         }
         // Consume in our own thread instead of using broker's callback thread.
         executorService.execute(() -> {
-
-            if (twinResponse.getObject() != null &&
-                    isObjectUpdated(twinResponse.getKey(), twinResponse.getObject())) {
-
-                LOG.trace("Received object update with key {}", twinResponse.getKey());
-                // Update twin object in local cache.
-                objMap.put(twinResponse.getKey(), twinResponse.getObject());
-                // Send update to each session.
-                if (sessionMap.containsKey(twinResponse.getKey())) {
-                    sessionMap.get(twinResponse.getKey()).forEach(session -> {
-                        try {
-                            session.accept(twinResponse.getObject());
-                        } catch (Exception e) {
-                            LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
-                        }
-                    });
-                } else {
-                    LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
-                    if (twinResponse.getObject() != null) {
-                        objMap.put(twinResponse.getKey(), twinResponse.getObject());
-                    }
-                }
-            }
+            validateAndSendResponse(twinResponse);
         });
     }
 
-    boolean isObjectUpdated(String key, byte[] updatedObject) {
-        byte[] objInBytes = objMap.get(key);
-        if (objInBytes == null) {
+    private void validateAndSendResponse(TwinResponseBean twinResponse) {
+        TwinTracker twinTracker = objMap.get(twinResponse.getKey());
+        if (twinResponse.getObject() != null &&
+                isObjectUpdated(twinTracker, twinResponse)) {
+            LOG.trace("Received object update with key {}", twinResponse.getKey());
+
+            // No need to update if version we are getting is less than what we have with the same session.
+            if (twinTracker != null && twinTracker.getSessionId().equals(twinResponse.getSessionId())
+                    && twinTracker.getVersion() > twinResponse.getVersion()) {
+                return;
+            }
+            byte[] patchedBytes = applyPatch(twinTracker, twinResponse);
+            // Invoke RPC when we can't apply patch properly.
+            if (patchedBytes == null) {
+                sendRpcRequest(new TwinRequestBean(twinResponse.getKey(), twinResponse.getLocation()));
+                return;
+            }
+            // Update twin object in local cache.
+            objMap.put(twinResponse.getKey(), new TwinTracker(patchedBytes, twinResponse.getVersion(), twinResponse.getSessionId()));
+            // Send update to each session.
+            if (sessionMap.containsKey(twinResponse.getKey())) {
+                sessionMap.get(twinResponse.getKey()).forEach(session -> {
+                    try {
+                        session.accept(patchedBytes);
+                    } catch (Exception e) {
+                        LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
+                    }
+                });
+            } else {
+                LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
+            }
+        }
+    }
+
+    private byte[] applyPatch(TwinTracker twinTracker, TwinResponseBean twinResponseBean) {
+        if (twinTracker == null || !twinResponseBean.isPatch()) {
+            return twinResponseBean.getObject();
+        }
+        // We can't apply patch when the version jumps more than one version.
+        if (twinResponseBean.getVersion() != twinTracker.getVersion() + 1) {
+            return null;
+        }
+        try {
+            JsonNode resultingDiff = objectMapper.readTree(twinResponseBean.getObject());
+            JsonNode original = objectMapper.readTree(twinTracker.getObj());
+            JsonPatch patch = JsonPatch.fromJson(resultingDiff);
+            JsonNode resultNode = patch.apply(original);
+            return resultNode.toString().getBytes(StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            LOG.error("Not able to apply patch for key {}", twinResponseBean.getKey(), e);
+        }
+        return null;
+    }
+
+    boolean isObjectUpdated(TwinTracker twinTracker, TwinResponseBean twinResponse) {
+        if (twinTracker == null || twinResponse.isPatch()) {
             return true;
         }
-        return !Arrays.equals(objInBytes, updatedObject);
+        return !Arrays.equals(twinTracker.getObj(), twinResponse.getObject());
     }
 
     public void shutdown() {
@@ -174,9 +207,9 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         }
 
         public void accept(byte[] objValue) throws IOException {
-                final T value = objectMapper.readValue(objValue, clazz);
-                LOG.trace("Updated consumer with key {}", key);
-                consumer.accept(value);
+            final T value = objectMapper.readValue(objValue, clazz);
+            LOG.trace("Updated consumer with key {}", key);
+            consumer.accept(value);
         }
 
         @Override
@@ -201,4 +234,29 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                     .toString();
         }
     }
+
+    private class SessionKey {
+        public final String sessionId;
+        public final String key;
+
+        public SessionKey(String key, String sessionId) {
+            this.key = key;
+            this.sessionId = sessionId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof SessionKey)) return false;
+            SessionKey that = (SessionKey) o;
+            return com.google.common.base.Objects.equal(sessionId, that.sessionId) && com.google.common.base.Objects.equal(key, that.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return com.google.common.base.Objects.hashCode(sessionId, key);
+        }
+    }
+
+
 }

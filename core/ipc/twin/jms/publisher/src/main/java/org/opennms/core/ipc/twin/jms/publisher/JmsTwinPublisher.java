@@ -100,10 +100,15 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
             builder.setLocation(twinResponseBean.getLocation());
         }
+        if(!Strings.isNullOrEmpty(twinResponseBean.getSessionId())) {
+            builder.setSessionId(twinResponseBean.getSessionId());
+        }
         builder.setConsumerKey(twinResponseBean.getKey());
         if (twinResponseBean.getObject() != null) {
             builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
         }
+        builder.setIsPatchObject(twinResponseBean.isPatch());
+        builder.setVersion(twinResponseBean.getVersion());
         return builder.build();
     }
 

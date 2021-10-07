@@ -87,7 +87,12 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
             public void onComplete(Exchange exchange) {
                 try {
                     byte[] response = exchange.getOut().getBody(byte[].class);
-                    accept(mapTwinResponseToProto(response));
+                    TwinResponseBean twinResponseBean = mapTwinResponseToProto(response);
+                    if (twinResponseBean.getLocation() == null ||
+                            twinResponseBean.getLocation().equals(getMinionIdentity().getLocation())) {
+                        LOG.trace("Received TwinResponse as RPC reply {}", twinResponseBean);
+                        accept(twinResponseBean);
+                    }
                 } catch (Exception e) {
                     LOG.error("Failed to process response", e);
                 }
@@ -129,10 +134,15 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
             if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
                 twinResponseBean.setLocation(twinResponseProto.getLocation());
             }
+            if(!Strings.isNullOrEmpty(twinResponseProto.getSessionId())) {
+                twinResponseBean.setSessionId(twinResponseProto.getSessionId());
+            }
             twinResponseBean.setKey(twinResponseProto.getConsumerKey());
             if (twinResponseProto.getTwinObject() != null) {
                 twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
             }
+            twinResponseBean.setPatch(twinResponseProto.getIsPatchObject());
+            twinResponseBean.setVersion(twinResponseProto.getVersion());
             return twinResponseBean;
         } catch (InvalidProtocolBufferException e) {
             LOG.error("Failed to parse response from proto", e);
@@ -144,8 +154,11 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     public void process(Exchange exchange) throws Exception {
         byte[] sinkUpdateBytes = exchange.getIn().getBody(byte[].class);
         TwinResponseBean twinResponseBean = mapTwinResponseToProto(sinkUpdateBytes);
-        LOG.trace("Received TwinResponse as sink update {}", twinResponseBean);
-        accept(twinResponseBean);
+        if (twinResponseBean.getLocation() == null ||
+                twinResponseBean.getLocation().equals(getMinionIdentity().getLocation())) {
+            LOG.trace("Received TwinResponse as sink update {}", twinResponseBean);
+            accept(twinResponseBean);
+        }
     }
 
     private class SinkRouteBuilder extends RouteBuilder {

@@ -221,26 +221,6 @@ public class JmsTwinIT extends CamelBlueprintTest {
     }
 
     /**
-     * Tests that subscription works if publisher gets restarted.
-     */
-    @Test
-    public void testPublisherRestart() throws Exception {
-        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
-
-        final var session = this.publisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
-
-        await().until(tracker::getLog, hasItems("Test1", "Test2"));
-
-        ((JmsTwinPublisher) publisher).destroy();
-        ((JmsTwinPublisher) publisher).init();
-        session.publish("Test3");
-
-        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
-    }
-
-    /**
      * Tests that multiple subscriptions exists for the same key.
      */
     @Test

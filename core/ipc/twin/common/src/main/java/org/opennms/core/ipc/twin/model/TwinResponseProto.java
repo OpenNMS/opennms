@@ -52,6 +52,9 @@ private static final long serialVersionUID = 0L;
     twinObject_ = com.google.protobuf.ByteString.EMPTY;
     systemId_ = "";
     location_ = "";
+    isPatchObject_ = false;
+    sessionId_ = "";
+    version_ = 0;
   }
 
   @java.lang.Override
@@ -101,11 +104,27 @@ private static final long serialVersionUID = 0L;
             location_ = s;
             break;
           }
-          case 42: {
-            if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          case 40: {
+
+            isPatchObject_ = input.readBool();
+            break;
+          }
+          case 50: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            sessionId_ = s;
+            break;
+          }
+          case 56: {
+
+            version_ = input.readInt32();
+            break;
+          }
+          case 66: {
+            if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
               tracingInfo_ = com.google.protobuf.MapField.newMapField(
                   TracingInfoDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000010;
+              mutable_bitField0_ |= 0x00000080;
             }
             com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
             tracingInfo__ = input.readMessage(
@@ -143,7 +162,7 @@ private static final long serialVersionUID = 0L;
   protected com.google.protobuf.MapField internalGetMapField(
       int number) {
     switch (number) {
-      case 5:
+      case 8:
         return internalGetTracingInfo();
       default:
         throw new RuntimeException(
@@ -270,7 +289,59 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int TRACING_INFO_FIELD_NUMBER = 5;
+  public static final int IS_PATCH_OBJECT_FIELD_NUMBER = 5;
+  private boolean isPatchObject_;
+  /**
+   * <code>bool is_patch_object = 5;</code>
+   */
+  public boolean getIsPatchObject() {
+    return isPatchObject_;
+  }
+
+  public static final int SESSION_ID_FIELD_NUMBER = 6;
+  private volatile java.lang.Object sessionId_;
+  /**
+   * <code>string session_id = 6;</code>
+   */
+  public java.lang.String getSessionId() {
+    java.lang.Object ref = sessionId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      sessionId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string session_id = 6;</code>
+   */
+  public com.google.protobuf.ByteString
+      getSessionIdBytes() {
+    java.lang.Object ref = sessionId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      sessionId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int VERSION_FIELD_NUMBER = 7;
+  private int version_;
+  /**
+   * <code>int32 version = 7;</code>
+   */
+  public int getVersion() {
+    return version_;
+  }
+
+  public static final int TRACING_INFO_FIELD_NUMBER = 8;
   private static final class TracingInfoDefaultEntryHolder {
     static final com.google.protobuf.MapEntry<
         java.lang.String, java.lang.String> defaultEntry =
@@ -297,7 +368,7 @@ private static final long serialVersionUID = 0L;
     return internalGetTracingInfo().getMap().size();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   public boolean containsTracingInfo(
@@ -313,14 +384,14 @@ private static final long serialVersionUID = 0L;
     return getTracingInfoMap();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
     return internalGetTracingInfo().getMap();
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   public java.lang.String getTracingInfoOrDefault(
@@ -332,7 +403,7 @@ private static final long serialVersionUID = 0L;
     return map.containsKey(key) ? map.get(key) : defaultValue;
   }
   /**
-   * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+   * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
 
   public java.lang.String getTracingInfoOrThrow(
@@ -372,12 +443,21 @@ private static final long serialVersionUID = 0L;
     if (!getLocationBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, location_);
     }
+    if (isPatchObject_ != false) {
+      output.writeBool(5, isPatchObject_);
+    }
+    if (!getSessionIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, sessionId_);
+    }
+    if (version_ != 0) {
+      output.writeInt32(7, version_);
+    }
     com.google.protobuf.GeneratedMessageV3
       .serializeStringMapTo(
         output,
         internalGetTracingInfo(),
         TracingInfoDefaultEntryHolder.defaultEntry,
-        5);
+        8);
     unknownFields.writeTo(output);
   }
 
@@ -400,6 +480,17 @@ private static final long serialVersionUID = 0L;
     if (!getLocationBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, location_);
     }
+    if (isPatchObject_ != false) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeBoolSize(5, isPatchObject_);
+    }
+    if (!getSessionIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, sessionId_);
+    }
+    if (version_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(7, version_);
+    }
     for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
          : internalGetTracingInfo().getMap().entrySet()) {
       com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
@@ -408,7 +499,7 @@ private static final long serialVersionUID = 0L;
           .setValue(entry.getValue())
           .build();
       size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, tracingInfo__);
+          .computeMessageSize(8, tracingInfo__);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -434,6 +525,12 @@ private static final long serialVersionUID = 0L;
         .equals(other.getSystemId());
     result = result && getLocation()
         .equals(other.getLocation());
+    result = result && (getIsPatchObject()
+        == other.getIsPatchObject());
+    result = result && getSessionId()
+        .equals(other.getSessionId());
+    result = result && (getVersion()
+        == other.getVersion());
     result = result && internalGetTracingInfo().equals(
         other.internalGetTracingInfo());
     result = result && unknownFields.equals(other.unknownFields);
@@ -455,6 +552,13 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getSystemId().hashCode();
     hash = (37 * hash) + LOCATION_FIELD_NUMBER;
     hash = (53 * hash) + getLocation().hashCode();
+    hash = (37 * hash) + IS_PATCH_OBJECT_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+        getIsPatchObject());
+    hash = (37 * hash) + SESSION_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getSessionId().hashCode();
+    hash = (37 * hash) + VERSION_FIELD_NUMBER;
+    hash = (53 * hash) + getVersion();
     if (!internalGetTracingInfo().getMap().isEmpty()) {
       hash = (37 * hash) + TRACING_INFO_FIELD_NUMBER;
       hash = (53 * hash) + internalGetTracingInfo().hashCode();
@@ -574,7 +678,7 @@ private static final long serialVersionUID = 0L;
     protected com.google.protobuf.MapField internalGetMapField(
         int number) {
       switch (number) {
-        case 5:
+        case 8:
           return internalGetTracingInfo();
         default:
           throw new RuntimeException(
@@ -585,7 +689,7 @@ private static final long serialVersionUID = 0L;
     protected com.google.protobuf.MapField internalGetMutableMapField(
         int number) {
       switch (number) {
-        case 5:
+        case 8:
           return internalGetMutableTracingInfo();
         default:
           throw new RuntimeException(
@@ -626,6 +730,12 @@ private static final long serialVersionUID = 0L;
 
       location_ = "";
 
+      isPatchObject_ = false;
+
+      sessionId_ = "";
+
+      version_ = 0;
+
       internalGetMutableTracingInfo().clear();
       return this;
     }
@@ -659,6 +769,9 @@ private static final long serialVersionUID = 0L;
       result.twinObject_ = twinObject_;
       result.systemId_ = systemId_;
       result.location_ = location_;
+      result.isPatchObject_ = isPatchObject_;
+      result.sessionId_ = sessionId_;
+      result.version_ = version_;
       result.tracingInfo_ = internalGetTracingInfo();
       result.tracingInfo_.makeImmutable();
       result.bitField0_ = to_bitField0_;
@@ -724,6 +837,16 @@ private static final long serialVersionUID = 0L;
       if (!other.getLocation().isEmpty()) {
         location_ = other.location_;
         onChanged();
+      }
+      if (other.getIsPatchObject() != false) {
+        setIsPatchObject(other.getIsPatchObject());
+      }
+      if (!other.getSessionId().isEmpty()) {
+        sessionId_ = other.sessionId_;
+        onChanged();
+      }
+      if (other.getVersion() != 0) {
+        setVersion(other.getVersion());
       }
       internalGetMutableTracingInfo().mergeFrom(
           other.internalGetTracingInfo());
@@ -993,6 +1116,127 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private boolean isPatchObject_ ;
+    /**
+     * <code>bool is_patch_object = 5;</code>
+     */
+    public boolean getIsPatchObject() {
+      return isPatchObject_;
+    }
+    /**
+     * <code>bool is_patch_object = 5;</code>
+     */
+    public Builder setIsPatchObject(boolean value) {
+      
+      isPatchObject_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>bool is_patch_object = 5;</code>
+     */
+    public Builder clearIsPatchObject() {
+      
+      isPatchObject_ = false;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object sessionId_ = "";
+    /**
+     * <code>string session_id = 6;</code>
+     */
+    public java.lang.String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        sessionId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string session_id = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string session_id = 6;</code>
+     */
+    public Builder setSessionId(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      sessionId_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string session_id = 6;</code>
+     */
+    public Builder clearSessionId() {
+      
+      sessionId_ = getDefaultInstance().getSessionId();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string session_id = 6;</code>
+     */
+    public Builder setSessionIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      sessionId_ = value;
+      onChanged();
+      return this;
+    }
+
+    private int version_ ;
+    /**
+     * <code>int32 version = 7;</code>
+     */
+    public int getVersion() {
+      return version_;
+    }
+    /**
+     * <code>int32 version = 7;</code>
+     */
+    public Builder setVersion(int value) {
+      
+      version_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 version = 7;</code>
+     */
+    public Builder clearVersion() {
+      
+      version_ = 0;
+      onChanged();
+      return this;
+    }
+
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> tracingInfo_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -1020,7 +1264,7 @@ private static final long serialVersionUID = 0L;
       return internalGetTracingInfo().getMap().size();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public boolean containsTracingInfo(
@@ -1036,14 +1280,14 @@ private static final long serialVersionUID = 0L;
       return getTracingInfoMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
       return internalGetTracingInfo().getMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public java.lang.String getTracingInfoOrDefault(
@@ -1055,7 +1299,7 @@ private static final long serialVersionUID = 0L;
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public java.lang.String getTracingInfoOrThrow(
@@ -1075,7 +1319,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public Builder removeTracingInfo(
@@ -1094,7 +1338,7 @@ private static final long serialVersionUID = 0L;
       return internalGetMutableTracingInfo().getMutableMap();
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
     public Builder putTracingInfo(
         java.lang.String key,
@@ -1106,7 +1350,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>map&lt;string, string&gt; tracing_info = 5;</code>
+     * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
 
     public Builder putAllTracingInfo(

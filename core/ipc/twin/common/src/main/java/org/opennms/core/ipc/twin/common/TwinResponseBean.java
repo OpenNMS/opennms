@@ -28,7 +28,10 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import com.google.common.base.Objects;
+
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 public class TwinResponseBean extends TwinRequestBean {
 
@@ -40,8 +43,19 @@ public class TwinResponseBean extends TwinRequestBean {
         super(key, location);
         this.object = object;
     }
+    public TwinResponseBean(String key, String location) {
+        super(key, location);
+    }
 
     private byte[] object;
+
+    private int version;
+
+    private boolean isRpc;
+
+    private boolean isPatch;
+
+    private String sessionId;
 
     public byte[] getObject() {
         return object;
@@ -51,28 +65,61 @@ public class TwinResponseBean extends TwinRequestBean {
         this.object = object;
     }
 
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public boolean isRpc() {
+        return isRpc;
+    }
+
+    public void setRpc(boolean rpc) {
+        isRpc = rpc;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public boolean isPatch() {
+        return isPatch;
+    }
+
+    public void setPatch(boolean patch) {
+        isPatch = patch;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof TwinResponseBean)) return false;
         if (!super.equals(o)) return false;
         TwinResponseBean that = (TwinResponseBean) o;
-        return Arrays.equals(object, that.object);
+        return version == that.version && isRpc == that.isRpc && Objects.equal(object, that.object) && Objects.equal(sessionId, that.sessionId);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(object);
-        return result;
+        return Objects.hashCode(super.hashCode(), object, version, isRpc, sessionId);
     }
 
     @Override
     public String toString() {
-        return "TwinResponseBean{" +
-                "key='" + key + '\'' +
-                ", location='" + location + '\'' +
-                ", object=" + Arrays.toString(object) +
-                '}';
+        return new StringJoiner(", ", TwinResponseBean.class.getSimpleName() + "[", "]")
+                .add("key='" + key + "'")
+                .add("location='" + location + "'")
+                .add("object=" + Arrays.toString(object))
+                .add("version=" + version)
+                .add("isRpc=" + isRpc)
+                .add("sessionId='" + sessionId + "'")
+                .toString();
     }
 }

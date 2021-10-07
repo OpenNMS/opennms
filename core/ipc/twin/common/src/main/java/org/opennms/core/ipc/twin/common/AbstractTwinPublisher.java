@@ -29,12 +29,15 @@
 package org.opennms.core.ipc.twin.common;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonpatch.diff.JsonDiff;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractTwinPublisher implements TwinPublisher {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinPublisher.class);
-    private final Map<SessionKey, byte[]> objMap = new ConcurrentHashMap<>();
+    private final Map<SessionKey, TwinTracker> twinTrackerMap = new ConcurrentHashMap<>();
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     private final LocalTwinSubscriber localTwinSubscriber;
@@ -66,15 +69,25 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     }
 
     protected TwinResponseBean getTwin(TwinRequestBean twinRequest) {
-        byte[] value = objMap.get(new SessionKey(twinRequest.getKey(), twinRequest.getLocation()));
-        if (value == null) {
-            value = objMap.get(new SessionKey(twinRequest.getKey(), null));
+        TwinTracker twinTracker = getTwinTracker(twinRequest);
+        byte[] objValue = twinTracker != null ? twinTracker.getObj() : null;
+        TwinResponseBean twinResponseBean =  new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), objValue);
+        twinResponseBean.setSessionId(twinTracker.getSessionId());
+        twinResponseBean.setPatch(false);
+        return twinResponseBean;
+    }
+
+    private TwinTracker getTwinTracker(TwinRequestBean twinRequest) {
+        // Check if we have a session key specific to location else check session key without location.
+        TwinTracker twinTracker = twinTrackerMap.get(new SessionKey(twinRequest.getKey(), twinRequest.getLocation()));
+        if(twinTracker == null) {
+            twinTracker = twinTrackerMap.get(new SessionKey(twinRequest.getKey(), null));
         }
-        return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
+        return twinTracker;
     }
 
     public void shutdown() {
-        objMap.clear();
+        twinTrackerMap.clear();
     }
 
     private class SessionImpl<T> implements Session<T> {
@@ -88,17 +101,47 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         @Override
         public void publish(T obj) throws IOException {
             LOG.info("Published an object update for the session with key {}", sessionKey.toString());
-            byte[] value = objectMapper.writeValueAsBytes(obj);
-            objMap.put(sessionKey, value);
-            TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, value);
-            // Handle local updates for the twin.
-            localTwinSubscriber.accept(twinResponseBean);
-            handleSinkUpdate(twinResponseBean);
+            byte[] objInBytes = objectMapper.writeValueAsBytes(obj);
+            TwinTracker twinTracker = twinTrackerMap.get(sessionKey);
+            if (twinTracker == null || !Arrays.equals(twinTracker.getObj(), objInBytes)) {
+                TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, objInBytes);
+                if (twinTracker == null) {
+                    twinTracker = new TwinTracker(objInBytes);
+                } else {
+                    // Generate patch and update response with patch.
+                    byte[] patchValue = getPatchValue(twinTracker.getObj(), objInBytes);
+                    if(patchValue != null) {
+                        twinResponseBean.setObject(patchValue);
+                        twinResponseBean.setPatch(true);
+                    }
+                    // Update Twin tracker with updated obj.
+                    twinTracker.setObj(objInBytes);
+                    twinTracker.incrementVersion();
+                }
+                twinTrackerMap.put(sessionKey, twinTracker);
+                twinResponseBean.setVersion(twinTracker.getVersion());
+                twinResponseBean.setSessionId(twinTracker.getSessionId());
+                // Handle local updates for the twin.
+                localTwinSubscriber.accept(twinResponseBean);
+                handleSinkUpdate(twinResponseBean);
+            }
+        }
+
+        private byte[] getPatchValue(byte[] originalObj, byte[] updatedObj) {
+            try {
+                JsonNode sourceNode = objectMapper.readTree(originalObj);
+                JsonNode targetNode = objectMapper.readTree(updatedObj);
+                JsonNode diffNode = JsonDiff.asJson(sourceNode, targetNode);
+                return diffNode.toString().getBytes(StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                LOG.error("Unable to generate patch for SessionKey {}", sessionKey, e);
+            }
+            return null;
         }
 
         @Override
         public void close() throws IOException {
-            objMap.remove(sessionKey);
+            twinTrackerMap.remove(sessionKey);
             LOG.info("Closed session with key {} ", sessionKey);
         }
     }
