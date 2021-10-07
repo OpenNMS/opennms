@@ -55,8 +55,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGro
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultClassificationService implements ClassificationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultClassificationService.class);
 
     private final ClassificationRuleDao classificationRuleDao;
 
@@ -105,7 +109,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public Integer saveRule(Rule rule) throws InvalidRuleException {
-        return runInTransaction(() -> {
+        return runInTransactionAndThenReload(() -> {
 
             ruleValidator.validate(rule);
 
@@ -119,7 +123,7 @@ public class DefaultClassificationService implements ClassificationService {
             // persist
             group.addRule(rule);
             final Integer ruleId = classificationRuleDao.save(rule);
-            updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(rule));
+            updateRulePositions(PositionUtil.sortRulePositions(rule));
 
             return ruleId;
         });
@@ -127,7 +131,7 @@ public class DefaultClassificationService implements ClassificationService {
 
     @Override
     public void importRules(int groupId, InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException {
-        runInTransaction(() -> {
+        runInTransactionAndThenReload(() -> {
 
             // Get and check group
             Group group = classificationGroupDao.get(groupId);
@@ -169,7 +173,7 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new CSVImportException(result);
             }
 
-            updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
+            updateRulePositions(PositionUtil.sortRulePositions(group.getRules()));
             classificationGroupDao.saveOrUpdate(group);
 
             return null;
@@ -188,7 +192,7 @@ public class DefaultClassificationService implements ClassificationService {
     public void deleteRules(int groupId) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(Rule.class).alias("group", "group");
         criteriaBuilder.eq("group.id", groupId);
-        runInTransaction(() -> {
+        runInTransactionAndThenReload(() -> {
             Group group = classificationGroupDao.get(groupId);
             if (group == null) throw new NoSuchElementException();
             if(group.isReadOnly()) {
@@ -196,7 +200,6 @@ public class DefaultClassificationService implements ClassificationService {
             }
             final Criteria criteria = criteriaBuilder.toCriteria();
             classificationRuleDao.findMatching(criteria).forEach(r -> classificationRuleDao.delete(r));
-            classificationEngine.reload();
             return null;
         });
     }
@@ -207,12 +210,12 @@ public class DefaultClassificationService implements ClassificationService {
             final Rule rule = classificationRuleDao.get(ruleId);
             if (rule == null) throw new NoSuchElementException();
             assertRuleIsNotInReadOnlyGroup(rule);
-            return runInTransaction(() -> {
+            return runInTransactionAndThenReload(() -> {
                 // Remove from group, as it would be saved later otherwise
                 final Group group = rule.getGroup();
                 group.removeRule(rule);
                 classificationRuleDao.delete(rule);
-                updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
+                updateRulePositions(PositionUtil.sortRulePositions(group.getRules()));
                 return null;
             });
         });
@@ -224,13 +227,13 @@ public class DefaultClassificationService implements ClassificationService {
         assertRuleIsNotInReadOnlyGroup(rule);
 
         // Persist
-        runInTransaction(() -> {
+        runInTransactionAndThenReload(() -> {
             ruleValidator.validate(rule);
             groupValidator.validate(rule.getGroup(), rule);
             classificationRuleDao.saveOrUpdate(rule);
             // reload to get updated group since we might just have switched groups
             Rule reloaded = classificationRuleDao.get(rule.getId());
-            updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(reloaded));
+            updateRulePositions(PositionUtil.sortRulePositions(reloaded));
             return null;
         });
     }
@@ -271,16 +274,16 @@ public class DefaultClassificationService implements ClassificationService {
     @Override
     public Integer saveGroup(Group group) {
         checkForDuplicateName(group);
-        return runInTransaction(() -> {
+        return runInTransactionAndThenReload(() -> {
             Integer groupId = classificationGroupDao.save(group);
-            updateGroupPositionsAndReloadEngine(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
+            updateGroupPositions(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
             return groupId;
         });
     }
 
     @Override
     public void deleteGroup(int groupId) {
-        runInTransaction(() -> {
+        runInTransactionAndThenReload(() -> {
             final Group group = classificationGroupDao.get(groupId);
             if (group == null) {
                 throw new NoSuchElementException();
@@ -288,8 +291,7 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new ClassificationException(ErrorContext.Entity, Errors.GROUP_READ_ONLY);
             }
             classificationGroupDao.delete(group);
-            updateGroupPositionsAndReloadEngine(PositionUtil.sortGroupPositions(classificationGroupDao.findAll()));
-            classificationEngine.reload();
+            updateGroupPositions(PositionUtil.sortGroupPositions(classificationGroupDao.findAll()));
             return null;
         });
     }
@@ -298,10 +300,10 @@ public class DefaultClassificationService implements ClassificationService {
     public void updateGroup(Group group) {
         if (group.getId() == null) throw new NoSuchElementException();
         checkForDuplicateName(group);
-        runInTransaction(() -> {
+        runInTransactionAndThenReload(() -> {
             classificationGroupDao.saveOrUpdate(group);
-            updateGroupPositionsAndReloadEngine(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
-            updateRulePositionsAndReloadEngine(PositionUtil.sortRulePositions(group.getRules()));
+            updateGroupPositions(PositionUtil.sortGroupPositions(group, classificationGroupDao.findAll()));
+            updateRulePositions(PositionUtil.sortRulePositions(group.getRules()));
             return null;
         });
     }
@@ -322,7 +324,17 @@ public class DefaultClassificationService implements ClassificationService {
         return sessionUtils.withTransaction(supplier);
     }
 
-    private void updateRulePositionsAndReloadEngine(final List<Rule> rules) {
+    private <T> T runInTransactionAndThenReload(Supplier<T> supplier) {
+        T res = runInTransaction(supplier);
+        try {
+            classificationEngine.reload();
+        } catch (InterruptedException e) {
+            LOG.error("reload was interrupted", e);
+        }
+        return res;
+    }
+
+    private void updateRulePositions(final List<Rule> rules) {
 
         // Update position field
         for (int i=0; i<rules.size(); i++) {
@@ -331,11 +343,9 @@ public class DefaultClassificationService implements ClassificationService {
             classificationRuleDao.saveOrUpdate(rule);
         }
 
-        // Reload engine
-        classificationEngine.reload();
     }
 
-    private void updateGroupPositionsAndReloadEngine(final List<Group> groups) {
+    private void updateGroupPositions(final List<Group> groups) {
 
         // Update position field
         for (int i=0; i<groups.size(); i++) {
@@ -344,8 +354,6 @@ public class DefaultClassificationService implements ClassificationService {
             classificationGroupDao.saveOrUpdate(group);
         }
 
-        // Reload engine
-        classificationEngine.reload();
     }
 
     private void checkForDuplicateName (Group group) {

@@ -12,10 +12,10 @@ of a given service by the display name.
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.Win32ServiceMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.Win32ServiceMonitor`
 |===
 
 == Configuration and use
@@ -24,10 +24,14 @@ of a given service by the display name.
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter       | Description                                                                                        | Default
-| service-name  | The name of the service. This should be the exact Display Name of the Windows service to monitor as it
-                    appears in the Services MSC snap-in. Short names such as you might use with net start will not
-                    work here.                                                                                         | Server
+| Parameter
+| Description
+| Default
+
+| service-name
+| The name of the service. This should be the exact Display Name of the Windows service to monitor as it appears in the Services MSC snap-in.
+Short names such as you might use with net start will not work here.
+| Server
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

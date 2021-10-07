@@ -83,4 +83,12 @@ public class Protocol {
     public int hashCode() {
         return Objects.hash(decimal, keyword, description);
     }
+
+    @Override
+    public String toString() {
+        return "Protocol{" +
+               "decimal=" + decimal +
+               ", keyword='" + keyword + '\'' +
+               '}';
+    }
 }

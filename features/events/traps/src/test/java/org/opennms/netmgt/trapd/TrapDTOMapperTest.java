@@ -83,7 +83,7 @@ public class TrapDTOMapperTest {
 		snmp4JV2cTrapPdu.add(new VariableBinding(new OID("1.3.6.1.2.1.1.5.3"),
 				new Null(130)));
 
-		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
+		TrapInformation snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation(
 			InetAddressUtils.ONE_TWENTY_SEVEN,
 			"public",
 			snmp4JV2cTrapPdu

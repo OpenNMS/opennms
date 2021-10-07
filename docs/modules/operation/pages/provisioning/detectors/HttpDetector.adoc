@@ -9,24 +9,42 @@ Use this detector to find and assign services based on HTTP.
 | Implementation | `org.opennms.netmgt.provision.detector.simple.HttpDetector`
 |===
 
-== Configuration and Use
+== Configuration and use
 
-.Parameters for the HTTP detector
-[options="header, %autowidth"]
-|===
-| Parameter      | Description                                                                               | Required | Default value
-| `checkRetCode` | If set to true only HTTP status codes that are the same or lower than the value of
-                   _maxRetCode_ pass.                                                                        | optional | false
-| `maxRetCode`   | Highest HTTP response code that passes. _maxRetCode_ is only evaluated if checkRetCode is
-                   set to true.                                                                              | optional | 399
-| `port`         | Port to query                          .                                                  | optional | 80
-| `url`          | URL to query                                                                              | optional | /
-| `timeout`      | Timeout in milliseconds to wait for a response.                                           | optional | 2000
+.Optional parameters for the HTTP service detector
+[options="header, autowidth"]
+[cols="1,3,1"]
 |===
 
-NOTE: The HTTP Detector makes only one HTTP request and doesn't follow redirects.
+| Parameter
+| Description
+| Default
 
-== Example Configuration
+| checkRetCode
+| If set to `true`, only HTTP status codes that are the same or lower than the value of `maxRetCode` pass.
+| false
+
+| maxRetCode
+| Highest HTTP response code that passes.
+Evaluated only if `checkRetCode` is set to `true`.
+| 399
+
+| port
+| Port to query.
+| 80
+
+| url
+| URL to query.
+| /
+
+| timeout
+| Timeout in milliseconds to wait for a response.
+| 2000
+|===
+
+NOTE: The HTTP detector makes only one HTTP request and does not follow redirects.
+
+== Example configuration
 
 [source,xml]
 ----
@@ -44,4 +62,3 @@ NOTE: The HTTP Detector makes only one HTTP request and doesn't follow redirects
   <policies/>
 </foreign-source>
 ----
-
