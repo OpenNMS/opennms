@@ -6,10 +6,10 @@ The monitor opens a TCP socket and tests the greeting banner returns with ICA; o
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.CitrixMonitor`
-| Remote Enabled | true
+| Class Name
+| `org.opennms.netmgt.poller.monitors.CitrixMonitor`
 |===
 
 == Configuration and use
@@ -18,15 +18,20 @@ The monitor opens a TCP socket and tests the greeting banner returns with ICA; o
 [options="header"]
 [cols="1,3,2"]
 |===
-| *Parameter* | *Description* | *Default* 
-| port    | TCP port where the ICA protocol listens.                                                         | 1494
+| Parameter
+| Description
+| Default
+
+| port
+| TCP port where the ICA protocol
+| 1494
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 WARNING: If you use session reliability to configure the MetaFrame Presentation Server Client, the TCP port is 2598 instead of 1494.
          Find more information on http://support.citrix.com/article/CTX104147[CTX104147].
-        It is not verified if the monitor works in this case.
+         It is not verified if the monitor works in this case.
 
 == Examples
 

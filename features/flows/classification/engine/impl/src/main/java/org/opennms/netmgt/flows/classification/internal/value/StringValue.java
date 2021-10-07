@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.internal.value;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class StringValue {
     }
 
     public List<StringValue> splitBy(String separator) {
-        return Arrays.stream(input.split(separator))
+        return isNullOrEmpty() ? Collections.emptyList() : Arrays.stream(input.split(separator))
                 .map(String::trim)
                 .filter(segment -> segment.length() > 0)
                 .map(StringValue::new)
