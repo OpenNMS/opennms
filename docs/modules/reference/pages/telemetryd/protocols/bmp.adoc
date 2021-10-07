@@ -207,7 +207,7 @@ You can configure the following parameters when connecting to external sources l
 
 | rpkiUrl
 | Rest API URL to retrieve RPKI ROAs.
-| http://localhost:8080/api/export.json
+| \http://localhost:8080/api/export.json
 
 | rpkiUsername
 | Username for RPKI Rest API.
