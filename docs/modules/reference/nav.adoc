@@ -14,7 +14,7 @@
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/aws-sqs.adoc[]
-** xref:telemetryd/introduction.adoc[]
+* xref:telemetryd/introduction.adoc[]
 ** xref:telemetryd/listeners/introduction.adoc[]
 *** xref:telemetryd/listeners/tcp.adoc[]
 *** xref:telemetryd/listeners/udp.adoc[]
