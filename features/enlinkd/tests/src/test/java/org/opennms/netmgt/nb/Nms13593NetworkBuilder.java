@@ -46,23 +46,23 @@ public class Nms13593NetworkBuilder extends NmsNetworkBuilder {
 
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(1, "system, Loopback IP interface");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(1, "lo0");
-        ZHBGO1Zsr001_IF_MAC_MAP.put(1, "242124ece23f");
+        ZHBGO1Zsr001_IF_MAC_MAP.put(1, "24 21 24 EC E2 3F".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr001_IF_IFALIAS_MAP.put(1, "");
 
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(104906753, "3/2/c1/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(104906753, "3/2/c1/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(104906753, "24 21 24 77 97 DF".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(104906753, "100-Gig Ethernet");
+        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(104906753, "");
 
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(105037825, "3/2/c5/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(105037825, "3/2/c5/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(105037825, "24 21 24 77 98 07".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105037825, "100-Gig Ethernet");
+        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105037825, "");
 
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(105070593, "3/2/c6/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(105070593, "3/2/c6/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(105070593, "24 21 24 77 98 11".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105070593, "100-Gig Ethernet");
+        ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105070593, "");
 
         ZHBGO1Zsr002_IP_IF_MAP.put(InetAddressUtils.addr(ZHBGO1Zsr002_IP), 1);
 
@@ -74,17 +74,22 @@ public class Nms13593NetworkBuilder extends NmsNetworkBuilder {
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(104906753, "3/2/c1/1, 100-Gig Ethernet");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(104906753, "3/2/c1/1");
         ZHBGO1Zsr002_IF_MAC_MAP.put(104906753, "24 21 24 77 4F 37".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(104906753, "100-Gig Ethernet");
+        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(104906753, "");
 
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(105037825, "3/2/c5/1, 100-Gig Ethernet");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(105037825, "3/2/c5/1");
         ZHBGO1Zsr002_IF_MAC_MAP.put(105037825, "24 21 24 77 4F 5F".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105037825, "100-Gig Ethernet");
+        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105037825, "");
 
-        ZHBGO1Zsr002_IF_IFDESCR_MAP.put(105070593, "esat-1/1/27, 1-Gig/10-Gig Ethernet, \"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
-        ZHBGO1Zsr002_IF_IFNAME_MAP.put(105070593, "esat-1/1/27");
-        ZHBGO1Zsr002_IF_MAC_MAP.put(105070593, "50 E0 EF 00 50 1C".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
-        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105070593, "1-Gig/10-Gig Ethernet, \"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
+        ZHBGO1Zsr002_IF_IFDESCR_MAP.put(105070593, "3/2/c6/1, 100-Gig Ethernet");
+        ZHBGO1Zsr002_IF_IFNAME_MAP.put(105070593, "3/2/c6/1");
+        ZHBGO1Zsr002_IF_MAC_MAP.put(105070593, "24 21 24 77 4F 69".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
+        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105070593, "");
+
+        ZHBGO1Zsr002_IF_IFDESCR_MAP.put(1140918299, "esat-1/1/27, 1-Gig/10-Gig Ethernet, \"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
+        ZHBGO1Zsr002_IF_IFNAME_MAP.put(1140918299, "esat-1/1/27");
+        ZHBGO1Zsr002_IF_MAC_MAP.put(1140918299, "50 E0 EF 00 50 1C".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
+        ZHBGO1Zsr002_IF_IFALIAS_MAP.put(1140918299, "\"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
 
 
     } catch (Exception e) {

@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
@@ -43,6 +38,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -62,12 +62,9 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     /**
      * Constructs a new SNMP collector for Lldp Node Discovery. 
      * The collection does not occur until the
-     * <code>run</code> method is invoked.
+     * <code>collect</code> method is invoked.
      * 
-     * @param EnhancedLinkd linkd
-     * 
-     * @param LinkableNode node
-     * 
+     *
      */
     public NodeDiscoveryLldp(
             final LldpTopologyService lldpTopologyService,
@@ -158,10 +155,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
         }
         if (links.size() == 0) {
             LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
+            List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
             TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
                @Override
                 public void processLldpRemRow(LldpRemRow row) {
-                    links.add(row.getLldpLink());
+                    ttlinks.add(row.getLldpLink());
                 }
             };
 
@@ -182,7 +180,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                 return;
             }
             LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", links.size());
-            storeTimeTetraLldpLinks(links, new TimeTetraLldpLocPortGetter(peer,
+            storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
                     getLocationAwareSnmpClient(),
                     getLocation(), getNodeId()));
         } else {
@@ -195,8 +193,8 @@ public final class NodeDiscoveryLldp extends NodeCollector {
         m_lldpTopologyService.reconcile(getNodeId(),now);
     }
 
-    private void storeTimeTetraLldpLinks(List<LldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
-        for (LldpLink link : links) {
+    private void storeTimeTetraLldpLinks(List<TimeTetraLldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
+        for (TimeTetraLldpLink link : links) {
             m_lldpTopologyService.store(getNodeId(), timeTetraLldpLocPortGetter.getLldpLink(link));
         }
     }

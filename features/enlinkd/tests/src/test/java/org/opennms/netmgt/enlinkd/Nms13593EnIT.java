@@ -30,28 +30,16 @@ package org.opennms.netmgt.enlinkd;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.enlinkd.model.CdpElement;
-import org.opennms.netmgt.enlinkd.model.CdpLink;
-import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms13593NetworkBuilder;
-import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.*;
 
 public class Nms13593EnIT extends EnLinkdBuilderITCase {
@@ -85,7 +73,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             @JUnitSnmpAgent(host=ZHBGO1Zsr001_IP, port=161, resource=ZHBGO1Zsr001_RESOURCE),
             @JUnitSnmpAgent(host=ZHBGO1Zsr002_IP, port=161, resource=ZHBGO1Zsr002_RESOURCE)
     })
-    public void testLldpLinks() throws Exception {
+    public void testLldpLinks() {
         m_nodeDao.save(builder.getZHBGO1Zsr001());
         m_nodeDao.save(builder.getZHBGO1Zsr002());
 
@@ -98,10 +86,10 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
         m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
 
         assertTrue(m_linkdConfig.useLldpDiscovery());
-        assertTrue(!m_linkdConfig.useCdpDiscovery());
-        assertTrue(!m_linkdConfig.useOspfDiscovery());
-        assertTrue(!m_linkdConfig.useBridgeDiscovery());
-        assertTrue(!m_linkdConfig.useIsisDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
 
         final OnmsNode zsr001 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr001_NAME);
         final OnmsNode zsr002 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr002_NAME);

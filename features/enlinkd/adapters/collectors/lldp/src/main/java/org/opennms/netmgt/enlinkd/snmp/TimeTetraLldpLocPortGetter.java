@@ -52,15 +52,15 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
 	    super(peer, client, location,nodeid);
 	}
 
-    public List<SnmpValue> get(Integer ifindex,Integer lldpRemLocalPortNum) {
+    public List<SnmpValue> get(Integer ifindex,Integer tmnxLldpRemLocalDestMACAddress) {
         List<SnmpObjId> oids = new ArrayList<>(3);
         oids.add(SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID_SUBTYPE).append(ifindex.toString()));
         oids.add(SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID).append(ifindex.toString()));
         oids.add(SnmpObjId.get(TIMETETRA_LLDP_LOC_DESCR).append(ifindex.toString()));
-        return get(oids,lldpRemLocalPortNum);
+        return get(oids,tmnxLldpRemLocalDestMACAddress);
     }
 
-    public LldpLink getLldpLink(LldpLink lldplink) {
+    public LldpLink getLldpLink(TimeTetraLldpLink lldplink) {
 
 	    if (lldplink.getLldpPortIfindex() == null) {
             LOG.debug("get: [{}], lldpPortIfindex is null! cannot find local instance for lldp local port number {}",
@@ -72,39 +72,7 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
             lldplink.setLldpPortDescr("");
             return lldplink;
         }
-	    Integer localPortId=Integer.valueOf(lldplink.getLldpLocalPortNum());
-        List<SnmpValue> val = get(lldplink.getLldpPortIfindex(),localPortId);
-        /*
-        tmnxLldpRemEntry                 OBJECT-TYPE
-    SYNTAX      TmnxLldpRemEntry
-    MAX-ACCESS  not-accessible
-    STATUS      current
-    DESCRIPTION
-        "Information about a particular physical network connection. Entries
-         may be created and deleted in this table by the agent, if a physical
-         topology discovery process is active.
-
-         Rows in this table can only be created for MAC addresses that can
-         validly be used in association with the type of interface concerned,
-         as defined by table 8-2.
-
-         The contents of this table is persistent across re-initializations or
-         reboots."
-    INDEX       {
-        tmnxLldpRemTimeMark,
-        ifIndex,
-        tmnxLldpRemLocalDestMACAddress,
-        tmnxLldpRemIndex
-    }
-
-    This is to be considered that TImeTetra Lldp Mib uses a complex index,
-    to identify lldp remote connection while LLDP MIB use an unique identifier
-    when we walk this mib we set lldpLocalPortNum = tmnxLldpRemLocalDestMACAddress
-    and lldpPortifIndex = ifIndex.
-    Both value are used to get the local lldp port info.
-    Finally we can set the lldpLocalPortNum to ifindex without issues.
-         */
-        lldplink.setLldpLocalPortNum(lldplink.getLldpPortIfindex());
+        List<SnmpValue> val = get(lldplink.getLldpPortIfindex(),lldplink.getTmnxLldpRemLocalDestMACAddress());
 
         if (val == null ) {
             LOG.debug("get: [{}], cannot find local instance for lldp ifindex {} and local port number {}",
