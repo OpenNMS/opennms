@@ -434,7 +434,7 @@ if (request.getAttribute("success") != null) {
             Proxy Host
             </label>
             <div class="col-sm-9">
-              <input id="proxyHost" name="proxyHost=" class="form-control" value="<%=proxyHost%>">
+              <input id="proxyHost" name="proxyHost" class="form-control" value="<%=proxyHost%>">
             </div>
           </div>
 

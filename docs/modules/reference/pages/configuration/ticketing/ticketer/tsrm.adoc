@@ -1,11 +1,11 @@
 
 
-[[ga-ticketing-tsrm]]
+[[ref-ticketing-tsrm]]
 = TSRM Ticketing Plugin
 
 The TSRM ticketing plugin creates TSRM incidents in response to {page-component-title} alarms.
 
-[[ga-ticketing-tsrm-setup]]
+[[ref-ticketing-tsrm-setup]]
 == Setup
 
 To enable the plugin start by setting following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
@@ -19,11 +19,20 @@ Configure the plugin options by setting the following properties in `$\{OPENNMS_
 
 [options="header, autowidth"]
 |===
-| Name                     | Description
-| `tsrm.url`               | TSRM Endpoint URL
-| `tsrm.ssl.strict`        | Strict SSL Check (true/false)
-| `tsrm.status.open`       | TSRM status for open ticket
-| `tsrm.status.close`      | TSRM status for close ticket
+| Name
+| Description
+
+| tsrm.url
+| TSRM Endpoint URL
+
+| tsrm.ssl.strict
+| Strict SSL Check (true/false)
+
+| tsrm.status.open
+| TSRM status for open ticket
+
+| tsrm.status.close
+| TSRM status for closed ticket
 |===
 
 Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`

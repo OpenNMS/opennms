@@ -57,6 +57,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.collect.Lists;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
 
     private static int DEFAULT_WAIT_TIME = 2000;
@@ -105,19 +106,21 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
     @Test
     public void verifySettingsTab() {
         // Load tab
-        final SettingsTab settings = new SettingsTab(uiPage).click();
+        SettingsTab settings = new SettingsTab(uiPage).click();
 
         // Verify 2 groups are shown (atm only 2 are supported)
         assertThat(settings.getGroups(), hasSize(2));
 
         // Verify user-defined group
-        final Group userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED);
+        settings = new SettingsTab(uiPage).click();
+        Group userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED);
         assertThat(userDefinedGroup.isEditable(), is(true));
         assertThat(userDefinedGroup.isEnabled(), is(true));
         assertThat(userDefinedGroup.getPosition(), is(0));
 
         // Verify pre-defined group
-        final Group preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED);
+        settings = new SettingsTab(uiPage).click();
+        Group preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED);
         assertThat(preDefinedGroup.isEditable(), is(false));
         assertThat(preDefinedGroup.isEnabled(), is(true));
         assertThat(preDefinedGroup.getPosition(), is(1));
@@ -125,6 +128,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         // Verify disable groups
         userDefinedGroup.setEnabled(false);
         preDefinedGroup.setEnabled(false);
+        settings = new SettingsTab(uiPage).click();
+        userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED); // recreate this object because DOM redraws can make them stale
+        preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED); // recreate this object because DOM redraws can make them stale
         assertThat(userDefinedGroup.isEnabled(), is(false));
         assertThat(preDefinedGroup.isEnabled(), is(false));
         assertThat(uiPage.getTabs(), hasSize(1));
@@ -132,10 +138,14 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         // Verify enable groups
         userDefinedGroup.setEnabled(true);
         preDefinedGroup.setEnabled(true);
+        settings = new SettingsTab(uiPage).click();
+        userDefinedGroup = settings.getGroup(Tabs.USER_DEFINED); // recreate this object because DOM redraws can make them stale
+        preDefinedGroup = settings.getGroup(Tabs.PRE_DEFINED); // recreate this object because DOM redraws can make them stale
         assertThat(userDefinedGroup.isEnabled(), is(true));
         assertThat(preDefinedGroup.isEnabled(), is(true));
 
         // Verify refresh
+        settings = new SettingsTab(uiPage).click();
         settings.refresh();
         assertThat(settings.getGroups(), hasSize(2));
         assertThat(uiPage.getTabs(), hasSize(expectedTabs.size()));
