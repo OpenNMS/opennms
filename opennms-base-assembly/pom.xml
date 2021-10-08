@@ -981,6 +981,13 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
     </dependency>
+    <!-- this is a runtime dependency we need at install time -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>javamail-dependencies</artifactId>
+      <scope>runtime</scope>
+      <type>pom</type>
+    </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
          OpenNMS dependencies that use the database because the database is
          configured in opennms-database.xml, which is in this project.
