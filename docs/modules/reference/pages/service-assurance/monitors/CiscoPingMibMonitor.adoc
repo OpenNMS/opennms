@@ -1,0 +1,234 @@
+
+= CiscoPingMibMonitor
+
+This monitor creates conceptual rows (entries) in the ciscoPingTable on Cisco IOS devices that support the http://www.circitor.fr/Mibs/Html/C/CISCO-PING-MIB.php[CISCO-PING-MIB].
+These entries direct the remote IOS device to ping an IPv4 or IPv6 address with a configurable set of parameters.
+
+After the IOS device completes the requested ping operations, the monitor queries the IOS device to determine the results.
+If the results indicate success according to the configured parameters in the service configuration, then the monitored service is reported as available and the results are available for optional time-series (RRD) storage.
+If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
+If something goes wrong during the setup of the entry or the subsequent querying of its status, the monitored service is reported to be in an unknown state.
+
+Unlike most monitors, the CiscoPingMibMonitor does not interpret the timeout and retries parameters to determine when a poll attempt has timed out or whether to attempt it again.
+The packet-count and packet-timeout parameters instead serve this purpose from the perspective of the remote IOS device.
+
+.Supported MIB OIDs from CISCO_PING_MIB
+[source, console]
+----
+ciscoPingEntry             1.3.6.1.4.1.9.9.16.1.1.1
+ciscoPingSerialNumber      1.3.6.1.4.1.9.9.16.1.1.1.1
+ciscoPingProtocol          1.3.6.1.4.1.9.9.16.1.1.1.2
+ciscoPingAddress           1.3.6.1.4.1.9.9.16.1.1.1.3
+ciscoPingPacketCount       1.3.6.1.4.1.9.9.16.1.1.1.4
+ciscoPingPacketSize        1.3.6.1.4.1.9.9.16.1.1.1.5
+ciscoPingPacketTimeout     1.3.6.1.4.1.9.9.16.1.1.1.6
+ciscoPingDelay             1.3.6.1.4.1.9.9.16.1.1.1.7
+ciscoPingTrapOnCompletion  1.3.6.1.4.1.9.9.16.1.1.1.8
+ciscoPingSentPackets       1.3.6.1.4.1.9.9.16.1.1.1.9
+ciscoPingReceivedPackets   1.3.6.1.4.1.9.9.16.1.1.1.10
+ciscoPingMinRtt            1.3.6.1.4.1.9.9.16.1.1.1.11
+ciscoPingAvgRtt            1.3.6.1.4.1.9.9.16.1.1.1.12
+ciscoPingMaxRtt            1.3.6.1.4.1.9.9.16.1.1.1.13
+ciscoPingCompleted         1.3.6.1.4.1.9.9.16.1.1.1.14
+ciscoPingEntryOwner        1.3.6.1.4.1.9.9.16.1.1.1.15
+ciscoPingEntryStatus       1.3.6.1.4.1.9.9.16.1.1.1.16
+ciscoPingVrfName           1.3.6.1.4.1.9.9.16.1.1.1.17
+----
+
+== Prerequisites
+
+* One or more Cisco devices running any 12.2 or later IOS image.
+Even very low-end devices appear to support the CISCO-PING-MIB.
+* The IOS devices that will perform the remote pings must be configured with an SNMP write community string whose source address access-list includes the address of the {page-component-title} server and whose MIB view (if any) includes the OID of the ciscoPingTable.
+* The corresponding SNMP write community string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of `snmp-config.xml` or a `<definition>` child element that applies to the SNMP-primary interface of the IOS device(s) that will perform the remote pings.
+
+== Scalability concerns
+
+This monitor spends a lot of time sleeping while it waits for the remote IOS device to complete the requested ping operations.
+The monitor is pessimistic in calculating the delay between creation of the ciscoPingTable entry and its first attempt to retrieve the results of that entry's ping operations -- it will always wait at least (`packet-count * (packet-timeout + packet-delay)`) milliseconds before even checking whether the remote pings have completed.
+Therefore, it is prone to hogging poller threads if used with large values for the packet-count, packet-timeout, and/or packet-delay parameters.
+Keep these values as small as practical to avoid tying up poller threads unnecessarily.
+
+This monitor always uses the current time in whole seconds since the UNIX epoch as the instance identifier of the ciscoPingTable entries that it creates.
+The object that holds this identifier is a signed 32-bit integer type, precluding a finer resolution.
+It's a good idea to mix in the least-significant byte of the millisecond-accurate time as a substitute for that of the whole-second-accurate value to avoid collisions.
+IOS seems to clean up entries in this table within minutes after their ping operations have completed.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the CiscoPingMibMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| version
+| SNMP protocol version (1, 2c, or 3) to use for operations this service monitor performs.
+| from `snmp-config.xml`
+
+| packet-count
+| Number of ping packets that the remote IOS device should send.
+| 5
+
+| packet-size
+| Size, in bytes, of each ping packet that the remote IOS device should send.
+| 100
+
+| packet-timeout
+| Timeout, in milliseconds, of each ping packet sent by the remote IOS device.
+| 2000
+
+| packet-delay
+| Delay, in milliseconds, between ping packets sent by the remote IOS device.
+| 0
+
+| entry-owner
+| String value to set as the value of ciscoPingEntryOwner of entries created for this service.
+|OpenNMS CiscoPingMibMonitor
+
+| vrf-name
+| String value to set as the VRF (VLAN) name in which context the remote IOS device should perform the pings for this service.
+| empty string
+
+|proxy-node-id
+| Numeric database identifier of the node whose primary SNMP interface this service should use as its proxy.
+If specified with the related `proxy-node-foreign-source`, `proxy-node-foreign-id`, and/or `proxy-ip-addr`, this parameter will be the effective one.
+| n/a
+
+| proxy-node-foreign-source +
+  proxy-node-foreign-id
+| `foreign-source` name and `foreign-ID` of the node whose primary SNMP interface this service should use as its proxy.
+These two parameters are corequisites.
+If they appear with the related `proxy-ip-addr`, these parameters will be the effective ones.
+|n/a
+
+| proxy-ip-addr
+| IP address of the interface that this service should use as its proxy.
+Effective only if none of `proxy-node-id`, `proxy-node-foreign-source`, or `proxy-node-foreign-id` appears alongside this parameter.
+A value of `$\{ipaddr}` will be substituted with the IP address of the interface on which the monitored service appears.
+| n/a
+
+| target-ip-addr
+| IP address that the remote IOS device should ping.
+A value of `$\{ipaddr}` will be substituted with the IP address of the interface on which the monitored service appears.
+|n/a
+
+| success-percent
+| A whole-number percentage of pings that must succeed (from the perspective of the remote IOS device) to consider this service available.
+As an  example, if `packet-count` is left at its default value of five but you wish the service to be considered available even if only one of those five pings is successful, then set this parameter's value to 20.
+| 100
+
+| rrd-repository
+| Base directory of an RRD repository in which to store this service monitor's response-time samples.
+|n/a
+
+| ds-name
+| Name of the RRD data source (DS) name in which to store this service monitor's response-time samples.
+The rrd-base-name Base name of the RRD file (minus the `.rrd` or `.jrb` file extension) within the specified rrd-repository path in which this service monitor's response-time samples will be persisted
+| n/a
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Optional variables for use in the configuration
+[options="header"]
+[cols="1,3"]
+|===
+| Variable        | Description
+| $\{ipaddr}     | This value will be substituted with the IP address of the interface on which the monitored service appears.
+|===
+
+== Example: Ping the same non-routable address from all routers of customer Foo
+
+A service provider's client, Foo Corporation, has network service at multiple locations.
+At each Foo location, a point-of-sale system is statically configured at IPv4 address 192.168.255.1.
+Foo wants to be notified any time a point-of-sale system becomes unreachable.
+Using an {page-component-title} remote location monitor is not feasible.
+
+All of Foo Corporation's CPE routers must be Cisco IOS devices to achieve full coverage in this scenario.
+
+One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
+
+We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
+Since we want each Foo CPE router to ping the same IP address, 192.168.255.1, we statically list that value for the `target-ip-addr` address.
+
+NOTE: Examples use CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<package name="ciscoping-foo-pos">
+  <filter>catincCustomer_Foo & catincCPE & catincRouters & nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>
+  <include-range begin="0.0.0.0" end="254.254.254.254" />
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <service name="FooPOS" interval="300000" user-defined="false" status="on">
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+    <parameter key="rrd-base-name" value="ciscoping" />
+    <parameter key="ds-name" value="ciscoping" />
+    <parameter key="proxy-ip-addr" value="$\{ipaddr}" />
+    <parameter key="target-ip-addr" value="192.168.255.1" />
+  </service>
+  <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+  <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+  <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+  <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+</package>
+
+<monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+----
+
+== Example: Ping from a single IOS device routable address of each router of customer Bar
+
+A service provider's client, Bar Limited, has network service at multiple locations.
+While {page-component-title}'s service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations is unreachable from the perspective of an IOS device in Bar's main data center.
+Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
+
+To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
+
+In this case, we use the special value `$\{ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
+Since we want the same IOS device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
+Example `poller-configuration.xml` additions:
+
+[source, xml]
+----
+<package name="ciscoping-bar-cpe">
+  <filter>catincCustomer_Bar & catincCPE & catincRouters</filter>
+  <include-range begin="0.0.0.0" end="254.254.254.254" />
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <service name="BarCentral" interval="300000" user-defined="false" status="on">
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+    <parameter key="rrd-base-name" value="ciscoping" />
+    <parameter key="ds-name" value="ciscoping" />
+    <parameter key="proxy-ip-addr" value="20.11.5.11" />
+    <parameter key="target-ip-addr" value="$\{ipaddr}" />
+  </service>
+  <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+  <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+  <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+  <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+</package>
+
+<monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+----
