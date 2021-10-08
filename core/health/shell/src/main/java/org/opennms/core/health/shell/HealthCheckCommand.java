@@ -58,7 +58,7 @@ public class HealthCheckCommand implements Action {
     public static final String FAILURE_MESSAGE = "=> Oh no, something is wrong";
 
     public static boolean isEndMessage(String s) {
-        // a newline is appended to the string -> do a startsWithCheck
+        // a newline is appended to the string -> do a startsWith check
         return s.startsWith(SUCCESS_MESSAGE) || s.startsWith(FAILURE_MESSAGE);
     }
 

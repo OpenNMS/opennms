@@ -50,12 +50,12 @@ public class KarafShellUtils {
     private static final Logger LOG = LoggerFactory.getLogger(KarafShellUtils.class);
 
     public static boolean isSuccessMsg(String s) {
-        // a newline is appended to the string -> do a startsWithCheck
+        // a newline is appended to the string -> do a startsWith check
         return s.startsWith(HealthCheckCommand.SUCCESS_MESSAGE);
     }
 
     public static boolean isFailureMessage(String s) {
-        // a newline is appended to the string -> do a startsWithCheck
+        // a newline is appended to the string -> do a startsWith check
         return s.startsWith(HealthCheckCommand.FAILURE_MESSAGE);
     }
 

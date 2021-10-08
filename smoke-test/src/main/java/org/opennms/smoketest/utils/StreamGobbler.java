@@ -39,6 +39,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Starts a thread that reads lines from an input stream, logs them, and stores them in an array list. The list of
+ * stored lines is used to search for expected output.
+ * <p>
+ * Used for consuming {@code stdout} and {@code stderr} of processes. Processes get blocked when their output buffers
+ * are full. Consuming their output prevents them from getting blocked.
+ */
 public class StreamGobbler extends Thread {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamGobbler.class);
