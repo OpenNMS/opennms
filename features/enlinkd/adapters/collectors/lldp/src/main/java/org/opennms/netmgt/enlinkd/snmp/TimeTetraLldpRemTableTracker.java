@@ -29,10 +29,8 @@
 package org.opennms.netmgt.enlinkd.snmp;
 
 
-import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,26 +134,27 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 
 	    public TimeTetraLldpLink getLldpLink() {
 
-            TimeTetraLldpLink lldpLink = new TimeTetraLldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
-            lldpLink.setTmnxLldpRemLocalDestMACAddress(getTmnxLldpRemLocalDestMACAddress());
-            lldpLink.setLldpPortIfindex(getIfindex());
-            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
-            lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
-            lldpLink.setLldpRemSysname(getLldpRemSysname());
-            lldpLink.setLldpRemPortId(getLldpRemPortid());
-            lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
-            lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
-            LOG.debug( "getLldpLink: local port num: {}, ifindex: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
-                       getLldpRemLocalPortNum(),
-                       lldpLink.getLldpPortIfindex(),
-                       lldpLink.getLldpRemChassisId(),
+            TimeTetraLldpLink timeTetraLldpLink = new TimeTetraLldpLink();
+            timeTetraLldpLink.getLldpLink().setLldpLocalPortNum(getLldpRemLocalPortNum());
+            timeTetraLldpLink.setTmnxLldpRemLocalDestMACAddress(getTmnxLldpRemLocalDestMACAddress());
+            timeTetraLldpLink.getLldpLink().setLldpPortIfindex(getIfindex());
+            timeTetraLldpLink.getLldpLink().setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
+            timeTetraLldpLink.getLldpLink().setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
+            timeTetraLldpLink.getLldpLink().setLldpRemSysname(getLldpRemSysname());
+            timeTetraLldpLink.getLldpLink().setLldpRemPortId(getLldpRemPortid());
+            timeTetraLldpLink.getLldpLink().setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
+            timeTetraLldpLink.getLldpLink().setLldpRemPortDescr(getLldpRemPortDescr());
+            LOG.debug( "getLldpLink: local port num: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
+                       timeTetraLldpLink.getLldpLink().getLldpLocalPortNum(),
+                       timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),
+                    timeTetraLldpLink.getTmnxLldpRemLocalDestMACAddress(),
+                       timeTetraLldpLink.getLldpLink().getLldpRemChassisId(),
                        LldpChassisIdSubType.getTypeString(getLldpRemChassisidSubtype()),
-                       lldpLink.getLldpRemSysname(),
-                       lldpLink.getLldpRemPortId(),
+                       timeTetraLldpLink.getLldpLink().getLldpRemSysname(),
+                       timeTetraLldpLink.getLldpLink().getLldpRemPortId(),
                        LldpPortIdSubType.getTypeString(getLldpRemPortidSubtype()));
 
-            return lldpLink;
+            return timeTetraLldpLink;
 	    }
     }
 

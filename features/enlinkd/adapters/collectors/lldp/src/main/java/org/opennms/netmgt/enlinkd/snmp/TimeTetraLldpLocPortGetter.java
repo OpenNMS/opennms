@@ -60,58 +60,66 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
         return get(oids,tmnxLldpRemLocalDestMACAddress);
     }
 
-    public LldpLink getLldpLink(TimeTetraLldpLink lldplink) {
+    // In case port sub type is local the portid is the ifindex and then we need to convert the exa decimal to int.
+    public LldpLink getLldpLink(TimeTetraLldpLink timeTetraLldpLink) {
 
-	    if (lldplink.getLldpPortIfindex() == null) {
+	    if (timeTetraLldpLink.getLldpLink().getLldpPortIfindex() == null) {
             LOG.debug("get: [{}], lldpPortIfindex is null! cannot find local instance for lldp local port number {}",
                     getNodeId(),
-                    lldplink.getLldpLocalPortNum());
+                    timeTetraLldpLink.getLldpLink().getLldpLocalPortNum());
             LOG.debug("get: [{}], setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"",getNodeId());
-            lldplink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
-            lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
-            lldplink.setLldpPortDescr("");
-            return lldplink;
+            timeTetraLldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
+            timeTetraLldpLink.getLldpLink().setLldpPortId("\"Not Found On lldpLocPortTable\"");
+            timeTetraLldpLink.getLldpLink().setLldpPortDescr("");
+            return timeTetraLldpLink.getLldpLink();
         }
-        List<SnmpValue> val = get(lldplink.getLldpPortIfindex(),lldplink.getTmnxLldpRemLocalDestMACAddress());
+        List<SnmpValue> val = get(timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),timeTetraLldpLink.getTmnxLldpRemLocalDestMACAddress());
 
         if (val == null ) {
             LOG.debug("get: [{}], cannot find local instance for lldp ifindex {} and local port number {}",
                     getNodeId(),
-                    lldplink.getLldpPortIfindex(),
-                    lldplink.getLldpLocalPortNum());
+                    timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),
+                    timeTetraLldpLink.getLldpLink().getLldpLocalPortNum());
             LOG.debug("get: [{}], setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"",getNodeId());
-            lldplink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
-            lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
-            lldplink.setLldpPortDescr("");
-            return lldplink;
+            timeTetraLldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
+            timeTetraLldpLink.getLldpLink().setLldpPortId("\"Not Found On lldpLocPortTable\"");
+            timeTetraLldpLink.getLldpLink().setLldpPortDescr("");
+            return timeTetraLldpLink.getLldpLink();
         }
 
         if (val.get(0) == null || val.get(0).isError() || !val.get(0).isNumeric()) {
             LOG.debug("get: [{}], port id subtype is null or invalid for lldp ifindex {} and local port number {}",
                     getNodeId(),
-                    lldplink.getLldpPortIfindex(),
-                    lldplink.getLldpLocalPortNum());
+                    timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),
+                    timeTetraLldpLink.getLldpLink().getLldpLocalPortNum());
             LOG.debug("get: [{}], setting default not found Values: portidtype \"InterfaceAlias\"",getNodeId());
-            lldplink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
+            timeTetraLldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         } else {
-            lldplink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.get(val.get(0).toInt()));
+            timeTetraLldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.get(val.get(0).toInt()));
         }
         if (val.get(1) == null || val.get(1).isError()) {
             LOG.debug("get: [{}], port id is null for lldp ifindex {} and local port number {}",
                     getNodeId(),
-                    lldplink.getLldpPortIfindex(),
-                    lldplink.getLldpLocalPortNum());
+                    timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),
+                    timeTetraLldpLink.getLldpLink().getLldpLocalPortNum());
             LOG.debug("get: [{}], setting default not found Values: portid=\"Not Found On lldpLocPortTable\"",getNodeId());
-            lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
+            timeTetraLldpLink.getLldpLink().setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {
-            lldplink.setLldpPortId(LldpRemTableTracker.decodeLldpPortId(lldplink.getLldpPortIdSubType().getValue(),
+            timeTetraLldpLink.getLldpLink().setLldpPortId(decodeLldpPortId(timeTetraLldpLink.getLldpLink().getLldpPortIdSubType(),
                     val.get(1)));
         }
         if (val.get(2) != null && !val.get(2).isError())
-            lldplink.setLldpPortDescr((val.get(2).toDisplayString()));
+            timeTetraLldpLink.getLldpLink().setLldpPortDescr((val.get(2).toDisplayString()));
         else
-            lldplink.setLldpPortDescr("");
-        return lldplink;
+            timeTetraLldpLink.getLldpLink().setLldpPortDescr("");
+        return timeTetraLldpLink.getLldpLink();
+    }
+
+    public static String decodeLldpPortId(LldpUtils.LldpPortIdSubType portSubType, SnmpValue snmpValue) {
+	    if (portSubType == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
+	        return String.valueOf(Integer.parseInt(LldpRemTableTracker.decodeLldpPortId( LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue(),snmpValue),16));
+        }
+	    return LldpRemTableTracker.decodeLldpPortId(portSubType.getValue(),snmpValue);
     }
 
 }

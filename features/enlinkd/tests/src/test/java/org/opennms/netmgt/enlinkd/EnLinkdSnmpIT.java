@@ -583,10 +583,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
             public void processLldpRemRow(final LldpRemRow row) {
                 assertEquals(6, row.getColumnCount());
-                TimeTetraLldpLink link = row.getLldpLink();
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
                 assertNotNull(link.getLldpLocalPortNum());
                 assertNotNull(link.getLldpPortIfindex());
-                links01.add(link);
+                links01.add(timeTetraLldpLinklink);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
@@ -596,10 +599,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             public void processLldpRemRow(final LldpRemRow row) {
 
                 assertEquals(6, row.getColumnCount());
-                TimeTetraLldpLink link = row.getLldpLink();
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
                 assertNotNull(link.getLldpLocalPortNum());
                 assertNotNull(link.getLldpPortIfindex());
-                links02.add(link);
+                links02.add(timeTetraLldpLinklink);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
@@ -632,7 +638,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 m_client,
                 null,1);
 
-        for (LldpLink link01: links01) {
+        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
+            LldpLink link01 = timeTetraLldpLink01.getLldpLink();
             assertNull(link01.getLldpPortId());
             assertNull(link01.getLldpPortIdSubType());
             assertNull(link01.getLldpPortDescr());
@@ -643,7 +650,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             assertEquals("",updated.getLldpPortDescr());
         }
 
-        for (LldpLink link02: links02) {
+        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
+            LldpLink link02 = timeTetraLldpLink02.getLldpLink();
             assertNull(link02.getLldpPortId());
             assertNull(link02.getLldpPortIdSubType());
             assertNull(link02.getLldpPortDescr());
@@ -662,36 +670,50 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 m_client,
                 null,1);
 
-        for (TimeTetraLldpLink link01: links01) {
+        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
+            LldpLink link01 = timeTetraLldpLink01.getLldpLink();
             assertEquals("\"Not Found On lldpLocPortTable\"",link01.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link01.getLldpPortIdSubType());
             assertEquals("",link01.getLldpPortDescr());
+            assertEquals(1,timeTetraLldpLink01.getTmnxLldpRemLocalDestMACAddress().intValue());
 
-            LldpLink updated = ttlldpLocPort01.getLldpLink(link01);
+            LldpLink updated = ttlldpLocPort01.getLldpLink(timeTetraLldpLink01);
             assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
             assertNotEquals("",updated.getLldpPortDescr());
-            LOG.warn("01 ifindex {}",updated.getLldpPortIfindex());
-            LOG.warn("01 portid {}",updated.getLldpPortId());
-            LOG.warn("01 portdescr {}",updated.getLldpPortDescr());
-            LOG.warn("01 rem portid {}",updated.getLldpRemPortId());
-            LOG.warn("01 rem portdescr {}",updated.getLldpRemPortDescr());
+            LOG.warn("01 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+            LOG.warn("01 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+            LOG.warn("01 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+            LOG.warn("01 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+            LOG.warn("01 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+            LOG.warn("01 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+            LOG.warn("01 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+            LOG.warn("01 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+            LOG.warn("01 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+            LOG.warn("01 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
         }
 
-        for (TimeTetraLldpLink link02: links02) {
+        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
+            LldpLink link02 = timeTetraLldpLink02.getLldpLink();
             assertEquals("\"Not Found On lldpLocPortTable\"",link02.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link02.getLldpPortIdSubType());
             assertEquals("",link02.getLldpPortDescr());
+            assertEquals(1,timeTetraLldpLink02.getTmnxLldpRemLocalDestMACAddress().intValue());
 
-            LldpLink updated = ttlldpLocPort02.getLldpLink(link02);
+            LldpLink updated = ttlldpLocPort02.getLldpLink(timeTetraLldpLink02);
             assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
             assertNotEquals("",updated.getLldpPortDescr());
-            LOG.warn("02 ifindex {}",updated.getLldpPortIfindex());
-            LOG.warn("02 portid {}",updated.getLldpPortId());
-            LOG.warn("02 portdescr {}",updated.getLldpPortDescr());
-            LOG.warn("02 rem portid {}",updated.getLldpRemPortId());
-            LOG.warn("02 rem portdescr {}",updated.getLldpRemPortDescr());
+            LOG.warn("02 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+            LOG.warn("02 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+            LOG.warn("02 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+            LOG.warn("02 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+            LOG.warn("02 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+            LOG.warn("02 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+            LOG.warn("02 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+            LOG.warn("02 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+            LOG.warn("02 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+            LOG.warn("02 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
 
         }
 
