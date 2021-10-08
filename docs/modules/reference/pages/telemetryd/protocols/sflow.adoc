@@ -4,13 +4,13 @@
 sFlow is capable of transporting both telemetry data and flow information.
 {page-component-title} can use both data types and extract and persist accordingly.
 
-See <<flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
 
 
 [[telemetryd-sflow-parser-udp]]
 == sFlow UDP Parser
 
-The sFlow UDP parser accepts packets received by a <<telemetryd/listener/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-sflow-adapter, sFlow Adapter>>.
+The sFlow UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-sflow-adapter, sFlow adapter>>.
 
 The sFlow UDP parser supports protocol detection.
 
