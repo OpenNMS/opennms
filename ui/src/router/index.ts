@@ -6,7 +6,7 @@ import DataTableDemo from '../components/Common/Demo/DataTableDemo.vue'
 import EditNode from '../components/Common/Demo/EditNode.vue'
 import ProvisionDConfig from '../components/Configuration/ProvisionDConfig.vue'
 import RequisitionDefinitionsLayout from '../components/Configuration/RequisitionDefinitionsLayout.vue'
-import ThreadPools from '../components/Configuration/ThreadPools.vue'
+import ThreadPools from '../components/Configuration/ThreadPoolForm.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
