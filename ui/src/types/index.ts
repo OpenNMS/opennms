@@ -53,6 +53,10 @@ export interface IfServiceApiResponse extends ApiResponse {
   'monitored-service': IfService[]
 }
 
+export interface LocationsApiResponse extends ApiResponse {
+  location: MonitoringLocation[]
+}
+
 export interface Node {
   location: string
   type: string
@@ -195,4 +199,60 @@ export interface NodeAvailability {
   }[]
   'service-count': number
   'service-down-count': number
+}
+
+export interface MonitoringLocation {
+  geolocation: any
+  latitude: any
+  longitude: any
+  priority: 100
+  tags: any[]
+  "location-name": string
+  "monitoring-area": string
+}
+
+export interface IPRange {
+  location: string
+  startIP: string
+  endIP: string
+}
+
+export interface IPRangeResponse {
+  location: string
+  scanResults: IPRangeResponseObject[]
+}
+
+interface IPRangeResponseObject {
+  hostname: string
+  ipAddress: string
+  rtt: number
+}
+
+export interface SNMPDetectRequest {
+  location: string
+  ipAddresses: string[]
+  configurations: SNMPDetectRequestConfig[]
+}
+
+export interface SNMPDetectRequestConfig {
+  communityString: string
+  timeout: number
+  retry: number
+  securityLevel: number
+}
+
+export interface SNMPDetectResponse {
+  location: string
+  hostname: string
+  ipAddress: string
+  sysOID: string | null
+  communityString: string
+  hasSNMPService: boolean
+}
+
+export interface ProvisionRequest {
+  batchName: string
+  scheduleTime: number
+  discoverIPRanges: IPRange[]
+  snmpConfigList: SNMPDetectRequest[]
 }

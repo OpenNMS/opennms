@@ -2,6 +2,7 @@
 <template>
   <div class="sidebar">
     <Link to="/">Nodes</Link>
+    <Link to="/inventory">Inventory</Link>
   </div>
 </template>
     
