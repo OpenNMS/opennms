@@ -39,6 +39,25 @@ const router = createRouter({
       ]
     },
     {
+      path: '/inventory',
+      name: 'Inventory',
+      component: Inventory,
+      children: [
+        {
+          path: '',
+          component: StepAdd
+        },
+        {
+          path: 'configure',
+          component: StepConfigure
+        },
+        {
+          path: 'schedule',
+          component: StepSchedule
+        }
+      ]
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
