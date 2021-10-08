@@ -38,6 +38,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -69,6 +70,8 @@ public class OnmsHwEntityAlias implements Serializable, Comparable<OnmsHwEntityA
 
     /** The hardware entity. */
     private OnmsHwEntity m_hwEntity;
+
+    private Integer m_hwEntityId;
     
     /**
      * The Constructor.
@@ -117,6 +120,15 @@ public class OnmsHwEntityAlias implements Serializable, Comparable<OnmsHwEntityA
     @XmlTransient
     public OnmsHwEntity getHwEntity() {
         return m_hwEntity;
+    }
+
+    @Transient
+    public Integer getHwEntityId() {
+        return m_hwEntityId;
+    }
+
+    public void setHwEntityId(Integer hwEntityId) {
+        this.m_hwEntityId = hwEntityId;
     }
 
     /**

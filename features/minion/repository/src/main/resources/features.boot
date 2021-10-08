@@ -26,3 +26,4 @@ opennms-core-ipc-sink-offheap
 scv-jceks-impl
 scv-shell
 minion-rest-service
+minion-health-check

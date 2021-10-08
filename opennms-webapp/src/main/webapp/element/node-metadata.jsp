@@ -92,7 +92,7 @@
                                 }
                 %>
                         <tr>
-                            <th width="30%"><%= WebSecurityUtils.sanitizeString(entry2.getKey()) %></th>
+                            <th style="width:auto;-webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto;"><%= WebSecurityUtils.sanitizeString(entry2.getKey()) %></th>
                             <td><%= WebSecurityUtils.sanitizeString(value) %></td>
                         </tr>
                 <%

@@ -1,0 +1,63 @@
+
+= Troubleshoot and Manage Thresholds
+
+The following shell commands help debug and manage thresholding.
+
+== Enumerate persisted threshold states
+
+Use `opennms:threshold-enumerate`:
+
+[source, console]
+----
+admin@opennms> opennms:threshold-enumerate
+Index   State Key
+1       23-127.0.0.1-hrStorageIndex-hrStorageUsed / hrStorageSize * 100.0-/opt/opennms/share/rrd/snmp-RELATIVE_CHANGE
+2       23-127.0.0.1-if-ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100-/opt/opennms/share/rrd/snmp-HIGH
+3       23-127.0.0.1-node-((loadavg5 / 100) / CpuNumCpus) * 100.0-/opt/opennms/share/rrd/snmp-HIGH
+4       23-127.0.0.1-if-ifInDiscards + ifOutDiscards-/opt/opennms/share/rrd/snmp-HIGH
+----
+
+Each state is uniquely identified by a state key and aliased by the given index.
+Indexes are scoped to the particular shell session and provided as an alternative to specifying the complete state key in subsequent commands.
+
+== Display state details
+
+Use `opennms:threshold-details`:
+
+[source, console]
+----
+admin@opennms> opennms:threshold-details 1
+multiplier=1.333
+lastSample=64.77758166043765
+previousTriggeringSample=28.862826722171075
+interpolatedExpression='hrStorageUsed / hrStorageSize * 100.0'
+----
+
+[source, console]
+----
+admin@opennms> opennms:threshold-details 2
+exceededCount=0
+armed=true
+interpolatedExpression='ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100'
+----
+
+Note that different types of thresholds display different properties.
+
+== Clear a particular persisted state
+
+Use `opennms:threshold-clear`:
+
+[source, console]
+----
+admin@opennms> opennms:threshold-clear 2
+----
+
+== Clear all persisted states
+
+Use `opennms:threshold-clear-all`:
+
+[source, console]
+----
+admin@opennms> opennms:threshold-clear-all
+Clearing all thresholding states....done
+----

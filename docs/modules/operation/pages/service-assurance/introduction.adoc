@@ -39,17 +39,31 @@ image::service-assurance/02_service-assurance.png[]
 _Pollerd_ can generate the following _Events_ in {page-component-title}:
 
 [options="header, autowidth"]
+[cols="1,2"]
 |===
-| Event name | Description
-| `uei.opennms.org/nodes/nodeLostService`     | _Critical Services_ are still up, just this service is lost.
-| `uei.opennms.org/nodes/nodeRegainedService` | Service came back up
-| `uei.opennms.org/nodes/interfaceDown`       | _Critical Service_ on an IP interface is down or all services are down.
-| `uei.opennms.org/nodes/interfaceUp`         | _Critical Service_ on that interface came back up again
-| `uei.opennms.org/nodes/nodeDown`            | All critical services on all IP interfaces are down from node.
-                                                The whole host is unreachable over the network.
-| `uei.opennms.org/nodes/nodeUp`              | Some of the _Critical Services_ came back online.
+| Event name
+| Description
+
+| uei.opennms.org/nodes/nodeLostService
+| Critical Services are still up, just this service is lost.
+
+| uei.opennms.org/nodes/nodeRegainedService
+| Service came back up
+
+| uei.opennms.org/nodes/interfaceDown
+| Critical Service on an IP interface is down or all services are down.
+
+| uei.opennms.org/nodes/interfaceUp
+| Critical Service on that interface came back up again
+
+| uei.opennms.org/nodes/nodeDown
+| All critical services on all IP interfaces are down from node.
+The whole host is unreachable over the network.
+
+| uei.opennms.org/nodes/nodeUp
+| Some of the Critical Services came back online.
 |===
 
-The behavior to generate _interfaceDown_ and _nodeDown_ events is described in the <<service-assurance/critical-service.adoc#ga-service-assurance-critical-service, Critical Service>> section.
+The behavior to generate `interfaceDown` and `nodeDown` events is described in the <<service-assurance/critical-service.adoc#ga-service-assurance-critical-service, Critical Service>> section.
 
 NOTE: This assumes that node-outage processing is enabled.

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { axiosAuth } from './apiInterceptor'
 
 let url = 'src/components/Common/Demo/MockupData/nodeData.json'
 let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
@@ -8,6 +9,8 @@ let tableMock = 'src/components/Common/Demo/MockupData/tableMock.json'
 
 const nodeData = axios.get(url)
 const tableMockData = axios.get(tableMock)
+let getProvisionD = '/opennms/rest/cm/provisiond/default'
+const apigetProvisionD = axiosAuth.get(getProvisionD)
 
 const getDropdownTypes = axios
   .get(typesUrl)
@@ -45,4 +48,4 @@ const getAdvancedDropdown = axios
     console.error('apiAdvDropdown Error ==>', err)
   })
 
-export { nodeData, getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, tableMockData }
+export { nodeData, getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, tableMockData, apigetProvisionD }
