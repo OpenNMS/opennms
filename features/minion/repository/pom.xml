@@ -74,6 +74,7 @@
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
                                 <featue>minion-rest-service</featue>
+                                <feature>minion-health-check</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -430,6 +431,11 @@
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>minion-rest-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>health-check</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

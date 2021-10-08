@@ -60,7 +60,7 @@ public class UpgradeConfigService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (!skipConfigUpgrades) { // TODO: Patrick discuss with Jesse: ok?
+        if (!skipConfigUpgrades) {
             new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
         }
     }

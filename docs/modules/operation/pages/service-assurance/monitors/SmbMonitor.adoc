@@ -1,7 +1,7 @@
 
 = SmbMonitor
 
-This monitor tests the _NetBIOS over TCP/IP_ name resolution in Microsoft Windows environments.
+This monitor tests the NetBIOS over TCP/IP name resolution in Microsoft Windows environments.
 The monitor tries to retrieve a NetBIOS name for the IP address of the interface.
 Name services for NetBIOS in Microsoft Windows are provided on port 137/UDP or 137/TCP.
 
@@ -17,10 +17,10 @@ TIP: If you want to monitor the status of a Windows file server, check out the <
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.SmbMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SmbMonitor`
 |===
 
 == Configuration and use
@@ -29,8 +29,13 @@ TIP: If you want to monitor the status of a Windows file server, check out the <
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter        | Description                                                     | Default
-| do-node-status | Try to get the NetBIOS node status type for the given address. | true
+| Parameter
+| Description
+| Default
+
+| do-node-status
+| Try to get the NetBIOS node status type for the given address.
+| true
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

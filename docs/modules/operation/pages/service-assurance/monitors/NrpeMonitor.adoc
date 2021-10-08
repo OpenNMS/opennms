@@ -18,10 +18,10 @@ CAUTION: {page-component-title} runs every NRPE check in a Java thread without `
 
 == Monitor facts
 
-[options="autowidth"]
+[cols="1,7"]
 |===
-| Class Name     | `org.opennms.netmgt.poller.monitors.NrpeMonitor`
-| Remote Enabled | false
+| Class Name
+| `org.opennms.netmgt.poller.monitors.NrpeMonitor`
 |===
 
 == Configuration and use
@@ -30,15 +30,34 @@ CAUTION: {page-component-title} runs every NRPE check in a Java thread without `
 [options="header"]
 [cols="1,3,2"]
 |===
-| Parameter |Description                                                     | Default
+| Parameter
+| Description
+| Default
+
 3+|*Required*
-| command | The {\check_name} of the command configured as `command[{\check_name}]="/path/to/plugin/check-script`      | empty
+
+| command
+| The \{check_name} of the command configured as `command[\{check_name}]="/path/to/plugin/check-script`
+| empty
+
 3+|*Optional*
-| retry   | Number of retries before the service is marked as down.                                                | 0
-| port    | Port to access NRPE on the remote server.                                                              |5666
-| padding | Padding for sending the command to the NRPE agent.                                                     | 2
-| usessl  | Enable encryption of network communication. NRPE uses SSL with anonymous DH and the following cipher
-              suite: TLS_DH_anon_WITH_AES_128_CBC_SHA                                                                 | true
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+
+| port
+| Port to access NRPE on the remote server.
+| 5666
+
+| padding
+| Padding for sending the command to the NRPE agent.
+| 2
+
+| usessl
+| Enable encryption of network communication.
+NRPE uses SSL with anonymous DH and the following cipher suite: TLS_DH_anon_WITH_AES_128_CBC_SHA
+| true
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

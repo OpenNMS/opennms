@@ -74,6 +74,7 @@ import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.OnTimeOutLogger;
 import org.opennms.smoketest.utils.SshClient;
 
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class KafkaProducerIT extends BaseKafkaPersisterIT {
 
     @ClassRule

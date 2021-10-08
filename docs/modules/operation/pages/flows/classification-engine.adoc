@@ -15,23 +15,41 @@ A rule has the following fields:
 |===
 | Name            | Description
 2+| *Required*
-| group            | The group in which this rule was placed.
-                     See also <<rule-groups,Rule Groups>>.
-| position         | The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
-| name             | The name the flow is classified with; for example, `http`.
-                
+
+| group
+| The group in which this rule was placed.
+See also <<rule-groups,Rule Groups>>.
+
+| position
+| The position at which it is placed within its group, relevant for the <<evaluation-order, order of evaluation>>.
+
+| name
+| The name the flow is classified with; for example, `http`.
+
 2+| *Optional*
-| dstPort          | The destination port of the flow to match.
-                     May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
-| dstAddress       | The destination IP address of the flow to match.
-                     May contain wildcards.
-| srcPort          | The source port of the flow to match.
-                     See `dstPort` for more details.
-| srcAddress       | The source IP address of the flow to match.
-                     See `dstAddress` for more details.
-| exporterFilter   | The exporter of the flow must match this criteria.
-                     This parameter supports all capabilities of the https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API].
-| protocol         | The IP protocol of the flow to match.
+
+| dstPort
+| The destination port of the flow to match.
+May be a range or list of ports; for example, 80,8080,8980, or 8000-9000.
+
+| dstAddress
+| The destination IP address of the flow to match.
+May contain wildcards.
+
+| srcPort
+| The source port of the flow to match.
+See `dstPort` for more details.
+
+| srcAddress
+| The source IP address of the flow to match.
+See `dstAddress` for more details.
+
+| exporterFilter
+| The exporter of the flow must match this criteria.
+This parameter supports all capabilities of the https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API].
+
+| protocol
+| The IP protocol of the flow to match.
 |===
 
 Even if all fields (besides `group`, `position`, and `name`) are optional, at least one of them must be defined to be considered a valid rule.
