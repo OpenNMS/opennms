@@ -28,13 +28,6 @@
 
 package org.opennms.netmgt.discovery;
 
-import static org.junit.Assert.assertTrue;
-import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
-
-import java.util.Date;
-import java.util.stream.StreamSupport;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +36,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -53,19 +47,25 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Date;
+import java.util.stream.StreamSupport;
+
+import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
+
 /**
  * A simple Spring context unit test for Discovery.
- * 
+ *
  * @author Seth
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
+@ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -74,7 +74,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/applicationContext-discovery-mock.xml",
 
         // Override the Pinger with a Pinger that always returns true
-        "classpath:/applicationContext-testPinger.xml"
+        "classpath:/applicationContext-testPinger.xml",
+
+        "classpath:discovery-configuration-managerservice-mock.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -86,7 +88,7 @@ public class DiscoveryIntegrationIT {
     private Discovery m_discovery;
 
     @Autowired
-    private DiscoveryConfigFactory m_discoveryConfig;
+    private DiscoveryConfigurationFactory m_discoveryConfig;
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -97,7 +99,6 @@ public class DiscoveryIntegrationIT {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true, "INFO");
-
         // Replace the default event forwarder with our mock
         m_discovery.setEventForwarder(m_eventIpcManager);
     }

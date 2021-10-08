@@ -51,7 +51,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
-    private ConfigurationManagerService configurationManagerService;
+    protected ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
     private String description;
@@ -125,6 +125,20 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
             }
         }
         return config;
+    }
+
+    public void updateConfig(final String configId, Object config) throws IOException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, config);
+    }
+
+    /**
+     * it will update the default config
+     * @see #updateConfig(String, Object)
+     * @param config
+     * @throws IOException
+     */
+    public void updateConfig(Object config) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), config);
     }
 
     /**

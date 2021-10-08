@@ -28,7 +28,17 @@
 
 package org.opennms.netmgt.discovery;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.Detector;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,23 +46,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
-import org.opennms.netmgt.config.discovery.Detector;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
-import org.opennms.netmgt.config.discovery.IncludeUrl;
+import static org.junit.Assert.assertEquals;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:mock-dao.xml"
+})
+@JUnitConfigurationEnvironment
 public class DiscoveryConfigDetectorsTest {
 
+    @Autowired
+    private DiscoveryConfigFactory configFactory;
 
     @Test
     public void testGetDetectorsFromDefinitions() throws IOException {
-
         String resourcePath = DiscoveryConfigDetectorsTest.class.getResource("/mock/etc/discovery-configuration.xml").getPath();
         Path etcPath = Paths.get(resourcePath).getParent().getParent();
         System.setProperty("opennms.home", etcPath.toString());
-        DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory();
         DiscoveryConfiguration config = configFactory.getConfiguration();
         // Check that configuration loaded properly from the test resources
         assertEquals(2, config.getDefinitions().size());
