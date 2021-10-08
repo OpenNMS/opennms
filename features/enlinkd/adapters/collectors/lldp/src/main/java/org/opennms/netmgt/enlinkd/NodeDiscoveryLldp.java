@@ -179,7 +179,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                         getNodeId(), e.getMessage());
                 return;
             }
-            LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", links.size());
+            LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
             storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
                     getLocationAwareSnmpClient(),
                     getLocation(), getNodeId()));
