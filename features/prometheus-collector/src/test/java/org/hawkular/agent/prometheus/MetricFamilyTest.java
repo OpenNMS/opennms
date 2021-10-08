@@ -42,8 +42,8 @@ public class MetricFamilyTest {
         }
 
         try {
-            new MetricFamily.Builder().setName("foo").build();
-            Assert.fail("Should have thrown exception because type is not set");
+            MetricFamily family = new MetricFamily.Builder().setName("foo").build();
+	    Assert.assertEquals(MetricType.GAUGE, family.getType());
         } catch (IllegalArgumentException expected) {
         }
 
