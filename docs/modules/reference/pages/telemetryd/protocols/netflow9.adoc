@@ -7,7 +7,7 @@ See <<ga-flow-support, Flow Support>> for details on flow support in {page-compo
 [[telemetryd-netflow9-parser-udp]]
 == Netflow v9 UDP Parser
 
-The Netflow v9 UDP parser accepts packets received by a <<telemetryd/listener/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow9-adapter, Netflow v9 adapter>>.
+The Netflow v9 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow9-adapter, Netflow v9 adapter>>.
 
 The Netflow v9 UDP parser supports protocol detection.
 

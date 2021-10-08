@@ -2,12 +2,12 @@
 = IPFIX
 
 The IP Flow Information Export (IPFIX) protocol is a vendor-neutral standard for transmitting traffic flow information.
-See <<flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
 
 [[telemetryd-ipfix-parser-udp]]
 == IPFIX UDP Parser
 
-The IPFIX UDP parser accepts packets received by a <<telemetryd/listener/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
+The IPFIX UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
 
 The IPFIX UDP parser supports protocol detection.
 
@@ -52,7 +52,7 @@ The value gives the size of the history buffer allowing flows to be processed ou
 [[telemetryd-ipfix-parser-tcp]]
 == IPFIX TCP Parser
 
-The IPFIX TCP Parser accepts packets received by a <<telemetryd/listener/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to a <<telemetryd-ipfix-adapter, IPFIX Adapter>>.
+The IPFIX TCP parser accepts packets received by a <<telemetryd/listeners/tcp.adoc#telemetryd-listener-tcp, TCP Listener>> and must forward them to an <<telemetryd-ipfix-adapter, IPFIX adapter>>.
 
 === Facts
 

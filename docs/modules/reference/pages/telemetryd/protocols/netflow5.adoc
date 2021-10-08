@@ -1,13 +1,13 @@
 
 = NetFlow v5
 
-See <<flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
 
 
 [[telemetryd-netflow5-parser-udp]]
 == Netflow v5 UDP parser
 
-The Netflow v5 UDP parser accepts packets received by a <<telemetryd/listener/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 Adapter>>.
+The Netflow v5 UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-netflow5-adapter, Netflow v5 adapter>>.
 
 The Netflow v5 UDP parser supports protocol detection.
 
