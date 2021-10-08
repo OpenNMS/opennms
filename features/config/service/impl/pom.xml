@@ -102,11 +102,11 @@
               </exclusion>
           </exclusions>
       </dependency>
-      <dependency>
+      <!--dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink</artifactId>
           <version>${eclipselinkVersion}</version>
-      </dependency>
+      </dependency-->
       <dependency>
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-xjc</artifactId>
