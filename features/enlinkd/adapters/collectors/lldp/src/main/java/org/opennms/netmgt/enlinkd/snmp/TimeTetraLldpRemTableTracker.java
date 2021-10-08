@@ -98,8 +98,11 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 		}
 
 	    public Integer getLldpRemLocalPortNum() {
-	    	return getInstance().getSubIdAt(2);
+	    	return getInstance().getSubIdAt(3);
 	    }
+        public Integer getTmnxLldpRemLocalDestMACAddress() {
+            return getInstance().getSubIdAt(2);
+        }
         public Integer getIfindex() {
             return getInstance().getSubIdAt(1);
         }
@@ -130,10 +133,12 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 	        return getValue(TIMETETRA_LLDP_REM_SYSNAME).toDisplayString();
 	    }
 
-	    public LldpLink getLldpLink() {
 
-            LldpLink lldpLink = new LldpLink();
+	    public TimeTetraLldpLink getLldpLink() {
+
+            TimeTetraLldpLink lldpLink = new TimeTetraLldpLink();
             lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setTmnxLldpRemLocalDestMACAddress(getTmnxLldpRemLocalDestMACAddress());
             lldpLink.setLldpPortIfindex(getIfindex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
