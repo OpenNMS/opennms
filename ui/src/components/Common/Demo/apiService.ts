@@ -4,8 +4,10 @@ let url = 'src/components/Common/Demo/MockupData/nodeData.json'
 let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
 let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
 let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
+let tableMock = 'src/components/Common/Demo/MockupData/tableMock.json'
 
 const nodeData = axios.get(url)
+const tableMockData = axios.get(tableMock)
 
 const getDropdownTypes = axios
   .get(typesUrl)
@@ -43,4 +45,4 @@ const getAdvancedDropdown = axios
     console.error('apiAdvDropdown Error ==>', err)
   })
 
-export { nodeData, getDropdownTypes, getSchedulePeriod, getAdvancedDropdown }
+export { nodeData, getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, tableMockData }

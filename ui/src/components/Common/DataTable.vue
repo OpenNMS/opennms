@@ -91,8 +91,8 @@ const findColumn = (data: any) => {
             const Obj = { "field": colData, "header": colData.toUpperCase(), "key": colData };
             columnDef.value.push(Obj);
         });
-        loading.value = false; //loading stops
     }
+    loading.value = false; //loading stops
 };
 
 //computed for rowsPerPage

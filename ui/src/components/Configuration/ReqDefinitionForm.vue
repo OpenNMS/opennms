@@ -1,5 +1,5 @@
 <template>
-    <p class="title">New Requisition Definition</p>
+    <p class="title">{{ title }} Requisition Definition</p>
     <div class="p-col-9">
         <form @submit.prevent="onSave">
             <div class="p-fluid">
@@ -17,7 +17,7 @@
                     <label for="type" class="required">Type</label>
                     <DropDown
                         v-model="model.reqDef.type.$model"
-                        :options="types"
+                        :options="stateTypes"
                         optionLabel="name"
                         optionValue="value"
                         :filter="true"
@@ -59,7 +59,7 @@
                         </p>
                         <DropDown
                             v-model="add.dropdownVal"
-                            :options="advancedDropdown"
+                            :options="stateAdvancedDropdown"
                             optionLabel="name"
                             optionValue="value"
                         ></DropDown>
@@ -99,7 +99,7 @@
                     <label for="type" class="required">Schedule Period</label>
                     <DropDown
                         v-model="model.reqDef.schedulePeriod.$model"
-                        :options="schedulePeriod"
+                        :options="stateSchedulePeriod"
                         optionLabel="name"
                         optionValue="value"
                         :filter="true"
@@ -133,15 +133,17 @@
 
 <script setup lang="ts">
 
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown } from '../Common/Demo/apiService'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
-import ValidationMessage from '../ValidationMessage.vue'
+import ValidationMessage from '../Common/ValidationMessage.vue'
 
+const store = useStore()
 const reqDefinition = reactive(State);
 
 const types: any = ref([]);
@@ -162,19 +164,38 @@ const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
 const model = State.toModel();
 
+const props = defineProps({
+    title: {
+        type: String,
+        default: "New"
+    }
+})
+
 // Dropdown API Data
 onMounted(async () => {
     try {
         //Types
-        types.value = await getDropdownTypes;
+        types.value = await store.dispatch('configuration/getDropdownTypes');
         // Schedule Period
-        schedulePeriod.value = await getSchedulePeriod;
+        schedulePeriod.value = await store.dispatch('configuration/getSchedulePeriod');;
         // Advanced Dropdown
-        advancedDropdown.value = await getAdvancedDropdown;
+        advancedDropdown.value = await store.dispatch('configuration/getAdvancedDropdown');;
     } catch {
         console.error("Error in API");
     }
 });
+
+const stateTypes = computed(() => {
+    return store.state.configuration.types
+})
+
+const stateSchedulePeriod = computed(() => {
+    return store.state.configuration.schedulePeriod
+})
+
+const stateAdvancedDropdown = computed(() => {
+    return store.state.configuration.advancedDropdown
+})
 
 //Add another parameter - max 1 allowed
 const addAnother = () => {
