@@ -889,6 +889,9 @@
         <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17</bundle>
         <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17</bundle>
         <bundle>mvn:org.opennms/opennms-vmware/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">
