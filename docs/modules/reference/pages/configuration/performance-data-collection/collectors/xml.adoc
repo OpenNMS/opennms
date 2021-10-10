@@ -56,7 +56,7 @@ The available handlers include:
 
 == XML collection configuration
 
-Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 
@@ -99,7 +99,8 @@ The request element can have the following optional child elements:
 | 0
 
 | use-system-proxy
-| Should the system-wide proxy settings be used? Configure the system proxy settings via <<system-properties/introduction.adoc#system-properties, system properties>>.
+| Should the system-wide proxy settings be used? 
+Configure the system proxy settings via <<operation:system-properties/introduction.adoc#system-properties, system properties>>.
 | false
 |===
 

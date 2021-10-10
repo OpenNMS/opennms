@@ -47,10 +47,10 @@ Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP
 To configure which MIB objects to collect from devices, create a datacollection XML configuration file in `etc/datacollection/`.
 After creating a new datacollection config file, add it to `etc/datacollection-config.xml` for inclusion in polling.
 The `datacollection-config.xml` is reloaded automatically whenever the file is modified.
-The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metics from a node.
+The content of dataCollectionGroups in `etc/datacollection/*.xml` files are reloaded each time the Collectd process gathers metrics from a node.
 This allows you to modify which metrics are collected without needing to restart services, once the Collectd collector service has been defined.
 
-Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 .Structure of the `datacollection-config.xml` file
 [source, xml]

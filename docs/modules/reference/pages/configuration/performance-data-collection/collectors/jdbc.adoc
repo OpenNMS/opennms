@@ -65,7 +65,7 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 == JDBC collection configuration
 
-Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 Define JDBC collections in `etc/jdbc-datacollection-config.xml`.
 

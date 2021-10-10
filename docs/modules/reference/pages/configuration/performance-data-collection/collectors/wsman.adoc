@@ -115,7 +115,7 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 [[ga-performance-mgmt-collectors-wsman-agent-config]]
 == WS-Management agent configuration
 
-Understanding xref:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
 The agent-specific configuration details are maintained in `etc/wsman-config.xml`.
 This file has a similar structure as `etc/snmp-config.xml`, which you may already be familiar with.
