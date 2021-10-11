@@ -1,0 +1,124 @@
+
+= RadiusAuthMonitor
+
+This monitor lets you test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
+The availability is tested by sending an AUTH packet to the RADIUS server.
+If a valid ACCEPT response is received, the RADIUS service is up and considered available.
+
+IMPORTANT: The use of the RadiusAuthMonitor requires the installation of the `opennms-plugin-protocol-radius` package before polling will start.
+
+****
+To install the opennms-plugin-protocol-radius package:
+
+* For RPM-based distributions:
+** `yum install opennms-plugin-protocol-radius`
+* For Debian-based distributions:
+** `apt-get install opennms-plugin-protocol-radius`
+****
+
+This monitor performs similar tests to using the radtest tool to check the status of a RADIUS server.
+
+[source, bash]
+----
+root@vagrant:~# radtest "John Doe" hello 127.0.0.1 1812 radiuspassword
+Sending Access-Request of id 49 to 127.0.0.1 port 1812
+	User-Name = "John Doe"
+	User-Password = "hello"
+	NAS-IP-Address = 127.0.0.1
+	NAS-Port = 1812
+	Message-Authenticator = 0x00000000000000000000000000000000
+rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <1>
+	Reply-Message = "Hello, John Doe"
+----
+<1> The Access-Accept message that the monitor evaluates.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.protocols.radius.monitor.RadiusAuthMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the RadiusAuthMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time in milliseconds to wait for the RADIUS service.
+| 5000
+
+| retry
+| Placeholder for the second optional monitor parameter description.
+| 0
+
+| authport
+| RADIUS authentication port.
+| 1812
+
+| acctport
+| RADIUS accounting port.
+| 1813
+
+| user kbd:[{}]
+| Username to test the authentication.
+| OpenNMS
+
+| password kbd:[{}]
+| Password to test the authentication.
+| OpenNMS
+
+| secret kbd:[{}]
+| The RADIUS shared secret used for communication between the client/NAS and the RADIUS server.
+| secret
+
+| authtype
+| RADIUS authentication type.
+The following authentication types are supported:
+chap, pap, mschapv1, mschapv2, eapmd5, eapmschapv2, eapttls.
+| pap
+
+| nasid kbd:[{}]
+| The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier] originating the Access-Request.
+| opennms
+
+| inner-protocol
+| When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
+Only pap is currently supported.
+| pap
+
+| inner-user kbd:[{}]
+| Username for the tunnelled pap authentication when using EAP-TTLS.
+| Inner-OpenNMS
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+Sample configuration shows how to configure the monitor in `poller-configuration.xml`.
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="Radius-Authentication" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="user" value="John Doe" />
+  <parameter key="password" value="hello" />
+  <parameter key="secret" value="radiuspassword" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="ds-name" value="radiusauth" />
+</service>
+
+<monitor service="Radius-Authentication" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
+----

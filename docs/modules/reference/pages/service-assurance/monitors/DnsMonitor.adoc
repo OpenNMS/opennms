@@ -1,0 +1,121 @@
+
+[[poller-dns-resolution-monitor]]
+= DnsMonitor
+
+This monitor tests the availability of the DNS service on remote IP interfaces.
+A DNS query is sent to check for a response of either an A or AAAA resource record.
+
+The monitor is marked as up if it receives a valid response from the DNS Server.
+For hostnames that have multiple resource records, it is possible to test if the number of responses are within a given boundary.
+
+The monitor can be simulated with the command line tool `host`:
+
+[source, console]
+----
+~ % host -v -t a www.google.com 8.8.8.8
+Trying "www.google.com"
+Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:
+
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9324
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.google.com.			IN	A
+
+;; ANSWER SECTION:
+www.google.com.		283	IN	A	74.125.232.17
+www.google.com.		283	IN	A	74.125.232.20
+www.google.com.		283	IN	A	74.125.232.19
+www.google.com.		283	IN	A	74.125.232.16
+www.google.com.		283	IN	A	74.125.232.18
+
+Received 112 bytes from 8.8.8.8#53 in 41 ms
+----
+
+TIP: This monitor is intended for testing the availability of a DNS service.
+To monitor the DNS resolution of some of your nodes from a client's perspective, use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+
+== DnsMonitor versus DNSResolutionMonitor
+
+The DnsMonitor is a test against a specific DNS server.
+Use this service to determine if the monitored node provides DNS resolution of requests sent to it.
+In {page-component-title}, the DNS server is the node and the DnsMonitor sends a lookup request for a given A record to the DNS server IP address.
+The service goes down if the DNS server doesn't have a valid A record in its zone database or has other issues resolving A records.
+
+The <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor, DNSResolutionMonitor>> measures the availability and record outages of hostname resolution from a client perspective.
+Use this service to determine if the monitored node can be resolved by DNS hosted somewhere else in your network.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.DnsMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the DnsMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of retries before the service is marked as down.
+| 0
+
+| timeout
+| Time in milliseconds to wait for the A Record response from the server.
+| 5000
+
+| port
+| UDP port for the DNS server
+| 53
+
+| lookup
+| DNS A Record for lookup test
+| localhost
+
+| fatal-response-codes
+| A comma-separated list of numeric DNS response codes considered fatal if present in the server's response.
+Default value is 2 and corresponds to `Server Failed`.
+See http://tools.ietf.org/html/rfc2929[RFC 2929] for a list of codes and their meanings.
+| 2
+
+| min-answers
+| Minimum number of records in the DNS server response for the given lookup.
+| n/a
+
+| max-answers
+| Maximum number of records in the DNS server response for the given lookup.
+| n/a
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Example
+
+This example shows how to monitor whether the IP interface from a given DNS server resolves a DNS request.
+This service should be bound to a DNS server which should be able to give a valid DNS response for DNS request _www.google.com_.
+The service is up if the DNS server gives between one and 10 A record responses.
+
+.Example configuration monitoring DNS request for a given server for www.google.com
+[source, xml]
+----
+<service name="DNS-www.google.com" interval="300000" user-defined="false" status="on">
+    <parameter key="lookup" value="www.google.com" />
+    <parameter key="fatal-response-code" value="2" />
+    <parameter key="min-answers" value="1" />
+    <parameter key="max-answers" value="10" />
+</service>
+
+<monitor service="DNS-www.google.com" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+----
+
+To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (dns-res-v4, dns-res-v6, dns-res-both, dns-res-either, dns-res-cname-mx) in `$OPENNMS_HOME/etc/response-graph.properties`.

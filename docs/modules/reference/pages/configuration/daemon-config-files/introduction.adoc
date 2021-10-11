@@ -1,0 +1,6 @@
+
+= Daemon Configuration Files
+
+Configuration changes require a restart of OpenNMS.
+Some daemons can reload configuration changes triggered by a daemon reload event.
+This section provides an overview of all daemons, their related configuration files, and which daemons you can reload without restarting OpenNMS.
