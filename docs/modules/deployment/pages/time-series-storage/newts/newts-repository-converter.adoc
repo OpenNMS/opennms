@@ -2,7 +2,7 @@
 = RRD/JRB to Newts Migration Utility
 
 Use this utility to migrate existing RRDTool- or JRobin-based data to a Newts cluster.
-The migration process traverses the `share/rrd` directory and its subdirectories, reads the data and properties files, and persists this data to Newts.
+The migration process traverses the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories, reads the data and properties files, and persists this data to Newts.
 
 == Migration
 
@@ -37,7 +37,7 @@ IMPORTANT: The newts_converter utility needs the path to the base directory of y
 For example, the utility needs the datasource configuration during the migration process to query the database to look up node data.
 
 == Use
-The utility is installed by default and its wrapper script is located in the `$OPENNMS_HOME/bin` directory.
+The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory.
 
 [source, console]
 ----
@@ -109,7 +109,7 @@ $ ./newts-repository-converter -t true -s true -T /usr/local/bin/rrdtool -n 16
 The following example shows how to convert JRobin-based data located in the directory `/mnt/opennms/rrd` that was collected with `storeByGroup` disabled.
 This program call uses eight concurrent threads to convert the JRB files.
 
-[source, shell]
+[source, console]
 ----
 $ ./newts-repository-converter -t false -s false -r /mnt/opennms/rrd -n 8
 <output omitted>
