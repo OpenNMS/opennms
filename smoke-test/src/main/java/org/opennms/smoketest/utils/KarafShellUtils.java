@@ -60,7 +60,7 @@ public class KarafShellUtils {
     }
 
     public static boolean isEndMessage(String s) {
-        return isSuccessMsg(s) || isFailureMessage(s);
+        return isSuccessMsg(s) || isFailureMessage(s) || s.contains("Command not found");
     }
 
     public static class HealthCheckResult {
@@ -118,8 +118,10 @@ public class KarafShellUtils {
                 sshAddr,
                 Duration.ofMinutes(2),
                 streams -> {
-                    streams.stdin.println("opennms:health-check");
-                    await().atMost(Duration.ofMinutes(1))
+                    final var healthCheckTimeout = Duration.ofSeconds(5);
+                    streams.stdin.println("opennms:health-check -t " + healthCheckTimeout.toMillis());
+                    // allow some extra seconds for the result to get detected
+                    await().atMost(healthCheckTimeout.plus(Duration.ofSeconds(5)))
                             .until(() -> streams.stdout.getLines().stream().anyMatch(KarafShellUtils::isEndMessage));
                     return new HealthCheckResult(streams.stdout.getLines(), streams.stderr.getLines());
                 }
