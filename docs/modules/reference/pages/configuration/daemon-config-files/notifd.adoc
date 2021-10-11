@@ -39,12 +39,12 @@
 | no
 
 | users.xml
-| Contain pager and address information for notification destination paths.
+| Contains pager and address information for notification destination paths.
 | no
 | no
 
 | groups.xml
-| Groups can be used as target for notifications.
+| Use groups as target for notifications.
 | no
 | no
 

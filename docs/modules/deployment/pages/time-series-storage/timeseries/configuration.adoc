@@ -1,9 +1,7 @@
 
-= Configuration
+= Enable Time Series Integration Layer
 
-== Enabling Time Series Integration Layer
-
-{page-component-title} can be configured to use the Time Series Integration Layer by setting the following property in `$\{OPENNMS_HOME}/etc/opennms.properties`:
+Set the following property in `$\{OPENNMS_HOME}/etc/opennms.properties` to configure {page-component-title} to use the Time Series Integration Layer:
 
 [source, properties]
 ----
@@ -17,11 +15,11 @@ Here is an example of how to activate the `in memory time series` plugin:
 [source, console]
 ----
 clone & build:
-git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
-mvn install
+> git clone git@github.com:opennms-forge/timeseries-integration-inmemory.git
+> mvn install
 
 in Karaf shell:
-bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
+> bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemory-plugin/1.0.0-SNAPSHOT
 ----
 
 For specific instructions, check your plugin description.
@@ -34,11 +32,9 @@ To this end, set the following property in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, {page-component-title} begins persisting metrics using the Time Series Integration Layer when restarted.
+With these set, upon restart, {page-component-title} begins persisting metrics using the Time Series Integration Layer.
 
-The next section provides additional configuration options.
-
-== Configuration reference
+== Additional configuration options
 
 Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure and tune the Time Series Integration Layer.
 
@@ -50,7 +46,8 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | Default
 
 | org.opennms.timeseries.config.ring_buffer_size
-| Maximum number of records that can be held in the ring buffer. Must be a power of two.
+| Maximum number of records that can be held in the ring buffer.
+Must be a power of two.
 | 8192
 
 | org.opennms.timeseries.config.writer_threads
@@ -58,7 +55,8 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | 16
 
 | org.opennms.timeseries.query.minimum_step
-| Minimum step size in milliseconds. Used to prevent large queries.
+| Minimum step size in milliseconds.
+Used to prevent large queries.
 | 300000
 
 | org.opennms.timeseries.query.interval_divider
@@ -66,19 +64,22 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | 2
 
 | org.opennms.timeseries.query.heartbeat
-| Duration in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your largest collection interval.
+| Duration in milliseconds.
+Used when no heartbeat is specified.
+Should generally be 1.5x your largest collection interval.
 | 450000
 
 | org.opennms.timeseries.query.parallelism
-| Maximum number of threads that can be used to compute aggregates. Defaults to the number of available cores.
+| Maximum number of threads that can be used to compute aggregates.
+Defaults to the number of available cores.
 | Number of cores
 
 | cache.timeseriesPersisterMetaTagCache.expireAfterRead
-| Expiry time in seconds for MetaTagCache.
+| Expiry time in seconds for MetaTagCache
 | 300
 
 | cache.timeseriesPersisterMetaTagCache.maximumSize
-| Maximum size for MetaTagCache.
+| Maximum size for MetaTagCache
 | 8192
 
 | cache.timeseriesPersisterMetaTagCache.recordStats
@@ -86,11 +87,11 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | true
 
 | cache.timeseriesSearcherCache.expireAfterRead
-| Expiry time in seconds for TimeseriesSearcherCache.
+| Expiry time in seconds for TimeseriesSearcherCache
 | 300
 
 | cache.timeseriesSearcherCache.maximumSize
-| Maximum size for TimeseriesSearcherCache.
+| Maximum size for TimeseriesSearcherCache
 | 8192
 
 | cache.timeseriesSearcherCache.recordStats
@@ -98,11 +99,11 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 | true
 
 | cache.timeseriesMetaDataCache.expireAfterRead
-| Expiry time in seconds for TimeseriesMetaDataCache.
+| Expiry time in seconds for TimeseriesMetaDataCache
 | 300
 
 | cache.timeseriesMetaDataCache.maximumSize
-| Maximum size for TimeseriesMetaDataCache.
+| Maximum size for TimeseriesMetaDataCache
 | 8192
 
 | cache.timeseriesMetaDataCache.recordStats
@@ -131,16 +132,16 @@ However, note that the memory the ring buffer uses is reserved, and larger value
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 == Expose additional meta tags
 Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
-This might not be sufficient if you use the data outside of {page-component-title} as well.
-Configure additional meta tags via a `.properties file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
+This might not be sufficient if you also use the data outside of {page-component-title}.
+Configure additional meta tags via a `.properties` file in the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` directory.
 
 The configuration of the tags has the following form:
 `prefix.tagKey=${query expression}`
 
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
-* The tagKey can by an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
+* The tagKey can be an arbitrary string as long as it does not break the Java properties file https://en.wikipedia.org/wiki/.properties[syntax].
 * The query expression lets you query the value.
-Supports use of the link:#ga-meta-data-dsl[Metadata DSL].
+Supports use of the xref:operation:meta-data.adoc#ga-meta-data-dsl[Metadata DSL].
 
 Examples:
 
@@ -151,7 +152,7 @@ Expose categories by setting `org.opennms.timeseries.tin.metatags.exposeCategori
 
 * `org.opennms.timeseries.tin.metatags.exposeCategories=true` +
 
-will lead to:
+Will lead to:
 
 ** `Tag("cat_myFirstCategory", "myFirstCategory")`
 ** `Tag("cat_mySecondCategory", "mySecondCategory")`

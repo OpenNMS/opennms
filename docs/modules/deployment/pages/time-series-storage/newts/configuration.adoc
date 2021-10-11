@@ -1,4 +1,5 @@
 
+[[newts-reference]]
 = Configuration Reference
 
 Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`, to configure and tune Newts.
