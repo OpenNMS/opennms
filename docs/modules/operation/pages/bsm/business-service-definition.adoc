@@ -36,7 +36,7 @@ image:bsm/01_bsm-editor.png[]
 
 (7) Show current business service, with dependencies, in the topology UI.
 
-(8) Edit and delete existing business service defintions.
+(8) Edit and delete existing business service definitions.
 
 As shown in figure <<ga-bsm-editor, Managing Business Services with the Business Service Editor>> the business services can be created or changed.
 The hierarchy is created by assigning an existing business service as child service.

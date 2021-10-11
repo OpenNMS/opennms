@@ -20,7 +20,7 @@ image:alarms/single_alarm_3.png[]
 .Both service down and service restored events from the poller
 image:alarms/single_alarm_4.png[]
 
-.The second occurence of the service down problem (SNMP), alarm reduced
+.The second occurrence of the service down problem (SNMP), alarm reduced
 image:alarms/single_alarm_5.png[]
 
 .Both service down events and the previous service restored event from the poller

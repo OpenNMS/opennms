@@ -33,7 +33,7 @@ sudo vi /opt/sentinel/etc/users.properties
 # OPENNMS: Change the admin user from 'karaf' to 'admin'
 admin = {CRYPT}C7AD...{CRYPT},_g_:admingroup<1>
 ----
-<1> Replace the whole string `\{CRYPT}C7AD...\{CRYPT}` with your new password in plainttext.
+<1> Replace the whole string `\{CRYPT}C7AD...\{CRYPT}` with your new password in plaintext.
     As soon you save the file the password will be SHA-512 encrypted.
 
 .Set restrictive file permissions
