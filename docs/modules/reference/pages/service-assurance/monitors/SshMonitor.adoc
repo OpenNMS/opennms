@@ -1,0 +1,68 @@
+
+= SshMonitor
+
+The SshMonitor tests the availability of an SSH service.
+During the poll, it attempts to connect on the specified port.
+If the connection request is successful, then the service is considered up.
+Optionally, the banner line the node provides may be parsed and compared against a pattern before the service is considered up.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SshMonitor`
+|===
+
+== Configuration and Use
+
+.Optional monitor-specific parameters for the SshMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| banner
+| Regular expression to be matched against the service's banner.
+| n/a
+| client-banner
+| The client banner that {page-component-title} uses to identify itself to the node.
+| SSH-1.99-OpenNMS_1.5
+
+| match
+| Regular expression to match against the service's banner. +
+Deprecated, please use the banner parameter instead.
+Note that this parameter does take precedence over the banner parameter.
+| n/a
+
+| port
+| TCP port to which SSH connection is tried.
+| 22
+
+| retry
+| Number of attempts to establish the SSH connection.
+| 0
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="SSH" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="banner" value="SSH"/>
+  <parameter key="client-banner" value="OpenNMS poller"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="ssh"/>
+  <parameter key="ds-name" value="ssh"/>
+</service>
+<monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
+----
