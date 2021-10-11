@@ -8,14 +8,14 @@ Depending on the SNMP MIBs that your devices support, you could either fill in s
 The SNMP asset provisioning adapter is invoked every time provisiond adds or updates a node.
 With the default provisiond configuration, the update takes place once every 24 hours.
 
-You can reload the provisiond SnmpAssetProvisioningAdapter with this command (or just restart OpenNMS):
+You can reload the provisiond `SnmpAssetProvisioningAdapter` with this command (or just restart OpenNMS):
 
 [source, console]
 ----
 ${OPENNMS_HOME}/bin# ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond.SnmpAssetProvisioningAdapter'
 ----
 
-NOTE: By default, the SnmpAssetProvisionAdapter runs 5 minutes after a provisiond `nodeScanCompleted` event is sent to indicate that provisiond completed the import.
+NOTE: By default, the `SnmpAssetProvisionAdapter` runs 5 minutes after a provisiond `nodeScanCompleted` event is sent to indicate that provisiond completed the import.
 
 == Installation
 
@@ -58,10 +58,10 @@ Mapping SNMP OID fields to node asset fields is defined in the `$\{OPENNMS_HOME}
 
 Variables in the formatString using the `$\{token}` syntax will be replaced by values that are defined by the list of mibObj parameters.
 
-In this configuration example, every node whose sysoid equals .1.3.6.1.4.1.9.1.379 will be matched by the "ciscoWireless" package.
-The adapter will get the OID value .1.3.6.1.4.1.9.9.661.1.3.2.1.8 and place the value in the "region" field in the asset database.
+In this configuration example, every node whose `sysoid` equals `.1.3.6.1.4.1.9.1.379` will be matched by the `ciscoWireless` package.
+The adapter will get the OID value `.1.3.6.1.4.1.9.9.661.1.3.2.1.8 `and place the value in the "region" field in the asset database.
 
 You may want to snmpwalk your target nodes and see if there are any interesting identifiers or string values that you would like to see in an asset field first.
-Once you identify the mibObjs to use, add them under a package that matches the device sysoid and you will be set to start collecting data.
+Once you identify the `mibObjs` to use, add them under a package that matches the device `sysoid` and you will be set to start collecting data.
 
 NOTE: You may specify any number of `<sysoid>` or `<sysoidMask>` tags in the config file.
