@@ -893,6 +893,7 @@
         <bundle>mvn:org.opennms.features.config.dao/org.opennms.features.config.dao.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.service/org.opennms.features.config.service.impl/${project.version}</bundle>
+        <bundle>mvn:org.json/json/${jsonVersion}</bundle>
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">
         <feature>camel-core</feature>
