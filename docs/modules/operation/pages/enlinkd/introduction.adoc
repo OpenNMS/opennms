@@ -143,8 +143,8 @@ Restart OpenNMS or just the Enlinkd daemon to apply configuration changes.
 
 .Send configuration reload event via CLI
 
-[source, shell]
+[source, console]
 ----
-cd $\{OPENNMS_HOME}/bin
+cd ${OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Enlinkd'
 ----
