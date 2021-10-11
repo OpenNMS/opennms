@@ -11,8 +11,7 @@
 
 * xref:provisioning/introduction.adoc[]
 ** xref:provisioning/getting-started.adoc[]
-** xref:provisioning/adapters/adapters.adoc[]
-*** xref:provisioning/adapters/ddns.adoc[]
+** xref:provisioning/adapters.adoc[]
 ** xref:provisioning/detectors.adoc[]
 ** xref:provisioning/policies.adoc[]
 ** xref:provisioning/handlers/import-handler.adoc[]
@@ -25,7 +24,6 @@
 ** xref:provisioning/integration.adoc[]
 ** xref:provisioning/scalability.adoc[]
 ** xref:provisioning/fine-grained.adoc[]
-** xref:provisioning/hardware-inventory.adoc[]
 ** xref:provisioning/snmp-profile.adoc[]
 
 * xref:thresholds/thresholding.adoc[]
@@ -183,4 +181,3 @@
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/geocoder.adoc[]
 ** xref:admin/config-tester.adoc[]
-
