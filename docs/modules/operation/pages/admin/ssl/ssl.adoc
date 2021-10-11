@@ -36,7 +36,7 @@ keytool \
   -trustcacerts \ <3>
   -alias localhost \ <4>
   -file localhost.cert \ <5>
-  -keystore $\{OPENNMS_HOME}/etc/trust-store.jks  <6>
+  -keystore ${OPENNMS_HOME}/etc/trust-store.jks  <6>
 ----
 <1> Define certificate or a certificate chain import.
 <2> Use verbose output.
@@ -75,12 +75,12 @@ openssl \
 === Configure {page-component-title} to use the defined Java Truststore
 
 To set up {page-component-title} to use the defined Java Truststore, you must set the applicable `javax.net.ssl.trustStore*` properties.
-Open `$OPENNMS_HOME/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
+Open `$\{OPENNMS_HOME}/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
 
-.$OPENNMS_HOME/etc/opennms.properties snippet to define a Java Truststore
+.$\{OPENNMS_HOME}/etc/opennms.properties snippet to define a Java Truststore
 [source, properties]
 ----
-javax.net.ssl.trustStore=$OPENNMS_HOME/etc/trust-store.jks <1>
+javax.net.ssl.trustStore=${OPENNMS_HOME}/etc/trust-store.jks <1>
 javax.net.ssl.trustStorePassword=change-me <2>
 ----
 <1> Java Truststore location
@@ -125,7 +125,7 @@ The JSSE framework requires these passwords to be identical.
 | javax.net.ssl.trustStore
 | Location of the Java keystore file that contains the collection of CA certificates this application process (truststore) trusts.
 If a truststore location is not specified using this property, the Sun JSSE implementation searches for and uses a keystore file in the following locations (in order):
-`$JAVA_HOME/lib/security/jssecacerts` and `$JAVA_HOME/lib/security/cacerts`.
+`$\{JAVA_HOME}/lib/security/jssecacerts` and `$\{JAVA_HOME}/lib/security/cacerts`.
 
 | javax.net.ssl.trustStorePassword
 | Password to unlock the keystore file (store password) javax.net.ssl.trustStore specifies.
