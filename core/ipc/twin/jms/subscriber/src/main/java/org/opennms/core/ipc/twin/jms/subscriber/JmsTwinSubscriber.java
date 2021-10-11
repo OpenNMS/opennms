@@ -63,6 +63,10 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     @EndpointInject(uri = "direct:twinRpc", context = "twinRpcClient")
     private Endpoint endpoint;
 
+    private final Component queuingservice;
+    // Logging control from Camel context.
+    private final String debugMaxChar;
+
     /*
        Two blueprint camel contexts couldn't be started from the same blueprint
      */
@@ -70,8 +74,8 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
 
     public JmsTwinSubscriber(MinionIdentity minionIdentity, Component queuingservice, String debugMaxChar) {
         super(minionIdentity);
-        sinkCamelContext.addComponent("queuingservice", queuingservice);
-        sinkCamelContext.getGlobalOptions().put(Exchange.LOG_DEBUG_BODY_MAX_CHARS, debugMaxChar);
+        this.queuingservice = queuingservice;
+        this.debugMaxChar = debugMaxChar;
     }
 
     @Override
@@ -97,12 +101,15 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     }
 
     public void init() throws Exception {
+        sinkCamelContext.addComponent("queuingservice", queuingservice);
+        sinkCamelContext.getGlobalOptions().put(Exchange.LOG_DEBUG_BODY_MAX_CHARS, debugMaxChar);
         sinkCamelContext.addRoutes(new SinkRouteBuilder(this));
         sinkCamelContext.start();
         LOG.info("JMS Twin subscriber initialized");
     }
 
     public void destroy() throws Exception {
+        super.shutdown();
         sinkCamelContext.stop();
         LOG.info("JMS Twin subscriber stopped");
     }

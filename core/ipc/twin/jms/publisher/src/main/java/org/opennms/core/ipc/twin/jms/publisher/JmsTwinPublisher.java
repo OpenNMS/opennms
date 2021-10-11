@@ -127,6 +127,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     }
 
     public void destroy() throws Exception {
+        super.shutdown();
         executor.shutdownNow();
         LOG.info("JMS Twin publisher stopped");
     }

@@ -122,6 +122,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     public void shutdown() {
+        super.shutdown();
         if (server != null) {
             server.shutdown();
             LOG.info("Stopped Twin GRPC Server");

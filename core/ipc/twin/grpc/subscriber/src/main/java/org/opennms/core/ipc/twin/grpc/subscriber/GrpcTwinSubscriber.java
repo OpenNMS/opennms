@@ -100,6 +100,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     public void shutdown() {
+        super.shutdown();
         if (channel != null) {
             channel.shutdown();
         }

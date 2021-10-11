@@ -31,11 +31,9 @@ package org.opennms.core.ipc.twin.common;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -84,11 +82,12 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         String location = minionIdentity != null ? minionIdentity.getLocation() : null;
         TwinRequestBean twinRequestBean = new TwinRequestBean(key, location);
         sendRpcRequest(twinRequestBean);
+        byte[] objValue = objMap.get(key);
         // If there is an existing object, send that update to subscriber.
-        if (objMap.get(key) != null) {
-            TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objMap.get(key));
+        if (objValue != null) {
+            TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objValue);
             try {
-                session.accept(twinResponseBean);
+                session.accept(objValue);
             } catch (IOException e) {
                 LOG.error("Exception while sending response to consumer", e);
             }
@@ -98,22 +97,27 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     }
 
     protected void accept(TwinResponseBean twinResponse) {
+
+        // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
+        if(twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
+            return;
+        }
         // Consume in our own thread instead of using broker's callback thread.
         executorService.execute(() -> {
 
-            LOG.trace("Received object update with key {}", twinResponse.getKey());
             if (twinResponse.getObject() != null &&
                     isObjectUpdated(twinResponse.getKey(), twinResponse.getObject())) {
 
+                LOG.trace("Received object update with key {}", twinResponse.getKey());
                 // Update twin object in local cache.
                 objMap.put(twinResponse.getKey(), twinResponse.getObject());
                 // Send update to each session.
                 if (sessionMap.containsKey(twinResponse.getKey())) {
                     sessionMap.get(twinResponse.getKey()).forEach(session -> {
                         try {
-                            session.accept(twinResponse);
-                        } catch (IOException e) {
-                            LOG.error("Exception while sending response to consumer", e);
+                            session.accept(twinResponse.getObject());
+                        } catch (Exception e) {
+                            LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
                         }
                     });
                 } else {
@@ -134,8 +138,21 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return !Arrays.equals(objInBytes, updatedObject);
     }
 
+    public void shutdown() {
+        executorService.shutdown();
+        objMap.clear();
+        sessionMap.clear();
+    }
+
     public MinionIdentity getMinionIdentity() {
         return minionIdentity;
+    }
+
+    private String getLocation() {
+        if (minionIdentity != null) {
+            return minionIdentity.getLocation();
+        }
+        return null;
     }
 
     private class SessionImpl<T> implements Closeable {
@@ -156,8 +173,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             LOG.info("Closed session with key {} ", key);
         }
 
-        public void accept(TwinResponseBean twinResponseBean) throws IOException {
-                final T value = objectMapper.readValue(twinResponseBean.getObject(), clazz);
+        public void accept(byte[] objValue) throws IOException {
+                final T value = objectMapper.readValue(objValue, clazz);
                 LOG.trace("Updated consumer with key {}", key);
                 consumer.accept(value);
         }
@@ -173,6 +190,15 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         @Override
         public int hashCode() {
             return Objects.hash(key, consumer, clazz);
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", SessionImpl.class.getSimpleName() + "[", "]")
+                    .add("key='" + key + "'")
+                    .add("consumer=" + consumer)
+                    .add("clazz=" + clazz)
+                    .toString();
         }
     }
 }

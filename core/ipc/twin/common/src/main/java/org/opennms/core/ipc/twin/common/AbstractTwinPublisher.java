@@ -73,6 +73,10 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
     }
 
+    public void shutdown() {
+        objMap.clear();
+    }
+
     private class SessionImpl<T> implements Session<T> {
 
         private final SessionKey sessionKey;

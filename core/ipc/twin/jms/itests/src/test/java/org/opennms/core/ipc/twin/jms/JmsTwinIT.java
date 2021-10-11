@@ -41,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher;
+import org.opennms.core.ipc.twin.jms.subscriber.JmsTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
@@ -55,9 +56,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -138,8 +141,6 @@ public class JmsTwinIT extends CamelBlueprintTest {
      */
     @Test
     public void testPublishSubscribe() throws Exception {
-        //subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
-        assertThat(subscriber, notNullValue());
         final var session = publisher.register("test", String.class);
         session.publish("Test1");
 
@@ -257,6 +258,23 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));
         await().until(tracker2::getLog, hasItems("Test2", "Test3"));
+    }
+
+
+    @Test
+    public void testPublishWithDifferentLocations() throws IOException, InterruptedException {
+        final var session = publisher.register("test", String.class, "INVALID-LOCATION");
+        final var session2 = publisher.register("test", String.class, REMOTE_LOCATION_NAME);
+        session.publish("Test1");
+        session2.publish("Test2");
+
+        final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, contains("Test2"));
+
+        // Publishing without location is akin to publishing to all locations
+        final var session3 = publisher.register("test", String.class);
+        session3.publish("Test3");
+        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, contains("Test2", "Test3"));
     }
 
 
