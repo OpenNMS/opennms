@@ -2,7 +2,7 @@
 [[import-handlers]]
 = Import Handlers
 
-{page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
+{page-component-title} supports a number of import handlers to facilitate xref:operation:provisioning/import-handler.adoc[provisioning] nodes from an external system (foreign source) into a requisition.
 This is done in the `$\{OPENNMS_HOME}/etc/provisiond-configuration.xml` file by referencing a requisition's location via a URL.
 Most commonly, these URLs are files on the file system (`file:$\{OPENNMS_HOME}/etc/imports/<my-requisition.xml>`) created through the Requisition UI.
 However, these same requisitions for adding, updating, and deleting nodes can also come from external URLs.
