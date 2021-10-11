@@ -1,0 +1,37 @@
+
+[[ga-opennms-operation-newts]]
+= Newts
+
+link:http://newts.io/[Newts] is a time series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
+It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontal scaling] for your time series storage and is an alternative to link:https://github.com/OpenNMS/jrobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+
+This section describes how to xref:time-series-storage/newts/newts.adoc#newts-configure[configure] {page-component-title} to use an existing Cassandra cluster, including how to initialize the Newts keyspace using `newts init` with STCS without production-ready tuning, and verify that time series data is stored and can be accessed
+
+It also provides reference documentation for Newts:
+
+* xref:time-series-storage/newts/configuration.adoc#newts-reference[additional configuration options]
+* xref:time-series-storage/newts/cassandra-jmx.adoc#cassandra-monitor[information about the metrics] {page-component-title} collects from Cassandra
+* xref:time-series-storage/newts/cassandra-newts-jmx.adoc#newts-monitor[monitoring Newts]
+* xref:time-series-storage/newts/resourcecli.adoc[resource management]
+
+== Cassandra documentation
+
+Cassandra cluster design, setup, sizing, tuning, and operation are out of scope for this documentation.
+To install and set up a Cassandra cluster, please follow the link:http://cassandra.apache.org/download[Cassandra installation instructions].
+For further information, see link:https://cassandra.apache.org/doc/latest/getting_started/index.html[Cassandra Getting Started Guide].
+
+TIP: To avoid unwanted updates, disable the Cassandra repository on DNF/YUM-based distributions or use `apt-mark hold cassandra` on APT based distributions.
+
+IMPORTANT: For simplicity we use the `$\{OPENNMS_HOME}/bin/newts init` command which initializes a Newts keyspace for you and the defaults are not optimal tuned for a production-ready environment.
+           To build a production environment please consult link:https://opennms.discourse.group/t/sizing-cassandra-for-newts/771[Sizing Cassandra for Newts] and link:https://docs.datastax.com/en/dse-planning/doc/planning/planningAntiPatterns.html[planning anti-patterns in Cassandra].
+
+== Before you begin
+
+Make sure you have the following:
+
+* A running instance of {page-component-title} running on Linux
+* Working data collection and response time metrics from collectd and pollerd
+* Cassandra cluster with access to the Cassandra client port `9042/tcp`
+
+Note that you must make configurations in the `etc` directory relative to the {page-component-title} Core home directory.
+Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
