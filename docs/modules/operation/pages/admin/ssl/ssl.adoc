@@ -10,7 +10,7 @@ NOTE: To use HTTPS, use the Java command line tool `keytool`.
 [[ga-operation-standalone-https-jetty]]
 == Secure {page-component-title} with HTTPS
 
-To configure {page-component-title}'s built in Jetty process to protect web sessions with HTTPS, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to set up SSL with Jetty].
+To configure {page-component-title}'s built-in Jetty process to protect web sessions with HTTPS, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to set up SSL with Jetty].
 Alternatively, you can configure Apache or link:https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208[NGINX] to act as a reverse proxy.
 
 [[ga-operation-https-client]]

@@ -70,7 +70,7 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 
 == Connecting to RMI over SSL
 
-Note that if you are using a self-signed or otherwise untrusted certificate, you will need to configure a truststore on the client side when you attempt to connect over SSL-enabled RMI.
+Note that if you use a self-signed or otherwise untrusted certificate, you must configure a truststore on the client side when you attempt to connect over SSL-enabled RMI.
 To create a truststore, follow the example in the <<admin/ssl/ssl.adoc#ga-operation-https-client, HTTPS client instructions>>.
 You may then use the truststore to connect to your {page-component-title} RMI server.
 
