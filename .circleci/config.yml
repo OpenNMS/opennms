@@ -279,6 +279,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             mvn clean -DskipTests=true
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
