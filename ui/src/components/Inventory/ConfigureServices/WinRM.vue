@@ -1,16 +1,16 @@
 <template>
   <Row first><h3>WinRM / WSMan</h3></Row>
-  <Row label="Username"><InputText v-model="username" class="input" @input="setValues" /></Row>
-  <Row label="Password"><InputText v-model="password" class="input" @input="setValues" /></Row>
-  <Row label="Timeout"><InputText v-model="timeout" class="input" @input="setValues" /></Row>
-  <Row label="Retry"><InputText v-model="retry" class="input" @input="setValues" /></Row>
+  <Row label="Username"><FeatherInput v-model="username" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Password"><FeatherInput v-model="password" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Timeout"><FeatherInput v-model="timeout" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Retry"><FeatherInput v-model="retry" class="input" @update:modelValue="setValues" /></Row>
 
   <!-- advanced options -->
   <ShowHideBox label="Advanced options">
-    <Row first label="Port"><InputText v-model="port" class="input" @input="setValues"/></Row>
-    <Row label="Use TLS"><Checkbox v-model="useTLS" @change="setValues" :binary="true"/></Row>
-    <Row label="Object"><InputText v-model="object" class="input" @input="setValues"/></Row>
-    <Row label="WQL Query"><InputText v-model="wqlQuery" class="input" @input="setValues"/></Row>
+    <Row first label="Port"><FeatherInput v-model="port" class="input" @update:modelValue="setValues"/></Row>
+    <Row label="Use TLS"><FeatherCheckbox v-model="useTLS" @update:modelValue="setValues" /></Row>
+    <Row label="Object"><FeatherInput v-model="object" class="input" @update:modelValue="setValues"/></Row>
+    <Row label="WQL Query"><FeatherInput v-model="wqlQuery" class="input" @update:modelValue="setValues"/></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />
@@ -19,8 +19,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import Checkbox from 'primevue/checkbox'
+import { FeatherInput } from '@featherds/input'
+import { FeatherCheckbox } from "@featherds/checkbox"
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'
@@ -28,8 +28,8 @@ import ServiceFilter from './ServiceFilter.vue'
 export default defineComponent({
   components: {
     Row,
-    InputText,
-    Checkbox,
+    FeatherInput,
+    FeatherCheckbox,
     ShowHideBox,
     ServiceFilter
   },
@@ -82,5 +82,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

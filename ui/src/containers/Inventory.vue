@@ -1,7 +1,7 @@
 <template>
-  <div class="p-grid page">
-    <div class="p-col-12">
-      <h1>Identify your network inventory</h1>
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <div class="title">Identify your network inventory</div>
       <Steps />
     </div>
   </div>
@@ -25,3 +25,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+.title {
+  @include headline3();
+}
+</style>

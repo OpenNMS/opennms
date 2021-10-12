@@ -1,19 +1,19 @@
 <template>
-  <Dropdown 
+  <FeatherSelect 
     @change="$emit('set-type', type)" 
     v-model="type" 
     :options="types" 
-    optionLabel="name"
+    text-prop="name"
     class="types-dropdown"/>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import Dropdown from 'primevue/dropdown'
+import { FeatherSelect } from '@featherds/select'
 
 export default defineComponent({
   components: {
-    Dropdown
+    FeatherSelect
   },
   emits: ['set-type'],
   setup() {

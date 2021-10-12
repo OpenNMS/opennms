@@ -1,45 +1,37 @@
 <template>
-  <Card>
-    <template v-slot:title>
-      What services do you want to find/monitor?
-    </template>
-    <template v-slot:content>
-      <StepConfigureServiceBtnContainer @configureServices="configureServices"/>
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-12 title">What services do you want to find/monitor?</div>
+    </div>
+
+    <div class="feather-row">
+      <StepConfigureServiceBtnContainer @configureServices="configureServices" />
       <StepConfigureServiceContainer :services="selectedServices" />
-    </template>
-    <template v-slot:footer>
-      <div class="p-grid p-nogutter p-justify-between">
-        <Button 
-          class="p-button-primary" 
-          label="Back" 
-          @click="$emit('prev-page', { pageIndex: 1 })" 
-          icon="pi pi-angle-left" 
-        />
-        <Button 
-          v-if="showNextBtn" 
-          class="p-button-primary" 
-          label="This looks good" 
-          @click="$emit('next-page', { pageIndex: 1 })" 
-          icon="pi pi-angle-right" 
-          iconPos="right" 
-        />
+    </div>
+
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <FeatherButton primary @click="$emit('prev-page', { pageIndex: 1 })">Back</FeatherButton>
+        <FeatherButton
+          v-if="showNextBtn"
+          primary
+          @click="$emit('next-page', { pageIndex: 1 })"
+        >This looks good</FeatherButton>
       </div>
-    </template>
-  </Card>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import Card from 'primevue/card'
-import Button from 'primevue/button'
+import { FeatherButton } from '@featherds/button'
 import StepConfigureServiceContainer from './StepConfigureServiceContainer.vue'
 import StepConfigureServiceBtnContainer from './StepConfigureServiceBtnContainer.vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
   components: {
-    Card,
-    Button,
+    FeatherButton,
     StepConfigureServiceContainer,
     StepConfigureServiceBtnContainer
   },
@@ -60,4 +52,14 @@ export default defineComponent({
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+  .title {
+    @include headline3();
+  }
+}
+</style>

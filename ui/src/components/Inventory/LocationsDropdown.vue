@@ -1,20 +1,21 @@
 <template>
-  <Dropdown 
-    @change="$emit('set-location', location)" 
-    v-model="location" 
-    :options="locations" 
-    optionLabel="location-name"
-    class="locations-dropdown"/>
+  <FeatherSelect
+    @update:modelValue="$emit('set-location', location)"
+    v-model="location"
+    :options="locations"
+    text-prop="location-name"
+    class="locations-dropdown"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, ref, watchEffect } from 'vue'
 import { useStore } from 'vuex'
-import Dropdown from 'primevue/dropdown'
+import { FeatherSelect } from '@featherds/select'
 
 export default defineComponent({
   components: {
-    Dropdown
+    FeatherSelect
   },
   emits: ['set-location'],
   setup(_, context) {
@@ -33,8 +34,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-  .locations-dropdown {
-    width: 100%;
-  }
+.locations-dropdown {
+  width: 100%;
+}
 </style>
 

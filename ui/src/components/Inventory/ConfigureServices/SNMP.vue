@@ -1,27 +1,26 @@
 <template>
-<div class="p-grid">
-  <div class="p-col">
+<div class="feather-row">
+  <div class="feather-col-6">
     <Row first><h3>SNMP</h3></Row>
-    <Row label="v1/v2c community string"><InputText type="text" v-model="v1v2" class="input" @input="setValues"/></Row>
-    <Row label="Timeout"><InputText type="number" v-model="timeout" class="input" @input="setValues" /></Row>
-    <Row label="Retry"><InputText type="number" v-model="retry" class="input" @input="setValues" /></Row>
+    <Row label="v1/v2c community string"><FeatherInput type="text" v-model="v1v2" class="input" @update:modelValue="setValues"/></Row>
+    <Row label="Timeout"><FeatherInput type="number" v-model="timeout" class="input" @update:modelValue="setValues" /></Row>
+    <Row label="Retry"><FeatherInput type="number" v-model="retry" class="input" @update:modelValue="setValues" /></Row>
 
     <ShowHideBox label="Advanced options">
       <Row first label="Security level">
-        <Dropdown 
+        <FeatherSelect 
           v-model="securityLevel" 
-          @change="setValues" 
+          @update:modelValue="setValues" 
           class="input" 
           :options="options"
-          option-label="label"
-          option-value="value"/>
+          text-prop="label" />
       </Row>
 
       <!-- add filter -->
       <ServiceFilter @setValues="setValues" />
     </ShowHideBox>
   </div>
-  <div class="p-col">
+  <div class="feather-col-6">
     <ResponseTable />
   </div>
 </div>
@@ -29,8 +28,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import Dropdown from 'primevue/dropdown'
+import { FeatherSelect } from '@featherds/select'
+import { FeatherInput } from '@featherds/input'
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'
@@ -39,8 +38,8 @@ import ResponseTable from './ResponseTable.vue'
 export default defineComponent({
   components: {
     Row,
-    Dropdown,
-    InputText,
+    FeatherSelect,
+    FeatherInput,
     ShowHideBox,
     ServiceFilter,
     ResponseTable
@@ -88,5 +87,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

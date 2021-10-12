@@ -3,34 +3,34 @@
     <component :is="contains" :index="index" @setValues="setValues"></component>
   </template>
 
-  <div p-flex-row>
-    <Button
-      label="Add another" 
-      class="p-button-raised p-button-text first input" 
+  <div class="feather-row">
+    <FeatherButton
+      primary
+      class="first input" 
       @click="addForm"
-    />
+    >Add another</FeatherButton>
   </div>
 
-  <div p-flex-row>
-    <Button
-      label="Test" 
-      class="p-button-primary input" 
+  <div class="feather-row">
+    <FeatherButton
+      primary
+      class="input" 
       @click="test"
-    />
+    >Test</FeatherButton>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
-import Button from 'primevue/button'
+import { FeatherButton } from '@featherds/button'
 import StepAddContentCtrl from './StepAddContentCtrl.vue'
 import StepAddContentDNS from './StepAddContentDNS.vue'
 import StepAddContentIpRange from './StepAddContentIpRange.vue'
 
 export default defineComponent({
   components: {
-    Button,
+    FeatherButton,
     StepAddContentDNS,
     StepAddContentCtrl,
     StepAddContentIpRange

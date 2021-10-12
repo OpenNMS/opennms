@@ -1,6 +1,8 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h3>Now pinging devices to identify nodes... Complete to go to Nodes table.</h3>
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <div class="title">Now pinging devices to identify nodes... Complete to go to Nodes table.</div>
+    </div>
   </div>
 </template>
 
@@ -10,4 +12,9 @@ import { defineComponent } from 'vue'
 export default defineComponent({})
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+.title {
+  @include headline3();
+}
+</style>

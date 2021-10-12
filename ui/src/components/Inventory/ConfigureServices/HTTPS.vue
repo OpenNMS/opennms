@@ -1,13 +1,13 @@
 <template>
   <Row first><h3>HTTP/S</h3></Row>
-  <Row label="Port"><InputText v-model="port" class="input" @input="setValues"/></Row>
-  <Row label="URL"><InputText v-model="url" class="input" @input="setValues" /></Row>
-  <Row label="Use HTTPS"><Checkbox v-model="useHttps" :binary="true" class="input" @change="setValues" /></Row>
-  <Row label="Timeout"><InputText v-model="timeout" class="input" @input="setValues" /></Row>
-  <Row label="Retry"><InputText v-model="retry" class="input" @input="setValues" /></Row>
+  <Row label="Port"><FeatherInput v-model="port" class="input"  @update:modelValue="setValues"/></Row>
+  <Row label="URL"><FeatherInput v-model="url" class="input"  @update:modelValue="setValues" /></Row>
+  <Row label="Use HTTPS"><FeatherCheckbox v-model="useHttps" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Timeout"><FeatherInput v-model="timeout" class="input"  @update:modelValue="setValues" /></Row>
+  <Row label="Retry"><FeatherInput v-model="retry" class="input"  @update:modelValue="setValues" /></Row>
 
   <ShowHideBox label="Add return code">
-    <Row label="Return code"><InputText v-model="returnCode" class="input" @input="setValues" /></Row>
+    <Row label="Return code"><FeatherInput v-model="returnCode" class="input"  @update:modelValue="setValues" /></Row>
   </ShowHideBox>
 
   <ServiceFilter @setValues="setValues" />
@@ -15,8 +15,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import Checkbox from 'primevue/checkbox'
+import { FeatherInput } from '@featherds/input'
+import { FeatherCheckbox } from "@featherds/checkbox"
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'
@@ -24,8 +24,8 @@ import ServiceFilter from './ServiceFilter.vue'
 export default defineComponent({
   components: {
     Row,
-    Checkbox,
-    InputText,
+    FeatherCheckbox,
+    FeatherInput,
     ShowHideBox,
     ServiceFilter
   },
@@ -70,5 +70,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

@@ -1,34 +1,32 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <template v-for="service of services">
-      <component 
-        is="StepConfigureServiceBtn" 
-        :serviceName="service"
-        :selectedServices="selectedServices"
-        :disableService="disableServiceSelection"
-        @selectService="selectService(service)"
-      />
-    </template>
-    <!-- <i class="pi pi-replay pointer" v-if="showReset" @click="resetServiceSelection" /> -->
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <template v-for="service of services">
+        <component
+          is="StepConfigureServiceBtn"
+          :serviceName="service"
+          :selectedServices="selectedServices"
+          :disableService="disableServiceSelection"
+          @selectService="selectService(service)"
+        />
+      </template>
+      <!-- <i class="pointer" v-if="showReset" @click="resetServiceSelection" /> -->
+    </div>
   </div>
-  <div class="p-flex-row first" v-if="showConfigureServicesBtn">
-    <Button
-      class="p-button-secondary" 
-      label="Configure" 
-      @click="configureServices"
-    />
+  <div class="feather-row first" v-if="showConfigureServicesBtn">
+    <FeatherButton secondary @click="configureServices">Configure</FeatherButton>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import StepConfigureServiceBtn from './StepConfigureServiceBtn.vue';
-import Button from 'primevue/button'
+import StepConfigureServiceBtn from './StepConfigureServiceBtn.vue'
+import { FeatherButton } from '@featherds/button'
 
 export default defineComponent({
   components: {
     StepConfigureServiceBtn,
-    Button
+    FeatherButton
   },
   emits: ['configure-services'],
   setup(_, context) {
@@ -62,7 +60,7 @@ export default defineComponent({
       disableServiceSelection.value = true
       showReset.value = true
     }
-    
+
     const resetServiceSelection = () => {
       // reset services
       selectedServices.value = []
@@ -87,10 +85,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
- .pi-replay {
-   margin-top: 10px;
-   font-weight: bold;
- }
-</style>

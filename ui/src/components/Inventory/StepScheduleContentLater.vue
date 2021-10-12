@@ -1,35 +1,31 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h3>When do you want to schedule this scan?</h3>
+  <div class="feather-row">
+    <div class="title">When do you want to schedule this scan?</div>
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h4 for="calendar">Date/Time</h4>
+  <div class="feather-row">
+    <div class="title" for="calendar">Date/Time</div>
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <Calendar id="calendar" v-model="calendarDate" :showTime="true" hourFormat="12" />
+  <div class="feather-row">
+    <FeatherDateInput id="calendar" v-model="calendarDate" />
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h4 for="calendar">Re-run this scan?</h4>
+  <div class="feather-row">
+    <div class="title" for="calendar">Re-run this scan?</div>
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <Dropdown :options="reRunOptions" v-model="selectedReRunOption" />
+  <div class="feather-row">
+    <FeatherSelect :options="reRunOptions" v-model="selectedReRunOption" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
 import { useStore } from 'vuex'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import Calendar from 'primevue/calendar'
-import Dropdown from 'primevue/dropdown'
+import { FeatherDateInput } from '@featherds/date-input'
+import { FeatherSelect } from '@featherds/select'
 
 export default defineComponent({
   components: {
-    InputText,
-    Calendar,
-    Dropdown,
-    Button,
+    FeatherDateInput,
+    FeatherSelect
   },
   props: {
     data: {
@@ -67,4 +63,9 @@ export default defineComponent({
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+.title {
+  @include headline3();
+}
+</style>

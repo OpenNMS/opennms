@@ -2,29 +2,14 @@
   <template v-for="index in forms">
     <component :is="service" :index="index" @setValues="setValues"></component>
   </template>
-
-  <div p-flex-row>
-    <Button
-      :label="`Add another ${service} from`" 
-      class="p-button-raised p-button-text first input" 
-      @click="addForm"
-    />
+  <div class="feather-row">
+    <FeatherButton primary class="first input" @click="addForm">{{ `Add another ${service} from` }}</FeatherButton>
   </div>
-
-  <div p-flex-row>
-    <Button
-      label="Test" 
-      class="p-button-primary input" 
-      @click="test"
-    />
+  <div class="feather-row">
+    <FeatherButton primary class="input" @click="test">Test</FeatherButton>
   </div>
-
-  <div p-flex-row v-if="showNextBtn">
-    <Button
-      label="Next" 
-      class="p-button-primary input" 
-      @click="next"
-    />
+  <div class="feather-row" v-if="showNextBtn">
+    <FeatherButton primary class="input" @click="next">Next</FeatherButton>
   </div>
 </template>
 
@@ -32,7 +17,7 @@
 import { defineComponent, ref, computed } from 'vue'
 import { SNMPDetectRequest } from '@/types'
 import { useStore } from 'vuex'
-import Button from 'primevue/button'
+import { FeatherButton } from '@featherds/button'
 import WinRM from './WinRM.vue'
 import HTTPS from './HTTPS.vue'
 import ICMP from './ICMP.vue'
@@ -41,7 +26,7 @@ import SSH from './SSH.vue'
 
 export default defineComponent({
   components: {
-    Button,
+    FeatherButton,
     WinRM,
     HTTPS,
     ICMP,
@@ -58,7 +43,7 @@ export default defineComponent({
       required: true
     }
   },
-  emit:['complete-service'],
+  emit: ['complete-service'],
   setup(props, context) {
     const store = useStore()
     const formsValues = ref([] as any)
@@ -66,7 +51,7 @@ export default defineComponent({
     const showNextBtn = ref(false)
 
     const addForm = () => forms.value.push(forms.value.length)
-    const setValues = (form: any) => {formsValues.value[form.index] = form.data; console.log(form.data)}
+    const setValues = (form: any) => { formsValues.value[form.index] = form.data; console.log(form.data) }
 
     const ipRangeResponses = computed(
       () => store.state.inventoryModule.ipRangeResponses
@@ -129,5 +114,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

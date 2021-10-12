@@ -1,12 +1,12 @@
 <template>
   <Row label="Location" first><LocationsDropdown @setLocation="setLocation"/></Row>
-  <Row label="Host"><InputText v-model="host" class="input" @input="setValues"/></Row>
-  <Row label="Zone"><InputText v-model="zone" class="input" @input="setValues" /></Row>
+  <Row label="Host"><FeatherInput v-model="host" class="input" @update:modelValue="setValues"/></Row>
+  <Row label="Zone"><FeatherInput v-model="zone" class="input" @update:modelValue="setValues" /></Row>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import InputText from 'primevue/inputtext'
+import { FeatherInput } from '@featherds/input'
 import LocationsDropdown from './LocationsDropdown.vue'
 import { MonitoringLocation } from '@/types'
 import Row from '@/components/Common/Row.vue'
@@ -14,7 +14,7 @@ import Row from '@/components/Common/Row.vue'
 export default defineComponent({
   components: {
     Row,
-    InputText,
+    FeatherInput,
     LocationsDropdown
   },
   emits: ['set-values'],
@@ -40,6 +40,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped lang="scss">
-</style>

@@ -1,11 +1,11 @@
 <template>
   <Row first ><h3>ICMP</h3></Row>
-  <Row label="Timeout"><InputText type="text" v-model="timeout" class="input" @input="setValues" /></Row>
-  <Row label="Retry"><InputText type="text" v-model="retry" class="input" @input="setValues" /></Row>
+  <Row label="Timeout"><FeatherInput type="text" v-model="timeout" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Retry"><FeatherInput type="text" v-model="retry" class="input" @update:modelValue="setValues" /></Row>
 
   <ShowHideBox label="Advanced options">
     <!-- Advanced options -->
-    <Row first label="DSCP"><InputText type="text" v-model="dscp" class="input" @input="setValues" /></Row>
+    <Row first label="DSCP"><FeatherInput type="text" v-model="dscp" class="input" @update:modelValue="setValues" /></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />
@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
+import { FeatherInput } from '@featherds/input'
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'
@@ -22,7 +22,7 @@ import ServiceFilter from './ServiceFilter.vue'
 export default defineComponent({
   components: {
     Row,
-    InputText,
+    FeatherInput,
     ShowHideBox,
     ServiceFilter
   },
@@ -58,5 +58,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

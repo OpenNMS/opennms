@@ -1,46 +1,32 @@
 <template>
-  <Card>
-    <template v-slot:content>
-      <StepScheduleContent />
-    </template>
-    <template v-slot:footer>
-      <div class="p-grid p-nogutter p-justify-between">
-        <Button 
-          class="p-button-primary" 
-          label="Back" 
-          @click="$emit('prev-page', { pageIndex: 2 })" 
-          icon="pi pi-angle-left" 
-        />
-        <Button
-          v-if="showCompleteButton"
-          label="Complete" 
-          @click="$emit('complete')" 
-          icon="pi pi-check" 
-          iconPos="right" 
-          class="p-button-success"
-        />
+  <div class="card">
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <StepScheduleContent />
       </div>
-    </template>
-  </Card>
+    </div>
+
+    <div class="feather-row space-between">
+      <FeatherButton primary @click="$emit('prev-page', { pageIndex: 2 })">Back</FeatherButton>
+      <FeatherButton v-if="showCompleteButton" @click="$emit('complete')" primary></FeatherButton>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
-import Card from 'primevue/card'
-import Button from 'primevue/button'
+import { FeatherButton } from '@featherds/button'
 import StepScheduleContent from './StepScheduleContent.vue'
 
 export default defineComponent({
   components: {
-    Card,
-    Button,
+    FeatherButton,
     StepScheduleContent
   },
   emits: ['complete', 'prev-page'],
   setup() {
     const store = useStore()
-
     const showCompleteButton = computed(() => store.state.inventoryModule.showCompleteButton)
 
     return {
@@ -51,4 +37,10 @@ export default defineComponent({
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+}
+</style>

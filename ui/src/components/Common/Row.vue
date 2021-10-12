@@ -1,8 +1,8 @@
 <template>
-  <div :class="['p-flex-row input', { 'first': first }]">
+  <div :class="['feather-row input', { 'first': first }]">
     {{ label }}
   </div>
-  <div class="p-flex-row input">
+  <div class="feather-row input">
     <slot></slot>
   </div>
 </template>
@@ -21,7 +21,4 @@ export default defineComponent({
     }
   }
 })
-
 </script>
-
-<style scoped lang="scss"></style>

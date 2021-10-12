@@ -46,4 +46,10 @@ a {
 .pointer {
   cursor: pointer !important;
 }
+.feather-secondary {
+  background: var(--feather-secondary)
+}
+.feather-secondary-variant {
+  background: var(--feather-secondary-variant)
+}
 </style>

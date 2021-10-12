@@ -1,40 +1,47 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <Button 
-      class="p-button-raised p-button-text button"
-      :class="deviceEntryOption === enterDevice ? 'bg-tertiaty-sky-blue' : ''"
-      label="I have formatted device data" 
-      @click="selectEnterDeviceData"/>
-        
-    <Button 
-      class="p-button-raised p-button-text button"
-      :class="deviceEntryOption === findDevice ? 'bg-tertiaty-sky-blue' : ''"
-      label="Let OpenNMS find devices for me"
-      @click="selectFindDevice"/>
+  <div class="feather-row">
+    <FeatherButton
+      primary
+      class="button"
+      :class="deviceEntryOption === enterDevice ? 'feather-secondary-variant' : ''"
+      @click="selectEnterDeviceData"
+    >I have formatted device data</FeatherButton>
+
+    <FeatherButton
+      primary
+      class="button"
+      :class="deviceEntryOption === findDevice ? 'feather-secondary-variant' : ''"
+      @click="selectFindDevice"
+    >Let OpenNMS find devices for me</FeatherButton>
   </div>
 
   <div v-if="deviceEntryOption === enterDevice">
-    <div class="p-d-flex p-flex-column p-flex-md-row">
-      <h3>How would you like to import devices on your network?</h3>
+    <div class="feather-row">
+      <div class="feather-col-12 title">How would you like to import devices on your network?</div>
     </div>
-    <div class="p-d-flex p-flex-column p-flex-md-row">
-      <Button
-        class="p-button-raised p-button-text button"
-        :class="deviceImportOption === byManual ? 'bg-tertiaty-sky-blue' : ''"
-        label="Manually" 
-        @click="selectManually"/>
-          
-      <Button
-        class="p-button-raised p-button-text button"
-        :class="deviceImportOption === byImport ? 'bg-tertiaty-sky-blue' : ''"
-        label="DNS Import"
-        @click="selectImport"/>
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <FeatherButton
+          primary
+          class="button"
+          :class="deviceImportOption === byManual ? 'feather-secondary-variant' : ''"
+          @click="selectManually"
+        >Manually</FeatherButton>
 
-      <Button
-        class="p-button-raised p-button-text button"
-        :class="deviceImportOption === byController ? 'bg-tertiaty-sky-blue' : ''"
-        label="Controller API"
-        @click="selectController"/>
+        <FeatherButton
+          primary
+          class="button"
+          :class="deviceImportOption === byImport ? 'feather-secondary-variant' : ''"
+          @click="selectImport"
+        >DNS Import</FeatherButton>
+
+        <FeatherButton
+          primary
+          class="button"
+          :class="deviceImportOption === byController ? 'feather-secondary-variant' : ''"
+          @click="selectController"
+        >Controller API</FeatherButton>
+      </div>
     </div>
 
     <div v-if="deviceImportOption === byManual">
@@ -44,28 +51,32 @@
     <div v-else-if="deviceImportOption === byImport">
       <StepAddContentContainer contains="StepAddContentDNS" />
     </div>
-    
+
     <div v-else-if="deviceImportOption === byController">
       <StepAddContentContainer contains="StepAddContentCtrl" />
     </div>
   </div>
 
   <div v-else-if="deviceEntryOption === findDevice">
-    <div class="p-d-flex p-flex-column p-flex-md-row">
-      <h3>How would you like to discover devices on your network?</h3>
+    <div class="feather-row">
+      <div class="feather-col-12 title">How would you like to discover devices on your network?</div>
     </div>
-    <div class="p-d-flex p-flex-column p-flex-md-row">
-      <Button
-        class="p-button-raised p-button-text button"
-        :class="deviceFindOption === byIPRange ? 'bg-tertiaty-sky-blue' : ''"
-        label="By IP Range"
-        @click="selectIpRange"/>
+    <div class="feather-row">
+      <div class="feather-row">
+        <FeatherButton
+          primary
+          class="button"
+          :class="deviceFindOption === byIPRange ? 'feather-secondary-variant' : ''"
+          @click="selectIpRange"
+        >By IP Range</FeatherButton>
 
-      <Button
-        class="p-button-raised p-button-text button"
-        :class="deviceFindOption === byPassiveDiscovery ? 'bg-tertiaty-sky-blue' : ''"
-        label="Use Passive Discovery"
-        @click="selectPassiveDiscovery"/>
+        <FeatherButton
+          primary
+          class="button"
+          :class="deviceFindOption === byPassiveDiscovery ? 'feather-secondary-variant' : ''"
+          @click="selectPassiveDiscovery"
+        >Use Passive Discovery</FeatherButton>
+      </div>
     </div>
 
     <div v-if="deviceFindOption === byIPRange">
@@ -76,72 +87,44 @@
       <StepAddContentPassiveDiscovery />
     </div>
   </div>
-
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import Button from 'primevue/button'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { FeatherButton } from '@featherds/button'
 import StepAddContentManual from './StepAddContentManual.vue'
 import StepAddContentContainer from './StepAddContentContainer.vue'
 import StepAddContentPassiveDiscovery from './StepAddContentPassiveDiscovery.vue'
 
-export default defineComponent({
-  components: {
-    Button,
-    StepAddContentManual,
-    StepAddContentContainer,
-    StepAddContentPassiveDiscovery
-  },
-  setup() {
-    const enterDevice = 'enter'
-    const findDevice = 'find'
-    const byManual = 'manual'
-    const byImport = 'import'
-    const byController = 'controller'
-    const byIPRange = 'ip'
-    const byPassiveDiscovery = 'discovery'
-    
-    const deviceEntryOption = ref()
-    const deviceImportOption = ref()
-    const deviceFindOption = ref()
+const enterDevice = 'enter'
+const findDevice = 'find'
+const byManual = 'manual'
+const byImport = 'import'
+const byController = 'controller'
+const byIPRange = 'ip'
+const byPassiveDiscovery = 'discovery'
 
-    const selectEnterDeviceData = () => deviceEntryOption.value = enterDevice
-    const selectFindDevice = () => deviceEntryOption.value = findDevice
-    const selectManually = () => deviceImportOption.value = byManual
-    const selectImport = () => deviceImportOption.value = byImport
-    const selectController = () => deviceImportOption.value = byController
-    const selectIpRange = () => deviceFindOption.value = byIPRange
-    const selectPassiveDiscovery = () => deviceFindOption.value = byPassiveDiscovery
+const deviceEntryOption = ref()
+const deviceImportOption = ref()
+const deviceFindOption = ref()
 
-    return {
-      selectManually,
-      selectImport,
-      selectController,
-      selectIpRange,
-      selectPassiveDiscovery,
-      selectFindDevice,
-      selectEnterDeviceData,
-      findDevice,
-      enterDevice,
-      byManual,
-      byImport,
-      byController,
-      byIPRange,
-      byPassiveDiscovery,
-      deviceEntryOption,
-      deviceImportOption,
-      deviceFindOption
-    }
-  }
-})
-
+const selectEnterDeviceData = () => deviceEntryOption.value = enterDevice
+const selectFindDevice = () => deviceEntryOption.value = findDevice
+const selectManually = () => deviceImportOption.value = byManual
+const selectImport = () => deviceImportOption.value = byImport
+const selectController = () => deviceImportOption.value = byController
+const selectIpRange = () => deviceFindOption.value = byIPRange
+const selectPassiveDiscovery = () => deviceFindOption.value = byPassiveDiscovery
 </script>
 
 <style scoped lang="scss">
-  .button {
-    margin-right: 10px;
-    height: 100px;
-  }
+@import "@featherds/styles/mixins/typography";
+.title {
+  @include headline3();
+}
+.button {
+  margin-right: 10px;
+  height: 100px;
+}
 </style>
 

@@ -1,34 +1,34 @@
 <template>
-  <div class="p-flex-row input first">
+  <div class="feather-row input first">
     <h4 class="pointer" @click="showFilter = !showFilter">Add a filter</h4>
   </div>
 
   <div v-if="showFilter">
-    <div class="p-flex-row input">
+    <div class="feather-row input">
       <label>If </label>
-      <Dropdown :options="['', 'any', 'all']" v-model="dropdown1" @change="setValues" />
-      <Dropdown :options="['IP address', 'Hostname']" v-model="dropdown2" @change="setValues" />
+      <FeatherSelect :options="['', 'any', 'all']" v-model="dropdown1" @update:modelValue="setValues" />
+      <FeatherSelect :options="['IP address', 'Hostname']" v-model="dropdown2" @update:modelValue="setValues" />
     </div>
-    <div class="p-flex-row input">
+    <div class="feather-row input">
       <label>matches </label>
-      <InputText placeholder="Value" v-model="value" @input="setValues" />
+      <FeatherInput placeholder="Value" v-model="value" @input="setValues" />
     </div>
-    <div class="p-flex-row input">
+    <div class="feather-row input">
       <label>then perform </label>
-      <Dropdown :options="['Don\'t add node', 'Don\'t collect data']" v-model="dropdown3" @change="setValues" />
+      <FeatherSelect :options="['Don\'t add node', 'Don\'t collect data']" v-model="dropdown3" @update:modelValue="setValues" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import Dropdown from 'primevue/dropdown'
-import InputText from 'primevue/inputtext'
+import { FeatherSelect } from '@featherds/select'
+import { FeatherInput } from '@featherds/input'
 
 export default defineComponent({
   components: {
-    InputText,
-    Dropdown
+    FeatherInput,
+    FeatherSelect
   },
   emits: ['set-values'],
   setup(_, context) {
@@ -53,5 +53,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped lang="scss"></style>

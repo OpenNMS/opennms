@@ -1,11 +1,11 @@
 <template>
-<div class="p-grid">
-	<div class="p-col">
+<div class="feather-row">
+	<div class="feather-col-6">
     <Row label="Location" first><LocationsDropdown @setLocation="setLocation" /></Row>
-    <Row label="Start"><InputText v-model="start" class="input" @input="setValues" /></Row>
-    <Row label="End"><InputText v-model="end" class="input" @input="setValues" /></Row>
+    <Row label="Start"><FeatherInput v-model="start" class="input" @update:modelValue="setValues" /></Row>
+    <Row label="End"><FeatherInput v-model="end" class="input" @update:modelValue="setValues" /></Row>
   </div>
-	<div class="p-col">
+	<div class="feather-col-5">
     <StepAddResponseTables />
   </div>
 </div>
@@ -13,16 +13,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
+import { FeatherInput } from '@featherds/input'
 import LocationsDropdown from './LocationsDropdown.vue'
-import { IPRange, MonitoringLocation } from '@/types'
+import { MonitoringLocation } from '@/types'
 import Row from '@/components/Common/Row.vue'
 import StepAddResponseTables from './StepAddResponseTables.vue'
 
 export default defineComponent({
   components: {
     Row,
-    InputText,
+    FeatherInput,
     LocationsDropdown,
     StepAddResponseTables
   },
@@ -63,8 +63,5 @@ export default defineComponent({
     }
   }
 })
-
 </script>
 
-<style scoped lang="scss">
-</style>

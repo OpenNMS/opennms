@@ -1,12 +1,12 @@
 <template>
   <Row first><h3>SSH</h3></Row>
-  <Row label="Timeout"><InputText v-model="timeout" class="input" @input="setValues" /></Row>
-  <Row label="Retry"><InputText v-model="retry" class="input" @input="setValues" /></Row>
+  <Row label="Timeout"><FeatherInput v-model="timeout" class="input" @update:modelValue="setValues" /></Row>
+  <Row label="Retry"><FeatherInput v-model="retry" class="input" @update:modelValue="setValues" /></Row>
 
   <!-- advanced options -->
   <ShowHideBox label="Advanced options">
-    <Row first label="Banner"><InputText v-model="banner" @input="setValues" class="input"/></Row>
-    <Row label="Port"><InputText v-model="port" @input="setValues" class="input"/></Row>
+    <Row first label="Banner"><FeatherInput v-model="banner" @update:modelValue="setValues" class="input"/></Row>
+    <Row label="Port"><FeatherInput v-model="port" @update:modelValue="setValues" class="input"/></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />
@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import InputText from 'primevue/inputtext'
+import { FeatherInput } from '@featherds/input'
 import Row from '@/components/Common/Row.vue'
 import ShowHideBox from '@/components/Common/ShowHideBox.vue'
 import ServiceFilter from './ServiceFilter.vue'
@@ -23,7 +23,7 @@ import ServiceFilter from './ServiceFilter.vue'
 export default defineComponent({
   components: {
     Row,
-    InputText,
+    FeatherInput,
     ShowHideBox,
     ServiceFilter
   },
@@ -62,5 +62,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped lang="scss"></style>

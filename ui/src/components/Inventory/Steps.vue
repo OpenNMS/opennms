@@ -1,6 +1,6 @@
 <template>
   <div class="steps-container">
-    <Steps :model="items" :readonly="true" />
+    <PrimeSteps :model="items" :readonly="true" />
   </div>
   <router-view v-slot="{Component}" @prevPage="prevPage($event)" @nextPage="nextPage($event)" @complete="complete">
   <keep-alive>
@@ -13,11 +13,11 @@
 import { ref, defineComponent, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import Steps from 'primevue/steps'
+import PrimeSteps from './PrimeSteps.vue'
 
 export default defineComponent({
   components: {
-    Steps
+    PrimeSteps
   },
   setup() {
     const store = useStore()
@@ -72,9 +72,6 @@ export default defineComponent({
 }
 :deep(.first) {
   margin-top: 30px;
-}
-:deep(.p-card-body) {
-  padding: 2rem;
 }
 .steps-container {
   max-width: 500px;

@@ -1,29 +1,20 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row file-upload">
-    <FileUpload
-    name="upload"
-    @upload="onUpload"
-    :multiple="false"
-    :maxFileSize="1000000"
-    >
-    <template #empty>
-      <p>Drag and drop file to upload.</p>
-    </template>
-  </FileUpload>
+  <div class="feather-row file-upload">
+    <FileUploader @uploadHandler="onUpload" filename="file" buttonCopy="Upload file" />
   </div>
 
-  <h4 class="p-d-flex p-flex-column p-flex-md-row">Paste in text</h4>
-  <h4 class="p-d-flex p-flex-column p-flex-md-row">Download sample file</h4>
+  <h4 class="feather-row">Paste in text</h4>
+  <h4 class="feather-row">Download sample file</h4>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import FileUpload from 'primevue/fileupload'
+import FileUploader from '@/components/Common/FileUploader.vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
   components: {
-    FileUpload
+    FileUploader
   },
   setup() {
     const store = useStore()

@@ -1,26 +1,25 @@
 <template>
-  <Button 
-    :label="serviceName"
-    class="p-button-raised p-button-text service"
+  <FeatherButton 
+    class="service"
     :class="[
       //@ts-ignore
-      {'bg-tertiaty-sky-blue' : (selectedServices.includes(serviceName) && !completedServices.includes(serviceName))}, 
+      {'feather-secondary-variant' : (selectedServices.includes(serviceName) && !completedServices.includes(serviceName))}, 
       //@ts-ignore
-      {'bg-primary-green' : completedServices.includes(serviceName)}
+      {'feather-secondary' : completedServices.includes(serviceName)}
     ]"
     :disabled="disableService"
     @click="$emit('select-service', serviceName)"
-  />
+  >{{ serviceName }}</FeatherButton>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import Button from 'primevue/button'
+import { FeatherButton } from '@featherds/button'
 import { useStore } from 'vuex'
 
 export default defineComponent({
   components: {
-    Button
+    FeatherButton
   },
   emits:['select-service'],
   props: {

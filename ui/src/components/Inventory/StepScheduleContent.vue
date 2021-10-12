@@ -1,26 +1,23 @@
 <template>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h3>Name this batch/set</h3>
+  <div class="feather-row">
+    <div class="title">Name this batch/set</div>
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <InputText id="batch-name" v-model="batchName" />
+  <div class="feather-row">
+    <FeatherInput id="batch-name" v-model="batchName" />
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <h3>When do you want to run this batch?</h3>
+  <div class="feather-row">
+    <div class="title">When do you want to run this batch?</div>
   </div>
-  <div class="p-d-flex p-flex-column p-flex-md-row">
-    <Button 
-      label="Now"
-      class="p-button-raised p-button-text now-btn"
-      :class="selected === now ? 'bg-tertiaty-sky-blue' : ''"
+  <div class="feather-row">
+    <FeatherButton
+      class="now-btn"
+      :class="selected === now ? 'feather-secondary-variant' : ''"
       @click="showNowForm"
-    />
-    <Button 
-      label="Schedule for later"
-      class="p-button-raised p-button-text"
-      :class="selected === later ? 'bg-tertiaty-sky-blue' : ''"
+    >Now</FeatherButton>
+    <FeatherButton
+      :class="selected === later ? 'feather-secondary-variant' : ''"
       @click="showLaterForm"
-    />
+    >Schedule for later</FeatherButton>
   </div>
   <div v-if="selected === now">
     <StepScheduleContentNow />
@@ -34,15 +31,15 @@
 import dayjs from 'dayjs'
 import { defineComponent, ref, computed } from 'vue'
 import { useStore } from 'vuex'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
+import { FeatherInput } from '@featherds/input'
+import { FeatherButton } from '@featherds/button'
 import StepScheduleContentNow from './StepScheduleContentNow.vue'
 import StepScheduleContentLater from './StepScheduleContentLater.vue'
 
 export default defineComponent({
   components: {
-    Button,
-    InputText,
+    FeatherButton,
+    FeatherInput,
     StepScheduleContentNow,
     StepScheduleContentLater
   },
@@ -65,9 +62,9 @@ export default defineComponent({
 
     const showNowForm = async () => {
       selected.value = now
-      const req = { scheduleTime: dayjsNow.unix(), ...data.value}
+      const req = { scheduleTime: dayjsNow.unix(), ...data.value }
       const success = await store.dispatch('inventoryModule/provision', req)
-      
+
       if (success) {
         store.dispatch('inventoryModule/setShowCompleteButton', 'now')
       }
@@ -88,11 +85,15 @@ export default defineComponent({
     }
   }
 })
-
 </script>
 
 <style scoped lang="scss">
-  .now-btn {
-    margin-right: 10px;
-  }
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
+.now-btn {
+  margin-right: 10px;
+}
+.title {
+  @include headline3();
+}
 </style>

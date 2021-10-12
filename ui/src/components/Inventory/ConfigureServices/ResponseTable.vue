@@ -1,22 +1,42 @@
 <template>
-  <DataTable :value="snmpDetectResponses" responsiveLayout="scroll" v-if="snmpDetectResponses.length">
-    <Column field="location" header="Location"></Column>
-    <Column field="hostname" header="Hostname"></Column>
-    <Column field="ipAddress" header="IP Address"></Column>
-    <Column field="sysOID" header="SysOID"></Column>
-    <Column field="communityString" header="Community String"></Column>
-    <Column field="hasSNMPService" header="SNMP Available"></Column>
-  </DataTable>
+  <div class="feather-row" v-if="snmpDetectResponses.length">
+    <div class="feather-col-12">
+      <table class="tl1 tl2 tl3 tl4" summary="Recent Events">
+        <thead>
+          <tr>
+            <th scope="col">Location</th>
+            <th scope="col">Hostname</th>
+            <th scope="col">IP Address</th>
+            <th scope="col">SysOID</th>
+            <th scope="col">Community String</th>
+            <th scope="col">SNMP Available</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="response in snmpDetectResponses" :key="response.location">
+            <td>{{ response.location }}</td>
+            <td>{{ response.hostname }}</td>
+            <td>{{ response.ipAddress }}</td>
+            <td>{{ response.sysOID }}</td>
+            <td>{{ response.communityString }}</td>
+            <td>{{ response.hasSNMPService }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue"
 import { useStore } from "vuex"
-import DataTable from "primevue/datatable"
-import Column from "primevue/column"
 
-const store = useStore();
+const store = useStore()
 const snmpDetectResponses = computed(
   () => store.state.inventoryModule.snmpDetectResponses
 )
-</script>   
+</script>
+
+<style lang="scss">
+@import "@featherds/table/scss/table";
+</style>
