@@ -97,7 +97,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
 
     @Transactional
     protected void saveLldpLink(final int nodeId, final LldpLink saveMe) {
-        new UpsertTemplate<>(m_transactionManager,
+        new UpsertTemplate<LldpLink,LldpLinkDao>(m_transactionManager,
                                                   m_lldpLinkDao) {
 
             @Override
