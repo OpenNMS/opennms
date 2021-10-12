@@ -41,11 +41,9 @@ public class MetricFamilyTest {
         } catch (IllegalArgumentException expected) {
         }
 
-        try {
-            MetricFamily family = new MetricFamily.Builder().setName("foo").build();
-	    Assert.assertEquals(MetricType.GAUGE, family.getType());
-        } catch (IllegalArgumentException expected) {
-        }
+        MetricFamily family = new MetricFamily.Builder().setName("foo").build();
+        Assert.assertEquals(MetricType.GAUGE, family.getType());
+	// untyped metrics should be treated as gauge
 
         try {
             new MetricFamily.Builder().setName("foo").setType(MetricType.COUNTER).addMetric(gauge).build();
