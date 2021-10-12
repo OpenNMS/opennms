@@ -317,6 +317,19 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[[releasenotes-changelog-Meridian-2019.1.24]]
+
+==== Release Meridian-2019.1.24
+
+Release 2019.1.24 contains a couple of small bug fixes.
+
+The codename for 2019.1.24 is link:$$https://wikipedia.org/wiki/HD_7199_b$$[_Hairu_].
+
+===== Bug
+
+* Signed Minion container bleeding image shows revision as meridian-foundation-2021.1.4-1-487 (Issue http://issues.opennms.org/browse/NMS-13587[NMS-13587])
+* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
+
 [[releasenotes-changelog-Meridian-2019.1.23]]
 
 ==== Release Meridian-2019.1.23
