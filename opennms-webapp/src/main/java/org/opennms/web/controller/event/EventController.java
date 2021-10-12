@@ -28,11 +28,26 @@
 
 package org.opennms.web.controller.event;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.alert.AlertType;
-import org.opennms.web.event.*;
+import org.opennms.web.controller.RedirectRestricter;
+import org.opennms.web.event.AcknowledgeType;
+import org.opennms.web.event.Event;
+import org.opennms.web.event.EventIdNotFoundException;
+import org.opennms.web.event.EventQueryParms;
+import org.opennms.web.event.EventUtil;
+import org.opennms.web.event.SortStyle;
+import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.EventIdListFilter;
@@ -53,13 +68,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * A controller that handles all event actions (e.g. querying the event table by using filters to create an
@@ -95,6 +103,9 @@ public class EventController extends MultiActionController implements Initializi
 	private WebEventRepository m_webEventRepository;
 
     private boolean m_showEventCount = false;
+
+    private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .build();
 
     public EventController() {
         super();
@@ -278,7 +289,8 @@ public class EventController extends MultiActionController implements Initializi
 
     private ModelAndView getRedirectView(HttpServletRequest request) {
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String reqParam = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(reqParam);
         String viewName;
         if (redirect != null) {
             viewName = redirect;

@@ -56,7 +56,8 @@ public class RedirectRestricter {
 
     /** Returns the given redirect if allowed, otherwise null. */
     public String getRedirectOrNull(final String redirect) {
-        return isRedirectAllowed(redirect) ? redirect : null;
+        String allowedRedirect = redirect;
+        return isRedirectAllowed(allowedRedirect) ? allowedRedirect : null;
     }
 
     public static RedirectRestricterBuilder builder() {

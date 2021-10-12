@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
+import org.opennms.web.controller.RedirectRestricter;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -65,6 +66,9 @@ public class AlarmSeverityChangeController extends AbstractController implements
     private AlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
+
+    private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .build();
     
     /**
      * <p>setRedirectView</p>
@@ -132,7 +136,9 @@ public class AlarmSeverityChangeController extends AbstractController implements
         
         
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String reqParam = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(reqParam);
+
         String viewName;
         if (redirect != null) {
             viewName = redirect;

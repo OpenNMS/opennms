@@ -138,7 +138,9 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
         }
 
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = redirectRestricter.getRedirectOrNull(request.getParameter("redirect"));
+        String reqParam= request.getParameter("redirect");
+
+        String redirect = redirectRestricter.getRedirectOrNull(reqParam);
         String viewName;
         if (redirect != null) {
             viewName = redirect;
