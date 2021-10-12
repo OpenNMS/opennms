@@ -36,6 +36,9 @@ if [ ! -s /tmp/this_node_projects ]; then
   exit 0
 fi
 
+echo "#### Set loopback to 127.0.0.1"
+sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
+
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
 
@@ -62,8 +65,8 @@ curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trus
 
 # limit more sources and add mirrors
 echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted
-deb http://debian.opennms.org stable main" | sudo tee /etc/apt/sources.list
+deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
+sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"

@@ -1033,6 +1033,8 @@
           <reuseForks>false</reuseForks>
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <reportsDirectory>${project.build.directory}/surefire-reports-${ci.instance}</reportsDirectory>
+          <useModulePath>false</useModulePath>
+          <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
       </plugin>
       <plugin>
@@ -1063,6 +1065,7 @@
           <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
           <skipITs>${skipITs}</skipITs>
           <reportsDirectory>${project.build.directory}/failsafe-reports-${ci.instance}</reportsDirectory>
+          <useModulePath>false</useModulePath>
         </configuration>
         <executions>
           <execution>
