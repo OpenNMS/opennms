@@ -2,6 +2,39 @@
 
 = Changelog
 
+[releasenotes-changelog-Meridian-2021.1.5]
+
+== Release Meridian-2021.1.5
+
+Release 2021.1.5 contains a number of bug fixes and enhancements, including web UI,
+Minion, Docker, and documentation improvements.
+
+The codename for 2021.1.5 is link:$$https://wikipedia.org/wiki/Viking_1$$[_Viking 1_].
+
+=== Bug
+
+* Strings with URL arguments are truncated in the eventdescr field (Issue http://issues.opennms.org/browse/NMS-13428[NMS-13428])
+* Web-based SNMP config UI does not pass through proxy-host if a value is provided (Issue http://issues.opennms.org/browse/NMS-13512[NMS-13512])
+* Add JVM option to the minion startup script (Issue http://issues.opennms.org/browse/NMS-13552[NMS-13552])
+* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
+* Signed Minion container bleeding image shows revision as meridian-foundation-2021.1.4-1-487 (Issue http://issues.opennms.org/browse/NMS-13587[NMS-13587])
+* Meridian Minion images do not include release (Issue http://issues.opennms.org/browse/NMS-13591[NMS-13591])
+
+=== Enhancement
+
+* Document data types in collectd (Issue http://issues.opennms.org/browse/NMS-10476[NMS-10476])
+* Update adapters documentation (Issue http://issues.opennms.org/browse/NMS-12999[NMS-12999])
+* Move monitors docs to the Reference section (Issue http://issues.opennms.org/browse/NMS-13524[NMS-13524])
+* Move detectors to reference section (Issue http://issues.opennms.org/browse/NMS-13525[NMS-13525])
+* Move collectors to reference section (Issue http://issues.opennms.org/browse/NMS-13526[NMS-13526])
+* Move telemetryd (streaming telemetry) to reference section (Issue http://issues.opennms.org/browse/NMS-13527[NMS-13527])
+* Move ticketing docs to reference section (Issue http://issues.opennms.org/browse/NMS-13529[NMS-13529])
+* Move provisioning policies to the reference section (Issue http://issues.opennms.org/browse/NMS-13562[NMS-13562])
+* Publish Minion image for Meridian to DockerHub  (Issue http://issues.opennms.org/browse/NMS-13567[NMS-13567])
+* Backport docker content trust for signed images to meridian 2021 (Issue http://issues.opennms.org/browse/NMS-13568[NMS-13568])
+* Backport confd support for minion config (Issue http://issues.opennms.org/browse/NMS-13573[NMS-13573])
+* Geolocator Doc Clarification (Issue http://issues.opennms.org/browse/NMS-13611[NMS-13611])
+
 [[releasenotes-changelog-Meridian-2021.1.4]]
 
 Release 2021.1.4 contains a number of bug fixes and enhancements, including a dependency
