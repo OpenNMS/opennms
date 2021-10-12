@@ -29,7 +29,6 @@
                 org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
                 org.opennms.core.network,
                 org.opennms.netmgt.collection.adapters,
-                !org.opennms.features.config.service.impl,
                 *
               </Import-Package>
             </instructions>
