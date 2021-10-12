@@ -1289,7 +1289,7 @@ jobs:
             ./publish.sh
   integration-test:
     executor: integration-test-executor
-    parallelism: 4
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1297,7 +1297,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 8
+    parallelism: 10
     steps:
       - attach_workspace:
           at: ~/
