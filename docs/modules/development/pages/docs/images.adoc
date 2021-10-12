@@ -44,7 +44,7 @@ This makes is easier to organize and find images associated with an AsciiDoc tex
 <5> Images folder. 
 Images should be *.png or *.jpg if included in the documentation.
 <6> Directory to mirror text directory structure.
-Images in this diretory are associated with the text in the same directory in the `/pages` folder.  
+Images in this directory are associated with the text in the same directory in the `/pages` folder.  
 This folder should also include the editable version of images created from tools like yED.
 <7> The image file. 
 Use a unique name with no spaces.

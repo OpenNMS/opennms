@@ -13,7 +13,7 @@ NOTE: This documentation describes a Debian-based desktop environment.
 
 == Installation
 
-Follow these instructions to set up your enivronment. 
+Follow these instructions to set up your environment. 
 They may vary depending on your operating system:
 
 [source, shell]

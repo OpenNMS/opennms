@@ -1,0 +1,75 @@
+
+= NetScalerGroupHealthMonitor
+
+This monitor is designed for Citrix(R) NetScaler(R) load-balancing checks.
+It checks if more than x percent of the servers assigned to a specific group on a load-balanced service are active.
+The required data is gathered via SNMP from the NetScaler.
+The status of the servers is determined by the NetScaler.
+The provided service itself is not part of the check.
+A valid SNMP configuration in {page-component-title} for the NetScaler is required.
+
+A NetScaler can manage several groups of servers per application.
+This monitor just covers one group at a time.
+To check multiple groups, define one monitor per group.
+
+IMPORTANT: This monitor does not check the status of the load-balanced service itself.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the NetScalerGroupHealthMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| group-name
+| The name of the server group to check.
+| n/a
+
+3+|*Optional*
+
+| group-health
+| The percentage of active servers versus total servers of the group, as an integer.
+| 60
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example checks a server group called central_webfront_http.
+If at least 70% of the servers are active, the service is up.
+If less then 70% of the servers are active, the service is down.
+Use a configuration like the following in `poller-configuration.xml`:
+
+[source, xml]
+----
+<service name="NetScaler_Health" interval="300000" user-defined="false" status="on">
+   <parameter key="group-name" value="central_webfront_http" />
+   <parameter key="group-health" value="70" />
+</service>
+
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
+----
+
+== Details about the used SNMP checks
+
+The monitor checks the status of the server group based on the NS-ROOT-MIB using the svcGrpMemberState.
+svcGrpMemberState is part of the serviceGroupMemberTable.
+The serviceGroupMemberTable is indexed by svcGrpMemberGroupName and svcGrpMemberName.
+An initial lookup for the group-name is performed.
+Based on the lookup, the serviceGroupMemberTable is walked with the numeric representation of the server group.
+The monitor interprets just the server status code `7-up` as active server.
+Other status codes like `2-unknown` or `3-busy` are counted for the total amount of servers.

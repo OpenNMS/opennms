@@ -164,7 +164,7 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
     private static byte[] convertToRawMessage(TrapInformation trapInfo) {
         // Raw message conversion is not implemented for JoeSnmp, as the usage of that strategy is deprecated
         if (!(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV1TrapInformation)
-                && !(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2TrapInformation)) {
+                && !(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation)) {
             LOG.warn("Unable to convert TrapInformation of type {} to raw message. " +
                             "Please use {} as snmp strategy to include raw messages",
                     trapInfo.getClass(), Snmp4JStrategy.class);
@@ -190,8 +190,8 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
         if (trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV1TrapInformation) {
             return ((Snmp4JTrapNotifier.Snmp4JV1TrapInformation) trapInfo).getPdu();
         }
-        if (trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2TrapInformation) {
-            return ((Snmp4JTrapNotifier.Snmp4JV2TrapInformation) trapInfo).getPdu();
+        if (trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation) {
+            return ((Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation) trapInfo).getPdu();
         }
         throw new IllegalArgumentException("Cannot extract PDU from trapInfo of type " + trapInfo.getClass());
     }

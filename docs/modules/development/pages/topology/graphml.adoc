@@ -99,7 +99,7 @@ ____
 [options="header, %autowidth"]
 |=======================
 | Property                  | Required | For element  | Type      | Default   | Description
-| `namespace`               | yes      | Graph        | `string`  | -         | The namespace must be unique ove rall existing topologies.
+| `namespace`               | yes      | Graph        | `string`  | -         | The namespace must be unique over all existing topologies.
 | `description`             | no       | Graph        | `string`  | -         | A description, shown in the Info Panel.
 | `preferred-layout`        | no       | Graph        | `string`  | `D3`      | Defines a preferred layout.
 | `focus-strategy`          | no       | Graph        | `string`  | `FIRST`   | Defines a focus strategy. See <<gd-topology-graphml-focus-strategy>> for more information.

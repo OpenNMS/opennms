@@ -1,0 +1,98 @@
+
+[[send-event]]
+= send-event.pl utility
+
+The send-event.pl utility lets you create and send an event to trigger processes inside of {page-component-title}.
+It is most frequently used to reload daemon configuration without having to restart {page-component-title}.
+You can also use the send-event.pl utility as an automation tool to trigger events as part of continuous integration scripts or other automated processes.
+
+For example:
+
+* create a new suspect event every time you add a new resource
+* clear out alarms
+* open a ticket in your integrated ticketing system
+* order new ink cartridges when your printer is out of toner
+
+Format: `bin/send-event.pl <uei> [host:port] [options]`
+
+The `host:port` defines the hostname and port to send the event; by default the local host.
+
+Find UEIs and their associated parameters in the `$\{OPENNMS_HOME}/etc/eventd-configuration.xml` file.
+See also xref:events/event-configuration.adoc#ga-events-event-configuration[Event Configuration].
+
+.`send-event.pl` parameters
+[options="header"]
+[cols="1,3"]
+|===
+
+| Name/Alias
+| Description
+
+2+|*Required*
+
+| uei
+| The unique event identifier (UEI) indicates the type of event.
+View UEIs in the eventd-configuration.xml file.
+You can also define your own UEIs.
+
+2+|*Optional*
+
+| -d (--description)
+| A description for the event browser.
+
+| -f (--ifindex)
+| ifIndex of the associated service.
+
+| -h (--help)
+| Help message for the script.
+(The content from this table.)
+
+| -i (--interface)
+| IP address of associated interface.
+
+| -l (--logmsg)
+| A short log message for the event browser (secure field by default).
+
+| -n (--nodeid)
+| Database ID of associated node (or use foreignSource, foreignId parameters).
+
+| -p (-parameter)
+| Parameter in key=value form.
+For example, `-p 'url \http://www.opennms.com/'`
+
+| -s (--service)
+| Name of the associated service
+
+| -x (--severity)
+| Severity of the event: +
+1=Indeterminate +
+2=Cleared +
+3=Normal +
+4=Warning +
+5=Minor +
+6=Major +
+7=Critical +
+
+| -t (--timezone)
+| The time zone you are in.
+
+| -v (--verbose)
+| Print raw XML that is generated.
+
+| -V (--version)
+| Print version and exit successfully.
+
+|===
+
+Note that parameter descriptions use the percentage sign (%) as a delimiter to mark a replacement variable.
+(See xref:events/event-configuration.adoc#replacement-tokens[Replacement tokens].)
+If a literal % sign appears in your description, you must escape it with a %.
+For example:
+
+`'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
+
+== Example
+
+Send an event to reload the configuration of Eventd.
+
+`$OPENNMS_HOME/bin/send-event.pl -p 'daemonName Eventd' uei.opennms.org/internal/reloadDaemonConfig`

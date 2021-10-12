@@ -28,6 +28,7 @@
 
 package org.opennms.core.health.rest.internal;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +59,9 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response probeHealth(int timeoutInMs, UriInfo uriInfo) {
+    public Response probeHealth(int timeoutInMs, int maxAgeMs, UriInfo uriInfo) {
         List<String> tags = uriInfo.getQueryParameters().get("tag");
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs,tags);
-        final Health health = healthWrapper.health;
+        final Health health = getHealthInternally(timeoutInMs, maxAgeMs, tags);
         if (health.isSuccess()) {
             return Response.ok()
                     .header("Health", SUCCESS_MESSAGE)
@@ -75,18 +75,17 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
     }
 
     @Override
-    public Response getHealth(int timeoutInMs, UriInfo uriInfo){
+    public Response getHealth(int timeoutInMs, int maxAgeMs, UriInfo uriInfo){
         List<String> tags = uriInfo.getQueryParameters().get("tag");
-        final HealthWrapper healthWrapper = getHealthInternally(timeoutInMs, tags);
-        final Health health = healthWrapper.health;
+        final Health health = getHealthInternally(timeoutInMs, maxAgeMs, tags);
 
         // Create response object
         final JSONArray jsonResponseArray = new JSONArray();
-        for (org.opennms.core.health.api.Response eachResponse : health.getResponses()) {
+        for (var pair : health.getResponses()) {
             final JSONObject eachJsonResponse = new JSONObject();
-            eachJsonResponse.put("status", eachResponse.getStatus().name());
-            eachJsonResponse.put("description", healthWrapper.descriptionMap.get(eachResponse));
-            eachJsonResponse.put("message", eachResponse.getMessage());
+            eachJsonResponse.put("status", pair.getRight().getStatus().name());
+            eachJsonResponse.put("description", pair.getLeft().getDescription());
+            eachJsonResponse.put("message", pair.getRight().getMessage());
             jsonResponseArray.put(eachJsonResponse);
         }
         final JSONObject jsonHealth = new JSONObject();
@@ -101,26 +100,21 @@ public class HealthCheckRestServiceImpl implements HealthCheckRestService {
                 .build();
     }
 
-    private HealthWrapper getHealthInternally(int timeoutInMs, List<String> tags){
+    private Health getHealthInternally(int timeoutInMs, int maxAgeMs, List<String> tags){
         try {
             final Context context = new Context();
             context.setTimeout(timeoutInMs);
-
-            final HealthWrapper healthWrapper = new HealthWrapper();
-            final AtomicReference<String> reference = new AtomicReference<>();
+            context.setMaxAge(Duration.ofMillis(maxAgeMs));
             final CompletableFuture<Health> future = healthCheckService.performAsyncHealthCheck(
                     context,
-                    healthCheck -> reference.set(healthCheck.getDescription()), // remember description
-                    response -> healthWrapper.descriptionMap.put(response, reference.get()), tags); // apply description
-            healthWrapper.health = future.get();
-            return healthWrapper;
+                    healthCheck -> {},
+                    (healthCheck, response) -> {},
+                    tags
+            );
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static class HealthWrapper {
-        private Health health;
-        private Map<org.opennms.core.health.api.Response, String> descriptionMap = new HashMap<>();
-    }
 }

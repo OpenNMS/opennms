@@ -21,4 +21,4 @@ WARNING: Please note that angle brackets (<>), single (') and double quotation m
 
 NOTE: Users will receive notifications in the order in which the user appears in the group. 
 
-IMPORTANT: If you delete a user group, no one receives notification that the group has been deleted. If the group is associated with a schedule, that schedule will no longer exist, and users associated with that group will no longer recieve notifications previously specified in the schedule. 
+IMPORTANT: If you delete a user group, no one receives notification that the group has been deleted. If the group is associated with a schedule, that schedule will no longer exist, and users associated with that group will no longer receive notifications previously specified in the schedule. 

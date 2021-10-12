@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,7 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 
@@ -48,6 +50,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.TreeSet;
 
 /**
  * The Class HwEntityDaoTest.
@@ -146,6 +151,9 @@ public class HwEntityDaoIT implements InitializingBean {
         m2.setEntPhysicalClass("module");
         m2.setEntPhysicalName("M2");
         m2.addAttribute(ram, "2");
+        OnmsHwEntityAlias onmsHwEntityAlias = new OnmsHwEntityAlias(1, "0.1.12.3.4");
+        onmsHwEntityAlias.setHwEntity(m2);
+        m2.addEntAliases(new TreeSet<>(Arrays.asList(onmsHwEntityAlias)));
 
         root.addChildEntity(m1);
         root.addChildEntity(m2);
@@ -169,9 +177,21 @@ public class HwEntityDaoIT implements InitializingBean {
         Assert.assertEquals("chassis", e1.getEntPhysicalClass());
         OnmsHwEntity c = e1.getChildren().iterator().next();
         Assert.assertEquals("4", c.getAttributeValue("ram"));
+        OnmsHwEntity chassisEntity = m_hwEntityDao.findEntityByIndex(node.getId(), 3);
+        Assert.assertThat(chassisEntity.getEntAliases(), Matchers.hasSize(1));
+        // Test valid findRootEntityByNodeId
+        OnmsHwEntity entity1 = m_hwEntityDao.findRootEntityByNodeId(node.getId());
+        Assert.assertNotNull(entity1);
+        Assert.assertNotNull(entity1.getNodeId());
+        Assert.assertEquals(entity1.getNodeId(), node.getId());
+        Assert.assertEquals(2, entity1.getChildren().size());
+        Assert.assertEquals("chassis", entity1.getEntPhysicalClass());
+        OnmsHwEntity m2Entity = entity1.getChildren().stream().filter(child -> child.getEntPhysicalIndex() == 3).findFirst().get();
+        Assert.assertThat(m2Entity.getEntAliases(), Matchers.hasSize(1));
 
         // Test invalid findRootByNodeId
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
+        m_hwEntityDao.findRootByNodeId(10000);
 
         // Test findEntityByIndex
         OnmsHwEntity e2 = m_hwEntityDao.findEntityByIndex(node.getId(), e1.getEntPhysicalIndex());

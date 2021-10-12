@@ -1,0 +1,55 @@
+
+= SmbMonitor
+
+This monitor tests the NetBIOS over TCP/IP name resolution in Microsoft Windows environments.
+The monitor tries to retrieve a NetBIOS name for the IP address of the interface.
+Name services for NetBIOS in Microsoft Windows are provided on port 137/UDP or 137/TCP.
+
+The service uses the IP address of the interface where the monitor is assigned.
+The service is up for the given IP address if a NetBIOS name is registered and can be resolved.
+
+For troubleshooting, refer to the use of the Microsoft Windows command line tool `nbtstat` or on Linux `nmblookup`.
+
+WARNING: Microsoft has deprecated the use of NetBIOS.
+         Since Windows Server 2000, DNS is used as the default name resolution.
+
+TIP: If you want to monitor the status of a Windows file server, check out the <<service-assurance/monitors/JCifsMonitor.adoc#poller-jcifs-monitor,JCifsMonitor>>.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SmbMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameter for the SmbMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| do-node-status
+| Try to get the NetBIOS node status type for the given address.
+| true
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Sample configuration on how to configure the monitor in poller-configuration.xml.
+
+[source, xml]
+----
+<service name="SMB" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="SMB" class-name="org.opennms.netmgt.poller.monitors.SmbMonitor"/>
+----
