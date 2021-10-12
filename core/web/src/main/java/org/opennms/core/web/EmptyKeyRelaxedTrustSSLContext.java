@@ -108,7 +108,7 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
                     return null;
                 }}
             };
-            customContext = SSLContext.getInstance("SSL");
+            customContext = SSLContext.getInstance("TLSv1.3");
             customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
             // Should never happen

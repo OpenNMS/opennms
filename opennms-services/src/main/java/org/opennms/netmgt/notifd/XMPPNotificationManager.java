@@ -192,7 +192,7 @@ public class XMPPNotificationManager {
 
 			if (Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled"))) {
 	            try {
-	                SSLContext ctx = SSLContext.getInstance("TLS");
+	                SSLContext ctx = SSLContext.getInstance("TLSv1.3");
 	                ctx.init(null, new TrustManager[] { new AnyServerX509TrustManager() }, null);
 	                xmppConfig.setCustomSSLContext(ctx);
 	            } catch (NoSuchAlgorithmException | KeyManagementException e) {

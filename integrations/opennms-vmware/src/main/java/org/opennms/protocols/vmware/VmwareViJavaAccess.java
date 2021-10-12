@@ -258,7 +258,7 @@ public class VmwareViJavaAccess {
         TrustManager[] trustAllCerts = new TrustManager[]{new AnyServerX509TrustManager()};
 
         try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
         } catch (Exception exception) {

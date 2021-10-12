@@ -510,7 +510,7 @@ public class VmwareConfigBuilder {
 
         SSLContext sc = null;
         try {
-            sc = SSLContext.getInstance("SSL");
+            sc = SSLContext.getInstance("TLSv1.3");
             sc.init(null, trustAllCerts, null);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

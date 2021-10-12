@@ -252,7 +252,7 @@ public class TlsExperiment {
         private final SSLServerSocketFactory socketFactory;
 
         public TestServerSocketFactory() throws Exception {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             KeyManagerFactory keyMgrFact = KeyManagerFactory.getInstance("PKIX");
             keyMgrFact.init(IDENTITY_KEY_STORE, ID_STORE_PASSWORD);
             sslContext.init(keyMgrFact.getKeyManagers(), null, null);
@@ -296,7 +296,7 @@ public class TlsExperiment {
         private final SSLSocketFactory socketFactory;
 
         public TestClientSocketFactory() throws Exception {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX");
             trustMgrFact.init(TRUST_STORE);
             sslContext.init(null, trustMgrFact.getTrustManagers(), null);

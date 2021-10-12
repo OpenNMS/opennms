@@ -67,7 +67,7 @@ public abstract class SocketUtils {
         TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         SSLContext sslContext = null;
         try {
-            sslContext = SSLContext.getInstance(protocol == null ? "SSL" : protocol);
+            sslContext = SSLContext.getInstance(protocol == null ? "TLSv1.3" : protocol);
             sslContext.init(null, tm, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
         	LOG.error("wrapSocket: Error wrapping socket, throwing runtime exception", e);

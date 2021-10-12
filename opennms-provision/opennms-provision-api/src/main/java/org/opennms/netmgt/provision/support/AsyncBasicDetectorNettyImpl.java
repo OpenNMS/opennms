@@ -223,7 +223,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
      */
     private static SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
         final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
-        final SSLContext sslContext = SSLContext.getInstance("SSL");
+        final SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
         sslContext.init(null, tm, new java.security.SecureRandom());
         return sslContext;
     }

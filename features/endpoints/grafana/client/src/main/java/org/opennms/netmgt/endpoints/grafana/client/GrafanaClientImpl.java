@@ -217,7 +217,7 @@ public class GrafanaClientImpl implements GrafanaClient {
             };
 
             // Install the all-trusting trust manager
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            final SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();

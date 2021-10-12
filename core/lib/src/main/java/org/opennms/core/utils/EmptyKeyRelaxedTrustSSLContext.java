@@ -58,7 +58,7 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
             // Use a blank list of key managers so no SSL keys will be available
             KeyManager[] keyManager = null;
             TrustManager[] trustManagers = { new AnyServerX509TrustManager() };
-            customContext = SSLContext.getInstance("SSL");
+            customContext = SSLContext.getInstance("TLSv1.3");
             customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
         } catch (NoSuchAlgorithmException e) {
             // Should never happen

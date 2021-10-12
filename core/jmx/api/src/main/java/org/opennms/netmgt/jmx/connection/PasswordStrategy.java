@@ -60,7 +60,7 @@ public interface PasswordStrategy {
             tmf.init(ks);
 
             final AnyServerX509TrustManager tm = new AnyServerX509TrustManager();
-            final SSLContext ctx = SSLContext.getInstance("TLSv1");
+            final SSLContext ctx = SSLContext.getInstance("TLSv1.3");
             ctx.init(null, new TrustManager[]{tm}, null);
 
             final SSLSocketFactory ssf = ctx.getSocketFactory();
