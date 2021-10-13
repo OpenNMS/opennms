@@ -1800,6 +1800,7 @@
         <feature>opennms-core-ipc-sink-kafka</feature>
         <feature>opennms-core-ipc-rpc-kafka</feature>
         <feature>opennms-core-ipc-twin-kafka</feature>
+    </feature>
 
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
