@@ -41,10 +41,9 @@ public class ConfigItem {
     private String schemaRef;
     private Type type;
     private List<ConfigItem> children = new LinkedList<>();
-    private boolean minSet = false;
-    private long min = 0;
-    private boolean maxSet = false;
-    private long max = 0;
+    private Long min = null;
+    private Long max = null;
+    private String pattern;
     private Object defaultValue;
     private String documentation;
 
@@ -91,8 +90,8 @@ public class ConfigItem {
         return type;
     }
 
-    static public boolean isPrimitiveType(Type type) {
-        switch (type) {
+    public boolean isPrimitiveType() {
+        switch (this.getType()) {
             case STRING:
             case NUMBER:
             case INTEGER:
@@ -128,30 +127,28 @@ public class ConfigItem {
         this.required = required;
     }
 
-    public boolean isMaxSet() {
-        return maxSet;
+    public Long getMin() {
+        return min;
     }
 
-    public void setMax(long max) {
-        maxSet = true;
-        this.max = max;
-    }
-
-    public long getMax() {
-        return max;
-    }
-
-    public boolean isMinSet() {
-        return minSet;
-    }
-
-    public void setMin(long min) {
-        minSet = true;
+    public void setMin(Long min) {
         this.min = min;
     }
 
-    public long getMin() {
-        return min;
+    public Long getMax() {
+        return max;
+    }
+
+    public void setMax(Long max) {
+        this.max = max;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
     }
 
     public Object getDefaultValue() {
@@ -176,7 +173,7 @@ public class ConfigItem {
         if (o == null || getClass() != o.getClass()) return false;
         ConfigItem that = (ConfigItem) o;
         return required == that.required && Objects.equals(name, that.name) && Objects.equals(schemaRef, that.schemaRef) && type == that.type && Objects.equals(children, that.children)
-                && Objects.equals(maxSet, that.maxSet) && Objects.equals(max, that.max) && Objects.equals(minSet, that.minSet) && Objects.equals(min, that.min);
+                && Objects.equals(max, that.max) && Objects.equals(min, that.min) && Objects.equals(pattern, that.pattern);
     }
 
     @Override

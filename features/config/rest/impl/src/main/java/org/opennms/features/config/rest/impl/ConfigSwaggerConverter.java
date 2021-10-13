@@ -338,11 +338,14 @@ public class ConfigSwaggerConverter {
             schema.setDescription(item.getDocumentation());
         }
 
-        if (item.isMinSet()) {
+        if (item.getMin() != null) {
             schema.setMinimum(BigDecimal.valueOf(item.getMin()));
         }
-        if (item.isMaxSet()) {
+        if (item.getMax() != null) {
             schema.setMaximum(BigDecimal.valueOf(item.getMax()));
+        }
+        if (item.getPattern() != null) {
+            schema.setPattern(item.getPattern());
         }
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
