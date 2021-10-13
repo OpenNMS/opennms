@@ -132,7 +132,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         try {
             configOptional = configurationManagerService
                     .getXmlConfiguration(this.getConfigName(), configId)
-                    .map(s -> JaxbUtils.unmarshal(entityClass, s));
+                    .map(s -> JaxbUtils.unmarshal(entityClass, s, false)); // no validation since we validated already at write time
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
