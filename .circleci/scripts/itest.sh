@@ -50,7 +50,7 @@ echo "#### Installing other dependencies"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
 
-# kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
+# kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt || true && \
             sudo apt update && \
             sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
@@ -61,6 +61,7 @@ sudo killall -9 apt || true && \
 
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+curl -sSf https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo tee -a /etc/apt/trusted.gpg.d/adoptopenjdk_key.asc
 curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
 
 # limit more sources and add mirrors
@@ -68,19 +69,25 @@ echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restri
 deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
 sudo add-apt-repository 'deb http://debian.opennms.org stable main'
 
+# add the Adopt OpenJDK repository
+sudo add-apt-repository "deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb $(lsb_release -cs) main"
+
 # add the R repository
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
-sudo apt-get update && \
+sudo apt update && \
             RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
             echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+                adoptopenjdk-8-hotspot \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
                 jicmp \
                 jicmp6 \
             || exit 1
+
+export JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin
 
 echo "#### Building Assembly Dependencies"
 ./compile.pl install -P'!checkstyle' \

@@ -162,6 +162,29 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateKeyPair</goal>
+            </goals>
+            <phase>generate-test-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <skipIfExist>true</skipIfExist>
+          <keystore>${test.keystore}</keystore>
+          <storepass>${test.storepass}</storepass>
+          <alias>${test.keyalias}</alias>
+          <keypass>${test.keypass}</keypass>
+          <dname>cn=${test.dnameCn}</dname>
+          <validity>2</validity>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
         <version>${sonarVersion}</version>
@@ -1044,13 +1067,6 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
-            <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
-            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
-            <javax.net.ssl.keyStorePassword>changeit</javax.net.ssl.keyStorePassword>
-            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
-            <javax.net.ssl.trustStorePassword>changeit</javax.net.ssl.trustStorePassword>
-            <!-- <ssl.debug>true</ssl.debug> -->
-            <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
@@ -1333,6 +1349,12 @@
     <webstart.dnameL/>
     <webstart.dnameSt/>
     <webstart.dnameC/>
+
+    <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
+    <test.storepass>${webstart.storepass}</test.storepass>
+    <test.keyalias>${webstart.keyalias}</test.keyalias>
+    <test.keypass>${webstart.keypass}</test.keypass>
+    <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
 
     <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>

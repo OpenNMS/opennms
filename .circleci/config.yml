@@ -3,10 +3,10 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.272.b10-3.6.3-b5769
+      - image: opennms/build-env:1.8.0.302.b08-3.6.3-b7294
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk8-b5875
+      - image: opennms/build-env:debian-jdk8-b7288
   docker-executor:
     docker:
       - image: docker:20.10.1-git
@@ -15,7 +15,7 @@ executors:
       - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine:
-     image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -147,12 +147,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
@@ -315,6 +315,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -359,7 +360,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - update-maven-cache
       - run:
           name: Monitor JVM processes
           background: true
