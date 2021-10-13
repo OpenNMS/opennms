@@ -100,6 +100,9 @@ public class ImportConfiguration extends AbstractCmChange {
             if (!Files.exists(this.archivePath)) {
                 Files.createDirectory(this.archivePath);
             }
+            if (!Files.isDirectory(this.archivePath)) {
+                validationErrors.addError(String.format("Archive directory %s is not a directory.", this.archivePath));
+            }
             if(!Files.isWritable(this.archivePath)) {
                 validationErrors.addError(String.format("Archive directory %s is not writable.", this.archivePath));
             }
