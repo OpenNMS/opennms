@@ -51,9 +51,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.MigrationFailedException;
-import liquibase.exception.ValidationFailedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,20 +68,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.FileSystemUtils;
 
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
