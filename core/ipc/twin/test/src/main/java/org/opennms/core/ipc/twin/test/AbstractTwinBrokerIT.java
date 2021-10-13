@@ -31,6 +31,7 @@ package org.opennms.core.ipc.twin.test;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 import java.io.Closeable;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
@@ -80,6 +82,8 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
+        // Ensure Test1 is received.
+        await().until(tracker::getLog, contains("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
@@ -181,7 +185,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test3");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, contains("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
 
         assertThat(tracker1.getLog(), contains("Test1"));
     }

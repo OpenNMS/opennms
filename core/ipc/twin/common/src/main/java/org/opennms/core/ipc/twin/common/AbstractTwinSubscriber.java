@@ -31,12 +31,18 @@ package org.opennms.core.ipc.twin.common;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
@@ -46,14 +52,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
-    private final Map<String, SessionImpl<?>> sessionMap = new ConcurrentHashMap<>();
+    private final Multimap<String, SessionImpl<?>> sessionMap = LinkedListMultimap.create();
     private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final MinionIdentity minionIdentity;
+    private MinionIdentity minionIdentity;
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("abstract-twin-subscriber-%d")
+            .build();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
 
     protected AbstractTwinSubscriber(MinionIdentity minionIdentity) {
         this.minionIdentity = minionIdentity;
+    }
+
+    public AbstractTwinSubscriber() {
     }
 
     /**
@@ -66,29 +79,80 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     public <T> Closeable subscribe(String key, Class<T> clazz, Consumer<T> consumer) {
         SessionImpl<T> session = new SessionImpl<T>(key, clazz, consumer);
         sessionMap.put(key, session);
-        TwinRequestBean twinRequestBean = new TwinRequestBean(key, minionIdentity.getLocation());
+        String location = minionIdentity != null ? minionIdentity.getLocation() : null;
+        TwinRequestBean twinRequestBean = new TwinRequestBean(key, location);
         sendRpcRequest(twinRequestBean);
+        byte[] objValue = objMap.get(key);
+        // If there is an existing object, send that update to subscriber.
+        if (objValue != null) {
+            TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objValue);
+            try {
+                session.accept(objValue);
+            } catch (IOException e) {
+                LOG.error("Exception while sending response to consumer", e);
+            }
+        }
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
     }
 
     protected void accept(TwinResponseBean twinResponse) {
-        LOG.info("Received object update with key {}", twinResponse.getKey());
-        SessionImpl<?> session = sessionMap.get(twinResponse.getKey());
-        if (session == null) {
-            LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
+
+        // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
+        if(twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
+            return;
         }
-        if (session != null) {
-            try {
-                session.accept(twinResponse);
-            } catch (IOException e) {
-                LOG.error("Exception while sending response to consumer", e);
+        // Consume in our own thread instead of using broker's callback thread.
+        executorService.execute(() -> {
+
+            if (twinResponse.getObject() != null &&
+                    isObjectUpdated(twinResponse.getKey(), twinResponse.getObject())) {
+
+                LOG.trace("Received object update with key {}", twinResponse.getKey());
+                // Update twin object in local cache.
+                objMap.put(twinResponse.getKey(), twinResponse.getObject());
+                // Send update to each session.
+                if (sessionMap.containsKey(twinResponse.getKey())) {
+                    sessionMap.get(twinResponse.getKey()).forEach(session -> {
+                        try {
+                            session.accept(twinResponse.getObject());
+                        } catch (Exception e) {
+                            LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
+                        }
+                    });
+                } else {
+                    LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
+                    if (twinResponse.getObject() != null) {
+                        objMap.put(twinResponse.getKey(), twinResponse.getObject());
+                    }
+                }
             }
+        });
+    }
+
+    boolean isObjectUpdated(String key, byte[] updatedObject) {
+        byte[] objInBytes = objMap.get(key);
+        if (objInBytes == null) {
+            return true;
         }
+        return !Arrays.equals(objInBytes, updatedObject);
+    }
+
+    public void shutdown() {
+        executorService.shutdown();
+        objMap.clear();
+        sessionMap.clear();
     }
 
     public MinionIdentity getMinionIdentity() {
         return minionIdentity;
+    }
+
+    private String getLocation() {
+        if (minionIdentity != null) {
+            return minionIdentity.getLocation();
+        }
+        return null;
     }
 
     private class SessionImpl<T> implements Closeable {
@@ -105,25 +169,14 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         @Override
         public void close() throws IOException {
+            sessionMap.remove(key, this);
             LOG.info("Closed session with key {} ", key);
-            sessionMap.remove(key);
         }
 
-        public void accept(TwinResponseBean twinResponseBean) throws IOException {
-            if (twinResponseBean.getObject() != null && isObjectUpdated(twinResponseBean.getObject())) {
-                objMap.put(twinResponseBean.getKey(), twinResponseBean.getObject());
-                final T value = objectMapper.readValue(twinResponseBean.getObject(), clazz);
-                LOG.debug("Update consumer with key {}", key);
+        public void accept(byte[] objValue) throws IOException {
+                final T value = objectMapper.readValue(objValue, clazz);
+                LOG.trace("Updated consumer with key {}", key);
                 consumer.accept(value);
-            }
-        }
-
-        boolean isObjectUpdated(byte[] updatedObject) {
-            byte[] objInBytes = objMap.get(key);
-            if (objInBytes == null) {
-                return true;
-            }
-            return !Arrays.equals(objInBytes, updatedObject);
         }
 
         @Override
@@ -137,6 +190,15 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         @Override
         public int hashCode() {
             return Objects.hash(key, consumer, clazz);
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", SessionImpl.class.getSimpleName() + "[", "]")
+                    .add("key='" + key + "'")
+                    .add("consumer=" + consumer)
+                    .add("clazz=" + clazz)
+                    .toString();
         }
     }
 }
