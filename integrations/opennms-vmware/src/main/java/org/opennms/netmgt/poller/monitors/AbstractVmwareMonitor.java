@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;

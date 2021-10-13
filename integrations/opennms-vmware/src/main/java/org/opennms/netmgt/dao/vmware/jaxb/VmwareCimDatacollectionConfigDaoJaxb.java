@@ -26,31 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.dao.vmware.jaxb;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
-import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
-import org.opennms.netmgt.dao.VmwareDatacollectionConfigDao;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
+import org.opennms.netmgt.dao.vmware.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import java.io.File;
 import java.util.List;
 
 /**
- * The Class DefaultVmwareDatacollectionConfigDao
+ * The Class VmwareCimDatacollectionConfigDaoJaxb
  * <p/>
- * This class is used for accessing the Vmware Data Collection configuration file
+ * This class is used for accessing the Vmware Cim Data Collection configuration file
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareDatacollectionConfig, VmwareDatacollectionConfig> implements VmwareDatacollectionConfigDao {
+public class VmwareCimDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareCimDatacollectionConfig, VmwareCimDatacollectionConfig> implements VmwareCimDatacollectionConfigDao {
+
 
     /**
      * Default constructor
      */
-    public VmwareDatacollectionConfigDaoJaxb() {
-        super(VmwareDatacollectionConfig.class, "Vmware Data Collection Configuration");
+    public VmwareCimDatacollectionConfigDaoJaxb() {
+        super(VmwareCimDatacollectionConfig.class, "Vmware Cim Data Collection Configuration");
     }
 
     /**
@@ -59,7 +60,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @return the current config object
      */
     @Override
-    public VmwareDatacollectionConfig getConfig() {
+    public VmwareCimDatacollectionConfig getConfig() {
         return getContainer().getObject();
     }
 
@@ -71,7 +72,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @return a custom object
      */
     @Override
-    public VmwareDatacollectionConfig translateConfig(VmwareDatacollectionConfig jaxbConfig) {
+    public VmwareCimDatacollectionConfig translateConfig(VmwareCimDatacollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
 
@@ -79,20 +80,20 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * This method returns a subset of the configuration data for a given collection name.
      *
      * @param collectionName the collection's name
-     * @return the collection object
+     * @return the Cim collection object
      */
     @Override
-    public VmwareCollection getVmwareCollection(String collectionName) {
-        VmwareCollection[] collections = getConfig().getVmwareCollection();
-        VmwareCollection collection = null;
-        for (VmwareCollection coll : collections) {
+    public VmwareCimCollection getVmwareCimCollection(String collectionName) {
+        VmwareCimCollection[] collections = getConfig().getVmwareCimCollection();
+        VmwareCimCollection collection = null;
+        for (VmwareCimCollection coll : collections) {
             if (coll.getName().equalsIgnoreCase(collectionName)) {
                 collection = coll;
                 break;
             }
         }
         if (collection == null) {
-            throw new IllegalArgumentException("getVmwareCollection: collection name: "
+            throw new IllegalArgumentException("getVmwareCimCollection: collection name: "
                     + collectionName + " specified in collectd configuration not found in Vmware collection configuration.");
         }
         return collection;
@@ -121,7 +122,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @return the step value
      */
     private int getStep(String cName) {
-        VmwareCollection collection = getVmwareCollection(cName);
+        VmwareCimCollection collection = getVmwareCimCollection(cName);
         if (collection != null) {
             return collection.getRrd().getStep();
         } else {
@@ -136,7 +137,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @return the RRAs list
      */
     private List<String> getRRAList(String cName) {
-        VmwareCollection collection = getVmwareCollection(cName);
+        VmwareCimCollection collection = getVmwareCimCollection(cName);
         if (collection != null) {
             return collection.getRrd().getRraCollection();
         } else {

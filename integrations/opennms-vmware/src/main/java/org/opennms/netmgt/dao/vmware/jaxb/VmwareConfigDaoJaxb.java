@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.netmgt.dao.vmware.jaxb;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.dao.VmwareConfigDao;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 
 import java.util.HashMap;
 import java.util.Map;
