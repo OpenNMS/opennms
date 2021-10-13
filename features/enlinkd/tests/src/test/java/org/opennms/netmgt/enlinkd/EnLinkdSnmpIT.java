@@ -28,10 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -74,25 +70,7 @@ import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
-import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
-import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -103,6 +81,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import static org.junit.Assert.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -118,7 +98,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpIT.class);
     
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
     }
 
     @Before
@@ -127,6 +107,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         p.setProperty("log4j.logger.org.opennms.mock.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.core.test.snmp", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt", "WARN");
+        p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         MockLogAppender.setupLogging(p);
@@ -134,12 +115,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     @Test
     public void testInSameNetwork() throws Exception {
-    	assertEquals(true, InetAddressUtils.inSameNetwork(InetAddress.getByName("192.168.0.1"),
-    			InetAddress.getByName("192.168.0.2"),InetAddress.getByName("255.255.255.252")));
-    	assertEquals(false, InetAddressUtils.inSameNetwork(InetAddress.getByName("192.168.0.1"),
-    			InetAddress.getByName("192.168.0.5"),InetAddress.getByName("255.255.255.252")));
-    	assertEquals(true, InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
-    			InetAddress.getByName("10.168.0.5"),InetAddress.getByName("255.0.0.0")));
+        assertTrue(InetAddressUtils.inSameNetwork(InetAddress.getByName("192.168.0.1"),
+                InetAddress.getByName("192.168.0.2"), InetAddress.getByName("255.255.255.252")));
+        assertFalse(InetAddressUtils.inSameNetwork(InetAddress.getByName("192.168.0.1"),
+                InetAddress.getByName("192.168.0.5"), InetAddress.getByName("255.255.255.252")));
+        assertTrue(InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
+                InetAddress.getByName("10.168.0.5"), InetAddress.getByName("255.0.0.0")));
     }
     
     @Test
@@ -285,8 +266,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         
         OspfElement ospfElement = ospfGeneralGroup.getOspfElement();
         assertEquals(InetAddress.getByName("192.168.100.246"), ospfElement.getOspfRouterId());
-        assertEquals(null, ospfElement.getOspfRouterIdNetmask());
-        assertEquals(null, ospfElement.getOspfRouterIdIfindex());
+        assertNull(ospfElement.getOspfRouterIdNetmask());
+        assertNull(ospfElement.getOspfRouterIdIfindex());
         assertEquals(Status.enabled, ospfElement.getOspfAdminStat());
         assertEquals(2, ospfElement.getOspfVersionNumber().intValue());
         assertEquals(TruthValue.FALSE, ospfElement.getOspfBdrRtrStatus());
@@ -334,7 +315,6 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             .get();
         } catch (final InterruptedException e) {
             LOG.error("run: collection interrupted, exiting",e);
-            return;
         }
     }
 
@@ -384,7 +364,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 				assertEquals(40, link.getOspfIfIndex().intValue());
 				assertEquals(InetAddress.getByName("255.255.255.0"), link.getOspfIpMask());
 			} else {
-				assertEquals(false, true);
+                fail();
 			}
 
         }
@@ -393,10 +373,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     /**
      * This test is designed to test the issues in bug NMS-6921.
      * 
-     * @see http://issues.opennms.org/browse/NMS-6912
-
-     * 
-     * @throws Exception
+     * @see "https://issues.opennms.org/browse/NMS-6912"
      */
     @Test
     @JUnitSnmpAgents(value={
@@ -432,10 +409,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     /**
      * This test is designed to test the issues in bug NMS-6921.
      * 
-     * @see http://issues.opennms.org/browse/NMS-6912
+     * @see "https://issues.opennms.org/browse/NMS-6912"
 
-     * 
-     * @throws Exception
      */
     @Test
     @JUnitSnmpAgents(value={
@@ -515,8 +490,235 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             .execute()
             .get();
         } catch (final InterruptedException e) {
-            assertEquals(false, true);
+            fail();
         }
+
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-13593.
+     *
+     * @see "https://issues.opennms.org/browse/NMS-13593"
+
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ZHBGO1Zsr001_IP, port=161, resource=ZHBGO1Zsr001_RESOURCE),
+            @JUnitSnmpAgent(host=ZHBGO1Zsr002_IP, port=161, resource=ZHBGO1Zsr002_RESOURCE)
+    })
+    public void testTimeTetraLldpWalk() throws Exception {
+        String trackerName01 = "lldpLocalGroup01";
+        SnmpAgentConfig  config01 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr001_IP));
+        String trackerName02 = "lldpLocalGroup02";
+        SnmpAgentConfig  config02 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr002_IP));
+        LldpLocalGroupTracker lldpLocalGroup01 = new LldpLocalGroupTracker();
+        LldpLocalGroupTracker lldpLocalGroup02 = new LldpLocalGroupTracker();
+        final List<TimeTetraLldpLink> links01 = new ArrayList<>();
+        final List<TimeTetraLldpLink> links02 = new ArrayList<>();
+
+        try {
+            m_client.walk(config01,lldpLocalGroup01)
+                    .withDescription(trackerName01)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,lldpLocalGroup02)
+                    .withDescription(trackerName02)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement lldpElement01 = lldpLocalGroup01.getLldpElement();
+        LldpElement lldpElement02 = lldpLocalGroup02.getLldpElement();
+        LOG.warn("01 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement01.getLldpChassisIdSubType().getValue()));
+        LOG.warn("01 local chassis id: " + lldpElement01.getLldpChassisId());
+        LOG.warn("01 local sysname: " + lldpElement01.getLldpSysname());
+        LOG.warn("02 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement02.getLldpChassisIdSubType().getValue()));
+        LOG.warn("02 local chassis id: " + lldpElement02.getLldpChassisId());
+        LOG.warn("02 local sysname: " + lldpElement02.getLldpSysname());
+
+        assertEquals(ZHBGO1Zsr001_LLDP_ID, lldpElement01.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement01.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr001_NAME, lldpElement01.getLldpSysname());
+        assertEquals(ZHBGO1Zsr002_LLDP_ID, lldpElement02.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement02.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr002_NAME, lldpElement02.getLldpSysname());
+
+        LldpRemTableTracker lldpRemTable01 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                fail();
+            }
+        };
+
+        LldpRemTableTracker lldpRemTable02 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                fail();
+            }
+        };
+
+        try {
+            m_client.walk(config01,
+                            lldpRemTable01)
+                    .withDescription("lldpRemTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,
+                            lldpRemTable02)
+                    .withDescription("lldpRemTable02")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        TimeTetraLldpRemTableTracker timetetralldpRemTable01
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                assertEquals(6, row.getColumnCount());
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links01.add(timeTetraLldpLinklink);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+        TimeTetraLldpRemTableTracker timetetralldpRemTable02
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+
+                assertEquals(6, row.getColumnCount());
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links02.add(timeTetraLldpLinklink);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+
+        try {
+            m_client.walk(config01,
+                            timetetralldpRemTable01)
+                    .withDescription("timetetralldpRemTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+            m_client.walk(config02,
+                            timetetralldpRemTable02)
+                    .withDescription("timetetralldpRemTable02")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        assertEquals(3,links01.size());
+        assertEquals(4,links02.size());
+
+        final LldpLocPortGetter lldpLocPort01 = new LldpLocPortGetter(config01,
+                m_client,
+                null,0);
+
+        final LldpLocPortGetter lldpLocPort02 = new LldpLocPortGetter(config02,
+                m_client,
+                null,1);
+
+        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
+            LldpLink link01 = timeTetraLldpLink01.getLldpLink();
+            assertNull(link01.getLldpPortId());
+            assertNull(link01.getLldpPortIdSubType());
+            assertNull(link01.getLldpPortDescr());
+
+            LldpLink updated = lldpLocPort01.getLldpLink(link01);
+            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
+            assertEquals("",updated.getLldpPortDescr());
+        }
+
+        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
+            LldpLink link02 = timeTetraLldpLink02.getLldpLink();
+            assertNull(link02.getLldpPortId());
+            assertNull(link02.getLldpPortIdSubType());
+            assertNull(link02.getLldpPortDescr());
+
+            LldpLink updated = lldpLocPort02.getLldpLink(link02);
+            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
+            assertEquals("",updated.getLldpPortDescr());
+        }
+
+        final TimeTetraLldpLocPortGetter ttlldpLocPort01 = new TimeTetraLldpLocPortGetter(config01,
+                m_client,
+                null,0);
+
+        final TimeTetraLldpLocPortGetter ttlldpLocPort02 = new TimeTetraLldpLocPortGetter(config02,
+                m_client,
+                null,1);
+
+        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
+            LldpLink link01 = timeTetraLldpLink01.getLldpLink();
+            assertEquals("\"Not Found On lldpLocPortTable\"",link01.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link01.getLldpPortIdSubType());
+            assertEquals("",link01.getLldpPortDescr());
+            assertEquals(1,timeTetraLldpLink01.getTmnxLldpRemLocalDestMACAddress().intValue());
+
+            LldpLink updated = ttlldpLocPort01.getLldpLink(timeTetraLldpLink01);
+            assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+            assertNotEquals("",updated.getLldpPortDescr());
+            LOG.warn("01 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+            LOG.warn("01 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+            LOG.warn("01 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+            LOG.warn("01 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+            LOG.warn("01 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+            LOG.warn("01 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+            LOG.warn("01 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+            LOG.warn("01 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+            LOG.warn("01 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+            LOG.warn("01 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
+        }
+
+        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
+            LldpLink link02 = timeTetraLldpLink02.getLldpLink();
+            assertEquals("\"Not Found On lldpLocPortTable\"",link02.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link02.getLldpPortIdSubType());
+            assertEquals("",link02.getLldpPortDescr());
+            assertEquals(1,timeTetraLldpLink02.getTmnxLldpRemLocalDestMACAddress().intValue());
+
+            LldpLink updated = ttlldpLocPort02.getLldpLink(timeTetraLldpLink02);
+            assertNotEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+            assertNotEquals("",updated.getLldpPortDescr());
+            LOG.warn("02 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+            LOG.warn("02 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+            LOG.warn("02 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+            LOG.warn("02 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+            LOG.warn("02 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+            LOG.warn("02 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+            LOG.warn("02 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+            LOG.warn("02 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+            LOG.warn("02 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+            LOG.warn("02 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
+
+        }
+
 
     }
 
@@ -691,7 +893,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                           .execute()
                           .get();
         } catch (final InterruptedException e) {
-            assertEquals(false, true);
+            fail();
         }
         
     }
@@ -762,14 +964,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     		assertEquals(IsisISAdjState.up, link.getIsisISAdjState());
     		assertEquals(IsisISAdjNeighSysType.l1_IntermediateSystem, link.getIsisISAdjNeighSysType());
     		assertEquals(0, link.getIsisISAdjNbrExtendedCircID().intValue());
-    		if (link.getIsisCircIndex().intValue() == 533) {
+    		if (link.getIsisCircIndex() == 533) {
     			assertEquals("001f12accbf0", link.getIsisISAdjNeighSNPAAddress());
     			assertEquals("000110255062",link.getIsisISAdjNeighSysID());
-    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    		} else if (link.getIsisCircIndex() == 552) {
     			assertEquals("0021590e47c2", link.getIsisISAdjNeighSNPAAddress());
     			assertEquals("000110088500",link.getIsisISAdjNeighSysID());
     		} else {
-    			assertEquals(true, false);
+                fail();
     		}
 
         }
@@ -806,44 +1008,44 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(12, links.size());
 
         for (final IsIsLink link: links) {
-    		if (link.getIsisCircIndex().intValue() == 533) {
+    		if (link.getIsisCircIndex() == 533) {
     			assertEquals(533, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 552) {
+    		} else if (link.getIsisCircIndex() == 552) {
     			assertEquals(552, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 13) {
+    		} else if (link.getIsisCircIndex() == 13) {
     			assertEquals(13, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.off, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 16) {
+    		} else if (link.getIsisCircIndex() == 16) {
     			assertEquals(16, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 504) {
+    		} else if (link.getIsisCircIndex() == 504) {
     			assertEquals(504, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 507) {
+    		} else if (link.getIsisCircIndex() == 507) {
     			assertEquals(507, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 508) {
+    		} else if (link.getIsisCircIndex() == 508) {
     			assertEquals(508, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-    		} else if (link.getIsisCircIndex().intValue() == 512) {
+    		} else if (link.getIsisCircIndex() == 512) {
     			assertEquals(512, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-       		} else if (link.getIsisCircIndex().intValue() == 514) {
+       		} else if (link.getIsisCircIndex() == 514) {
     			assertEquals(514, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-       		} else if (link.getIsisCircIndex().intValue() == 531) {
+       		} else if (link.getIsisCircIndex() == 531) {
     			assertEquals(531, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-       		} else if (link.getIsisCircIndex().intValue() == 572) {
+       		} else if (link.getIsisCircIndex() == 572) {
     			assertEquals(572, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
-       		} else if (link.getIsisCircIndex().intValue() == 573) {
+       		} else if (link.getIsisCircIndex() == 573) {
     			assertEquals(573, link.getIsisCircIfIndex().intValue());
             	assertEquals(IsisAdminState.on, link.getIsisCircAdminState());
      		} else {
-    			assertEquals(true, false);
+                fail();
     		}
 
         }
@@ -880,27 +1082,35 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         for (final IpNetToMedia row: rows) {
     		assertEquals(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC,row.getIpNetToMediaType());
-        	if (row.getPhysAddress().equals("00901a4222f8")) {
-        		assertEquals(InetAddressUtils.addr("10.129.16.1"), row.getNetAddress());
-        		assertEquals(1, row.getSourceIfIndex().intValue());
-        	} else if (row.getPhysAddress().equals("0013c8f1d242")) {
-        		assertEquals(InetAddressUtils.addr("10.129.16.164"), row.getNetAddress());
-        		assertEquals(1, row.getSourceIfIndex().intValue());
-        	} else if (row.getPhysAddress().equals("f0728c99994d")) {
-        		assertEquals(InetAddressUtils.addr("192.168.0.13"), row.getNetAddress());
-        		assertEquals(2, row.getSourceIfIndex().intValue());
-        	} else if (row.getPhysAddress().equals("0015999f07ef")) {
-        		assertEquals(InetAddressUtils.addr("192.168.0.14"), row.getNetAddress());
-        		assertEquals(2, row.getSourceIfIndex().intValue());
-        	} else if (row.getPhysAddress().equals("60334b0817a8")) {
-        		assertEquals(InetAddressUtils.addr("192.168.0.16"), row.getNetAddress());
-        		assertEquals(2, row.getSourceIfIndex().intValue());
-        	} else if (row.getPhysAddress().equals("001b63cda9fd")) {
-        		assertEquals(InetAddressUtils.addr("192.168.0.17"), row.getNetAddress());
-        		assertEquals(2, row.getSourceIfIndex().intValue());
-        	} else {
-        		assertEquals(false, true);
-        	}
+            switch (row.getPhysAddress()) {
+                case "00901a4222f8":
+                    assertEquals(InetAddressUtils.addr("10.129.16.1"), row.getNetAddress());
+                    assertEquals(1, row.getSourceIfIndex().intValue());
+                    break;
+                case "0013c8f1d242":
+                    assertEquals(InetAddressUtils.addr("10.129.16.164"), row.getNetAddress());
+                    assertEquals(1, row.getSourceIfIndex().intValue());
+                    break;
+                case "f0728c99994d":
+                    assertEquals(InetAddressUtils.addr("192.168.0.13"), row.getNetAddress());
+                    assertEquals(2, row.getSourceIfIndex().intValue());
+                    break;
+                case "0015999f07ef":
+                    assertEquals(InetAddressUtils.addr("192.168.0.14"), row.getNetAddress());
+                    assertEquals(2, row.getSourceIfIndex().intValue());
+                    break;
+                case "60334b0817a8":
+                    assertEquals(InetAddressUtils.addr("192.168.0.16"), row.getNetAddress());
+                    assertEquals(2, row.getSourceIfIndex().intValue());
+                    break;
+                case "001b63cda9fd":
+                    assertEquals(InetAddressUtils.addr("192.168.0.17"), row.getNetAddress());
+                    assertEquals(2, row.getSourceIfIndex().intValue());
+                    break;
+                default:
+                    fail();
+                    break;
+            }
         }        
         
     }
@@ -1026,7 +1236,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1dTpFdbTable";
-    	final List<BridgeForwardingTableEntry> links = new ArrayList<BridgeForwardingTableEntry>();
+    	final List<BridgeForwardingTableEntry> links = new ArrayList<>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
             @Override
@@ -1051,45 +1261,32 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         for (BridgeForwardingTableEntry link: links) {
         	assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
         	System.out.println(link.getMacAddress());
-        	if (link.getMacAddress().equals("000c29dcc076")) {
-        		assertEquals(24,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("000ffeb10d1e")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("000ffeb10e26")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("001a4b802790")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("001d6004acbc")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("001e58865d0f")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("0021913b5108")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("002401ad3416")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("00248c4c8bd0")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("0024d608693e")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("000ffeb10d1e")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("1caff737cc33")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("1caff7443339")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("1cbdb9b56160")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("5cd998667abb")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("e0cb4e3e7fc0")) {
-        		assertEquals(6,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("f07d68711f89")) {
-        		assertEquals(24,link.getBridgePort().intValue());
-        	} else if(link.getMacAddress().equals("f07d6876c565")) {
-        		assertEquals(24,link.getBridgePort().intValue());
-           } else {
-        		assertEquals(false, true);
-        	}
+            switch (link.getMacAddress()) {
+                case "000c29dcc076":
+                case "f07d68711f89":
+                case "f07d6876c565":
+                    assertEquals(24, link.getBridgePort().intValue());
+                    break;
+                case "000ffeb10d1e":
+                case "000ffeb10e26":
+                case "001a4b802790":
+                case "001d6004acbc":
+                case "001e58865d0f":
+                case "0021913b5108":
+                case "002401ad3416":
+                case "00248c4c8bd0":
+                case "0024d608693e":
+                case "1caff737cc33":
+                case "1caff7443339":
+                case "1cbdb9b56160":
+                case "5cd998667abb":
+                case "e0cb4e3e7fc0":
+                    assertEquals(6, link.getBridgePort().intValue());
+                    break;
+                default:
+                    fail();
+                    break;
+            }
         }
     }
 
@@ -1101,8 +1298,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1qTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1qTpFdbTable";
-    	final Map<String,Integer> macs1 = new HashMap<String, Integer>();
-    	final Map<String,Integer> macs2 = new HashMap<String, Integer>();
+    	final Map<String,Integer> macs1 = new HashMap<>();
+    	final Map<String,Integer> macs2 = new HashMap<>();
     	SnmpAgentConfig  config1 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1qTpFdbTableTracker tracker1 = new Dot1qTpFdbTableTracker() {
             @Override
