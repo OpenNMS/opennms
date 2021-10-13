@@ -28,19 +28,23 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * <p>Abstract AbstractCmJaxbConfigDao class.</p>
@@ -52,11 +56,10 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCmJaxbConfigDao.class);
 
     @Autowired
-    private ConfigurationManagerService configurationManagerService;
+    protected ConfigurationManagerService configurationManagerService;
 
     private Class<ENTITY_CLASS> entityClass;
     private String description;
-    private final Collection<Consumer<ENTITY_CLASS>> onReloadCausedChangeCallbacks = new ArrayList<>();
     private ConcurrentHashMap<String, ENTITY_CLASS> lastKnownEntityMap = new ConcurrentHashMap<>();
 
     /**
@@ -66,6 +69,14 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
      */
     abstract protected String getConfigName();
 
+    /**
+     * It will provide the default callback for all ConfigDao, override if you needed
+     *
+     * @return Consumer
+     */
+    Consumer<ConfigUpdateInfo> getUpdateCallback() {
+        return new DefaultAbstractCmJaxbConfigDaoUpdateCallback<>(this);
+    }
 
     /**
      * The default configId when getConfig without passing configId
@@ -76,24 +87,43 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
 
     /**
      * <p>Constructor for AbstractJaxbConfigDao.</p>
+     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
+     * override getUpdateCallback if you need to change.
      *
      * @param entityClass a {@link java.lang.Class} object.
      * @param description a {@link java.lang.String} object.
+     * @see #getUpdateCallback()
      */
     public AbstractCmJaxbConfigDao(final Class<ENTITY_CLASS> entityClass, final String description) {
-        super();
         this.entityClass = entityClass;
         this.description = description;
     }
 
     /**
-     * loadConfig from CM. If the config is already stored in cache, it will also trigger reload callback
+     * Add default callback
+     */
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        Set<String> configIds = configurationManagerService.getConfigIds(this.getConfigName());
+        configIds.forEach(configId -> this.addOnReloadedCallback(configId, getUpdateCallback()));
+    }
+
+    /**
+     * It will load the default config
+     *
+     * @return ConfigObject
+     */
+    public ENTITY_CLASS loadConfig() {
+        return this.loadConfig(this.getDefaultConfigId());
+    }
+
+    /**
+     * loadConfig from database by CM. If it is already in cache, it will update the cache.
      *
      * @param configId
      * @return ConfigObject
-     * @throws IOException
      */
-    protected ENTITY_CLASS loadConfig(final String configId) {
+    public ENTITY_CLASS loadConfig(final String configId) {
         long startTime = System.currentTimeMillis();
 
         LOG.debug("Loading {} configuration from {}", description, configId);
@@ -102,7 +132,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         try {
             configOptional = configurationManagerService
                     .getXmlConfiguration(this.getConfigName(), configId)
-                    .map(s -> JaxbUtils.unmarshal(entityClass, s));
+                    .map(s -> JaxbUtils.unmarshal(entityClass, s, false)); // no validation since we validated already at write time
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,37 +140,48 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
         if (configOptional.isEmpty()) {
             throw new RuntimeException("NOT_FOUND: configName=" + this.getConfigName() + " configId=" + configId);
         }
-        ENTITY_CLASS config = configOptional.get();
+        final ENTITY_CLASS config = configOptional.get();
         long endTime = System.currentTimeMillis();
         LOG.info("Loaded {} in {} ms", getDescription(), (endTime - startTime));
 
-        // If the config is not load in the first time, we will trigger the callbacks for this change
-        ENTITY_CLASS lastKnownEntity = lastKnownEntityMap.get(configId);
-        if (lastKnownEntity != null) {
-            synchronized (onReloadCausedChangeCallbacks) {
-                if (!onReloadCausedChangeCallbacks.isEmpty()) {
-                    LOG.debug("Calling onReloaded callbacks");
-                    try {
-                        //TODO: Freddy PE-13 reconsider the possibility of exception during loop
-                        onReloadCausedChangeCallbacks.forEach(c -> c.accept(config));
-                    } catch (Exception e) {
-                        LOG.warn("Encountered exception while calling onReloaded callbacks", e);
-                    }
-                }
+        return lastKnownEntityMap.compute(configId, (k, v) -> {
+            if (v != null) {
+                BeanUtils.copyProperties(config, v);
+                return v;
+            } else {
+                return config;
             }
-        }
-        return config;
+        });
     }
 
     /**
-     * get default config object
-     *
-     * @return config object
+     * It will the config in cache, if nothing found it will load from db.
+     * <b>Please notice that, config can be different in db.</b>
+     * @param configId
+     * @return config
      */
-    public ENTITY_CLASS getConfig(String configId) {
-        ENTITY_CLASS config = lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
-        lastKnownEntityMap.put(configId, config);
-        return config;
+    public ENTITY_CLASS getConfig(String configId){
+        // cannot use computeIfAbsent, it will cause IllegalStateException
+        ENTITY_CLASS config = lastKnownEntityMap.get(configId);
+        if (config == null){
+            return this.loadConfig(configId);
+        }
+        return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
+    }
+
+    public void updateConfig(final String configId, String configStr) throws IOException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(configStr));
+    }
+
+    /**
+     * it will update the default config
+     *
+     * @param configStr
+     * @throws IOException
+     * @see #updateConfig(String, String)
+     */
+    public void updateConfig(String configStr) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), configStr);
     }
 
     /**
@@ -155,11 +196,8 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     /**
      * @param callback a callback that will be called when the entity maintained by this DAO is reloaded
      */
-    public void addOnReloadedCallback(Consumer<ENTITY_CLASS> callback) {
+    public void addOnReloadedCallback(String configId, Consumer<ConfigUpdateInfo> callback) {
         Objects.requireNonNull(callback);
-
-        synchronized (onReloadCausedChangeCallbacks) {
-            onReloadCausedChangeCallbacks.add(callback);
-        }
+        configurationManagerService.registerReloadConsumer(new ConfigUpdateInfo(this.getConfigName(), configId), callback);
     }
 }

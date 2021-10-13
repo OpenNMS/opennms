@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,33 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.features.config.service.util;
 
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 
-import javax.annotation.PostConstruct;
+import java.util.function.Consumer;
 
-public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
-    public static final String CONFIG_NAME = "provisiond";
-    public static final String CONFIG_ID = "default";
+/**
+ * It is default update notifier for AbstractCmJaxbConfigDao.
+ *`
+ * @param <ENTITY_CLASS>
+ */
+public class DefaultAbstractCmJaxbConfigDaoUpdateCallback<ENTITY_CLASS> implements Consumer<ConfigUpdateInfo> {
+    private AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao;
 
-    public ProvisiondCmJaxbConfigTestDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
+    public DefaultAbstractCmJaxbConfigDaoUpdateCallback(AbstractCmJaxbConfigDao<ENTITY_CLASS> abstractCmJaxbConfigDao) {
+        this.abstractCmJaxbConfigDao = abstractCmJaxbConfigDao;
     }
 
     @Override
-    protected String getConfigName() {
-        return CONFIG_NAME;
-    }
-
-    @Override
-    protected String getDefaultConfigId() {
-        return CONFIG_ID;
-    }
-
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(CONFIG_ID, getUpdateCallback());
+    public void accept(ConfigUpdateInfo configUpdateInfo) {
+        // trigger to reload, which will replace the entity in lastKnownEntityMap
+        abstractCmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
     }
 }

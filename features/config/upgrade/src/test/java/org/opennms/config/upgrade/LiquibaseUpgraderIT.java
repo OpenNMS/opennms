@@ -28,6 +28,7 @@
 
 package org.opennms.config.upgrade;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,14 +39,14 @@ import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -65,6 +66,7 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.util.FileSystemUtils;
 
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.MigrationFailedException;
@@ -81,8 +83,10 @@ import liquibase.exception.ValidationFailedException;
 @JUnitTemporaryDatabase
 public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryDatabase> {
 
-    private final static String SCHEMA_NAME = "provisiond";
-    private final static String CONFIG_ID = "provisiond";
+    private final static String SCHEMA_NAME_PROVISIOND = "provisiond";
+    private final static String SCHEMA_NAME_EVENTD = "eventd";
+    private final static String CONFIG_ID = "default";
+    private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private DataSource dataSource;
     private Connection connection;
@@ -90,7 +94,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Autowired
     private ConfigurationManagerService cm;
     private ConfigurationManagerService cmSpy;
-    private List<Path> pathsToDelete = new ArrayList<>();
+    private Path opennmsHome;
+    private String opennmsHomeOrg;
 
     @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
@@ -98,30 +103,45 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Before
-    public void setUp() throws SQLException, IOException {
+    public void setUp() throws SQLException, IOException, URISyntaxException {
+        this.opennmsHome = Files.createTempDirectory(this.getClass().getSimpleName());
+        opennmsHomeOrg = System.getProperty(SYSTEM_PROP_OPENNMS_HOME);
+        System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHome.toString());
+        Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
+        Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
+                Path.of(etcDir + "/"+SCHEMA_NAME_EVENTD + "-configuration.xml"));
         this.db = new DBUtils();
         this.connection = dataSource.getConnection();
         db.watch(connection);
         cmSpy = spy(cm);
-        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME).isEmpty());
-        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isEmpty());
+        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isEmpty());
+        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
     }
 
     @After
     public void tearDown() throws SQLException, IOException {
-        if(cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent()) {
-            this.cm.unregisterConfiguration(SCHEMA_NAME, CONFIG_ID);
+        if(cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
+            this.cm.unregisterConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID);
         }
-        if(cm.getRegisteredSchema(SCHEMA_NAME).isPresent()) {
-            this.cm.unregisterSchema(SCHEMA_NAME);
+        if(cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
         }
-        for(Path path: pathsToDelete) {
-            Files.deleteIfExists(path);
+        if(cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
+            this.cm.unregisterConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID);
+        }
+        if(cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_EVENTD);
+        }
+        FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
+        if(this.opennmsHomeOrg != null) {
+            System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHomeOrg);
         }
     }
 
     @Test
-    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException {
+    public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException, URISyntaxException {
         try {
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
             liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
@@ -132,27 +152,34 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
                     eq("provisiond-configuration"));
 
             // check if CM was called for config
-            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME), eq("provisiond"), any());
+            verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
 
             // check if liquibase table names where set correctly
             checkIfTableExists(TABLE_NAME_DATABASECHANGELOG);
             checkIfTableExists(LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
 
             // check for the data itself
-            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME).isPresent());
-            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent());
+            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent());
+            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
 
             // check if CM was called for schema
             verify(cmSpy).upgradeSchema(anyString(),
                     eq("provisiond-configuration_v2.xsd"),
                     eq("provisiond-configuration"));
+
+            // check if xml file was moved into archive folder
+            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
+            assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
+            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should not be copied since it is the default one
         } finally {
             this.db.cleanUp();
         }
     }
 
     @Test
-    public void shouldAbortInCaseOfValidationError() {
+    public void shouldAbortInCaseOfValidationError() throws URISyntaxException, IOException {
         try {
             ConfigurationManagerService cm = Mockito.mock(ConfigurationManagerService.class);
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
@@ -164,9 +191,13 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     @Test
-    public void shouldAbortInCaseOfErrorDuringRun() {
+    public void shouldAbortInCaseOfErrorDuringRun() throws SQLException, URISyntaxException, IOException {
         try {
-            LiquibaseUpgrader liqui = new LiquibaseUpgrader(null);
+            // Make sure it trigger Liquibase logic
+            PreparedStatement statement = connection.prepareStatement("TRUNCATE " + TABLE_NAME_DATABASECHANGELOG);
+            statement.execute();
+            ConfigurationManagerService cm = null; // will lead to Nullpointer
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cm);
             assertThrowsException(MigrationFailedException.class,
                     () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog2.xml", connection));
         } finally {

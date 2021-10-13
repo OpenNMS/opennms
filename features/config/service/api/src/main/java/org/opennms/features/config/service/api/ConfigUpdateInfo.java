@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,33 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.service.impl;
+package org.opennms.features.config.service.api;
 
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import java.util.Objects;
 
-import javax.annotation.PostConstruct;
+public class ConfigUpdateInfo {
+    private String configName;
+    private String configId;
 
-public class ProvisiondCmJaxbConfigTestDao extends AbstractCmJaxbConfigDao<ProvisiondConfiguration> {
-    public static final String CONFIG_NAME = "provisiond";
-    public static final String CONFIG_ID = "default";
+    /**
+     * ConfigId is nullable, when it is null. It will reload all configIds.
+     * @param configName
+     * @param configId
+     */
+     public ConfigUpdateInfo(String configName, String configId) {
+        this.configName = Objects.requireNonNull(configName);
+        this.configId = Objects.requireNonNull(configId);
+    }
 
-    public ProvisiondCmJaxbConfigTestDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
+    public String getConfigName() {
+        return configName;
+    }
+
+    public String getConfigId() {
+        return configId;
     }
 
     @Override
-    protected String getConfigName() {
-        return CONFIG_NAME;
+    public int hashCode() {
+        return (this.getConfigName() + this.getConfigId()).hashCode();
     }
 
     @Override
-    protected String getDefaultConfigId() {
-        return CONFIG_ID;
-    }
-
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.addOnReloadedCallback(CONFIG_ID, getUpdateCallback());
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ConfigUpdateInfo)) {
+            return false;
+        }
+        return ((ConfigUpdateInfo) obj).getConfigName().equals(this.getConfigName())
+                && ((ConfigUpdateInfo) obj).getConfigId().equals(this.getConfigId());
     }
 }
