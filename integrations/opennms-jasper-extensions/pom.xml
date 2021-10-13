@@ -36,25 +36,25 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>keytool-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generateKeyPair</goal>
-            </goals>
-            <phase>generate-test-resources</phase>
-          </execution>
-        </executions>
         <configuration>
-          <workingDirectory>${project.build.directory}</workingDirectory>
-          <skipIfExist>true</skipIfExist>
           <alias>localhost</alias>
           <keysize>1024</keysize>
           <keyalg>DSA</keyalg>
           <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
-          <keystore>${project.build.directory}/test-keystore.jks</keystore>
-          <storepass>password</storepass>
-          <validity>2</validity>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <javax.net.ssl.keyStore>${test.keystore}</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>${test.storepass}</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>${test.keystore}</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>${test.storepass}</javax.net.ssl.trustStorePassword>
+          </systemPropertyVariables>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
     </plugins>

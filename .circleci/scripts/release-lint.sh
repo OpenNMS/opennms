@@ -29,7 +29,7 @@ case "$OPENNMS_FULL_VERSION" in
 esac
 
 echo "* validating documentation"
-export DOCDIR="opennms-doc/releasenotes/src/asciidoc"
+DOCDIR="opennms-doc/releasenotes/src/asciidoc"
 if [ -d docs ] && [ -e "docs/antora.yml" ]; then
   DOCDIR="docs/modules/releasenotes/pages"
 fi
