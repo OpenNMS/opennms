@@ -141,6 +141,7 @@ import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
 import ValidationMessage from '../ValidationMessage.vue'
+import { apigetProvisionD } from '../Common/Demo/apiService'
 
 const reqDefinition = reactive(State);
 
@@ -171,6 +172,17 @@ onMounted(async () => {
         schedulePeriod.value = await getSchedulePeriod;
         // Advanced Dropdown
         advancedDropdown.value = await getAdvancedDropdown;
+        await apigetProvisionD.then((response: any) => {
+        //data come form api
+        if (response.status == 200) {
+            model.value.reqDef.name.$model =  response.data.reqDef.name;
+            model.value.reqDef.type.$model =  response.data.reqDef.type;
+            model.value.reqDef.host.$model =  response.data.reqDef.host;
+            model.value.reqDef.foreignSource.$model =  response.data.reqDef.foreignSource;
+        }
+    }).catch((err) => {
+        console.error("error ==>", err);
+    });
     } catch {
         console.error("Error in API");
     }

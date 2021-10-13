@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, toRef, ref } from 'vue'
@@ -58,24 +58,35 @@ import { required, minValue, numeric, maxValue } from '@vuelidate/validators'
 import { apigetProvisionD } from '../Common/Demo/apiService'
 import State from './formState'
 import ValidationMessage from '../ValidationMessage.vue'
+import { notify } from "@kyvg/vue3-notification"
 
 const validationVar = State.toModel();
 
-const onSave = () => {      
-    console.log("Threadpool successfully save.", validationVar.value.threadpool);
-}
+const onSave = () => {          
+    notify({
+          title: "Notification",
+          text: 'Threadpool data successfully updated',
+          data: validationVar.value.threadpool,
+          type: 'success',
+        });
+  }
 
 onMounted(async () => {
     //service call for data
-    await apigetProvisionD.then((response: any) => {
-        //data come form api
-        if (response.status == 200) {
+    await apigetProvisionD.then((response: any) => {  
+        //data come form api        
+        if (response && response.status == 200) {
             validationVar.value.threadpool.importThreads.$model =  response.data.importThreads;
             validationVar.value.threadpool.scanThreads.$model =  response.data.scanThreads;
             validationVar.value.threadpool.rescanThreads.$model =  response.data.rescanThreads;
             validationVar.value.threadpool.writeThreads.$model =  response.data.writeThreads;
         }
     }).catch((err) => {
+      notify({
+          title: "Notification",
+          text: err,
+          type: 'error',
+        });
         console.error("error ==>", err);
     });
 })
@@ -83,4 +94,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "../Common/common.scss";
+.notification-font {
+  font-style: normal;
+  font-size: 14px;
+}
 </style>

@@ -4,12 +4,15 @@
   <Sidebar />
   <div id="view">
     <router-view />
+    <notifications position="bottom right" duration=200 closeOnClick=true ignoreDuplicates=true />
   </div>
 </template>
   
 <script setup lang="ts">
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
+import { notify } from "@kyvg/vue3-notification"
+
 </script>
   
 <style lang="scss">

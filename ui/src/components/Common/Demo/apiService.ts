@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { axiosAuth } from './apiInterceptor'
+import { notify } from "@kyvg/vue3-notification"
+
 
 let url = 'src/components/Common/Demo/MockupData/nodeData.json'
 let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
@@ -15,6 +17,11 @@ const apigetProvisionD = axiosAuth
     }
   })
   .catch((err: any) => {
+    notify({
+      title: "Notification",
+      text: err,
+      type: 'error',
+    });
     console.error('apiTypes Error ==>', err)
   })
 
@@ -27,6 +34,11 @@ const getDropdownTypes = axios
     }
   })
   .catch((err: any) => {
+    notify({
+      title: "Notification",
+      text: err,
+      type: 'error',
+    });
     console.error('apiTypes Error ==>', err)
   })
 
@@ -39,6 +51,11 @@ const getSchedulePeriod = axios
     }
   })
   .catch((err: any) => {
+    notify({
+      title: "Notification",
+      text: err,
+      type: 'error',
+    });
     console.error('apiPeriod Error ==>', err)
   })
 
@@ -51,6 +68,11 @@ const getAdvancedDropdown = axios
     }
   })
   .catch((err: any) => {
+    notify({
+      title: "Notification",
+      text: err,
+      type: 'error',
+    });
     console.error('apiAdvDropdown Error ==>', err)
   })
 
