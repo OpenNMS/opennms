@@ -28,8 +28,6 @@
 
 package liquibase.ext2.cm.change;
 
-import java.io.IOException;
-
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +70,11 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
                 validationErrors.addError(String.format("The hashes for the schema file %s don't match." +
                         " Expected from changelog: %s, actual: %s.%n", xsdFileName, expectedXsdHash, actualHash));
             }
-        } catch (IOException e) {
-            validationErrors.addError(String.format("Attribute %s is missing", xsdFileName));
+        } catch (Exception e) {
+            validationErrors.addError(
+                    String.format("Cannot compare hashes for the schema file %s." +
+                            " Expected from changelog: %s.%n%s", xsdFileName, expectedXsdHash, e.getMessage())
+            );
         }
     }
 

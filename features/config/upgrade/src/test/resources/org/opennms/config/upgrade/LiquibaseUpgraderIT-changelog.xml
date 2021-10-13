@@ -14,6 +14,6 @@
         <cm:importConfig schemaId="eventd" configId="default" filePath="eventd-configuration.xml"/>
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
-        <cm:upgradeSchema id="provisiond" xsdName="provisiond-configuration_v2.xsd" rootElement="provisiond-configuration"/>
+        <cm:upgradeSchema id="provisiond" xsdName="provisiond-configuration_v2.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
     </changeSet>
 </databaseChangeLog>
