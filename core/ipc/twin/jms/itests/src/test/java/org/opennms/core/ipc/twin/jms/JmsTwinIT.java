@@ -146,7 +146,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
     }
 
 
@@ -155,16 +155,15 @@ public class JmsTwinIT extends CamelBlueprintTest {
      */
     @Test
     public void testUpdates() throws Exception {
-        //subscriber = context.getRegistry().lookupByNameAndType("jmsTwinSubscriber", TwinSubscriber.class);
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
 
         final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
         session.publish("Test2");
         session.publish("Test3");
-        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -180,7 +179,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
         session.publish("Test1");
 
         final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, contains("Test1"));
+        await().until(tracker2::getLog, hasItems("Test1"));
 
         assertThat(tracker1.getLog(), empty());
     }
@@ -196,7 +195,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
         session.publish("Test1");
         session.publish("Test2");
 
-        await().until(tracker::getLog, contains("Test1", "Test2"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2"));
     }
 
     /**
@@ -218,7 +217,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
         final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
         await().until(tracker2::getLog, hasItems("Test3"));
 
-        assertThat(tracker1.getLog(), contains("Test1"));
+        assertThat(tracker1.getLog(), hasItems("Test1"));
     }
 
     /**
@@ -232,13 +231,13 @@ public class JmsTwinIT extends CamelBlueprintTest {
         session.publish("Test1");
         session.publish("Test2");
 
-        await().until(tracker::getLog, contains("Test1", "Test2"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2"));
 
         ((JmsTwinPublisher) publisher).destroy();
         ((JmsTwinPublisher) publisher).init();
         session.publish("Test3");
 
-        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -256,7 +255,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         session.publish("Test3");
 
-        await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker1::getLog, hasItems("Test1", "Test2", "Test3"));
         await().until(tracker2::getLog, hasItems("Test2", "Test3"));
     }
 
@@ -269,12 +268,12 @@ public class JmsTwinIT extends CamelBlueprintTest {
         session2.publish("Test2");
 
         final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
-        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, contains("Test2"));
+        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2"));
 
         // Publishing without location is akin to publishing to all locations
         final var session3 = publisher.register("test", String.class);
         session3.publish("Test3");
-        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, contains("Test2", "Test3"));
+        await().atMost(10, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2", "Test3"));
     }
 
 
