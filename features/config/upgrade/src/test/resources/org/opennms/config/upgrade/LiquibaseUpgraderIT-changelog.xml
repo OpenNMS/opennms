@@ -7,9 +7,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet author="LiquibaseUpgrader" id="register-schema-provisiond">
+    <changeSet author="LiquibaseUpgrader" id="register-schemas">
         <cm:registerSchema id="provisiond" xsdName="provisiond-configuration.xsd" rootElement="provisiond-configuration"/>
-        <cm:importConfig schemaId="provisiond" configId="provisiond" filePath="file:../test/src/test/resources/provisiond-configuration.xml"/>
+        <cm:registerSchema id="eventd" xsdName="eventd-configuration.xsd" rootElement="eventd-configuration"/>
+        <cm:importConfig schemaId="provisiond" configId="default" filePath="provisiond-configuration.xml"/>
+        <cm:importConfig schemaId="eventd" configId="default" filePath="eventd-configuration.xml"/>
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
         <cm:upgradeSchema id="provisiond" xsdName="provisiond-configuration_v2.xsd" rootElement="provisiond-configuration"/>
