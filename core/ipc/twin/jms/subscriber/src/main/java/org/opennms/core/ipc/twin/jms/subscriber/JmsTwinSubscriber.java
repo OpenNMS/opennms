@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.twin.jms.subscriber;
 
+import java.io.IOException;
+
 import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.camel.CamelContext;
@@ -108,9 +110,15 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         LOG.info("JMS Twin subscriber initialized");
     }
 
-    public void destroy() throws Exception {
-        super.shutdown();
-        sinkCamelContext.stop();
+    public void close() throws IOException {
+        super.close();
+
+        try {
+            sinkCamelContext.stop();
+        } catch (final Exception e) {
+            throw new IOException(e);
+        }
+
         LOG.info("JMS Twin subscriber stopped");
     }
 

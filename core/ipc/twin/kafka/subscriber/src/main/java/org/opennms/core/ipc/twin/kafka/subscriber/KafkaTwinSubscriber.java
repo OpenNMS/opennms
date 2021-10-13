@@ -1,0 +1,154 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.core.ipc.twin.kafka.subscriber;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
+import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
+import org.opennms.core.ipc.twin.common.TwinRequestBean;
+import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
+import org.opennms.core.ipc.twin.kafka.common.Topic;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+
+public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaTwinSubscriber.class);
+
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
+
+    private final KafkaConfigProvider kafkaConfigProvider;
+
+    private KafkaProducer<String, byte[]> producer;
+    private KafkaConsumer<String, byte[]> consumer;
+
+    private KafkaConsumerRunner consumerRunner;
+
+    public KafkaTwinSubscriber(final MinionIdentity identity, final KafkaConfigProvider kafkaConfigProvider) {
+        super(identity);
+        this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
+    }
+
+    public void init() {
+        final var kafkaConfig = new Properties();
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
+        kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
+        kafkaConfig.putAll(kafkaConfigProvider.getProperties());
+
+        LOG.debug("Initialized kafka twin subscriber with {}", kafkaConfig);
+        this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+
+        this.consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+        this.consumer.subscribe(ImmutableList.<String>builder()
+                                        .add(Topic.responseForLocation(this.getMinionIdentity().getLocation()))
+                                        .add(Topic.responseGlobal())
+                                        .build());
+
+        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage);
+    }
+
+    public void close() throws IOException {
+        super.close();
+
+        if (this.consumerRunner != null) {
+            this.consumerRunner.close();
+        }
+
+        if (this.consumer != null) {
+            this.consumer.close();
+        }
+
+        if (this.producer != null) {
+            this.producer.close();
+        }
+    }
+
+    @Override
+    protected void sendRpcRequest(final TwinRequestBean twinRequest) {
+        final var proto = TwinRequestProto.newBuilder();
+        proto.setConsumerKey(twinRequest.getKey());
+        proto.setLocation(this.getMinionIdentity().getLocation());
+        proto.setSystemId(this.getMinionIdentity().getId());
+
+        final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), proto.build().toByteArray());
+        this.producer.send(record, (meta, ex) -> {
+            if (ex != null) {
+                RATE_LIMITED_LOG.error("Error sending request", ex);
+            }
+        });
+        this.producer.flush();
+    }
+
+    private void handleMessage(final ConsumerRecord<String, byte[]> record) {
+        final TwinResponseBean response;
+        try {
+            final var proto = TwinResponseProto.parseFrom(record.value());
+
+            response = new TwinResponseBean();
+            response.setKey(proto.getConsumerKey());
+            response.setLocation(proto.getLocation());
+            response.setObject(proto.getTwinObject().toByteArray());
+        } catch (final InvalidProtocolBufferException e) {
+            LOG.error("Failed to parse protobuf for the response", e);
+            return;
+        }
+
+        this.accept(response);
+    }
+}

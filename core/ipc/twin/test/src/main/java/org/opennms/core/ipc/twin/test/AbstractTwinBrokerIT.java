@@ -41,23 +41,33 @@ import java.util.List;
 import java.util.Objects;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.MinionIdentity;
 
 public abstract class AbstractTwinBrokerIT {
 
-    protected abstract TwinPublisher createPublisher();
-    protected abstract TwinSubscriber createSubscriber();
+    protected abstract TwinPublisher createPublisher() throws Exception;
+    protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
     private TwinPublisher publisher;
     private TwinSubscriber subscriber;
 
+    private final MinionIdentity standardIdentity = new MockMinionIdentity("remote");
+
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         this.publisher = this.createPublisher();
-        this.subscriber = this.createSubscriber();
+        this.subscriber = this.createSubscriber(this.standardIdentity);
+    }
+
+    @After
+    public void teardown() throws Exception {
+        this.subscriber.close();
+        this.publisher.close();
     }
 
     /**
@@ -129,19 +139,19 @@ public abstract class AbstractTwinBrokerIT {
      */
     @Test
     public void testMultipleSubscribers() throws Exception {
-        final var subscriber1 = this.createSubscriber();
+        final var subscriber1 = this.createSubscriber(this.standardIdentity);
         final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
         session.publish("Test2");
 
-        final var subscriber2 = this.createSubscriber();
+        final var subscriber2 = this.createSubscriber(this.standardIdentity);
         final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
 
         session.publish("Test3");
 
-        final var subscriber3 = this.createSubscriber();
+        final var subscriber3 = this.createSubscriber(this.standardIdentity);
         final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
 
         await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));

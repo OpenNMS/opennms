@@ -39,6 +39,7 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -101,9 +102,9 @@ public class GrpcTwinIT {
     }
 
     @After
-    public void destroy() {
-        twinSubscriber.shutdown();
-        twinPublisher.shutdown();
+    public void destroy() throws IOException {
+        twinSubscriber.close();
+        twinPublisher.close();
     }
 
     private class TwinConsumer implements Consumer<MinionInfoBean> {

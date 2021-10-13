@@ -138,7 +138,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return !Arrays.equals(objInBytes, updatedObject);
     }
 
-    public void shutdown() {
+    public void close() throws IOException {
         executorService.shutdown();
         objMap.clear();
         sessionMap.clear();

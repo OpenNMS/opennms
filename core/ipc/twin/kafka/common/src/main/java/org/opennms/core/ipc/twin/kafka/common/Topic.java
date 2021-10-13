@@ -26,39 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.grpc;
+package org.opennms.core.ipc.twin.kafka.common;
 
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.distributed.core.api.SystemType;
+import java.util.Objects;
 
-public class MockMinionIdentity implements MinionIdentity {
+public class Topic {
+    private final static String PREFIX = "twin";
 
-    private final String location;
+    private final static String REQUEST = "request";
+    private final static String RESPONSE = "response";
 
-    private String id = "minionId";
+    private Topic() {}
 
-    public MockMinionIdentity(String location) {
-        this.location = location;
+    public static String request() {
+        return String.format("%s.%s", Topic.PREFIX, Topic.REQUEST);
     }
 
-    public MockMinionIdentity(String location, String id) {
-        this.location = location;
-        this.id = id;
+    public static String responseGlobal() {
+        return String.format("%s.%s", Topic.PREFIX, Topic.RESPONSE);
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
+    public static String responseForLocation(final String location) {
+        Objects.requireNonNull(location);
 
-    @Override
-    public String getLocation() {
-        return location;
+        return String.format("%s.%s.%s", Topic.PREFIX, Topic.RESPONSE, location);
     }
-
-    @Override
-    public String getType() {
-        return SystemType.Minion.name();
-    }
-
 }

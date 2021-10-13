@@ -212,4 +212,9 @@ public class MemoryTwinPublisher implements TwinPublisher {
                                     .ifPresent(session -> session.subscriptions.remove(this));
         }
     }
+
+    @Override
+    public void close() {
+        this.sessions.clear();
+    }
 }

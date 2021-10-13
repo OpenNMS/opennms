@@ -29,6 +29,8 @@
 package org.opennms.core.ipc.twin.common;
 
 
+import java.io.IOException;
+
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
 
@@ -40,6 +42,10 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
     @Override
     public void accept(TwinResponseBean twinResponse) {
         super.accept(twinResponse);
+    }
+
+    @Override
+    public void close() throws IOException {
     }
 }
 

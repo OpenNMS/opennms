@@ -99,8 +99,9 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         return this.rpcStream;
     }
 
-    public void shutdown() {
-        super.shutdown();
+    public void close() throws IOException {
+        super.close();
+
         if (channel != null) {
             channel.shutdown();
         }
