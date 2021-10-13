@@ -3,13 +3,23 @@
     <component :is="service" :index="index" @setValues="setValues"></component>
   </template>
   <div class="feather-row">
-    <FeatherButton primary class="first input" @click="addForm">{{ `Add another ${service} from` }}</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton
+        primary
+        
+        @click="addForm"
+      >{{ `Add another ${service} from` }}</FeatherButton>
+    </div>
   </div>
   <div class="feather-row">
-    <FeatherButton primary class="input" @click="test">Test</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton primary  @click="test">Test</FeatherButton>
+    </div>
   </div>
   <div class="feather-row" v-if="showNextBtn">
-    <FeatherButton primary class="input" @click="next">Next</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton primary  @click="next">Next</FeatherButton>
+    </div>
   </div>
 </template>
 

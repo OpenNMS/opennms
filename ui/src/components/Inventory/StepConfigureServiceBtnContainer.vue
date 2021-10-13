@@ -13,8 +13,10 @@
       <!-- <i class="pointer" v-if="showReset" @click="resetServiceSelection" /> -->
     </div>
   </div>
-  <div class="feather-row first" v-if="showConfigureServicesBtn">
-    <FeatherButton secondary @click="configureServices">Configure</FeatherButton>
+  <div class="feather-row" v-if="showConfigureServicesBtn">
+    <div class="feather-col-12">
+      <FeatherButton secondary @click="configureServices">Configure</FeatherButton>
+    </div>
   </div>
 </template>
 

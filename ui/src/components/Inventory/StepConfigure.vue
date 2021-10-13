@@ -5,8 +5,10 @@
     </div>
 
     <div class="feather-row">
-      <StepConfigureServiceBtnContainer @configureServices="configureServices" />
-      <StepConfigureServiceContainer :services="selectedServices" />
+      <div class="feather-col-12">
+        <StepConfigureServiceBtnContainer @configureServices="configureServices" />
+        <StepConfigureServiceContainer :services="selectedServices" />
+      </div>
     </div>
 
     <div class="feather-row">

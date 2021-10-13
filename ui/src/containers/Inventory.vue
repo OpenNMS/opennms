@@ -1,8 +1,10 @@
 <template>
   <div class="feather-row">
     <div class="feather-col-12">
-      <div class="title">Identify your network inventory</div>
-      <Steps />
+      <div class="card">
+        <div class="title">Identify your network inventory</div>
+        <Steps />
+      </div>
     </div>
   </div>
 </template>
@@ -28,7 +30,13 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
-.title {
-  @include headline3();
+@import "@featherds/styles/mixins/elevation";
+.card {
+  @include elevation(2);
+  padding: 15px;
+  margin: 15px;
+  .title {
+    @include headline1();
+  }
 }
 </style>

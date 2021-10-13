@@ -1,18 +1,18 @@
 <template>
   <div class="feather-row">
-    <FeatherButton
-      primary
-      class="button"
-      :class="deviceEntryOption === enterDevice ? 'feather-secondary-variant' : ''"
-      @click="selectEnterDeviceData"
-    >I have formatted device data</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton
+        class="button"
+        :class="deviceEntryOption === enterDevice ? 'feather-secondary-variant' : 'feather-shade3'"
+        @click="selectEnterDeviceData"
+      >I have formatted device data</FeatherButton>
 
-    <FeatherButton
-      primary
-      class="button"
-      :class="deviceEntryOption === findDevice ? 'feather-secondary-variant' : ''"
-      @click="selectFindDevice"
-    >Let OpenNMS find devices for me</FeatherButton>
+      <FeatherButton
+        class="button"
+        :class="deviceEntryOption === findDevice ? 'feather-secondary-variant' : 'feather-shade3'"
+        @click="selectFindDevice"
+      >Let OpenNMS find devices for me</FeatherButton>
+    </div>
   </div>
 
   <div v-if="deviceEntryOption === enterDevice">
@@ -22,23 +22,20 @@
     <div class="feather-row">
       <div class="feather-col-12">
         <FeatherButton
-          primary
           class="button"
-          :class="deviceImportOption === byManual ? 'feather-secondary-variant' : ''"
+          :class="deviceImportOption === byManual ? 'feather-secondary-variant' : 'feather-shade3'"
           @click="selectManually"
         >Manually</FeatherButton>
 
         <FeatherButton
-          primary
           class="button"
-          :class="deviceImportOption === byImport ? 'feather-secondary-variant' : ''"
+          :class="deviceImportOption === byImport ? 'feather-secondary-variant' : 'feather-shade3'"
           @click="selectImport"
         >DNS Import</FeatherButton>
 
         <FeatherButton
-          primary
           class="button"
-          :class="deviceImportOption === byController ? 'feather-secondary-variant' : ''"
+          :class="deviceImportOption === byController ? 'feather-secondary-variant' : 'feather-shade3'"
           @click="selectController"
         >Controller API</FeatherButton>
       </div>
@@ -62,18 +59,16 @@
       <div class="feather-col-12 title">How would you like to discover devices on your network?</div>
     </div>
     <div class="feather-row">
-      <div class="feather-row">
+      <div class="feather-col-12">
         <FeatherButton
-          primary
           class="button"
-          :class="deviceFindOption === byIPRange ? 'feather-secondary-variant' : ''"
+          :class="deviceFindOption === byIPRange ? 'feather-secondary-variant' : 'feather-shade3'"
           @click="selectIpRange"
         >By IP Range</FeatherButton>
 
         <FeatherButton
-          primary
           class="button"
-          :class="deviceFindOption === byPassiveDiscovery ? 'feather-secondary-variant' : ''"
+          :class="deviceFindOption === byPassiveDiscovery ? 'feather-secondary-variant' : 'feather-shade3'"
           @click="selectPassiveDiscovery"
         >Use Passive Discovery</FeatherButton>
       </div>

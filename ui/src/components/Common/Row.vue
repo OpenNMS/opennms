@@ -1,9 +1,9 @@
 <template>
-  <div :class="['feather-row input', { 'first': first }]">
-    {{ label }}
-  </div>
-  <div class="feather-row input">
-    <slot></slot>
+  <div :class="`feather-col-${col || 12} headling4`">{{ label }}</div>
+  <div class="feather-row">
+    <div :class="`feather-col-${col || 12}`">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -12,11 +12,10 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   props: {
-    first: {
-      type: Boolean,
-      default: false
-    },
     label: {
+      type: String
+    },
+    col: {
       type: String
     }
   }

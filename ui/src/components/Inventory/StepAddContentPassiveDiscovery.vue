@@ -1,5 +1,5 @@
 <template>
-  <Row label="Location" first><LocationsDropdown @setLocation="setLocation" /></Row>
+  <Row col="3"><LocationsDropdown @setLocation="setLocation" /></Row>
   <Row label="Send device traps and syslogs to 192.168.1.1 in order for OpenNMS to discover." />
   
 </template>
@@ -23,7 +23,7 @@ export default defineComponent({
     const setLocation = (selectedLocation: MonitoringLocation) => {
       location.value = selectedLocation
       // display next btn if testing successful
-      store.dispatch('inventoryModule/showAddStepNextButton', true)
+      //store.dispatch('inventoryModule/showAddStepNextButton', true)
     }
 
     return {

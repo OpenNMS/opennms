@@ -1,10 +1,16 @@
 <template>
-  <div class="feather-row file-upload">
-    <FileUploader @uploadHandler="onUpload" filename="file" buttonCopy="Upload file" />
+  <div class="feather-row">
+    <div class="feather-col-3">
+      <FileUploader @uploadHandler="onUpload" filename="file" buttonCopy="Upload file" />
+    </div>
   </div>
 
-  <h4 class="feather-row">Paste in text</h4>
-  <h4 class="feather-row">Download sample file</h4>
+  <div class="feather-row">
+    <div class="feather-col-12 headline3">Paste in text</div>
+  </div>
+  <div class="feather-row">
+    <div class="feather-col-12 headline3">Download sample file</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -23,17 +29,9 @@ export default defineComponent({
       store.dispatch('inventoryModule/showAddStepNextButton', true)
     }
 
-    return { 
-      onUpload 
+    return {
+      onUpload
     }
   }
 })
-
 </script>
-
-<style scoped lang="scss">
-  .file-upload {
-    margin-top: 30px;
-  }
-</style>
-

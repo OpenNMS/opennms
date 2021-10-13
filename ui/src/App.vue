@@ -52,4 +52,13 @@ a {
 .feather-secondary-variant {
   background: var(--feather-secondary-variant)
 }
+.feather-shade3 {
+  background: var(--feather-shade-3)
+}
+.headline3 {
+  @include headline3();
+}
+.headline4 {
+  @include headline4();
+}
 </style>

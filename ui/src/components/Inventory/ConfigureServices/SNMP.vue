@@ -1,19 +1,21 @@
 <template>
 <div class="feather-row">
   <div class="feather-col-6">
-    <Row first><h3>SNMP</h3></Row>
-    <Row label="v1/v2c community string"><FeatherInput type="text" v-model="v1v2" class="input" @update:modelValue="setValues"/></Row>
-    <Row label="Timeout"><FeatherInput type="number" v-model="timeout" class="input" @update:modelValue="setValues" /></Row>
-    <Row label="Retry"><FeatherInput type="number" v-model="retry" class="input" @update:modelValue="setValues" /></Row>
+    <Row><span class="headline3">SNMP</span></Row>
+    <Row><FeatherInput label="v1/v2c community string" type="text" v-model="v1v2"  @update:modelValue="setValues"/></Row>
+    <Row><FeatherInput label="Timeout" type="number" v-model="timeout"  @update:modelValue="setValues" /></Row>
+    <Row><FeatherInput label="Retry" type="number" v-model="retry"  @update:modelValue="setValues" /></Row>
 
     <ShowHideBox label="Advanced options">
-      <Row first label="Security level">
+      <Row>
         <FeatherSelect 
           v-model="securityLevel" 
           @update:modelValue="setValues" 
-          class="input" 
+           
           :options="options"
-          text-prop="label" />
+          text-prop="label"
+          label="Security level"
+        />
       </Row>
 
       <!-- add filter -->

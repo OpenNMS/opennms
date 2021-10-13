@@ -1,23 +1,31 @@
 <template>
   <div class="feather-row">
-    <div class="title">Name this batch/set</div>
+    <div class="feather-col-12">
+      <div class="title">Name this batch/set</div>
+    </div>
   </div>
   <div class="feather-row">
-    <FeatherInput id="batch-name" v-model="batchName" />
+    <div class="feather-col-12">
+      <FeatherInput id="batch-name" v-model="batchName" />
+    </div>
   </div>
   <div class="feather-row">
-    <div class="title">When do you want to run this batch?</div>
+    <div class="feather-col-12">
+      <div class="title">When do you want to run this batch?</div>
+    </div>
   </div>
   <div class="feather-row">
-    <FeatherButton
-      class="now-btn"
-      :class="selected === now ? 'feather-secondary-variant' : ''"
-      @click="showNowForm"
-    >Now</FeatherButton>
-    <FeatherButton
-      :class="selected === later ? 'feather-secondary-variant' : ''"
-      @click="showLaterForm"
-    >Schedule for later</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton
+        class="now-btn"
+        :class="selected === now ? 'feather-secondary-variant' : 'feather-shade3'"
+        @click="showNowForm"
+      >Now</FeatherButton>
+      <FeatherButton
+        :class="selected === later ? 'feather-secondary-variant' : 'feather-shade3'"
+        @click="showLaterForm"
+      >Schedule for later</FeatherButton>
+    </div>
   </div>
   <div v-if="selected === now">
     <StepScheduleContentNow />

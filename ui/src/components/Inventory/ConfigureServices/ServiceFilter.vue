@@ -1,5 +1,5 @@
 <template>
-  <div class="feather-row input first">
+  <div class="feather-row input">
     <h4 class="pointer" @click="showFilter = !showFilter">Add a filter</h4>
   </div>
 

@@ -1,15 +1,13 @@
 <template>
-  <div class="card">
-    <div class="title">Do you have any managed or preconfigured information about your network?</div>
+  <div class="title">Do you have any managed or preconfigured information about your network?</div>
 
-    <Content />
+  <Content />
 
-    <FeatherButton
-      primary
-      @click="$emit('next-page', { pageIndex: 0 })"
-      v-if="showAddStepNextButton"
-    >This looks good</FeatherButton>
-  </div>
+  <FeatherButton
+    primary
+    @click="$emit('next-page', { pageIndex: 0 })"
+    v-if="showAddStepNextButton"
+  >This looks good</FeatherButton>
 </template>
 
 <script lang="ts">
@@ -37,13 +35,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/mixins/elevation";
-.card {
-  @include elevation(2);
-  padding: 15px;
-  margin-bottom: 15px;
-  .title {
-    @include headline3();
-  }
+.title {
+  @include headline3();
 }
 </style>

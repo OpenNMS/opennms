@@ -1,9 +1,9 @@
 <template>
 <div class="feather-row">
 	<div class="feather-col-6">
-    <Row label="Location" first><LocationsDropdown @setLocation="setLocation" /></Row>
-    <Row label="Start"><FeatherInput v-model="start" class="input" @update:modelValue="setValues" /></Row>
-    <Row label="End"><FeatherInput v-model="end" class="input" @update:modelValue="setValues" /></Row>
+    <Row col="6"><LocationsDropdown @setLocation="setLocation" /></Row>
+    <Row col="6"><FeatherInput label="Start" v-model="start" @update:modelValue="setValues" /></Row>
+    <Row col="6"><FeatherInput label="End" v-model="end" @update:modelValue="setValues" /></Row>
   </div>
 	<div class="feather-col-5">
     <StepAddResponseTables />

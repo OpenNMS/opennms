@@ -1,9 +1,9 @@
 <template>
-  <Row label="Location" first><LocationsDropdown @setLocation="setLocation" /></Row>
-  <Row label="Type"><TypesDropdown @setType="setType" /></Row>
-  <Row label="Endpoint"><FeatherInput v-model="endpoint" class="input" @update:modelValue="setValues" /></Row>
-  <Row label="Key"><FeatherInput v-model="key" class="input" @update:modelValue="setValues" /></Row>
-  <Row label="Secret"><FeatherInput v-model="secret" class="input" @update:modelValue="setValues" /></Row>
+  <Row col="3"><LocationsDropdown @setLocation="setLocation" /></Row>
+  <Row col="3"><TypesDropdown @setType="setType" /></Row>
+  <Row col="3"><FeatherInput label="Endpoint" v-model="endpoint" @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Key" v-model="key" @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Secret" v-model="secret" @update:modelValue="setValues" /></Row>
 </template>
 
 <script lang="ts">

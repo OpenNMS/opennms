@@ -1,5 +1,5 @@
 <template>
-  <Row><h4 class="pointer" @click="show = !show">{{ label }}</h4></Row>
+  <Row><div class="pointer headline4" @click="show = !show">{{ label }}</div></Row>
   <div v-if="show">
     <slot></slot>
   </div>

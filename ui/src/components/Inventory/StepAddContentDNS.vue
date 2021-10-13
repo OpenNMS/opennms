@@ -1,7 +1,7 @@
 <template>
-  <Row label="Location" first><LocationsDropdown @setLocation="setLocation"/></Row>
-  <Row label="Host"><FeatherInput v-model="host" class="input" @update:modelValue="setValues"/></Row>
-  <Row label="Zone"><FeatherInput v-model="zone" class="input" @update:modelValue="setValues" /></Row>
+  <Row col="3"><LocationsDropdown @setLocation="setLocation"/></Row>
+  <Row col="3"><FeatherInput label="Host" v-model="host" @update:modelValue="setValues"/></Row>
+  <Row col="3"><FeatherInput label="Zone" v-model="zone" @update:modelValue="setValues" /></Row>
 </template>
 
 <script lang="ts">

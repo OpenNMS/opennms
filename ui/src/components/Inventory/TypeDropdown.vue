@@ -4,7 +4,8 @@
     v-model="type" 
     :options="types" 
     text-prop="name"
-    class="types-dropdown"/>
+    class="types-dropdown"
+    label="type"/>
 </template>
 
 <script lang="ts">

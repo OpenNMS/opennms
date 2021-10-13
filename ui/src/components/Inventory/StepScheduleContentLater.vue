@@ -1,18 +1,28 @@
 <template>
   <div class="feather-row">
-    <div class="title">When do you want to schedule this scan?</div>
+    <div class="feather-col-12">
+      <div class="title">When do you want to schedule this scan?</div>
+    </div>
   </div>
   <div class="feather-row">
-    <div class="title" for="calendar">Date/Time</div>
+    <div class="feather-col-12">
+      <div class="title" for="calendar">Date/Time</div>
+    </div>
   </div>
   <div class="feather-row">
-    <FeatherDateInput id="calendar" v-model="calendarDate" />
+    <div class="feather-col-12">
+      <FeatherDateInput id="calendar" v-model="calendarDate" />
+    </div>
   </div>
   <div class="feather-row">
-    <div class="title" for="calendar">Re-run this scan?</div>
+    <div class="feather-col-12">
+      <div class="title" for="calendar">Re-run this scan?</div>
+    </div>
   </div>
   <div class="feather-row">
-    <FeatherSelect :options="reRunOptions" v-model="selectedReRunOption" />
+    <div class="feather-col-12">
+      <FeatherSelect :options="reRunOptions" v-model="selectedReRunOption" />
+    </div>
   </div>
 </template>
 
@@ -41,11 +51,11 @@ export default defineComponent({
 
     watch(calendarDate, (calendarDate) => {
       if (calendarDate) {
-        
+
         const date = new Date(calendarDate)
         const unix = date.valueOf()
         const req = { scheduleTime: unix, ...props.data }
-        
+
         store.dispatch('inventoryModule/saveProvisionRequest', req)
         store.dispatch('inventoryModule/setShowCompleteButton', 'later')
       } else {

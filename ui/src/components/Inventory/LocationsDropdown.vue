@@ -5,6 +5,7 @@
     :options="locations"
     text-prop="location-name"
     class="locations-dropdown"
+    label="Location"
   />
 </template>
 

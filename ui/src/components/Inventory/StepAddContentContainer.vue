@@ -4,19 +4,15 @@
   </template>
 
   <div class="feather-row">
-    <FeatherButton
-      primary
-      class="first input" 
-      @click="addForm"
-    >Add another</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton primary @click="addForm">Add another</FeatherButton>
+    </div>
   </div>
 
   <div class="feather-row">
-    <FeatherButton
-      primary
-      class="input" 
-      @click="test"
-    >Test</FeatherButton>
+    <div class="feather-col-12">
+      <FeatherButton primary @click="test">Test</FeatherButton>
+    </div>
   </div>
 </template>
 
@@ -58,7 +54,7 @@ export default defineComponent({
       const missingFields = []
       for (const form of formsValues.value) {
         for (const field of requiredFields.value) {
-          if (!form[field]) missingFields.push(field) 
+          if (!form[field]) missingFields.push(field)
         }
       }
 
@@ -71,16 +67,16 @@ export default defineComponent({
       //const validForms = isValid()
 
       //if (validForms) {
-        const success = await store.dispatch('inventoryModule/scanIPRanges', formsValues.value)
+      const success = await store.dispatch('inventoryModule/scanIPRanges', formsValues.value)
 
-        if (success) {
-          // display next btn if testing successful
-          store.dispatch('inventoryModule/showAddStepNextButton', true)
-        } else {
-          store.dispatch('inventoryModule/showAddStepNextButton', false)
-        }
+      if (success) {
+        // display next btn if testing successful
+        store.dispatch('inventoryModule/showAddStepNextButton', true)
+      } else {
+        store.dispatch('inventoryModule/showAddStepNextButton', false)
+      }
       //}
-      
+
       // store.dispatch('spinnerModule/setSpinnerState', false)
     }
 
@@ -94,4 +90,5 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

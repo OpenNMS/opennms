@@ -1,13 +1,13 @@
 <template>
-  <Row first><h3>HTTP/S</h3></Row>
-  <Row label="Port"><FeatherInput v-model="port" class="input"  @update:modelValue="setValues"/></Row>
-  <Row label="URL"><FeatherInput v-model="url" class="input"  @update:modelValue="setValues" /></Row>
-  <Row label="Use HTTPS"><FeatherCheckbox v-model="useHttps" class="input" @update:modelValue="setValues" /></Row>
-  <Row label="Timeout"><FeatherInput v-model="timeout" class="input"  @update:modelValue="setValues" /></Row>
-  <Row label="Retry"><FeatherInput v-model="retry" class="input"  @update:modelValue="setValues" /></Row>
+  <Row><span class="headline3">HTTP/S</span></Row>
+  <Row><FeatherInput label="Port" v-model="port"   @update:modelValue="setValues"/></Row>
+  <Row><FeatherInput label="URL" v-model="url"   @update:modelValue="setValues" /></Row>
+  <Row><FeatherCheckbox label="Use HTTPS" v-model="useHttps"  @update:modelValue="setValues" /></Row>
+  <Row><FeatherInput label="Timeout" v-model="timeout"   @update:modelValue="setValues" /></Row>
+  <Row><FeatherInput label="Retry" v-model="retry"   @update:modelValue="setValues" /></Row>
 
   <ShowHideBox label="Add return code">
-    <Row label="Return code"><FeatherInput v-model="returnCode" class="input"  @update:modelValue="setValues" /></Row>
+    <Row><FeatherInput label="Return code" v-model="returnCode"   @update:modelValue="setValues" /></Row>
   </ShowHideBox>
 
   <ServiceFilter @setValues="setValues" />
