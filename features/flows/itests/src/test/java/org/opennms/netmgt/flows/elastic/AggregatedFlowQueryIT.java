@@ -674,7 +674,7 @@ public class AggregatedFlowQueryIT {
     }
 
     private <L> void verifyHttpsSeriesAggregated(Table<Directional<L>, Long, Double> appTraffic, L label) {
-        // Pull the values from the table into arrays for easy comparision and validate
+        // Pull the values from the table into arrays for easy comparison and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);
         List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), appTraffic);
@@ -697,7 +697,7 @@ public class AggregatedFlowQueryIT {
     }
 
     private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
-        // Pull the values from the table into arrays for easy comparision and validate
+        // Pull the values from the table into arrays for easy comparison and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), appTraffic);
         List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), appTraffic);
@@ -723,7 +723,7 @@ public class AggregatedFlowQueryIT {
     }
 
     private void verifyHttpsSeries(Table<Directional<Conversation>, Long, Double> convoTraffic, Conversation label) {
-        // Pull the values from the table into arrays for easy comparision and validate
+        // Pull the values from the table into arrays for easy comparison and validate
         List<Long> timestamps = getTimestampsFrom(convoTraffic);
         List<Double> httpsIngressValues = getValuesFor(new Directional<>(label, true), convoTraffic);
         List<Double> httpsEgressValues = getValuesFor(new Directional<>(label, false), convoTraffic);

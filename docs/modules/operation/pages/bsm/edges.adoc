@@ -33,7 +33,7 @@ The hierarchy is build by selecting the Business Service as Child Service as dep
 
 The IP Service is a predefined set of reduction keys that lets you easily assign a specific monitored service to the given BS.
 As an example you have multiple Servers with a monitored service SMTP and you want to model a BS named Mail Communication.
-If just the reduction key for a nodeLostService is assgined, the BS would not be affected in case the IP Interface or the whole Node goes down.
+If just the reduction key for a nodeLostService is assigned, the BS would not be affected in case the IP Interface or the whole Node goes down.
 OpenNMS generates alarms with different UEI which needs to be assigned to the BS as well.
 To make it easier to model this use case the IP Service generates the following reduction keys automatically:
 

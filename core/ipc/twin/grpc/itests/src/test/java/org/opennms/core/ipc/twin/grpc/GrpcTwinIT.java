@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
@@ -79,7 +80,7 @@ public class GrpcTwinIT {
         MinionIdentity minionIdentity = new MockMinionIdentity("remote");
         twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
         twinSubscriber.start();
-        twinPublisher = new GrpcTwinPublisher(configAdmin, port);
+        twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
         twinPublisher.start();
     }
 

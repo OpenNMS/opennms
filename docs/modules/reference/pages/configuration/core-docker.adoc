@@ -48,7 +48,7 @@
 | `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | Store timeseries data by foreign source instead of the database node id | optional | `true`
 | `OPENNMS_RRD_STRATEGYCLASS`        | Java RRD Strategy class                                                 | optional | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy`
 | `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
-| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 libray path                                                       | optional | `/usr/lib64/libjrrd2.so`
+| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
 |===
 
 .SNMP Trap receiver configuration in trapd-configuration.xml
@@ -57,7 +57,7 @@
 | Environment variable              | Description                                                       | Required | Default value
 | `OPENNMS_TRAPD_ADDRESS`           | Listen interface for _SNMP Trapd_                                 | optional | `*`
 | `OPENNMS_TRAPD_PORT`              | Port to listen for _SNMP Traps_                                   | optional | `1162`
-| `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event based Trap recepient for unknown devices | optional | `false`
+| `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event based Trap recipient for unknown devices | optional | `false`
 | `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in _SNMP Traps_                             | optional | `false`
 | `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP Traps                     | optional | `0`
 | `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for _SNMP Trap_ processing                      | optional | `10000`
