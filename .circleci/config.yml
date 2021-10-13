@@ -106,12 +106,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
