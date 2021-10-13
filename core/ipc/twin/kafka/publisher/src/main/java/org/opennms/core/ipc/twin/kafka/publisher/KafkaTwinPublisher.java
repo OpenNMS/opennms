@@ -139,7 +139,6 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.build().toByteArray());
         this.producer.send(record, (meta, ex) -> {
             if (ex != null) {
-                // TODO: Rate limiting and request counting
                 RATE_LIMITED_LOG.error("Error publishing update", ex);
             }
         });
