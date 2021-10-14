@@ -2,16 +2,16 @@
 
 = Changelog
 
-[releasenotes-changelog-28.1.1]
+[[releasenotes-changelog-28.1.1]]
 
-==== Release 28.1.1
+== Release 28.1.1
 
 Release 28.1.1 contains a number of bug fixes and enhancements, including web UI,
 Minion, Docker, and documentation improvements.
 
 The codename for Horizon 28.1.1 is https://transformers.fandom.com/wiki/Mikaela_Banes[_Mikaela Banes_].
 
-===== Bug
+=== Bug
 
 * Fix example configuration for Scriptd (Issue http://issues.opennms.org/browse/NMS-13271[NMS-13271])
 * Strings with URL arguments are truncated in the eventdescr field (Issue http://issues.opennms.org/browse/NMS-13428[NMS-13428])
@@ -22,7 +22,7 @@ The codename for Horizon 28.1.1 is https://transformers.fandom.com/wiki/Mikaela_
 * Meridian Minion images do not include release (Issue http://issues.opennms.org/browse/NMS-13591[NMS-13591])
 * Horizon release-28.x builds fail with a certificate error (Issue http://issues.opennms.org/browse/NMS-13609[NMS-13609])
 
-===== Enhancement
+=== Enhancement
 
 * Document data types in collectd (Issue http://issues.opennms.org/browse/NMS-10476[NMS-10476])
 * Update adapters documentation (Issue http://issues.opennms.org/browse/NMS-12999[NMS-12999])
@@ -37,7 +37,6 @@ The codename for Horizon 28.1.1 is https://transformers.fandom.com/wiki/Mikaela_
 * Implement HW inventory Provisioning adapter API to support Juniper HW  (Issue http://issues.opennms.org/browse/NMS-13575[NMS-13575])
 * Add full trapoid for Snmp V1 (Issue http://issues.opennms.org/browse/NMS-13586[NMS-13586])
 * Geolocator Doc Clarification (Issue http://issues.opennms.org/browse/NMS-13611[NMS-13611])
-
 
 [[releasenotes-changelog-28.1.0]]
 
