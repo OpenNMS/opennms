@@ -108,7 +108,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
                                         .add(Topic.request())
                                         .build());
 
-        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage);
+        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage, "twin-publisher");
     }
 
     public void close() throws IOException {

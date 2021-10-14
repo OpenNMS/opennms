@@ -48,10 +48,11 @@ public class KafkaConsumerRunner implements Runnable, Closeable {
     private final Thread thread;
 
     public KafkaConsumerRunner(final KafkaConsumer<String, byte[]> consumer,
-                                final Consumer<ConsumerRecord<String, byte[]>> handler) {
+                                final Consumer<ConsumerRecord<String, byte[]>> handler,
+				final String name) {
         this.consumer = Objects.requireNonNull(consumer);
         this.handler = Objects.requireNonNull(handler);
-        this.thread = new Thread(this);
+        this.thread = new Thread(this, "kafka-consumer:" + name);
         this.thread.start();
     }
 

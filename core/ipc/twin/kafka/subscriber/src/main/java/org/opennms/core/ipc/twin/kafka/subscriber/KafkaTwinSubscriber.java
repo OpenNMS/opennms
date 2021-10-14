@@ -100,7 +100,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
                                         .add(Topic.responseGlobal())
                                         .build());
 
-        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage);
+        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage, "twin-subscriber");
     }
 
     public void close() throws IOException {
