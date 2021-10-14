@@ -62,7 +62,6 @@ The codename for Horizon 28.1.0 is https://wikipedia.org/wiki/$$Bumblebee_(Trans
 * IFTTT integration not working anymore (Issue http://issues.opennms.org/browse/NMS-13501[NMS-13501])
 * Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
 * Service Parameters box misses Poller Patterns (Issue http://issues.opennms.org/browse/NMS-13517[NMS-13517])
-* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
 
 === Enhancement
 
