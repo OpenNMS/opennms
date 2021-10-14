@@ -104,7 +104,8 @@ public class EvaluateStatsIT {
         EvaluateGroupPersister persister = new EvaluateGroupPersister(stats, new ServiceParameters(new HashMap<String,Object>()), repo);
         MockCollectionAgent agent = new MockCollectionAgent(1, "node.local", "Test", "001", InetAddressUtils.addr("127.0.0.1"));
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
-        NodeLevelResource node = new NodeLevelResource(agent.getNodeId());  
+        NodeLevelResource node = new NodeLevelResource(agent.getNodeId());
+        builder.withNumericAttribute(node, "mib2-host-resources-system", "hrSystemProcesses", 5.0, AttributeType.GAUGE);
         InterfaceLevelResource eth0 = new InterfaceLevelResource(node, "eth0");
         builder.withNumericAttribute(eth0, "mib2-interfaces", "ifInErrors", 0.0, AttributeType.COUNTER);
         builder.withNumericAttribute(eth0, "mib2-interfaces", "ifOutErrors", 0.0, AttributeType.COUNTER);
@@ -121,11 +122,11 @@ public class EvaluateStatsIT {
         stats.dumpCache();
 
         Assert.assertEquals(1, registry.getGauges().get("evaluate.nodes").getValue());
-        Assert.assertEquals(2, registry.getGauges().get("evaluate.resources").getValue());
-        Assert.assertEquals(4, registry.getGauges().get("evaluate.groups").getValue());
-        Assert.assertEquals(8, registry.getGauges().get("evaluate.numeric-attributes").getValue());
+        Assert.assertEquals(3, registry.getGauges().get("evaluate.resources").getValue());
+        Assert.assertEquals(5, registry.getGauges().get("evaluate.groups").getValue());
+        Assert.assertEquals(9, registry.getGauges().get("evaluate.numeric-attributes").getValue());
         Assert.assertEquals(2, registry.getGauges().get("evaluate.string-attributes").getValue());
-        Assert.assertEquals(8, registry.getMeters().get("evaluate.samples").getCount());
+        Assert.assertEquals(9, registry.getMeters().get("evaluate.samples").getCount());
     }
 
 }
