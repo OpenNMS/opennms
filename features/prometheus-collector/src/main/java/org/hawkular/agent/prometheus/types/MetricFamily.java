@@ -69,7 +69,8 @@ public class MetricFamily {
             throw new IllegalArgumentException("Need to set name");
         }
         if (builder.type == null) {
-            throw new IllegalArgumentException("Need to set type");
+	    // default to GAUGE if no type
+	    builder.setType(MetricType.GAUGE);
         }
 
         Class<? extends Metric> expectedMetricClassType;
