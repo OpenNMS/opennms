@@ -213,7 +213,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         assertEquals(1140918299,link.getLldpPortIfindex().intValue());
                         assertEquals("1140918299",link.getLldpPortId());
                         assertEquals("e48184acbf34",link.getLldpRemChassisId());
-                        assertEquals("ZHAUWA1Zbb002",link.getLldpRemSysname());
+                        assertEquals("sq342g4",link.getLldpRemSysname());
                         assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpRemPortIdSubType());
                         assertEquals("1610901763",link.getLldpRemPortId());
                         l26++;
