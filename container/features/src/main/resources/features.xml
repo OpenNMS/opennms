@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features name="opennms-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+<features name="opennms-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
@@ -1323,7 +1323,6 @@
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <!-- Dependencies -->
-        <feature>http-whiteboard</feature>
         <bundle>wrap:mvn:com.google.gwt/gwt-elemental/${gwtVersion}</bundle>
         <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
         <bundle>mvn:com.vaadin.external/gentyref/1.2.0.vaadin1</bundle>
@@ -1778,6 +1777,21 @@
     </feature>
     <feature name="opennms-timeseries-shell" version="${project.version}" description="OpenNMS :: Features :: Timeseries :: Shell Commands">
         <bundle>mvn:org.opennms.features/org.opennms.features.timeseries.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}">
+        <feature>opennms-bridge-http-service</feature>
+    </feature>
+
+
+    <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
+        <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
+        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
+        <capability>http-service;provider:=pax-http</capability>
+        <conditional>
+            <condition>webconsole</condition>
+            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/${karafVersion}</bundle>
+        </conditional>
     </feature>
 
     <feature name="opennms-core-ipc-twin-jms-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: JMS :: Subscriber" version="${project.version}">

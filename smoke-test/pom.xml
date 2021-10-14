@@ -16,7 +16,7 @@
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.10.0</jackson2Version>
     <jersey.version>2.28</jersey.version>
-    <karafVersion>4.2.11</karafVersion>
+    <karafVersion>4.3.2</karafVersion>
     <selenium.version>3.141.59</selenium.version>
     <testcontainers.version>1.15.2</testcontainers.version>
     <test.fork.count>0</test.fork.count>

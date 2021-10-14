@@ -218,7 +218,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.1</version>
+        <version>5.1.2</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -1422,7 +1422,7 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
-    <karafVersion>4.2.11</karafVersion>
+    <karafVersion>4.3.2</karafVersion>
     <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1437,7 +1437,7 @@
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>7.2.19</paxWebVersion>
+    <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
@@ -1446,12 +1446,13 @@
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>0.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>0.6.0</opennmsApiVersionOsgi>
-    <osgiVersion>6.0.0</osgiVersion>
-    <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
-    <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <osgiVersion>7.0.0</osgiVersion>
+    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
+    <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
+    <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.0.2.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
@@ -3996,17 +3997,22 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
+        <artifactId>osgi.core</artifactId>
         <version>${osgiVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
+        <artifactId>osgi.cmpn</artifactId>
         <version>${osgiCompendiumVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.enterprise</artifactId>
+        <artifactId>osgi.annotation</artifactId>
+        <version>${osgiAnnotationVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi.enterprise</artifactId>
         <version>${osgiEnterpriseVersion}</version>
       </dependency>
       <dependency>
