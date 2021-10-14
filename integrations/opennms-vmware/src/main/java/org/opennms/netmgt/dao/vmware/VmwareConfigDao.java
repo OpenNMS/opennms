@@ -26,48 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.vmware;
 
-import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
-import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+
+import java.util.Map;
 
 /**
- * The Interface VmwareCimDatacollectionConfigDao
+ * The Interface VmwareConfigDao
  * <p/>
- * This class is used for defining the methods for accessing the configuration data for the Vmware Cim Data Collection
+ * This class is used for defining the methods for accessing the configuration data for the Vmware Accounts
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public interface VmwareCimDatacollectionConfigDao {
+public interface VmwareConfigDao {
 
     /**
      * Returns the loaded config object.
      *
      * @return the current config object
      */
-    VmwareCimDatacollectionConfig getConfig();
+    VmwareConfig getConfig();
 
     /**
-     * This method returns a subset of the configuration data for a given collection name.
+     * Returns the map of server entries from the configuration object.
      *
-     * @param collectionName the collection's name
-     * @return the Cim collection object
+     * @return the map of server entries
      */
-    VmwareCimCollection getVmwareCimCollection(String collectionName);
-
-    /**
-     * Returns the Rrd repository for a given collection name.
-     *
-     * @param collectionName the collection's name
-     * @return the repository
-     */
-    public RrdRepository getRrdRepository(String collectionName);
-
-    /**
-     * Returns the base Rrd's path.
-     *
-     * @return the Rrd's path
-     */
-    public String getRrdPath();
+    Map<String, VmwareServer> getServerMap();
 }

@@ -29,14 +29,17 @@
 package org.opennms.features.config.service.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
 
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.springframework.stereotype.Component;
@@ -61,8 +64,12 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
+    public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
 
+    }
+
+    @Override
+    public void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
     }
 
     @Override
@@ -97,7 +104,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigNames() throws IOException {
-        return null;
+        return new HashSet<>();
     }
 
     @Override
@@ -107,6 +114,6 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigIds(String configName) throws IOException {
-        return null;
+        return new HashSet<>();
     }
 }

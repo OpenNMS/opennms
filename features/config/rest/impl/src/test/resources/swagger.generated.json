@@ -325,6 +325,7 @@
         "type" : "object",
         "properties" : {
           "operator" : {
+            "pattern" : "(<|<=|=|>=|>)",
             "type" : "string",
             "description" : "only run the action if the row count evaluates with\n          the operator (defaults to > 0)"
           },
