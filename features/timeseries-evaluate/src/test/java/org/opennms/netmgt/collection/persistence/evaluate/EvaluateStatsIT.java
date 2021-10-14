@@ -39,6 +39,7 @@ import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
+import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -106,6 +107,8 @@ public class EvaluateStatsIT {
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         NodeLevelResource node = new NodeLevelResource(agent.getNodeId());
         builder.withNumericAttribute(node, "mib2-host-resources-system", "hrSystemProcesses", 5.0, AttributeType.GAUGE);
+        LatencyTypeResource icmp = new LatencyTypeResource("icmp", "10.0.0.10", "Default");
+        builder.withNumericAttribute(icmp, "latency", "icmp", 50, AttributeType.GAUGE);
         InterfaceLevelResource eth0 = new InterfaceLevelResource(node, "eth0");
         builder.withNumericAttribute(eth0, "mib2-interfaces", "ifInErrors", 0.0, AttributeType.COUNTER);
         builder.withNumericAttribute(eth0, "mib2-interfaces", "ifOutErrors", 0.0, AttributeType.COUNTER);
@@ -122,11 +125,12 @@ public class EvaluateStatsIT {
         stats.dumpCache();
 
         Assert.assertEquals(1, registry.getGauges().get("evaluate.nodes").getValue());
-        Assert.assertEquals(3, registry.getGauges().get("evaluate.resources").getValue());
-        Assert.assertEquals(5, registry.getGauges().get("evaluate.groups").getValue());
-        Assert.assertEquals(9, registry.getGauges().get("evaluate.numeric-attributes").getValue());
+        Assert.assertEquals(1, registry.getGauges().get("evaluate.interfaces").getValue());
+        Assert.assertEquals(4, registry.getGauges().get("evaluate.resources").getValue());
+        Assert.assertEquals(6, registry.getGauges().get("evaluate.groups").getValue());
+        Assert.assertEquals(10, registry.getGauges().get("evaluate.numeric-attributes").getValue());
         Assert.assertEquals(2, registry.getGauges().get("evaluate.string-attributes").getValue());
-        Assert.assertEquals(9, registry.getMeters().get("evaluate.samples").getCount());
+        Assert.assertEquals(10, registry.getMeters().get("evaluate.samples").getCount());
     }
 
 }
