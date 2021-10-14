@@ -120,6 +120,7 @@ const columnDefs = ref([
     headerName: "LABLE",
     field: "lable",
     headerTooltip: "Lable",
+    sort: "asc"
   },
   {
     headerName: "LABLE SOURCE",
