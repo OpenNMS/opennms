@@ -154,35 +154,37 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return;
         }
         if (links.size() == 0) {
-            LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
-            List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
-            TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
-               @Override
-                public void processLldpRemRow(LldpRemRow row) {
-                    ttlinks.add(row.getLldpLink());
-                }
-            };
+            if (getSysoid() != null && getSysoid().startsWith(".1.3.6.1.4.1.6527")) {
+                LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
+                List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
+                TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
+                    @Override
+                    public void processLldpRemRow(LldpRemRow row) {
+                        ttlinks.add(row.getLldpLink());
+                    }
+                };
 
-            try {
-                getLocationAwareSnmpClient().walk(peer,
-                                timeTetraLldpRemTableTracker)
-                        .withDescription("timeTetraLldpRemTable")
-                        .withLocation(getLocation())
-                        .execute()
-                        .get();
-            } catch (ExecutionException e) {
-                LOG.debug("run: node [{}]: ExecutionException: {}",
-                        getNodeId(), e.getMessage());
-                return;
-            } catch (final InterruptedException e) {
-                LOG.debug("run: node [{}]: InterruptedException: {}",
-                        getNodeId(), e.getMessage());
-                return;
+                try {
+                    getLocationAwareSnmpClient().walk(peer,
+                                    timeTetraLldpRemTableTracker)
+                            .withDescription("timeTetraLldpRemTable")
+                            .withLocation(getLocation())
+                            .execute()
+                            .get();
+                } catch (ExecutionException e) {
+                    LOG.debug("run: node [{}]: ExecutionException: {}",
+                            getNodeId(), e.getMessage());
+                    return;
+                } catch (final InterruptedException e) {
+                    LOG.debug("run: node [{}]: InterruptedException: {}",
+                            getNodeId(), e.getMessage());
+                    return;
+                }
+                LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
+                storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
+                        getLocationAwareSnmpClient(),
+                        getLocation(), getNodeId()));
             }
-            LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
-            storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
-                    getLocationAwareSnmpClient(),
-                    getLocation(), getNodeId()));
         } else {
             LOG.info("run: {} remote table entry found walking LLDP-MIB", links.size());
             storeLldpLinks(links,
