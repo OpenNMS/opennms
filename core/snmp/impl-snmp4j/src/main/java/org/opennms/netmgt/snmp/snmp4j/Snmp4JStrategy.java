@@ -48,6 +48,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.sysprops.SystemProperties;
@@ -92,6 +93,8 @@ import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
+import org.snmp4j.security.UsmUserEntry;
+import org.snmp4j.security.UsmUserTable;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
@@ -583,38 +586,70 @@ public class Snmp4JStrategy implements SnmpStrategy {
         dispatcher.addMessageProcessingModel(new MPv1());
         dispatcher.addMessageProcessingModel(new MPv2c());
         dispatcher.addMessageProcessingModel(new MPv3(getLocalEngineID()));
+
         Snmp snmp = new Snmp(dispatcher, transport);
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(getLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-
         if (snmpUsers != null) {
-            for (SnmpV3User user : snmpUsers) {
-                SnmpAgentConfig config = new SnmpAgentConfig();
-                config.setVersion(SnmpConfiguration.VERSION3);
-                config.setSecurityName(user.getSecurityName());
-                config.setAuthProtocol(user.getAuthProtocol());
-                config.setAuthPassPhrase(user.getAuthPassPhrase());
-                config.setPrivProtocol(user.getPrivProtocol());
-                config.setPrivPassPhrase(user.getPrivPassPhrase());
-                Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(config);
-                UsmUser usmUser = new UsmUser(
-                        agentConfig.getSecurityName(),
-                        agentConfig.getAuthProtocol(),
-                        agentConfig.getAuthPassPhrase(),
-                        agentConfig.getPrivProtocol(),
-                        agentConfig.getPrivPassPhrase()
-                );
-                /* This doesn't work as expected. Basically SNMP4J is ignoring the engineId
-                if (user.getEngineId() == null) {
-                    snmp.getUSM().addUser(agentConfig.getSecurityName(), usmUser);
-                } else {
-                    snmp.getUSM().addUser(agentConfig.getSecurityName(), new OctetString(user.getEngineId()), usmUser);
-                }
-                */
-                snmp.getUSM().addUser(agentConfig.getSecurityName(), usmUser);
+            // Split users up based on security name
+            Map<UsmUserTable.UsmUserKey, List<UsmUser>> usmUsersByKey = snmpUsers.stream()
+                    .map(user -> {
+                        SnmpAgentConfig config = new SnmpAgentConfig();
+                        config.setVersion(SnmpConfiguration.VERSION3);
+                        config.setSecurityName(user.getSecurityName());
+                        config.setAuthProtocol(user.getAuthProtocol());
+                        config.setAuthPassPhrase(user.getAuthPassPhrase());
+                        config.setPrivProtocol(user.getPrivProtocol());
+                        config.setPrivPassPhrase(user.getPrivPassPhrase());
+                        Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(config);
+                        return new UsmUser(
+                                agentConfig.getSecurityName(),
+                                agentConfig.getAuthProtocol(),
+                                agentConfig.getAuthPassPhrase(),
+                                agentConfig.getPrivProtocol(),
+                                agentConfig.getPrivPassPhrase()
+                        );
+                        // Use the same key as SNMP4J uses in the UserTable
+                    }).collect(Collectors.groupingBy(user ->new UsmUserTable.UsmUserKey(new UsmUserEntry(user.getSecurityName(), user))));
+
+            // The map may contain a list with multiple entries for a given key
+            // Process the first entries by adding all users to the default USM context
+            usmUsersByKey.values().stream()
+                    .filter(usmUsers -> usmUsers.size() > 0)
+                    .map(usmUsers -> usmUsers.get(0))
+                    .forEach(u -> snmp.getUSM().addUser(u.getSecurityName(), u));
+
+            // Determine the maximum number of entries across all lists
+            int maxNumUniqueDefs = usmUsersByKey.values().stream()
+                    .mapToInt(List::size).max().orElse(0);
+
+            // For every additional index (meaning there are duplicate entries for the same key)
+            // gather the entries across all the other lists and:
+            //   1) Add these to a new USM context
+            //   2) Create a new SNMPv3 processor for this context that is run *after* the previous processors
+            // All SNMPv3 packets are expected to be processed by all processors, but only 1 is expected to respond
+            for (int k = 1; k < maxNumUniqueDefs; k++) {
+                // New USM context with same engine ID
+                USM usm = new USM();
+                usm.setLocalEngine(new OctetString(getLocalEngineID()), 0, 0);
+
+                // Add all the corresponding users to the USM context
+                final int index = k;
+                usmUsersByKey.values().stream()
+                        .filter(usmUsers -> usmUsers.size() > index)
+                        .map(usmUsers -> usmUsers.get(index))
+                        .forEach(u -> usm.addUser(u.getSecurityName(), u));
+
+                // Create another dispatcher for this context
+                final MessageDispatcher nextDispatcher = new BufferRewindingMessageDispatcher();
+                nextDispatcher.addMessageProcessingModel(new MPv3(usm));
+                // Use the same trap notifier
+                nextDispatcher.addCommandResponder(trapNotifier);
+                transport.addTransportListener(nextDispatcher);
             }
         }
+
         Snmp4JStrategy.trackSession(snmp);
         snmp.addCommandResponder(trapNotifier);
         info.setSession(snmp);
