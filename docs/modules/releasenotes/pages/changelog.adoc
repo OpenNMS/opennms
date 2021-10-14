@@ -9,7 +9,7 @@
 Release 2021.1.5 contains a number of bug fixes and enhancements, including web UI,
 Minion, Docker, and documentation improvements.
 
-The codename for 2021.1.5 is link:$$https://wikipedia.org/wiki/Viking_1$$[_Viking 1_].
+The codename for 2021.1.5 is link:https://wikipedia.org/wiki/$$Viking_1$$[_Viking 1_].
 
 === Bug
 
