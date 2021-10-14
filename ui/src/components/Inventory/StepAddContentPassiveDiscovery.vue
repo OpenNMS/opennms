@@ -1,6 +1,6 @@
 <template>
   <Row col="3"><LocationsDropdown @setLocation="setLocation" /></Row>
-  <Row label="Send device traps and syslogs to 192.168.1.1 in order for OpenNMS to discover." />
+  <Row><span class="headline4">Send device traps and syslogs to 192.168.1.1 in order for OpenNMS to discover."</span></Row>
   
 </template>
 

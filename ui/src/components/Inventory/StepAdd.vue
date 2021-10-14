@@ -1,13 +1,18 @@
 <template>
-  <div class="title">Do you have any managed or preconfigured information about your network?</div>
+  <div class="headline3">Do you have any managed or preconfigured information about your network?</div>
 
   <Content />
 
-  <FeatherButton
-    primary
-    @click="$emit('next-page', { pageIndex: 0 })"
-    v-if="showAddStepNextButton"
-  >This looks good</FeatherButton>
+  <div class="feather-row">
+    <div class="feather-col-11">
+      <FeatherButton
+        class="btn-next"
+        primary
+        @click="$emit('next-page', { pageIndex: 0 })"
+        v-if="showAddStepNextButton"
+      >This looks good</FeatherButton>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -35,7 +40,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
-.title {
-  @include headline3();
+.btn-next {
+  float: right;
 }
 </style>

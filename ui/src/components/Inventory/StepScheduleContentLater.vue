@@ -11,7 +11,7 @@
   </div>
   <div class="feather-row">
     <div class="feather-col-12">
-      <FeatherDateInput id="calendar" v-model="calendarDate" />
+      <FeatherDateInput class="headline4" disabled id="calendar" v-model="calendarDate" />
     </div>
   </div>
   <div class="feather-row">
@@ -21,7 +21,7 @@
   </div>
   <div class="feather-row">
     <div class="feather-col-12">
-      <FeatherSelect :options="reRunOptions" v-model="selectedReRunOption" />
+      <FeatherSelect text-prop="value" :options="reRunOptions" v-model="selectedReRunOption" />
     </div>
   </div>
 </template>
@@ -45,7 +45,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
-    const reRunOptions = ['Never', 'Weekly', 'Daily']
+    const reRunOptions = [{ id: 1, value: 'Never' }, { id: 2, value: 'Weekly' }, { id: 3, value: 'Daily' }]
     const selectedReRunOption = ref('Never')
     const calendarDate = ref()
 

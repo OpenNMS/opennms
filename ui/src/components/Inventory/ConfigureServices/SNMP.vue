@@ -2,9 +2,9 @@
 <div class="feather-row">
   <div class="feather-col-6">
     <Row><span class="headline3">SNMP</span></Row>
-    <Row><FeatherInput label="v1/v2c community string" type="text" v-model="v1v2"  @update:modelValue="setValues"/></Row>
-    <Row><FeatherInput label="Timeout" type="number" v-model="timeout"  @update:modelValue="setValues" /></Row>
-    <Row><FeatherInput label="Retry" type="number" v-model="retry"  @update:modelValue="setValues" /></Row>
+    <Row col="6"><FeatherInput label="v1/v2c community string" type="text" v-model="v1v2"  @update:modelValue="setValues"/></Row>
+    <Row col="6"><FeatherInput label="Timeout" type="number" v-model="timeout"  @update:modelValue="setValues" /></Row>
+    <Row col="6"><FeatherInput label="Retry" type="number" v-model="retry"  @update:modelValue="setValues" /></Row>
 
     <ShowHideBox label="Advanced options">
       <Row>

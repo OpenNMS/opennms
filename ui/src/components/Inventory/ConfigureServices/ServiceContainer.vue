@@ -80,7 +80,7 @@ export default defineComponent({
     })
 
     const test = async () => {
-      // store.dispatch('spinnerModule/setSpinnerState', true)
+      store.dispatch('spinnerModule/setSpinnerState', true)
       const request: SNMPDetectRequest[] = []
 
       for (const key in locations.value) {
@@ -92,7 +92,7 @@ export default defineComponent({
       }
 
       const success = await store.dispatch('inventoryModule/detectSNMPAvailable', request)
-      // store.dispatch('spinnerModule/setSpinnerState', false)
+      store.dispatch('spinnerModule/setSpinnerState', false)
 
       if (success) {
         if (props.lastService) {

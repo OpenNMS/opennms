@@ -2,10 +2,9 @@
   <FeatherButton 
     class="service"
     :class="[
-      //@ts-ignore
       {'feather-secondary-variant' : (selectedServices.includes(serviceName) && !completedServices.includes(serviceName))}, 
-      //@ts-ignore
-      {'feather-secondary' : completedServices.includes(serviceName)}
+      {'feather-secondary' : completedServices.includes(serviceName)},
+      {'feather-shade3': !completedServices.includes(serviceName) && (!selectedServices.includes(serviceName))}
     ]"
     :disabled="disableService"
     @click="$emit('select-service', serviceName)"

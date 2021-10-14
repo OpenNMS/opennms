@@ -1,16 +1,16 @@
 <template>
   <Row><span class="headline3">WinRM / WSMan</span></Row>
-  <Row><FeatherInput label="Username" v-model="username"  @update:modelValue="setValues" /></Row>
-  <Row><FeatherInput label="Password" v-model="password"  @update:modelValue="setValues" /></Row>
-  <Row><FeatherInput label="Timeout" v-model="timeout"  @update:modelValue="setValues" /></Row>
-  <Row><FeatherInput label="Retry" v-model="retry"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Username" v-model="username"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Password" v-model="password"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Timeout" v-model="timeout"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Retry" v-model="retry"  @update:modelValue="setValues" /></Row>
 
   <!-- advanced options -->
   <ShowHideBox label="Advanced options">
-    <Row><FeatherInput label="Port" v-model="port"  @update:modelValue="setValues"/></Row>
-    <Row><FeatherCheckbox label="Use TLS" v-model="useTLS" @update:modelValue="setValues" /></Row>
-    <Row><FeatherInput label="Object" v-model="object"  @update:modelValue="setValues"/></Row>
-    <Row><FeatherInput label="WQL Query" v-model="wqlQuery"  @update:modelValue="setValues"/></Row>
+    <Row col="3"><FeatherInput label="Port" v-model="port"  @update:modelValue="setValues"/></Row>
+    <Row col="3"><FeatherCheckbox v-model="useTLS" @update:modelValue="setValues">Use TLS</FeatherCheckbox></Row>
+    <Row col="3"><FeatherInput label="Object" v-model="object"  @update:modelValue="setValues"/></Row>
+    <Row col="3"><FeatherInput label="WQL Query" v-model="wqlQuery"  @update:modelValue="setValues"/></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />

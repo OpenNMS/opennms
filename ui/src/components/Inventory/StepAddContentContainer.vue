@@ -62,7 +62,7 @@ export default defineComponent({
     }
 
     const test = async () => {
-      // store.dispatch('spinnerModule/setSpinnerState', true)
+       store.dispatch('spinnerModule/setSpinnerState', true)
 
       //const validForms = isValid()
 
@@ -77,7 +77,7 @@ export default defineComponent({
       }
       //}
 
-      // store.dispatch('spinnerModule/setSpinnerState', false)
+      store.dispatch('spinnerModule/setSpinnerState', false)
     }
 
     return {

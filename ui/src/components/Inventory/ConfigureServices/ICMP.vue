@@ -1,11 +1,11 @@
 <template>
-  <Row><span class="headline3">ICMP</span>span></Row>
-  <Row><FeatherInput label="Timeout" type="text" v-model="timeout"  @update:modelValue="setValues" /></Row>
-  <Row><FeatherInput label="Retry" type="text" v-model="retry"  @update:modelValue="setValues" /></Row>
+  <Row><span class="headline3">ICMP</span></Row>
+  <Row col="3"><FeatherInput label="Timeout" type="text" v-model="timeout"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Retry" type="text" v-model="retry"  @update:modelValue="setValues" /></Row>
 
   <ShowHideBox label="Advanced options">
     <!-- Advanced options -->
-    <Row><FeatherInput label="DSCP" type="text" v-model="dscp"  @update:modelValue="setValues" /></Row>
+    <Row col="3"><FeatherInput label="DSCP" type="text" v-model="dscp"  @update:modelValue="setValues" /></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />

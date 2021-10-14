@@ -6,7 +6,7 @@
     </template>
 
     <Sidebar />
-
+    <Spinner />
     <router-view />
   </FeatherAppLayout>
 </template>
@@ -15,6 +15,7 @@
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
+import Spinner from './components/Common/Spinner.vue'
 </script>
   
 <style lang="scss">

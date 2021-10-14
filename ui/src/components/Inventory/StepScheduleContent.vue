@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="feather-row">
-    <div class="feather-col-12">
+    <div class="feather-col-3">
       <FeatherInput id="batch-name" v-model="batchName" />
     </div>
   </div>
@@ -27,11 +27,15 @@
       >Schedule for later</FeatherButton>
     </div>
   </div>
-  <div v-if="selected === now">
-    <StepScheduleContentNow />
-  </div>
-  <div v-if="selected === later">
-    <StepScheduleContentLater :data="data" />
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <div v-if="selected === now">
+        <StepScheduleContentNow />
+      </div>
+      <div v-if="selected === later">
+        <StepScheduleContentLater :data="data" />
+      </div>
+    </div>
   </div>
 </template>
 

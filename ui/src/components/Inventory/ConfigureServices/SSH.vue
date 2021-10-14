@@ -1,12 +1,12 @@
 <template>
   <Row><span class="headline3">SSH</span></Row>
-  <Row><FeatherInput label="Timeout" v-model="timeout"  @update:modelValue="setValues" /></Row>
-  <Row><FeatherInput label="Retry" v-model="retry"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Timeout" v-model="timeout"  @update:modelValue="setValues" /></Row>
+  <Row col="3"><FeatherInput label="Retry" v-model="retry"  @update:modelValue="setValues" /></Row>
 
   <!-- advanced options -->
   <ShowHideBox label="Advanced options">
-    <Row><FeatherInput label="Banner" v-model="banner" @update:modelValue="setValues" /></Row>
-    <Row><FeatherInput label="Port" v-model="port" @update:modelValue="setValues" /></Row>
+    <Row col="3"><FeatherInput label="Banner" v-model="banner" @update:modelValue="setValues" /></Row>
+    <Row col="3"><FeatherInput label="Port" v-model="port" @update:modelValue="setValues" /></Row>
 
     <!-- add filter -->
     <ServiceFilter @setValues="setValues" />
