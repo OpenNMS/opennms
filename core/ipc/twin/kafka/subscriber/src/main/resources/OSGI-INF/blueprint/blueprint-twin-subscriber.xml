@@ -22,7 +22,6 @@
 
     <!-- Config Provider -->
     <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
-        <argument value="[[group.id]]"/>
         <!-- same as persistent-id -->
         <argument value="org.opennms.core.ipc.sink.kafka.consumer"/>
         <argument ref="configurationAdmin" />

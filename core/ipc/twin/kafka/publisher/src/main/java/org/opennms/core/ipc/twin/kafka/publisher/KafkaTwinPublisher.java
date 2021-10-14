@@ -79,6 +79,10 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
 
     private KafkaConsumerRunner consumerRunner;
 
+    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber) {
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+    }
+
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
                               final KafkaConfigProvider kafkaConfigProvider) {
         super(localTwinSubscriber);
