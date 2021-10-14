@@ -11,39 +11,42 @@
 
 <script setup lang="ts">
 
-import { onMounted, ref } from 'vue';
-import { nodeData, tableMockData } from '../Demo/apiService';
+import { onMounted, ref, computed } from 'vue';
 import DataTable from '../DataTable.vue';
+import { useStore } from 'vuex';
+import cronstrue from 'cronstrue';
 
+const store = useStore();
 const isData = ref(false);
-let nodeDataValue: any = ref([]);
 let customData: any = ref([]); //custom data
 
+const provisionDService = computed(() => { return store.state.configuration.provisionDService });
 
-onMounted(() => {
-    //service call for data
-    // nodeData.then((response: any) => {
-    //     //data come form api
-    //     let dataLen = response.data.response.length;
-    //     if (dataLen > 0) {
-    //         nodeDataValue.value = response.data.response;
-    //     }
-    // }).catch((err) => {
-    //     console.error("error ==>", err);
-    // });
-
-    tableMockData.then((response: any) => {
-        //data come form api
-        let data = response['data']["requisition-def"];
+const nodeDataValue = computed(() => {
+    if (provisionDService.value) {
+        let copyState = [];
+        copyState = JSON.parse(JSON.stringify(provisionDService.value));
+        let data = (copyState as any)["requisition-def"];
         if (data && data.length > 1) {
-            nodeDataValue.value = response['data']["requisition-def"];
             customData.value = ['edit', 'delete'];
-            isData.value = true;
+            isData.value = true; //show pagination 
+            // cron-schedule expression changed to human readable format 
+            const copydata = data.filter((rowData: any) => {
+                return rowData['cron-schedule'] = cronstrue.toString(rowData['cron-schedule'], { use24HourTimeFormat: true });
+            });
+            return copydata;
         }
-
-    }).catch((err) => {
-        console.error("error ==>", err);
-    });
+    }
+    return [];
 })
+
+onMounted(async () => {
+    try {
+        await store.dispatch('configuration/getProvisionDService');
+    } catch {
+        console.error("Error in API - Inside datatableDemo");
+    }
+});
+
 
 </script>

@@ -10,4 +10,12 @@ const getAdvancedDropdown = (state: any, advancedDropdown: any) => {
   state.advancedDropdown = advancedDropdown
 }
 
-export default { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown }
+const getProvisionDService = (state: any, provisionDService: any) => {
+  state.provisionDService = provisionDService
+}
+
+const sendEditData = (state: any, sendEditData: any) => {
+  state.sendEditData = sendEditData
+}
+
+export default { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService, sendEditData }

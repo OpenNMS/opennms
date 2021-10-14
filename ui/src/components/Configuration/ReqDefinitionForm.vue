@@ -135,20 +135,16 @@
 
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
-import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown } from '../Common/Demo/apiService'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
+import router from '@/router'
 
-const store = useStore()
+const store = useStore();
 const reqDefinition = reactive(State);
-
-const types: any = ref([]);
-const schedulePeriod: any = ref([]);
-const advancedDropdown: any = ref([]);
 
 const minVal = ref(1);
 const count = ref(0);
@@ -169,42 +165,82 @@ const props = defineProps({
         type: String,
         default: "New"
     }
-})
+});
 
 // Dropdown API Data
 onMounted(async () => {
     try {
-        //Types
-        types.value = await store.dispatch('configuration/getDropdownTypes');
+        // Types
+        await store.dispatch('configuration/getDropdownTypes');
         // Schedule Period
-        schedulePeriod.value = await store.dispatch('configuration/getSchedulePeriod');;
+        await store.dispatch('configuration/getSchedulePeriod');
         // Advanced Dropdown
-        advancedDropdown.value = await store.dispatch('configuration/getAdvancedDropdown');;
+        await store.dispatch('configuration/getAdvancedDropdown');
+
+        // Edit Operation logic
+        if (router.currentRoute.value.name === 'reqDefEdit') {
+
+            let data = store.state.configuration.sendEditData;
+            let url = data['import-url-resource'].split('/');
+
+            //temp logic to patch schedule period value
+            let cron_schedule = data['cron-schedule'];
+            reqDefinition.reqDef.schedulePeriodNumber = parseInt(cron_schedule.match(/\d+/)[0]);
+            reqDefinition.reqDef.schedulePeriod = "minute"
+            //temp logic ends
+
+            reqDefinition.reqDef.name = data['import-name'];
+            reqDefinition.reqDef.type = url[0].split(':')[0];
+            reqDefinition.reqDef.host = url[2];
+            generatedURL.value = data['import-url-resource'];
+
+            let patchVal = url[3].split('?');
+            reqDefinition.reqDef.foreignSource = patchVal[0];
+
+            //add edit data value to advance dropdown
+            const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
+                if (index == 1) {
+                    addAnotherArr.value[0]['dropdownVal'] = dropdownVal;
+                    addAnotherArr.value[0]['advTextVal'] = advTextVal;
+                } else {
+                    let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal };
+                    addAnotherArr.value.push(addObj);
+                }
+            }
+
+            //Identify how many advance parameter
+            for (let i = 1; i < patchVal.length; i++) {
+                let val = patchVal[i].split('=');
+                dropVal(val[0], val[1], i);
+            }
+
+        } else {
+            reqDefinition.reqDef.name = '';
+            reqDefinition.reqDef.type = '';
+            reqDefinition.reqDef.host = '';
+            reqDefinition.reqDef.foreignSource = '';
+        }
     } catch {
-        console.error("Error in API");
+        console.error("Error in API/Logic");
     }
 });
 
 const stateTypes = computed(() => {
     return store.state.configuration.types
-})
+});
 
 const stateSchedulePeriod = computed(() => {
     return store.state.configuration.schedulePeriod
-})
+});
 
 const stateAdvancedDropdown = computed(() => {
     return store.state.configuration.advancedDropdown
-})
+});
 
-//Add another parameter - max 1 allowed
+//Add another parameter
 const addAnother = () => {
-    if (addAnotherArr.value.length < 2) {
-        let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
-        addAnotherArr.value.push(addObj);
-    } else {
-        alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
-    }
+    let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
+    addAnotherArr.value.push(addObj);
 };
 
 //Dismiss dropdown
@@ -239,7 +275,7 @@ const generateURL = () => {
 
 //Save 
 const onSave = () => {
-    console.log("generatedURL", generatedURL.value)
+    console.log("generatedURL", generatedURL.value);
     console.log('onSave Obj', JSON.stringify(reqDefinition));
 };
 

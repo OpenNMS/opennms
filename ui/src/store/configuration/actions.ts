@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { VuexContext } from '@/types'
+import { axiosAuth } from '../../components/Common/Demo/apiInterceptor'
 
 let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
 let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
 let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
+let getProvisionD = '/opennms/rest/cm/provisiond/default'
 
 const getDropdownTypes = (context: VuexContext) => {
   axios.get(typesUrl).then((response) => {
@@ -23,8 +25,19 @@ const getAdvancedDropdown = (context: VuexContext) => {
   })
 }
 
+const getProvisionDService = (context: VuexContext) => {
+  axiosAuth.get(getProvisionD).then((response) => {
+    if (response.status === 200) {
+      context.commit('getProvisionDService', response.data)
+    } else {
+      console.error('Please check API response')
+    }
+  })
+}
+
 export default {
   getDropdownTypes,
   getSchedulePeriod,
-  getAdvancedDropdown
+  getAdvancedDropdown,
+  getProvisionDService
 }

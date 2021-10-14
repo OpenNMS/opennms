@@ -5,7 +5,9 @@
         </div>
         <div class="reqDef">
             <div class="dataTable" v-if="index === 0">
-                <DataTableDemo></DataTableDemo>
+                <KeepAlive>
+                    <DataTableDemo></DataTableDemo>
+                </KeepAlive>
             </div>
             <div v-else>
                 <ReqDefinitionForm></ReqDefinitionForm>
@@ -37,7 +39,6 @@ const clickAction = (val: any) => {
             break;
     }
 }
-
 
 </script>
 

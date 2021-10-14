@@ -1,7 +1,9 @@
 const state = {
   types: [],
   schedulePeriod: [],
-  advancedDropdown: []
+  advancedDropdown: [],
+  provisionDService: null,
+  sendEditData: null
 }
 
 export default state
