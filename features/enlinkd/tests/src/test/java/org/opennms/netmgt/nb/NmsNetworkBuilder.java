@@ -30,7 +30,6 @@ package org.opennms.netmgt.nb;
 
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -1446,32 +1445,6 @@ public abstract class NmsNetworkBuilder {
     public static final Map<InetAddress,Integer> DARWIN_10_8_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     public static final Map<Integer, String> DARWIN_10_8_IF_IFNAME_MAP = new HashMap<Integer, String>();
     public static final Map<Integer, String> DARWIN_10_8_IF_MAC_MAP = new HashMap<Integer, String>();
-
-    //NMS-13593
-    public static final String ZHBGO1Zsr001_NAME="ZHBGO1Zsr001";
-    public static final String ZHBGO1Zsr001_IP="10.119.41.15";
-    public static final String ZHBGO1Zsr001_SYSOID=".1.3.6.1.4.1.6527.1.3.8";
-    public static final String ZHBGO1Zsr001_LLDP_ID="24 21 24 EC E2 3F".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
-    public static final String ZHBGO1Zsr001_RESOURCE="classpath:/linkd/nms13593/srv001-walk.txt";
-    public static final Map<InetAddress,Integer> ZHBGO1Zsr001_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    public static final Map<Integer,String>      ZHBGO1Zsr001_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr001_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr001_IF_MAC_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr001_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,InetAddress> ZHBGO1Zsr001_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
-
-    public static final String ZHBGO1Zsr002_NAME="ZHBGO1Zsr002";
-    public static final String ZHBGO1Zsr002_IP="10.119.41.16";
-    public static final String ZHBGO1Zsr002_SYSOID=".1.3.6.1.4.1.6527.1.3.8";
-    public static final String ZHBGO1Zsr002_LLDP_ID="24 21 24 DA F6 3F".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
-    public static final String ZHBGO1Zsr002_RESOURCE="classpath:/linkd/nms13593/srv002-walk.txt";
-
-    public static final Map<InetAddress,Integer> ZHBGO1Zsr002_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
-    public static final Map<Integer,String>      ZHBGO1Zsr002_IF_IFNAME_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr002_IF_IFDESCR_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr002_IF_MAC_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,String>      ZHBGO1Zsr002_IF_IFALIAS_MAP = new HashMap<Integer, String>();
-    public static final Map<Integer,InetAddress> ZHBGO1Zsr002_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     NetworkBuilder m_networkBuilder;
 

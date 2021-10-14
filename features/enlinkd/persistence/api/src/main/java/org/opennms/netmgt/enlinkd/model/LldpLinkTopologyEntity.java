@@ -40,7 +40,6 @@ public class LldpLinkTopologyEntity {
     private final Integer nodeId;
     private final String lldpRemChassisId;
     private final String lldpRemPortId;
-    private final String lldpRemPortDescr;
     private final LldpUtils.LldpPortIdSubType lldpRemPortIdSubType;
     private final String lldpPortId;
     private final LldpUtils.LldpPortIdSubType lldpPortIdSubType;
@@ -48,7 +47,7 @@ public class LldpLinkTopologyEntity {
     private final Integer lldpPortIfindex;
 
     public LldpLinkTopologyEntity(Integer id, Integer nodeId, String lldpRemChassisId, String lldpRemPortId,
-                                  LldpUtils.LldpPortIdSubType lldpRemPortIdSubType, String lldpRemPortDescr, String lldpPortId,
+                                  LldpUtils.LldpPortIdSubType lldpRemPortIdSubType, String lldpPortId,
                                   LldpUtils.LldpPortIdSubType lldpPortIdSubType, String lldpPortDescr, Integer lldpPortIfindex) {
         this.id = id;
         this.nodeId = nodeId;
@@ -56,7 +55,6 @@ public class LldpLinkTopologyEntity {
         this.lldpRemPortId = lldpRemPortId;
         this.lldpRemPortIdSubType = lldpRemPortIdSubType;
         this.lldpPortId = lldpPortId;
-        this.lldpRemPortDescr=lldpRemPortDescr;
         this.lldpPortIdSubType = lldpPortIdSubType;
         this.lldpPortDescr = lldpPortDescr;
         this.lldpPortIfindex = lldpPortIfindex;
@@ -69,7 +67,6 @@ public class LldpLinkTopologyEntity {
                 , link.getLldpRemChassisId()
                 , link.getLldpRemPortId()
                 , link.getLldpRemPortIdSubType()
-                ,link.getLldpPortDescr()
                 , link.getLldpPortId()
                 , link.getLldpPortIdSubType()
                 , link.getLldpPortDescr()
@@ -119,9 +116,6 @@ public class LldpLinkTopologyEntity {
     public Integer getLldpPortIfindex() {
         return lldpPortIfindex;
     }
-    public String getLldpRemPortDescr() {
-        return lldpRemPortDescr;
-    }
 
     @Override
     public String toString() {
@@ -131,12 +125,10 @@ public class LldpLinkTopologyEntity {
                 .add("lldpRemChassisId", lldpRemChassisId)
                 .add("lldpRemPortId", lldpRemPortId)
                 .add("lldpRemPortIdSubType", lldpRemPortIdSubType)
-                .add("lldpRemPortDescr", lldpRemPortDescr)
                 .add("lldpPortId", lldpPortId)
                 .add("lldpPortIdSubType", lldpPortIdSubType)
                 .add("lldpPortDescr", lldpPortDescr)
                 .add("lldpPortIfindex", lldpPortIfindex)
                 .toString();
     }
-
 }

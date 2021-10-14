@@ -97,7 +97,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
 
     @Transactional
     protected void saveLldpLink(final int nodeId, final LldpLink saveMe) {
-        new UpsertTemplate<>(m_transactionManager,
+        new UpsertTemplate<LldpLink, LldpLinkDao>(m_transactionManager,
                                                   m_lldpLinkDao) {
 
             @Override
@@ -178,12 +178,13 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
             List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> results = new ArrayList<>();
 
             Map<Integer, LldpElementTopologyEntity> nodelldpelementidMap = getTopologyEntityCache().getLldpElementTopologyEntities().stream()
-                    .collect(Collectors.toMap(LldpElementTopologyEntity::getNodeId, lldpelem -> lldpelem));
+                    .collect(Collectors.toMap(lldpelem -> lldpelem.getNodeId(), lldpelem -> lldpelem));
             
             List<LldpLinkTopologyEntity> allLinks = getTopologyEntityCache().getLldpLinkTopologyEntities();
             // 1.) create mapping
             Map<CompositeKey, LldpLinkTopologyEntity> targetLinkMap = new HashMap<>();
             for(LldpLinkTopologyEntity targetLink : allLinks){
+
                 CompositeKey key = new CompositeKey(
                         targetLink.getLldpRemChassisId(),
                         nodelldpelementidMap.get(targetLink.getNodeId()).getLldpChassisId(),
@@ -192,30 +193,24 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                         targetLink.getLldpRemPortId(),
                         targetLink.getLldpRemPortIdSubType());
                 targetLinkMap.put(key, targetLink);
-                CompositeKey descrkey = new CompositeKey(
-                        targetLink.getLldpRemChassisId(),
-                        nodelldpelementidMap.get(targetLink.getNodeId()).getLldpChassisId(),
-                        targetLink.getLldpPortDescr(),
-                        targetLink.getLldpRemPortDescr());
-                targetLinkMap.put(descrkey,targetLink);
             }
 
             // 2.) iterate
-            Set<Integer> parsed = new HashSet<>();
+            Set<Integer> parsed = new HashSet<Integer>();
             for (LldpLinkTopologyEntity sourceLink : allLinks) {
                 if (parsed.contains(sourceLink.getId())) {
                     continue;
                 }
                 String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId();
                 if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("getLldpLinks: self link not adding source: {}",sourceLink);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink);
                     }
                     parsed.add(sourceLink.getId());
                     continue;
                 }
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("getLldpLinks: source: {}",sourceLink);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: source: {}",sourceLink);
                 }
 
                 CompositeKey key = new CompositeKey(
@@ -226,26 +221,14 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                         sourceLink.getLldpPortId(),
                         sourceLink.getLldpPortIdSubType());
                 LldpLinkTopologyEntity targetLink = targetLinkMap.get(key);
+
                 if (targetLink == null) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("getLldpLinks: cannot found target using default key for source: '{}'", sourceLink.getId());
-                    }
-                    CompositeKey descrkey = new CompositeKey(
-                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
-                            sourceLink.getLldpRemChassisId(),
-                            sourceLink.getLldpRemPortDescr(),
-                            sourceLink.getLldpPortDescr());
-                    targetLink = targetLinkMap.get(descrkey);
-                }
-                if (targetLink == null) {
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
-                    }
+                    LOG.debug("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
                     continue;
                 }
 
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
                 }
 
                 parsed.add(sourceLink.getId());
