@@ -29,12 +29,14 @@
 package org.opennms.features.config.dao.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.bind.UnmarshalException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -85,6 +87,30 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             return Optional.empty();
         }
         return Optional.of(allMap.keySet());
+    }
+
+    @Override
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        Map<String, ConfigSchema<?>> output = new HashMap<>();
+        jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value)->{
+            JSONObject json = new JSONObject(value);
+            String className = (String) json.get("converterClass");
+            Class<?> converterClass = null;
+            try {
+                converterClass = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Invalid schema for configName: " + key);
+            }
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
+            ConfigSchema<?> schema = null;
+            try {
+                schema = mapper.readValue(value, javaType);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            output.put(key, schema);
+        });
+        return output;
     }
 
     @Override

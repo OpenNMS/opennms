@@ -102,6 +102,11 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        return configStoreDao.getAllConfigSchema();
+    }
+
+    @Override
     public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) throws IOException {
         Objects.requireNonNull(configName);
         return configStoreDao.getConfigSchema(configName);

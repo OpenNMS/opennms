@@ -60,8 +60,6 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    private String prefix = "/";
-
     public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException{
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
@@ -104,19 +102,51 @@ public class ConfigSwaggerConverter {
         }
     }
 
-    public OpenAPI convert(ConfigItem item, String prefix) {
-        this.prefix = prefix;
-
-        // Create an empty set of components
-        Components components = new Components();
-        openAPI.setComponents(components);
-
-        // Create a basic info section
+    private Info genInfo(){
         // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");
         info.setTitle("OpenNMS Model");
+        return info;
+    }
+
+    public OpenAPI convert(Map<String, ConfigItem> items) {
+        // Create an empty set of components
+        Components components = new Components();
+        openAPI.setComponents(components);
+
+
+        // Create an empty set of paths
+        Paths paths = new Paths();
+        openAPI.setPaths(paths);
+
+        // Create a basic info section
+        Info info = this.genInfo();
+
+        openAPI.setInfo(info);
+        items.forEach((prefix, item) -> {
+            // Generate schemas for the items
+            walk(null, item, this::generateSchemasForItems);
+            schemasByItem.forEach((k, v) -> {
+                if (ConfigItem.Type.OBJECT.equals(k.getType())) {
+                    components.addSchemas(v.getName(), v);
+                }
+            });
+            // Generate paths for the items
+            this.generatePathsForItems(item, prefix);
+            pathItemsByPath.forEach(paths::addPathItem);
+        });
+        return openAPI;
+    }
+
+    public OpenAPI convert(ConfigItem item, String prefix) {
+        // Create an empty set of components
+        Components components = new Components();
+        openAPI.setComponents(components);
+
+        // Create a basic info section
+        Info info = this.genInfo();
 
         openAPI.setInfo(info);
         // Generate schemas for the items
@@ -132,7 +162,7 @@ public class ConfigSwaggerConverter {
         openAPI.setPaths(paths);
 
         // Generate paths for the items
-        this.generatePathsForItems(item);
+        this.generatePathsForItems(item, prefix);
         pathItemsByPath.forEach(paths::addPathItem);
 
         return openAPI;
@@ -142,7 +172,7 @@ public class ConfigSwaggerConverter {
      * It handles path for each config
      * @param item config
      */
-    private void generatePathsForItems(ConfigItem item) {
+    private void generatePathsForItems(ConfigItem item, String prefix) {
         String path = prefix;
 
         // Index the path for future reference
@@ -155,7 +185,7 @@ public class ConfigSwaggerConverter {
         PathItem configNamePathItem = new PathItem();
         PathItem configIdPathItem = new PathItem();
 
-        String tagName = getTagName(path);
+        String tagName = getTagName(path, prefix);
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
@@ -261,7 +291,7 @@ public class ConfigSwaggerConverter {
         return messageResponse;
     }
 
-    private String getTagName(String path) {
+    private String getTagName(String path, String prefix) {
         String relevantPath = path.replace(prefix, "");
 
         if (relevantPath.isEmpty()) {
