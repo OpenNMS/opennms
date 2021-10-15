@@ -30,6 +30,7 @@ package org.opennms.features.config.service.impl;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -56,6 +57,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
     public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{
 
+    }
+
+    @Override
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        return null;
     }
 
     @Override

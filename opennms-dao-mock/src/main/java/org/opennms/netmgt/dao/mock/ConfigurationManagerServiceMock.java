@@ -72,6 +72,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
 
     @Override
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        return null;
+    }
+
+    @Override
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException {
         return Optional.empty();
     }
