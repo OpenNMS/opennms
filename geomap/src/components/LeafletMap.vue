@@ -27,6 +27,7 @@
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
+          :icon ="redMarker"
 add         >
         <l-popup> {{ node.label }} </l-popup>
         </l-marker>
@@ -43,7 +44,7 @@ add         >
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, watch, ref, nextTick } from "vue";
+import { computed, watch, ref, nextTick, onMounted, onBeforeUnmount } from "vue";
 import "leaflet/dist/leaflet.css";
 import {
   LMap,
@@ -56,6 +57,10 @@ import {
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
+// import commonjs from 'rollup-plugin-commonjs';
+// import L from "leaflet";
+import AwesomeMarkers from "leaflet.awesome-markers";
+
 
 let leafletReady = ref(false);
 let leafletObject = ref("");
@@ -134,6 +139,63 @@ const tileProviders = [
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
 ];
+
+onMounted(async () => {
+      const {
+        bind,
+        Browser,
+        DivIcon,
+        DomEvent,
+        DomUtil,
+        extend,
+        FeatureGroup,
+        featureGroup,
+        Icon,
+        LatLng,
+        LatLngBounds,
+        LayerGroup,
+        Marker,
+        marker,
+        Point,
+        Util,
+      } = await import("leaflet/dist/leaflet-src.esm");
+
+      /** create a fake window.L from just the bits we need to make markercluster load properly **/
+      const L = {
+        bind,
+        Browser,
+        DivIcon,
+        DomUtil,
+        extend,
+        FeatureGroup,
+        featureGroup,
+        Icon,
+        LatLng,
+        LatLngBounds,
+        LayerGroup,
+        Marker,
+        Point,
+        Util,
+      };
+      window['L'] = L;
+});
+
+ let redMarker = L.AwesomeMarkers.icon({
+     icon: 'coffee',
+     markerColor: 'red'
+   });
+
+// let greenIcon = new L.Icon({
+//   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+//   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+//   shadowSize: [41, 41]
+// });
+      
+  // L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
+
 
 </script>
 
