@@ -176,7 +176,7 @@ onMounted(async () => {
         Marker,
         Point,
         Util,
-      };
+      } as any;
       window['L'] = L;
 });
 
