@@ -1,0 +1,110 @@
+
+= sFlow
+
+sFlow is capable of transporting both telemetry data and flow information.
+{page-component-title} can use both data types and extract and persist accordingly.
+
+See <<operation:flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
+
+
+[[telemetryd-sflow-parser-udp]]
+== sFlow UDP Parser
+
+The sFlow UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<telemetryd-sflow-adapter, sFlow adapter>>.
+
+The sFlow UDP parser supports protocol detection.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser`
+|===
+
+=== Configuration and use
+
+.Optional parameters for the Netflow v5 UDP Parser
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| dnsLookupsEnabled
+| Enable or disable DNS resolution for flows.
+| true
+|===
+
+[[telemetryd-sflow-adapter-flow]]
+== sFlow adapter
+
+The sFlow adapter handles sFlow data received and parsed by the <<telemetryd-sflow-parser, sFlow parser>>.
+Flows are decoded from the messages into the canonical flow format and published to the flow repository.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter`
+|===
+
+=== Configuration and use
+
+This adapter does not currently have any configurable parameters.
+
+
+[[telemetryd-sflow-adapter-telemetry]]
+== sFlow telemetry adapter
+
+The sFlow telemetry adapter handles sFlow telemetry data received and parsed by the <<telemetryd-sflow-parser-udp, sFlow UDP parser>>.
+The telemetry data is forwarded to a JSR-223-compatible script (for example, Beanshell or Groovy) for further processing.
+Using the script extension, you can extract the desired metrics from the sFlow messages and persist the results as time series data.
+
+=== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter`
+|===
+
+=== Configuration and use
+
+.Required adapter-specific parameters
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| script
+| Full path to the script used to handle the sFlow messages.
+| none
+|===
+
+=== Scripting
+
+The script will be invoked for every sFlow (extended) counter sample that is received.
+
+The following globals will be passed to the script:
+
+.Globals passed to the script
+[options="header", cols="1,3,3"]
+|===
+| Parameter
+| Description
+| Type
+
+| agent
+| The agent (node) against which the metrics will be associated.
+| org.opennms.netmgt.collection.api.CollectionAgent
+
+| builder
+| Builder in which the resources and metrics should be added.
+| org.opennms.netmgt.collection.support.builder.CollectionSetBuilder
+
+| msg
+| sFlow (extended) counter sample
+| dynamic Map
+|===
+
+See https://sflow.org/developers/specifications.php[sFlow Specification] for the contained fields and their meaning.
