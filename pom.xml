@@ -2373,6 +2373,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-geoip-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
