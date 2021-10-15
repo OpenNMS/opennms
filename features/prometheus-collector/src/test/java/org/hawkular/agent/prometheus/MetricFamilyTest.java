@@ -77,7 +77,7 @@ public class MetricFamilyTest {
         } catch (IllegalArgumentException expected) {
         }
 
-        MetricFamily family = new MetricFamily.Builder().setName("foo").setType(MetricType.SUMMARY).build();
+        family = new MetricFamily.Builder().setName("foo").setType(MetricType.SUMMARY).build();
         Assert.assertEquals("foo", family.getName());
         Assert.assertNull(family.getHelp());
         Assert.assertEquals(MetricType.SUMMARY, family.getType());
