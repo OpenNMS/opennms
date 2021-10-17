@@ -50,7 +50,7 @@ public class BufferRewindingMessageDispatcher extends MessageDispatcherImpl {
                                ByteBuffer wholeMessage,
                                TransportStateReference tmStateReference) {
         processMessage(sourceTransport, incomingAddress,
-                new BERInputStream(wholeMessage.rewind()),
+                new BERInputStream((ByteBuffer) wholeMessage.rewind()),
                 tmStateReference);
     }
 }
