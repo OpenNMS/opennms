@@ -42,8 +42,8 @@ import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequestBean;
 import org.opennms.core.ipc.twin.common.TwinResponseBean;
 import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
-import org.opennms.core.ipc.twin.grpc.common.TwinRequestProto;
-import org.opennms.core.ipc.twin.grpc.common.TwinResponseProto;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -145,8 +145,8 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
 
         @Override
-        public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinRequestProto> rpcStreaming(
-                io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+        public io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinRequestProto> rpcStreaming(
+                io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
             StreamObserver<TwinResponseProto> rpcStream = responseObserver;
             return new StreamObserver<>() {
                 @Override
@@ -180,7 +180,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
         @Override
         public void sinkStreaming(org.opennms.core.ipc.twin.grpc.common.MinionHeader request,
-                                  io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.grpc.common.TwinResponseProto> responseObserver) {
+                                  io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
             sinkStreamsByLocation.put(request.getLocation(), responseObserver);
         }
 

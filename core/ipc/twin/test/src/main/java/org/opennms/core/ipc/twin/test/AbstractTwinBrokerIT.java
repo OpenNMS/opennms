@@ -48,14 +48,14 @@ import org.opennms.core.ipc.twin.api.TwinSubscriber;
 
 public abstract class AbstractTwinBrokerIT {
 
-    protected abstract TwinPublisher createPublisher();
-    protected abstract TwinSubscriber createSubscriber();
+    protected abstract TwinPublisher createPublisher() throws IOException;
+    protected abstract TwinSubscriber createSubscriber() throws IOException;
 
     private TwinPublisher publisher;
     private TwinSubscriber subscriber;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         this.publisher = this.createPublisher();
         this.subscriber = this.createSubscriber();
     }
@@ -70,7 +70,7 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
     }
 
     /**
@@ -83,12 +83,12 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
         // Ensure Test1 is received.
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
 
-        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -100,9 +100,10 @@ public abstract class AbstractTwinBrokerIT {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
+        await().until(tracker::getLog, hasItems("Test1"));
         session.publish("Test2");
 
-        await().until(tracker::getLog, contains("Test1", "Test2"));
+        await().until(tracker::getLog, hasItems("Test2"));
     }
 
     /**

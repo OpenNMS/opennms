@@ -36,9 +36,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -52,20 +54,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GrpcTwinIT {
+public class GrpcTwinIT  extends AbstractTwinBrokerIT  {
 
     protected GrpcTwinSubscriber twinSubscriber;
     protected GrpcTwinPublisher twinPublisher;
-    protected Set<MinionInfoBean> minionInfoBeanSet = new HashSet<>();
+    private ConfigurationAdmin configAdmin;
+    private int port;
 
+    @Override
+    protected TwinPublisher createPublisher() throws IOException {
+        this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
+        twinPublisher.start();
+        return twinPublisher;
+    }
+
+    @Override
+    protected TwinSubscriber createSubscriber() throws IOException {
+        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
+        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
+        twinSubscriber.start();
+        return twinSubscriber;
+    }
 
     @Before
     public void setup() throws IOException {
         Hashtable<String, Object> serverConfig = new Hashtable<>();
-        int port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
+        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
         serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
         serverConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
         Hashtable<String, Object> clientConfig = new Hashtable<>();
@@ -73,31 +91,72 @@ public class GrpcTwinIT {
 
         clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
         clientConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
+        configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
-
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
-        twinSubscriber.start();
-        twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
-        twinPublisher.start();
+        super.setup();
     }
 
     @Test
-    public void testGrpcTwinConsumption() throws IOException {
-        String key = "minion-info-bean";
-        TwinPublisher.Session<MinionInfoBean> session = twinPublisher.register(key, MinionInfoBean.class);
-        session.publish(new MinionInfoBean(5, "Twin-Node"));
-        twinSubscriber.subscribe(key, MinionInfoBean.class, new TwinConsumer());
-        await().atMost(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> minionInfoBeanSet, Matchers.hasSize(1));
-        minionInfoBeanSet.clear();
-        // Send update to MinionInfoBean
-        String updatedLabel = "Twin-Node-Update-Label";
-        session.publish(new MinionInfoBean(5, updatedLabel));
-        await().atMost(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> minionInfoBeanSet, Matchers.hasSize(1));
-        MinionInfoBean minionInfoBean = minionInfoBeanSet.iterator().next();
-        Assert.assertThat(minionInfoBean.getNodeLabel(), Matchers.equalTo(updatedLabel));
+    public void testMultipleSubscribers() throws Exception {
+        final var subscriber1 = this.createSubscriber();
+        final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker1::getLog, hasItems("Test2"));
+        final var subscriber2 = this.createSubscriber();
+        final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
+
+        await().until(tracker2::getLog, hasItems("Test2"));
+        session.publish("Test3");
+
+        final var subscriber3 = this.createSubscriber();
+        final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
+
+        await().until(tracker1::getLog, hasItems("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
+        await().until(tracker3::getLog, hasItems("Test3"));
+    }
+
+    /**
+     * Tests that multiple subscriptions exists for the same key.
+     */
+    @Test
+    public void testMultipleSubscription() throws Exception {
+        final var tracker1 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+        await().until(tracker1::getLog, hasItems( "Test2"));
+        final var tracker2 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        session.publish("Test3");
+
+        await().until(tracker1::getLog, hasItems("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
+    }
+
+    /**
+     * Tests that subscription works if publisher gets restarted.
+     */
+    @Test
+    public void testPublisherRestart() throws Exception {
+        final var tracker = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker::getLog, hasItems("Test2"));
+        twinPublisher.shutdown();
+        twinPublisher = (GrpcTwinPublisher) this.createPublisher();
+        session.publish("Test3");
+
+        await().until(tracker::getLog, hasItems("Test3"));
     }
 
     @After
@@ -106,13 +165,6 @@ public class GrpcTwinIT {
         twinPublisher.shutdown();
     }
 
-    private class TwinConsumer implements Consumer<MinionInfoBean> {
-
-        @Override
-        public void accept(MinionInfoBean minionInfoBean) {
-            minionInfoBeanSet.add(minionInfoBean);
-        }
-    }
 
     static int getAvailablePort(final AtomicInteger current, final int max) {
         while (current.get() < max) {

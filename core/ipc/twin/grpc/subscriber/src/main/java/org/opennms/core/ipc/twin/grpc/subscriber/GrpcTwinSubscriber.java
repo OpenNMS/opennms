@@ -40,7 +40,8 @@ import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequestBean;
 import org.opennms.core.ipc.twin.common.TwinResponseBean;
 import org.opennms.core.ipc.twin.grpc.common.*;
-import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -48,16 +49,13 @@ import org.slf4j.LoggerFactory;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
-import static org.opennms.core.grpc.common.GrpcIpcUtils.GRPC_HOST;
 
 public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcTwinSubscriber.class);
-    private static final long RETRIEVAL_TIMEOUT = 3000;
+    private static final long RETRIEVAL_TIMEOUT = 1000;
     private static final int TWIN_REQUEST_POOL_SIZE = 100;
     private final int port;
     private final ConfigurationAdmin configAdmin;
@@ -90,13 +88,19 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     private StreamObserver<TwinRequestProto> getRpcStream(ConnectivityState currentChannelState) {
         if (currentChannelState.equals(ConnectivityState.READY) && this.rpcStream == null) {
-            ResponseHandler responseHandler = new ResponseHandler();
-            this.rpcStream = asyncStub.rpcStreaming(responseHandler);
-            MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
-                    .setSystemId(getMinionIdentity().getId()).build();
-            asyncStub.sinkStreaming(minionHeader, responseHandler);
+            this.rpcStream = asyncStub.rpcStreaming(new ResponseHandler());
+            // Send minion header only once or when server re-initialized.
+            sendMinionHeader();
         }
         return this.rpcStream;
+    }
+
+    private void sendMinionHeader() {
+        // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
+        // gRPC Server needs at least one message to send the stream back.
+        MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
+                .setSystemId(getMinionIdentity().getId()).build();
+        asyncStub.sinkStreaming(minionHeader, new ResponseHandler());
     }
 
     public void shutdown() {

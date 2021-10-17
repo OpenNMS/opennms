@@ -30,10 +30,14 @@ package org.opennms.core.ipc.twin.grpc;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -41,10 +45,34 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+import static org.opennms.core.ipc.twin.grpc.GrpcTwinIT.getAvailablePort;
 
-public class GrpcSSLTwinIT extends GrpcTwinIT {
+public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
+
+    private ConfigurationAdmin configAdmin;
+
+    protected GrpcTwinSubscriber twinSubscriber;
+    protected GrpcTwinPublisher twinPublisher;
+    int port;
+
+    @Override
+    protected TwinPublisher createPublisher() throws IOException {
+        this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
+        twinPublisher.start();
+        return twinPublisher;
+    }
+
+    @Override
+    protected TwinSubscriber createSubscriber() throws IOException {
+        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
+        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
+        twinSubscriber.start();
+        return twinSubscriber;
+    }
 
     @Before
     public void setup() throws IOException {
@@ -55,7 +83,7 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
         String clientPrivateKeyFilePath = this.getClass().getResource("/tls/client.pem").getPath();
 
         Hashtable<String, Object> serverConfig = new Hashtable<>();
-        int port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
+        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
         serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
         serverConfig.put(GrpcIpcUtils.TLS_ENABLED, "true");
         serverConfig.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, serverCertFilePath);
@@ -70,19 +98,77 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
         clientConfig.put(GrpcIpcUtils.CLIENT_CERTIFICATE_FILE_PATH, clientCertFilePath);
         clientConfig.put(GrpcIpcUtils.CLIENT_PRIVATE_KEY_FILE_PATH, clientPrivateKeyFilePath);
 
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
+        configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
+        super.setup();
+    }
 
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
-        twinSubscriber.start();
-        twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
-        twinPublisher.start();
+    @Test
+    public void testMultipleSubscribers() throws Exception {
+        final var subscriber1 = this.createSubscriber();
+        final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker1::getLog, hasItems("Test2"));
+        final var subscriber2 = this.createSubscriber();
+        final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
+
+        await().until(tracker2::getLog, hasItems("Test2"));
+        session.publish("Test3");
+
+        final var subscriber3 = this.createSubscriber();
+        final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
+
+        await().until(tracker1::getLog, hasItems("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
+        await().until(tracker3::getLog, hasItems("Test3"));
+    }
+
+    /**
+     * Tests that multiple subscriptions exists for the same key.
+     */
+    @Test
+    public void testMultipleSubscription() throws Exception {
+        final var tracker1 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+        await().until(tracker1::getLog, hasItems( "Test2"));
+        final var tracker2 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        session.publish("Test3");
+
+        await().until(tracker1::getLog, hasItems("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
+    }
+
+    /**
+     * Tests that subscription works if publisher gets restarted.
+     */
+    @Test
+    public void testPublisherRestart() throws Exception {
+        final var tracker = Tracker.subscribe(this.twinSubscriber, "test", String.class);
+
+        final var session = this.twinPublisher.register("test", String.class);
+        session.publish("Test1");
+        session.publish("Test2");
+
+        await().until(tracker::getLog, hasItems("Test2"));
+        twinPublisher.shutdown();
+        twinPublisher = (GrpcTwinPublisher) this.createPublisher();
+        session.publish("Test3");
+
+        await().until(tracker::getLog, hasItems("Test3"));
     }
 
     @After
     public void destroy() {
-        super.destroy();
+        twinSubscriber.shutdown();
+        twinPublisher.shutdown();
     }
 }
