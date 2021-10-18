@@ -87,6 +87,10 @@ public class MetricFamily {
             case HISTOGRAM:
                 expectedMetricClassType = Histogram.class;
                 break;
+            case UNTYPED:
+	        //treat untyped metrics as gauge
+                expectedMetricClassType = Gauge.class;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid type: " + builder.type);
         }
