@@ -170,7 +170,7 @@
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.subscriber/${project.version}</bundle>
     </feature>
-    
+
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
         <feature>minion-core-api</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
@@ -198,6 +198,11 @@
     <feature version="${cxfVersion}">cxf-core</feature>
     <feature version="${cxfVersion}">cxf-jaxrs</feature>
     <bundle>mvn:org.opennms.features.minion/minion-rest-service/${project.version}</bundle>
+  </feature>
+
+  <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
+    <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+    <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
   </feature>
 
 </features>

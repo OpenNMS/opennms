@@ -157,7 +157,7 @@ final class BeanWrapperRestrictionVisitor extends BaseRestrictionVisitor {
                 final Comparable oC = (Comparable)o;
                 final Comparable oV = (Comparable)restriction.getValue();
                 final int comparison = oC.compareTo(oV);
-                LOG.debug("comparision = {}", comparison);
+                LOG.debug("comparison = {}", comparison);
                 if (comparison == 0) {
                     return;
                 }

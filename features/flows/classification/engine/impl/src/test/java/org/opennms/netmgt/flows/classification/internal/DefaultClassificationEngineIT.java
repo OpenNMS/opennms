@@ -122,7 +122,7 @@ public class DefaultClassificationEngineIT {
     }
 
     @Test
-    public void verifyRuleFilter() {
+    public void verifyRuleFilter() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> ruleDao.findAllEnabledRules(), new DefaultFilterService(filterDao));
 
         // Create request, that matches rule1

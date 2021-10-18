@@ -27,10 +27,10 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
                                 <!-- Additional tools -->
@@ -39,11 +39,9 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
-                                <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
-                                <feature>opennms-core-ipc-rpc-kafka</feature>
-                                <feature>opennms-core-ipc-sink-camel</feature>
-                                <feature>opennms-core-ipc-sink-kafka</feature>
+                                <feature>opennms-core-ipc-jms</feature>
+                                <feature>opennms-core-ipc-kafka</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-offheap</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
@@ -74,6 +72,7 @@
                                 <feature>dominion-grpc-client</feature>
                                 <feature>dominion-secure-credentials-vault</feature>
                                 <featue>minion-rest-service</featue>
+                                <feature>minion-health-check</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -150,6 +149,20 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
@@ -398,6 +411,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.twin.jms</groupId>
+            <artifactId>org.opennms.core.ipc.twin.jms.subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.grpc</groupId>
             <artifactId>org.opennms.core.ipc.grpc.common</artifactId>
             <version>${project.version}</version>
@@ -430,6 +448,11 @@
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>minion-rest-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>health-check</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -16,6 +16,7 @@
         <module>api</module>
         <module>common</module>
         <module>grpc</module>
+        <module>jms</module>
         <module>test</module>
         <module>memory</module>
     </modules>

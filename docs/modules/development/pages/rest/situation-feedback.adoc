@@ -3,7 +3,7 @@
 
 = Situation Feedback
 
-Situation feedback is an optional feature for the management of user-ontributed feedback regarding correlation of alarms.
+Situation feedback is an optional feature for the management of user-contributed feedback regarding correlation of alarms.
 
 It is a simple API for the submission and retrieval of correlation feedback.
 
@@ -19,7 +19,7 @@ NOTE: situationId is the same as the AlarmId for the situation.
 
 == Use examples with cURL
 
-.Retrieve situation feedback for the situaiton with AlarmId == 210
+.Retrieve situation feedback for the situation with AlarmId == 210
 [source,bash]
 ----
 curl -u admin:admin "http://localhost:8980/opennms/rest/situation-feedback/210"
@@ -61,12 +61,12 @@ On a successful request, the feedback will be persisted.
 [options="header, autowidth", cols="5,10"]
 |===
 | Resource                              | Description
-| `/situation-feedback/\{situationid}`  | Submits feedback for the situation identitified with AlarmId = \{situationid}.
+| `/situation-feedback/\{situationid}`  | Submits feedback for the situation identified with AlarmId = \{situationid}.
 |===
 
 == Use examples with cURL
 
-.Submit positve Feedback for a Situation with 2 alarms.
+.Submit positive Feedback for a Situation with 2 alarms.
 [source,bash]
 ----
 curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" -u admin:admin  -d @feedback.json  http://127.0.0.1:8980/opennms/rest/situation-feedback/210
