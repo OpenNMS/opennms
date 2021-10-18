@@ -26,24 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.change;
+package org.opennms.features.config.dao.api.util;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
+import java.io.IOException;
+import java.net.URL;
 
-import liquibase.change.ChangeMetaData;
-import liquibase.change.DatabaseChange;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-/** Used in changelog.xml */
-@DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
-public class RegisterSchema extends AbstractSchemaChange {
-
-    protected String getChangeName() {
-        return "Register";
-    }
-
-    protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.registerSchema(id, xsdFileName, this.rootElement);
+public class SchemaUtil {
+    /**
+     * It will search xsds first, otherwise it will search across classpath
+     *
+     * @return URL of the xsd file
+     */
+    public static URL getSchemaPath(String xsdName) throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("xsds/" + xsdName);
+        if (url == null) {
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
+            if (resources != null && resources.length > 0)
+                url = resources[0].getURL();
+        }
+        return url;
     }
 }
-
-
