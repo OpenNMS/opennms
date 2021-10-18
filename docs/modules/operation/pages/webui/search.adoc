@@ -32,7 +32,7 @@ Click on the following links to quickly search for the associated information:
 * All nodes and their interfaces
 * All nodes with asset info
 
-=== Name-containing search
+=== Name search
 
 Search by name is a case-insensitive, inclusive search.
 For example, searching on `serv` finds any of `serv, Service, Reserved, NTSERV, UserVortex`, and so on.
@@ -54,22 +54,22 @@ For example, the following search fields are all valid and each creates the same
 * 2001:6a8:3c80:8000-8fff:*:*:*:*
 * fc00,fe80:*:*:*:*:*:*:*
 
-=== System- or interface-attribute search
+=== System or interface search
 
 A system/interface attribute search finds nodes with systems or interfaces that match a given search string.
 The "contains" modifier provides a case-insensitive, inclusive search similar to the "name containing" search described above.
 The "equals" modifier requires the search to find an exact match.
 
-=== Location- or providing-service search
+=== Location search
 
 Select the location or service to search for from the appropriate drop-down menu.
 
-=== MAC address-like search
+=== MAC address search
 Case-insensitive, partial string match to find interfaces with hardware (MAC) addresses that match the search string.
 For example, to find all interfaces with a specified manufacturer's code, enter the first six characters of the MAC address.
 Octet separators (dash or colon) are optional.
 
-=== Foreign service name-like search
+=== Foreign service name search
 Case-insensitive, inclusive search on the foreign service name.
 Use the underscore character as a single-character wildcard.
 Use the percent character as a multiple-character wildcard.
@@ -81,7 +81,7 @@ Find nodes with or without flows data.
 
 Find nodes with CDP/LLDP data that match the given search string.
 
-=== Category or field asset information search
+=== Category or field search
 Search for nodes that have assets associated with a particular category or field.
 The field search includes a list of fields and a text box to match a value.
 The field search is case-insensitive and inclusive.
