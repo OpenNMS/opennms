@@ -109,7 +109,7 @@ const onClickHandle = (selectedName: any, data: any) => {
     switch (selectedName) {
         case "edit":
             //edit click data state store
-            store.commit('configuration/sendEditData', data);
+            store.commit('configuration/SEND_MODIFIED_DATA', data);
             //route to edit node component
             router.push({ path: `/${selectedName}/${data['import-name']}` });
             break;

@@ -3,7 +3,7 @@ const state = {
   schedulePeriod: [],
   advancedDropdown: [],
   provisionDService: null,
-  sendEditData: null
+  sendModifiedData: null
 }
 
 export default state

@@ -180,7 +180,7 @@ onMounted(async () => {
         // Edit Operation logic
         if (router.currentRoute.value.name === 'reqDefEdit') {
 
-            let data = store.state.configuration.sendEditData;
+            let data = store.state.configuration.sendModifiedData;
             let url = data['import-url-resource'].split('/');
 
             //temp logic to patch schedule period value

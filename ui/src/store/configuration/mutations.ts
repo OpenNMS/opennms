@@ -1,21 +1,21 @@
-const getDropdownTypes = (state: any, types: any) => {
+const SAVE_TYPES = (state: any, types: any) => {
   state.types = types
 }
 
-const getSchedulePeriod = (state: any, schedulePeriod: any) => {
+const SAVE_SCHEDULE_PERIOD = (state: any, schedulePeriod: any) => {
   state.schedulePeriod = schedulePeriod
 }
 
-const getAdvancedDropdown = (state: any, advancedDropdown: any) => {
+const SAVE_ADVANCE_DROPDOWN = (state: any, advancedDropdown: any) => {
   state.advancedDropdown = advancedDropdown
 }
 
-const getProvisionDService = (state: any, provisionDService: any) => {
+const SAVE_PROVISION_SERVICE = (state: any, provisionDService: any) => {
   state.provisionDService = provisionDService
 }
 
-const sendEditData = (state: any, sendEditData: any) => {
-  state.sendEditData = sendEditData
+const SEND_MODIFIED_DATA = (state: any, sendModifiedData: any) => {
+  state.sendModifiedData = sendModifiedData
 }
 
-export default { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService, sendEditData }
+export default { SAVE_TYPES, SAVE_SCHEDULE_PERIOD, SAVE_ADVANCE_DROPDOWN, SAVE_PROVISION_SERVICE, SEND_MODIFIED_DATA }

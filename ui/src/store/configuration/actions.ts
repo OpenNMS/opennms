@@ -1,38 +1,32 @@
-import axios from 'axios'
 import { VuexContext } from '@/types'
-import { axiosAuth } from '../../components/Common/Demo/apiInterceptor'
+import API from '@/services'
 
-let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
-let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
-let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
-let getProvisionD = '/opennms/rest/cm/provisiond/default'
-
-const getDropdownTypes = (context: VuexContext) => {
-  axios.get(typesUrl).then((response) => {
-    context.commit('getDropdownTypes', response.data)
-  })
+const getDropdownTypes = async (context: VuexContext) => {
+  const resp = await API.getDropdownTypes
+  if (resp) {
+    context.commit('SAVE_TYPES', resp)
+  }
 }
 
-const getSchedulePeriod = (context: VuexContext) => {
-  axios.get(periodUrl).then((response) => {
-    context.commit('getSchedulePeriod', response.data)
-  })
+const getSchedulePeriod = async (context: VuexContext) => {
+  const resp = await API.getSchedulePeriod
+  if (resp) {
+    context.commit('SAVE_SCHEDULE_PERIOD', resp)
+  }
 }
 
-const getAdvancedDropdown = (context: VuexContext) => {
-  axios.get(advDropdownUrl).then((response) => {
-    context.commit('getAdvancedDropdown', response.data)
-  })
+const getAdvancedDropdown = async (context: VuexContext) => {
+  const resp = await API.getAdvancedDropdown
+  if (resp) {
+    context.commit('SAVE_ADVANCE_DROPDOWN', resp)
+  }
 }
 
-const getProvisionDService = (context: VuexContext) => {
-  axiosAuth.get(getProvisionD).then((response) => {
-    if (response.status === 200) {
-      context.commit('getProvisionDService', response.data)
-    } else {
-      console.error('Please check API response')
-    }
-  })
+const getProvisionDService = async (context: VuexContext) => {
+  const resp = await API.getProvisionDService
+  if (resp) {
+    context.commit('SAVE_PROVISION_SERVICE', resp)
+  }
 }
 
 export default {
