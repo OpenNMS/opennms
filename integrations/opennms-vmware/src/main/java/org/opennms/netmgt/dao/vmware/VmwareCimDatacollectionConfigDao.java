@@ -26,35 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.vmware;
 
-import org.opennms.netmgt.config.vmware.vijava.VmwareCollection;
-import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
- * The Interface VmwareDatacollectionConfigDao
+ * The Interface VmwareCimDatacollectionConfigDao
  * <p/>
- * This class is used for defining the methods for accessing the configuration data for the Vmware Data Collection
+ * This class is used for defining the methods for accessing the configuration data for the Vmware Cim Data Collection
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public interface VmwareDatacollectionConfigDao {
+public interface VmwareCimDatacollectionConfigDao {
 
     /**
      * Returns the loaded config object.
      *
      * @return the current config object
      */
-    VmwareDatacollectionConfig getConfig();
+    VmwareCimDatacollectionConfig getConfig();
 
     /**
      * This method returns a subset of the configuration data for a given collection name.
      *
      * @param collectionName the collection's name
-     * @return the collection object
+     * @return the Cim collection object
      */
-    VmwareCollection getVmwareCollection(String collectionName);
+    VmwareCimCollection getVmwareCimCollection(String collectionName);
 
     /**
      * Returns the Rrd repository for a given collection name.

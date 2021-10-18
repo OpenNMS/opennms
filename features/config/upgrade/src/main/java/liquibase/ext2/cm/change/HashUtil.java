@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao;
+package liquibase.ext2.cm.change;
 
-import org.opennms.netmgt.config.vmware.VmwareConfig;
-import org.opennms.netmgt.config.vmware.VmwareServer;
+import java.io.IOException;
+import java.net.URL;
 
-import java.util.Map;
+import org.opennms.features.config.dao.api.util.SchemaUtil;
 
-/**
- * The Interface VmwareConfigDao
- * <p/>
- * This class is used for defining the methods for accessing the configuration data for the Vmware Accounts
- *
- * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
- */
-public interface VmwareConfigDao {
+import com.google.common.hash.Hashing;
+import com.google.common.io.Resources;
 
-    /**
-     * Returns the loaded config object.
-     *
-     * @return the current config object
-     */
-    VmwareConfig getConfig();
-
-    /**
-     * Returns the map of server entries from the configuration object.
-     *
-     * @return the map of server entries
-     */
-    Map<String, VmwareServer> getServerMap();
+public class HashUtil {
+    public static String getHash(String xsdFileName) throws IOException {
+        URL url = SchemaUtil.getSchemaPath(xsdFileName);
+        byte[] bytes = Resources.toByteArray(url);
+        return Hashing.sha256().hashBytes(bytes).toString();
+    }
 }

@@ -28,9 +28,14 @@
 
 package liquibase.ext2.cm.change;
 
-import java.io.File;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigSchema;
@@ -38,7 +43,10 @@ import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
@@ -48,14 +56,21 @@ import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 
+/**
+ * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
+ */
 @DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfiguration extends AbstractCmChange {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
+    private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
     private String schemaId;
     private String configId;
     private String filePath;
+    private Path archivePath;
+    private Path etcFile = null; // user defined file
+    private Resource configResource;
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
@@ -63,15 +78,37 @@ public class ImportConfiguration extends AbstractCmChange {
         validationErrors.checkRequiredField("configId", this.configId);
         validationErrors.checkRequiredField("filePath", this.filePath);
 
+        String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
+        this.etcFile = Path.of(opennmsHome + "/etc/"+this.filePath);
+        configResource = new FileSystemResource(etcFile.toString()); // check etc dir first
+        if (!configResource.isReadable()) {
+            configResource = new ClassPathResource("/defaults/"+this.filePath); // fallback: default config
+            this.etcFile = null;
+        }
+        if (!configResource.isReadable()) {
+            validationErrors.addError(String.format("Cannot read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
+                    opennmsHome, this.filePath, this.filePath));
+        }
+        checkArchiveDir(validationErrors);
+        return validationErrors;
+    }
+
+    void checkArchiveDir(ValidationErrors validationErrors) {
         try {
-            File file = ResourceUtils.getFile(this.filePath);
-            if(!file.canRead()) {
-                validationErrors.addError(String.format("Can not find file %s", this.filePath));
+            String opennmsHome = System.getProperty(SYSTEM_PROP_OPENNMS_HOME, "");
+            this.archivePath = Paths.get(opennmsHome, "etc_archive");
+            if (!Files.exists(this.archivePath)) {
+                Files.createDirectory(this.archivePath);
+            }
+            if (!Files.isDirectory(this.archivePath)) {
+                validationErrors.addError(String.format("Archive directory %s is not a directory.", this.archivePath));
+            }
+            if(!Files.isWritable(this.archivePath)) {
+                validationErrors.addError(String.format("Archive directory %s is not writable.", this.archivePath));
             }
         } catch(Exception e) {
-            validationErrors.addError(String.format("Can not find file %s: %s", this.filePath, e.getMessage()));
+            validationErrors.addError(String.format("Can not find or create archive directory %s: %s", this.archivePath, e.getMessage()));
         }
-        return validationErrors;
     }
 
     @Override
@@ -86,14 +123,27 @@ public class ImportConfiguration extends AbstractCmChange {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
-                        String xmlStr = Files.readString(ResourceUtils.getFile(this.filePath).toPath());
+                        String xmlStr = asString(this.configResource);
                         JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
+                        LOG.info("Configuration with id={} imported.", this.configId);
+                        if(etcFile != null) {
+                            // we imported a user defined config file => move to archive
+                            Path archiveFile = Path.of(this.archivePath + "/" + etcFile.getFileName());
+                            Files.move(etcFile, archiveFile); // move to archive
+                            LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 })
         };
+    }
+
+    private static String asString(Resource resource) throws IOException {
+        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
+            return FileCopyUtils.copyToString(reader);
+        }
     }
 
     public String getSchemaId() {

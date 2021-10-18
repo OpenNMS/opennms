@@ -42,7 +42,7 @@ public class UpgradeSchema extends AbstractSchemaChange {
     }
 
     protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.upgradeSchema(id, xsdName, this.rootElement);
+        return () -> m.upgradeSchema(id, xsdFileName, this.rootElement);
     }
 }
 

@@ -29,7 +29,6 @@
 package org.opennms.features.config.dao.impl.util;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -44,14 +43,12 @@ import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ValidationSchema;
 import org.opennms.features.config.dao.api.XmlSchema;
 import org.opennms.features.config.dao.api.XmlValidationSchema;
+import org.opennms.features.config.dao.api.util.SchemaUtil;
 import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.io.Resources;
 
@@ -101,7 +98,7 @@ public class XmlConverter implements ConfigConverter {
      * @throws IOException
      */
     private XmlValidationSchema readXmlSchema() throws IOException {
-        String xsdStr = Resources.toString(this.getSchemaPath(), StandardCharsets.UTF_8);
+        String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
         final XsdModelConverter xsdModelConverter = new XsdModelConverter();
         final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xsdStr);
         // Grab the first namespace that includes 'opennms', sort for predictability
@@ -120,24 +117,6 @@ public class XmlConverter implements ConfigConverter {
 
     public String getRootElement() {
         return rootElement;
-    }
-
-    /**
-     * It will search xsds first, otherwise it will search across classpath
-     *
-     * @return URL of the xsd file
-     */
-    @Override
-    @JsonIgnore
-    public URL getSchemaPath() throws IOException {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("xsds/" + xsdName);
-        if (url == null) {
-            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
-            if (resources != null && resources.length > 0)
-                url = resources[0].getURL();
-        }
-        return url;
     }
 
     @Override

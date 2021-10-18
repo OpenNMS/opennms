@@ -39,7 +39,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
@@ -47,7 +46,6 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  */
 @XmlRootElement(name = "provisiond-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-@ValidateUsing("provisiond-configuration.xsd")
 public class ProvisiondConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
