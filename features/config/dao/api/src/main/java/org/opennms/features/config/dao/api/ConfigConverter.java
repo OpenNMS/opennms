@@ -28,9 +28,6 @@
 
 package org.opennms.features.config.dao.api;
 
-import java.io.IOException;
-import java.net.URL;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface ConfigConverter {
@@ -58,13 +55,6 @@ public interface ConfigConverter {
      * @return ServiceSchema
      */
     ValidationSchema<?> getValidationSchema();
-
-    /**
-     * @return schema URL
-     * @throws IOException
-     */
-    @JsonIgnore
-    URL getSchemaPath() throws IOException;
 
     /**
      * @return schema type
