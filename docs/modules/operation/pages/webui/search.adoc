@@ -46,7 +46,7 @@ An asterisk (*) in place of any octet matches any value for that octet.
 Separate two numbers by a dash (-) to indicate a range.
 Use a comma for list demarcation.
 
-For example, the following search fields are all valid and each creates the same result set: all TCP/IP addresses from 192.168.0.0 through 192.168.255.255:
+For example, the following search fields are all valid and each creates the same result set: all IP addresses from 192.168.0.0 through 192.168.255.255:
 
 * 192.168.\*.*
 * 192.168.0-255.0-255
