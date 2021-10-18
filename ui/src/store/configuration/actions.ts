@@ -1,6 +1,10 @@
 import { VuexContext } from '@/types'
 import API from '@/services'
 
+export const GET_TYPES_DROPDOWN = 'configuration/getDropdownTypes'
+export const GET_SCHEDULE_PERIOD_DROPDOWN = 'configuration/getSchedulePeriod'
+export const GET_ADVANCED_DROPDOWN = 'configuration/getAdvancedDropdown'
+
 const getDropdownTypes = async (context: VuexContext) => {
   const resp = await API.getDropdownTypes
   if (resp) {

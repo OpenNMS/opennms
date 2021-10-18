@@ -142,6 +142,11 @@ import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
 import router from '@/router'
+import {
+    GET_TYPES_DROPDOWN,
+    GET_SCHEDULE_PERIOD_DROPDOWN,
+    GET_ADVANCED_DROPDOWN
+} from '../../store/configuration/actions'
 
 const store = useStore();
 const reqDefinition = reactive(State);
@@ -171,48 +176,29 @@ const props = defineProps({
 onMounted(async () => {
     try {
         // Types
-        await store.dispatch('configuration/getDropdownTypes');
+        await store.dispatch(GET_TYPES_DROPDOWN);
         // Schedule Period
-        await store.dispatch('configuration/getSchedulePeriod');
+        await store.dispatch(GET_SCHEDULE_PERIOD_DROPDOWN);
         // Advanced Dropdown
-        await store.dispatch('configuration/getAdvancedDropdown');
+        await store.dispatch(GET_ADVANCED_DROPDOWN);
 
         // Edit Operation logic
         if (router.currentRoute.value.name === 'reqDefEdit') {
 
             let data = store.state.configuration.sendModifiedData;
             let url = data['import-url-resource'].split('/');
-
-            //temp logic to patch schedule period value
-            let cron_schedule = data['cron-schedule'];
-            reqDefinition.reqDef.schedulePeriodNumber = parseInt(cron_schedule.match(/\d+/)[0]);
-            reqDefinition.reqDef.schedulePeriod = "minute"
-            //temp logic ends
-
             reqDefinition.reqDef.name = data['import-name'];
             reqDefinition.reqDef.type = url[0].split(':')[0];
             reqDefinition.reqDef.host = url[2];
             generatedURL.value = data['import-url-resource'];
 
+            //temp logic to patch/set schedule period value
+            setCronSchedule(data['cron-schedule']);
+
             let patchVal = url[3].split('?');
             reqDefinition.reqDef.foreignSource = patchVal[0];
-
-            //add edit data value to advance dropdown
-            const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
-                if (index == 1) {
-                    addAnotherArr.value[0]['dropdownVal'] = dropdownVal;
-                    addAnotherArr.value[0]['advTextVal'] = advTextVal;
-                } else {
-                    let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal };
-                    addAnotherArr.value.push(addObj);
-                }
-            }
-
-            //Identify how many advance parameter
-            for (let i = 1; i < patchVal.length; i++) {
-                let val = patchVal[i].split('=');
-                dropVal(val[0], val[1], i);
-            }
+            //On edit patch/set data - for advance dropdown
+            setAdvDropDowndata(patchVal);
 
         } else {
             reqDefinition.reqDef.name = '';
@@ -236,6 +222,30 @@ const stateSchedulePeriod = computed(() => {
 const stateAdvancedDropdown = computed(() => {
     return store.state.configuration.advancedDropdown
 });
+
+const setCronSchedule = (data: any) => {
+    reqDefinition.reqDef.schedulePeriodNumber = parseInt(data.match(/\d+/)[0]);
+    reqDefinition.reqDef.schedulePeriod = "minute"
+}
+
+const setAdvDropDowndata = (patchVal: any) => {
+    //add edit data value to advance dropdown
+    const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
+        if (index == 1) {
+            addAnotherArr.value[0]['dropdownVal'] = dropdownVal;
+            addAnotherArr.value[0]['advTextVal'] = advTextVal;
+        } else {
+            let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal };
+            addAnotherArr.value.push(addObj);
+        }
+    }
+
+    //Identify how many advance parameter
+    for (let i = 1; i < patchVal.length; i++) {
+        let val = patchVal[i].split('=');
+        dropVal(val[0], val[1], i);
+    }
+}
 
 //Add another parameter
 const addAnother = () => {

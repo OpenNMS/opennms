@@ -5,9 +5,7 @@
         </div>
         <div class="reqDef">
             <div class="dataTable" v-if="index === 0">
-                <KeepAlive>
-                    <DataTableDemo></DataTableDemo>
-                </KeepAlive>
+                <DataTableDemo></DataTableDemo>
             </div>
             <div v-else>
                 <ReqDefinitionForm></ReqDefinitionForm>

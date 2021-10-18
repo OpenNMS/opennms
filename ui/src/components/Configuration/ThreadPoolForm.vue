@@ -46,7 +46,12 @@
         <Button
           icon="pi pi-save"
           label="Save"
-          :disabled="validationVar.threadpool.writeThreads.$invalid || validationVar.threadpool.scanThreads.$invalid || validationVar.threadpool.rescanThreads.$invalid || validationVar.threadpool.importThreads.$invalid"
+          :disabled="
+            validationVar.threadpool.writeThreads.$invalid ||
+            validationVar.threadpool.scanThreads.$invalid ||
+            validationVar.threadpool.rescanThreads.$invalid ||
+            validationVar.threadpool.importThreads.$invalid
+          "
           @click="onSave()"
         ></Button>
       </div>
