@@ -40,6 +40,7 @@ const defaultColDef = ref({
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
   sortable: true,
+  suppressMenu: true
 })
 
 let interestedNodesID = computed(() => {
