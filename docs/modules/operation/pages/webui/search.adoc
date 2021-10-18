@@ -39,7 +39,7 @@ For example, searching on `serv` finds any of `serv, Service, Reserved, NTSERV, 
 Use the underscore character as a single-character wildcard.
 Use the percent character as a multiple-character wildcard.
 
-=== TCP/IP address-like search
+=== IP address search
 
 Searching by IP address uses a flexible search format that lets you separate the four or eight (in the case of IPv6) fields of an IP address into specific searches.
 An asterisk (*) in place of any octet matches any value for that octet.
