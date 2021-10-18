@@ -139,8 +139,6 @@
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
 
-* xref:search/search.adoc[]
-
 * xref:ticketing/introduction.adoc[]
 
 * xref:rmi.adoc[]
