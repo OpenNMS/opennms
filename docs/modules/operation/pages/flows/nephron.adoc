@@ -1,0 +1,51 @@
+[[ga-nephron]]
+= Nephron
+
+NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
+
+link:https://github.com/OpenNMS/nephron[Nephron] is a streaming application that reads flows from Kafka, calculates flow aggregates, and persists these aggregates in Elasticsearch, Cortex, or Kafka.
+
+== Flow input
+
+Flow input from Kafka is configured by the following command line arguments:
+
+[source, console]
+----
+--bootstrapServers=...
+--flowSourceTopic=...
+----
+
+The `flowSourceTopic` given here must match the topic configured for the <<flows/setup.adoc#kafka-forwarder-config, Kafka forwarder>>.
+
+== Elasticsearch persistence
+
+Elasticsearch persistence is configured by the following command line argument:
+
+[source, console]
+----
+--elasticUrl=http://<server>:9200
+----
+
+For additional options see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/NephronOptions.java[NephronOptions].
+
+If no Elasticsearch output is required then `--elasticUrl` must be set empty.
+
+== Cortex persistence
+
+Cortex persistence is configured by the following command line argument:
+
+[source, console]
+----
+--cortexWriteUrl=http://<server>:9009/api/v1/push
+----
+
+For additional options see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/CortexOptions.java[CortexOptions].
+
+== Kafka persistence
+
+Kafka persistence is configured by the command line argument:
+
+[source, console]
+----
+--flowDestTopc=...
+----
