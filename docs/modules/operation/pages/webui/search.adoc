@@ -92,7 +92,7 @@ Use the percent character as a multiple-character wildcard.
 == Customize search results
 
 Customize search results to show additional metadata in the search results pop up.
-Create a new file in `$OPENNMS_HOME/etc/opennms.properties.d/` and specify a value for `org.opennms.netmgt.search.info`, to pick additional metadata fields to display.
+Create a new file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` and specify a value for `org.opennms.netmgt.search.info`, to pick additional metadata fields to display.
 
 This example displays the node's sys-contact and the associated department:
 
