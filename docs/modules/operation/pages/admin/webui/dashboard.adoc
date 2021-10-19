@@ -35,7 +35,7 @@ The Surveillance View has multiple functions.
 * Lets you limit the number of information in the dashboard by selecting rows, columns and cells.
 
 You can select columns, rows, single cells and of course all entries in a Surveillance View.
-Please refer to the <<webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View Section>> for details on how to configure Surveillance Views.
+Please refer to the <<admin/webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View Section>> for details on how to configure Surveillance Views.
 
 .The Surveillance View forms the basis for the dashboard page.
 image::dashboard/02_dashboard-surveillance-view.png[]
@@ -106,7 +106,7 @@ image::dashboard/06_dashboard-resource-graphs.png[]
 
 The Surveillance View component lets you model multiple views for different monitoring contexts.
 It gives the possibility to create special view as example for network operators or server operators.
-The dashboard shows only *one* configured <<webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
+The dashboard shows only *one* configured <<admin/webui/surveillance-view.adoc#ga-surveillance-view, Surveillance View>>.
 To give different users the possibility using their Surveillance View fitting there requirements it is possible to map a logged in user to a given Surveillance View used in the dashboard.
 
 The selected nodes from the Surveillance View are also aware of https://opennms.discourse.group/t/user-restriction-filters-webacls/1021[User Restriction Filter].
@@ -144,7 +144,7 @@ image::dashboard/08_dashboard-user-roles.png[]
 ----
 
 ==== Step 3: Define Surveillance View
-Edit the `$\{OPENNMS_HOME}/etc/surveilliance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
+Edit the `$\{OPENNMS_HOME}/etc/surveillance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
 [source, xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>

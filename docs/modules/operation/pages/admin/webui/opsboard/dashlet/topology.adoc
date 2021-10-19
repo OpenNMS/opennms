@@ -1,7 +1,7 @@
 
 = Topology
 
-This dashlet shows a https://wiki.opennms.org/wiki/Topology_Maps[Topology Map].
+This dashlet shows a <<topology/topology.adoc#topology-map, Topology Map>>.
 Configure the topology map with the following parameters.
 
 [options="autowidth"]

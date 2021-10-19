@@ -19,6 +19,6 @@ Configure the Alarm Details Dashlet with the following parameters.
 
 [options="autowidth"]
 |===
-| Boost support | <<webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
-| Configuration | <<webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
+| Boost support | <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+| Configuration | <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
 |===

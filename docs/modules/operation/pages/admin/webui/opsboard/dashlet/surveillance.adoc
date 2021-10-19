@@ -1,7 +1,7 @@
 
 = Surveillance
 
-This dashlet shows a given https://wiki.opennms.org/wiki/Surveillance_View_%28af%29[Surveillance View].
+This dashlet shows a given <<admin/webui/surveillance-view.adoc#surveillance-view, Surveillance View>>.
 
 [options="autowidth"]
 |===

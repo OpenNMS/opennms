@@ -54,4 +54,4 @@ image::webui/opsboard/05_opsboard-user.png[]
 Visualization of information is implemented in dashlets.
 The different dashlets are described in this section with all available configuration parameter.
 
-To allow filter information, configure the dashlet with a generic <<webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder,Criteria Builder>>.
+To allow filter information, configure the dashlet with a generic <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder,Criteria Builder>>.
