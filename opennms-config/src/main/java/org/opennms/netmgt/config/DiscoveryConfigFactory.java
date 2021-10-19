@@ -34,6 +34,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.*;
@@ -159,7 +160,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @throws java.io.IOException if any.
      */
   public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
-      this.updateConfig(configuration);
+      this.updateConfig(JaxbUtils.marshal((Object)configuration));
     }
     /**
      * <pre>
