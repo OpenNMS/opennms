@@ -38,7 +38,6 @@ const clickAction = (val: any) => {
     }
 }
 
-
 </script>
 
 <style scoped>

@@ -28,7 +28,7 @@
             <!-- custom data column added -->
             <Column v-for="columnName of props.customData">
                 <template #body="{ data }">
-                    <Button :label="columnName" @click="onClickHandle(columnName, data.id)"></Button>
+                    <Button :label="columnName" @click="onClickHandle(columnName, data)"></Button>
                 </template>
             </Column>
         </PrimeVueDataTable>
@@ -37,11 +37,14 @@
 
 <script setup lang="ts">
 
-import { computed, ref } from 'vue';
-import PrimeVueDataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import router from '@/router';
-import Button from "./Button.vue";
+import { computed, ref } from 'vue'
+import PrimeVueDataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import router from '@/router'
+import Button from "./Button.vue"
+import { useStore } from 'vuex'
+
+const store = useStore();
 
 const selectedRows: any = ref();
 const tableData: any = ref();
@@ -82,6 +85,7 @@ const dataValue = computed(() => {
 });
 
 const findColumn = (data: any) => {
+    columnDef.value = [];
     let responseData = data[0];
     //responseData can not be null | undefined
     if (responseData) {
@@ -91,8 +95,8 @@ const findColumn = (data: any) => {
             const Obj = { "field": colData, "header": colData.toUpperCase(), "key": colData };
             columnDef.value.push(Obj);
         });
-        loading.value = false; //loading stops
     }
+    loading.value = false; //loading stops
 };
 
 //computed for rowsPerPage
@@ -101,13 +105,16 @@ const rowsPerPage = computed(() => {
 });
 
 //decision for routing
-const onClickHandle = (selectedName: any, paramId: any) => {
+const onClickHandle = (selectedName: any, data: any) => {
     switch (selectedName) {
         case "edit":
-            router.push({ path: `/${selectedName}/${paramId}` });
+            //edit click data state store
+            store.commit('configuration/SEND_MODIFIED_DATA', data);
+            //route to edit node component
+            router.push({ path: `/${selectedName}/${data['import-name']}` });
             break;
         case "delete":
-            confirm(`Please confirm delete id ${paramId}?`);
+            confirm(`Please confirm delete ${data['import-name']}?`);
             break;
         default:
             alert(`please add logic for ${selectedName}`);
