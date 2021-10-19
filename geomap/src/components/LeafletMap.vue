@@ -27,7 +27,7 @@
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
-add         >
+            >
         <l-popup> {{ node.label }} </l-popup>
         </l-marker>
         <l-polyline

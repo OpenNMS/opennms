@@ -1,5 +1,5 @@
 import API from "@/services"
-import { QueryParameters, VuexContext } from '@/types'
+import { QueryParameters, AlarmModificationQueryVariable, VuexContext, Node } from '@/types'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getNodes(queryParameters)
@@ -22,13 +22,13 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
 
 const getAlarms = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getAlarms(queryParameters)
-
-    context.commit("SAVE_ALARMS_TO_STATE", resp.alarm)
-
+    if (resp) {
+        context.commit("SAVE_ALARMS_TO_STATE", resp.alarm)
+    }
 }
 
 const resetInterestedNodesID = ({ commit, state }) => {
-    commit("SAVE_INTERESTED_NODES_ID", state.nodesWithCoordinates.map(node => node.id))
+    commit("SAVE_INTERESTED_NODES_ID", state.nodesWithCoordinates.map((node: Node) => node.id))
 }
 
 const getNodesGraphEdges = async (context: VuexContext, queryParameters?: QueryParameters) => {
@@ -49,11 +49,17 @@ const setInterestedNodesId = (context: VuexContext, ids: number[]) => {
     context.commit("SAVE_INTERESTED_NODES_ID", ids)
 }
 
+const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModificationQueryVariable) => {
+    const resp = await API.modifyAlarm(alarmQueryVariable.pathVariable, alarmQueryVariable.queryParameters)
+    return resp;
+}
+
 
 export default {
     getNodes,
     getAlarms,
     resetInterestedNodesID,
     getNodesGraphEdges,
-    setInterestedNodesId
+    setInterestedNodesId,
+    modifyAlarm
 }

@@ -115,3 +115,14 @@ export interface SortProps {
   sortField: string
   sortOrder: 1 | -1
 }
+
+export interface AlarmQueryParameters {
+  ack?: boolean
+  clear?: boolean
+  escalate?: boolean
+}
+
+export interface AlarmModificationQueryVariable {
+  pathVariable: string
+  queryParameters:  AlarmQueryParameters
+}

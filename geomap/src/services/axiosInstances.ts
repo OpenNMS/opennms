@@ -6,4 +6,14 @@ const v2 = axios.create({
   withCredentials: true
 })
 
-export { v2 }
+const rest = axios.create({
+  baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
+  withCredentials: true,
+  headers: {
+    put: {
+      Accept: 'application/x-www-form-urlencoded'
+    },
+}
+})
+
+export { v2, rest }

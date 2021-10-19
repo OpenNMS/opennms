@@ -73,8 +73,7 @@ function onGridReady(params: any) {
 
 watch(
   () => interestedNodesID.value,
-  (newValue, oldValue) => {
-    console.log("MapNodes page. I'm changed from " + oldValue + " to " + newValue)
+  () => {
     gridApi.setRowData(
       getGridRowDataFromInterestedNodes()
     );
