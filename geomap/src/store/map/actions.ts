@@ -51,6 +51,7 @@ const setInterestedNodesId = (context: VuexContext, ids: number[]) => {
 
 const setMapCenter = (context: VuexContext, center: Coordinates) => {
     context.commit("SAVE_MAP_CENTER", center)
+}
 
 const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModificationQueryVariable) => {
     const resp = await API.modifyAlarm(alarmQueryVariable.pathVariable, alarmQueryVariable.queryParameters)
