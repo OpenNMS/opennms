@@ -77,6 +77,10 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         objMap.clear();
     }
 
+    public Map<SessionKey, byte[]> getObjMap() {
+        return objMap;
+    }
+
     private class SessionImpl<T> implements Session<T> {
 
         private final SessionKey sessionKey;

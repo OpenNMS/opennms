@@ -30,7 +30,10 @@ package org.opennms.core.ipc.twin.grpc;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.grpc.common.GrpcIpcServer;
+import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
@@ -43,6 +46,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -61,7 +65,8 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
 
     @Override
     protected TwinPublisher createPublisher() throws IOException {
-        this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, 0);
+        this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
         twinPublisher.start();
         return twinPublisher;
     }
@@ -154,16 +159,17 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
     public void testPublisherRestart() throws Exception {
         final var tracker = Tracker.subscribe(this.twinSubscriber, "test", String.class);
 
-        final var session = this.twinPublisher.register("test", String.class);
+        var session = this.twinPublisher.register("test", String.class);
         session.publish("Test1");
         session.publish("Test2");
 
-        await().until(tracker::getLog, hasItems("Test2"));
+        await().atMost(15, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2"));
         twinPublisher.shutdown();
         twinPublisher = (GrpcTwinPublisher) this.createPublisher();
+        session = this.twinPublisher.register("test", String.class);
         session.publish("Test3");
 
-        await().until(tracker::getLog, hasItems("Test3"));
+        await().atMost(15, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test3"));
     }
 
     @After

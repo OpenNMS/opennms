@@ -26,42 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.grpc;
+package org.opennms.core.grpc.common;
 
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.distributed.core.api.SystemType;
+import io.grpc.BindableService;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.util.Properties;
 
-public class MockMinionIdentity implements MinionIdentity {
+/**
+ *  This Interface allows us to have a common Grpc Server for all IPC Services.
+ */
+public interface GrpcIpcServer {
 
-    private final String location;
+    /**
+     * Starts server, this will not immediately start server but schedules server start after certain delay.
+     * This should be called after #addService
+     **/
+    void startServer() throws IOException;
 
-    private String id = "minionId";
+    /**
+     * Stops the Server.
+     **/
+    void stopServer();
 
-    public MockMinionIdentity(String location) {
-        this.location = location;
-        this.id = UUID.randomUUID().toString();
-    }
+    /**
+     * Adds services to Server.
+     **/
+    void addService(BindableService bindableService);
 
-    public MockMinionIdentity(String location, String id) {
-        this.location = location;
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getLocation() {
-        return location;
-    }
-
-    @Override
-    public String getType() {
-        return SystemType.Minion.name();
-    }
-
+    /**
+     * Get properties with which the service has started.
+     **/
+    Properties getProperties();
 }

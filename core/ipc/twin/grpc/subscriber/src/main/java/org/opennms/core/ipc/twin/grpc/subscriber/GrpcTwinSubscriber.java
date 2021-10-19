@@ -63,6 +63,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private Properties clientProperties;
     private OpenNMSTwinIpcGrpc.OpenNMSTwinIpcStub asyncStub;
     private StreamObserver<TwinRequestProto> rpcStream;
+    private ResponseHandler responseHandler = new ResponseHandler();
     private final ThreadFactory twinRequestSenderThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("twin-request-sender-%d")
             .build();
@@ -86,21 +87,37 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     }
 
-    private StreamObserver<TwinRequestProto> getRpcStream(ConnectivityState currentChannelState) {
+    private boolean initRpcStream() {
+        ConnectivityState currentChannelState = channel.getState(true);
         if (currentChannelState.equals(ConnectivityState.READY) && this.rpcStream == null) {
-            this.rpcStream = asyncStub.rpcStreaming(new ResponseHandler());
-            // Send minion header only once or when server re-initialized.
+            this.rpcStream = asyncStub.rpcStreaming(responseHandler);
+            // Send minion header whenever we re-initialize rpc stream.
             sendMinionHeader();
+            return true;
         }
-        return this.rpcStream;
+        return false;
+    }
+
+    private void retryInitializeRpcStream() {
+        try {
+            ScheduledFuture<Boolean> future = twinRequestSenderExecutor.schedule(
+                    () -> initRpcStream(), RETRIEVAL_TIMEOUT, TimeUnit.MILLISECONDS);
+            boolean succeeded = future.get();
+            if (succeeded) {
+                return;
+            }
+        } catch (Exception e) {
+            LOG.error("Error while initializing RPC stream {}", e);
+        }
+        retryInitializeRpcStream();
     }
 
     private void sendMinionHeader() {
         // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
-        // gRPC Server needs at least one message to send the stream back.
+        // gRPC Server needs at least one message to initialize the stream
         MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
                 .setSystemId(getMinionIdentity().getId()).build();
-        asyncStub.sinkStreaming(minionHeader, new ResponseHandler());
+        asyncStub.sinkStreaming(minionHeader, responseHandler);
     }
 
     public void shutdown() {
@@ -134,10 +151,10 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private synchronized boolean sendTwinRequest(TwinRequestProto twinRequestProto) {
+        initRpcStream();
         ConnectivityState currentChannelState = channel.getState(true);
-        StreamObserver<TwinRequestProto> requestSender = getRpcStream(currentChannelState);
-        if (requestSender != null && currentChannelState.equals(ConnectivityState.READY)) {
-            requestSender.onNext(twinRequestProto);
+        if (rpcStream != null && currentChannelState.equals(ConnectivityState.READY)) {
+            rpcStream.onNext(twinRequestProto);
             return true;
         } else {
             return false;
@@ -163,12 +180,14 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         public void onError(Throwable throwable) {
             LOG.error("Error in Twin streaming", throwable);
             rpcStream = null;
+            CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
         @Override
         public void onCompleted() {
             LOG.error("Closing Twin Response Handler");
             rpcStream = null;
+            CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
         private TwinResponseBean mapTwinResponseProto(TwinResponseProto twinResponseProto) {
