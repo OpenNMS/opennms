@@ -37,9 +37,7 @@ if [ ! -s /tmp/this_node_projects ]; then
 fi
 
 echo "#### Set loopback to 127.0.0.1"
-# circleci has started making 127.0.0.1 resolve to a generated hostname, which we don't want
-sudo sed -i -e '/^127.0.[01].1/d' /etc/hosts
-echo "127.0.0.1 localhost" | sudo tee -a /etc/hosts
+sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
 
 echo "#### Allowing non-root ICMP"
 sudo sysctl net.ipv4.ping_group_range='0 429496729'
