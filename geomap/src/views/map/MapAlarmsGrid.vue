@@ -250,6 +250,7 @@ const columnDefs = ref([
     cellRenderer: (data: any) => {
       return data.value ? new Date(data.value).toLocaleDateString() : "";
     },
+    sort: "desc"
   },
   {
     headerName: "LOG MESSAGE",

@@ -130,6 +130,7 @@ const columnDefs = ref([
     headerName: "LABEL",
     field: "label",
     headerTooltip: "Label",
+    sort: "asc"
   },
   {
     headerName: "LABEL SOURCE",
