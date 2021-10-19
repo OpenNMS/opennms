@@ -4,10 +4,17 @@
 This dashlet shows a <<topology/topology.adoc#topology-map, Topology Map>>.
 Configure the topology map with the following parameters.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-| Boost support | false
-| `focusNodes`  | Which node(s) is in focus for the topology
-| `provider`    | Which topology should be displayed, e.g., Linkd, VMware
-| `szl`         | Set the zoom level for the topology
+| Boost support
+| false
+
+| focusNodes
+| Which node(s) is in focus for the topology
+
+| provider
+| Which topology should be displayed, for example, Linkd, VMware
+
+| szl
+| Set the zoom level for the topology
 |===

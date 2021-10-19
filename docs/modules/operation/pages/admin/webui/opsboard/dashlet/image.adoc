@@ -3,10 +3,17 @@
 
 This dashlet displays an image by a given URL.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-| Boost support    | false
-| `imageUrl`       | URL with the location of the image to show in this dashlet
-| `maximizeHeight` | Rescale the image to fill display width
-| `maximizeWidth`  | Rescale the image to fill display height
+| Boost support
+| false
+
+| imageUrl
+| URL with the location of the image to show in this dashlet
+
+| maximizeHeight
+| Rescale the image to fill display width
+
+| maximizeWidth
+| Rescale the image to fill display height
 |===

@@ -4,7 +4,7 @@
 
 Enable HTTP requests logs for Jetty by uncommenting the following snippet in `etc/jetty.xml`:
 
-[source,xml]
+[source, xml]
 ----
 <!-- NCSA Request Logging
   <Item>
@@ -27,7 +27,7 @@ NOTE: If you do not have a `jetty.xml` in the `etc` directory, you can start by 
 
 To include the user names associated with the requests in the log file, you must also uncomment the following snippet in `jetty-webapps/opennms/WEB-INF/web.xml`:
 
-[source,xml]
+[source, xml]
 ----
 <!-- Enable this filter mapping when using NCSA request logging
 <filter-mapping>

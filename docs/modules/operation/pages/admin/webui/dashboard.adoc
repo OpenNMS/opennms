@@ -2,7 +2,7 @@
 = Dashboard
 
 In Network Operation Centers NOC an overview about issues in the network is important and often described as dashboards.
-Large networks have people (Operator) with different responsibilities and the dashboard should show only information for a given monitoring context.
+Large networks have people (Operators) with different responsibilities and the dashboard should show only information for a given monitoring context.
 Network or Server operator have a need to customize or filter information on the dashboard.
 A dashboard as an At-a-glance overview is also often used to give an entry point for more detailed diagnosis through the information provided by the monitoring system.
 The Surveillance View lets you reduce the visible information by selecting rows, columns, and cells to quickly limit the amount of information to navigate through.
@@ -128,12 +128,12 @@ The following example assigns a dashboard to the user "drv4doe" (a router and sw
 image::dashboard/07_dashboard-add-user.png[]
 
 ==== Step 2: Change Security Roles
-Now, add the `ROLE_PROVISION` role to the user through the WebUI or by manually editing the `users.xml` file in the `/opt/opennms/etc` directory for the user `drv4doe`.
+Now, add the `ROLE_PROVISION` role to the user through the WebUI or by manually editing the `users.xml` file in the `$\{OPENNMS_HOME}/etc` directory for the user `drv4doe`.
 
 .Adding dashboard role to the user `drv4doe` using the {page-component-title} WebUI
 image::dashboard/08_dashboard-user-roles.png[]
 
-[source, properties]
+[source, xml]
 ----
 <user>
     <user-id>drv4doe</user-id>
@@ -169,7 +169,7 @@ Edit the `$\{OPENNMS_HOME}/etc/surveillance-view.xml` file to add a definition f
         </column-def>
       </columns>
     </view>
-   <!-- default view here -->
+    <!-- default view here -->
     <view name="default" refresh-seconds="300" >
       <rows>
         <row-def label="Routers" >
@@ -211,37 +211,37 @@ NOTE: The `drv4doe` user is not allowed to navigate to URLs other than the `dash
 === Anonymous dashboards
 
 You can modify the configuration files for the security framework to give you access to one or more dashboards without logging in.
-At the end you'll be able to point a browser at a special URL like \`http://.../opennms/dashboard1` or \`http://.../opennms/dashboard2` and see a dashboard without any authentication.
+At the end you'll be able to point a browser at a special URL like `\http://hostname/opennms/dashboard1` or `\http://hostname/opennms/dashboard2` and see a dashboard without any authentication.
 First, configure surveillance views and create dashboard users as above.
 For example, make two dashboards and two users called `dashboard1` and `dashboard2`.
 Test that you can log in as each of the new users and see the correct dashboard.
 Now create some aliases you can use to distinguish between dashboards.
-In `/opt/opennms/jetty-webapps/opennms/WEB-INF`, edit `web.xml`.
+In `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF`, edit `web.xml`.
 Just before the first `<servlet-mapping>` tag, add the following servlet entries:
 [source, xml]
 ----
-  <servlet>
-       <servlet-name>dashboard1</servlet-name>
-       <jsp-file>/dashboard.jsp</jsp-file>
-  </servlet>
+    <servlet>
+        <servlet-name>dashboard1</servlet-name>
+        <jsp-file>/dashboard.jsp</jsp-file>
+    </servlet>
 
-  <servlet>
-       <servlet-name>dashboard2</servlet-name>
-       <jsp-file>/dashboard.jsp</jsp-file>
-  </servlet>
+    <servlet>
+        <servlet-name>dashboard2</servlet-name>
+        <jsp-file>/dashboard.jsp</jsp-file>
+    </servlet>
 ----
 Just before the first `<error-page>` tag, add the following servlet-mapping entries:
 [source, xml]
 ----
-  <servlet-mapping>
-       <servlet-name>dashboard1</servlet-name>
-       <url-pattern>/dashboard1</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dashboard1</servlet-name>
+        <url-pattern>/dashboard1</url-pattern>
+    </servlet-mapping>
 
-  <servlet-mapping>
-       <servlet-name>dashboard2</servlet-name>
-       <url-pattern>/dashboard2</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dashboard2</servlet-name>
+        <url-pattern>/dashboard2</url-pattern>
+    </servlet-mapping>
 ----
 After the last `<filter-mapping>` tag, add the following filter-mapping entries:
 [source, xml]
@@ -307,7 +307,7 @@ Finally, near the bottom of the page, add a new instance of `AnonymousProcessing
     <property name="userAttribute"><value>dashboard2,ROLE_DASHBOARD</value></property>
   </bean>
 ----
-Restart {page-component-title} and you should bring up a dashboard at \`http://.../opennms/dashboard1` without logging in.
+Restart {page-component-title} and you should bring up a dashboard at `\http://hostname/opennms/dashboard1` without logging in.
 
 WARNING: There's no way to switch dashboards without closing the browser (or deleting the JSESSIONID session cookie).
 

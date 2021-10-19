@@ -3,8 +3,11 @@
 
 This dashlet shows a given <<admin/webui/surveillance-view.adoc#surveillance-view, Surveillance View>>.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-| Boost support     | false
-| `viewName`        | Name of the configured surveillance view
+| Boost support
+| false
+
+| viewName
+| Name of the configured surveillance view
 |===

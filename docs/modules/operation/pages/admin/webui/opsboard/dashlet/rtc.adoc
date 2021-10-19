@@ -3,10 +3,8 @@
 
 This dashlet shows the configured SLA categories from the {page-component-title} start page.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-| Boost support     | false
-| `-`               | -
+| Boost support
+| false
 |===
-
-

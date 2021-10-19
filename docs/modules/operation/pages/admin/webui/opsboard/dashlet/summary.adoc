@@ -3,8 +3,11 @@
 
 This dashlet shows a trend of incoming alarms in given time frame.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-| Boost support     | <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
-| `timeslot`        | Time slot in seconds to evaluate the trend for alarms by severity and _UEI_.
+| Boost support
+| <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+
+| timeslot
+| Time slot in seconds to evaluate the trend for alarms by severity and _UEI_.
 |===

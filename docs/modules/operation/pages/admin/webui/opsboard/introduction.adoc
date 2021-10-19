@@ -20,7 +20,7 @@ image::webui/opsboard/02_opsboard-concept.png[]
 == Configuration
 
 To create and configure ops boards administration permissions are required.
-The configuration section is in admin area of {page-component-title} and named ops board Config Web Ui.
+The configuration section is in admin area of {page-component-title} and named "Ops Board Configuration".
 
 .Navigation to the Ops Board configuration
 image::webui/opsboard/03_admin-configure-opsboard.png[]

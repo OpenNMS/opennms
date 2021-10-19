@@ -4,18 +4,28 @@
 This Alarms dashlet shows a table with a short alarm description.
 
 .Information of the alarm
-[options="header, autowidth"]
+[options="header, autowidth", cols="1,2"]
 |===
-| Field        | Description
-| Time       | Absolute time since the alarm appeared
-| Node label | Node label of the node where the alarm occurred
-| UEI        | {page-component-title} Unique event identifier for this alarm
+| Field
+| Description
+
+| Time
+| Absolute time since the alarm appeared
+
+| Node label
+| Node label of the node where the alarm occurred
+
+| UEI
+| {page-component-title} Unique event identifier for this alarm
 |===
 
 Configure the Alarms dashlet with the following parameters.
 
-[options="autowidth"]
+[options="autowidth", cols="1,2"]
 |===
-|Boost support | <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
-| Configuration | <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
+| Boost support
+| <<admin/webui/opsboard/boosting-behavior.adoc#webui-opsboard-dashlet-boosting, Boosted Severity>>
+
+| Configuration
+| <<admin/webui/opsboard/criteria-builder.adoc#webui-opsboard-criteria-builder, Criteria Builder>>
 |===
