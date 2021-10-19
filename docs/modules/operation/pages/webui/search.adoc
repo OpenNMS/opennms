@@ -42,7 +42,7 @@ Use the percent character as a multiple-character wildcard.
 === IP address search
 
 Searching by IP address uses a flexible search format that lets you separate the four or eight (in the case of IPv6) fields of an IP address into specific searches.
-An asterisk (*) in place of any octet matches any value for that octet.
+An asterisk (`*`) in place of any octet matches any value for that octet.
 Separate two numbers by a dash (`-`) to indicate a range.
 Use a comma for list demarcation.
 
