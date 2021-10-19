@@ -93,6 +93,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     public Map<String, ConfigSchema<?>> getAllConfigSchema() {
         Map<String, ConfigSchema<?>> output = new HashMap<>();
         jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value)->{
+            //TODO: START to be remove after PE-118
             JSONObject json = new JSONObject(value);
             String className = (String) json.get("converterClass");
             Class<?> converterClass = null;
@@ -108,6 +109,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
+            //TODO: END
             output.put(key, schema);
         });
         return output;

@@ -87,24 +87,13 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
 
     @Override
     public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
-        // testing use only
-        try {
-            if (configurationManagerService.getRegisteredSchema("vacuumd").isEmpty()) {
-                configurationManagerService.registerSchema("vacuumd", "vacuumd-configuration.xsd", "VacuumdConfiguration");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        // END
         Map<String, ConfigSchema<?>> schemas = configurationManagerService.getAllConfigSchema();
         Map<String, ConfigItem> items = new HashMap<>();
         schemas.forEach((key, schema) -> {
-            items.put(request.getContextPath() + BASE_PATH + key, schema.getConverter().getValidationSchema().getConfigItem());
+            items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
         });
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        OpenAPI openapi = configSwaggerConverter.convert(items);
+        OpenAPI openapi = configSwaggerConverter.convert(request.getContextPath() + BASE_PATH, items);
         return Response.ok(configSwaggerConverter.convertOpenAPIToString(openapi, acceptType)).build();
     }
 
