@@ -3,10 +3,11 @@
     <div class="geo-map">
       <l-map
         ref="map"
+        v-model:center="center"
         :max-zoom="19"
-        v-model="zoom"
+        :min-zoom="2"
+        :zoom="zoom"
         :zoomAnimation="true"
-        :center="openNMSHeadQuarter"
         @ready="onLeafletReady"
       >
         <template v-if="leafletReady">
@@ -20,22 +21,21 @@
             :attribution="tileProvider.attribution"
             layer-type="base"
           />
-          <marker-cluster
-            :options="{ showCoverageOnHover: false, chunkedLoading: true }"
-          >
+          <marker-cluster :options="{ showCoverageOnHover: false, chunkedLoading: true }">
             <l-marker
-          v-for="(node, index) in interestedNodes"
-          :key="index"
-          :lat-lng="getCoordinateFromNode(node)"
+              v-for="(node, index) in interestedNodes"
+              :key="index"
+              :lat-lng="getCoordinateFromNode(node)"
+              add
             >
-        <l-popup> {{ node.label }} </l-popup>
-        </l-marker>
-        <l-polyline
-          v-for="(coordinatePair, index) in edges"
-          :key="index"
-          :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
-          color="green"
-        />
+              <l-popup>{{ node.label }}</l-popup>
+            </l-marker>
+            <l-polyline
+              v-for="(coordinatePair, index) in edges"
+              :key="index"
+              :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+              color="green"
+            />
           </marker-cluster>
         </template>
       </l-map>
@@ -56,15 +56,20 @@ import {
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
+import { Coordinates } from "@/types";
 
 let leafletReady = ref(false);
 let leafletObject = ref("");
 let visible = ref(false);
 let map: any = ref();
 const store = useStore();
-const openNMSHeadQuarter = ref([35.849613, -78.794882])
-const zoom = ref(4)
 
+let center = computed(() => {
+  const coordinates: Coordinates = store.getters['mapModule/getMapCenter']
+  return [coordinates.latitude, coordinates.longitude];
+})
+
+let zoom = ref(2);
 
 let interestedNodes = computed(() => {
   return store.getters['mapModule/getInterestedNodes'];
@@ -102,16 +107,10 @@ function getInterestedNodesCoordinateMap() {
   return map;
 }
 
-watch(
-  () => interestedNodesID.value,
-  (newValue, oldValue) => {
-  }
-)
-
 async function onLeafletReady() {
   await nextTick();
   leafletObject.value = map.value.leafletObject;
-  if(leafletObject.value != undefined && leafletObject.value != null){
+  if (leafletObject.value != undefined && leafletObject.value != null) {
     leafletReady.value = true;
   }
 }

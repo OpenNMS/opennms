@@ -18,6 +18,7 @@
         :defaultColDef="defaultColDef"
         :gridOptions="gridOptions"
         :pagination="true"
+        @rowDoubleClicked="rowDoubleClicked"
       ></ag-grid-vue>
     </div>
   </div>
@@ -29,6 +30,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
 import { useStore } from "vuex";
 import { computed, watch } from 'vue'
+import { Coordinates } from "@/types";
 
 const store = useStore();
 
@@ -87,12 +89,20 @@ function clearFilters() {
 function confirmFilters() {
   let ids: string[] = [];
   gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()));
-  console.log("ids = " + ids)
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
 function reset() {
   store.dispatch("mapModule/resetInterestedNodesID");
+}
+
+function rowDoubleClicked() {
+  const id = gridApi.getSelectedNodes().map(node => node.data)[0].id;
+  const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id);
+
+  let coordinate: Coordinates;
+  coordinate = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
+  store.dispatch("mapModule/setMapCenter", coordinate)
 }
 
 const columnDefs = ref([

@@ -1,5 +1,5 @@
 import API from "@/services"
-import { QueryParameters, AlarmModificationQueryVariable, VuexContext, Node } from '@/types'
+import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node} from '@/types'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
     const resp = await API.getNodes(queryParameters)
@@ -49,11 +49,14 @@ const setInterestedNodesId = (context: VuexContext, ids: number[]) => {
     context.commit("SAVE_INTERESTED_NODES_ID", ids)
 }
 
+const setMapCenter = (context: VuexContext, center: Coordinates) => {
+    context.commit("SAVE_MAP_CENTER", center)
+}
+
 const modifyAlarm = async (context: VuexContext, alarmQueryVariable: AlarmModificationQueryVariable) => {
     const resp = await API.modifyAlarm(alarmQueryVariable.pathVariable, alarmQueryVariable.queryParameters)
     return resp;
 }
-
 
 export default {
     getNodes,
@@ -61,5 +64,6 @@ export default {
     resetInterestedNodesID,
     getNodesGraphEdges,
     setInterestedNodesId,
+    setMapCenter,
     modifyAlarm
 }
