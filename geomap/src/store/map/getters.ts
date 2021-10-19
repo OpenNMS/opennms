@@ -10,11 +10,11 @@ const getInterestedNodes = (state: State) => {
 }
 
 const getAlarmsFromSelectedNodes = (state: State) => {
-    let selectedNodesLable = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
-        (node: Node) => node.label
+    let selectedNodesId = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
+        (node: Node) => node.id
     );
     return state.alarms.filter((alarm: Alarm) =>
-        selectedNodesLable.includes(alarm.nodeLabel)
+        selectedNodesId.includes(alarm.nodeId.toString())
     )
 }
 
