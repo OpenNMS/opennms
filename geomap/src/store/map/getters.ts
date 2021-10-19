@@ -10,11 +10,11 @@ const getInterestedNodes = (state: State) => {
 }
 
 const getAlarmsFromSelectedNodes = (state: State) => {
-    let selectedNodesLable = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
+    let selectedNodesLabel = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
         (node: Node) => node.label
     );
     return state.alarms.filter((alarm: Alarm) =>
-        selectedNodesLable.includes(alarm.nodeLabel)
+        selectedNodesLabel.includes(alarm.nodeLabel)
     )
 }
 
@@ -22,9 +22,14 @@ const getEdges = (state: State) => {
     return state.edges;
 }
 
+const getMapCenter = (state: State) => {
+    return state.mapCenter;
+}
+
 export default {
     getInterestedNodesID,
     getInterestedNodes,
     getAlarmsFromSelectedNodes,
-    getEdges
+    getEdges,
+    getMapCenter,
 }
