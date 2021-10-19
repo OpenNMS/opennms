@@ -180,6 +180,7 @@ const defaultColDef = ref({
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
   sortable: true,
+  suppressMenu: true
 })
 
 const columnDefs = ref([
