@@ -159,12 +159,12 @@ function clearFilters() {
 function applyFilters() {
   let nodesLable: any = [];
   gridApi.forEachNodeAfterFilter((node: any) => {
-    nodesLable.push(node.data.node);
+    nodesLabel.push(node.data.node);
   });
-  let distictNodesLable = [...new Set(nodesLable)];
+  let distictNodesLabel = [...new Set(nodesLabel)];
   let ids = [];
   ids = store.getters['mapModule/getInterestedNodes']
-    .filter((node: Node) => distictNodesLable.includes(node.label))
+    .filter((node: Node) => distictNodesLabel.includes(node.label))
     .map((node: Node) => node.id);
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }

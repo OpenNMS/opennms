@@ -6,9 +6,10 @@
       </div>
     </pane>
     <pane id="map-pane-under">
-      <router-link :to="{ name: 'MapAlarms' }">Alarms</router-link>
-      |
       <router-link :to="{ name: 'MapNodes' }">Nodes</router-link>
+      |
+      <router-link :to="{ name: 'MapAlarms' }">Alarms</router-link>
+
       <router-view />
     </pane>
   </splitpanes>
