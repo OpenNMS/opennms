@@ -29,7 +29,9 @@
 package org.opennms.features.config.service.api;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
@@ -140,64 +142,6 @@ public interface ConfigurationManagerService {
      * @throws IOException
      */
     void unregisterSchema(String configName) throws IOException;
-
-    final class Version {
-        int majorVersion;
-        int minorVersion;
-        int patchVersion;
-
-        public Version(int majorVersion, int minorVersion, int patchVersion) {
-            this.majorVersion = majorVersion;
-            this.minorVersion = minorVersion;
-            this.patchVersion = patchVersion;
-        }
-
-        public int getMajorVersion() {
-            return majorVersion;
-        }
-
-        public void setMajorVersion(int majorVersion) {
-            this.majorVersion = majorVersion;
-        }
-
-        public int getMinorVersion() {
-            return minorVersion;
-        }
-
-        public void setMinorVersion(int minorVersion) {
-            this.minorVersion = minorVersion;
-        }
-
-        public int getPatchVersion() {
-            return patchVersion;
-        }
-
-        public void setPatchVersion(int patchVersion) {
-            this.patchVersion = patchVersion;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Version version = (Version) o;
-            return majorVersion == version.majorVersion && minorVersion == version.minorVersion && patchVersion == version.patchVersion;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(majorVersion, minorVersion, patchVersion);
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", Version.class.getSimpleName() + "[", "]")
-                    .add("majorVersion=" + majorVersion)
-                    .add("minorVersion=" + minorVersion)
-                    .add("patchVersion=" + patchVersion)
-                    .toString();
-        }
-    }
 
     /**
      * return configIds by configName

@@ -57,12 +57,6 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
         return validationErrors;
     }
 
-    private void checkRequiredField(ValidationErrors validationErrors, String name, String value) {
-        if(value == null || value.isBlank()) {
-            validationErrors.addError(String.format("Attribute %s is missing", name));
-        }
-    }
-
     private void checkHash(ValidationErrors validationErrors, String xsdFileName, String expectedXsdHash) {
         try {
             String actualHash = HashUtil.getHash(xsdFileName);

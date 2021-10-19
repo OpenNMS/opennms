@@ -38,7 +38,7 @@ import liquibase.change.DatabaseChange;
 public class UpgradeSchema extends AbstractSchemaChange {
 
     protected String getChangeName() {
-        return "Upgrade";
+        return "Upgrad";
     }
 
     protected RunnableWithException getCmFunction(ConfigurationManagerService m) {

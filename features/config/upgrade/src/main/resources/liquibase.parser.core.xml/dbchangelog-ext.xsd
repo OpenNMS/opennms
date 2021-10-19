@@ -21,6 +21,26 @@
             <xsd:attribute name="rootElement" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
+    <xsd:element name="modifySchema">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="put" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        <xsd:attribute name="default" type="xsd:string" use="required"/>
+                        <xsd:attribute name="regex" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="delete" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="importConfig">
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>

@@ -15,5 +15,9 @@
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
         <cm:upgradeSchema id="provisiond" xsdFileName="provisiond-configuration_v2.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
+        <cm:modifySchema schemaId="properties">
+            <cm:put name="property1" default="" regex=".*" />
+            <cm:delete name="property1"/>
+        </cm:modifySchema>
     </changeSet>
 </databaseChangeLog>

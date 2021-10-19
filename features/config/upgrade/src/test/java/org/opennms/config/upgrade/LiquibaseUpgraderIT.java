@@ -173,6 +173,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
             assertTrue(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_EVENTD + "-configuration.xml")));
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should not be copied since it is the default one
+
+            // check if schema changes work properly
+            // TODO: Patrick can be tested after cm implemented properties
         } finally {
             this.db.cleanUp();
         }

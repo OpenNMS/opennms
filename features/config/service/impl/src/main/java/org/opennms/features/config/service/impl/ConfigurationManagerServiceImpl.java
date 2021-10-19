@@ -28,6 +28,20 @@
 
 package org.opennms.features.config.service.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
+import javax.xml.bind.JAXBException;
+
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -40,12 +54,6 @@ import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -88,7 +96,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
                 .getConfigs(configName)
                 .orElse(Collections.emptyMap());
 
-        // Validate to check all of the existing configuration matches the new schema. If not => throw Exception
+        // Check if all existing configuration match the new schema. If not => throw Exception
         for (Map.Entry<String, JSONObject> config : configs.entrySet()) {
             String xml = converter.jsonToXml(config.getValue().toString());
             if (!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)) {
