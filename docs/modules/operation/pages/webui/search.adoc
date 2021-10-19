@@ -35,7 +35,7 @@ Click on the following links to quickly search for the associated information:
 === Name search
 
 Search by name is a case-insensitive, inclusive search.
-For example, searching on `serv` finds any of `serv, Service, Reserved, NTSERV, UserVortex`, and so on.
+For example, searching on `serv` finds any of `serv`, `Service`, `Reserved`, `NTSERV`, `UserVortex`, and so on.
 Use the underscore character as a single-character wildcard.
 Use the percent character as a multiple-character wildcard.
 
