@@ -163,6 +163,8 @@ const urlIcon = ref('pi pi-check-circle');
 
 const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
+const putDataPosition = ref();
+
 const model = State.toModel();
 
 const props = defineProps({
@@ -172,7 +174,6 @@ const props = defineProps({
     }
 });
 
-// Dropdown API Data
 onMounted(async () => {
     try {
         // Types
@@ -187,6 +188,7 @@ onMounted(async () => {
 
             let data = store.state.configuration.sendModifiedData;
             let url = data['import-url-resource'].split('/');
+            putDataPosition.value = data['tablePosition'];   //Helps in edit save
             reqDefinition.reqDef.name = data['import-name'];
             reqDefinition.reqDef.type = url[0].split(':')[0];
             reqDefinition.reqDef.host = url[2];
@@ -285,9 +287,37 @@ const generateURL = () => {
 
 //Save 
 const onSave = () => {
-    console.log("generatedURL", generatedURL.value);
-    console.log('onSave Obj', JSON.stringify(reqDefinition));
+    let provisionDService = store.state.configuration.provisionDService['requisition-def'];
+    //create copy state data
+    let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
+    //generate cron_expression
+    const cron_expression = saveCronSchedule();
+    const paylod =
+    {
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
+    }
+    //Edit record operation
+    if (router.currentRoute.value.name === 'reqDefEdit') {
+        //Edited data replace with new payload
+        copyProvisionData.splice(putDataPosition.value, 1, paylod);
+    } else {
+        //New record operation
+        copyProvisionData.push(paylod);
+    }
+    const requestPayload = { 'requisition-def': copyProvisionData };
+    console.log("Final requestPayload", requestPayload);
 };
+
+const saveCronSchedule = () => {
+    let cronSchedule = ['minute', 'hour', 'day of month', 'month', 'day of week'];
+    let findPosition = cronSchedule.indexOf(reqDefinition.reqDef.schedulePeriod);
+    let expression = ['*', '*', '*', '*', '*'];
+    expression.splice(findPosition, 1, String(reqDefinition.reqDef.schedulePeriodNumber));
+    return expression.join(' ');
+}
 
 </script>
 

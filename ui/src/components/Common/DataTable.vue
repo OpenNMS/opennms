@@ -27,8 +27,8 @@
             ></Column>
             <!-- custom data column added -->
             <Column v-for="columnName of props.customData">
-                <template #body="{ data }">
-                    <Button :label="columnName" @click="onClickHandle(columnName, data)"></Button>
+                <template #body="{ data, index }">
+                    <Button :label="columnName" @click="onClickHandle(columnName, data, index)"></Button>
                 </template>
             </Column>
         </PrimeVueDataTable>
@@ -105,7 +105,11 @@ const rowsPerPage = computed(() => {
 });
 
 //decision for routing
-const onClickHandle = (selectedName: any, data: any) => {
+const onClickHandle = (selectedName: any, data: any, index: any) => {
+
+    //Added one dyanamic property to data for identitify the table position - helps in edit put call
+    data['tablePosition'] = index;
+
     switch (selectedName) {
         case "edit":
             //edit click data state store
