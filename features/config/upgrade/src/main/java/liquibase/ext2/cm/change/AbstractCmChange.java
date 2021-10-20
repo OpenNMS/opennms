@@ -63,4 +63,9 @@ public abstract class AbstractCmChange extends AbstractChange {
             validationErrors.addError(String.format("Attribute %s is missing", name));
         }
     }
+
+    @FunctionalInterface
+    protected interface RunnableWithException {
+        void doRun() throws Exception;
+    }
 }

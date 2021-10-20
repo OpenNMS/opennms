@@ -37,26 +37,14 @@ import liquibase.ext2.cm.database.CmDatabase;
 public class GenericCmStatement extends AbstractCmStatement {
 
     private final Consumer<ConfigurationManagerService> executor;
-    private final String stringRepresentation;
 
     public GenericCmStatement(Consumer<ConfigurationManagerService> executor) {
-        this(executor, null);
-    }
-
-    public GenericCmStatement(final Consumer<ConfigurationManagerService> executor,
-                              final String stringRepresentation) {
         this.executor = executor;
-        this.stringRepresentation = stringRepresentation;
     }
 
     @Override
     public void execute(CmDatabase database) {
         ConfigurationManagerService cm = database.getConfigurationManager();
         executor.accept(cm);
-    }
-
-    @Override
-    public String toString() {
-        return (this.stringRepresentation ==null) ? super.toString() : this.stringRepresentation;
     }
 }
