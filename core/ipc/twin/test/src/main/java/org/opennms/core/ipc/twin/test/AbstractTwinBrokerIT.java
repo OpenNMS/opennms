@@ -32,6 +32,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.Closeable;
@@ -204,7 +205,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker1 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker1::getLog, contains("Test1"));
+        await().until(tracker1::getLog, hasItems("Test1"));
 
         tracker1.close();
 
@@ -214,7 +215,8 @@ public abstract class AbstractTwinBrokerIT {
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
         await().until(tracker2::getLog, hasItems("Test3"));
 
-        assertThat(tracker1.getLog(), contains("Test1"));
+        assertThat(tracker1.getLog(), not(hasItems("Test2")));
+        assertThat(tracker1.getLog(), not(hasItems("Test3")));
     }
 
     /**
@@ -229,7 +231,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, contains("Test1"));
+        await().until(tracker2::getLog, hasItems("Test1"));
 
         assertThat(tracker1.getLog(), empty());
     }

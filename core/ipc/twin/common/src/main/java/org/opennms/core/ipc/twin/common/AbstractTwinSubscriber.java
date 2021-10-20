@@ -170,7 +170,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             LOG.trace("Received object update with key {}", twinResponse.getKey());
 
             // No need to update if version we are getting is less than what we have with the same session.
-            if (twinTracker != null && twinTracker.getSessionId().equals(twinResponse.getSessionId())
+            if (twinTracker != null && twinTracker.getSessionId() != null
+                    && twinTracker.getSessionId().equals(twinResponse.getSessionId())
                     && twinTracker.getVersion() > twinResponse.getVersion()) {
                 return;
             }

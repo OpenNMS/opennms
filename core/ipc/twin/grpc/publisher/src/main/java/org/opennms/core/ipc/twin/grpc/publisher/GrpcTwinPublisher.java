@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.protobuf.ByteString;
 
 import io.grpc.stub.StreamObserver;
 
@@ -115,7 +114,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
         twinRpcExecutor.shutdown();
     }
 
-
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
 
         @Override
@@ -159,6 +157,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             }
             sinkStreamsByLocation.put(request.getLocation(), responseObserver);
             sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
+
             getObjMap().forEach(((sessionKey, twinTracker) -> {
                 if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
                     TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, twinTracker.getObj());
@@ -173,7 +172,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                                   io.grpc.stub.StreamObserver<org.opennms.core.ipc.twin.model.TwinResponseProto> responseObserver) {
              handleSinkStreamUpdate(request, responseObserver);
         }
-
 
     }
 
