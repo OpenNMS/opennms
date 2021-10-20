@@ -1,0 +1,42 @@
+
+= Daemon Configuration Files
+
+Configuration changes can require a restart of OpenNMS and some daemons are able to reload configuration changes by a running CLI command or by sending a daemon reload event.
+
+NOTE: Check out the xref:reference:daemons/introduction#ga-daemons[daemon reference section] to get an overview about all daemons and the related configuration files and which can be reloaded without restarting OpenNMS.
+
+== Reload daemons by CLI
+
+To use the reload commands in the CLI, log into the Karaf Shell on your system using:
+
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+To reload a daemon use the `reload-daemon` command:
+[source, console]
+----
+admin@opennms()> reload-daemon NAME
+----
+
+NOTE: A list of reloadable daemons can be obtained by pressing `tabulator` after the command.
+
+== Reload daemons by reload event
+
+.Running reload command in a shell
+[source, console]
+----
+cd $\{OPENNMS_HOME}/bin
+./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
+----
+
+.Running the reload command in Docker
+[source, console]
+----
+docker exec -it horizon /opt/opennms/bin/send-event.pl  uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName NAME'
+----
+
+== Check daemon reload results
+
+A daemon reload generates the events `uei.opennms.org/internal/reloadDaemonConfig` as an indicator that the reload process was triggered, a positive feedback with event `uei.opennms.org/internal/reloadDaemonConfigSuccessful` or a negative feedback with event `uei.opennms.org/internal/reloadDaemonConfigFailed` when OpenNMS was not able to load it accordingly. In this case also an event reason will be noticed in the event description.

@@ -175,3 +175,4 @@
 ** xref:admin/http-ssl.adoc[]
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
+** xref:admin/daemon-config-files.adoc[]

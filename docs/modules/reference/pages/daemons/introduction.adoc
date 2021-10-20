@@ -1,0 +1,41 @@
+[[ref-daemons]]
+= Daemons
+
+[options="header"]
+[cols="1,3"]
+|===
+| Name | Description
+| Ackd |
+| Actiond |
+| Alarmd |
+| AsteriskGateway |
+| Bsmd |
+| Collectd |
+| Correlator |
+| Discovery |
+| EnhancedLinkd |
+| EventTranslator |
+| Eventd |
+| JettyServer |
+| KarafStartupMonitor |
+| Manager |
+| Notifd |
+| PassiveStatusd |
+| Pollerd |
+| Provisiond |
+| Queued |
+| Reportd |
+| Rtcd |
+| Scriptd |
+| SnmpPoller |
+| Statsd |
+| Syslogd |
+| Telemetryd |
+| TestLoadLibraries |
+| Ticketer |
+| Tl1d |
+| Trapd |
+| Vacuumd |
+|===
+
+

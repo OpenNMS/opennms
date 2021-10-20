@@ -1,0 +1,33 @@
+[[ref-daemon-config-files-collectd]]
+= Collectd
+
+.Collectd configuration file overview
+[options="header"]
+[cols="2,1,1,3"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| collectd-configuration.xml
+| Restart is required in case new collection services are created or removed.
+ A reload command changed configuration parameters of existing monitors.
+| yes
+| yes
+
+| jdbc-datacollection-config.xml
+| Restart is required in case of any changes
+| no
+| yes
+
+| http-datacollection-config.xml
+| Restart is required in case of any changes
+| no
+| yes
+
+| xml-datacollection-config.xml
+| Restart is required in case of any changes
+| no
+| yes
+|===
