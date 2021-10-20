@@ -91,7 +91,15 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (this.getRegisteredSchema(configName).isPresent() || configDefinitions.containsKey(configName)) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
         }
-        this.configDefinitions.put(configName, configDefinition);
+        this.configDefinitions.put(configName, configDefinition); // TODO: Patrick fix this mock:
+        try {
+            ConfigSchema<?> schema = new ConfigSchema<>(configDefinition.getConfigName(),
+                    XmlConverter.class,
+                    new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration"));
+            configStoreDao.register(schema);
+        } catch(IOException | JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
 
@@ -155,9 +156,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
             // check if CM was called for schema
-            verify(cmSpy).registerSchema(anyString(),
-                    eq("provisiond-configuration.xsd"),
-                    eq("provisiond-configuration"));
+            verify(cmSpy,times(3)).registerConfigDefinition(anyString(), any());
 
             // check if CM was called for config
             verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
