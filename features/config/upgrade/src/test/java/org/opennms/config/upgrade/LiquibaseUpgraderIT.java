@@ -28,7 +28,9 @@
 
 package org.opennms.config.upgrade;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +49,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -62,6 +65,8 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -85,6 +90,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
     private final static String SCHEMA_NAME_PROVISIOND = "provisiond";
     private final static String SCHEMA_NAME_EVENTD = "eventd";
+    private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String CONFIG_ID = "default";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
@@ -143,6 +149,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldRunChangelog() throws LiquibaseException, IOException, SQLException, JAXBException, URISyntaxException {
         try {
+            assertFalse(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES).isPresent());
+
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
             liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
@@ -175,7 +183,13 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc_archive/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"))); // should not be copied since it is the default one
 
             // check if schema changes work properly
-            // TODO: Patrick can be tested after cm implemented properties
+            Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
+            assertTrue(configDefinition.isPresent());
+            ConfigItem schema = configDefinition.get().getSchema();
+            assertNotNull(schema);
+            assertEquals(1, schema.getChildren().size());
+            assertEquals("property1", schema.getChildren().get(0).getName());
+            assertEquals(".*", schema.getChildren().get(0).getPattern());
         } finally {
             this.db.cleanUp();
         }

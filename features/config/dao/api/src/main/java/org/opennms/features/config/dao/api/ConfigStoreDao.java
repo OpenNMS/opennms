@@ -67,7 +67,7 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @param configName
      * @return status
      */
-    Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException;
+    Optional<ConfigSchema<?>> getConfigSchema(String configName);
 
     /**
      * update configs meta by configName

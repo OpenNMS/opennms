@@ -133,9 +133,4 @@ public abstract class AbstractSchemaChange extends AbstractCmChange {
     public void setRootElement(String rootElement) {
         this.rootElement = rootElement;
     }
-
-    @FunctionalInterface
-    protected interface RunnableWithException {
-        void doRun() throws Exception;
-    }
 }

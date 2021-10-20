@@ -26,25 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package liquibase.ext2.cm.statement;
+package org.opennms.features.config.dao.api;
 
-import java.util.function.Consumer;
+/** TODO Patrick: Discuss with Freddy */
+/** This class holds the definition for a configuration.
+ * It is based on OpenAPI plus Metadata.
+ */
+public class ConfigDefinition {
+    private String configName;
+    private int maxInstances = 1;
+    private ConfigItem schema;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-
-import liquibase.ext2.cm.database.CmDatabase;
-
-public class GenericCmStatement extends AbstractCmStatement {
-
-    private final Consumer<ConfigurationManagerService> executor;
-
-    public GenericCmStatement(Consumer<ConfigurationManagerService> executor) {
-        this.executor = executor;
+    public String getConfigName() {
+        return configName;
     }
 
-    @Override
-    public void execute(CmDatabase database) {
-        ConfigurationManagerService cm = database.getConfigurationManager();
-        executor.accept(cm);
+    public void setConfigName(String configName) {
+        this.configName = configName;
+    }
+
+    public int getMaxInstances() {
+        return maxInstances;
+    }
+
+    public void setMaxInstances(int maxInstances) {
+        this.maxInstances = maxInstances;
+    }
+
+    public ConfigItem getSchema() {
+        return schema;
+    }
+
+    public void setSchema(ConfigItem schema) {
+        this.schema = schema;
     }
 }

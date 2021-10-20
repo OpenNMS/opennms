@@ -31,18 +31,18 @@ package org.opennms.netmgt.dao.mock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import javax.xml.bind.JAXBException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -67,6 +67,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     @Override
     public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
 
+    @Override
+    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
+
+    }
+
     /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
     @Override
     public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
@@ -77,7 +82,17 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException {
+    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
+
+    }
+
+    @Override
+    public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
         return Optional.empty();
     }
 

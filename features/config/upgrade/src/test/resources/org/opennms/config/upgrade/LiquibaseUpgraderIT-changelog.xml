@@ -7,7 +7,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet author="LiquibaseUpgrader" id="register-schemas">
+    <changeSet author="LiquibaseUpgraderIT" id="register-schemas">
         <cm:registerSchema id="provisiond" xsdFileName="provisiond-configuration.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
         <cm:registerSchema id="eventd" xsdFileName="eventd-configuration.xsd" xsdFileHash="dba9c50b58600a7003ed4e34735628bb656b0430864288ccbe7813a30cedf407" rootElement="eventd-configuration"/>
         <cm:importConfig schemaId="provisiond" configId="default" filePath="provisiond-configuration.xml"/>
@@ -15,9 +15,12 @@
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
         <cm:upgradeSchema id="provisiond" xsdFileName="provisiond-configuration_v2.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
-        <cm:modifySchema schemaId="properties">
+    </changeSet>
+    <changeSet author="LiquibaseUpgraderIT" id="upgrade-properties">
+        <cm:changeSchema schemaId="propertiesTest">
             <cm:put name="property1" default="" regex=".*" />
-            <cm:delete name="property1"/>
-        </cm:modifySchema>
+            <cm:put name="property2" default="" regex=".*" />
+            <cm:delete name="property2"/>
+        </cm:changeSchema>
     </changeSet>
 </databaseChangeLog>

@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -116,7 +117,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
+    public Optional<ConfigSchema<?>> getConfigSchema(String configName) {
         Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
@@ -130,7 +131,13 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new IllegalArgumentException("Invalid schema for configName: " + configName);
         }
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
-        ConfigSchema<?> schema = mapper.readValue(jsonStr.get(), javaType);
+        ConfigSchema<?> schema = null;
+        try {
+            schema = mapper.readValue(jsonStr.get(), javaType);
+        } catch (JsonProcessingException e) {
+            // This should not happen since we only write valid json into the database
+            throw new RuntimeException(e);
+        }
         return Optional.ofNullable(schema);
     }
 

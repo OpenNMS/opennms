@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +46,7 @@ import javax.xml.bind.JAXBException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
@@ -62,6 +64,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     // This map contains key: ConfigUpdateInfo value: list of Consumer
     private final ConcurrentHashMap<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
 
+    private final Map<String, ConfigDefinition> configDefinitions = new HashMap<>(); // TODO: Patrick: need to be replaced with proper implementations
+
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
         this.configStoreDao = configStoreDao;
     }
@@ -77,6 +81,17 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         }
         final ConfigSchema configSchema = new ConfigSchema(configName, converter.getClass(), converter);
         configStoreDao.register(configSchema);
+    }
+
+    @Override
+    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
+        // TODO: Patrick: implement me properly
+        Objects.requireNonNull(configName);
+        Objects.requireNonNull(configDefinition);
+        if (this.getRegisteredSchema(configName).isPresent() || configDefinitions.containsKey(configName)) {
+            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
+        }
+        this.configDefinitions.put(configName, configDefinition);
     }
 
     @Override
@@ -115,9 +130,26 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) throws IOException {
+    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
+        // TODO: Patrick: implement me properly
+        Objects.requireNonNull(configName);
+        Objects.requireNonNull(configDefinition);
+        if (this.getRegisteredSchema(configName).isEmpty() &&  !configDefinitions.containsKey(configName)) {
+            throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
+        }
+        this.configDefinitions.put(configName, configDefinition);
+    }
+
+    @Override
+    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) {
         Objects.requireNonNull(configName);
         return configStoreDao.getConfigSchema(configName);
+    }
+
+    @Override
+    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
+        Objects.requireNonNull(configName);
+        return Optional.ofNullable(this.configDefinitions.get(configName));
     }
 
     @Override

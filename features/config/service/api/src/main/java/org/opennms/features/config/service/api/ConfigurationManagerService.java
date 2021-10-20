@@ -38,6 +38,7 @@ import javax.xml.bind.JAXBException;
 
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigSchema;
 
 /**
@@ -50,10 +51,18 @@ import org.opennms.features.config.dao.api.ConfigSchema;
 public interface ConfigurationManagerService {
 
     /** Registers a new schema. The schema name must not have been used before. */
+    @Deprecated // use registerConfigDefinition() instead.
     void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
 
+    /** Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException. */
+    void registerConfigDefinition(String configName, ConfigDefinition configDefinition);
+
     /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
+    @Deprecated // use changeConfigDefinition() instead.
     void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
+
+    /** Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException. */
+    void changeConfigDefinition(String configName, ConfigDefinition configDefinition);
 
     Map<String, ConfigSchema<?>> getAllConfigSchema();
 
@@ -64,7 +73,10 @@ public interface ConfigurationManagerService {
      * @return ConfigSchema
      * @throws IOException
      */
-    Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
+    @Deprecated // replace with getRegisteredConfigDefinition
+    Optional<ConfigSchema<?>> getRegisteredSchema(String configName);
+
+    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
 
     void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
