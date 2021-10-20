@@ -32,6 +32,9 @@ package org.opennms.core.ipc.twin.grpc.subscriber;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -63,6 +66,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private Properties clientProperties;
     private OpenNMSTwinIpcGrpc.OpenNMSTwinIpcStub asyncStub;
     private StreamObserver<TwinRequestProto> rpcStream;
+    private AtomicBoolean isShutDown = new AtomicBoolean(false);
     private ResponseHandler responseHandler = new ResponseHandler();
     private final ThreadFactory twinRequestSenderThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("twin-request-sender-%d")
@@ -99,20 +103,10 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void retryInitializeRpcStream() {
-        try {
-            ScheduledFuture<Boolean> future = twinRequestSenderExecutor.schedule(
-                    () -> initRpcStream(), RETRIEVAL_TIMEOUT, TimeUnit.MILLISECONDS);
-            boolean succeeded = future.get();
-            if (succeeded) {
-                return;
-            }
-        } catch (Exception e) {
-            LOG.error("Error while initializing RPC stream {}", e);
-        }
-        retryInitializeRpcStream();
+        scheduleWithDelayUntilGetSucceeds(twinRequestSenderExecutor, this::initRpcStream, RETRIEVAL_TIMEOUT);
     }
 
-    private void sendMinionHeader() {
+    private synchronized void sendMinionHeader() {
         // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
         // gRPC Server needs at least one message to initialize the stream
         MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
@@ -121,6 +115,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     public void shutdown() {
+        isShutDown.set(true);
         super.shutdown();
         if (channel != null) {
             channel.shutdown();
@@ -136,22 +131,58 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void retrySendRpcRequest(TwinRequestProto twinRequestProto) {
-        // It may be possible that TwinPublisher is Offline. Retry sending request till it succeeds.
-        ScheduledFuture<Boolean> future = twinRequestSenderExecutor.schedule(
-                () -> sendTwinRequest(twinRequestProto), RETRIEVAL_TIMEOUT, TimeUnit.MILLISECONDS);
-        try {
-            boolean succeeded = future.get();
-            if (succeeded) {
-                return;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error while attempting to send Twin Request with key {}", twinRequestProto.getConsumerKey(), e);
-        }
-        retrySendRpcRequest(twinRequestProto);
+        // We can only send RPC If channel is active and RPC stream is not in error.
+        // Schedule sending RPC request with given retrieval timeout until it succeeds.
+        scheduleWithDelayUntilFunctionSucceeds(twinRequestSenderExecutor, this::sendTwinRpcRequest, RETRIEVAL_TIMEOUT, twinRequestProto);
     }
 
-    private synchronized boolean sendTwinRequest(TwinRequestProto twinRequestProto) {
-        initRpcStream();
+    private <T> void scheduleWithDelayUntilFunctionSucceeds(ScheduledExecutorService executorService,
+                                                            Function<T, Boolean> function,
+                                                            long delayInMsec,
+                                                            T obj) {
+        boolean succeeded = function.apply(obj);
+        if (!succeeded) {
+            do {
+                ScheduledFuture<Boolean> future = executorService.schedule(() -> function.apply(obj), delayInMsec, TimeUnit.MILLISECONDS);
+                try {
+                    succeeded = future.get();
+                    if (succeeded) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    // It's likely that error persists, bail out
+                    succeeded = true;
+                    LOG.warn("Error while attempting to schedule the task", e);
+                }
+            } while (!succeeded || !isShutDown.get());
+        }
+    }
+
+    private void scheduleWithDelayUntilGetSucceeds(ScheduledExecutorService executorService,
+                                                   Supplier<Boolean> supplier,
+                                                   long delayInMsec) {
+        boolean succeeded = supplier.get();
+        if (!succeeded) {
+            do {
+                ScheduledFuture<Boolean> future = executorService.schedule(() -> supplier.get(), delayInMsec, TimeUnit.MILLISECONDS);
+                try {
+                    succeeded = future.get();
+                    if (succeeded) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    // It's likely that error persists, bail out
+                    succeeded = true;
+                    LOG.warn("Error while attempting to schedule the task", e);
+                }
+            } while (!succeeded || !isShutDown.get());
+        }
+    }
+
+    private synchronized boolean sendTwinRpcRequest(TwinRequestProto twinRequestProto) {
+        if(this.rpcStream == null) {
+            initRpcStream();
+        }
         ConnectivityState currentChannelState = channel.getState(true);
         if (rpcStream != null && currentChannelState.equals(ConnectivityState.READY)) {
             rpcStream.onNext(twinRequestProto);
