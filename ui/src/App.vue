@@ -4,7 +4,7 @@
   <Sidebar />
   <div id="view">
     <router-view />
-    <notifications position="bottom right" duration=200 closeOnClick=true ignoreDuplicates=true />
+      <notifications position="top center" duration=200 closeOnClick=true ignoreDuplicates=true />   
   </div>
 </template>
   

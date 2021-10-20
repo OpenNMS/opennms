@@ -10,6 +10,7 @@ import {
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
+import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown, getProvisionDService } from './configurationService'
 
 export default {
   search,
@@ -20,5 +21,9 @@ export default {
   getNodeIfServices,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
-  getNodeAvailabilityPercentage
+  getNodeAvailabilityPercentage,
+  getDropdownTypes,
+  getSchedulePeriod,
+  getAdvancedDropdown,
+  getProvisionDService
 }
