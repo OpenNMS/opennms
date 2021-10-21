@@ -147,6 +147,8 @@ import {
     GET_SCHEDULE_PERIOD_DROPDOWN,
     GET_ADVANCED_DROPDOWN
 } from '../../store/configuration/actions'
+import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore();
 const reqDefinition = reactive(State);
@@ -313,7 +315,28 @@ const onSave = () => {
         copyProvisionData.push(paylod);
     }
     const requestPayload = { 'requisition-def': copyProvisionData };
-    console.log("Final requestPayload", requestPayload);
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
 };
 
 const saveCronSchedule = () => {
