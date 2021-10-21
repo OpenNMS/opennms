@@ -108,12 +108,8 @@
 *** xref:enlinkd/layer-3/ospf-discovery.adoc[]
 *** xref:enlinkd/layer-3/is-is-discovery.adoc[]
 
-* xref:system-properties/introduction.adoc[]
-** xref:system-properties/system-proxies.adoc[]
-
 * xref:ticketing/introduction.adoc[]
 
-* xref:rmi.adoc[]
 * xref:workarounds/snmp.adoc[]
 * xref:ifttt/ifttt-integration.adoc[]
 * xref:dnsresolver/introduction.adoc[]
@@ -170,7 +166,10 @@
 ***** xref:admin/webui/opsboard/criteria-builder.adoc[]
 *** xref:admin/webui/surveillance-view.adoc[]
 *** xref:admin/webui/trends.adoc[]
+** xref:admin/system-properties/introduction.adoc[]
+*** xref:admin/system-properties/system-proxies.adoc[]
 ** xref:admin/config-tester.adoc[]
+** xref:admin/rmi.adoc[]
 ** xref:admin/geocoder.adoc[]
 ** xref:admin/http-ssl.adoc[]
 ** xref:admin/request-logging.adoc[]
