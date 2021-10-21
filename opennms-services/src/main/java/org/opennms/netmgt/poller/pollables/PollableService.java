@@ -31,6 +31,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -187,12 +189,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
-    public PollStatus poll() {
-        PollStatus newStatus = m_pollConfig.poll();
-        if (!newStatus.isUnknown()) { 
-            updateStatus(newStatus);
-        }
-        return getStatus();
+    public CompletionStage<PollStatus> poll() {
+        return m_pollConfig.poll().thenApply(newStatus -> {
+            if (!newStatus.isUnknown()) {
+                updateStatus(newStatus);
+            }
+            return getStatus();
+        });
     }
 
     /**
@@ -210,7 +213,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return the top changed element whose status changes needs to be processed
      */
-    public PollStatus doPoll() {
+    public CompletionStage<PollStatus> doPoll() {
         if (getContext().isNodeProcessingEnabled()) {
             return getParent().doPoll(this);
         }

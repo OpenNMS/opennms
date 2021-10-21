@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +47,6 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
@@ -118,15 +118,14 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
-    public PollStatus poll() {
-        try {
-            final String packageName = getPackageName();
-            // Use the service's configured interval as the TTL for this request
-            final Long ttlInMs = m_configService.getInterval();
-            LOG.debug("Polling {} with TTL {} using pkg {}",
-                    m_service, ttlInMs, packageName);
+    public CompletionStage<PollStatus> poll() {
+        final String packageName = getPackageName();
+        // Use the service's configured interval as the TTL for this request
+        final Long ttlInMs = m_configService.getInterval();
+        LOG.debug("Polling {} with TTL {} using pkg {}",
+                m_service, ttlInMs, packageName);
 
-            CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
+        return m_locationAwarePollerClient.poll()
                 .withService(m_service)
                 .withMonitor(m_serviceMonitor)
                 .withTimeToLive(ttlInMs)
@@ -135,46 +134,44 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withAdaptor(m_statusStoringServiceMonitorAdaptor)
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
                 .withPatternVariables(m_patternVariables)
-                .execute();
+                .execute()
+                .thenApply(response -> {
+                    PollStatus result = response.getPollStatus();
+                    LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
 
-            PollerResponse response = future.get();
-            PollStatus result = response.getPollStatus();
-            LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
+                    // Track the results of the poll
+                    m_service.getContext().trackPoll(m_service, result);
+                    return result;
+                }).exceptionally(e ->
+                        RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
+                            @Override
+                            public PollStatus onInterrupted(Throwable cause) {
+                                LOG.warn("Interrupted while invoking the poll for {}."
+                                         + " Marking the service as UNKNOWN.", m_service);
+                                return PollStatus.unknown("Interrupted while invoking the poll for" + m_service + ". " + e);
+                            }
 
-            // Track the results of the poll
-            m_service.getContext().trackPoll(m_service, result);
+                            @Override
+                            public PollStatus onTimedOut(Throwable cause) {
+                                LOG.warn("No response was received when remotely invoking the poll for {}."
+                                         + " Marking the service as UNKNOWN.", m_service);
+                                return PollStatus.unknown(String.format("No response received for %s. %s", m_service, cause));
+                            }
 
-            return result;
-        } catch (Throwable e) {
-            return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
-                @Override
-                public PollStatus onInterrupted(Throwable cause) {
-                    LOG.warn("Interrupted while invoking the poll for {}."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown("Interrupted while invoking the poll for"+m_service+". "+e);
-                }
+                            @Override
+                            public PollStatus onRejected(Throwable cause) {
+                                LOG.warn("The request to remotely invoke the poll for {} was rejected."
+                                         + " Marking the service as UNKNOWN.", m_service);
+                                return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", m_service, cause));
+                            }
 
-                @Override
-                public PollStatus onTimedOut(Throwable cause) {
-                    LOG.warn("No response was received when remotely invoking the poll for {}."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown(String.format("No response received for %s. %s", m_service, cause));
-                }
-
-                @Override
-                public PollStatus onRejected(Throwable cause) {
-                    LOG.warn("The request to remotely invoke the poll for {} was rejected."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", m_service, cause));
-                }
-
-                @Override
-                public PollStatus onUnknown(Throwable cause) {
-                    LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
-                    return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
-                }
-            });
-        }
+                            @Override
+                            public PollStatus onUnknown(Throwable cause) {
+                                LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
+                                return PollStatus.down("Unexpected exception while polling " + m_service + ". " + e);
+                            }
+                        })
+                );
     }
 
     /**

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.poller;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * <p>
@@ -97,6 +99,10 @@ public interface ServiceMonitor {
      * @see PollStatus#SERVICE_UNAVAILABLE
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
+
+    default CompletionStage<PollStatus> pollAsync(MonitoredService svc, Map<String, Object> parameters) {
+        return CompletableFuture.completedFuture(poll(svc, parameters));
+    }
 
     /**
      *

@@ -32,6 +32,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -194,7 +196,7 @@ public class PollableNetwork extends PollableContainer {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus pollRemainingMembers(PollableElement member) {
+    public CompletionStage<PollStatus> pollRemainingMembers(PollableElement member) {
         return getMemberStatus();
     }
 
@@ -262,7 +264,7 @@ public class PollableNetwork extends PollableContainer {
 
     /** {@inheritDoc} */
     @Override
-    public PollStatus poll(PollableElement elem) {
+    public CompletionStage<PollStatus> poll(PollableElement elem) {
         PollableElement member = findMemberWithDescendent(elem);
         return member.poll(elem);
     }

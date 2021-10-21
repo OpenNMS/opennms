@@ -30,7 +30,10 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -175,7 +178,7 @@ public abstract class PollableElement {
      * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public PollStatus doPoll(PollableElement elem) {
+    public CompletionStage<PollStatus> doPoll(PollableElement elem) {
         if (getParent() == null) {
             resetStatusChanged();
             return poll(elem);
@@ -226,14 +229,7 @@ public abstract class PollableElement {
     public final void withTreeLock(Runnable r) {
         withTreeLock(Executors.callable(r));
     }
-    
-    /**
-     * <p>withTreeLock</p>
-     *
-     * @param c a {@link java.util.concurrent.Callable} object.
-     * @param <T> a T object.
-     * @return a T object.
-     */
+
     protected final <T> T withTreeLock(Callable<T> c) {
         try {
             obtainTreeLock();
@@ -242,6 +238,24 @@ public abstract class PollableElement {
             throw e;
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        } finally {
+            releaseTreeLock();
+        }
+    }
+
+    /**
+     * <p>withTreeLock</p>
+     *
+     * @param c a {@link java.util.concurrent.Callable} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
+    protected final <T> CompletionStage<T> withTreeLock(Supplier<CompletionStage<T>> c) {
+        obtainTreeLock();
+        try {
+            final var future = c.get();
+            future.thenRun(this::releaseTreeLock);
+            return future;
         } finally {
             releaseTreeLock();
         }
@@ -294,7 +308,7 @@ public abstract class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public abstract PollStatus poll();
+    public abstract CompletionStage<PollStatus> poll();
 
     /**
      * <p>poll</p>
@@ -302,7 +316,7 @@ public abstract class PollableElement {
      * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    protected PollStatus poll(PollableElement elem) {
+    protected CompletionStage<PollStatus> poll(PollableElement elem) {
         if (elem != this)
             throw new IllegalArgumentException("Invalid parameter to poll on "+this+": "+elem);
         

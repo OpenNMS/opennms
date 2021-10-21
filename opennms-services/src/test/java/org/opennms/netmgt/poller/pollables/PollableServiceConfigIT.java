@@ -131,7 +131,7 @@ public class PollableServiceConfigIT {
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
-        PollStatus pollStatus = psc.poll();
+        PollStatus pollStatus = psc.poll().toCompletableFuture().get();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
 
@@ -168,7 +168,7 @@ public class PollableServiceConfigIT {
         final PollableService svc = new PollableService(iface, "HTTP-www.example.com");
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                 persisterFactory, thresholdingService, locationAwarePollerClient, m_pollOutagesDao);
-        psc.poll();
+        psc.poll().toCompletableFuture().get();
 
         verify(pollerRequestBuilder).withMonitor(factory.getServiceMonitor("HTTP"));
     }
@@ -220,7 +220,7 @@ public class PollableServiceConfigIT {
                 pkg, timer, persisterFactory, thresholdingService, client, m_pollOutagesDao);
 
         // Trigger the poll
-        PollStatus pollStatus = psc.poll();
+        PollStatus pollStatus = psc.poll().toCompletableFuture().get();
 
         // Verify
         assertTrue(pollStatus.isUnknown());

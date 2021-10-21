@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a Schedule
  *
+ * Contains a {@link ReadyRunnable} that can be scheduled and reschedules itself after it has run.
+ *
  * @author brozow
  * @version $Id: $
  */
@@ -51,6 +53,9 @@ public class Schedule {
     private final ReadyRunnable m_schedulable;
     private final ScheduleInterval m_interval;
     private final ScheduleTimer m_timer;
+    // incremented whenever a new ScheduleEntry is scheduled by the outer Schedule class
+    // -> used to check on start and finish of a ScheduleEntry run if it is outdated
+    // -> a ScheduleEntry reschedules itself after it has run
     private volatile int m_currentExpirationCode;
     private volatile boolean m_scheduled = false;
 	
@@ -127,6 +132,7 @@ public class Schedule {
      */
     public void schedule() {
         m_scheduled = true;
+        // schedule for right now
         schedule(0);
     }
 

@@ -32,6 +32,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -279,17 +281,11 @@ public class PollableNode extends PollableContainer {
     
     /** {@inheritDoc} */
     @Override
-    public PollStatus doPoll(final PollableElement elem) {
-        final PollStatus[] retVal = new PollStatus[1];
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                resetStatusChanged();
-                retVal[0] =  poll(elem);
-            }
-        };
-        withTreeLock(r);
-        return retVal[0];
+    public CompletionStage<PollStatus> doPoll(final PollableElement elem) {
+        return withTreeLock(() -> {
+            resetStatusChanged();
+            return poll(elem);
+        });
     }
 
 }

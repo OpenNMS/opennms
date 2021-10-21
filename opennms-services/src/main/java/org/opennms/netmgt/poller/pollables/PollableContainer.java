@@ -34,7 +34,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
+import org.opennms.core.concurrent.FutureUtils;
 import org.opennms.netmgt.poller.PollStatus;
 
 
@@ -308,23 +312,23 @@ abstract public class PollableContainer extends PollableElement {
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected PollStatus poll(final PollableElement elem) {
-        final PollStatus[] retVal = new PollStatus[1];
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                PollableElement member = findMemberWithDescendent(elem);
-                PollStatus memberStatus = member.poll(elem);
+    protected CompletionStage<PollStatus> poll(final PollableElement elem) {
+        return elem.withTreeLock(() -> {
+            PollableElement member = findMemberWithDescendent(elem);
+            return member.poll(elem).thenCompose(memberStatus -> {
                 if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
-                    updateStatus(pollRemainingMembers(member));
+                    return pollRemainingMembers(member).thenApply(pollStatus -> {
+                        updateStatus(pollStatus);
+                        return getStatus();
+                    });
                 }
-                retVal[0] = getStatus();
-            }
-        };
-        elem.withTreeLock(r);
-        return retVal[0];
+                return CompletableFuture.completedFuture(getStatus());
+            });
+        });
     }
 
     /**
@@ -333,47 +337,34 @@ abstract public class PollableContainer extends PollableElement {
      * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public PollStatus pollRemainingMembers(final PollableElement member) {
-        SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(member.getStatus()) {
-            @Override
-            public void forEachElement(PollableElement elem) {
-                if (elem != member) {
-                    if (elem.poll().isUp())
-                        setResult(PollStatus.up());
-                }
-            }
-        };
-        forEachMember(iter);
-        return iter.getResult();
+    public CompletionStage<PollStatus> pollRemainingMembers(final PollableElement member) {
+        return FutureUtils.traverse(
+                getMembers().stream().filter(elem -> elem != member).collect(Collectors.toList()),
+                elem -> elem.poll()
+        ).thenApply(list -> list.stream().anyMatch(PollStatus::isUp) ? PollStatus.up() : member.getStatus());
     }
-    
+
     /**
      * <p>getMemberStatus</p>
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public PollStatus getMemberStatus() {
-        SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
-            @Override
-            public void forEachElement(PollableElement elem) {
-                if (elem.getStatus().isUp())
-                    setResult(PollStatus.up());
-            }
-            
-        };
-        forEachMember(iter);
-        return iter.getResult();
+    public CompletionStage<PollStatus> getMemberStatus() {
+        final var pollStatus = getMembers().stream().map(PollableElement::getStatus).anyMatch(PollStatus::isUp) ? PollStatus.up() : PollStatus.down();
+        return CompletableFuture.completedFuture(pollStatus);
     }
-    
+
     /**
      * <p>poll</p>
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
-    public PollStatus poll() {
+    public CompletionStage<PollStatus> poll() {
         PollableElement leaf = selectPollElement();
-        if (leaf == null) return PollStatus.up();
+        if (leaf == null) {
+            return CompletableFuture.completedFuture(PollStatus.up());
+        }
         return poll(leaf);
     }
 

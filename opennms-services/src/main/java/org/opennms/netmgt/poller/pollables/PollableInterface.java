@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -222,17 +224,17 @@ public class PollableInterface extends PollableContainer {
     
     /** {@inheritDoc} */
     @Override
-    protected PollStatus poll(PollableElement elem) {
+    protected CompletionStage<PollStatus> poll(PollableElement elem) {
         PollableService critSvc = getCriticalService();
         if (getStatus().isUp() || critSvc == null || elem == critSvc)
             return super.poll(elem);
     
-        return PollStatus.down();
+        return CompletableFuture.completedFuture(PollStatus.down());
     }
     
     /** {@inheritDoc} */
     @Override
-    public PollStatus pollRemainingMembers(PollableElement member) {
+    public CompletionStage<PollStatus> pollRemainingMembers(PollableElement member) {
         PollableService critSvc = getCriticalService();
         
         
@@ -240,7 +242,7 @@ public class PollableInterface extends PollableContainer {
             if (member != critSvc)
                 critSvc.poll();
 
-            return critSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down();
+            return CompletableFuture.completedFuture(critSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down());
         }
         
         if (getContext().isPollingAllIfCritServiceUndefined())
