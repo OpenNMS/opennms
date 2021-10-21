@@ -98,7 +98,7 @@ The `apikey` and `query` strings are substituted before making the request.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 |===
@@ -153,7 +153,7 @@ Alternatively, provide this information in the userAgent property.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-Configure the system proxy settings in <<system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
 | Boolean
 | false
 |===
