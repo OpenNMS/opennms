@@ -36,9 +36,14 @@ import java.util.function.Consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.WakeupException;
 import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KafkaConsumerRunner implements Runnable, Closeable {
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaConsumerRunner.class);
+
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     private final KafkaConsumer<String, byte[]> consumer;
@@ -48,10 +53,13 @@ public class KafkaConsumerRunner implements Runnable, Closeable {
     private final Thread thread;
 
     public KafkaConsumerRunner(final KafkaConsumer<String, byte[]> consumer,
-                                final Consumer<ConsumerRecord<String, byte[]>> handler,
-				final String name) {
+                               final Consumer<ConsumerRecord<String, byte[]>> handler,
+                               final String name) {
         this.consumer = Objects.requireNonNull(consumer);
         this.handler = Objects.requireNonNull(handler);
+
+        this.consumer.commitSync();
+
         this.thread = new Thread(this, "kafka-consumer:" + name);
         this.thread.start();
     }
@@ -63,7 +71,7 @@ public class KafkaConsumerRunner implements Runnable, Closeable {
         try {
             this.thread.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("Consumer thread interrupted", e);
         }
     }
 
@@ -71,10 +79,17 @@ public class KafkaConsumerRunner implements Runnable, Closeable {
     public void run() {
         Logging.putPrefix("twin");
 
-        while (!this.closed.get()) {
-            for (final var record : this.consumer.poll(Duration.ofMillis(100))) {
-                this.handler.accept(record);
+        try {
+            while (!this.closed.get()) {
+                for (final var record : this.consumer.poll(Duration.ofMillis(100))) {
+                    this.handler.accept(record);
+                }
             }
+        } catch (final WakeupException e) {
+            // Ignored
+        } finally {
+            this.consumer.unsubscribe();
+            this.consumer.close();
         }
     }
 }

@@ -30,8 +30,6 @@ package org.opennms.core.ipc.twin.kafka;
 
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
@@ -58,25 +56,43 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
 
-    private final KafkaConfigProvider config = () -> {
-        final var properties = new Properties();
-        properties.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
-        properties.put("group.id", SystemInfoUtils.getInstanceId());
-        return properties;
-    };
-
     @Override
     protected TwinPublisher createPublisher() throws Exception {
+        final KafkaConfigProvider config = () -> {
+            final var properties = new Properties();
+            properties.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
+            properties.put("group.id", SystemInfoUtils.getInstanceId());
+            return properties;
+        };
+
         final var kafkaTwinPublisher = new KafkaTwinPublisher(new LocalTwinSubscriberImpl(), config);
         kafkaTwinPublisher.init();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return kafkaTwinPublisher;
     }
 
     @Override
     protected TwinSubscriber createSubscriber(final MinionIdentity identity) {
+        final KafkaConfigProvider config = () -> {
+            final var properties = new Properties();
+            properties.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
+            return properties;
+        };
+
         final var kafkaTwinSubscriber = new KafkaTwinSubscriber(identity, config);
         kafkaTwinSubscriber.init();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return kafkaTwinSubscriber;
     }

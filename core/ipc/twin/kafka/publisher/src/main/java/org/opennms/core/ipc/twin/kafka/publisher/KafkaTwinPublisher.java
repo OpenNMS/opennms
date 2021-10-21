@@ -44,7 +44,7 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.KafkaSinkConstants;
+import org.opennms.core.ipc.common.kafka.KafkaTwinConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
@@ -75,12 +75,10 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private final KafkaConfigProvider kafkaConfigProvider;
 
     private KafkaProducer<String, byte[]> producer;
-    private KafkaConsumer<String, byte[]> consumer;
-
     private KafkaConsumerRunner consumerRunner;
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber) {
-        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
     }
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
@@ -93,7 +91,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         final var kafkaConfig = new Properties();
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
@@ -103,12 +101,12 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
         this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
 
-        this.consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-        this.consumer.subscribe(ImmutableList.<String>builder()
+        final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+        consumer.subscribe(ImmutableList.<String>builder()
                                         .add(Topic.request())
                                         .build());
 
-        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage, "twin-publisher");
+        this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
     }
 
     public void close() throws IOException {
@@ -116,10 +114,6 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
 
         if (this.consumerRunner != null) {
             this.consumerRunner.close();
-        }
-
-        if (this.consumer != null) {
-            this.consumer.close();
         }
 
         if (this.producer != null) {
@@ -138,7 +132,9 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         if (!Strings.isNullOrEmpty(sinkUpdate.getLocation())) {
             proto.setLocation(sinkUpdate.getLocation());
         }
-        proto.setTwinObject(ByteString.copyFrom(sinkUpdate.getObject()));
+        if (sinkUpdate.getObject() != null) {
+            proto.setTwinObject(ByteString.copyFrom(sinkUpdate.getObject()));
+        }
 
         final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.build().toByteArray());
         this.producer.send(record, (meta, ex) -> {

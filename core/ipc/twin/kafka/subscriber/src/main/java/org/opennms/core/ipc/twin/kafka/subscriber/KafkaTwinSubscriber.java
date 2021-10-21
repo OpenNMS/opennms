@@ -56,6 +56,7 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -71,9 +72,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     private final KafkaConfigProvider kafkaConfigProvider;
 
     private KafkaProducer<String, byte[]> producer;
-    private KafkaConsumer<String, byte[]> consumer;
-
-    private KafkaConsumerRunner consumerRunner;
+    private KafkaConsumerRunner consumer;
 
     public KafkaTwinSubscriber(final MinionIdentity identity, final KafkaConfigProvider kafkaConfigProvider) {
         super(identity);
@@ -82,9 +81,10 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
     public void init() {
         final var kafkaConfig = new Properties();
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, this.getMinionIdentity().getId());
         kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
         kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
         kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
@@ -94,21 +94,17 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
         LOG.debug("Initialized kafka twin subscriber with {}", kafkaConfig);
         this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
 
-        this.consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-        this.consumer.subscribe(ImmutableList.<String>builder()
+        final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+        consumer.subscribe(ImmutableList.<String>builder()
                                         .add(Topic.responseForLocation(this.getMinionIdentity().getLocation()))
                                         .add(Topic.responseGlobal())
                                         .build());
 
-        this.consumerRunner = new KafkaConsumerRunner(this.consumer, this::handleMessage, "twin-subscriber");
+        this.consumer = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-subscriber");
     }
 
     public void close() throws IOException {
         super.close();
-
-        if (this.consumerRunner != null) {
-            this.consumerRunner.close();
-        }
 
         if (this.consumer != null) {
             this.consumer.close();
@@ -142,7 +138,9 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
             response = new TwinResponseBean();
             response.setKey(proto.getConsumerKey());
-            response.setLocation(proto.getLocation());
+            if (!Strings.isNullOrEmpty(proto.getLocation())) {
+                response.setLocation(proto.getLocation());
+            }
             response.setObject(proto.getTwinObject().toByteArray());
         } catch (final InvalidProtocolBufferException e) {
             LOG.error("Failed to parse protobuf for the response", e);

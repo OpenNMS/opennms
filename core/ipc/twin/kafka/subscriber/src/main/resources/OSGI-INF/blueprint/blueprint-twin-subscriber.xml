@@ -8,22 +8,15 @@
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <cm:property-placeholder id="kafkaConsumerProperties"
-                             persistent-id="org.opennms.core.ipc.twin.kafka.consumer"
-                             placeholder-prefix="[["
-                             placeholder-suffix="]]"
-                             update-strategy="reload">
-        <cm:default-properties>
-            <cm:property name="group.id" value="OpenNMS"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
+    <cm:property-placeholder id="kafkaProperties"
+                             persistent-id="org.opennms.core.ipc.twin.kafka"
+                             update-strategy="reload" />
 
     <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
 
     <!-- Config Provider -->
     <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider" >
-        <!-- same as persistent-id -->
-        <argument value="org.opennms.core.ipc.sink.kafka.consumer"/>
+        <argument value="org.opennms.core.ipc.twin.kafka"/>
         <argument ref="configurationAdmin" />
     </bean>
 
