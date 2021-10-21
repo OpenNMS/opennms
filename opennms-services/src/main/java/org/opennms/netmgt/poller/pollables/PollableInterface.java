@@ -141,7 +141,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     public PollableService createService(final String svcName) {
-        return withTreeLock(new Callable<PollableService>() {
+        return withSyncTreeLock(new Callable<PollableService>() {
             @Override
             public PollableService call() {
 
@@ -329,11 +329,11 @@ public class PollableInterface extends PollableContainer {
         Runnable lockSecondNodeAndRun = new Runnable() {
             @Override
             public void run() {
-                secondNode.withTreeLock(reparent);
+                secondNode.withSyncTreeLock(reparent);
             }
         };
         
-        firstNode.withTreeLock(lockSecondNodeAndRun);
+        firstNode.withSyncTreeLock(lockSecondNodeAndRun);
         
     }
 

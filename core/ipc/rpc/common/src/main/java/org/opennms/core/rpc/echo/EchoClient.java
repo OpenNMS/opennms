@@ -29,6 +29,7 @@
 package org.opennms.core.rpc.echo;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -45,7 +46,7 @@ public class EchoClient implements RpcClient<EchoRequest, EchoResponse>, Initial
     private RpcClient<EchoRequest, EchoResponse> m_delegate;
 
     @Override
-    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+    public CompletionStage<EchoResponse> execute(EchoRequest request) {
         return m_delegate.execute(request);
     }
 

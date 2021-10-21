@@ -32,7 +32,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -113,7 +112,7 @@ public class PollableNode extends PollableContainer {
                 retVal[0] = iface;
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
         return retVal[0];
     }
 
@@ -182,7 +181,7 @@ public class PollableNode extends PollableContainer {
                 retVal[0] = iface.createService(svcName);
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
         return retVal[0];
     }
 
@@ -282,7 +281,7 @@ public class PollableNode extends PollableContainer {
     /** {@inheritDoc} */
     @Override
     public CompletionStage<PollStatus> doPoll(final PollableElement elem) {
-        return withTreeLock(() -> {
+        return withAsyncTreeLock(() -> {
             resetStatusChanged();
             return poll(elem);
         });

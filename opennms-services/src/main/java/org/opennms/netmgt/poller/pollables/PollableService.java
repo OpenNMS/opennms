@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.logging.Logging;
@@ -54,20 +53,6 @@ import org.slf4j.LoggerFactory;
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
     
     private static final Logger LOG = LoggerFactory.getLogger(PollableService.class);
-
-    private final class PollRunner implements Runnable {
-    	
-    	private volatile PollStatus m_pollStatus;
-            @Override
-		public void run() {
-		    doPoll();
-		    getNode().processStatusChange(new Date());
-		    m_pollStatus = getStatus();
-		}
-		public PollStatus getPollStatus() {
-			return m_pollStatus;
-		}
-	}
 
 	private final String m_svcName;
 
@@ -380,45 +365,38 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public void run() {
+        // the poll got just started processStatusChange is fired on completion
         doRun(500);
     }
-    
-    /**
-     * <p>doRun</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
-     */
-    public PollStatus doRun() {
-    	return doRun(0);
+
+    private CompletionStage<PollStatus> startPoll() {
+        long startDate = System.currentTimeMillis();
+        return doPoll().thenApply(status -> {
+            processStatusChange(new Date());
+            LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
+            return status;
+        });
     }
 
-    private PollStatus doRun(int timeout) {
+    private CompletionStage<PollStatus> doRun(int timeout) {
         final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putThreadContext("service", m_svcName);
             Logging.putThreadContext("ipAddress", getIpAddr());
             Logging.putThreadContext("nodeId", Integer.toString(getNodeId()));
             Logging.putThreadContext("nodeLabel", getNodeLabel());
-            long startDate = System.currentTimeMillis();
             LOG.debug("Start Scheduled Poll of service {}", this);
-            PollStatus status;
             if (getContext().isNodeProcessingEnabled()) {
-                PollRunner r = new PollRunner();
                 try {
-                    withTreeLock(r, timeout);
+                    return withAsyncTreeLock(() -> startPoll(), timeout);
                 } catch (LockUnavailable e) {
                     LOG.info("Postponing poll for {}. Another service is currently holding the lock.", this);
                     throw new PostponeNecessary("LockUnavailable postpone poll");
                 }
-                status = r.getPollStatus();
             }
             else {
-                doPoll();
-                processStatusChange(new Date());
-                status = getStatus();
+                return startPoll();
             }
-            LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
-            return status;
         } finally {
             Logging.setContextMap(mdc);
         }
@@ -436,7 +414,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
                 m_schedule.unschedule();
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
     }
 
     /**

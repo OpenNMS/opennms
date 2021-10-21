@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -226,11 +225,11 @@ public abstract class PollableElement {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public final void withTreeLock(Runnable r) {
-        withTreeLock(Executors.callable(r));
+    public final void withSyncTreeLock(Runnable r) {
+        withSyncTreeLock(Executors.callable(r));
     }
 
-    protected final <T> T withTreeLock(Callable<T> c) {
+    protected final <T> T withSyncTreeLock(Callable<T> c) {
         try {
             obtainTreeLock();
             return c.call();
@@ -250,7 +249,7 @@ public abstract class PollableElement {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected final <T> CompletionStage<T> withTreeLock(Supplier<CompletionStage<T>> c) {
+    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> c) {
         obtainTreeLock();
         try {
             final var future = c.get();
@@ -260,8 +259,19 @@ public abstract class PollableElement {
             releaseTreeLock();
         }
     }
-    
-    
+
+    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> c, long timeout) throws LockUnavailable {
+        obtainTreeLock(timeout);
+        try {
+            final var future = c.get();
+            future.thenRun(this::releaseTreeLock);
+            return future;
+        } finally {
+            releaseTreeLock();
+        }
+    }
+
+
     /**
      * <p>withTreeLock</p>
      *
@@ -269,8 +279,8 @@ public abstract class PollableElement {
      * @param timeout Lock timeout in milliseconds
      * @throws LockUnavailable 
      */
-    protected final void withTreeLock(Runnable r, long timeout) throws LockUnavailable {
-        withTreeLock(Executors.callable(r), timeout);
+    protected final void withSyncTreeLock(Runnable r, long timeout) throws LockUnavailable {
+        withSyncTreeLock(Executors.callable(r), timeout);
     }
 
     /**
@@ -282,7 +292,7 @@ public abstract class PollableElement {
      * @return a T object.
      * @throws LockUnavailable 
      */
-    protected final <T> T withTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
+    protected final <T> T withSyncTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
         boolean locked = false;
         try {
             obtainTreeLock(timeout);
@@ -481,7 +491,7 @@ public abstract class PollableElement {
                 }
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
     }
 
     /**
@@ -507,7 +517,7 @@ public abstract class PollableElement {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
      */
     public PollEvent extrapolateCause() {
-        return withTreeLock(new Callable<PollEvent>() {
+        return withSyncTreeLock(new Callable<PollEvent>() {
             @Override
             public PollEvent call() throws Exception {
                 return doExtrapolateCause();
@@ -529,7 +539,7 @@ public abstract class PollableElement {
      * <p>inheritParentalCause</p>
      */
     public void inheritParentalCause() {
-        withTreeLock(new Runnable() {
+        withSyncTreeLock(new Runnable() {
 
             @Override
             public void run() {

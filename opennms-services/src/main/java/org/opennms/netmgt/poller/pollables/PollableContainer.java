@@ -147,7 +147,7 @@ abstract public class PollableContainer extends PollableElement {
                 PollableContainer.super.delete();
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
         
     }
     
@@ -253,7 +253,7 @@ abstract public class PollableContainer extends PollableElement {
         };
         
         if (withTreeLock) {
-            withTreeLock(r);
+            withSyncTreeLock(r);
         } else {
             r.run();
         }
@@ -279,7 +279,7 @@ abstract public class PollableContainer extends PollableElement {
                 updateStatus(iter.getResult());
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
     }
     
     /**
@@ -300,7 +300,7 @@ abstract public class PollableContainer extends PollableElement {
                 forEachMember(iter);
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
     }
     
     PollableElement findMemberWithDescendent(PollableElement elem) {
@@ -317,7 +317,7 @@ abstract public class PollableContainer extends PollableElement {
      */
     @Override
     protected CompletionStage<PollStatus> poll(final PollableElement elem) {
-        return elem.withTreeLock(() -> {
+        return elem.withAsyncTreeLock(() -> {
             PollableElement member = findMemberWithDescendent(elem);
             return member.poll(elem).thenCompose(memberStatus -> {
                 if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
@@ -396,7 +396,7 @@ abstract public class PollableContainer extends PollableElement {
                 }
             }
         };
-        withTreeLock(r);
+        withSyncTreeLock(r);
         
     }
 
