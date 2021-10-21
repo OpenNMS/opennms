@@ -314,6 +314,8 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         assertFalse(trapListener.hasError());
         // Cleanup for sanity
         strategy.clearUsers();
+        // unregister listener
+        strategy.unregisterForTraps(trapListener, getAgentAddress(), 9162);
     }
 
 
