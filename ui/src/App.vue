@@ -3,9 +3,9 @@
   <Menubar />
   <Sidebar />
   <div id="view">
-    <router-view />
-      <notifications position="top center" duration=200 closeOnClick=true ignoreDuplicates=true />   
+    <router-view />     
   </div>
+  <notifications position="top center" ignoreDuplicates = true />  
 </template>
   
 <script setup lang="ts">
