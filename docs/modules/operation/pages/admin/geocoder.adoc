@@ -56,7 +56,7 @@ Required only if `useEnterpriseCredentials` is true.
 
 | useSystemProxy
 | Should the system-wide proxy settings be used?
-  Configure the system proxy settings in <<system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+  Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
 | Boolean
 | false
 
