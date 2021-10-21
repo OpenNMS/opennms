@@ -2,7 +2,7 @@
 # Pre-stage image to extract and manipulate Minion directory structure
 # Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
-# as addtional layers into the final image.
+# as additional layers into the final image.
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-1.2.0.b105"
 
@@ -14,7 +14,7 @@ ADD ./tarball/minion.tar.gz /opt/
 RUN mv /opt/minion-* /opt/minion
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
 
-# We set the correct permissions in this stage, so we don't have this as an addtional
+# We set the correct permissions in this stage, so we don't have this as an additional
 # layer in our deploy image.
 RUN groupadd --gid 10001 minion && \
     useradd --system --uid 10001 --gid minion minion --home-dir /opt/minion && \

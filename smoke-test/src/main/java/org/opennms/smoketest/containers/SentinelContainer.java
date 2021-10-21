@@ -28,9 +28,7 @@
 
 package org.opennms.smoketest.containers;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -45,17 +43,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.JsonStoreStrategy;
 import org.opennms.smoketest.stacks.SentinelProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TargetRoot;
@@ -245,16 +240,8 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         @Override
         protected void waitUntilReady() {
             LOG.info("Waiting for Sentinel health check...");
-            final long timeoutMins = 5;
             final InetSocketAddress sshAddr = container.getSshAddress();
-            final AtomicReference<String> lastOutput = new AtomicReference<>();
-            try {
-                await().atMost(timeoutMins, MINUTES).pollInterval(5, SECONDS)
-                        .until(() -> KarafShellUtils.testHealthCheck(sshAddr, lastOutput));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("Sentinel did not finish starting after {} minutes. Last output:", timeoutMins, lastOutput);
-                throw new RuntimeException(e);
-            }
+            awaitHealthCheckSucceeded(sshAddr, 5, "Sentinel");
             LOG.info("Health check passed.");
         }
     }
