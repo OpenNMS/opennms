@@ -123,6 +123,6 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
     }
 
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
-        return delegate.execute(request);
+        return delegate.execute(request).toCompletableFuture();
     }
 }

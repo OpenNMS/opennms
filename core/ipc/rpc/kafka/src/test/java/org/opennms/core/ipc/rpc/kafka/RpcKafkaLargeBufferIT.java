@@ -123,7 +123,7 @@ public class RpcKafkaLargeBufferIT {
         requestDTO.setTimeToLive(10000L);
         String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
         SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
-        SnmpMultiResponseDTO responseDTO = snmpClient.execute(requestDTO).get();
+        SnmpMultiResponseDTO responseDTO = snmpClient.execute(requestDTO).toCompletableFuture().get();
         Assert.assertTrue(kafkaRpcServer.isSkippedOrDuplicated());
         Assert.assertEquals(expectedResponseDTO, responseDTO);
     }
@@ -141,7 +141,7 @@ public class RpcKafkaLargeBufferIT {
         String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
         SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
         try {
-            snmpClient.execute(requestDTO).get();
+            snmpClient.execute(requestDTO).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             Assert.assertTrue(kafkaRpcServer.isSkippedOrDuplicated());

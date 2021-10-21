@@ -31,8 +31,10 @@ package org.opennms.core.rpc.camel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.junit.Test;
+import org.opennms.core.concurrent.FutureUtils;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.echo.EchoRequest;
@@ -74,7 +76,7 @@ public abstract class EchoRpcThreadIT extends CamelBlueprintTest {
 
         // Fire off NTHREADS request
         ThreadLockingEchoClient client = new ThreadLockingEchoClient(rpcClientFactory, lockingRpcModule);
-        List<CompletableFuture<EchoResponse>> futures = new ArrayList<>();
+        List<CompletionStage<EchoResponse>> futures = new ArrayList<>();
         for (int i = 0; i < NTHREADS; i++) {
             EchoRequest request = new EchoRequest("ping");
             request.setTimeToLiveMs(30000L);
@@ -87,7 +89,7 @@ public abstract class EchoRpcThreadIT extends CamelBlueprintTest {
 
         // Release and verify that all the futures return
         lockingRpcModule.getRunLocker().release();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[NTHREADS])).get();
+        FutureUtils.sequence(futures).toCompletableFuture().get();
     }
 
     public static class ThreadLockingEchoClient implements RpcClient<EchoRequest, EchoResponse> {
@@ -99,7 +101,7 @@ public abstract class EchoRpcThreadIT extends CamelBlueprintTest {
         }
 
         @Override
-        public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+        public CompletionStage<EchoResponse> execute(EchoRequest request) {
             return m_delegate.execute(request);
         }
     }

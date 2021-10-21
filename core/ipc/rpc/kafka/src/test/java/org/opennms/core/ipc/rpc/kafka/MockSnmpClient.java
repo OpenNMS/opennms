@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -52,7 +52,7 @@ public class MockSnmpClient implements RpcClient<SnmpRequestDTO, SnmpMultiRespon
     }
 
     @Override
-    public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
+    public CompletionStage<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
         return rpcProxy.getClient(rpcModule).execute(request);
     }
 }

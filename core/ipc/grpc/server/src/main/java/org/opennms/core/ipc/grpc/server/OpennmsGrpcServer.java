@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -269,7 +270,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
         return new RpcClient<S, T>() {
             @Override
-            public CompletableFuture<T> execute(S request) {
+            public CompletionStage<T> execute(S request) {
                 if (request.getLocation() == null || request.getLocation().equals(getLocation())) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);

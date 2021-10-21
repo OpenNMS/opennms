@@ -105,7 +105,7 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
             }
             summary.setResponses(responses);
             return summary;
-        });
+        }).toCompletableFuture();
 
     }
 

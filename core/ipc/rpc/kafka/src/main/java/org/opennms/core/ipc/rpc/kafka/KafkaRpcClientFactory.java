@@ -44,6 +44,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.DelayQueue;
@@ -161,7 +162,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         return new RpcClient<S, T>() {
 
             @Override
-            public CompletableFuture<T> execute(S request) {
+            public CompletionStage<T> execute(S request) {
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);

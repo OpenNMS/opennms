@@ -154,7 +154,7 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
         // Execute!
         return client.getDelegate().execute(request).thenApply(results -> {
             return results.getRequisition();
-        });
+        }).toCompletableFuture();
     }
 
 }

@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.opennms.integration.api.v1.pollers.PollerRequestBuilder;
 import org.opennms.integration.api.v1.pollers.PollerResult;
@@ -41,7 +40,6 @@ import org.opennms.integration.api.v1.pollers.Status;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
 import com.google.common.base.Enums;
@@ -108,22 +106,14 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     public CompletableFuture<PollerResult> execute() {
         Map<String, Object> props = Collections.unmodifiableMap(attributes);
         MonitoredService service = new SimpleMonitoredService(address, serviceName);
-        CompletableFuture<PollerResponse> future = pollerClient.poll()
+        return pollerClient.poll()
                 .withService(service)
                 .withMonitorClassName(className)
                 .withTimeToLive(ttlInMs)
                 .withAttributes(props)
-                .execute();
-        // convert the response to PollResult.
-        CompletableFuture<PollerResult> result = new CompletableFuture<>();
-
-        try {
-            PollerResponse pollerResponse = future.get();
-            result.complete(new PollerResultImpl(pollerResponse.getPollStatus()));
-        } catch (InterruptedException | ExecutionException e) {
-           result.completeExceptionally(e);
-        }
-        return result;
+                .execute()
+                .thenApply(response -> (PollerResult)new PollerResultImpl(response.getPollStatus()))
+                .toCompletableFuture();
     }
 
     private class PollerResultImpl implements PollerResult {

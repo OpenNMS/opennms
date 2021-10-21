@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -43,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.concurrent.FutureUtils;
 import org.opennms.core.ipc.common.kafka.OsgiKafkaConfigProvider;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -104,7 +106,7 @@ public class RpcKafkaConsumerAsyncIT {
 
         ThreadLockingEchoClient client = new ThreadLockingEchoClient(rpcClientFactory, echoRpcModule);
         CompletableFuture<Integer> runLockedFuture = client.getRunLocker().waitForThreads(NTHREADS);
-        List<CompletableFuture<EchoResponse>> futures = new ArrayList<>();
+        List<CompletionStage<EchoResponse>> futures = new ArrayList<>();
         for (int i = 0; i < NTHREADS; i++) {
             EchoRequest request = new EchoRequest("ping");
             request.setTimeToLiveMs(15000L);
@@ -116,7 +118,7 @@ public class RpcKafkaConsumerAsyncIT {
         runLockedFuture.get();
         // Release and verify that all the futures return
         client.getRunLocker().release();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[NTHREADS])).get();
+        FutureUtils.sequence(futures).toCompletableFuture().get();
     }
 
 
@@ -132,8 +134,8 @@ public class RpcKafkaConsumerAsyncIT {
         }
 
         @Override
-        public CompletableFuture<EchoResponse> execute(EchoRequest request) {
-            CompletableFuture<EchoResponse> future = m_delegate.execute(request);
+        public CompletionStage<EchoResponse> execute(EchoRequest request) {
+            CompletionStage<EchoResponse> future = m_delegate.execute(request);
             future.whenComplete((echoResponse, throwable) -> {
                 if (throwable == null) {
                     runLocker.park();

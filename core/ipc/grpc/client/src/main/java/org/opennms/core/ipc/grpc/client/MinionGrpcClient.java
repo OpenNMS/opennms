@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -411,7 +412,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         setTagsForRpc(requestProto, minionSpan);
 
         RpcRequest rpcRequest = rpcModule.unmarshalRequest(requestProto.getRpcContent().toStringUtf8());
-        CompletableFuture<RpcResponse> future = rpcModule.execute(rpcRequest);
+        CompletionStage<RpcResponse> future = rpcModule.execute(rpcRequest);
         future.whenComplete((res, ex) -> {
             final RpcResponse rpcResponse;
             if (ex != null) {

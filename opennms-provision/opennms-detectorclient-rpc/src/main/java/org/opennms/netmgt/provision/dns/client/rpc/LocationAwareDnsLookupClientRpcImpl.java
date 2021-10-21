@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.dns.client.rpc;
 
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -83,8 +84,8 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
         dto.setLocation(location);
         dto.setSystemId(systemId);
         dto.setQueryType(queryType);
-        CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
-        return future.thenApply(DnsLookupResponseDTO::getHostResponse);
+        CompletionStage<DnsLookupResponseDTO> future = getDelegate().execute(dto);
+        return future.thenApply(DnsLookupResponseDTO::getHostResponse).toCompletableFuture();
     }
 
 }

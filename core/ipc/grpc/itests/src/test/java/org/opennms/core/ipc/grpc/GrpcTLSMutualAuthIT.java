@@ -115,7 +115,7 @@ public class GrpcTLSMutualAuthIT {
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("gRPC-RPC-Request");
         try {
-            EchoResponse actualResponse = echoClient.execute(request).get();
+            EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
             assertEquals(expectedResponse, actualResponse);
         } catch (InterruptedException | ExecutionException e) {
             fail();

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -157,7 +158,7 @@ public class Poll implements Action {
         final Map<String, Object> parameters = retrieveParameters(ipAddress, packageName, serviceName);
         parameters.putAll(parse(attributes));
 
-        final CompletableFuture<PollerResponse> future = locationAwarePollerClient.poll()
+        final CompletionStage<PollerResponse> future = locationAwarePollerClient.poll()
                 .withService(service)
                 .withSystemId(systemId)
                 .withMonitorClassName(className)
@@ -181,7 +182,7 @@ public class Poll implements Action {
         while (true) {
             try {
                 try {
-                    PollStatus pollStatus = future.get(1, TimeUnit.SECONDS).getPollStatus();
+                    PollStatus pollStatus = future.toCompletableFuture().get(1, TimeUnit.SECONDS).getPollStatus();
 
                     if (pollStatus.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
                         System.out.printf("\nService is %s on %s using %s:\n", pollStatus.getStatusName(), host, className);

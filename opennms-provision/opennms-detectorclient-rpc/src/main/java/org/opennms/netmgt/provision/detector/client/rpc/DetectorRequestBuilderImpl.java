@@ -210,6 +210,6 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
                     LOG.error("Error while processing detect callback.", t);
                 }
                 return response.isDetected();
-            });
+            }).toCompletableFuture();
     }
 }

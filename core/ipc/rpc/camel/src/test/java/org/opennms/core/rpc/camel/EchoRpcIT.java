@@ -76,7 +76,7 @@ public abstract class EchoRpcIT {
     public void canExecuteRpcViaCurrentLocation() throws InterruptedException, ExecutionException {
         EchoRequest request = new EchoRequest("HELLO!");
         EchoResponse expectedResponse = new EchoResponse("HELLO!");
-        EchoResponse actualResponse = echoClient.execute(request).get();
+        EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -94,7 +94,7 @@ public abstract class EchoRpcIT {
         EchoRequest request = new EchoRequest("HELLO!!!");
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
-        EchoResponse actualResponse = echoClient.execute(request).get();
+        EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
 
         routeManager.unbind(echoRpcModule);
@@ -118,7 +118,7 @@ public abstract class EchoRpcIT {
         request.setSystemId(minionIdentity.getId());
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
-        EchoResponse actualResponse = echoClient.execute(request).get();
+        EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
 
         routeManager.unbind(echoRpcModule);
@@ -148,7 +148,7 @@ public abstract class EchoRpcIT {
         request.setLocation(REMOTE_LOCATION_NAME);
 
         try {
-            echoClient.execute(request).get();
+            echoClient.execute(request).toCompletableFuture().get();
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
             assertTrue("Cause is not of type RequestTimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);
@@ -167,7 +167,7 @@ public abstract class EchoRpcIT {
         EchoRequest request = new EchoRequest("Oops!");
         request.shouldThrow(true);
         try {
-            echoClient.execute(request).get();
+            echoClient.execute(request).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             assertEquals("Oops!", e.getCause().getMessage());
@@ -194,7 +194,7 @@ public abstract class EchoRpcIT {
         request.shouldThrow(true);
         request.setLocation(REMOTE_LOCATION_NAME);
         try {
-            echoClient.execute(request).get();
+            echoClient.execute(request).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             assertTrue(e.getCause().getMessage(), e.getCause().getMessage().contains("Oops!"));
@@ -220,7 +220,7 @@ public abstract class EchoRpcIT {
         EchoRequest request = new EchoRequest("Helló");
         request.setLocation(REMOTE_LOCATION_NAME);
         try {
-            echoClient.execute(request).get();
+            echoClient.execute(request).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             assertEquals(RequestRejectedException.class, e.getCause().getClass());
@@ -297,7 +297,7 @@ public abstract class EchoRpcIT {
         request.setDelay(CamelRpcClientPreProcessor.CAMEL_JMS_REQUEST_TIMEOUT_DEFAULT * 2);
 
         try {
-            echoClient.execute(request).get();
+            echoClient.execute(request).toCompletableFuture().get();
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
             assertTrue("Cause is not of type RequestTimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);

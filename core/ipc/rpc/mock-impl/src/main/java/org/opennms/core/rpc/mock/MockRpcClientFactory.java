@@ -28,7 +28,7 @@
 
 package org.opennms.core.rpc.mock;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -46,7 +46,7 @@ public class MockRpcClientFactory implements RpcClientFactory {
     public <R extends RpcRequest, S extends RpcResponse> RpcClient<R, S> getClient(RpcModule<R, S> module) {
         return new RpcClient<R, S>() {
             @Override
-            public CompletableFuture<S> execute(R request) {
+            public CompletionStage<S> execute(R request) {
                 return module.execute(request);
             }
         };

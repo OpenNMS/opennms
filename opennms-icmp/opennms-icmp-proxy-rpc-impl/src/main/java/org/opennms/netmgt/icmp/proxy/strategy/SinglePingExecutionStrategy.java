@@ -58,6 +58,6 @@ public class SinglePingExecutionStrategy implements ExecutionStrategy {
             PingSummary summary = new PingSummary(requestDTO.toPingRequest(), 1 /* we always only have 1 */);
             summary.addSequence(1, pingResponse);
             return summary;
-        });
+        }).toCompletableFuture();
     }
 }

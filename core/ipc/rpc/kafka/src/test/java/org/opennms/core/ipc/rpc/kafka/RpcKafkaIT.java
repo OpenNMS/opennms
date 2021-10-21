@@ -154,7 +154,7 @@ public class RpcKafkaIT {
     public void testKafkaRpcAtDefaultLocation() throws InterruptedException, ExecutionException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
-        EchoResponse actualResponse = getEchoClient().execute(request).get();
+        EchoResponse actualResponse = getEchoClient().execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -166,7 +166,7 @@ public class RpcKafkaIT {
         request.setSystemId(getMinionIdentity().getId());
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
-        EchoResponse actualResponse = getEchoClient().execute(request).get();
+        EchoResponse actualResponse = getEchoClient().execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -176,7 +176,7 @@ public class RpcKafkaIT {
         request.setLocation(REMOTE_LOCATION_NAME);
         request.setDelay(5000L);
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
-        EchoResponse actualResponse = getEchoClient().execute(request).get();
+        EchoResponse actualResponse = getEchoClient().execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -186,7 +186,7 @@ public class RpcKafkaIT {
         request.setSystemId("!" + getMinionIdentity().getId());
         request.setLocation(REMOTE_LOCATION_NAME);
         try {
-            getEchoClient().execute(request).get();
+            getEchoClient().execute(request).toCompletableFuture().get();
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
             assertTrue("Cause is of type TimedOutException: " + ExceptionUtils.getStackTrace(e),
@@ -199,7 +199,7 @@ public class RpcKafkaIT {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.shouldThrow(true);
         try {
-            getEchoClient().execute(request).get();
+            getEchoClient().execute(request).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             assertEquals("Kafka-RPC", e.getCause().getMessage());
@@ -215,7 +215,7 @@ public class RpcKafkaIT {
         request.setSystemId(getMinionIdentity().getId());
         request.setLocation(REMOTE_LOCATION_NAME);
         try {
-            getEchoClient().execute(request).get();
+            getEchoClient().execute(request).toCompletableFuture().get();
             fail();
         } catch (ExecutionException e) {
             assertEquals(RemoteExecutionException.class, e.getCause().getClass());
@@ -337,7 +337,7 @@ public class RpcKafkaIT {
         request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
         expectedResponse.setBody(message);
-        EchoResponse actualResponse = getEchoClient().execute(request).get();
+        EchoResponse actualResponse = getEchoClient().execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -350,7 +350,7 @@ public class RpcKafkaIT {
         request.setBody(message);
         EchoResponse expectedResponse = new EchoResponse();
         expectedResponse.setBody(message);
-        EchoResponse actualResponse = getEchoClient().execute(request).get();
+        EchoResponse actualResponse = getEchoClient().execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 

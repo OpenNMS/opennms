@@ -37,6 +37,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -118,7 +119,7 @@ public class CamelRpcClientFactory implements RpcClientFactory {
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S,T> getClient(RpcModule<S,T> module) {
         return new RpcClient<S,T>() {
             @Override
-            public CompletableFuture<T> execute(S request) {
+            public CompletionStage<T> execute(S request) {
 
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly

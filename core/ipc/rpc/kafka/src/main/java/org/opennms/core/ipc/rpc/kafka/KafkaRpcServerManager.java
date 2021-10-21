@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -369,7 +369,7 @@ public class KafkaRpcServerManager {
             RpcRequest request = module.unmarshalRequest(rpcContent.toStringUtf8());
             setTagsOnMinion(rpcRequestProto, request, minionSpan);
             // Modules may run the execution in their own thread pool.
-            CompletableFuture<RpcResponse> future = module.execute(request);
+            CompletionStage<RpcResponse> future = module.execute(request);
             final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(module.getId(), RPC_REQUESTS_RECEIVED));
             requestSentMeter.mark();
             future.whenComplete((res, ex) -> {

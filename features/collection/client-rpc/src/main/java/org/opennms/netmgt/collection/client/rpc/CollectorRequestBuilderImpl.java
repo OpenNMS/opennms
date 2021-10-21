@@ -173,7 +173,7 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         }
 
         // Execute the request
-        return client.getDelegate().execute(request).thenApply(CollectorResponseDTO::getCollectionSet);
+        return client.getDelegate().execute(request).thenApply(CollectorResponseDTO::getCollectionSet).toCompletableFuture();
     }
 
 }

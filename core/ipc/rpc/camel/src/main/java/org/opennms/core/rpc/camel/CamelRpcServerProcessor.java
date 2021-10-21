@@ -29,24 +29,24 @@
 package org.opennms.core.rpc.camel;
 
 import static org.opennms.core.rpc.camel.CamelRpcConstants.JMS_TRACING_INFO;
-import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
+import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class CamelRpcServerProcessor implements AsyncProcessor {
         if(request.getSystemId() != null) {
             minionSpan.setTag(TAG_SYSTEM_ID, request.getSystemId());
         }
-        final CompletableFuture<RpcResponse> future = module.execute(request);
+        final CompletionStage<RpcResponse> future = module.execute(request);
         future.whenComplete((res, ex) -> {
             try {
                 final RpcResponse response;

@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.osgi;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -165,7 +166,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
         @SuppressWarnings("unchecked")
         @Override
-        public CompletableFuture execute(RpcRequest request) {
+        public CompletionStage execute(RpcRequest request) {
             if (delegate == null) {
                 delegate = getRpcClient(module);
             }

@@ -51,7 +51,7 @@ public abstract class EchoRpcBlueprintIT extends CamelBlueprintTest {
         // Execute a request via the current location
         EchoRequest request = new EchoRequest("HELLO!");
         EchoResponse expectedResponse = new EchoResponse("HELLO!");
-        EchoResponse actualResponse = echoClient.execute(request).get();
+        EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -62,7 +62,7 @@ public abstract class EchoRpcBlueprintIT extends CamelBlueprintTest {
         EchoRequest request = new EchoRequest("HELLO!!!");
         request.setLocation(REMOTE_LOCATION_NAME);
         EchoResponse expectedResponse = new EchoResponse("HELLO!!!");
-        EchoResponse actualResponse = echoClient.execute(request).get();
+        EchoResponse actualResponse = echoClient.execute(request).toCompletableFuture().get();
         assertEquals(expectedResponse, actualResponse);
     }
 }

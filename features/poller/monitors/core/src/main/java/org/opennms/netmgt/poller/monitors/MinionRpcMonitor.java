@@ -98,7 +98,7 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
         request.addTracingInfo(RpcRequest.TAG_IP_ADDRESS, InetAddressUtils.toIpAddrString(svc.getAddress()));
 
         try {
-            final EchoResponse response = client.execute(request).get();
+            final EchoResponse response = client.execute(request).toCompletableFuture().get();
             final Long responseTime = System.currentTimeMillis() - response.getId();
             return PollStatus.available(responseTime.doubleValue());
         } catch (InterruptedException|ExecutionException t) {

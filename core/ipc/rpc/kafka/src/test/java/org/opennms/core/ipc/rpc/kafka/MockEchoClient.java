@@ -28,7 +28,7 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
@@ -53,7 +53,7 @@ public class MockEchoClient implements RpcClient<EchoRequest, EchoResponse> {
     }
 
     @Override
-    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+    public CompletionStage<EchoResponse> execute(EchoRequest request) {
         return getRpcProxy().getClient(rpcModule).execute(request);
     }
 
