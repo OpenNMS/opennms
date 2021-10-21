@@ -67,17 +67,36 @@ import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
 import { useStore } from 'vuex'
 import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore();
 const validationVar = State.toModel();
 
-const onSave = () => {
-  notify({
+const onSave = () => {       
+  const provisionDService = store.state.configuration.provisionDService;
+  provisionDService.importThreads = validationVar.value.threadpool.importThreads.$model,
+  provisionDService.scanThreads = validationVar.value.threadpool.scanThreads.$model,
+  provisionDService.rescanThreads = validationVar.value.threadpool.rescanThreads.$model,
+  provisionDService.writeThreads = validationVar.value.threadpool.writeThreads.$model
+  // await store.commit('configuration/PUT_ProvisionDService', provisionDService);
+  // await store.dispatch('configuration/putProvisionDService');
+  let response = putProvisionDService(provisionDService);
+  console.log(response);
+  try {    
+    if (response != null) {
+      notify({
           title: "Notification",
           text: 'Threadpool data successfully updated',
-          data: validationVar.value.threadpool,
           type: 'success',
         });
+    }
+  } catch {
+    notify({
+          title: "Notification",
+          text: 'ProvisionDService PUT API Error',
+          type: 'error',
+        });
+  }
 }
 
 onMounted(async () => {
