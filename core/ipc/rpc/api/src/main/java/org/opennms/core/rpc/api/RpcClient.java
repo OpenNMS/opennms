@@ -28,7 +28,7 @@
 
 package org.opennms.core.rpc.api;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Asynchronously executes remote procedure calls (RPCs).
@@ -37,6 +37,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface RpcClient<S extends RpcRequest, T extends RpcResponse> {
 
-    CompletableFuture<T> execute(S request);
+    CompletionStage<T> execute(S request);
 
 }

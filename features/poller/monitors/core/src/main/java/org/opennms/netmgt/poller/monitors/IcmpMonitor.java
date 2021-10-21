@@ -30,10 +30,16 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -102,6 +108,44 @@ public class IcmpMonitor extends AbstractServiceMonitor {
             return PollStatus.unavailable(null);
         }
 
+    }
+
+    @Override
+    public CompletionStage<PollStatus> pollAsync(MonitoredService svc, Map<String, Object> parameters, Executor executor) {
+        InetAddress host = svc.getAddress();
+        var res = new CompletableFuture<PollStatus>();
+
+        try {
+            int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
+            long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
+            int packetSize = ParameterMap.getKeyedInteger(parameters, "packet-size", PingConstants.DEFAULT_PACKET_SIZE);
+            final int dscp = ParameterMap.getKeyedDecodedInteger(parameters, "dscp", 0);
+            final boolean allowFragmentation = ParameterMap.getKeyedBoolean(parameters, "allow-fragmentation", true);
+            pingerFactory.get().getInstance(dscp, allowFragmentation).ping(host, timeout, retries, packetSize, new PingResponseCallback() {
+                @Override
+                public void handleResponse(InetAddress address, EchoPacket response) {
+                    LOG.info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
+                    var s = PollStatus.available((double)Math.round(response.elapsedTime(TimeUnit.MICROSECONDS)));
+                    res.complete(s);
+                }
+
+                @Override
+                public void handleTimeout(InetAddress address, EchoPacket request) {
+                    LOG.info("timed out pinging address " + address + ", thread " + request.getIdentifier() + ", seq " + request.getSequenceNumber());
+                    res.complete(PollStatus.unavailable(null));
+                }
+
+                @Override
+                public void handleError(InetAddress address, EchoPacket request, Throwable t) {
+                    LOG.info("an error occurred pinging " + address, t);
+                    res.complete(PollStatus.unavailable(t.getMessage()));
+                }
+            });
+        } catch (Throwable t) {
+            res.completeExceptionally(t);
+        }
+
+        return res;
     }
 
     public void setPingerFactory(PingerFactory pingerFactory) {

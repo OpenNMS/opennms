@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 
 /**
  * <p>
@@ -100,8 +101,8 @@ public interface ServiceMonitor {
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
-    default CompletionStage<PollStatus> pollAsync(MonitoredService svc, Map<String, Object> parameters) {
-        return CompletableFuture.completedFuture(poll(svc, parameters));
+    default CompletionStage<PollStatus> pollAsync(MonitoredService svc, Map<String, Object> parameters, Executor executor) {
+        return CompletableFuture.supplyAsync(() -> poll(svc, parameters), executor);
     }
 
     /**

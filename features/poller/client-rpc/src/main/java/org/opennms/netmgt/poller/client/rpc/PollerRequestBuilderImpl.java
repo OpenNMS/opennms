@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
@@ -130,7 +131,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
     }
 
     @Override
-    public CompletableFuture<PollerResponse> execute() {
+    public CompletionStage<PollerResponse> execute() {
         if (serviceMonitor == null) {
             throw new IllegalArgumentException("Monitor or monitor class name is required.");
         } else if (service == null) {

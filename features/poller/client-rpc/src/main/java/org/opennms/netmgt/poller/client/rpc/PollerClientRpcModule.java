@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.client.rpc;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
@@ -61,26 +62,16 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
     }
 
     @Override
-    public CompletableFuture<PollerResponseDTO> execute(PollerRequestDTO request) {
+    public CompletionStage<PollerResponseDTO> execute(PollerRequestDTO request) {
         final String className = request.getClassName();
         final ServiceMonitor monitor = serviceMonitorRegistry.getMonitorByClassName(className);
         if (monitor == null) {
             return CompletableFuture.completedFuture(new PollerResponseDTO(PollStatus.unknown("No monitor found with class name '" + className + "'.")));
         }
-
-        return CompletableFuture.supplyAsync(new Supplier<PollerResponseDTO>() {
-            @Override
-            public PollerResponseDTO get() {
-                PollStatus pollStatus;
-                try {
-                    final Map<String, Object> parameters = request.getMonitorParameters();
-                    pollStatus = monitor.poll(request, parameters);
-                } catch (RuntimeException e) {
-                    pollStatus = PollStatus.unknown(e.getMessage());
-                }
-                return new PollerResponseDTO(pollStatus);
-            }
-        }, executor);
+        final Map<String, Object> parameters = request.getMonitorParameters();
+        return monitor.pollAsync(request, parameters, executor)
+                .exceptionally(t -> PollStatus.unknown(t.getMessage()))
+                .thenApply(PollerResponseDTO::new);
     }
 
     public void setServiceMonitorRegistry(ServiceMonitorRegistry serviceMonitorRegistry) {
