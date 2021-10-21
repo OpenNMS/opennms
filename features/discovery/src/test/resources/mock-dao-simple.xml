@@ -8,6 +8,6 @@
 	<bean id="configurationManagerService" class="org.opennms.netmgt.discovery.ConfigurationManagerServiceMock" />
 -->
 	<bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
-		<property name="configFile" value="mock/etc/discovery-configuration.xml"/>
+		<property name="configFile" value="etc/discovery-configuration.xml"/>
 	</bean>
 </beans>
