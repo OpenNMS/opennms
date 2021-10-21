@@ -57,7 +57,7 @@
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
@@ -66,12 +66,18 @@ import Button from '../Common/Button.vue'
 import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
 import { useStore } from 'vuex'
+import { notify } from "@kyvg/vue3-notification"
 
 const store = useStore();
 const validationVar = State.toModel();
 
 const onSave = () => {
-  console.log("Threadpool successfully save.", validationVar.value.threadpool);
+  notify({
+          title: "Notification",
+          text: 'Threadpool data successfully updated',
+          data: validationVar.value.threadpool,
+          type: 'success',
+        });
 }
 
 onMounted(async () => {
@@ -93,4 +99,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "../Common/common.scss";
+.notification-font {
+  font-style: normal;
+  font-size: 14px;
+}
 </style>
