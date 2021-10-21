@@ -68,7 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/applicationContext-discovery-mock.xml",
         // Override the Pinger with a Pinger that always returns true
         "classpath:/applicationContext-testPinger.xml",
-        "classpath:discovery-configuration-managerservice-mock.xml"
+        "classpath:mock-dao-simple.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
