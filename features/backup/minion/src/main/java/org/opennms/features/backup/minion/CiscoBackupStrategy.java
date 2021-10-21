@@ -17,39 +17,42 @@ public class CiscoBackupStrategy implements BackupStrategy {
         Config config = new Config();
         try {
             Session session = loginToDevice(ipAddress, port, params.get(Const.DEVICE_USER), params.get(Const.DEVICE_KEY));
-            Channel channel=session.openChannel("exec");
-            ((ChannelExec)channel).setCommand("show running-config");
-            channel.setInputStream(null);
-            ((ChannelExec)channel).setErrStream(System.err);
-            InputStream in = channel.getInputStream();
-            channel.connect();
-            System.out.println("exec channel connected.....");
-
-            byte[] tmp = new byte[1024];
-            while(true){
-                while(in.available()>0){
-                    int i=in.read(tmp, 0, 1024);
-                    if(i<0)break;
-                    System.out.print(new String(tmp, 0, i));
-                }
-                if(channel.isClosed()){
-                    if(in.available()>0) continue;
-                    System.out.println("exit-status: "+channel.getExitStatus());
-                    break;
-                }
-                try{Thread.sleep(1000);}catch(Exception ee){}
-            }
-            channel.disconnect();
+            byte[] result = executeCommand(session, "show run");
             session.disconnect();
-
-            config.setData(tmp);
+            config.setData(result);
             config.setType(ConfigType.TEXT);
             config.setRetrievedAt(new Date());
         } catch (JSchException | IOException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
             config.setMessage(e.getMessage());
         }
         return config;
+    }
+
+    private byte[] executeCommand(Session session, String command) throws JSchException, IOException {
+        Channel channel = session.openChannel("exec");
+        ((ChannelExec)channel).setCommand(command);
+        channel.setInputStream(null);
+        ((ChannelExec)channel).setErrStream(System.err);
+        InputStream in = channel.getInputStream();
+        channel.connect();
+        System.out.println("executing exec command .....");
+
+        byte[] tmp = new byte[1024];
+        while(true){
+            while(in.available()>0){
+                int i=in.read(tmp, 0, 1024);
+                if(i<0)break;
+            }
+            if(channel.isClosed()){
+                if(in.available()>0) continue;
+                System.out.println("exit-status: "+channel.getExitStatus());
+                break;
+            }
+            try{Thread.sleep(1000);}catch(Exception ee){}
+        }
+        channel.disconnect();
+        return tmp;
     }
 
     private Session loginToDevice(String ipAddress, int port, String user, String key) throws JSchException {
@@ -124,6 +127,6 @@ public class CiscoBackupStrategy implements BackupStrategy {
                 "oLSGKix8ToGR5/k9oEmyBe0qhCq4xHcY3mSG0PdReqd0dIuihWKoYm0=\n" +
                 "-----END RSA PRIVATE KEY-----\n");
         Config config = ciscoBackupStrategy.getConfig("20.115.57.63", 22, params);
-        System.out.println("Config: " + config);
+        System.out.println(config);
     }
 }

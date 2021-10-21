@@ -29,6 +29,9 @@
 package org.opennms.features.backup.api;
 
 import lombok.Data;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 
 @Data
@@ -37,4 +40,14 @@ public class Config {
     private ConfigType type;
     private Date retrievedAt;
     private String message;
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "type=" + type +
+                ", retrievedAt=" + retrievedAt +
+                ", message='" + message + '\'' +
+                ", data=" + new String(data, StandardCharsets.UTF_8) +
+                '}';
+    }
 }
