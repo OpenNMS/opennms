@@ -26,15 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.backup.api;
+package org.opennms.features.backup.service.api;
 
-import lombok.Data;
-import java.util.Date;
+import org.opennms.features.backup.api.Config;
+import org.springframework.stereotype.Service;
 
-@Data
-public class Config {
-    private byte[] data;
-    private ConfigType type;
-    private Date retrievedAt;
-    private String message;
+import java.util.List;
+
+@Service
+public interface NetworkDeviceBackupManager {
+
+    /**
+     * Return a list of nodeIds already in backup
+     * @return nodeIds
+     */
+    List<Integer> getBackupedNodeIds();
+
+    /**
+     * Return a list of kv store key for this nodeId
+     * @param nodeId
+     * @return keys
+     */
+    List<String> getConfigs(int nodeId);
+
+    /**
+     * Return the actual config from database
+     * @param nodeId
+     * @param version
+     * @return
+     */
+    Config getConfig(int nodeId, String version);
+
+    /**
+     * Store the config
+     * @param config
+     * @throws Exception
+     */
+    void saveConfig(Config config) throws Exception;
+
+    /**
+     * Trigger backup for specific device
+     * @param nodeId
+     * @throws Exception
+     */
+    void backup(int nodeId) throws Exception;
+
+    /**
+     * Trigger all network device backup
+     * @throws Exception
+     */
+    void backup() throws Exception;
 }

@@ -26,15 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.backup.api;
+package org.opennms.core.backup.client;
 
-import lombok.Data;
-import java.util.Date;
+import org.opennms.core.rpc.api.RpcClient;
+import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.features.backup.api.BackupRequestDTO;
+import org.opennms.features.backup.api.BackupResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Data
-public class Config {
-    private byte[] data;
-    private ConfigType type;
-    private Date retrievedAt;
-    private String message;
+import java.util.concurrent.CompletableFuture;
+
+public class BackupRpcClient implements RpcClient<BackupRequestDTO, BackupResponseDTO> {
+
+    @Autowired
+    private RpcClientFactory m_rpcProxy;
+
+    private RpcClient<BackupRequestDTO, BackupResponseDTO> m_delegate;
+
+    @Override
+    public CompletableFuture<BackupResponseDTO> execute(BackupRequestDTO request) {
+        return m_delegate.execute(request);
+    }
 }

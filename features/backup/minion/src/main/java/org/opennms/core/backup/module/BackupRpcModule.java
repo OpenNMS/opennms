@@ -26,15 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.backup.api;
 
-import lombok.Data;
-import java.util.Date;
+package org.opennms.core.backup.module;
 
-@Data
-public class Config {
-    private byte[] data;
-    private ConfigType type;
-    private Date retrievedAt;
-    private String message;
+import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
+import org.opennms.features.backup.api.BackupRequestDTO;
+import org.opennms.features.backup.api.BackupResponseDTO;
+
+import java.util.concurrent.CompletableFuture;
+
+public class BackupRpcModule extends AbstractXmlRpcModule<BackupRequestDTO, BackupResponseDTO> {
+
+    private final String BACK_UP_RPC_MODULE_ID = "backup";
+
+    public BackupRpcModule() {
+        super(BackupRequestDTO.class, BackupResponseDTO.class);
+    }
+
+    @Override
+    public CompletableFuture<BackupResponseDTO> execute(BackupRequestDTO request) {
+        return null;
+    }
+
+    @Override
+    public String getId() {
+        return BACK_UP_RPC_MODULE_ID;
+    }
+
+    @Override
+    public BackupResponseDTO createResponseWithException(Throwable ex) {
+        return new BackupResponseDTO(ex.getMessage());
+    }
 }
