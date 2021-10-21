@@ -226,8 +226,13 @@ const stateAdvancedDropdown = computed(() => {
 });
 
 const setCronSchedule = (data: any) => {
-    reqDefinition.reqDef.schedulePeriodNumber = parseInt(data.match(/\d+/)[0]);
-    reqDefinition.reqDef.schedulePeriod = "minute"
+    let values = data.split(' ');
+    reqDefinition.reqDef.schedulePeriodNumber = parseInt(values[1]);
+    if (values.length > 3) {
+        reqDefinition.reqDef.schedulePeriod = values.slice(2, values.length + 1).join(' ')
+    } else {
+        reqDefinition.reqDef.schedulePeriod = values[2];
+    }
 }
 
 const setAdvDropDowndata = (patchVal: any) => {
