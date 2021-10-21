@@ -55,6 +55,7 @@
 *** xref:webui/jmx-config-generator/webui.adoc[]
 *** xref:webui/jmx-config-generator/cli.adoc[]
 ** xref:webui/heatmap/introduction.adoc[]
+** xref:webui/search.adoc[]
 ** xref:webui/trend/introduction.adoc[]
 
 
@@ -137,8 +138,6 @@
 
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
-
-* xref:search/search.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 

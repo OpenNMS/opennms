@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.health.rest;
+package org.opennms.core.health.api;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@Path("/health")
-public interface HealthCheckRestService {
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    @GET
-    @Path("probe")
-    @Produces(MediaType.TEXT_PLAIN)
-    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
+import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
+public class HealthTest {
+
+    @Test
+    public void findsWorst() {
+        var pairs = Stream.of(Status.values()).map(s -> Pair.<HealthCheck, Response>of(null, new Response(s))).collect(Collectors.toList());
+        var h1 = new Health(pairs).getWorst();
+        assertThat(h1.get().getRight().getStatus(), Matchers.is(Status.values()[Status.values().length - 1]));
+        Collections.reverse(pairs);
+        var h2 = new Health(pairs).getWorst();
+        assertThat(h2.get().getRight().getStatus(), Matchers.is(Status.values()[Status.values().length - 1]));
+    }
 }
