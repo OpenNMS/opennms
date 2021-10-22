@@ -57,7 +57,9 @@ public class BackupRpcModule extends AbstractXmlRpcModule<BackupRequestDTO, Back
         try {
             Config config = strategy.getConfig(request.getHost(), 22, params);
             BackupResponseDTO responseDTO = new BackupResponseDTO();
-            responseDTO.setResponse(new String(config.getData(), StandardCharsets.UTF_8));
+            if (config.getData() != null) {
+                responseDTO.setResponse(new String(config.getData(), StandardCharsets.UTF_8));
+            }
             future.complete(responseDTO);
         } catch (Throwable t) {
             future.completeExceptionally(t);

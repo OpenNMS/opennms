@@ -28,8 +28,15 @@
 
 package org.opennms.features.backup.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.json.JSONObject;
 import org.opennms.features.backup.LocationAwareBackupClient;
 import org.opennms.features.backup.api.Config;
@@ -41,16 +48,21 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @EventListener(name = "NetworkDeviceBackupManager", logPrefix = "backupd")
@@ -250,6 +262,7 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("nodeDao", nodeDao);
         jobDataMap.put("backupRpcClient", backupRpcClient);
+        jobDataMap.put("sessionUtils", sessionUtils);
         jobDataMap.put("networkDeviceBackupManager", this);
         if (params != null) {
             params.forEach((k, v) -> {

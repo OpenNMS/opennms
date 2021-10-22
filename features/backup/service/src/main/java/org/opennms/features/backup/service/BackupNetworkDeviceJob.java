@@ -33,9 +33,11 @@ import java.util.List;
 import org.opennms.core.backup.client.LocationAwareBackupClientImpl;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.backup.LocationAwareBackupClient;
+import org.opennms.features.backup.api.Const;
 import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -53,11 +55,15 @@ public class BackupNetworkDeviceJob implements Job {
         NodeDao nodeDao = (NodeDao) jobExecutionContext.getMergedJobDataMap().get("nodeDao");
         NetworkDeviceBackupManager networkDeviceBackupManager = (NetworkDeviceBackupManager)
                 jobExecutionContext.getMergedJobDataMap().get("networkDeviceBackupManager");
+        SessionUtils sessionUtils = (SessionUtils)jobExecutionContext
+                .getMergedJobDataMap().get("sessionUtils");
 
-        List<OnmsNode> nodes = nodeDao.findAll();
-        LOG.debug("Nodes size = " + nodes.size());
+        sessionUtils.withTransaction(() -> {
+            List<OnmsNode> nodes = nodeDao.findAll();
+            LOG.debug("Nodes size = " + nodes.size());
 
-        handleBackup(nodes, backupRpcClient, networkDeviceBackupManager);
+            handleBackup(nodes, backupRpcClient, networkDeviceBackupManager);
+        });
     }
 
     private void handleBackup(List<OnmsNode> nodes, LocationAwareBackupClientImpl backupRpcClient,
@@ -79,8 +85,8 @@ public class BackupNetworkDeviceJob implements Job {
             client.backup()
                     .withLocation(MonitoringLocationUtils.getLocationNameOrNullIfDefault(node))
                     .withHost(InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()))
-                    .withAttribute("username", node.getAssetRecord().getUsername())
-                    .withAttribute("password", node.getAssetRecord().getPassword())
+                    .withAttribute(Const.DEVICE_USER, node.getAssetRecord().getUsername())
+                    .withAttribute(Const.DEVICE_KEY, node.getAssetRecord().getPassword())
                     .execute()
                     .whenComplete((config, ex) -> {
                         if (ex == null) {
