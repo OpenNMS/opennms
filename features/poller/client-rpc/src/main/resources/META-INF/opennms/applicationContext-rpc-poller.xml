@@ -11,8 +11,6 @@
 
 	<context:annotation-config />
 
-    <bean id="pollerClientRpcModule" class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule" />
-
     <bean id="locationAwarePollerClient" class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl" />
     <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient" ref="locationAwarePollerClient"/>
 

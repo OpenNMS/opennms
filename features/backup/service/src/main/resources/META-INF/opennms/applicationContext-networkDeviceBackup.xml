@@ -18,6 +18,11 @@
 
     <context:annotation-config />
     <tx:annotation-driven/>
+
+    <bean id="backupRpcModule" class="org.opennms.core.backup.module.BackupRpcModule" />
+    <bean id="locationAwareBackupClient" class="org.opennms.core.backup.client.LocationAwareBackupClientImpl"/>
+    <onmsgi:service ref="locationAwareBackupClient" interface="org.opennms.features.backup.LocationAwareBackupClient" />
+
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="schedulerName" value="Backup" />
     </bean>
@@ -25,4 +30,6 @@
     <bean id="daemon" class="org.opennms.features.backup.service.impl.NetworkDeviceBackupManagerImpl">
       <property name="scheduler" ref="scheduler"/>
     </bean>
+    <onmsgi:service ref="daemon" interface="org.opennms.features.backup.service.api.NetworkDeviceBackupManager" />
+
 </beans>

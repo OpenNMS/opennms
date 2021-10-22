@@ -28,10 +28,13 @@
 
 package org.opennms.features.backup.service;
 
-import org.opennms.core.backup.client.BackupRpcClient;
-import org.opennms.features.backup.api.BackupRequestDTO;
-import org.opennms.features.backup.api.BackupResponseDTO;
+import java.util.List;
+
+import org.opennms.core.backup.client.LocationAwareBackupClientImpl;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.backup.LocationAwareBackupClient;
 import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.quartz.Job;
@@ -40,16 +43,13 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 public class BackupNetworkDeviceJob implements Job {
     private static final Logger LOG = LoggerFactory.getLogger(BackupNetworkDeviceJob.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         LOG.debug("Start execute BackupNetworkDeviceJob!");
-        BackupRpcClient backupRpcClient = (BackupRpcClient) jobExecutionContext.getMergedJobDataMap().get("backupRpcClient");
+        LocationAwareBackupClientImpl backupRpcClient = (LocationAwareBackupClientImpl) jobExecutionContext.getMergedJobDataMap().get("backupRpcClient");
         NodeDao nodeDao = (NodeDao) jobExecutionContext.getMergedJobDataMap().get("nodeDao");
         NetworkDeviceBackupManager networkDeviceBackupManager = (NetworkDeviceBackupManager)
                 jobExecutionContext.getMergedJobDataMap().get("networkDeviceBackupManager");
@@ -60,26 +60,41 @@ public class BackupNetworkDeviceJob implements Job {
         handleBackup(nodes, backupRpcClient, networkDeviceBackupManager);
     }
 
-    private void handleBackup(List<OnmsNode> nodes, BackupRpcClient backupRpcClient,
+    private void handleBackup(List<OnmsNode> nodes, LocationAwareBackupClientImpl backupRpcClient,
                               NetworkDeviceBackupManager networkDeviceBackupManager) {
         nodes.forEach(node -> {
             LOG.info("Working on device: " + node.getLabel());
             LOG.debug(node.getAssetRecord().getUsername() + " " + node.getAssetRecord().getPassword());
 
             if (node.getAssetRecord().getUsername() == null || node.getAssetRecord().getPassword() == null) {
-                LOG.warn("SKIP node with empty username and password.");
+                LOG.warn("SKIP node[{}] with empty username and password.", node.getNodeId());
                 return;
             }
-            /*
-            BackupRequestDTO dto = new BackupRequestDTO();
-            // setup request dto
-            CompletableFuture<BackupResponseDTO> future = backupRpcClient.execute(dto);
-            future.whenComplete((responseDTO, throwable) -> {
-                LOG.debug("RECEIVED responseDTO: {}", responseDTO);
-                LOG.debug(networkDeviceBackupManager.toString());
-                //networkDeviceBackupManager.saveConfig();
-            });
-             */
+
+            if (node.getPrimaryInterface() == null) {
+                LOG.warn("SKIP node[{}] without primary interface.", node.getNodeId());
+                return;
+            }
+
+            final LocationAwareBackupClient client = networkDeviceBackupManager.getClient();
+            client.backup()
+                    .withLocation(MonitoringLocationUtils.getLocationNameOrNullIfDefault(node))
+                    .withHost(InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()))
+                    .withAttribute("username", node.getAssetRecord().getUsername())
+                    .withAttribute("password", node.getAssetRecord().getPassword())
+                    .execute()
+                    .whenComplete((config, ex) -> {
+                        if (ex == null) {
+                            LOG.debug("Received config: {} for node[{}].", config, node.getNodeId());
+                            try {
+                                networkDeviceBackupManager.saveConfig(node.getId(), config);
+                            } catch (Exception e) {
+                                LOG.error("Failed to save config: {} for node[{}].", config, node.getNodeId());
+                            }
+                        } else {
+                            LOG.error("Failed to retrieve config for node[{}].", node.getNodeId(), ex);
+                        }
+                    });
         });
     }
 

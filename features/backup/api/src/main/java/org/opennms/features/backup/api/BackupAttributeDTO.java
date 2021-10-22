@@ -28,75 +28,69 @@
 
 package org.opennms.features.backup.api;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.rpc.api.RpcResponse;
-
-import com.google.common.base.Objects;
-
-@XmlRootElement(name = "backup-response")
+@XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BackupResponseDTO implements RpcResponse {
+public class BackupAttributeDTO {
 
-    public BackupResponseDTO() {
+    @XmlAttribute(name = "key")
+    private String key;
+
+    @XmlAttribute(name="value")
+    private String value;
+
+
+    public BackupAttributeDTO() {
+        // no-arg constructor for JAXB
     }
 
-    public BackupResponseDTO(String error) {
-        this.error = error;
+    public BackupAttributeDTO(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
-    @XmlAttribute(name = "id")
-    private Long id;
-
-    @XmlAttribute(name = "error")
-    private String error;
-
-    @XmlElement(name = "response", required = false)
-    private String response;
-
-    @Override
-    public String getErrorMessage() {
-        return error;
+    public String getKey() {
+        return key;
     }
 
-    public Long getId() {
-        return id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getValue() {
+        return value;
     }
 
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BackupResponseDTO)) return false;
-        BackupResponseDTO that = (BackupResponseDTO) o;
-        return Objects.equal(id, that.id) && Objects.equal(error, that.error) && Objects.equal(response, that.response);
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, error, response);
+        return Objects.hash(key, value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final BackupAttributeDTO other = (BackupAttributeDTO) obj;
+        return Objects.equals(this.key, other.key)
+                && Objects.equals(this.value, other.value);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("BackupAttributeDTO[key='%s', value='%s']", key, value);
     }
 }

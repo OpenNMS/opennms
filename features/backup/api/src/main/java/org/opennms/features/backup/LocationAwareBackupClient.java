@@ -26,25 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.backup.client;
+package org.opennms.features.backup;
 
-import org.opennms.core.rpc.api.RpcClient;
-import org.opennms.core.rpc.api.RpcClientFactory;
-import org.opennms.features.backup.api.BackupRequestDTO;
-import org.opennms.features.backup.api.BackupResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+public interface LocationAwareBackupClient {
 
-import java.util.concurrent.CompletableFuture;
+    BackupRequestBuilder backup();
 
-public class BackupRpcClient implements RpcClient<BackupRequestDTO, BackupResponseDTO> {
-
-    @Autowired
-    private RpcClientFactory m_rpcProxy;
-
-    private RpcClient<BackupRequestDTO, BackupResponseDTO> m_delegate;
-
-    @Override
-    public CompletableFuture<BackupResponseDTO> execute(BackupRequestDTO request) {
-        return m_delegate.execute(request);
-    }
 }

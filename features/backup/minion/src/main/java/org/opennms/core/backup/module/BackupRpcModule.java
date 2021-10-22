@@ -29,11 +29,16 @@
 
 package org.opennms.core.backup.module;
 
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
 import org.opennms.features.backup.api.BackupRequestDTO;
 import org.opennms.features.backup.api.BackupResponseDTO;
-
-import java.util.concurrent.CompletableFuture;
+import org.opennms.features.backup.api.Config;
+import org.opennms.features.backup.minion.CiscoBackupStrategy;
 
 public class BackupRpcModule extends AbstractXmlRpcModule<BackupRequestDTO, BackupResponseDTO> {
 
@@ -45,7 +50,19 @@ public class BackupRpcModule extends AbstractXmlRpcModule<BackupRequestDTO, Back
 
     @Override
     public CompletableFuture<BackupResponseDTO> execute(BackupRequestDTO request) {
-        return null;
+        CompletableFuture<BackupResponseDTO> future = new CompletableFuture<>();
+        CiscoBackupStrategy strategy = new CiscoBackupStrategy();
+        Map<String,String> params = new LinkedHashMap<>();
+        request.getAttributes().forEach(e -> params.put(e.getKey(), e.getValue()));
+        try {
+            Config config = strategy.getConfig(request.getHost(), 22, params);
+            BackupResponseDTO responseDTO = new BackupResponseDTO();
+            responseDTO.setResponse(new String(config.getData(), StandardCharsets.UTF_8));
+            future.complete(responseDTO);
+        } catch (Throwable t) {
+            future.completeExceptionally(t);
+        }
+        return future;
     }
 
     @Override

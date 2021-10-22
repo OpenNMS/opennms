@@ -26,27 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.backup.api;
+package org.opennms.features.backup;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import lombok.Data;
-
-@Data
-public class Config {
-    private byte[] data;
-    private ConfigType type;
-    private Date retrievedAt;
-    private String message;
-
-    @Override
-    public String toString() {
-        return "Config{" +
-                "type=" + type +
-                ", retrievedAt=" + retrievedAt +
-                ", message='" + message + '\'' +
-                ", data=" + (data != null ? new String(data, StandardCharsets.UTF_8) : null) +
-                '}';
-    }
+public interface BackupResponse {
 }

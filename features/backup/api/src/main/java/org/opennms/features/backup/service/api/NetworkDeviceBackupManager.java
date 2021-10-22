@@ -28,11 +28,13 @@
 
 package org.opennms.features.backup.service.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.opennms.features.backup.api.Config;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.opennms.features.backup.LocationAwareBackupClient;
+import org.opennms.features.backup.api.Config;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface NetworkDeviceBackupManager {
 
@@ -83,4 +85,7 @@ public interface NetworkDeviceBackupManager {
      * @throws Exception
      */
     void backup() throws Exception;
+
+    LocationAwareBackupClient getClient();
+
 }

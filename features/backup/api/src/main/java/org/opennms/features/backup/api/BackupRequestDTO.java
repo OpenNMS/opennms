@@ -28,17 +28,22 @@
 
 package org.opennms.features.backup.api;
 
-import com.google.common.base.Objects;
-import io.opentracing.Span;
-import org.opennms.core.rpc.api.RpcRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.opennms.core.rpc.api.RpcRequest;
+
+import com.google.common.base.Objects;
+
+import io.opentracing.Span;
 
 @XmlRootElement(name="backup-request")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -49,6 +54,12 @@ public class BackupRequestDTO implements RpcRequest {
 
     @XmlAttribute(name="id")
     private Long id;
+
+    @XmlElement(name="host", required=true)
+    private String host;
+
+    @XmlElement(name = "attribute")
+    private List<BackupAttributeDTO> attributes = new ArrayList<>();
 
     @XmlElement(name="strategy-config", required=true)
     private String strategyConfig;
@@ -86,6 +97,22 @@ public class BackupRequestDTO implements RpcRequest {
     @Override
     public Span getSpan() {
         return null;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public List<BackupAttributeDTO> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<BackupAttributeDTO> attributes) {
+        this.attributes = attributes;
     }
 
     public Long getId() {

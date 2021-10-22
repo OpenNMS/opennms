@@ -17,6 +17,7 @@
     <modules>
         <module>api</module>
         <module>service</module>
+        <module>shell</module>
         <module>minion</module>
     </modules>
 

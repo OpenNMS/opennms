@@ -10,8 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.opennms.features.backup</groupId>
-    <artifactId>org.opennms.features.backup.service</artifactId>
-    <name>OpenNMS :: Features :: Backup :: Service</name>
+    <artifactId>org.opennms.features.backup.shell</artifactId>
+    <name>OpenNMS :: Features :: Backup :: Shell</name>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -24,6 +24,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Karaf-Commands>*</Karaf-Commands>
                     </instructions>
                 </configuration>
             </plugin>
@@ -36,34 +37,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.backup</groupId>
-            <artifactId>org.opennms.features.backup.minion</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-dependencies</artifactId>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>quartz-dependencies</artifactId>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
+           <groupId>org.apache.karaf.shell</groupId>
+           <artifactId>org.apache.karaf.shell.core</artifactId>
         </dependency>
     </dependencies>
 </project>

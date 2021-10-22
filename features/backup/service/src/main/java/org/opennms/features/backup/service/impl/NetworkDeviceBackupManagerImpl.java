@@ -28,11 +28,16 @@
 
 package org.opennms.features.backup.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.json.JSONObject;
-import org.opennms.core.backup.client.BackupRpcClient;
-import org.opennms.features.backup.api.BackupStrategy;
+import org.opennms.features.backup.LocationAwareBackupClient;
 import org.opennms.features.backup.api.Config;
 import org.opennms.features.backup.service.BackupNetworkDeviceJob;
 import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
@@ -40,16 +45,21 @@ import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.quartz.*;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Pattern;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @EventListener(name = "NetworkDeviceBackupManager", logPrefix = "backupd")
 public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManager, SpringServiceDaemon {
@@ -71,8 +81,8 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
     @Autowired
     private Scheduler scheduler;
 
-    //@Autowired
-    private BackupRpcClient backupRpcClient;
+    @Autowired
+    private LocationAwareBackupClient backupRpcClient;
 
     @Autowired
     private NodeDao nodeDao;
@@ -145,6 +155,8 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         return new JSONObject(config.get());
     }
 
+
+
     @Override
     public void saveConfig(int nodeId, Config config) throws Exception {
         JSONObject latest = this.getLatestConfigJson(nodeId);
@@ -192,6 +204,11 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         synchronized (scheduler) {
             scheduler.triggerJob(new JobKey(JOB_IDENTITY, JOB_GROUP));
         }
+    }
+
+    @Override
+    public LocationAwareBackupClient getClient() {
+        return backupRpcClient;
     }
 
     @Override

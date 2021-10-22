@@ -915,6 +915,9 @@
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.poller.monitors/org.opennms.features.poller.monitors.core/${project.version}</bundle>
+        <!-- FIXME: This should not go here :) -->
+        <bundle>mvn:org.opennms.features.backup/org.opennms.features.backup.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.backup/org.opennms.features.backup.minion/${project.version}</bundle>
     </feature>
     <feature name="opennms-poller-shell" version="${project.version}" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
@@ -1585,6 +1588,8 @@
         <feature>dropwizard-metrics</feature>
         <feature>guava</feature>
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.shell/${project.version}</bundle>
+        <!-- FIXME: This should not go here :) -->
+        <bundle>mvn:org.opennms.features.backup/org.opennms.features.backup.shell/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dnsresolver-netty" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: Netty">

@@ -26,27 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.backup.api;
+package org.opennms.features.backup.shell;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
 
-import lombok.Data;
+@Command(scope = "opennms", name = "backup-trigger", description="Do the backup.")
+@Service
+public class Trigger implements Action {
 
-@Data
-public class Config {
-    private byte[] data;
-    private ConfigType type;
-    private Date retrievedAt;
-    private String message;
+    @Reference
+    private NetworkDeviceBackupManager networkDeviceBackupManager;
 
     @Override
-    public String toString() {
-        return "Config{" +
-                "type=" + type +
-                ", retrievedAt=" + retrievedAt +
-                ", message='" + message + '\'' +
-                ", data=" + (data != null ? new String(data, StandardCharsets.UTF_8) : null) +
-                '}';
+    public Object execute() throws Exception {
+        System.out.println("Backing up...");
+        networkDeviceBackupManager.backup();
+        System.out.println("Done.");
+        return null;
     }
 }
