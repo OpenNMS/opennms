@@ -47,7 +47,7 @@ public class Config {
                 "type=" + type +
                 ", retrievedAt=" + retrievedAt +
                 ", message='" + message + '\'' +
-                ", data=" + new String(data, StandardCharsets.UTF_8) +
+                ", data=" + (data != null ? new String(data, StandardCharsets.UTF_8) : null) +
                 '}';
     }
 }
