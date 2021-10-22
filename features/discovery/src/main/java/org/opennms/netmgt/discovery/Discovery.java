@@ -35,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -65,7 +66,7 @@ public class Discovery extends AbstractServiceDaemon {
     protected static final String LOG4J_CATEGORY = "discovery";
 
     @Autowired
-    private DiscoveryConfigFactory m_discoveryFactory;
+    private DiscoveryConfigurationFactory m_discoveryFactory;
 
     @Autowired
     private DiscoveryTaskExecutor m_discoveryTaskExecutor;
