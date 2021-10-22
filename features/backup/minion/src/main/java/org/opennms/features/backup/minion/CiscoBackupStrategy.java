@@ -28,20 +28,19 @@
 
 package org.opennms.features.backup.minion;
 
-import static org.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import org.opennms.features.backup.api.BackupStrategy;
-import org.opennms.features.backup.api.Config;
-import org.opennms.features.backup.api.ConfigType;
-import org.opennms.features.backup.api.Const;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.opennms.features.backup.api.BackupStrategy;
+import org.opennms.features.backup.api.Config;
+import org.opennms.features.backup.api.ConfigType;
+import org.opennms.features.backup.api.Const;
 
 public class CiscoBackupStrategy implements BackupStrategy {
 
@@ -57,7 +56,19 @@ public class CiscoBackupStrategy implements BackupStrategy {
             pipe.println("terminal length 0");
             pipe.println("show run");
             pipe.println("logout");
-            await().atMost(5, SECONDS).until(sshClient.isShellClosedCallable());
+            long start = System.currentTimeMillis();
+
+            boolean didClose = false;
+            while (System.currentTimeMillis() < (start + 5000)) {
+                if (sshClient.isShellClosed()) {
+                    didClose = true;
+                    break;
+                }
+                Thread.sleep(500);
+            }
+            if (!didClose) {
+                throw new RuntimeException("Shell not closed in time.");
+            }
 
             // Read stdout
             String shellOutput = sshClient.getStdout();
