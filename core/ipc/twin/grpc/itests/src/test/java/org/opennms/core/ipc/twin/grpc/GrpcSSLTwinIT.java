@@ -51,28 +51,6 @@ import static org.mockito.Mockito.when;
 
 public class GrpcSSLTwinIT extends GrpcTwinIT {
 
-    private ConfigurationAdmin configAdmin;
-
-    protected GrpcTwinSubscriber twinSubscriber;
-    protected GrpcTwinPublisher twinPublisher;
-    private int port;
-
-    @Override
-    protected TwinPublisher createPublisher() throws IOException {
-        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
-        this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
-        twinPublisher.start();
-        return twinPublisher;
-    }
-
-    @Override
-    protected TwinSubscriber createSubscriber(MinionIdentity identity) throws Exception {
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
-        twinSubscriber.start();
-        return twinSubscriber;
-    }
-
     @Before
     public void setup() throws Exception {
         String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
@@ -100,12 +78,7 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
         configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
-        super.setup();
+        super.setupAbstract();
     }
 
-    @After
-    public void destroy() throws IOException {
-        twinSubscriber.close();
-        twinPublisher.close();
-    }
 }

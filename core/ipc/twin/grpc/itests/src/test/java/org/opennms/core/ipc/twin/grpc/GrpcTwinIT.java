@@ -57,8 +57,8 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
 
     protected GrpcTwinSubscriber subscriber;
     protected GrpcTwinPublisher publisher;
-    private ConfigurationAdmin configAdmin;
-    private int port;
+    protected ConfigurationAdmin configAdmin;
+    protected int port;
 
     @Override
     protected TwinPublisher createPublisher() throws IOException {
@@ -90,6 +90,10 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
         configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
+        super.setup();
+    }
+
+    public void setupAbstract() throws Exception {
         super.setup();
     }
 
