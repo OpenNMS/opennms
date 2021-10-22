@@ -1,7 +1,7 @@
 
 = KSC
 
-This dashlet shows an existing https://wiki.opennms.org/wiki/KSC_Reports[KSC reports].
+This dashlet shows an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC reports].
 The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
 
 [options="autowidth", cols="1,2"]

@@ -1,7 +1,7 @@
 
 = Charts
 
-This dashlet displays an existing https://wiki.opennms.org/wiki/Chart-configuration.xml[Chart].
+This dashlet displays an existing https://opennms.discourse.group/t/creating-custom-charts/2208[Chart].
 
 [options="autowidth", cols="1,2"]
 |===
