@@ -28,6 +28,7 @@
 
 package org.opennms.features.backup.service.impl;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,32 +156,40 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         return new JSONObject(metas.findFirst().get().getValue());
     }
 
-
-
     @Override
-    public void saveConfig(int nodeId, Config config) throws Exception {
-        JSONObject latest = this.getLatestConfigJson(nodeId);
-        List<String> keys;
-        if (latest != null) {
-            Config latestConfig = mapper.convertValue(latest.get(CONFIG_TAG), Config.class);
-            String version = dateFormatter.format(latestConfig.getRetrievedAt());
-            this.actualWriteConfig(nodeId, version, mapper.writeValueAsString(latestConfig));
-            Object tmp = latest.get(KEYS_TAG);
-            if (tmp instanceof ArrayList) {
-                keys = (List) tmp;
+    public void saveConfig(int nodeId, Config config)  {
+        sessionUtils.withTransaction(() -> {
+            JSONObject latest = null; // this.getLatestConfigJson(nodeId);
+            List<String> keys;
+            if (latest != null) {
+                Config latestConfig = mapper.convertValue(latest.get(CONFIG_TAG), Config.class);
+                String version = dateFormatter.format(latestConfig.getRetrievedAt());
+                try {
+                    this.actualWriteConfig(nodeId, version, new String(config.getData(), StandardCharsets.UTF_8));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                Object tmp = latest.get(KEYS_TAG);
+                if (tmp instanceof ArrayList) {
+                    keys = (List) tmp;
+                } else {
+                    keys = new ArrayList<>(1);
+                }
+                keys.add(version);
             } else {
                 keys = new ArrayList<>(1);
             }
-            keys.add(version);
-        } else {
-            keys = new ArrayList<>(1);
-        }
 
-        JSONObject json = new JSONObject();
-        json.put(CONFIG_TAG, config);
-        json.put(KEYS_TAG, keys);
-        this.actualWriteConfig(nodeId, LATEST, json.toString());
+            JSONObject json = new JSONObject();
+            json.put(CONFIG_TAG, config);
+            json.put(KEYS_TAG, keys);
+            try {
+                this.actualWriteConfig(nodeId, LATEST, new String(config.getData(), StandardCharsets.UTF_8));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
 //        jsonStore.put(this.generateKey(nodeId, LATEST), mapper.writeValueAsString(config), CONTEXT);
+        });
     }
 
     private void actualWriteConfig(int nodeId, String version, String configStr) throws JsonProcessingException {

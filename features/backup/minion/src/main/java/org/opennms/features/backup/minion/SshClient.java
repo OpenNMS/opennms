@@ -28,12 +28,23 @@
 
 package org.opennms.features.backup.minion;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -94,7 +105,7 @@ public class SshClient implements AutoCloseable {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(keyFileName));
-            writer.write(keyStr);
+            writer.write(new String(Base64.getUrlDecoder().decode(keyStr), StandardCharsets.UTF_8));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
