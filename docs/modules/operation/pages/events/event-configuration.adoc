@@ -34,7 +34,7 @@ logEventSummaries::
 
 The set of known events is configured in `$\{OPENNMS_HOME}/etc/eventconf.xml`.
 This file opens with a `<global>` element, whose `<security>` child element defines which event fields may not be overridden in the body of an event submitted via any `Eventd` listener.
-This mechanism stops a mailicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
+This mechanism stops a malicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
 
 After the `<global>` element, this file consists of a series of `<event-file>` elements.
 The content of each `<event-file>` element specifies the path of a *tributary file* whose contents will be read and incorporated into the event configuration.
@@ -80,7 +80,7 @@ Note that parameter descriptions use the percentage sign (%) as a delimiter to m
 If a literal % sign appears in your description, you must escape it with a %.
 For example:
 
-`'testUrl https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
+`'testUrl \https://www.opennms.org/ReportSection?filter=FOO_BAR_BAZ%%20eq%%20%%27101%%27'`
 
 `%eventid%`::
     The event's numeric database ID.
@@ -202,7 +202,7 @@ When slotting your own event definitions, take care not to place them below thes
 * To save memory and shorten startup times, you may wish to remove event definition files that you know you do not need.
 * If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
 
-==== Reloading the Event onfiguration
+==== Reloading the Event configuration
 
 After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {page-component-title} server:
 

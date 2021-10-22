@@ -1,0 +1,131 @@
+
+= SystemExecuteMonitor
+
+If you need to run a system call or a script to determine a service status, use the SystemExecuteMonitor.
+The monitor calls a script or system command and determines service status based on the return of a `0` or a `non-0` exit code.
+As an alternative, the output of the system call can be matched against a banner.
+If the banner is part of the output, the status is interpreted as up.
+If the banner is not available in the output, the status is determined as down.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SystemExecuteMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the SystemExecuteMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| script
+| The system call to run.
+| n/a
+
+3+|*Optional*
+
+| args
+| The arguments to hand over to the system call.
+It supports variable replacement, see below.
+| n/a
+| banner
+| A string that is matched against the output of the system-call.
+If the output contains the banner, the service is determined as UP.
+| n/a
+|===
+
+The parameter `args` supports variable replacement for the following set of variables.
+
+TIP: Always providing a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
+
+.Variables that can be used in the configuration
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| $\{timeout}    | Timeout in milliseconds, based on service configuration.
+| $\{timeoutsec} | Timeout in seconds, based on service configuration.
+| $\{retry}      | Amount of retries based on service configuration.
+| $\{svcname}    | Service name based on service configuration.
+| $\{ipaddr}     | IP-address of the interface the service is bound to.
+| $\{nodeid}     | Nodeid of the node the monitor is associated with.
+| $\{nodelabel}  | Nodelabel of the node the monitor is associated with.
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+
+=== Placeholder use
+
+[source, xml]
+----
+<parameter key="args" value="-i $\{ipaddr} -t $\{timeout}"/>
+<parameter key="args" value="http://$\{nodelabel}/$\{svcname}/static"/>
+----
+
+=== Exit status example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+# ...some test logic
+
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  echo "This test passed"
+  exit 0
+else
+  echo "This test failed because of ..."
+  exit 1
+fi
+----
+
+=== Banner matching example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="banner" value="PASSED"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+# ...some test logic
+
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  echo "PASSED"
+else
+  echo "FAILED"
+fi
+----

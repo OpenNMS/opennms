@@ -193,7 +193,7 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
         </config>
         <!--
             Configure as Kafka Consumer.
-            All properties desribed at https://kafka.apache.org/0100/documentation.html#newconsumerconfigs are supported.
+            All properties described at https://kafka.apache.org/0100/documentation.html#newconsumerconfigs are supported.
         -->
         <config name="org.opennms.core.ipc.sink.kafka.consumer">
             group.id = OpenNMS
@@ -201,7 +201,7 @@ Simply copy it to `$\{SENTINEL_HOME}/deploy/`.
         </config>
         <!--
             Configure as Kafka Producer for sending Events from Sentinel.
-            All properties desribed at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
+            All properties described at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
         -->
         <config name="org.opennms.core.ipc.sink.kafka">
             bootstrap.servers = localhost:9092
@@ -262,7 +262,7 @@ This chapter describes the various adapters which may contain sample data which 
 At the moment only _Newts_ is supported as a Persistence Storage.
 See chapter <<ga-sentinel-configure-newts>> on how to configure _Newts_.
 
-In order to get it to work properly, please note, that an apropriate listener on the _Minion_ must also be configured.
+In order to get it to work properly, please note, that an appropriate listener on the _Minion_ must also be configured.
 The name of the listener should share the same name on _Sentinel_.
 
 ==== SFlowTelemetryAdapter

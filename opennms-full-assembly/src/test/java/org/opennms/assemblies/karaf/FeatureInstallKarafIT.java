@@ -50,7 +50,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
     @Ignore("Does not work with Karaf 4.2.3 anymore")
     public void testInstallAllOpenNMSFeatures() {
         final String version = getOpenNMSVersion();
-        addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("standard").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("spring-legacy").getURL());
         addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version(version).type("xml").classifier("features").getURL());
 

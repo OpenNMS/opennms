@@ -28,7 +28,7 @@ User maintenance describes additional tasks and information related to users.
 . Click the trash bin icon beside the user (or group) you want to delete. 
 . Confirm delete request with *OK*.
 
-IMPORTANT: When you delete a group no one receives notification that the group has been deleted. Be aware that deleting a group or user also removes any schedules associated with that group or user, meaning they will not receive notifcations specified as part of a schedule. 
+IMPORTANT: When you delete a group no one receives notification that the group has been deleted. Be aware that deleting a group or user also removes any schedules associated with that group or user, meaning they will not receive notifications specified as part of a schedule. 
 
 == Advanced Configuration
 

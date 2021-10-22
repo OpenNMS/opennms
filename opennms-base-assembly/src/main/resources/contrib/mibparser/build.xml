@@ -140,7 +140,7 @@
   <target name="testmibs" depends="jar" 
           description="Parse some MIBs and output XML.">
     <echo> 
-      To specifiy your MIBS use:
+      To specify your MIBS use:
         ant -DMIBS="A-MIB B-MIB C-MIB" testmibs
         Full path to each MIB or just the file name if in mibs dir
         
