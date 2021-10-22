@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
-import java.net.InetSocketAddress;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import io.netty.buffer.ByteBuf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -42,17 +37,17 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateExce
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Scope;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
-import io.netty.buffer.ByteBuf;
+import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class UdpSessionManagerTest {
@@ -198,13 +193,13 @@ public class UdpSessionManagerTest {
 
         session.addOptions(observationId1, templateId1, scopesValue, fieldsValue);
 
-        assertThat(udpSessionManager.options.keySet(), hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
         assertThat(udpSessionManager.templates.keySet(), hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)));
+        assertThat(udpSessionManager.templates.get(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)).wrapped.options.entrySet(), not(empty()));
 
         udpSessionManager.doHousekeeping();
 
-        assertThat(udpSessionManager.options.keySet(), not(hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id))));
         assertThat(udpSessionManager.templates.keySet(), not(hasItem(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id))));
+        assertThat(udpSessionManager.templates.get(new UdpSessionManager.TemplateKey(sessionKey, observationId1, template.id)), nullValue());
     }
 
     @Test

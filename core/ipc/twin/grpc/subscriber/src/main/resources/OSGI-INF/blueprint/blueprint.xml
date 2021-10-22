@@ -22,7 +22,7 @@
     <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
     <bean id="grpcClient" class="org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber"
-          init-method="start" destroy-method="shutdown">
+          init-method="start" destroy-method="close">
         <argument ref="minionIdentity"/>
         <argument ref="configAdmin"/>
         <argument value="${port}"/>

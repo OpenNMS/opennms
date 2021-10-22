@@ -10,7 +10,7 @@
     <reference id="grpcIpcServer" interface="org.opennms.core.grpc.common.GrpcIpcServer" />
 
     <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
-          init-method="start" destroy-method="shutdown">
+          init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
         <argument ref="grpcIpcServer"/>
     </bean>

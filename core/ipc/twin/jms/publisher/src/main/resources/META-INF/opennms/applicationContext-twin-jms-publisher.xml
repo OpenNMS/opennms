@@ -18,7 +18,7 @@
 
 
     <bean id="jmsTwinPublisher" class="org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher" primary="true"
-          init-method="init" destroy-method="destroy" >
+          init-method="init" destroy-method="close" >
         <constructor-arg ref="twinRpcServer"/>
         <constructor-arg ref="localTwinSubscriber"/>
     </bean>

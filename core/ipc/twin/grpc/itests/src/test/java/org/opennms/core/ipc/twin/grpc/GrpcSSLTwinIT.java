@@ -30,7 +30,6 @@ package org.opennms.core.ipc.twin.grpc;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
@@ -41,6 +40,7 @@ import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -72,7 +72,7 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
     }
 
     @Override
-    protected TwinSubscriber createSubscriber() throws IOException {
+    protected TwinSubscriber createSubscriber(MinionIdentity identity) throws Exception {
         MinionIdentity minionIdentity = new MockMinionIdentity("remote");
         twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
         twinSubscriber.start();
@@ -80,7 +80,7 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
     }
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
         String serverKeyFilePath = this.getClass().getResource("/tls/server.pem").getPath();
         String trustCertFilePath = this.getClass().getResource("/tls/ca.crt").getPath();
@@ -111,7 +111,9 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
 
     @Test
     public void testMultipleSubscribers() throws Exception {
-        final var subscriber1 = this.createSubscriber();
+
+        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
+        final var subscriber1 = this.createSubscriber(minionIdentity);
         final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
 
         final var session = this.twinPublisher.register("test", String.class);
@@ -119,13 +121,14 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
         session.publish("Test2");
 
         await().until(tracker1::getLog, hasItems("Test2"));
-        final var subscriber2 = this.createSubscriber();
+        minionIdentity = new MockMinionIdentity("remote");
+        final var subscriber2 = this.createSubscriber(minionIdentity);
         final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
 
         await().until(tracker2::getLog, hasItems("Test2"));
         session.publish("Test3");
-
-        final var subscriber3 = this.createSubscriber();
+        minionIdentity = new MockMinionIdentity("remote");
+        final var subscriber3 = this.createSubscriber(minionIdentity);
         final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
 
         await().until(tracker1::getLog, hasItems("Test3"));
@@ -164,7 +167,7 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
         session.publish("Test2");
 
         await().atMost(15, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2"));
-        twinPublisher.shutdown();
+        twinPublisher.close();
         twinPublisher = (GrpcTwinPublisher) this.createPublisher();
         session = this.twinPublisher.register("test", String.class);
         session.publish("Test3");
@@ -173,8 +176,8 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
     }
 
     @After
-    public void destroy() {
-        twinSubscriber.shutdown();
-        twinPublisher.shutdown();
+    public void destroy() throws IOException {
+        twinSubscriber.close();
+        twinPublisher.close();
     }
 }

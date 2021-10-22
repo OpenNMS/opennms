@@ -40,19 +40,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
-    private final Multimap<String, SessionImpl<?>> sessionMap = LinkedListMultimap.create();
+    private final Multimap<String, SessionImpl<?>> sessionMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     private final Map<String, byte[]> objMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private MinionIdentity minionIdentity;
@@ -81,9 +82,9 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         sessionMap.put(key, session);
         String location = minionIdentity != null ? minionIdentity.getLocation() : null;
         TwinRequestBean twinRequestBean = new TwinRequestBean(key, location);
-        sendRpcRequest(twinRequestBean);
-        byte[] objValue = objMap.get(key);
+
         // If there is an existing object, send that update to subscriber.
+        byte[] objValue = objMap.get(key);
         if (objValue != null) {
             TwinResponseBean twinResponseBean = new TwinResponseBean(key, location, objValue);
             try {
@@ -92,6 +93,9 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 LOG.error("Exception while sending response to consumer", e);
             }
         }
+
+        sendRpcRequest(twinRequestBean);
+
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
     }
@@ -102,43 +106,40 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         if(twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
             return;
         }
+
+        // Got empty response
+        if (twinResponse.getObject() == null) {
+            return;
+        }
+
+        // Swap the incoming object with the cached one while retrieving the old value in a (almost) atomic way
+        final var old = this.objMap.put(twinResponse.getKey(), twinResponse.getObject());
+        if (Arrays.equals(twinResponse.getObject(), old)) {
+            return;
+        }
+
+        LOG.trace("Received object update with key {}", twinResponse.getKey());
+
+        // Send update to each session.
+        final var sessions = this.sessionMap.get(twinResponse.getKey());
+        if (sessions == null) {
+            LOG.trace("Session with key {} doesn't exist yet", twinResponse.getKey());
+            return;
+        }
+
         // Consume in our own thread instead of using broker's callback thread.
         executorService.execute(() -> {
-
-            if (twinResponse.getObject() != null &&
-                    isObjectUpdated(twinResponse.getKey(), twinResponse.getObject())) {
-
-                LOG.trace("Received object update with key {}", twinResponse.getKey());
-                // Update twin object in local cache.
-                objMap.put(twinResponse.getKey(), twinResponse.getObject());
-                // Send update to each session.
-                if (sessionMap.containsKey(twinResponse.getKey())) {
-                    sessionMap.get(twinResponse.getKey()).forEach(session -> {
-                        try {
-                            session.accept(twinResponse.getObject());
-                        } catch (Exception e) {
-                            LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
-                        }
-                    });
-                } else {
-                    LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
-                    if (twinResponse.getObject() != null) {
-                        objMap.put(twinResponse.getKey(), twinResponse.getObject());
+                sessions.forEach(session -> {
+                    try {
+                        session.accept(twinResponse.getObject());
+                    } catch (Exception e) {
+                        LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
                     }
-                }
-            }
+                });
         });
     }
 
-    boolean isObjectUpdated(String key, byte[] updatedObject) {
-        byte[] objInBytes = objMap.get(key);
-        if (objInBytes == null) {
-            return true;
-        }
-        return !Arrays.equals(objInBytes, updatedObject);
-    }
-
-    public void shutdown() {
+    public void close() throws IOException {
         executorService.shutdown();
         objMap.clear();
         sessionMap.clear();

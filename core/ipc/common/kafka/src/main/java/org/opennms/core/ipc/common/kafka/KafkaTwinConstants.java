@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,42 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.grpc;
+package org.opennms.core.ipc.common.kafka;
 
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.distributed.core.api.SystemType;
-
-import java.util.UUID;
-
-public class MockMinionIdentity implements MinionIdentity {
-
-    private final String location;
-
-    private String id = "minionId";
-
-    public MockMinionIdentity(String location) {
-        this.location = location;
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public MockMinionIdentity(String location, String id) {
-        this.location = location;
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getLocation() {
-        return location;
-    }
-
-    @Override
-    public String getType() {
-        return SystemType.Minion.name();
-    }
-
+public interface KafkaTwinConstants {
+    String KAFKA_CONFIG_PID = "org.opennms.core.ipc.twin.kafka";
+    String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
 }

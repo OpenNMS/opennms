@@ -119,7 +119,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
         }
     }
 
-    public void destroy() {
+    public void close() {
         if (kafkaConsumerRunner != null) {
             kafkaConsumerRunner.close();
         }

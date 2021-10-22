@@ -114,9 +114,10 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         asyncStub.sinkStreaming(minionHeader, responseHandler);
     }
 
-    public void shutdown() {
+
+    public void close() throws IOException {
         isShutDown.set(true);
-        super.shutdown();
+        super.close();
         if (channel != null) {
             channel.shutdown();
         }

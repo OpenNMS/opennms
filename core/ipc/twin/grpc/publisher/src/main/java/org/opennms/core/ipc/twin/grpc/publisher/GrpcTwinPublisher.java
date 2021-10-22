@@ -108,12 +108,11 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
     }
 
-    public void shutdown() {
-        super.shutdown();
-        if (grpcIpcServer != null) {
-            grpcIpcServer.stopServer();
-            LOG.info("Stopped Twin GRPC Server");
-        }
+
+    public void close() throws IOException {
+        super.close();
+        grpcIpcServer.stopServer();
+        LOG.info("Stopped Twin GRPC Server");
         twinRpcExecutor.shutdown();
     }
 
@@ -195,7 +194,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             }
             return twinRequestBean;
         }
-
 
     }
 
