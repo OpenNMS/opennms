@@ -72,7 +72,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         final var sessionKey = new SessionKey(key, location);
 
         if (this.sessions.containsKey(sessionKey)) {
-            throw new IllegalStateException("Session already registered with same key: " + sessionKey);
+            return this.sessions.get(sessionKey);
         }
 
         if (sessionKey.hasLocation() && this.sessions.containsKey(sessionKey.withoutLocation())) {
@@ -215,6 +215,5 @@ public class MemoryTwinPublisher implements TwinPublisher {
 
     @Override
     public void close() {
-        this.sessions.clear();
     }
 }
