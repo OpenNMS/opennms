@@ -1,0 +1,68 @@
+= DNS Service Detector
+
+This detector lets you find DNS services for monitoring in your network.
+The DNS service is detected when the server responds to a DNS query for an A resource record.
+You can customize the A record used in the query with the `lookup` configuration parameter.
+
+Use the command line tool `host` to simulate the detector:
+
+[source, console]
+----
+> host -v -t a www.google.com 8.8.8.8
+Trying "www.google.com"
+Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:
+
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9324
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.google.com.			IN	A
+
+;; ANSWER SECTION:
+www.google.com.		283	IN	A	74.125.232.17
+www.google.com.		283	IN	A	74.125.232.20
+www.google.com.		283	IN	A	74.125.232.19
+www.google.com.		283	IN	A	74.125.232.16
+www.google.com.		283	IN	A	74.125.232.18
+
+Received 112 bytes from 8.8.8.8#53 in 41 ms
+----
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.datagram.DnsDetector`
+|===
+
+== Configuration and use
+
+.Optional parameters for the DNS service detector
+[options="header, autowidth"]
+[cols="1,3,3"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| Port to query.
+| 53
+
+| lookup
+| Name to query.
+| localhost
+|===
+
+== Example Configuration
+
+[source,xml]
+----
+<detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector">
+  <parameter key="port"   value="53"/>
+  <parameter key="lookup" value="localhost"/>
+</detector>
+----

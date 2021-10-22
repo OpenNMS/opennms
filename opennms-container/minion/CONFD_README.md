@@ -118,7 +118,7 @@ telemetry:
             NXOS-Listener:
                 class-name: "org.opennms.netmgt.telemetry.listeners.UdpListener"
                 parameters:
-                    # List all the parameters you wish to specifiy here
+                    # List all the parameters you wish to specify here
                     port: 50002
                 parsers:
                     # List all the parsers you wish to specify here

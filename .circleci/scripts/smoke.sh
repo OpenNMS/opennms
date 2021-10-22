@@ -53,20 +53,21 @@ export MAVEN_OPTS="-Xmx1g -Xms1g"
 cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"
-  # Run a set of known tests
-  for TEST_CLASS in "MenuHeaderIT" "SinglePortFlowsIT"
-  do
-    echo "###### Testing: ${TEST_CLASS}"
-    ../compile.pl -N -DskipTests=false -DskipITs=false -Dtest.fork.count=0 -Dit.test=$TEST_CLASS install verify
-  done
+  IT_TESTS="MenuHeaderIT,SinglePortFlowsIT"
 else
-  echo "#### Executing complete suite of smoke/system tests"
   find_tests
-  # Iterate through the tests and stop after the first failure
-  while read -r TEST_CLASS
-  do
-    echo "###### Testing: ${TEST_CLASS}"
-    ../compile.pl -N -DskipTests=false -DskipITs=false -DfailIfNoTests=false -Dtest.fork.count=0 -Dit.test="$TEST_CLASS" "-Psmoke.$SUITE" install verify
-  done < /tmp/this_node_it_tests
+  echo "#### Executing complete suite of smoke/system tests"
+  IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
+../compile.pl \
+  -DskipTests=false \
+  -DskipITs=false \
+  -DfailIfNoTests=false \
+  -Dtest.fork.count=0 \
+  -Dit.test="$IT_TESTS" \
+  --fail-fast \
+  -N \
+  '-P!smoke.all' \
+  "-Psmoke.$SUITE" \
+  install verify

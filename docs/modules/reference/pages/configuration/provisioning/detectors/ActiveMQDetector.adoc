@@ -1,0 +1,47 @@
+= ActiveMQDetector
+
+Use this detector to find and assign services based on ActiveMQ.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.jms.ActiveMQDetector`
+|===
+
+== Configuration and use
+
+.Parameters for the ActiveMQ service detector
+[options="header, autowidth"]
+[cols="1,1,4"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| broker-url
+| The URL used to connect to the ActiveMQ broker.
+| vm://localhost?create=false
+
+3+| *Optional*
+
+| user
+| The authentication username for connecting to the broker.
+| none
+
+| password
+| The password for connecting to the broker.
+| none
+
+| use-nodelabel
+| If true, modify the broker URL to use the node label instead of the IP address in the broker URL.
+| false
+|===
+
+== Examples
+
+=== Example for use-nodelabel=true
+
+If you are using an SSL-based connector, use this flag so that the detector will adjust the broker-url to reflect the node label as the hostname.

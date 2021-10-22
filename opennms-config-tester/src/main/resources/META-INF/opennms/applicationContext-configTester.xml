@@ -85,6 +85,7 @@
         <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
+        <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
@@ -548,6 +549,10 @@
 
   <bean id="wsManConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/wsman-config.xml" />
+  </bean>
+
+  <bean id="snmpMetadataConfigDao" class="org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/snmp-metadata-adapter-configuration.xml" />
   </bean>
 
   <!--

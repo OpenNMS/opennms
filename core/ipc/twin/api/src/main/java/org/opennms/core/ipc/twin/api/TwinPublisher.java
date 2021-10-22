@@ -37,7 +37,7 @@ import java.io.IOException;
  * Modules publish initial objects/updated objects on the session.
  */
 
-public interface TwinPublisher {
+public interface TwinPublisher extends Closeable {
 
     /**
      * Session that can publish initial objects and updates to T.

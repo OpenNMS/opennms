@@ -4,7 +4,7 @@
 --              adding import of transmission, changing
 --              ds1 to be { transmission 10 }
 --              instead of { experimental 2 }
---      Changed defintions and references from "DS1" to "Ds1" for
+--      Changed definitions and references from "DS1" to "Ds1" for
 --              the following: DS1ConfigEntry, DS1IntervalEntry,
 --              DS1CurrentEntry, DS1TotalEntry, DS1FracEntry
 -- dperkins@scruznet.com

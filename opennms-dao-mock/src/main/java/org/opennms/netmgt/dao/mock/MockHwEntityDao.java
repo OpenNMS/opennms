@@ -58,6 +58,16 @@ public class MockHwEntityDao extends AbstractMockDao<OnmsHwEntity, Integer> impl
 	}
 
 	@Override
+	public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
+		for (final OnmsHwEntity entity : findAll()) {
+			if (entity.getNode().getId().equals(nodeId) && entity.getParent() == null) {
+				return entity;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
 		throw new UnsupportedOperationException("Not yet implemented!");
 	}

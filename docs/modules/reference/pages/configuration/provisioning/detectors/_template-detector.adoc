@@ -1,0 +1,42 @@
+= Name of the Detector
+
+A summary what the detector is doing.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `Name of the detector class`
+|===
+
+== Configuration and use
+
+.Parameters for the <DETECTOR-NAME-HERE>
+[options="header, autowidth"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| my parameter 1
+| Placeholder for the first required monitor parameter description.
+One column per line, with a blank line between rows.
+One sentence per line, if multiple sentences for the cell.
+If you have a very long description, make a soft break at line 120.
+| none
+
+3+| *Optional*
+
+| my parameter 2
+| Placeholder for the second optional monitor parameter description.
+| value
+
+|===
+
+==== Examples
+
+A simple short real world example of how to use this detector.
+#missing#

@@ -39,14 +39,37 @@ IMPORTANT: To improve the layout, the property names have been shortened to thei
 
 .Additional optional parameters for the Slack notification strategy
 [options="header"]
-[cols="1,3, 1,1"]
+[cols="1,3,1,2"]
 |===
-| Parameter        | Description                                                                     | Default   | Example
-| channel        | Specify a channel or private group other than the one targeted by the webhook.   | Webhook default | NetOps
-| username       | The username to associate with the notification posts.                           | None            | OpenNMS_Bot
-| iconEmoji      | An emoji sequence to use as the icon for the notification posts.                 | No icon         | :metal:
-| iconURL        | The URL of an image to use as the icon for the notification posts.               | No icon         | \https://example.org/assets/icon.png
-| useSystemProxy | Should the system-wide proxy settings be used? Configure the system proxy settings via <<system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.            | true           | true
+| Parameter
+| Description
+| Default
+| Example
+
+| channel
+| Specify a channel or private group other than the one targeted by the webhook.
+| Webhook default
+| NetOps
+
+| username
+| The username to associate with the notification posts.
+| None
+| OpenNMS_Bot
+
+| iconEmoji
+| An emoji sequence to use as the icon for the notification posts.
+| No icon
+| :metal:
+
+| iconURL
+| The URL of an image to use as the icon for the notification posts.
+| No icon
+| \https://example.org/assets/icon.png
+
+| useSystemProxy
+| Should the system-wide proxy settings be used? Configure the system proxy settings via <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+| true
+| true
 |===
 
 For more information on incoming webhooks in Slack, see https://api.slack.com/incoming-webhooks[Slack API].
