@@ -72,7 +72,7 @@ public class MemoryTwinPublisher implements TwinPublisher {
         final var sessionKey = new SessionKey(key, location);
 
         if (this.sessions.containsKey(sessionKey)) {
-            return this.sessions.get(sessionKey);
+            return (Session<T>) this.sessions.get(sessionKey);
         }
 
         if (sessionKey.hasLocation() && this.sessions.containsKey(sessionKey.withoutLocation())) {
