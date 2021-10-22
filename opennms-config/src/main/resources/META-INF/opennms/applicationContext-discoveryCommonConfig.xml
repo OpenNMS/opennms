@@ -3,6 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
+    <bean id="m_discoveryFactory" class="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" />
 
 </beans>
