@@ -93,7 +93,7 @@ public class GrpcIpcRpcIT {
 
         grpcClient = new MinionGrpcClient(minionIdentity, configAdmin);
         grpcClient.bind(echoRpcModule);
-        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, 0);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
         server = new OpennmsGrpcServer(grpcIpcServer);
         echoClient = new MockEchoClient(server);
         server.start();

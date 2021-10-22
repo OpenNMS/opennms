@@ -101,8 +101,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
     public void start() throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(GrpcIpcUtils.LOG_PREFIX)) {
-            grpcIpcServer.addService(new StreamHandler());
-            grpcIpcServer.startServer();
+            grpcIpcServer.startServer(new StreamHandler());
             LOG.info("Added Twin Service to OpenNMS IPC Grpc Server");
         }
 

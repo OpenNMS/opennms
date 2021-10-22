@@ -30,16 +30,12 @@ package org.opennms.core.ipc.grpc.server;
 
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_TTL_PROPERTY;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,7 +78,6 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.distributed.core.api.Identity;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,11 +92,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
-import io.grpc.Server;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.stub.StreamObserver;
 import io.opentracing.References;
 import io.opentracing.Scope;
@@ -183,8 +173,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     public void start() throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
 
-            grpcIpcServer.addService(new OpennmsIpcService());
-            grpcIpcServer.startServer();
+            grpcIpcServer.startServer(new OpennmsIpcService());
             LOG.info("Added RPC/Sink Service to OpenNMS IPC Grpc Server");
 
             properties = grpcIpcServer.getProperties();

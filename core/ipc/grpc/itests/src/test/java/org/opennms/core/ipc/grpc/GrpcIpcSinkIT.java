@@ -84,7 +84,7 @@ public class GrpcIpcSinkIT {
         MinionIdentity minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
 
         grpcClient = new MinionGrpcClient(minionIdentity, configAdmin);
-        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, 0);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PTOS");
         server = new OpennmsGrpcServer(grpcIpcServer);
         grpcClient.start();
     }

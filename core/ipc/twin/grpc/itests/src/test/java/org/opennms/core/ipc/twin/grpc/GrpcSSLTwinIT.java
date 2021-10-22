@@ -30,7 +30,6 @@ package org.opennms.core.ipc.twin.grpc;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
@@ -39,33 +38,28 @@ import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
-import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
-import static org.opennms.core.ipc.twin.grpc.GrpcTwinIT.getAvailablePort;
 
-public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
+public class GrpcSSLTwinIT extends GrpcTwinIT {
 
     private ConfigurationAdmin configAdmin;
 
     protected GrpcTwinSubscriber twinSubscriber;
     protected GrpcTwinPublisher twinPublisher;
-    int port;
+    private int port;
 
     @Override
     protected TwinPublisher createPublisher() throws IOException {
-        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, 0);
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
         this.twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
         twinPublisher.start();
         return twinPublisher;
@@ -107,72 +101,6 @@ public class GrpcSSLTwinIT extends AbstractTwinBrokerIT {
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
         super.setup();
-    }
-
-    @Test
-    public void testMultipleSubscribers() throws Exception {
-
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        final var subscriber1 = this.createSubscriber(minionIdentity);
-        final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
-
-        final var session = this.twinPublisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
-
-        await().until(tracker1::getLog, hasItems("Test2"));
-        minionIdentity = new MockMinionIdentity("remote");
-        final var subscriber2 = this.createSubscriber(minionIdentity);
-        final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
-
-        await().until(tracker2::getLog, hasItems("Test2"));
-        session.publish("Test3");
-        minionIdentity = new MockMinionIdentity("remote");
-        final var subscriber3 = this.createSubscriber(minionIdentity);
-        final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
-
-        await().until(tracker1::getLog, hasItems("Test3"));
-        await().until(tracker2::getLog, hasItems("Test3"));
-        await().until(tracker3::getLog, hasItems("Test3"));
-    }
-
-    /**
-     * Tests that multiple subscriptions exists for the same key.
-     */
-    @Test
-    public void testMultipleSubscription() throws Exception {
-        final var tracker1 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
-
-        final var session = this.twinPublisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
-        await().until(tracker1::getLog, hasItems( "Test2"));
-        final var tracker2 = Tracker.subscribe(this.twinSubscriber, "test", String.class);
-
-        session.publish("Test3");
-
-        await().until(tracker1::getLog, hasItems("Test3"));
-        await().until(tracker2::getLog, hasItems("Test3"));
-    }
-
-    /**
-     * Tests that subscription works if publisher gets restarted.
-     */
-    @Test
-    public void testPublisherRestart() throws Exception {
-        final var tracker = Tracker.subscribe(this.twinSubscriber, "test", String.class);
-
-        var session = this.twinPublisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
-
-        await().atMost(15, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test2"));
-        twinPublisher.close();
-        twinPublisher = (GrpcTwinPublisher) this.createPublisher();
-        session = this.twinPublisher.register("test", String.class);
-        session.publish("Test3");
-
-        await().atMost(15, TimeUnit.SECONDS).until(tracker::getLog, hasItems("Test3"));
     }
 
     @After

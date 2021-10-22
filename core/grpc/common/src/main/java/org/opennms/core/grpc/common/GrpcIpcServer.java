@@ -40,19 +40,14 @@ public interface GrpcIpcServer {
 
     /**
      * Starts server, this will not immediately start server but schedules server start after certain delay.
-     * This should be called after #addService
-     **/
-    void startServer() throws IOException;
+     *
+     * @param bindableService The service that needs to be added */
+    void startServer(BindableService bindableService) throws IOException;
 
     /**
      * Stops the Server.
      **/
     void stopServer();
-
-    /**
-     * Adds services to Server.
-     **/
-    void addService(BindableService bindableService);
 
     /**
      * Get properties with which the service has started.

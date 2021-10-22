@@ -81,12 +81,13 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     public void start() throws IOException {
-        // Twin inherits all properties from ipc client except for port.
+        // Twin inherits all properties from ipc client
         clientProperties = GrpcIpcUtils.getPropertiesFromConfig(configAdmin, GrpcIpcUtils.GRPC_CLIENT_PID);
 
         channel = GrpcIpcUtils.getChannel(clientProperties, this.port);
 
         asyncStub = OpenNMSTwinIpcGrpc.newStub(channel);
+        retryInitializeRpcStream();
         LOG.info("Started Twin gRPC Subscriber at location {} with systemId {}", getMinionIdentity().getLocation(), getMinionIdentity().getId());
 
     }
@@ -184,8 +185,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         if(this.rpcStream == null) {
             initRpcStream();
         }
-        ConnectivityState currentChannelState = channel.getState(true);
-        if (rpcStream != null && currentChannelState.equals(ConnectivityState.READY)) {
+        if (rpcStream != null) {
             rpcStream.onNext(twinRequestProto);
             return true;
         } else {

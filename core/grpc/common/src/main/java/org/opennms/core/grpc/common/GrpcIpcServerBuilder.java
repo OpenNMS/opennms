@@ -40,13 +40,13 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GrpcIpcServerBuilder implements GrpcIpcServer {
 
@@ -57,33 +57,39 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
     private NettyServerBuilder serverBuilder;
     private Server server;
     private final int port;
-    private final int delay;
-    private AtomicBoolean serverStartScheduled = new AtomicBoolean(false);
+    private final Duration delay;
+    private boolean serverStartScheduled = false;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private Set<BindableService> services = new HashSet<>();
 
-    public GrpcIpcServerBuilder(ConfigurationAdmin configAdmin, int port, int delay) {
+    public GrpcIpcServerBuilder(ConfigurationAdmin configAdmin, int port, String delay) {
         this.configAdmin = configAdmin;
         this.port = port;
-        this.delay = delay;
+        this.delay = Duration.parse(delay);
         this.properties = GrpcIpcUtils.getPropertiesFromConfig(configAdmin, GrpcIpcUtils.GRPC_SERVER_PID);
     }
 
     @Override
-    public synchronized void startServer() throws IOException {
-        if (!serverStartScheduled.get()) {
-            startServerWithDelay(delay);
-            serverStartScheduled.set(true);
+    public synchronized void startServer(BindableService bindableService) throws IOException {
+        initializeServerFromConfig();
+        if (!services.contains(bindableService)) {
+            serverBuilder.addService(bindableService);
+            services.add(bindableService);
+        }
+        if (!serverStartScheduled) {
+            startServerWithDelay(delay.toMillis());
+            serverStartScheduled = true;
         }
     }
 
     @Override
-    public void stopServer() {
+    public synchronized void stopServer() {
         if (server != null && !server.isShutdown()) {
             server.shutdownNow();
         }
-        serverStartScheduled.set(false);
+        services.clear();
+        serverStartScheduled = false;
     }
 
     private void initializeServerFromConfig() {
@@ -107,21 +113,12 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
     }
 
     @Override
-    public synchronized void addService(BindableService bindableService) {
-        initializeServerFromConfig();
-        if (!services.contains(bindableService)) {
-            serverBuilder.addService(bindableService);
-            services.add(bindableService);
-        }
-    }
-
-    @Override
     public Properties getProperties() {
         return properties;
     }
 
-    private void startServerWithDelay(int delay) {
-        executor.schedule(this::startServerNow, delay, TimeUnit.SECONDS);
+    private void startServerWithDelay(long delay) {
+        executor.schedule(this::startServerNow, delay, TimeUnit.MILLISECONDS);
     }
 
     private void startServerNow() {
