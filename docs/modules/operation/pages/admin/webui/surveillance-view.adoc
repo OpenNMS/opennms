@@ -1,4 +1,5 @@
 
+[[surveillance-view]]
 = Surveillance View
 
 When networks are larger and contain devices of different priority, it becomes interesting to show at a glance how the "whole system" is working.
@@ -27,7 +28,7 @@ The visual indication for outages in the surveillance view cells is defined as t
 * One (1) service down: yellow as warning
 * More than one (1) services down: red as critical
 
-This Surveillance View model also builds the foundation of the <<webui/dashboard.adoc#ga-dashboard-components, Dashboard View>>.
+This Surveillance View model also builds the foundation of the <<admin/webui/dashboard.adoc#ga-dashboard-components, Dashboard View>>.
 
 == Default Surveillance View Configuration
 

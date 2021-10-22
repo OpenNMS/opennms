@@ -67,10 +67,10 @@ For the Alias inputs are validated to be not longer then 19 characters and have 
 
 The last step is generating the following configuration files for {page-component-title}:
 
-* _collectd-configuration.xml_: Generated sample configuration assigned to a service with a matching data collection group
-* _jmx-datacollection-config.xml_: Generated JMX data collection configuration with the selected MBeans and composite data
-* _snmp-graph.properties_: Generated default RRD graph definition files for all selected metrics
+* `collectd-configuration.xml`: Generated sample configuration assigned to a service with a matching data collection group
+* `jmx-datacollection-config.xml`: Generated JMX data collection configuration with the selected MBeans and composite data
+* `snmp-graph.properties`: Generated default RRD graph definition files for all selected metrics
 
-The content of the configuration files can be copy & pasted or can be downloaded as ZIP archive.
+The content of the configuration files can be copy and pasted or can be downloaded as ZIP archive.
 
 NOTE: If the content of the configuration file exceeds 2,500 lines, the files can only be downloaded as ZIP archive.
