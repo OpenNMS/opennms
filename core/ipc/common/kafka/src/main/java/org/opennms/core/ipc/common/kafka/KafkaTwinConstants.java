@@ -29,6 +29,6 @@
 package org.opennms.core.ipc.common.kafka;
 
 public interface KafkaTwinConstants {
-    String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
+    String KAFKA_CONFIG_PID = "org.opennms.core.ipc.twin.kafka";
     String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
 }
