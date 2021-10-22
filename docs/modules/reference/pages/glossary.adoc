@@ -4,8 +4,77 @@
 [options="header,footer"]
 [cols="15h,~"]
 |===
-| Term           | Definition
-| Discovery      | A process to find network devices and services in your network and add them to monitoring automatically.
-                   To identify a device the protocol ICMP is used.
-| Provisioning   | The process of getting your devices, applications and services into monitoring.
+| Term
+| Definition
+2+|*A*
+| ActiveMQ
+| Java-based open-source message broker supported by the Apache community.
+
+| ALEC
+| The Architecture for Learning Enabled Correlation (ALEC) is an OpenNMS framework that uses artificial intelligence and machine learning to provide alarm triage.
+ALEC groups related alarms so you can better manage the more complex situations they might represent.
+2+|*B*
+2+|*C*
+| Cassandra
+| Open-source distributed/scale-out NoSQL database designed to hold large amounts of structured or unstructured data across many servers.
+2+|*D*
+| Discovery
+| A process that uses ICMP to find network devices and services in your network and then automatically adds them to monitoring.
+2+|*E*
+2+|*F*
+2+|*G*
+2+|*H*
+| Helm
+| Helm is an an OpenNMS application for creating flexible dashboards to display and customize fault management and performance management data from Horizon and Meridian.
+Helm works with the Grafana analytics program to customize what data you can view.
+| Horizon
+| Open-source solution from OpenNMS that helps users visualize and monitor everything on your local and remote networks.
+Free, community-driven project includes the latest technology and features delivered through a rapid release cycle.
+2+|*I*
+2+|*J*
+2+|*K*
+| Kafka
+| Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
+2+|*L*
+2+|*M*
+| Meridian
+|Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
+Annual release with monthly security patches that includes only the most stable and secure Horizon features.
+
+| Minion
+| Instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
+Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
+2+|*N*
+| Nephron
+| OpenNMS component that enables streaming analytics for flows.
+| Newts
+| Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data store based on Apache Cassandra.
+Use it as an alternative persistence strategy instead of JRobin or RRDtool.
+2+|*O*
+| Okta
+| Identity-as-a-service provider to identify and authenticate users.
+Used with Minion Appliance.
+2+|*P*
+| PostgreSQL
+| Commonly used open-source relational database known for its stability.
+PostgreSQL scales up but not out.
+| Provisioning
+| The process of getting your devices, applications, and services into monitoring.
+2+|*Q*
+2+|*R*
+| Round Robin Database (RRD)
+| Special type of database designed for collection, visualization, and analysis of time-series data.
+Data is maintained as a fixed-size circular-buffer that overwrites the oldest data with new data.
+2+|*S*
+| Sentinel
+| Karaf container that provides scalability for data processing, including flows, SNMP traps, syslog messages, and streaming telemetry in OpenNMS.
+It also supports thresholding for streaming telemetry if you are using OpenNMS Newts.
+2+|*T*
+| Time series, time-series database (TSDB)
+| Time series is a sequence of data points that occur in successive order over a period of time.
+A time series database (TSDB) is designed to store and serve time series data. (See https://en.wikipedia.org/wiki/Time_series_database[time series database].)
+2+|*U*
+2+|*V*
+2+|*W*
+2+|*X, Y, Z*
 |===
