@@ -28,12 +28,12 @@
 
 package org.opennms.features.backup.service.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.backup.api.Config;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
 public interface NetworkDeviceBackupManager {
 
     /**
@@ -50,19 +50,26 @@ public interface NetworkDeviceBackupManager {
     List<String> getConfigs(int nodeId);
 
     /**
+     * return the latest config from database
+     * @param nodeId
+     * @return
+     */
+    Optional<Config> getConfig(int nodeId) throws JsonProcessingException;
+
+    /**
      * Return the actual config from database
      * @param nodeId
      * @param version
      * @return
      */
-    Config getConfig(int nodeId, String version);
+    Optional<Config> getConfig(int nodeId, String version) throws JsonProcessingException;
 
     /**
      * Store the config
      * @param config
      * @throws Exception
      */
-    void saveConfig(Config config) throws Exception;
+    void saveConfig(int nodeId, Config config) throws Exception;
 
     /**
      * Trigger backup for specific device

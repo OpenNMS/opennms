@@ -1203,6 +1203,16 @@
       <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.backup</groupId>
+      <artifactId>org.opennms.features.backup.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.backup</groupId>
+      <artifactId>org.opennms.features.backup.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
