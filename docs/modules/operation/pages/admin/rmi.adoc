@@ -1,8 +1,8 @@
 
-= Enabling RMI
+= Enable RMI
 
 By default, the RMI port in the {page-component-title} server is disabled, for security reasons.
-To enable it so that you can access {page-component-title} through jconsole or remote-manage {page-component-title}, you will have to add some settings to the default {page-component-title} install.
+To enable it so that you can access {page-component-title} through jconsole or remote-manage {page-component-title}, you must add some settings to the default {page-component-title} install.
 
 To enable the RMI port in {page-component-title}, add the following to the `$\{OPENNMS_HOME}/etc/opennms.conf` file.
 If you do not have an `opennms.conf` file, you can create it.
@@ -22,13 +22,13 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 ----
 
 This tells {page-component-title} to listen for RMI on port `18980`, and to listen on all interfaces.
-(Originally, RMI was used only for the legacy Remote Poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)
-Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {page-component-title} will accept connections on the RMI port, but not be able to complete a valid connection.
+(Originally, RMI was used only for the legacy remote poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)
+Note that you must include the `-Djava.rmi.server.hostname=` option or {page-component-title} will accept connections on the RMI port but not be able to complete a valid connection.
 
-Authentication will be allowed only for users that are in the `admin` role (i.e., `ROLE_ADMIN`), or the `jmx` role (i.e., `ROLE_JMX`).
-To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user in `users.xml`.
+Authentication is allowed only for users that are in the `admin` role (`ROLE_ADMIN`), or the `jmx` role (`ROLE_JMX`).
+To make a user an admin, add only the `ROLE_ADMIN` role to the user in `users.xml`.
 To add the `jmx` role to the user, add the `ROLE_JMX` role to the user in `users.xml`, and also the `ROLE_USER` role if it is required to provide access to the Web UI.
-(Also see <<user-management/security-roles.adoc#ga-role-user-management-roles, Assigning User Permissions>>).
+(Also see <<user-management/security-roles.adoc#ga-role-user-management-roles, Assigning User Permissions>>.)
 
 Make sure `$\{OPENNMS_HOME}/etc/jmxremote.access` has the appropriate settings:
 
@@ -41,14 +41,14 @@ jmx     readonly
 The possible types of access are:
 
 readwrite:: Lets you retrieve JMX metrics as well as executing MBeans.
-readonly:: Lets you retrieve JMX metrics but does *not* allow executing MBeans, even if they just return simple values.
+readonly:: Lets you retrieve JMX metrics but does not allow executing MBeans, even if they just return simple values.
 
 == Enabling SSL
 
-To enable SSL on the RMI port, you will need to have an existing keystore for the {page-component-title} server.  
+To enable SSL on the RMI port, you need an existing keystore for the {page-component-title} server.
 For information on configuring a keystore, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to setup SSL with Jetty].
 
-You will need to change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {page-component-title} where your keystore is.
+You must change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {page-component-title} where your keystore is.
 
 [source, properties, options="nowrap"]
 ----
@@ -71,10 +71,10 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 == Connecting to RMI over SSL
 
 Note that if you use a self-signed or otherwise untrusted certificate, you must configure a truststore on the client side when you attempt to connect over SSL-enabled RMI.
-To create a truststore, follow the example in the <<admin/ssl/ssl.adoc#ga-operation-https-client, HTTPS client instructions>>.
+To create a truststore, follow the example in the <<admin/http-ssl.adoc#ga-operation-https-client, HTTPS client instructions>>.
 You may then use the truststore to connect to your {page-component-title} RMI server.
 
-For example, when using `jconsole` to connect to the {page-component-title} RMI interface to get JVM statistics, you would run:
+For example, when using `jconsole` to connect to the {page-component-title} RMI interface to get JVM statistics, run:
 
 [source, console, options="nowrap"]
 ----
