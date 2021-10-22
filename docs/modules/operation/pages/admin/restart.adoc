@@ -28,7 +28,7 @@ Shutdown components in the following order:
 . Dashboard applications such as Grafana and Kibana.
 
 +
-[source]
+[source, console]
 ----
 systemctl stop grafana-server
 systemctl stop kibana
@@ -52,7 +52,7 @@ image::admin/notification-status.png[status, 300]
 .. Type the following commands:
 
 +
-[source]
+[source, console]
 ----
 systemctl stop opennms
 systemctl stop minion
@@ -61,7 +61,7 @@ systemctl stop sentinel
 
 . Persistence and messaging components such as PostgreSQL, Cassandra, Kafka, etc., in any order:
 
-[source]
+[source, console]
 ----
 systemctl stop postgresql-12
 systemctl stop cassandra
@@ -78,7 +78,7 @@ Restart components in the following order:
 . Persistence and messaging components such as PostgreSQL, Cassandra, Kafka, etc., in any order:
 
 +
-[source]
+[source, console]
 ----
 systemctl start postgresql-12
 systemctl start cassandra
@@ -88,7 +88,7 @@ systemctl start elasticsearch
 . {page-component-title} Core application second, in any order.
 
 +
-[source]
+[source, console]
 ----
 systemctl start opennms
 systemctl start minion
@@ -99,7 +99,7 @@ systemctl start sentinel
 
 . Dashboard applications like Grafana and Kibana last so they function properly.
 
-[source]
+[source, console]
 ----
 systemctl start grafana-server
 systemctl start kibana
