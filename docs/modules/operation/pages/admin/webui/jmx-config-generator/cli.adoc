@@ -364,7 +364,7 @@ The following example illustrates how a custom template `mytemplate.vm` is used 
 The template file has to be an http://velocity.apache.org[_Apache Velocity_] template.
 The following sample represents the template that is used by default:
 
-[source, graph]
+[source, properties]
 ----
 reports=#foreach( $report in $reportsList )
 ${report.id}#if( $foreach.hasNext ), \
