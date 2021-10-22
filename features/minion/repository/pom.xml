@@ -459,7 +459,7 @@
             <groupId>org.opennms.features.backup</groupId>
             <artifactId>org.opennms.features.backup.minion</artifactId>
             <version>${project.version}</version>
-        </dependency
+        </dependency>
     </dependencies>
 
     <repositories>
