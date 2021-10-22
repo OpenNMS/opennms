@@ -251,6 +251,8 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         jobDataMap.put("nodeDao", nodeDao);
         jobDataMap.put("backupRpcClient", backupRpcClient);
         jobDataMap.put("networkDeviceBackupManager", this);
+        jobDataMap.put("sessionUtils", sessionUtils);
+
         if (params != null) {
             params.forEach((k, v) -> {
                 jobDataMap.put(k, v);

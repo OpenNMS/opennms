@@ -28,6 +28,7 @@
 
 package org.opennms.features.backup.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.backup.client.LocationAwareBackupClientImpl;
@@ -36,6 +37,7 @@ import org.opennms.features.backup.LocationAwareBackupClient;
 import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -51,27 +53,35 @@ public class BackupNetworkDeviceJob implements Job {
         LOG.debug("Start execute BackupNetworkDeviceJob!");
         LocationAwareBackupClientImpl backupRpcClient = (LocationAwareBackupClientImpl) jobExecutionContext.getMergedJobDataMap().get("backupRpcClient");
         NodeDao nodeDao = (NodeDao) jobExecutionContext.getMergedJobDataMap().get("nodeDao");
+        SessionUtils sessionUtils = (SessionUtils) jobExecutionContext.getMergedJobDataMap().get("sessionUtils");
         NetworkDeviceBackupManager networkDeviceBackupManager = (NetworkDeviceBackupManager)
                 jobExecutionContext.getMergedJobDataMap().get("networkDeviceBackupManager");
 
-        List<OnmsNode> nodes = nodeDao.findAll();
-        LOG.debug("Nodes size = " + nodes.size());
+        List<OnmsNode> filteredNodes = new ArrayList<>();
+        // prevent lazy loading out of session issue
+        sessionUtils.withTransaction(()->{
+            List<OnmsNode> nodes = nodeDao.findAll();
+            LOG.debug("Nodes size = " + nodes.size());
+            nodes.forEach(node -> {
+                if (node.getAssetRecord().getUsername() == null || node.getAssetRecord().getPassword() == null) {
+                    LOG.warn("SKIP node[{}] with empty username and password.", node.getNodeId());
+                    return;
+                }
+                if (node.getPrimaryInterface() == null) {
+                    LOG.warn("SKIP node[{}] without primary interface.", node.getNodeId());
+                    return;
+                }
+                filteredNodes.add(node);
+            });
+        });
 
-        handleBackup(nodes, backupRpcClient, networkDeviceBackupManager);
+        handleBackup(filteredNodes, backupRpcClient, networkDeviceBackupManager);
     }
 
     private void handleBackup(List<OnmsNode> nodes, LocationAwareBackupClientImpl backupRpcClient,
                               NetworkDeviceBackupManager networkDeviceBackupManager) {
         LOG.info("Start handleBackup");
         nodes.forEach(node -> {
-            if (node.getAssetRecord().getUsername() == null || node.getAssetRecord().getPassword() == null) {
-                LOG.warn("SKIP node[{}] with empty username and password.", node.getNodeId());
-                return;
-            }
-            if (node.getPrimaryInterface() == null) {
-                LOG.warn("SKIP node[{}] without primary interface.", node.getNodeId());
-                return;
-            }
             LOG.info("Working on device: " + node.getLabel());
             LOG.debug(node.getAssetRecord().getUsername() + " " + node.getAssetRecord().getPassword());
 

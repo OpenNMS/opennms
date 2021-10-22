@@ -28,7 +28,7 @@
 
 package org.opennms.features.backup.minion;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import org.opennms.features.backup.api.BackupStrategy;
 import org.opennms.features.backup.api.Config;
