@@ -28,38 +28,30 @@
 
 package org.opennms.features.backup.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.opennms.features.backup.LocationAwareBackupClient;
 import org.opennms.features.backup.api.Config;
 import org.opennms.features.backup.service.BackupNetworkDeviceJob;
 import org.opennms.features.backup.service.api.NetworkDeviceBackupManager;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @EventListener(name = "NetworkDeviceBackupManager", logPrefix = "backupd")
 public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManager, SpringServiceDaemon {
@@ -87,30 +79,22 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
     @Autowired
     private NodeDao nodeDao;
 
+    @Autowired
+    private SessionUtils sessionUtils;
+
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
-    @Autowired
-    private JsonStore jsonStore;
+//    @Autowired
+//    private JsonStore jsonStore;
 
     @Override
     public List<Integer> getBackupedNodeIds() {
-        //TODO: it is kind of dangerous if jsonStore have a lot of data, suggest create a key only function in kv store
-        Map<String, String> results = jsonStore.enumerateContext(CONTEXT);
-        List<Integer> nodeIds = new ArrayList<>();
-        Pattern latestPattern = Pattern.compile(":" + LATEST + "$");
-        for (String s : results.keySet()) {
-            if (s == null || s.indexOf(LATEST) == -1) {
-                continue;
-            }
-            String id = latestPattern.matcher(s).replaceAll("");
-            try {
-                nodeIds.add(Integer.parseInt(id));
-            } catch (NumberFormatException e) {
-                LOG.warn("Invalid id found in kv store. key = {}", s);
-            }
-        }
+        // it is kind of dangerous if jsonStore have a lot of data, suggest create a key only function in kv store
+        // Map<String, String> results = jsonStore.enumerateContext(CONTEXT);
+        List<OnmsNode> nodes = nodeDao.findNodeWithMetaData(CONTEXT, LATEST, null);
+        List<Integer> nodeIds = nodes.stream().collect(Collectors.mapping(OnmsNode::getId, Collectors.toList()));
         return nodeIds;
     }
 
@@ -137,22 +121,26 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
             JSONObject json = this.getLatestConfigJson(nodeId);
             return Optional.of(mapper.readValue((String) json.get(CONFIG_TAG), Config.class));
         } else {
-            Optional<String> config = jsonStore.get(this.generateKey(nodeId, version), CONTEXT);
-            if (config.isEmpty()) {
-                LOG.warn("nodeId: {} do not have ver: {} config stored.", nodeId, version);
+            //Optional<String> config = jsonStore.get(this.generateKey(nodeId, version), CONTEXT);
+            Stream<OnmsMetaData> metas = nodeDao.get(nodeId).getMetaData().stream().filter(
+                    meta -> CONTEXT.equals(meta.getContext()) && version.equals(meta.getKey()));
+            if (metas.count() != 1) {
+                LOG.warn("nodeId: {} do not have ver: {} config stored. metas: {}", nodeId, version, metas);
                 return null;
             }
-            return Optional.of(mapper.readValue(config.get(), Config.class));
+            return Optional.of(mapper.readValue(metas.findFirst().get().getValue(), Config.class));
         }
     }
 
     private JSONObject getLatestConfigJson(int nodeId) {
-        Optional<String> config = jsonStore.get(this.generateKey(nodeId, LATEST), CONTEXT);
-        if (config.isEmpty()) {
-            LOG.warn("nodeId: {} do not have any config stored.", nodeId);
+        //Optional<String> config = jsonStore.get(this.generateKey(nodeId, LATEST), CONTEXT);
+        OnmsNode node = nodeDao.get(nodeId);
+        Stream<OnmsMetaData> metas = node.getMetaData().stream().filter(data -> CONTEXT.equals(data.getContext()) && LATEST.equals(data.getKey()));
+        if (metas.count() != 1) {
+            LOG.warn("nodeId: {} do not have invalid config stored. meta: {}", nodeId, metas);
             return null;
         }
-        return new JSONObject(config.get());
+        return new JSONObject(metas.findFirst().get().getValue());
     }
 
 
@@ -164,7 +152,7 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         if (latest != null) {
             Config latestConfig = mapper.convertValue(latest.get(CONFIG_TAG), Config.class);
             String version = dateFormatter.format(latestConfig.getRetrievedAt());
-            this.archiveConfig(nodeId, version, latestConfig);
+            this.actualWriteConfig(nodeId, version, mapper.writeValueAsString(latestConfig));
             Object tmp = latest.get(KEYS_TAG);
             if (tmp instanceof ArrayList) {
                 keys = (List) tmp;
@@ -175,18 +163,26 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         } else {
             keys = new ArrayList<>(1);
         }
+
         JSONObject json = new JSONObject();
         json.put(CONFIG_TAG, config);
         json.put(KEYS_TAG, keys);
-        jsonStore.put(this.generateKey(nodeId, LATEST), mapper.writeValueAsString(config), CONTEXT);
+        this.actualWriteConfig(nodeId, LATEST, json.toString());
+//        jsonStore.put(this.generateKey(nodeId, LATEST), mapper.writeValueAsString(config), CONTEXT);
     }
 
-    private void archiveConfig(int nodeId, String version, Config config) throws JsonProcessingException {
-        jsonStore.put(this.generateKey(nodeId, version), mapper.writeValueAsString(config), CONTEXT);
+    private void actualWriteConfig(int nodeId, String version, String configStr) throws JsonProcessingException {
+        sessionUtils.withTransaction(() -> {
+            OnmsNode node = nodeDao.get(nodeId);
+            node.addMetaData(CONTEXT, this.generateKey(nodeId, version), configStr);
+            nodeDao.save(node);
+        });
+        //jsonStore.put(this.generateKey(nodeId, version), mapper.writeValueAsString(config), CONTEXT);
     }
 
     private String generateKey(int nodeId, String version) {
-        return nodeId + ":" + version;
+        //return nodeId + ":" + version;
+        return version;
     }
 
     @Override

@@ -62,19 +62,18 @@ public class BackupNetworkDeviceJob implements Job {
 
     private void handleBackup(List<OnmsNode> nodes, LocationAwareBackupClientImpl backupRpcClient,
                               NetworkDeviceBackupManager networkDeviceBackupManager) {
+        LOG.info("Start handleBackup");
         nodes.forEach(node -> {
-            LOG.info("Working on device: " + node.getLabel());
-            LOG.debug(node.getAssetRecord().getUsername() + " " + node.getAssetRecord().getPassword());
-
             if (node.getAssetRecord().getUsername() == null || node.getAssetRecord().getPassword() == null) {
                 LOG.warn("SKIP node[{}] with empty username and password.", node.getNodeId());
                 return;
             }
-
             if (node.getPrimaryInterface() == null) {
                 LOG.warn("SKIP node[{}] without primary interface.", node.getNodeId());
                 return;
             }
+            LOG.info("Working on device: " + node.getLabel());
+            LOG.debug(node.getAssetRecord().getUsername() + " " + node.getAssetRecord().getPassword());
 
             final LocationAwareBackupClient client = networkDeviceBackupManager.getClient();
             client.backup()
@@ -96,6 +95,6 @@ public class BackupNetworkDeviceJob implements Job {
                         }
                     });
         });
+        LOG.info("End handleBackup");
     }
-
 }

@@ -297,5 +297,12 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
 
     OnmsNode getDefaultFocusPoint();
 
+    /**
+     * List nodes with by metadata context, key and value (value can be null, it will ignore in the criteria)
+     * @param context
+     * @param key
+     * @param value (nullable)
+     * @return
+     */
     List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value);
 }

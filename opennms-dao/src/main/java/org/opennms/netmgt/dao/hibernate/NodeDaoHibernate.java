@@ -582,23 +582,34 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
 
-
     public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
-                .setString("context", context)
-                .setString("key", key)
-                .setString("value", value)
-                .setResultTransformer(new ResultTransformer() {
-                    @Override
-                    public Object transformTuple(Object[] tuple, String[] aliases) {
-                        return get((Integer) tuple[0]);
-                    }
+        final boolean isCheckValue = (value != null || value.trim().length() != 0);
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key ");
+        if (isCheckValue) {
+            sb.append("AND value = :value ");
+        }
+        sb.append("ORDER BY n.nodeid");
 
-                    @SuppressWarnings("rawtypes")
-                    @Override
-                    public List transformList(List collection) {
-                        return collection;
-                    }
-                }).list());
+        return getHibernateTemplate().execute(session -> {
+            Query q = session.createSQLQuery(sb.toString())
+                    .setString("context", context)
+                    .setString("key", key);
+            if (isCheckValue) {
+                q = q.setString("value", value);
+            }
+            return (List<OnmsNode>) q.setResultTransformer(new ResultTransformer() {
+                @Override
+                public Object transformTuple(Object[] tuple, String[] aliases) {
+                    return get((Integer) tuple[0]);
+                }
+
+                @SuppressWarnings("rawtypes")
+                @Override
+                public List transformList(List collection) {
+                    return collection;
+                }
+            }).list();
+        });
     }
 }
