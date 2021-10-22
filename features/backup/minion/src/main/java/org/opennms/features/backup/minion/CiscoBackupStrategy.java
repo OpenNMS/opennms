@@ -28,8 +28,10 @@
 
 package org.opennms.features.backup.minion;
 
-import static com.jayway.awaitility.Awaitility.await;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+
 import org.opennms.features.backup.api.BackupStrategy;
 import org.opennms.features.backup.api.Config;
 import org.opennms.features.backup.api.ConfigType;
@@ -46,6 +48,7 @@ public class CiscoBackupStrategy implements BackupStrategy {
 
     @Override
     public Config getConfig(String ipAddress, int port, Map<String, String> params) {
+        //startTFTPServer();
         Config config = new Config();
         SshClient sshClient = null;
         try {
@@ -53,9 +56,10 @@ public class CiscoBackupStrategy implements BackupStrategy {
             sshClient = new SshClient(inetSocketAddress, params.get(Const.DEVICE_USER), params.get(Const.DEVICE_KEY));
             final PrintStream pipe = sshClient.openShell();
 
-            pipe.println("terminal length 0 \n show run");
+            pipe.println("terminal length 0");
+            pipe.println("show run");
             pipe.println("logout");
-            await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
+            await().atMost(5, SECONDS).until(sshClient.isShellClosedCallable());
 
             // Read stdout
             String shellOutput = sshClient.getStdout();
@@ -73,11 +77,15 @@ public class CiscoBackupStrategy implements BackupStrategy {
         return config;
     }
 
+    private void startTFTPServer() {
+        TFTPServer ts = new TFTPServer(new File(args[0]), new File(args[0]), GET_AND_PUT);
+    }
+
     public static void main(String[] args) {
         CiscoBackupStrategy ciscoBackupStrategy = new CiscoBackupStrategy();
         Map params = new HashMap();
-        params.put(Const.DEVICE_USER, "???");
-        Path fileName = Path.of("???");
+        params.put(Const.DEVICE_USER, "azureuser");
+        Path fileName = Path.of("/Users/maximbrener/Downloads/cisco_key.pem");
         String actual = null;
         try {
             actual = Files.readString(fileName);
@@ -85,7 +93,7 @@ public class CiscoBackupStrategy implements BackupStrategy {
             e.printStackTrace();
         }
         params.put(Const.DEVICE_KEY, actual);
-        Config config = ciscoBackupStrategy.getConfig("???", 22, params);
+        Config config = ciscoBackupStrategy.getConfig("20.115.57.63", 22, params);
         System.out.println(config);
     }
 }
