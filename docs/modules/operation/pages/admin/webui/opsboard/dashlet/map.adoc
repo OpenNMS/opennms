@@ -1,7 +1,7 @@
 
 = Map
 
-This dashlet displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map].
+This dashlet displays the link:https://opennms.discourse.group/t/geographical-maps/2212[geographical map].
 
 [options="autowidth", cols="1,2"]
 |===
@@ -9,5 +9,5 @@ This dashlet displays the https://opennms.discourse.group/t/geographical-maps/22
 | false
 
 | search
-| Predefined https://opennms.discourse.group/t/geographical-maps/2212#searching-3[search] for a subset of nodes shown in the geographical map in this dashlet
+| Predefined link:https://opennms.discourse.group/t/geographical-maps/2212#searching-3[search] for a subset of nodes shown in the geographical map in this dashlet
 |===
