@@ -45,5 +45,10 @@
             <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson2Version}</version>
+        </dependency>
     </dependencies>
 </project>
