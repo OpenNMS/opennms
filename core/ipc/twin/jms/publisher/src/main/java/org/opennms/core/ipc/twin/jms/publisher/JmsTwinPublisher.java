@@ -52,6 +52,7 @@ import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -126,12 +127,12 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         LOG.info("JMS Twin publisher initialized");
     }
 
-    public void destroy() throws Exception {
-        super.shutdown();
+    public void close() throws IOException {
+        super.close();
+
         executor.shutdownNow();
         LOG.info("JMS Twin publisher stopped");
     }
-
 
     @Override
     public boolean process(Exchange exchange, AsyncCallback callback) {

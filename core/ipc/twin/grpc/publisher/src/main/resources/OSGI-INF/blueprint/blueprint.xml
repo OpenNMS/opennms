@@ -18,7 +18,7 @@
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
 
     <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
-          init-method="start" destroy-method="shutdown">
+          init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
         <argument ref="configAdmin"/>
         <argument value="${port}"/>

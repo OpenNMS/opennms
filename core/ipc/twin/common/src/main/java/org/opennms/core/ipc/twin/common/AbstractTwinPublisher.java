@@ -73,7 +73,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
     }
 
-    public void shutdown() {
+    public void close() throws IOException {
         objMap.clear();
     }
 

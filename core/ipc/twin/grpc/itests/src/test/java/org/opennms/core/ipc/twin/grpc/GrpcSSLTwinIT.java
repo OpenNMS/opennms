@@ -34,6 +34,7 @@ import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -82,7 +83,7 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
     }
 
     @After
-    public void destroy() {
+    public void destroy() throws IOException {
         super.destroy();
     }
 }
