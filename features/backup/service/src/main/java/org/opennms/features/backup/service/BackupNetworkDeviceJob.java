@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 public class BackupNetworkDeviceJob implements Job {
     private static final Logger LOG = LoggerFactory.getLogger(BackupNetworkDeviceJob.class);
@@ -64,13 +63,14 @@ public class BackupNetworkDeviceJob implements Job {
     private void handleBackup(List<OnmsNode> nodes, BackupRpcClient backupRpcClient,
                               NetworkDeviceBackupManager networkDeviceBackupManager) {
         nodes.forEach(node -> {
-            LOG.info("Working on device: " + node.getSysName());
+            LOG.info("Working on device: " + node.getLabel());
             LOG.debug(node.getAssetRecord().getUsername() + " " + node.getAssetRecord().getPassword());
 
             if (node.getAssetRecord().getUsername() == null || node.getAssetRecord().getPassword() == null) {
                 LOG.warn("SKIP node with empty username and password.");
                 return;
             }
+            /*
             BackupRequestDTO dto = new BackupRequestDTO();
             // setup request dto
             CompletableFuture<BackupResponseDTO> future = backupRpcClient.execute(dto);
@@ -79,6 +79,7 @@ public class BackupNetworkDeviceJob implements Job {
                 LOG.debug(networkDeviceBackupManager.toString());
                 //networkDeviceBackupManager.saveConfig();
             });
+             */
         });
     }
 

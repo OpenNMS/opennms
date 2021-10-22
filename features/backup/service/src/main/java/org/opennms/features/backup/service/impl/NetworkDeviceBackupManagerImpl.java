@@ -71,11 +71,15 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
     @Autowired
     private Scheduler scheduler;
 
-    @Autowired
+    //@Autowired
     private BackupRpcClient backupRpcClient;
 
     @Autowired
     private NodeDao nodeDao;
+
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
     @Autowired
     private JsonStore jsonStore;
@@ -219,12 +223,13 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
             JobDataMap jobDataMap = this.prepareJobDataMap(null);
             JobDetail jobDetail = JobBuilder.newJob(BackupNetworkDeviceJob.class)
                     .withIdentity(JOB_IDENTITY, JOB_GROUP).setJobData(jobDataMap).build();
-            CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
-            cronReportTrigger.setJobDetail(jobDetail);
-            cronReportTrigger.setCronExpression("*/1 * * * *");
 
-            scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
-            LOG.debug("Schedule report {}", cronReportTrigger);
+            final Trigger trigger = TriggerBuilder
+                    .newTrigger().withSchedule(CronScheduleBuilder.cronSchedule("0 * * * * ?"))
+                    .build();
+
+            scheduler.scheduleJob(jobDetail, trigger);
+            LOG.debug("Schedule job {} trigger {}", jobDetail, trigger);
         }
     }
 
@@ -233,10 +238,11 @@ public class NetworkDeviceBackupManagerImpl implements NetworkDeviceBackupManage
         jobDataMap.put("nodeDao", nodeDao);
         jobDataMap.put("backupRpcClient", backupRpcClient);
         jobDataMap.put("networkDeviceBackupManager", this);
-
-        params.forEach((k, v) -> {
-            jobDataMap.put(k, v);
-        });
+        if (params != null) {
+            params.forEach((k, v) -> {
+                jobDataMap.put(k, v);
+            });
+        }
         return jobDataMap;
     }
 }
