@@ -1,13 +1,5 @@
 .Reference
 * Configuration
-** xref:configuration/daemon-config-files/introduction.adoc[]
-*** xref:configuration/daemon-config-files/eventd.adoc[]
-*** xref:configuration/daemon-config-files/notifd.adoc[]
-*** xref:configuration/daemon-config-files/pollerd.adoc[]
-*** xref:configuration/daemon-config-files/snmppoller.adoc[]
-*** xref:configuration/daemon-config-files/syslogd.adoc[]
-*** xref:configuration/daemon-config-files/trapd.adoc[]
-
 ** xref:configuration/filters/filters.adoc[]
 *** xref:configuration/filters/components.adoc[]
 *** xref:configuration/filters/parameters.adoc[]
