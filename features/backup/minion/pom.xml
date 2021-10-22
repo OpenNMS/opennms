@@ -57,7 +57,8 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.1.0</version>
+            <version>3.1.6</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
