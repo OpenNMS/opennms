@@ -1,8 +1,5 @@
-
-= KSC
-
-This dashlet shows an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report].
-The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
+= KSC Reports
+This dashlet shows an existing KSC report. KSC Reports provide a way to generate prefabricated graphical views of collected data.
 
 [options="autowidth", cols="1,2"]
 |===
@@ -12,3 +9,8 @@ The view is exactly the same as the KSC report is built regarding order, columns
 | KSC-Report
 | Name of the KSC report to show in this dashlet
 |===
+
+= KSC Report Configuration
+
+This dashlet shows an existing link:https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC reports].
+The view is exactly the same as the KSC report is built regarding order, columns, and time spans.
