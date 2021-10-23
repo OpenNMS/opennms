@@ -59,7 +59,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Dependencies used -->
@@ -70,7 +69,7 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <artifactId>osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
