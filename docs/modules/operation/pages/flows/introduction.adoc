@@ -18,7 +18,7 @@ At a high level:
 * Flows are enriched:
 ** Flows are tagged with an application name via the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>>.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
-* Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka
+* Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
 * <<flows/nephron.adoc#ga-nephron, Nephron>> can be used to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka.
 * The REST API supports generating both summaries and time series data from the flows or flow aggregates stored in Elasticsearch.
 * Use OpenNMS Helm to visualize flows and/or flow aggregates:
