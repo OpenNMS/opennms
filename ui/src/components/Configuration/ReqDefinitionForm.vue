@@ -147,6 +147,8 @@ import {
     GET_SCHEDULE_PERIOD_DROPDOWN,
     GET_ADVANCED_DROPDOWN
 } from '../../store/configuration/actions'
+import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore();
 const reqDefinition = reactive(State);
@@ -163,6 +165,8 @@ const urlIcon = ref('pi pi-check-circle');
 
 const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
+const putDataPosition = ref();
+
 const model = State.toModel();
 
 const props = defineProps({
@@ -172,7 +176,6 @@ const props = defineProps({
     }
 });
 
-// Dropdown API Data
 onMounted(async () => {
     try {
         // Types
@@ -187,6 +190,7 @@ onMounted(async () => {
 
             let data = store.state.configuration.sendModifiedData;
             let url = data['import-url-resource'].split('/');
+            putDataPosition.value = data['tablePosition'];   //Helps in edit save
             reqDefinition.reqDef.name = data['import-name'];
             reqDefinition.reqDef.type = url[0].split(':')[0];
             reqDefinition.reqDef.host = url[2];
@@ -224,8 +228,13 @@ const stateAdvancedDropdown = computed(() => {
 });
 
 const setCronSchedule = (data: any) => {
-    reqDefinition.reqDef.schedulePeriodNumber = parseInt(data.match(/\d+/)[0]);
-    reqDefinition.reqDef.schedulePeriod = "minute"
+    let values = data.split(' ');
+    reqDefinition.reqDef.schedulePeriodNumber = parseInt(values[1]);
+    if (values.length > 3) {
+        reqDefinition.reqDef.schedulePeriod = values.slice(2, values.length + 1).join(' ')
+    } else {
+        reqDefinition.reqDef.schedulePeriod = values[2];
+    }
 }
 
 const setAdvDropDowndata = (patchVal: any) => {
@@ -285,9 +294,58 @@ const generateURL = () => {
 
 //Save 
 const onSave = () => {
-    console.log("generatedURL", generatedURL.value);
-    console.log('onSave Obj', JSON.stringify(reqDefinition));
+    let provisionDService = store.state.configuration.provisionDService['requisition-def'];
+    //create copy state data
+    let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
+    //generate cron_expression
+    const cron_expression = saveCronSchedule();
+    const paylod =
+    {
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
+    }
+    //Edit record operation
+    if (router.currentRoute.value.name === 'reqDefEdit') {
+        //Edited data replace with new payload
+        copyProvisionData.splice(putDataPosition.value, 1, paylod);
+    } else {
+        //New record operation
+        copyProvisionData.push(paylod);
+    }
+    const requestPayload = { 'requisition-def': copyProvisionData };
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
 };
+
+const saveCronSchedule = () => {
+    let cronSchedule = ['minute', 'hour', 'day of month', 'month', 'day of week'];
+    let findPosition = cronSchedule.indexOf(reqDefinition.reqDef.schedulePeriod);
+    let expression = ['*', '*', '*', '*', '*'];
+    expression.splice(findPosition, 1, String(reqDefinition.reqDef.schedulePeriodNumber));
+    return expression.join(' ');
+}
 
 </script>
 

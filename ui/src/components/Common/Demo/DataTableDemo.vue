@@ -24,21 +24,33 @@ const provisionDService = computed(() => { return store.state.configuration.prov
 
 const nodeDataValue = computed(() => {
     if (provisionDService.value) {
-        let copyState = [];
+
+        let copyState = [], cronScheduleType: string[], valuePos: number, ele: number;
+        cronScheduleType = ['minute', 'hour', 'day of month', 'month', 'day of week'];
         copyState = JSON.parse(JSON.stringify(provisionDService.value));
+
         let data = (copyState as any)["requisition-def"];
         if (data && data.length > 1) {
             customData.value = ['edit', 'delete'];
             isData.value = true; //show pagination 
+
             // cron-schedule expression changed to human readable format 
             const copydata = data.filter((rowData: any) => {
-                return rowData['cron-schedule'] = cronstrue.toString(rowData['cron-schedule'], { use24HourTimeFormat: true });
+                let items = rowData['cron-schedule'].split(' ');
+                items.forEach((element: any) => {
+                    if (!isNaN(element)) {
+                        ele = element
+                        valuePos = items.indexOf(element);
+                    }
+                });
+                return rowData['cron-schedule'] = `Every ${ele} ${cronScheduleType[valuePos]}`;
             });
+            //return updated data
             return copydata;
         }
     }
     return [];
-})
+});
 
 onMounted(async () => {
     try {
