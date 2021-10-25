@@ -43,7 +43,7 @@ For additional options see link:https://github.com/OpenNMS/nephron/blob/master/m
 
 == Kafka persistence
 
-Kafka persistence is configured by the command line argument:
+Use the following command line argument to configure Kafka persistence:
 
 [source, console]
 ----
