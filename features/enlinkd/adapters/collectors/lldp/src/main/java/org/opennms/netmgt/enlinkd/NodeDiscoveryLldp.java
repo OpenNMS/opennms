@@ -58,6 +58,8 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     private static final String DW_NULL_CHASSIS_ID="cf";
     private static final String DW_NULL_SYSOID_ID="NuDesign";
 
+    private static final String TIMETETRA_SYSOID=".1.3.6.1.4.1.6527";
+
     private final LldpTopologyService m_lldpTopologyService;
     /**
      * Constructs a new SNMP collector for Lldp Node Discovery. 
@@ -154,7 +156,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return;
         }
         if (links.size() == 0) {
-            if (getSysoid() != null && getSysoid().startsWith(".1.3.6.1.4.1.6527")) {
+            if (getSysoid() != null && getSysoid().startsWith(TIMETETRA_SYSOID)) {
                 LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
                 List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
                 TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {

@@ -1473,6 +1473,16 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ZHBGO1Zsr002_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     public static final Map<Integer,InetAddress> ZHBGO1Zsr002_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
+    //NMS-13637
+    public static final String MKTROUTER1_NAME="router-1";
+    public static final String MKTROUTER1_IP="172.16.8.25";
+    public static final String MKTROUTER1_RESOURCE="classpath:/linkd/nms13637/router-1-walk.txt";
+    public static final String MKTROUTER1_LLDP_ID=    "00 0C 29 0F D9 BD".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+
+    public static final String MKTROUTER2_NAME="router-2";
+    public static final String MKTROUTER2_IP="172.16.8.26";
+    public static final String MKTROUTER2_RESOURCE="classpath:/linkd/nms13637/router-2-walk.txt";
+    public static final String MKTROUTER2_LLDP_ID=    "00 0C 29 AD 3C FD".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     NetworkBuilder m_networkBuilder;
 
     NetworkBuilder getNetworkBuilder() {
