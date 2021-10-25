@@ -1,5 +1,5 @@
 <template>
-  <div class="feather-row" v-if="ipRangeResponses.length">
+  <div class="feather-row" v-if="ipRangeResponses.length" v-for="ipRangeResponse in ipRangeResponses" :key="ipRangeResponse.location">
     <div class="feather-col-12">
       <div class="title">{{ ipRangeResponses.location }}</div>
       <table class="tl1 tl2 tl3" summary="IP Range Responses">
@@ -11,10 +11,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="ipRangeResponse in ipRangeResponses" :key="ipRangeResponse.location">
-            <td>{{ ipRangeResponse.hostname }}</td>
-            <td>{{ ipRangeResponse.ipAddress }}</td>
-            <td>{{ ipRangeResponse.rtt }}</td>
+          <tr v-for="scanResult in ipRangeResponse.scanResults" :key="scanResult.hostname">
+            <td>{{ scanResult.hostname }}</td>
+            <td>{{ scanResult.ipAddress }}</td>
+            <td>{{ scanResult.rtt }}</td>
           </tr>
         </tbody>
       </table>

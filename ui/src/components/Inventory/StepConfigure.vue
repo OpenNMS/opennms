@@ -12,7 +12,7 @@
     </div>
 
     <div class="feather-row">
-      <div class="feather-col-12">
+      <div class="feather-col-12 space-between">
         <FeatherButton primary @click="$emit('prev-page', { pageIndex: 1 })">Back</FeatherButton>
         <FeatherButton
           v-if="showNextBtn"

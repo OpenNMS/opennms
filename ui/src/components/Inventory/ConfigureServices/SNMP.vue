@@ -10,8 +10,7 @@
       <Row>
         <FeatherSelect 
           v-model="securityLevel" 
-          @update:modelValue="setValues" 
-           
+          @update:modelValue="setValues"
           :options="options"
           text-prop="label"
           label="Security level"
@@ -22,7 +21,7 @@
       <ServiceFilter @setValues="setValues" />
     </ShowHideBox>
   </div>
-  <div class="feather-col-6">
+  <div class="feather-col-5">
     <ResponseTable />
   </div>
 </div>
@@ -62,7 +61,7 @@ export default defineComponent({
     ]
 
     // advanced options
-    const securityLevel = ref(1)
+    const securityLevel = ref({ label: 'noAuthNoPriv', value: 1 })
 
     // form
     const v1v2 = ref()
@@ -73,7 +72,7 @@ export default defineComponent({
       timeout: Number(timeout.value), 
       retry: Number(retry.value), 
       communityString: v1v2.value,
-      securityLevel: securityLevel.value
+      securityLevel: securityLevel.value.value
     }))
 
     const setValues = () => context.emit('set-values', { index: props.index, data: {...data.value } })

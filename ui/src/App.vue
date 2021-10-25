@@ -42,6 +42,7 @@ a {
   display: flex;
 }
 .space-between {
+  display: flex;
   justify-content: space-between;
 }
 .pointer {

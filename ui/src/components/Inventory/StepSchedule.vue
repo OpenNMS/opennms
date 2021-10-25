@@ -6,9 +6,11 @@
       </div>
     </div>
 
-    <div class="feather-row space-between">
-      <FeatherButton primary @click="$emit('prev-page', { pageIndex: 2 })">Back</FeatherButton>
-      <FeatherButton v-if="showCompleteButton" @click="$emit('complete')" primary></FeatherButton>
+    <div class="feather-row">
+      <div class="feather-col-12 space-between">
+        <FeatherButton primary @click="$emit('prev-page', { pageIndex: 2 })">Back</FeatherButton>
+        <FeatherButton v-if="showCompleteButton" @click="$emit('complete')" primary>Complete</FeatherButton>
+      </div>
     </div>
   </div>
 </template>
