@@ -1,4 +1,4 @@
-
+[[ksc]]
 = KSC
 
 This dashlet shows an existing https://wiki.opennms.org/wiki/KSC_Reports[KSC reports].
