@@ -28,12 +28,6 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,15 +39,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.enlinkd.model.BridgeElement;
-import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
-import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
-import org.opennms.netmgt.enlinkd.model.IsIsElement;
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
-import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.enlinkd.model.OspfElement;
-import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.model.*;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortEnable;
@@ -70,7 +56,6 @@ import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -78,6 +63,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
 
@@ -826,7 +817,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         final List<LldpLink> links02 = new ArrayList<>();
 
-        LldpRemTableTracker lldpRemTable02 = new LldpRemTableTracker() {
+        MikrotikLldpRemTableTracker lldpRemTable02 = new MikrotikLldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
                 links02.add(row.getLldpLink());
@@ -847,7 +838,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(1,links02.size());
 
         LldpLink router2Link=links02.iterator().next();
-        assertEquals(0,router2Link.getLldpLocalPortNum().intValue());
+        assertEquals(1,router2Link.getLldpLocalPortNum().intValue());
         assertEquals(MKTROUTER1_LLDP_ID,router2Link.getLldpRemChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,router2Link.getLldpRemChassisIdSubType());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,router2Link.getLldpRemPortIdSubType());
