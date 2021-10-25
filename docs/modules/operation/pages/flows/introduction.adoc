@@ -14,7 +14,7 @@ While flows offer a great breadth of information, the current focus of the suppo
 At a high level:
 
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on both {page-component-title} and Minion.
-* Telemetryd adapters convert the flows to a canonical flow model
+* Telemetryd adapters convert the flows to a canonical flow model.
 * Flows are enriched:
 ** Flows are tagged with an application name via the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>>.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
