@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd.snmp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
@@ -54,11 +55,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        List<SnmpObjId> oids = new ArrayList<>(3);
-        oids.add(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE));
-        oids.add(SnmpObjId.get(LLDP_LOC_PORTID));
-        oids.add(SnmpObjId.get(LLDP_LOC_DESCR)) ;
-        return get(oids,lldpRemLocalPortNum);
+        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE),SnmpObjId.get(LLDP_LOC_PORTID),SnmpObjId.get(LLDP_LOC_DESCR)),lldpRemLocalPortNum);
     }
 
     public LldpLink getLldpLink(LldpLink lldplink) {
