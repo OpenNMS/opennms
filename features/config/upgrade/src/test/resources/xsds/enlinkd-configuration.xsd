@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/enlinkd"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/enlinkd"
+	xmlns:ns2="http://www.w3.org/1999/xhtml"
+	xmlns:ns="http://www.w3.org/2001/XMLSchema"
+	xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+	elementFormDefault="qualified">
+	<annotation>
+		<documentation>
+			XML Schema for the enlinkd-configuration.xml configuration file.
+		</documentation>
+	</annotation>
+
+	<element name="enlinkd-configuration">
+		<annotation>
+			<documentation>
+				Top-level element for the enlinkd-configuration.xml
+				configuration file.
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<attribute name="threads" type="int" use="required">
+				<annotation>
+					<documentation>
+						The max number of threads used for polling snmp
+						devices.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="initial_sleep_time" type="long"
+				use="optional" default="60000">
+				<annotation>
+					<documentation>
+						The initial sleep time in mill seconds before starting
+						node Link Discovery.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="rescan_interval" type="long"
+				use="optional" default="86400000">
+				<annotation>
+					<documentation>
+						Node Link Discovery Rescan Time interval in mill seconds.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="bridge_topology_interval" type="long"
+				use="optional" default="300000">
+				<annotation>
+					<documentation>
+						Bridge Topology Discovery Time interval in mill seconds.
+					</documentation>
+				</annotation>
+			</attribute>				
+			<attribute name="topology_interval" type="long"
+				use="optional" default="30000">
+				<annotation>
+					<documentation>
+						Topology Updater Time interval in mill seconds.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="max_bft" type="int"
+				use="optional" default="100">
+				<annotation>
+					<documentation>
+						Max bridge forwarding table to hold in memory.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="discovery-bridge-threads" type="int"
+				use="optional" default="1">
+				<annotation>
+					<documentation>
+					The number of threads used for calculate bridge topology 
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-cdp-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						cisco discovery protocol cache table.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-bridge-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						Bridge mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-lldp-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						lldp mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="use-ospf-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						ospf mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="use-isis-discovery" type="boolean"
+				use="optional" default="true">
+				<annotation>
+					<documentation>
+						Whether links discovery process should use
+						isis mib data.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="disable-bridge-vlan-discovery" type="boolean"
+					   use="optional" default="false">
+				<annotation>
+					<documentation>
+						Set to true to skip VLAN enumeration and scanning during bridge discovery.
+					</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+</schema>
