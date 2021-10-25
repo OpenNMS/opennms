@@ -33,6 +33,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -62,7 +63,6 @@ import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.stacks.TimeSeriesStrategy;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.opennms.smoketest.utils.SshClient;
@@ -422,8 +422,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             if (container.getModel().isElasticsearchEnabled()) {
                 LOG.info("Waiting for OpenNMS health check...");
                 final InetSocketAddress karafSsh = container.getSshAddress();
-                await().atMost(3, MINUTES).pollInterval(5, SECONDS)
-                        .until(() -> KarafShellUtils.testHealthCheck(karafSsh));
+                awaitHealthCheckSucceeded(karafSsh, 3, "OpenNMS");
                 LOG.info("Health check passed.");
             }
         }

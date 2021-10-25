@@ -42,7 +42,7 @@ The TTL used when invoking detectors remotely is:
 
 == Global TTL
 
-For cases where we cannot derive a suitable TTL, a global value is used wich defaults to `20000` (20 seconds).
+For cases where we cannot derive a suitable TTL, a global value is used which defaults to `20000` (20 seconds).
 This value can be configured.
 When using the JMS-based RPC implementation, set value of the `org.opennms.jms.timeout` system property to the desired number of milliseconds.
 When using the Kafka-based RPC implementation, set the value of the `org.opennms.core.ipc.rpc.kafka.ttl` system property to the desired number of milliseconds.

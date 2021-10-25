@@ -35,7 +35,7 @@ config:property-set datasource.databaseName opennms-db-name<4>
 config:update
 ----
 
-<1> JDBC connection string, replace `postres-ip`, `postgres-port` and `opennms-db-name` accordingly
+<1> JDBC connection string, replace `postgres-ip`, `postgres-port` and `opennms-db-name` accordingly
 <2> PostgreSQL user name with read/write access to the `opennms-db-name` database
 <3> PostgreSQL password for `my-db-user` user
 <4> Database name of your {page-component-title} Core instance database

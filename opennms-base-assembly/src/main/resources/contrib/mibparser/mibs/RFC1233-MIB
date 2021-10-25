@@ -4,7 +4,7 @@
 --              adding import of transmission, changing
 --              ds3 to be { transmission 30 }
 --              instead of { experimental 15 }
---      Changed defintions and references from "DS3" to "Ds3" for
+--      Changed definitions and references from "DS3" to "Ds3" for
 --              the following: DS3ConfigEntry, DS3IntervalEntry,
 --              DS3CurrentEntry, DS3TotalEntry
 --      Question: should the description for ds3SendCode say

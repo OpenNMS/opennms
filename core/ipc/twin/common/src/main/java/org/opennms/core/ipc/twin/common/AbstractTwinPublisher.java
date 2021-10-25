@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractTwinPublisher implements TwinPublisher {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinPublisher.class);
     private final Map<SessionKey, byte[]> objMap = new ConcurrentHashMap<>();
     protected final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinPublisher.class);
+
+    private final LocalTwinSubscriber localTwinSubscriber;
+
+    public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
+        Objects.requireNonNull(localTwinSubscriber);
+        this.localTwinSubscriber = localTwinSubscriber;
+    }
 
     /**
      * @param sinkUpdate Handle sink Update from @{@link AbstractTwinPublisher}.
@@ -65,6 +73,10 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
     }
 
+    public void close() throws IOException {
+        objMap.clear();
+    }
+
     private class SessionImpl<T> implements Session<T> {
 
         private final SessionKey sessionKey;
@@ -78,13 +90,16 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             LOG.info("Published an object update for the session with key {}", sessionKey.toString());
             byte[] value = objectMapper.writeValueAsBytes(obj);
             objMap.put(sessionKey, value);
-            handleSinkUpdate(new TwinResponseBean(sessionKey.key, sessionKey.location, value));
+            TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, value);
+            // Handle local updates for the twin.
+            localTwinSubscriber.accept(twinResponseBean);
+            handleSinkUpdate(twinResponseBean);
         }
 
         @Override
         public void close() throws IOException {
-            LOG.info("Closed session with key {} ", sessionKey);
             objMap.remove(sessionKey);
+            LOG.info("Closed session with key {} ", sessionKey);
         }
     }
 
