@@ -26,7 +26,7 @@ Elasticsearch persistence is configured by the following command line argument:
 --elasticUrl=http://<server>:9200
 ----
 
-For additional options see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/NephronOptions.java[NephronOptions].
+For additional options, see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/NephronOptions.java[NephronOptions].
 
 If no Elasticsearch output is required then `--elasticUrl` must be set empty.
 
