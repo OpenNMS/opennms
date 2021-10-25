@@ -188,7 +188,7 @@ const columnDefs = ref([
     headerName: "ID",
     field: "id",
     headerTooltip: "ID",
-    width: 75,
+    width: 50,
     headerCheckboxSelection: true,
     checkboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -240,7 +240,7 @@ const columnDefs = ref([
   {
     headerName: "COUNT",
     field: "count",
-    width: 75,
+    width: 50,
     headerTooltip: "Count",
     comparator: (valueA: number, valueB: number) => {
       return valueA - valueB;
