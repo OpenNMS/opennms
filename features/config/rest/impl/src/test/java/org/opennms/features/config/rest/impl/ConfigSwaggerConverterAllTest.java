@@ -88,18 +88,18 @@ public class ConfigSwaggerConverterAllTest {
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
         Map<String, Object> map = mapper.readValue(yaml, typeRef);
 
-        Assert.assertTrue("It should have empty components.", ((Map) map.get("components")).size() == 0);
+        Assert.assertEquals("It should have empty components.", ((Map) map.get("components")).size(), 0);
         Map<String, Map> paths = (Map) map.get("paths");
-        Assert.assertTrue("It should have 4 paths.", paths.size() == 4);
+        Assert.assertEquals("It should have 4 paths.", paths.size(), 4);
         Map<String,Map> getVaccuumdContent = (Map)((Map)((Map)((Map)paths.get("/opennms/rest/cm/schema/vacuumd/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
         Map<String,Map> getVaccuumd2Content = (Map)((Map)((Map)((Map)paths.get("/opennms/rest/cm/schema/vacuumd2/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
         String ref = (String) ((Map)getVaccuumdContent.get("application/json").get("schema")).get("$ref");
         String ref2 = (String) ((Map)getVaccuumd2Content.get("application/json").get("schema")).get("$ref");
-        Assert.assertTrue("It should have correct ref.",
-                "/opennms/rest/cm/schema/vacuumd#/components/schemas/VacuumdConfiguration".equals(ref));
-        Assert.assertTrue("It should have correct ref2.",
-                "/opennms/rest/cm/schema/vacuumd2#/components/schemas/VacuumdConfiguration".equals(ref2));
+        Assert.assertEquals("It should have correct ref.",
+                "/opennms/rest/cm/schema/vacuumd#/components/schemas/VacuumdConfiguration", ref);
+        Assert.assertEquals("It should have correct ref2.",
+                "/opennms/rest/cm/schema/vacuumd2#/components/schemas/VacuumdConfiguration", ref2);
     }
 }
