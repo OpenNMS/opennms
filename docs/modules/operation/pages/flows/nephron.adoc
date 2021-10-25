@@ -39,7 +39,7 @@ Cortex persistence is configured by the following command line argument:
 --cortexWriteUrl=http://<server>:9009/api/v1/push
 ----
 
-For additional options see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/CortexOptions.java[CortexOptions].
+For additional options, see link:https://github.com/OpenNMS/nephron/blob/master/main/src/main/java/org/opennms/nephron/CortexOptions.java[CortexOptions].
 
 == Kafka persistence
 
