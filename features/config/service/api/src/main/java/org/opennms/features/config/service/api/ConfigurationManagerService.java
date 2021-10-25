@@ -29,10 +29,7 @@
 package org.opennms.features.config.service.api;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
@@ -55,6 +52,8 @@ public interface ConfigurationManagerService {
 
     /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
     void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
+
+    Map<String, ConfigSchema<?>> getAllConfigSchema();
 
     /**
      * Get the registered Schema

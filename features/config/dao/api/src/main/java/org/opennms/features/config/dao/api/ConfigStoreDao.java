@@ -59,6 +59,8 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     Optional<Set<String>> getConfigNames();
 
+    Map<String, ConfigSchema<?>> getAllConfigSchema();
+
     /**
      * get configs meta by configName
      *
