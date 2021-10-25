@@ -9,9 +9,11 @@
     "test": "vite-jest"
   },
   "dependencies": {
+    "@kyvg/vue3-notification": "^2.3.4",
     "@vuelidate/core": "^2.0.0-alpha.4",
     "@vuelidate/validators": "^2.0.0-alpha.2",
     "axios": "^0.21.1",
+    "cronstrue": "^1.117.0",
     "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
     "primeflex": "^2.0.0",

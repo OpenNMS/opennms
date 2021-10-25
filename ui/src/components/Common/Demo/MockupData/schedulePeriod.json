@@ -1,27 +1,27 @@
 [
     {
-        "name": "Seconds",
-        "id": "301",
-        "value": "seconds"
-    },
-    {
-        "name": "Minutes",
+        "name": "Minute",
         "id": "302",
-        "value": "minutes"
+        "value": "minute"
     },
     {
-        "name": "Days",
+        "name": "Hour",
         "id": "303",
-        "value": "days"
+        "value": "hour"
     },
     {
-        "name": "Weeks",
+        "name": "Day of month",
         "id": "304",
-        "value": "weeks"
+        "value": "day of month"
     },
     {
-        "name": "Months",
+        "name": "Month",
         "id": "305",
-        "value": "months"
+        "value": "month"
+    },
+    {
+        "name": "Day of week",
+        "id": "306",
+        "value": "day of week"
     }
 ]

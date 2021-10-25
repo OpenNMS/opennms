@@ -38,10 +38,10 @@ When the `karaf-extender` feature is installed it will:
 . Gather the list of Karaf Feature Names from the `features.boot` files in the repositories.
 . Gather the list of Karaf Feature Names form the files under `$karaf.etc/featuresBoot.d` that do not start with a '.' and sort these by name.
 . Register the Maven Repositories by updating the `org.ops4j.pax.url.mvn.repositories` key for the PID `org.ops4j.pax.url.mvn`.
-. Wait up to 30 seconds until all of the Karaf Feature URIs are resolvable (the Maven Repositiries may take a few moments to update after updating the configuration.)
+. Wait up to 30 seconds until all of the Karaf Feature URIs are resolvable (the Maven Repositories may take a few moments to update after updating the configuration.)
 . Install the Karaf Feature Repository URIs.
 . Install the Karaf Features.
 
-NOTE: Features listed in the `features.boot` files of the Maven Repositiries will take precedence over those listed in `featuresBoot.d`.
+NOTE: Features listed in the `features.boot` files of the Maven Repositories will take precedence over those listed in `featuresBoot.d`.
 
 WARNING: Any existing repository registered in `org.ops4j.pax.url.mvn.repositories` will be overwritten.

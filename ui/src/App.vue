@@ -3,13 +3,16 @@
   <Menubar />
   <Sidebar />
   <div id="view">
-    <router-view />
+    <router-view />     
   </div>
+  <notifications position="top center" ignoreDuplicates = true />  
 </template>
   
 <script setup lang="ts">
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
+import { notify } from "@kyvg/vue3-notification"
+
 </script>
   
 <style lang="scss">
