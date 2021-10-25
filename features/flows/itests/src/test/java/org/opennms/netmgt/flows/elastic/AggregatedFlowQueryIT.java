@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.testing.TestPipeline;
@@ -70,6 +71,7 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.nephron.NephronOptions;
 import org.opennms.nephron.Pipeline;
+import org.opennms.nephron.UnalignedFixedWindows;
 import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
@@ -158,7 +160,20 @@ public class AggregatedFlowQueryIT {
         flowRepository.setEnableFlowForwarding(true);
 
         // The repository should be empty
-        assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, 0))).get(), equalTo(0L));
+        assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));
+    }
+
+    // Nephron uses unaligned windows
+    // -> windows are shifted by the hash of their exporter node modulo the window size
+    // -> use dates that are sufficiently "large" in order not to be smaller than the maximum shift
+
+    private static final int NODE_ID = 99;
+    private static final long SHIFT = UnalignedFixedWindows.perNodeShift(NODE_ID, 60 * 1000);
+    // align the shift to 10 millis because that makes testing the output by ES simpler (that is calculated for step=10)
+    private static long OFFSET = (SHIFT / 10 + 1) * 10 + 60000;
+
+    private Date date(long millis) {
+        return new Date(OFFSET + millis);
     }
 
     @Test
@@ -349,21 +364,21 @@ public class AggregatedFlowQueryIT {
     public void canGetDscps() throws Exception {
 
         final List<FlowDocument> flows = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
+                .withExporter("SomeFs", "SomeFid", NODE_ID)
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
                 .withTos(0)
-                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(3), date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
                 .withDirection(Direction.EGRESS)
                 .withTos(4)
-                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(3), date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 .withDirection(Direction.INGRESS)
                 .withTos(8)
-                .withFlow(new Date(20), new Date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+                .withFlow(date(20), date(45), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
                 .withDirection(Direction.EGRESS)
                 .withTos(12)
-                .withFlow(new Date(20), new Date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+                .withFlow(date(20), date(45), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 .build();
 
         // expect 25 flow summary documents
@@ -715,7 +730,10 @@ public class AggregatedFlowQueryIT {
         //
         //   53.8461 + 21.2904 = 75.1365
         final double error = 1E-8;
-        assertThat(timestamps, contains(OFFSET + 10L, OFFSET + 20L, OFFSET + 30L, OFFSET + 40L));
+        var startHttps = date(13).getTime() / 10;
+        var endHttps = date(45).getTime() / 10;
+        var expectedTimestamps = LongStream.range(startHttps, endHttps + 1).mapToObj(l -> Long.valueOf(l * 10)).toArray(l -> new Long[l]);
+        assertThat(timestamps, contains(expectedTimestamps));
         assertThat(httpsIngressValues, containsDoubles(error, 75.136476426799, 81.63771712158808, 35.483870967741936,
                 17.741935483870968));
         assertThat(httpsEgressValues, containsDoubles(error, 751.36476426799, 816.3771712158809, 354.83870967741933,
@@ -766,19 +784,9 @@ public class AggregatedFlowQueryIT {
         return column;
     }
 
-    // Nephron uses unaligned windows
-    // -> windows are shifted by the hash of their exporter node modulo the window size
-    // -> use dates that are sufficiently "large" in order not to be smaller than the maximum shift
-
-    private static long OFFSET = 60000;
-
-    private Date date(long millis) {
-        return new Date(OFFSET + millis);
-    }
-
     private void loadDefaultFlows() throws FlowException {
         final List<FlowDocument> flows = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
+                .withExporter("SomeFs", "SomeFid", NODE_ID)
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
