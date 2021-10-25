@@ -11,7 +11,7 @@ config:update
 <2> Set a name for the IPFIX adapter
 <3> Assign an adapter to enrich IPFIX messages
 
-TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
+TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for additional protocols.
 
 TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-ipfix.cfg`.
 

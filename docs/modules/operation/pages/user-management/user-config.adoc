@@ -28,7 +28,7 @@ WARNING: Please note that angle brackets (<>), single (') and double quotation m
 . _Optional_: assign <<user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
 +
 NOTE: By default a new user has the following permissions:
-     Acknowledge and work with alarms and noficiations.
+     Acknowledge and work with alarms and notifications.
      Cannot access the *configure OpenNMS* administration menu.
      Add the _ROLE_ADMIN_ role to create a new admin. 
 

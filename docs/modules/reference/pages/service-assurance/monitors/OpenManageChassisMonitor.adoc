@@ -1,0 +1,52 @@
+
+= OpenManageChassisMonitor
+
+The OpenManageChassis monitor tests the status of a Dell chassis by querying its SNMP agent.
+The monitor polls the value of the node's SNMP OID .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
+If the value is OK (3), the service is considered available.
+
+As this monitor uses SNMP, the queried nodes must have proper SNMP configuration in `snmp-config.xml`.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameter for the OpenManageChassisMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The port to which to try to connect.
+| From snmp-config.xml
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#<ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+[source, xml]
+----
+<!-- Overriding default SNMP config -->
+<service name="OMA-Chassis" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="OMA-Chassis" class-name="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" />
+----
+
+== Dell MIBs
+
+Find Dell MIBs link:https://www.dell.com/support/kbdoc/en-ca/000177052/how-to-find-dell-management-information-base-mib-files[here].
+Download the `DCMIB<version>.zip` or `DCMIB<version>.exe` file that corresponds to the version of your OpenManage agents.
+The latest one should be sufficient for all previous versions.

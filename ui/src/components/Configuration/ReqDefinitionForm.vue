@@ -1,5 +1,5 @@
 <template>
-    <p class="title">New Requisition Definition</p>
+    <p class="title">{{ title }} Requisition Definition</p>
     <div class="p-col-9">
         <form @submit.prevent="onSave">
             <div class="p-fluid">
@@ -17,7 +17,7 @@
                     <label for="type" class="required">Type</label>
                     <DropDown
                         v-model="model.reqDef.type.$model"
-                        :options="types"
+                        :options="stateTypes"
                         optionLabel="name"
                         optionValue="value"
                         :filter="true"
@@ -59,7 +59,7 @@
                         </p>
                         <DropDown
                             v-model="add.dropdownVal"
-                            :options="advancedDropdown"
+                            :options="stateAdvancedDropdown"
                             optionLabel="name"
                             optionValue="value"
                         ></DropDown>
@@ -99,7 +99,7 @@
                     <label for="type" class="required">Schedule Period</label>
                     <DropDown
                         v-model="model.reqDef.schedulePeriod.$model"
-                        :options="schedulePeriod"
+                        :options="stateSchedulePeriod"
                         optionLabel="name"
                         optionValue="value"
                         :filter="true"
@@ -133,20 +133,25 @@
 
 <script setup lang="ts">
 
-import { onMounted, reactive, ref } from 'vue'
-import { getDropdownTypes, getSchedulePeriod, getAdvancedDropdown } from '../Common/Demo/apiService'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import Button from '../Common/Button.vue'
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
-import ValidationMessage from '../ValidationMessage.vue'
+import ValidationMessage from '../Common/ValidationMessage.vue'
+import router from '@/router'
+import {
+    GET_TYPES_DROPDOWN,
+    GET_SCHEDULE_PERIOD_DROPDOWN,
+    GET_ADVANCED_DROPDOWN
+} from '../../store/configuration/actions'
+import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
+const store = useStore();
 const reqDefinition = reactive(State);
-
-const types: any = ref([]);
-const schedulePeriod: any = ref([]);
-const advancedDropdown: any = ref([]);
 
 const minVal = ref(1);
 const count = ref(0);
@@ -160,30 +165,101 @@ const urlIcon = ref('pi pi-check-circle');
 
 const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
+const putDataPosition = ref();
+
 const model = State.toModel();
 
-// Dropdown API Data
-onMounted(async () => {
-    try {
-        //Types
-        types.value = await getDropdownTypes;
-        // Schedule Period
-        schedulePeriod.value = await getSchedulePeriod;
-        // Advanced Dropdown
-        advancedDropdown.value = await getAdvancedDropdown;
-    } catch {
-        console.error("Error in API");
+const props = defineProps({
+    title: {
+        type: String,
+        default: "New"
     }
 });
 
-//Add another parameter - max 1 allowed
-const addAnother = () => {
-    if (addAnotherArr.value.length < 2) {
-        let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
-        addAnotherArr.value.push(addObj);
-    } else {
-        alert(`Max allowed param is ${addAnotherArr.value.length - 1}`);
+onMounted(async () => {
+    try {
+        // Types
+        await store.dispatch(GET_TYPES_DROPDOWN);
+        // Schedule Period
+        await store.dispatch(GET_SCHEDULE_PERIOD_DROPDOWN);
+        // Advanced Dropdown
+        await store.dispatch(GET_ADVANCED_DROPDOWN);
+
+        // Edit Operation logic
+        if (router.currentRoute.value.name === 'reqDefEdit') {
+
+            let data = store.state.configuration.sendModifiedData;
+            let url = data['import-url-resource'].split('/');
+            putDataPosition.value = data['tablePosition'];   //Helps in edit save
+            reqDefinition.reqDef.name = data['import-name'];
+            reqDefinition.reqDef.type = url[0].split(':')[0];
+            reqDefinition.reqDef.host = url[2];
+            generatedURL.value = data['import-url-resource'];
+
+            //temp logic to patch/set schedule period value
+            setCronSchedule(data['cron-schedule']);
+
+            let patchVal = url[3].split('?');
+            reqDefinition.reqDef.foreignSource = patchVal[0];
+            //On edit patch/set data - for advance dropdown
+            setAdvDropDowndata(patchVal);
+
+        } else {
+            reqDefinition.reqDef.name = '';
+            reqDefinition.reqDef.type = '';
+            reqDefinition.reqDef.host = '';
+            reqDefinition.reqDef.foreignSource = '';
+        }
+    } catch {
+        console.error("Error in API/Logic");
     }
+});
+
+const stateTypes = computed(() => {
+    return store.state.configuration.types
+});
+
+const stateSchedulePeriod = computed(() => {
+    return store.state.configuration.schedulePeriod
+});
+
+const stateAdvancedDropdown = computed(() => {
+    return store.state.configuration.advancedDropdown
+});
+
+const setCronSchedule = (data: any) => {
+    let values = data.split(' ');
+    reqDefinition.reqDef.schedulePeriodNumber = parseInt(values[1]);
+    if (values.length > 3) {
+        reqDefinition.reqDef.schedulePeriod = values.slice(2, values.length + 1).join(' ')
+    } else {
+        reqDefinition.reqDef.schedulePeriod = values[2];
+    }
+}
+
+const setAdvDropDowndata = (patchVal: any) => {
+    //add edit data value to advance dropdown
+    const dropVal = (dropdownVal: any, advTextVal: any, index: any) => {
+        if (index == 1) {
+            addAnotherArr.value[0]['dropdownVal'] = dropdownVal;
+            addAnotherArr.value[0]['advTextVal'] = advTextVal;
+        } else {
+            let addObj = { "id": index - 1, "dropdownVal": dropdownVal, "advTextVal": advTextVal };
+            addAnotherArr.value.push(addObj);
+        }
+    }
+
+    //Identify how many advance parameter
+    for (let i = 1; i < patchVal.length; i++) {
+        let val = patchVal[i].split('=');
+        dropVal(val[0], val[1], i);
+    }
+}
+
+//Add another parameter
+const addAnother = () => {
+    let addObj = { "id": ++count.value, "dropdownVal": '', "advTextVal": "" };
+    addAnotherArr.value.push(addObj);
 };
 
 //Dismiss dropdown
@@ -218,9 +294,58 @@ const generateURL = () => {
 
 //Save 
 const onSave = () => {
-    console.log("generatedURL", generatedURL.value)
-    console.log('onSave Obj', JSON.stringify(reqDefinition));
+    let provisionDService = store.state.configuration.provisionDService['requisition-def'];
+    //create copy state data
+    let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
+    //generate cron_expression
+    const cron_expression = saveCronSchedule();
+    const paylod =
+    {
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
+    }
+    //Edit record operation
+    if (router.currentRoute.value.name === 'reqDefEdit') {
+        //Edited data replace with new payload
+        copyProvisionData.splice(putDataPosition.value, 1, paylod);
+    } else {
+        //New record operation
+        copyProvisionData.push(paylod);
+    }
+    const requestPayload = { 'requisition-def': copyProvisionData };
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
 };
+
+const saveCronSchedule = () => {
+    let cronSchedule = ['minute', 'hour', 'day of month', 'month', 'day of week'];
+    let findPosition = cronSchedule.indexOf(reqDefinition.reqDef.schedulePeriod);
+    let expression = ['*', '*', '*', '*', '*'];
+    expression.splice(findPosition, 1, String(reqDefinition.reqDef.schedulePeriodNumber));
+    return expression.join(' ');
+}
 
 </script>
 

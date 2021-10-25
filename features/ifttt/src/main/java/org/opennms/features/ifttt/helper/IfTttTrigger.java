@@ -28,16 +28,17 @@
 
 package org.opennms.features.ifttt.helper;
 
-import java.io.IOException;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Helper class for constructing and invoking IFTTT requests.
@@ -82,7 +83,7 @@ public class IfTttTrigger {
     }
 
     public void trigger() {
-        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build()) {
+        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(SSLContext.getInstance("Default")).build()) {
             LOG.debug("Sending '" + event + "' event to IFTTT.");
 
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));
@@ -97,7 +98,7 @@ public class IfTttTrigger {
             if (statusCode != 200) {
                 LOG.warn("Received HTTP Status {} for request to {} with body {}", statusCode, httpPost.getURI(), httpPost.getEntity());
             }
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             LOG.error("Error invoking request: {}", e);
         }
     }

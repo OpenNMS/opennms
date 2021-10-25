@@ -18,7 +18,7 @@ To ensure that the feature continues to be installed on subsequent restarts, add
 
 === Requirements
 
-The feature requires Elasticsearch to persist the feeback records.
+The feature requires Elasticsearch to persist the feedback records.
 
 ==== Configure Elasticsearch Persistence
 
