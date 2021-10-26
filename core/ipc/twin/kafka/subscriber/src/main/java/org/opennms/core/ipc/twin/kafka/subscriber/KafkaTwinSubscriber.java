@@ -51,14 +51,11 @@ import org.opennms.core.ipc.twin.common.TwinResponseBean;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
-import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
@@ -117,12 +114,9 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
     @Override
     protected void sendRpcRequest(final TwinRequestBean twinRequest) {
-        final var proto = TwinRequestProto.newBuilder();
-        proto.setConsumerKey(twinRequest.getKey());
-        proto.setLocation(this.getMinionIdentity().getLocation());
-        proto.setSystemId(this.getMinionIdentity().getId());
 
-        final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), proto.build().toByteArray());
+        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+        final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), twinRequestProto.toByteArray());
         this.producer.send(record, (meta, ex) -> {
             if (ex != null) {
                 RATE_LIMITED_LOG.error("Error sending request", ex);
@@ -132,21 +126,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinResponseBean response;
-        try {
-            final var proto = TwinResponseProto.parseFrom(record.value());
-
-            response = new TwinResponseBean();
-            response.setKey(proto.getConsumerKey());
-            if (!Strings.isNullOrEmpty(proto.getLocation())) {
-                response.setLocation(proto.getLocation());
-            }
-            response.setObject(proto.getTwinObject().toByteArray());
-        } catch (final InvalidProtocolBufferException e) {
-            LOG.error("Failed to parse protobuf for the response", e);
-            return;
-        }
-
+        final TwinResponseBean response = mapTwinResponseToProto(record.value());
         this.accept(response);
     }
 }

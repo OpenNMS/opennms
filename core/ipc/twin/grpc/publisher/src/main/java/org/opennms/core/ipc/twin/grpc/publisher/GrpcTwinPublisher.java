@@ -115,17 +115,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
         twinRpcExecutor.shutdown();
     }
 
-    private TwinResponseProto mapTwinResponse(TwinResponseBean twinResponseBean) {
-        TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
-        if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
-            builder.setLocation(twinResponseBean.getLocation());
-        }
-        builder.setConsumerKey(twinResponseBean.getKey());
-        if (twinResponseBean.getObject() != null) {
-            builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
-        }
-        return builder.build();
-    }
 
     private class StreamHandler extends OpenNMSTwinIpcGrpc.OpenNMSTwinIpcImplBase {
 
@@ -137,7 +126,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                 @Override
                 public void onNext(TwinRequestProto twinRequestProto) {
                     CompletableFuture.runAsync(() -> {
-                        TwinRequestBean twinRequestBean = mapTwinRequestProto(twinRequestProto);
+                        TwinRequestBean twinRequestBean = mapTwinRequestProto(twinRequestProto.toByteArray());
                         TwinResponseBean twinResponseBean = getTwin(twinRequestBean);
                         TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
                         LOG.debug("Sent Twin response for key {} at location {}", twinRequestBean.getKey(), twinRequestBean.getLocation());
@@ -185,14 +174,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
              handleSinkStreamUpdate(request, responseObserver);
         }
 
-        TwinRequestBean mapTwinRequestProto(TwinRequestProto twinRequestProto) {
-            TwinRequestBean twinRequestBean = new TwinRequestBean();
-            twinRequestBean.setKey(twinRequestProto.getConsumerKey());
-            if (!Strings.isNullOrEmpty(twinRequestProto.getLocation())) {
-                twinRequestBean.setLocation(twinRequestProto.getLocation());
-            }
-            return twinRequestBean;
-        }
 
     }
 

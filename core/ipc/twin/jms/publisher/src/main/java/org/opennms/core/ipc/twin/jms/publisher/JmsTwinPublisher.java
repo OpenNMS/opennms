@@ -96,37 +96,6 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         template.sendBodyAndHeaders(twinResponseProto.toByteArray(), headers);
     }
 
-    private TwinResponseProto mapTwinResponse(TwinResponseBean twinResponseBean) {
-        TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
-        if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
-            builder.setLocation(twinResponseBean.getLocation());
-        }
-        if(!Strings.isNullOrEmpty(twinResponseBean.getSessionId())) {
-            builder.setSessionId(twinResponseBean.getSessionId());
-        }
-        builder.setConsumerKey(twinResponseBean.getKey());
-        if (twinResponseBean.getObject() != null) {
-            builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
-        }
-        builder.setIsPatchObject(twinResponseBean.isPatch());
-        builder.setVersion(twinResponseBean.getVersion());
-        return builder.build();
-    }
-
-    TwinRequestBean mapTwinRequestProto(byte[] twinRequestBytes) {
-        TwinRequestBean twinRequestBean = new TwinRequestBean();
-        try {
-            TwinRequestProto twinRequestProto = TwinRequestProto.parseFrom(twinRequestBytes);
-            twinRequestBean.setKey(twinRequestProto.getConsumerKey());
-            if (!Strings.isNullOrEmpty(twinRequestProto.getLocation())) {
-                twinRequestBean.setLocation(twinRequestProto.getLocation());
-            }
-        } catch (InvalidProtocolBufferException e) {
-            LOG.warn("Failed to parse protobuf for the request", e);
-        }
-        return twinRequestBean;
-    }
-
     public void init() throws Exception {
         rpcCamelContext.addRoutes(new RpcRouteBuilder(this, rpcCamelContext));
         LOG.info("JMS Twin publisher initialized");

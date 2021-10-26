@@ -127,7 +127,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     @Override
     protected void sendRpcRequest(TwinRequestBean twinRequest) {
-        TwinRequestProto twinRequestProto = mapTwinRequest(twinRequest);
+        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
         // Send RPC Request asynchronously.
         CompletableFuture.runAsync(() -> retrySendRpcRequest(twinRequestProto), twinRequestSenderExecutor);
     }
@@ -193,18 +193,11 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         }
     }
 
-    private TwinRequestProto mapTwinRequest(TwinRequestBean twinRequest) {
-        TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
-        builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
-                .setSystemId(getMinionIdentity().getId());
-        return builder.build();
-    }
-
     private class ResponseHandler implements StreamObserver<TwinResponseProto> {
 
         @Override
         public void onNext(TwinResponseProto twinResponseProto) {
-            TwinResponseBean twinResponseBean = mapTwinResponseProto(twinResponseProto);
+            TwinResponseBean twinResponseBean = mapTwinResponseToProto(twinResponseProto.toByteArray());
             accept(twinResponseBean);
         }
 
@@ -222,17 +215,6 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
             CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
-        private TwinResponseBean mapTwinResponseProto(TwinResponseProto twinResponseProto) {
-            TwinResponseBean twinResponseBean = new TwinResponseBean();
-            if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
-                twinResponseBean.setLocation(twinResponseProto.getLocation());
-            }
-            twinResponseBean.setKey(twinResponseProto.getConsumerKey());
-            if (twinResponseProto.getTwinObject() != null) {
-                twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
-            }
-            return twinResponseBean;
-        }
     }
 
 

@@ -43,9 +43,13 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +130,37 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         executorService.execute(() -> {
             validateAndSendResponse(twinResponse);
         });
+    }
+
+    protected TwinResponseBean mapTwinResponseToProto(byte[] responseBytes) {
+        TwinResponseBean twinResponseBean = new TwinResponseBean();
+        try {
+            TwinResponseProto twinResponseProto = TwinResponseProto.parseFrom(responseBytes);
+
+            if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
+                twinResponseBean.setLocation(twinResponseProto.getLocation());
+            }
+            if(!Strings.isNullOrEmpty(twinResponseProto.getSessionId())) {
+                twinResponseBean.setSessionId(twinResponseProto.getSessionId());
+            }
+            twinResponseBean.setKey(twinResponseProto.getConsumerKey());
+            if (twinResponseProto.getTwinObject() != null) {
+                twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
+            }
+            twinResponseBean.setPatch(twinResponseProto.getIsPatchObject());
+            twinResponseBean.setVersion(twinResponseProto.getVersion());
+            return twinResponseBean;
+        } catch (InvalidProtocolBufferException e) {
+            LOG.error("Failed to parse response from proto", e);
+        }
+        return twinResponseBean;
+    }
+
+    protected TwinRequestProto mapTwinRequestToProto(TwinRequestBean twinRequest) {
+        TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
+        builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
+                .setSystemId(getMinionIdentity().getId());
+        return builder.build();
     }
 
     private void validateAndSendResponse(TwinResponseBean twinResponse) {

@@ -127,16 +127,9 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
                 ? Topic.responseGlobal()
                 : Topic.responseForLocation(sinkUpdate.getLocation());
 
-        final var proto = TwinResponseProto.newBuilder();
-        proto.setConsumerKey(sinkUpdate.getKey());
-        if (!Strings.isNullOrEmpty(sinkUpdate.getLocation())) {
-            proto.setLocation(sinkUpdate.getLocation());
-        }
-        if (sinkUpdate.getObject() != null) {
-            proto.setTwinObject(ByteString.copyFrom(sinkUpdate.getObject()));
-        }
+        final var proto = mapTwinResponse(sinkUpdate);
 
-        final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.build().toByteArray());
+        final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
         this.producer.send(record, (meta, ex) -> {
             if (ex != null) {
                 RATE_LIMITED_LOG.error("Error publishing update", ex);
@@ -146,18 +139,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinRequestBean request;
-        try {
-            final var proto = TwinRequestProto.parseFrom(record.value());
-
-            request = new TwinRequestBean();
-            request.setKey(proto.getConsumerKey());
-            request.setLocation(proto.getLocation());
-        } catch (final InvalidProtocolBufferException e) {
-            LOG.error("Failed to parse protobuf for the request", e);
-            return;
-        }
-
+        final TwinRequestBean request = mapTwinRequestProto(record.value());
         final var response = this.getTwin(request);
         this.handleSinkUpdate(response);
     }

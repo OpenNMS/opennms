@@ -37,7 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonpatch.diff.JsonDiff;
+import com.google.common.base.Strings;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +89,37 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             twinTracker = twinTrackerMap.get(new SessionKey(twinRequest.getKey(), null));
         }
         return twinTracker;
+    }
+
+    protected TwinResponseProto mapTwinResponse(TwinResponseBean twinResponseBean) {
+        TwinResponseProto.Builder builder = TwinResponseProto.newBuilder();
+        if (!Strings.isNullOrEmpty(twinResponseBean.getLocation())) {
+            builder.setLocation(twinResponseBean.getLocation());
+        }
+        if(!Strings.isNullOrEmpty(twinResponseBean.getSessionId())) {
+            builder.setSessionId(twinResponseBean.getSessionId());
+        }
+        builder.setConsumerKey(twinResponseBean.getKey());
+        if (twinResponseBean.getObject() != null) {
+            builder.setTwinObject(ByteString.copyFrom(twinResponseBean.getObject()));
+        }
+        builder.setIsPatchObject(twinResponseBean.isPatch());
+        builder.setVersion(twinResponseBean.getVersion());
+        return builder.build();
+    }
+
+    protected TwinRequestBean mapTwinRequestProto(byte[] twinRequestBytes) {
+        TwinRequestBean twinRequestBean = new TwinRequestBean();
+        try {
+            TwinRequestProto twinRequestProto = TwinRequestProto.parseFrom(twinRequestBytes);
+            twinRequestBean.setKey(twinRequestProto.getConsumerKey());
+            if (!Strings.isNullOrEmpty(twinRequestProto.getLocation())) {
+                twinRequestBean.setLocation(twinRequestProto.getLocation());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            LOG.warn("Failed to parse protobuf for the request", e);
+        }
+        return twinRequestBean;
     }
 
     public void close() throws IOException {
