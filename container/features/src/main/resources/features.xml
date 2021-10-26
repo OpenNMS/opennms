@@ -1077,10 +1077,13 @@
         <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>
     <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health">
+        <feature>opennms-core</feature>
+        <feature>commons-lang3</feature>
         <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
     </feature>
     <feature name="opennms-health-rest" version="${project.version}" description="OpenNMS :: Health :: Rest">
         <feature>opennms-health</feature>
