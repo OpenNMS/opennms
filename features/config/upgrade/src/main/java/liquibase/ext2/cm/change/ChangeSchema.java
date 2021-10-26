@@ -28,9 +28,12 @@
 
 package liquibase.ext2.cm.change;
 
+import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.createConfigItemForProperty;
+import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.findPropertyDefinition;
+import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.getAttributeValueOrThrowException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -71,14 +74,14 @@ public class ChangeSchema extends AbstractCmChange {
     @Override
     public String getConfirmationMessage() {
         String modifications = String.join("\n", this.changeLog);
-        return String.format("Changed schema %s:%n%s" , this.schemaId, modifications);
+        return String.format("Changed schema %s:%n%s", this.schemaId, modifications);
     }
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
         LOG.info("Change schema {}", this.schemaId);
 
-        return new SqlStatement[] {
+        return new SqlStatement[]{
                 // we wrap all changes into one statement to be atomic and save some time
                 new GenericCmStatement((ConfigurationManagerService cm) -> {
                     // 1.) find schema
@@ -107,43 +110,31 @@ public class ChangeSchema extends AbstractCmChange {
     }
 
     protected void customLoadLogic(ParsedNode parsedNode, ResourceAccessor resourceAccessor) {
-        for(ParsedNode node : parsedNode.getChildren()) {
-            if("put".equals(node.getName())) {
+        for (ParsedNode node : parsedNode.getChildren()) {
+            if ("put".equals(node.getName())) {
                 handlePut(node);
-            } else if("delete".equals(node.getName())) {
-               handleDelete(node);
+            } else if ("delete".equals(node.getName())) {
+                handleDelete(node);
             }
         }
     }
 
     private void handlePut(ParsedNode node) {
         try {
-            final String name = getAttributeValueOrThrowException(node.getChildren(), "name");
-            final String defaultValue = getAttributeValueOrThrowException(node.getChildren(), "default");
-            final String regex = getAttributeValueOrThrowException(node.getChildren(), "regex");
-            changeLog.add(String.format("PUT: name=%s, defaultValue=%s, regex=%s", name, defaultValue, regex));
-            Consumer<ConfigItem> change = configItem -> put(configItem, name, defaultValue, regex);
+            final ConfigItem newPropertyDefinition = createConfigItemForProperty(node.getChildren());
+            Consumer<ConfigItem> change = schema -> put(schema, newPropertyDefinition);
             changes.add(change);
         } catch (IllegalArgumentException e) {
             this.validationErrorsWhileParsing.add(e.getMessage());
         }
     }
 
-    static void put(ConfigItem schema, String propertyName, String defaultValue, String regex) {
-        // find property definition
-        Optional<ConfigItem> propertyOptional = findProperty(schema, propertyName);
-
-        // modify or create new property definition
-        final ConfigItem property;
-        if (propertyOptional.isEmpty()) {
-            property = new ConfigItem();
-            property.setName(propertyName);
-            schema.getChildren().add(property);
-        } else {
-            property = propertyOptional.get();
-        }
-        property.setDefaultValue(defaultValue);
-        property.setPattern(regex);
+    /**
+     * remove old definition (if present) & add new one.
+     */
+    static void put(ConfigItem schema, ConfigItem newPropertyDefinition) {
+        findPropertyDefinition(schema, newPropertyDefinition.getName()).ifPresent(p -> schema.getChildren().remove(p));
+        schema.getChildren().add(newPropertyDefinition);
     }
 
     private void handleDelete(ParsedNode node) {
@@ -152,34 +143,18 @@ public class ChangeSchema extends AbstractCmChange {
             changeLog.add(String.format("DELETE: name=%s", name));
             Consumer<ConfigItem> change = configItem -> delete(configItem, name);
             changes.add(change);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             this.validationErrorsWhileParsing.add(e.getMessage());
         }
     }
 
+    /**
+     * remove old definition (if present) & add new one.
+     */
     static void delete(ConfigItem schema, String propertyName) {
-        // find property definition
-        Optional<ConfigItem> propertyOptional = findProperty(schema, propertyName);
-        propertyOptional.ifPresent(configItem -> schema.getChildren().remove(configItem));
+        findPropertyDefinition(schema, propertyName).ifPresent(configItem -> schema.getChildren().remove(configItem));
     }
 
-    static Optional<ConfigItem> findProperty(ConfigItem schema, String propertyName) {
-        Objects.requireNonNull(propertyName);
-        return schema
-                .getChildren()
-                .stream().filter(i -> propertyName.equals(i.getName()))
-                .findAny();
-    }
-
-    private String getAttributeValueOrThrowException(final List<ParsedNode> listOfAttributes, final String name) {
-        return listOfAttributes
-                .stream()
-                .filter(n -> name.equals(n.getName()))
-                .findAny()
-                .map(ParsedNode::getValue)
-                .map(Object::toString)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Attribute %s must not be null.", name)));
-    }
     public String getSchemaId() {
         return schemaId;
     }

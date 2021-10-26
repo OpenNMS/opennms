@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,6 +39,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -116,7 +116,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHome.toString());
         Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
-                Path.of(etcDir + "/"+SCHEMA_NAME_EVENTD + "-configuration.xml"));
+                Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
         this.db = new DBUtils();
         this.connection = dataSource.getConnection();
         db.watch(connection);
@@ -129,20 +129,20 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
     @After
     public void tearDown() throws SQLException, IOException {
-        if(cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
+        if (cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
             this.cm.unregisterConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID);
         }
-        if(cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent()) {
+        if (cm.getRegisteredSchema(SCHEMA_NAME_PROVISIOND).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
         }
-        if(cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
+        if (cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
             this.cm.unregisterConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID);
         }
-        if(cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent()) {
+        if (cm.getRegisteredSchema(SCHEMA_NAME_EVENTD).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_EVENTD);
         }
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
-        if(this.opennmsHomeOrg != null) {
+        if (this.opennmsHomeOrg != null) {
             System.setProperty(SYSTEM_PROP_OPENNMS_HOME, this.opennmsHomeOrg);
         }
     }
@@ -156,7 +156,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
             // check if CM was called for schema
-            verify(cmSpy,times(3)).registerConfigDefinition(anyString(), any());
+            verify(cmSpy, times(3)).registerConfigDefinition(anyString(), any());
 
             // check if CM was called for config
             verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
@@ -186,9 +186,11 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(configDefinition.isPresent());
             ConfigItem schema = configDefinition.get().getSchema();
             assertNotNull(schema);
-            assertEquals(1, schema.getChildren().size());
+            assertEquals(2, schema.getChildren().size());
             assertEquals("property1", schema.getChildren().get(0).getName());
             assertEquals(".*", schema.getChildren().get(0).getPattern());
+            assertEquals(ConfigItem.Type.BOOLEAN, schema.getChildren().get(1).getType());
+            assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
         } finally {
             this.db.cleanUp();
         }
@@ -231,20 +233,5 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         assertTrue(result.getBoolean(1));
     }
 
-    // similar to JUnit5
-    public static void assertThrowsException(Class<? extends Throwable> expectedException, RunnableWithCheckedException function) {
-        try {
-            function.run();
-        } catch (Exception e) {
-            if (!expectedException.isAssignableFrom(e.getClass())) {
-                fail(String.format("Expected exception: %s but was %s", expectedException.getName(), e.getClass().getName()));
-            }
-            return;
-        }
-        fail(String.format("Expected exception: %s but none was thrown.", expectedException.getName()));
-    }
 
-    public interface RunnableWithCheckedException {
-        void run() throws Exception;
-    }
 }

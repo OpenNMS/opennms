@@ -24,9 +24,10 @@
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-properties">
         <cm:registerSchema id="propertiesTest"/>
         <cm:changeSchema schemaId="propertiesTest">
-            <cm:put name="property1" default="" regex=".*" />
-            <cm:put name="property2" default="" regex=".*" />
-            <cm:delete name="property2"/>
+            <cm:put name="property1" type="string" default="" pattern=".*" />
+            <cm:put name="tobedeleted" type="string" default="" pattern=".*" />
+            <cm:delete name="tobedeleted"/>
+            <cm:put name="property3" type="bool" default="false" />
         </cm:changeSchema>
     </changeSet>
 </databaseChangeLog>
