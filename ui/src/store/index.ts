@@ -8,6 +8,7 @@ import ifServicesModule from './ifServices'
 import spinnerModule from './spinner'
 import inventoryModule from './inventory'
 import locationsModule from './locations'
+import fileEditorModule from './fileEditor'
 
 export default createStore({
   modules: {
@@ -17,6 +18,7 @@ export default createStore({
     ifServicesModule,
     spinnerModule,
     inventoryModule,
-    locationsModule
+    locationsModule,
+    fileEditorModule
   }
 })

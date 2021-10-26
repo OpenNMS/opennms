@@ -49,13 +49,19 @@ a {
   cursor: pointer !important;
 }
 .feather-secondary {
-  background: var(--feather-secondary)
+  background: var(--feather-secondary);
 }
 .feather-secondary-variant {
-  background: var(--feather-secondary-variant)
+  background: var(--feather-secondary-variant);
 }
 .feather-shade3 {
-  background: var(--feather-shade-3)
+  background: var(--feather-shade-3);
+}
+.headline1 {
+  @include headline1();
+}
+.headline2 {
+  @include headline2();
 }
 .headline3 {
   @include headline3();
