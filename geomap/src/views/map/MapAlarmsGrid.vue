@@ -157,7 +157,7 @@ function clearFilters() {
 }
 
 function applyFilters() {
-  let nodesLable: any = [];
+  let nodesLabel: any = [];
   gridApi.forEachNodeAfterFilter((node: any) => {
     nodesLabel.push(node.data.node);
   });
