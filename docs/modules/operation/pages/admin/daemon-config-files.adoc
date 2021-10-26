@@ -20,7 +20,7 @@ To reload a daemon use the `reload-daemon` command:
 admin@opennms()> reload-daemon NAME
 ----
 
-NOTE: A list of reloadable daemons can be obtained by pressing `tabulator` after the command.
+NOTE: To see a list of reloadable daemons, press `tabulator` after the command.
 
 == Reload daemons by reload event
 
