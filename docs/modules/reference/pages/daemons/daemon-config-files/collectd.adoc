@@ -11,23 +11,23 @@
 | Restart Required
 
 | collectd-configuration.xml
-| Restart is required in case new collection services are created or removed.
+| This file defines which collections are being collected and assigned to which nodes.
  A reload command changed configuration parameters of existing monitors.
 | yes
 | yes
 
 | jdbc-datacollection-config.xml
-| Restart is required in case of any changes
+| Defines JDBC datacollections. Attributes are retrieved using SQL queries.
 | no
 | yes
 
 | http-datacollection-config.xml
-| Restart is required in case of any changes
+| Defines HTTP datacollections. Attributes are extracted from the HTTP responses using a regular expression.
 | no
 | yes
 
 | xml-datacollection-config.xml
-| Restart is required in case of any changes
+| Defines datacollections that can be extracted from XML or JSON documents.
 | no
 | yes
 |===
