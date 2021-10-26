@@ -22,7 +22,7 @@ Reload event loads changed configuration parameters of existing monitors.
 | no
 
 | poll-outages.xm
-| Can be reloaded with `uei.opennms.org/internal/schedOutagesChanged`.
+| Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 | yes
 | no
 |===
