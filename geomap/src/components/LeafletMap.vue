@@ -1,5 +1,6 @@
 <template>
   <div class="leaflet">
+    <!-- <img src="src/assets/red-marker.png"> -->
     <div class="geo-map">
       <l-map
         ref="map"
@@ -27,8 +28,9 @@
           v-for="(node, index) in interestedNodes"
           :key="index"
           :lat-lng="getCoordinateFromNode(node)"
-          :icon ="redMarker"
-add         >
+          :icon ="setIcon"
+add         
+>
         <l-popup> {{ node.label }} </l-popup>
         </l-marker>
         <l-polyline
@@ -44,7 +46,7 @@ add         >
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, watch, ref, nextTick, onMounted, onBeforeUnmount } from "vue";
+import { computed, watch, ref, nextTick, onMounted } from "vue";
 import "leaflet/dist/leaflet.css";
 import {
   LMap,
@@ -58,8 +60,9 @@ import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
 // import commonjs from 'rollup-plugin-commonjs';
-// import L from "leaflet";
-import AwesomeMarkers from "leaflet.awesome-markers";
+ import L from "leaflet";
+// import { Console } from "console";
+
 
 
 let leafletReady = ref(false);
@@ -74,6 +77,23 @@ const zoom = ref(4)
 let interestedNodes = computed(() => {
   return store.getters['mapModule/getInterestedNodes'];
 })
+
+console.log("interestedNodes>>>>>>", interestedNodes.value)
+
+let interestedAlarms = computed(() => {
+    return store.getters['mapModule/getAlarmsFromSelectedNodes'];
+  // return store.state.mapModule.alarms
+})
+console.log("interestedAlarms>>>>>>", interestedAlarms.value)
+
+
+//  onMounted(async () => {
+//    const alarmData = await store.getters['mapModule/getAlarmsFromSelectedNodes'];
+//    console.log("alarm data", alarmData);
+//  })
+
+
+
 
 function getCoordinateFromNode(node: any) {
   let coordinate: string[] = [];
@@ -140,59 +160,86 @@ const tileProviders = [
   },
 ];
 
-onMounted(async () => {
-      const {
-        bind,
-        Browser,
-        DivIcon,
-        DomEvent,
-        DomUtil,
-        extend,
-        FeatureGroup,
-        featureGroup,
-        Icon,
-        LatLng,
-        LatLngBounds,
-        LayerGroup,
-        Marker,
-        marker,
-        Point,
-        Util,
-      } = await import("leaflet/dist/leaflet-src.esm");
+
+
+// onMounted(async () => {
+      // const {
+      //   bind,
+      //   Browser,
+      //   DivIcon,
+      //   DomEvent,
+      //   DomUtil,
+      //   extend,
+      //   FeatureGroup,
+      //   featureGroup,
+      //   Icon,
+      //   LatLng,
+      //   LatLngBounds,
+      //   LayerGroup,
+      //   Marker,
+      //   marker,
+      //   Point,
+      //   Util,
+      // } = await import("leaflet/dist/leaflet-src.esm");
 
       /** create a fake window.L from just the bits we need to make markercluster load properly **/
-      const L = {
-        bind,
-        Browser,
-        DivIcon,
-        DomUtil,
-        extend,
-        FeatureGroup,
-        featureGroup,
-        Icon,
-        LatLng,
-        LatLngBounds,
-        LayerGroup,
-        Marker,
-        Point,
-        Util,
-      } as any;
-      window['L'] = L;
-});
+//       const L = {
+//         bind,
+//         Browser,
+//         DivIcon,
+//         DomUtil,
+//         extend,
+//         FeatureGroup,
+//         featureGroup,
+//         Icon,
+//         LatLng,
+//         LatLngBounds,
+//         LayerGroup,
+//         Marker,
+//         Point,
+//         Util,
+//       } as any;
+//       window['L'] = L;
+//  });
+// const {AwesomeMarkers} = await import ("leaflet.awesome-markers");
 
- let redMarker = L.AwesomeMarkers.icon({
-     icon: 'coffee',
-     markerColor: 'red'
-   });
+//  const redMarker = AwesomeMarkers.icon({
+//      icon: 'coffee',
+//      markerColor: 'red'
+//    });
+var iconPath
+ let setIcon = new L.Icon({
+   iconUrl: setMarkerColor(),
+   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+   iconSize: [25, 41],
+   iconAnchor: [12, 41],
+   popupAnchor: [1, -34],
+   shadowSize: [41, 41]
+ });
 
-// let greenIcon = new L.Icon({
-//   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-//   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-//   iconSize: [25, 41],
-//   iconAnchor: [12, 41],
-//   popupAnchor: [1, -34],
-//   shadowSize: [41, 41]
-// });
+ function setMarkerColor(){
+ let severity = "MAJOR";
+
+switch(severity) {
+  case "NORMAL":
+    return iconPath = "src/assets/Normal-icon.png";
+    break;
+  case "WARNING":
+    return iconPath = "src/assets/Warning-icon.png";
+    break;
+  case "MINOR":
+    return iconPath = "src/assets/Minor-icon.png";
+    break;
+    case "MAJOR":
+    return iconPath = "src/assets/Major-icon.png";
+    break;
+    case "CRITICAL":
+    return iconPath = "src/assets/Critical-icon.png";
+    break;
+  default:
+    return iconPath = "src/assets/Normal-icon.png";
+} 
+ }
       
   // L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
 
