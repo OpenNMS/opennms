@@ -12,12 +12,12 @@
     <context:annotation-config />
 
     <bean id="memoryTwinPublisher" class="org.opennms.core.ipc.twin.memory.MemoryTwinPublisher"
-          primary="true"
           destroy-method="close">
     </bean>
 
     <bean id="memoryTwinSubscriber" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
         <constructor-arg ref="memoryTwinPublisher"/>
+        <constructor-arg value="Default"/>
     </bean>
 
     <onmsgi:service ref="memoryTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>

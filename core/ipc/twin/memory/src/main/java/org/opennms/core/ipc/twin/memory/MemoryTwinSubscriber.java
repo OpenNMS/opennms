@@ -29,23 +29,16 @@
 package org.opennms.core.ipc.twin.memory;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 
 public class MemoryTwinSubscriber implements TwinSubscriber {
 
     private final MemoryTwinPublisher publisher;
 
     private final String location;
-
-    public MemoryTwinSubscriber(final MemoryTwinPublisher publisher) {
-        this(publisher, MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
-    }
 
     public MemoryTwinSubscriber(final MemoryTwinPublisher publisher,
                                 final String location) {
