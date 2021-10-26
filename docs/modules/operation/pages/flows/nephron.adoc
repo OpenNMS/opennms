@@ -116,7 +116,7 @@ scrape_configs:
 | cortex
 | response_failure
 | Counter
-| The number of Cortex responses failures (responses to Cortex writes that indicate a failure condition).
+| The number of Cortex response failures (responses to Cortex writes that indicate a failure condition).
 
 | cortex
 | response_failure_<kind>
