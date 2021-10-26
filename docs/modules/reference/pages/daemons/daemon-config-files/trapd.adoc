@@ -12,7 +12,7 @@
 | Restart Required
 
 | trapd-configuration.xml
-| Configure generic behavior of Trapd; for example, port numbers with IP addresses to listen for traps
+| Configure generic behavior of Trapd; for example, port numbers with IP addresses to listen for traps.
 | yes
 | no
 |===
