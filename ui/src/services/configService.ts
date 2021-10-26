@@ -1,5 +1,4 @@
 import { rest, restFile } from './axiosInstances'
-import * as xml from 'xml2js'
 
 const endpoint = '/filesystem'
 
@@ -14,14 +13,8 @@ const getFileNames = async (): Promise<string[]> => {
 
 const getFile = async (fileName: string): Promise<string> => {
   try {
-    let parsed = ''
     const resp = await rest.get(`${endpoint}/contents?f=${fileName}`)
-
-    xml.parseString(resp.data, (err, result) => {
-      if (!err) parsed = result
-    })
-
-    return parsed
+    return new XMLSerializer().serializeToString(resp.data)
   } catch (err) {
     return ''
   }
