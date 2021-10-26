@@ -53,15 +53,5 @@
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>core-api</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-api</artifactId>
-        </dependency>
     </dependencies>
 </project>
