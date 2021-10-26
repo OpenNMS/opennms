@@ -43,26 +43,6 @@ public final class TwinGrpcIpc {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TwinRequestProto_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TwinRequestProto_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TwinRequestProto_TracingInfoEntry_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TwinRequestProto_TracingInfoEntry_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TwinResponseProto_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TwinResponseProto_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TwinResponseProto_TracingInfoEntry_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TwinResponseProto_TracingInfoEntry_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MinionHeader_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -75,24 +55,15 @@ public final class TwinGrpcIpc {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
-      "\n\017twin-grpc.proto\"\273\001\n\020TwinRequestProto\022\024" +
-      "\n\014consumer_key\030\001 \001(\t\022\021\n\tsystem_id\030\002 \001(\t\022" +
-      "\020\n\010location\030\003 \001(\t\0228\n\014tracing_info\030\004 \003(\0132" +
-      "\".TwinRequestProto.TracingInfoEntry\0322\n\020T" +
-      "racingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 " +
-      "\001(\t:\0028\001\"\322\001\n\021TwinResponseProto\022\024\n\014consume" +
-      "r_key\030\001 \001(\t\022\023\n\013twin_object\030\002 \001(\014\022\021\n\tsyst" +
-      "em_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\0229\n\014tracing" +
-      "_info\030\005 \003(\0132#.TwinResponseProto.TracingI" +
-      "nfoEntry\0322\n\020TracingInfoEntry\022\013\n\003key\030\001 \001(" +
-      "\t\022\r\n\005value\030\002 \001(\t:\0028\001\"3\n\014MinionHeader\022\021\n\t" +
-      "system_id\030\001 \001(\t\022\020\n\010location\030\002 \001(\t2\205\001\n\016Op" +
-      "enNMSTwinIpc\022;\n\014RpcStreaming\022\021.TwinReque" +
-      "stProto\032\022.TwinResponseProto\"\000(\0010\001\0226\n\rSin" +
-      "kStreaming\022\r.MinionHeader\032\022.TwinResponse" +
-      "Proto\"\0000\001B6\n%org.opennms.core.ipc.twin.g" +
-      "rpc.commonB\013TwinGrpcIpcP\001b\006proto3"
+    String[] descriptorData = {
+      "\n\017twin-grpc.proto\032\030proto/twin-message.pr" +
+      "oto\"3\n\014MinionHeader\022\021\n\tsystem_id\030\001 \001(\t\022\020" +
+      "\n\010location\030\002 \001(\t2\205\001\n\016OpenNMSTwinIpc\022;\n\014R" +
+      "pcStreaming\022\021.TwinRequestProto\032\022.TwinRes" +
+      "ponseProto\"\000(\0010\001\0226\n\rSinkStreaming\022\r.Mini" +
+      "onHeader\032\022.TwinResponseProto\"\0000\001B6\n%org." +
+      "opennms.core.ipc.twin.grpc.commonB\013TwinG" +
+      "rpcIpcP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -105,37 +76,15 @@ public final class TwinGrpcIpc {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          org.opennms.core.ipc.twin.model.TwinMessageProto.getDescriptor(),
         }, assigner);
-    internal_static_TwinRequestProto_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_TwinRequestProto_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TwinRequestProto_descriptor,
-        new java.lang.String[] { "ConsumerKey", "SystemId", "Location", "TracingInfo", });
-    internal_static_TwinRequestProto_TracingInfoEntry_descriptor =
-      internal_static_TwinRequestProto_descriptor.getNestedTypes().get(0);
-    internal_static_TwinRequestProto_TracingInfoEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TwinRequestProto_TracingInfoEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
-    internal_static_TwinResponseProto_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_TwinResponseProto_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TwinResponseProto_descriptor,
-        new java.lang.String[] { "ConsumerKey", "TwinObject", "SystemId", "Location", "TracingInfo", });
-    internal_static_TwinResponseProto_TracingInfoEntry_descriptor =
-      internal_static_TwinResponseProto_descriptor.getNestedTypes().get(0);
-    internal_static_TwinResponseProto_TracingInfoEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TwinResponseProto_TracingInfoEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
     internal_static_MinionHeader_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(0);
     internal_static_MinionHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MinionHeader_descriptor,
-        new java.lang.String[] { "SystemId", "Location", });
+        new String[] { "SystemId", "Location", });
+    org.opennms.core.ipc.twin.model.TwinMessageProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

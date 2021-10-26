@@ -26,50 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.grpc;
+package org.opennms.core.grpc.common;
 
-import java.util.Objects;
+import io.grpc.BindableService;
 
-public class MinionInfoBean {
+import java.io.IOException;
+import java.util.Properties;
 
-    private Integer nodeId;
+/**
+ *  This Interface allows us to have a common Grpc Server for all IPC Services.
+ */
+public interface GrpcIpcServer {
 
-    private String nodeLabel;
+    /**
+     * Starts server, this will not immediately start server but schedules server start after certain delay.
+     *
+     * @param bindableService The service that needs to be added */
+    void startServer(BindableService bindableService) throws IOException;
 
-    public MinionInfoBean(Integer nodeId, String nodeLabel) {
-        this.nodeId = nodeId;
-        this.nodeLabel = nodeLabel;
-    }
+    /**
+     * Stops the Server.
+     **/
+    void stopServer();
 
-    public MinionInfoBean() {
-    }
-
-    public Integer getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(Integer nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getNodeLabel() {
-        return nodeLabel;
-    }
-
-    public void setNodeLabel(String nodeLabel) {
-        this.nodeLabel = nodeLabel;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MinionInfoBean that = (MinionInfoBean) o;
-        return Objects.equals(nodeId, that.nodeId) && Objects.equals(nodeLabel, that.nodeLabel);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nodeId, nodeLabel);
-    }
+    /**
+     * Get properties with which the service has started.
+     **/
+    Properties getProperties();
 }
