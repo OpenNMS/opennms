@@ -11,13 +11,14 @@
 
     <context:annotation-config />
 
-    <bean id="kafkaTwinPublisher" class="org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher"
+    <bean id="memoryTwinPublisher" class="org.opennms.core.ipc.twin.memory.MemoryTwinPublisher"
           primary="true"
-          init-method="init"
           destroy-method="close">
-        <constructor-arg ref="localTwinSubscriber"/>
     </bean>
 
-    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
-    <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+    <bean id="memoryTwinSubscriber" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+        <constructor-arg ref="memoryTwinPublisher"/>
+    </bean>
+
+    <onmsgi:service ref="memoryTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 </beans>

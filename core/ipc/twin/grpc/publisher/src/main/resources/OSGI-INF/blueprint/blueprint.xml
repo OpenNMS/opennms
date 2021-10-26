@@ -17,7 +17,7 @@
 
     <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
 
-    <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
+    <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <service ref="grpcTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher">
         <service-properties>
