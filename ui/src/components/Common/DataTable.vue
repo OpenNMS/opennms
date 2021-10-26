@@ -43,6 +43,8 @@ import Column from 'primevue/column'
 import router from '@/router'
 import Button from "./Button.vue"
 import { useStore } from 'vuex'
+import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore();
 
@@ -118,7 +120,37 @@ const onClickHandle = (selectedName: any, data: any, index: any) => {
             router.push({ path: `/${selectedName}/${data['import-name']}` });
             break;
         case "delete":
-            confirm(`Please confirm delete ${data['import-name']}?`);
+            let copyState = [], confirmResponse, requestPayload;
+            const provisionData = store.state.configuration.provisionDService['requisition-def'];
+            copyState = JSON.parse(JSON.stringify(provisionData));
+            confirmResponse = confirm(`Please confirm delete ${data['import-name']}?`);
+            if (confirmResponse == true) {
+                try {
+                    copyState.splice(data['tablePosition'], 1);
+                    requestPayload = { 'requisition-def': copyState };
+                    const response = putProvisionDService(requestPayload);
+                    if (response != null) {
+                        ;
+                        notify({
+                            title: "Notification",
+                            text: `${data['import-name']} successfully deleted !`,
+                            type: 'success',
+                        });
+
+                        //Route to table and refresh the data
+                        router.push({ name: 'requisitionDefinitionsLayout' });
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                } catch {
+                    notify({
+                        title: "Notification",
+                        text: 'ProvisionDService PUT API Error',
+                        type: 'error',
+                    });
+                }
+            }
             break;
         default:
             alert(`please add logic for ${selectedName}`);
