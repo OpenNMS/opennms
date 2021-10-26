@@ -18,6 +18,7 @@
         :defaultColDef="defaultColDef"
         :gridOptions="gridOptions"
         :pagination="true"
+        @rowDoubleClicked="rowDoubleClicked"
       ></ag-grid-vue>
     </div>
   </div>
@@ -29,6 +30,7 @@ import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
 import { useStore } from "vuex";
 import { computed, watch } from 'vue'
+import { Coordinates } from "@/types";
 
 const store = useStore();
 
@@ -40,6 +42,7 @@ const defaultColDef = ref({
   enableBrowserTooltips: true,
   filter: "agTextColumnFilter",
   sortable: true,
+  suppressMenu: true
 })
 
 let interestedNodesID = computed(() => {
@@ -53,8 +56,8 @@ function getGridRowDataFromInterestedNodes() {
     id: +node.id,
     foreignSource: node.foreignSource,
     foreignId: node.foreignId,
-    lable: node.label,
-    lableSource: node.labelSource,
+    label: node.label,
+    labelSource: node.labelSource,
     lastCapabilitiesScan: node.lastCapsdPoll,
     primaryInterface: node.primaryInterface,
     sysObjectid: node.sysObjectId,
@@ -66,15 +69,25 @@ function getGridRowDataFromInterestedNodes() {
 }
 
 let gridApi = ref({});
+let gridColumnApi = ref({});
 
 function onGridReady(params: any) {
   gridApi = params.api
+  gridColumnApi = params.columnApi
+  autoSizeAll(false);
+}
+
+function autoSizeAll(skipHeader: boolean) {
+  var allColumnIds: string[] = [];
+  gridColumnApi.getAllColumns().forEach(function (column) {
+    allColumnIds.push(column.colId);
+  });
+  gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
 }
 
 watch(
   () => interestedNodesID.value,
-  (newValue, oldValue) => {
-    console.log("MapNodes page. I'm changed from " + oldValue + " to " + newValue)
+  () => {
     gridApi.setRowData(
       getGridRowDataFromInterestedNodes()
     );
@@ -88,12 +101,20 @@ function clearFilters() {
 function confirmFilters() {
   let ids: string[] = [];
   gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()));
-  console.log("ids = " + ids)
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
 
 function reset() {
   store.dispatch("mapModule/resetInterestedNodesID");
+}
+
+function rowDoubleClicked() {
+  const id = gridApi.getSelectedNodes().map(node => node.data)[0].id;
+  const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id);
+
+  let coordinate: Coordinates;
+  coordinate = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
+  store.dispatch("mapModule/setMapCenter", coordinate)
 }
 
 const columnDefs = ref([
@@ -117,14 +138,15 @@ const columnDefs = ref([
     headerTooltip: "Foreign ID",
   },
   {
-    headerName: "LABLE",
-    field: "lable",
-    headerTooltip: "Lable",
+    headerName: "LABEL",
+    field: "label",
+    headerTooltip: "Label",
+    sort: "asc"
   },
   {
-    headerName: "LABLE SOURCE",
-    field: "lableSource",
-    headerTooltip: "Lable Source",
+    headerName: "LABEL SOURCE",
+    field: "labelSource",
+    headerTooltip: "Label Source",
   },
   {
     headerName: "LAST CAPABILITIES SCAN",

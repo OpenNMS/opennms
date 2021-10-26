@@ -6,9 +6,10 @@
       </div>
     </pane>
     <pane id="map-pane-under">
-      <router-link :to="{ name: 'MapAlarms' }">Alarms</router-link>
+      <router-link :to="{ name: 'MapNodes' }">Nodes({{interestedNodesID.length}})</router-link>
       |
-      <router-link :to="{ name: 'MapNodes' }">Nodes</router-link>
+      <router-link :to="{ name: 'MapAlarms' }">Alarms({{alarms.length}})</router-link>
+
       <router-view />
     </pane>
   </splitpanes>
@@ -19,8 +20,17 @@ import LeafletMap from "../components/LeafletMap.vue";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import { useStore } from "vuex";
+import { computed, watch } from 'vue'
 
 const store = useStore();
+
+let interestedNodesID = computed(() => {
+  return store.getters['mapModule/getInterestedNodesID'];
+})
+
+let alarms = computed(() => {
+  return store.getters['mapModule/getAlarmsFromSelectedNodes'];
+})
 
 store.dispatch("mapModule/getNodes", {
   limit: 5000,

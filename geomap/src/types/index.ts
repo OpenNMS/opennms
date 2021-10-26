@@ -12,8 +12,8 @@ export interface MapNode {
   coordinates: [number, number]
   foreignSource: string
   foreignId: string
-  lable: string
-  lableSource: any
+  label: string
+  labelSource: any
   lastCapabilitiesScan: string
   primaryInterface: number
   sysObjectid: string
@@ -50,7 +50,7 @@ export interface Node {
   lastEgressFlow: any
   lastIngressFlow: any
   //added by Jane
-  lableSource: string
+  labelSource: string
   lastCapabilitiesScan: string
   primaryInterface: number
   sysObjectid: string
@@ -97,6 +97,13 @@ export interface Edge {
   source: { namespace: string, id: number }
   target: { namespace: string, id: number }
 }
+
+//added by jane
+export interface Coordinates {
+  latitude: number, 
+  longitude: number
+}
+
 export interface QueryParameters {
   limit?: number
   offset?: number
@@ -114,4 +121,15 @@ export interface SortProps {
   rows: Number
   sortField: string
   sortOrder: 1 | -1
+}
+
+export interface AlarmQueryParameters {
+  ack?: boolean
+  clear?: boolean
+  escalate?: boolean
+}
+
+export interface AlarmModificationQueryVariable {
+  pathVariable: string
+  queryParameters:  AlarmQueryParameters
 }
