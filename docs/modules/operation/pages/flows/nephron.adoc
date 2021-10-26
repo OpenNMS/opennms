@@ -61,7 +61,7 @@ metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusRepor
 metrics.reporter.prom.port: 9250-9260
 ----
 
-A corresponding scrape configuration must be added to `prometheus.yml`:
+You must add a corresponding scrape configuration to `prometheus.yml`:
 
 [source, console]
 ----
