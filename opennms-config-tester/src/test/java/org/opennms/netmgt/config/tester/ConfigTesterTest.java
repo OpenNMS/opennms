@@ -462,6 +462,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testSnmpMetadataConfiguration() {
+        testConfigFile("snmp-metadata-adapter-configuration.xml");
+    }
+
+    @Test
     /**
      * FIXME: Not part of the standard build?
      */

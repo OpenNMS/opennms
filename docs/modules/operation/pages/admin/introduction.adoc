@@ -1,4 +1,10 @@
 
 = {page-component-title} Administration
 
-This section describes administrative tasks, such as shutdown and restart, you may need to perform with your {page-component-title} instance.
+This section describes additional administrative tasks you may want to perform or configure:
+
+* xref:admin/restart.adoc[shutdown and restart]
+* xref:admin/ssl/ssl.adoc[HTTPS/SSL configuration]
+* xref:admin/request-logging.adoc[request logging]
+* xref:admin/geocoder.adoc[geolocation resolution]
+* xref:admin/config-tester.adoc[configuration tester]

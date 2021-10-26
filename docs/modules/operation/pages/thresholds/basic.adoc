@@ -1,0 +1,19 @@
+
+[[threshold-bw]]
+= Basic Walk-Through
+
+This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users.
+Our threshold will tell {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
+
+Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold.
+
+[[metric-collect]]
+== Determine you are collecting metric
+In this case, we have chosen a metric (number of logged-in users) that is collected by default.
+We are also using data collected via SNMP. (For information on other collectors, see <<performance-data-collection/collectors.adoc#collectors-overview,Collectors>>.)
+
+. In the {page-component-title} UI, choose *Reports>Resource Graphs*.
+. Select one of the listed resources.
+. Under *SNMP Node Data*, select *Node-level Performance Data* and choose *Graph Selection*.
+. Scroll to find the *Number of Users* graph.
+.. You can click the binoculars icon to display only this graph.

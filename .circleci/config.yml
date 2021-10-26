@@ -3,10 +3,10 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:11.0.9.11-3.6.3-b5958
+      - image: opennms/build-env:11.0.12.0.7-3.6.3-b7295
   debian-build-executor:
     docker:
-      - image: opennms/build-env:debian-jdk11-b6222
+      - image: opennms/build-env:debian-jdk11-b7291
   docker-executor:
     docker:
       - image: docker:20.10.1-git
@@ -15,11 +15,13 @@ executors:
       - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine:
-     image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
-
+  ui-executor:
+    docker:
+      - image: cimg/node:16.3.0
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
@@ -64,11 +66,14 @@ aliases:
         "release-"*)
            MINION_IMAGE_VERSION="release-candidate"
           ;;
+        "foundation-"20[1-2][0-9])
+           MINION_IMAGE_VERSION="${CIRCLE_BRANCH}"
+          ;;
         "develop")
            MINION_IMAGE_VERSION="bleeding"
           ;;
         *)
-          MINION_IMAGE_VERSION=b<< pipeline.number >>
+          MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
       echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
@@ -88,6 +93,7 @@ aliases:
       # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
       # that is required for loading the
       docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+
 docker_container_config: &docker_container_config
   executor: docker-executor
 
@@ -143,12 +149,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
@@ -311,6 +317,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -355,7 +362,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - update-maven-cache
       - run:
           name: Monitor JVM processes
           background: true
@@ -443,7 +449,7 @@ commands:
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
-          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - "/tmp/<< parameters.cache_prefix >>"
   restore-workflow-assets:
@@ -458,8 +464,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+            - << parameters.cache_prefix >>-v3-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_SHA1 }}
       - when:
           condition: << parameters.target_path >>
           steps:
@@ -571,6 +576,11 @@ workflows:
             branches:
               ignore:
                 - /^from-foundation.*/
+      - build-ui:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
       - tarball-assembly:
           requires:
             - build
@@ -627,6 +637,21 @@ workflows:
               ignore:
                 - /^merge-foundation.*/
       - smoke-test-core:
+          requires:
+            - horizon-rpm-build
+            - tarball-assembly
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+                - /^dependabot.*/
+      - smoke-test-flaky:
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -737,6 +762,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -758,6 +784,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -771,6 +798,7 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -787,6 +815,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - smoke-test-core
+            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - smoke-test-minimal
@@ -808,6 +837,14 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
+  build-ui:
+    executor: ui-executor
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            cd ui && yarn install && yarn test && yarn build
   build-docs:
     executor: docs-executor
     steps:
@@ -869,18 +906,25 @@ jobs:
               install --batch-mode
             # javadoc
             date
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
-              -Daether.connector.resumeDownloads=false \
-              -Daether.connector.basic.threads=1 \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-              -DmaxCpus=<< parameters.number-vcpu >> \
-              -Pbuild-bamboo \
-              -Prun-expensive-tasks \
-              -Dopennms.home=/opt/opennms \
-              javadoc:aggregate --batch-mode
-            date
+            case "${CIRCLE_BRANCH}" in
+              "master-"*|"release-"*)
+                ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+                  -DupdatePolicy=never \
+                  -Daether.connector.resumeDownloads=false \
+                  -Daether.connector.basic.threads=1 \
+                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                  -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+                  -DmaxCpus=<< parameters.number-vcpu >> \
+                  -Pbuild-bamboo \
+                  -Prun-expensive-tasks \
+                  -Dopennms.home=/opt/opennms \
+                  javadoc:aggregate --batch-mode
+                date
+                ;;
+              *)
+                echo "Skipping Javadoc compilation; it is enabled only on master/release branches."
+                ;;
+            esac
       - run:
           name: Build Minion OCI
           command: |
@@ -893,7 +937,6 @@ jobs:
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
-
       - run:
           name: Collect Artifacts
           command: |
@@ -902,9 +945,11 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
+            if [ -d target/site/apidocs ]; then
+              pushd target/site/apidocs
+                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              popd
+            fi
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
@@ -1260,7 +1305,7 @@ jobs:
             ./publish.sh
   integration-test:
     executor: integration-test-executor
-    parallelism: 4
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1268,7 +1313,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 8
+    parallelism: 10
     steps:
       - attach_workspace:
           at: ~/
@@ -1299,7 +1344,7 @@ jobs:
       - save-sonar-cache
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 6
+    parallelism: 8
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
@@ -1308,6 +1353,17 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: core
+  smoke-test-flaky:
+    executor: smoke-test-executor
+    parallelism: 5
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: flaky
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4

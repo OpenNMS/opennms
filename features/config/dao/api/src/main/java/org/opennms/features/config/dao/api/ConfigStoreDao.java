@@ -33,6 +33,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+<<<<<<< HEAD
+=======
+import org.json.JSONObject;
+
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 /**
  * It handles storing config data in database by generic datatype
  * It also validation config before persist. (add & update)
@@ -57,6 +62,11 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     Optional<Set<String>> getConfigNames();
 
+<<<<<<< HEAD
+=======
+    Map<String, ConfigSchema<?>> getAllConfigSchema();
+
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     /**
      * get configs meta by configName
      *
@@ -78,11 +88,20 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * get configs data by configName
      * It gives the raw ConfigData object.
      * If you only want to get the specific config, you should use getConfig(String, String)
+<<<<<<< HEAD
      * @see #getConfig(String, String)
      * @see ConfigData
      * @param configName
      * @return config object
      * @throws IOException
+=======
+     *
+     * @param configName
+     * @return config object
+     * @throws IOException
+     * @see #getConfig(String, String)
+     * @see ConfigData
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
      */
     Optional<ConfigData<CONFIG_DATATYPE>> getConfigData(String configName) throws IOException;
 
@@ -100,14 +119,22 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      *
      * @param configName
      * @param configId
+<<<<<<< HEAD
      * @param configObject
      * @throws IOException
      */
     void addConfig(String configName, String configId, Object configObject) throws IOException;
+=======
+     * @param configObject (entityBean/String(json)/JSONObject)
+     * @throws IOException
+     */
+    void addConfig(String configName, String configId, JSONObject configObject) throws IOException;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     Optional<CONFIG_DATATYPE> getConfig(String configName, String configId) throws IOException;
 
     /**
+<<<<<<< HEAD
      * update config to a registered service name
      *
      * @param configName
@@ -117,6 +144,17 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     void updateConfig(String configName, String configId, Object configObject) throws IOException;
 
+=======
+     * update config to a registered service name, if the configObject is String / JSONObject, it can be partial data and
+     * copy into existing config.
+     *
+     * @param configName
+     * @param configId
+     * @param configObject (entityBean/String(json)/JSONObject)
+     * @throws IOException
+     */
+    void updateConfig(String configName, String configId, JSONObject config) throws IOException;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     /**
      * **replace** all configs for the registered service name
      *
@@ -149,4 +187,8 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      * @return configs
      */
     Optional<Map<String, CONFIG_DATATYPE>> getConfigs(String configName) throws IOException;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63

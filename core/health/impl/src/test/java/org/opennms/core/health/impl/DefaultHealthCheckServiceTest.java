@@ -33,11 +33,11 @@ import static org.hamcrest.CoreMatchers.is;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -46,10 +46,11 @@ import org.junit.rules.Timeout;
 import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.HealthCheckConstants;
+import org.opennms.core.health.api.HealthCheckService;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.SimpleHealthCheck;
 import org.opennms.core.health.api.Status;
-import org.opennms.core.health.api.HealthCheckConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.slf4j.Logger;
@@ -124,13 +125,22 @@ public class DefaultHealthCheckServiceTest {
         context.setTimeout(1000); // ms
 
         for (int i=0; i<2; i++) {
-            final CompletableFuture<Health> future = healthCheckService
+            var eitherErrorOrFuture = healthCheckService
                     .performAsyncHealthCheck(context,
-                            healthCheck -> LOG.info("Executing: {}", healthCheck.getDescription()),
-                            response -> LOG.info("=> {} : {}", response.getStatus().name(), response.getMessage()),
+                            new HealthCheckService.ProgressListener() {
+                                @Override
+                                public void onPerform(HealthCheck healthCheck) {
+                                    LOG.info("Executing: {}", healthCheck.getDescription());
+                                }
+
+                                @Override
+                                public void onResponse(HealthCheck check, Response response) {
+                                    LOG.info("=> {} : {}", response.getStatus().name(), response.getMessage());
+                                }
+                            },
                             null);
-            final Health health = future.get();
-            final List<Response> timedOutResponsed = health.getResponses().stream().filter(r -> r.getStatus() == Status.Timeout).collect(Collectors.toList());
+            final Health health = eitherErrorOrFuture.get().toCompletableFuture().get();
+            final List<Response> timedOutResponsed = health.getResponses().stream().map(Pair::getRight).filter(r -> r.getStatus() == Status.Timeout).collect(Collectors.toList());
             Assert.assertThat(timedOutResponsed.size(), is(1));
         }
     }

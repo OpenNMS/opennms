@@ -41,10 +41,18 @@ public class ConfigItem {
     private String schemaRef;
     private Type type;
     private List<ConfigItem> children = new LinkedList<>();
+<<<<<<< HEAD
     private boolean minSet = false;
     private long min = 0;
     private boolean maxSet = false;
     private long max = 0;
+=======
+    private Long min = null;
+    private Long max = null;
+    private String pattern;
+    private Object defaultValue;
+    private String documentation;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     private boolean required = false;
 
@@ -55,7 +63,18 @@ public class ConfigItem {
         NUMBER,
         INTEGER,
         LONG,
+<<<<<<< HEAD
         BOOLEAN;
+=======
+        BOOLEAN,
+        DATE,  //YYYY-MM-DD
+        DATE_TIME, //YYYY-MM-DDThh:mm:ss
+        POSITIVE_INTEGER, // 1,2,3....
+        NON_NEGATIVE_INTEGER, // 0,1,2,....
+        NEGATIVE_INTEGER,
+        ANY_TYPE,
+        SIMPLE_TYPE;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
         public boolean isSimple() {
             return !(this.equals(OBJECT) || this.equals(ARRAY));
@@ -82,13 +101,26 @@ public class ConfigItem {
         return type;
     }
 
+<<<<<<< HEAD
     static public boolean isPrimitiveType(Type type) {
         switch(type) {
+=======
+    public boolean isPrimitiveType() {
+        switch (this.getType()) {
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
             case STRING:
             case NUMBER:
             case INTEGER:
             case LONG:
             case BOOLEAN:
+<<<<<<< HEAD
+=======
+            case DATE:
+            case DATE_TIME:
+            case POSITIVE_INTEGER:
+            case NON_NEGATIVE_INTEGER:
+            case NEGATIVE_INTEGER:
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
                 return true;
         }
         return false;
@@ -114,6 +146,7 @@ public class ConfigItem {
         this.required = required;
     }
 
+<<<<<<< HEAD
     public boolean isMaxSet() {
         return maxSet;
     }
@@ -138,6 +171,46 @@ public class ConfigItem {
 
     public long getMin() {
         return min;
+=======
+    public Long getMin() {
+        return min;
+    }
+
+    public void setMin(Long min) {
+        this.min = min;
+    }
+
+    public Long getMax() {
+        return max;
+    }
+
+    public void setMax(Long max) {
+        this.max = max;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     }
 
     @Override
@@ -146,7 +219,11 @@ public class ConfigItem {
         if (o == null || getClass() != o.getClass()) return false;
         ConfigItem that = (ConfigItem) o;
         return required == that.required && Objects.equals(name, that.name) && Objects.equals(schemaRef, that.schemaRef) && type == that.type && Objects.equals(children, that.children)
+<<<<<<< HEAD
                 && Objects.equals(maxSet, that.maxSet) && Objects.equals(max, that.max) && Objects.equals(minSet, that.minSet) && Objects.equals(min, that.min);
+=======
+                && Objects.equals(max, that.max) && Objects.equals(min, that.min) && Objects.equals(pattern, that.pattern);
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     }
 
     @Override

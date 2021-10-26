@@ -9,11 +9,21 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.config</artifactId>
   <packaging>pom</packaging>
+<<<<<<< HEAD
   <name>OpenNMS :: Features :: Configuration Manager</name>
+=======
+  <name>OpenNMS :: Features :: Config</name>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
   <modules>
     <module>service</module>
     <module>dao</module>
     <module>rest</module>
+<<<<<<< HEAD
+=======
+    <module>upgrade</module>
+    <!-- to store service & dao's unit test to prevent circular dependency problem -->
+    <module>test</module>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
   </modules>
   <properties>
     <!-- Misc. -->
@@ -29,7 +39,10 @@
       <artifactId>org.opennms.core.spring</artifactId>
       <version>${project.version}</version>
     </dependency>
+<<<<<<< HEAD
 
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

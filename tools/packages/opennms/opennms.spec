@@ -534,16 +534,6 @@ else
 		install --builder smart --threads ${CCI_MAXCPU:-2}
 fi
 
-cd opennms-tools
-	../compile.pl -N \
-		$OPTS_SKIP_TESTS \
-		$OPTS_SETTINGS_XML \
-		$OPTS_ENABLE_SNAPSHOTS \
-		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-		-Dinstall.version="%{version}-%{release}" \
-		-Dopennms.home="%{instprefix}" \
-		install --builder smart --threads ${CCI_MAXCPU:-2}
-cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl \
@@ -752,6 +742,7 @@ rm -rf %{buildroot}
 %attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
+%attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
 
 %files jmx-config-generator
 %defattr(644 opennms opennms 755)
@@ -914,8 +905,8 @@ if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 		ln -sf "$LOG_INST" "$ROOT_INST/logs"
 		echo "done"
 	fi
-	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 fi
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs" "$LOG_INST"
 
 if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 	printf -- "- making symlink for $ROOT_INST/share... "
@@ -927,8 +918,8 @@ if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 		ln -sf "$SHARE_INST" "$ROOT_INST/share"
 		echo "done"
 	fi
-	"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share"
 fi
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share" "$SHARE_INST"
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
 if [ `ls $ROOT_INST/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then

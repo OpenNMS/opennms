@@ -8,6 +8,7 @@
         http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
+<<<<<<< HEAD
     <reference id="jsonConfigStoreDao" interface="org.opennms.features.config.dao.api.ConfigStoreDao" availability="mandatory" />
     <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory" />
 
@@ -22,3 +23,17 @@
     </service>
 </blueprint>
 
+=======
+
+  <reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" availability="mandatory" />
+
+  <bean id="configManagerRestService" class="org.opennms.features.config.rest.impl.ConfigManagerRestServiceImpl">
+    <property name="configurationManagerService" ref="configurationManagerService" />
+  </bean>
+  <service interface="org.opennms.features.config.rest.api.ConfigManagerRestService" ref="configManagerRestService" >
+      <service-properties>
+        <entry key="application-path" value="/rest" />
+      </service-properties>
+  </service>
+</blueprint>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63

@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.rest.api;
 
+<<<<<<< HEAD
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 
@@ -43,12 +44,24 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Path("/configManager")
+=======
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+@Path("/cm")
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 @Produces("application/json")
 @Consumes("application/json")
 /**
  * <b>Currently for testing OSGI integration</b>
  */
 public interface ConfigManagerRestService {
+<<<<<<< HEAD
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
     Set<String> listConfigNames();
@@ -64,4 +77,89 @@ public interface ConfigManagerRestService {
     @POST
     @Path("/{configName}/{configId}/attach")
     ConfigData getView(@PathParam("configName") String configName, @PathParam("configId") String filename, Map<String, Object> inputParameters);
+=======
+    /**
+     * list registered configNames
+     * @return
+     */
+    @GET
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    Response listConfigs();
+
+    /**
+     * get raw OpenApi schema (for debug use, <b>SHOULD REMOVE BEFORE PRODUCTION</b>)
+     * @param configName
+     * @return
+     */
+    @GET
+    @Path("/schema/raw/{configName}")
+    Response getRawSchema(@PathParam("configName") String configName);
+
+    @GET
+    @Path("/schema/all")
+    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request) throws JsonProcessingException;
+
+    /**
+     * get filtered OpenApi schema
+     * @param configName
+     * @param acceptType
+     * @return
+     */
+    @GET
+    @Path("/schema/{configName}")
+    Response getOpenApiSchema(@PathParam("configName") String configName, @HeaderParam("accept") String acceptType, @Context HttpServletRequest request);
+
+    /**
+     * get configIds
+     * @param configName
+     * @return
+     */
+    @GET
+    @Path("/{configName}")
+    Response getConfigIds(@PathParam("configName") String configName);
+
+    /**
+     * get config by configName and configId
+     * @param configName
+     * @param configId
+     * @return
+     */
+    @GET
+    @Path("/{configName}/{configId}")
+    Response getConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
+
+    /**
+     * add new config by
+     * @param configName
+     * @param configId
+     * @param jsonStr
+     * @return
+     */
+    @POST
+    @Path("/{configName}/{configId}")
+    Response addConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
+
+    /**
+     *
+     * @param configName
+     * @param configId
+     * @param jsonStr
+     * @return
+     */
+    @PUT
+    @Path("/{configName}/{configId}")
+    Response updateConfig(@PathParam("configName") String configName, @PathParam("configId") String configId, String jsonStr);
+
+
+    /**
+     * delete config by configName and configId
+     * @param configName
+     * @param configId
+     * @return
+     */
+    @DELETE
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("/{configName}/{configId}")
+    Response deleteConfig(@PathParam("configName") String configName, @PathParam("configId") String configId);
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 }

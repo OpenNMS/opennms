@@ -1,0 +1,128 @@
+= Web Detector
+
+Use this detector to find and assign services based on HTTP.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.web.WebDetector`
+|===
+
+== Configuration and use
+
+.Optional parameters for the Web service detector
+[options="header"]
+[cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| authEnable
+| Whether to enable basic authentication.
+| false
+
+| authPassword
+| Password required for authentication.
+| admin
+
+| authPreemtive
+| Whether to send basic authentication even if the site did not ask for it.
+| true
+
+| authUser
+| Username required for authentication.
+| admin
+
+| headers
+| Optional headers to pass in the HTTP request.
+| none
+
+| ipMatch
+| Matches against specific IP addresses or patterns.
+Use filters here to match single addresses or ranges.
+Substring match by default (see note below regarding regular expressions).
+| none
+
+| path
+| The relative URL to call in the request.
+| /
+
+| port
+| Port of the web server the detector is connecting to.
+| 80
+
+| queryString
+| The query string to add to the URL after a ? (for example, foo=bar&baz=zot).
+| none
+
+| responseRange
+| Range for allowed HTTP error codes from the response.
+| 100-399
+
+| responseText
+| Text to look for in the response body.
+This will be matched against every line, and it will be considered a success at the first match.
+Substring match by default (see note below regarding regular expressions).
+| none
+
+| retries
+| none
+| Number of attempts to test a service's up/down status.
+
+| schema
+| Protocol/scheme to use.
+| http
+
+| serviceName
+| A custom service name to identify this service.
+| WEB
+
+| timeout
+| Timeout in milliseconds to wait for a response.
+| 2000
+
+| useHttpV1
+| True/false whether to use HTTP 1.0 or 1.1.
+| false
+
+| useSSLFilter
+| If true, certificate verification is skipped.
+| false
+
+| useSystemProxy
+| Should the system-wide proxy settings be used? Configure system proxy settings via system properties.
+| false
+
+| userAgent
+| Set the user agent field in HTTP header to identify the OpenNMS monitor.
+| OpenNMS WebMonitor
+
+| virtualHost
+| Set the virtual host field in HTTP header.
+In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation.
+| none
+|===
+
+NOTE: If there is a `~` at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, otherwise the match will be a substring one.
+The regular expression match is anchored at the beginning and end of the line, so you will likely need to put a `.*` on both sides of your pattern unless you are going to match on the entire line.
+
+== Example configuration
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2010-06-29T13:15:30.494+02:00" name="test" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+  <scan-interval>1d</scan-interval>
+    <detector name="ServiceName" class="org.opennms.netmgt.provision.detector.web.WebDetector">
+      <parameter key="useSSLFilter" value="true"/>
+      <parameter key="port" value="443"/>
+      <parameter key="schema" value="https"/>
+      <parameter key="timeout" value="5000"/>
+      <parameter key="responseText" value="~^.*WoooRegEx.*$"/>
+      <parameter key="path" value="/login.jsp"/>
+    </detector>
+  <policies/>
+</foreign-source>
+----

@@ -18,6 +18,16 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
+<<<<<<< HEAD
+=======
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Karaf-Commands>*</Karaf-Commands>
+            <Import-Package>!org.json,*</Import-Package>
+          </instructions>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         </configuration>
       </plugin>
     </plugins>

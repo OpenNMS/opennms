@@ -28,6 +28,7 @@
 
 package org.opennms.features.config.service.api;
 
+<<<<<<< HEAD
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -38,10 +39,23 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
+=======
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Consumer;
+
+import javax.xml.bind.JAXBException;
+
+import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigSchema;
+
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 /**
  * Responsible for managing Schemas and Configurations.
  * A Schema is a set of rules that constrain the data of a Configuration.
  * A Configuration is the data that defines the runtime behaviour of a service together with the code of that service.
+<<<<<<< HEAD
  */
 public interface ConfigurationManagerService {
 
@@ -62,6 +76,20 @@ public interface ConfigurationManagerService {
 
     void registerSchema(String configName, int majorVersion, int minorVersion,
                         int patchVersion, ConfigConverter converter) throws IOException;
+=======
+ *
+ * @apiNote Due to the classloading behaviour. Do not use any non-primitive API parameters via OSGi interface. It will subject to <b>FAIL</b>!!!
+ */
+public interface ConfigurationManagerService {
+
+    /** Registers a new schema. The schema name must not have been used before. */
+    void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
+
+    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
+    void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
+
+    Map<String, ConfigSchema<?>> getAllConfigSchema();
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     /**
      * Get the registered Schema
@@ -72,17 +100,31 @@ public interface ConfigurationManagerService {
      */
     Optional<ConfigSchema<?>> getRegisteredSchema(String configName) throws IOException;
 
+<<<<<<< HEAD
     /**
      * register a new configuration by JSONObject.
+=======
+    void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
+
+    /**
+     * register a new configuration by config object.
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
      * It will make sure the configId is not duplicated !!!
      *
      * @param configName
      * @param configId
+<<<<<<< HEAD
      * @param configObject
      * @throws IOException
      */
     void registerConfiguration(String configName, String configId, Object configObject)
             throws IOException;
+=======
+     * @param configObject (config object / JSONObject)
+     * @throws IOException
+     */
+    void registerConfiguration(String configName, String configId, JsonAsString configObject) throws IOException;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     /**
      * remove configure from service
@@ -93,6 +135,7 @@ public interface ConfigurationManagerService {
     void unregisterConfiguration(String configName, String configId) throws IOException;
 
     void updateConfiguration(String configName, String configId,
+<<<<<<< HEAD
                                          Object configObject)
             throws IOException;
 
@@ -118,6 +161,27 @@ public interface ConfigurationManagerService {
      * @throws IOException
      */
     Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+=======
+                             JsonAsString configObject) throws IOException, IllegalArgumentException;
+
+    /**
+     * get config as json by configName, configId
+     *
+     * @param configName
+     * @param configId
+     * @return JSONObject
+     * @throws IOException
+     */
+    Optional<JSONObject> getJSONConfiguration(String configName, String configId) throws IOException;
+
+    /**
+     * Use for osgi API
+     *
+     * @return config in json string
+     * @see #getJSONStrConfiguration(String, String)
+     */
+    String getJSONStrConfiguration(String configName, String configId) throws IOException;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     /**
      * get config as xml by configName, configId
@@ -140,6 +204,10 @@ public interface ConfigurationManagerService {
 
     /**
      * get a list of registered configName
+<<<<<<< HEAD
+=======
+     *
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
      * @return configName set
      * @throws IOException
      */
@@ -153,8 +221,76 @@ public interface ConfigurationManagerService {
      */
     void unregisterSchema(String configName) throws IOException;
 
+<<<<<<< HEAD
     //    Optional<ConfigData<JSONObject>> getConfigurationMetaData(final String configName);
     //    ConfigData getSchemaForConfiguration(final String configId);
+=======
+    final class Version {
+        int majorVersion;
+        int minorVersion;
+        int patchVersion;
+
+        public Version(int majorVersion, int minorVersion, int patchVersion) {
+            this.majorVersion = majorVersion;
+            this.minorVersion = minorVersion;
+            this.patchVersion = patchVersion;
+        }
+
+        public int getMajorVersion() {
+            return majorVersion;
+        }
+
+        public void setMajorVersion(int majorVersion) {
+            this.majorVersion = majorVersion;
+        }
+
+        public int getMinorVersion() {
+            return minorVersion;
+        }
+
+        public void setMinorVersion(int minorVersion) {
+            this.minorVersion = minorVersion;
+        }
+
+        public int getPatchVersion() {
+            return patchVersion;
+        }
+
+        public void setPatchVersion(int patchVersion) {
+            this.patchVersion = patchVersion;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Version version = (Version) o;
+            return majorVersion == version.majorVersion && minorVersion == version.minorVersion && patchVersion == version.patchVersion;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(majorVersion, minorVersion, patchVersion);
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Version.class.getSimpleName() + "[", "]")
+                    .add("majorVersion=" + majorVersion)
+                    .add("minorVersion=" + minorVersion)
+                    .add("patchVersion=" + patchVersion)
+                    .toString();
+        }
+    }
+
+    /**
+     * return configIds by configName
+     *
+     * @param configName
+     */
+    Set<String> getConfigIds(String configName) throws IOException;
+
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 // TODO: next phase for xml conversion work
 //    /** add: inserts a child into a parent element */
 //    void addConfiguration(final String configId, final String path, final String content);

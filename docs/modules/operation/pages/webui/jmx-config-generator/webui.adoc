@@ -1,14 +1,14 @@
 
 = Web-Based Utility
 
-Complex  JMX  data collection configurations can be generated from a web based tool.
-It collects all available  MBean Attributes  or  Composite Data Attributes  from a  JMX  enabled Java application.
+Complex JMX data collection configurations can be generated from a web based tool.
+The JMX Configuration Generator collects all available MBean Attributes or Composite Data Attributes from a JMX enabled Java application.
 
 The workflow of the tool is:
 
-. Connect with  JMX  or  JMXMP  against a  MBean Server  provided of a  Java  application
-. Retrieve all  MBean and composite data from the application
-. Select specific MBeans and composite data  objects which should be collected by {page-component-title}
+. Connect with JMX or JMXMP against a MBean Server provided of a Java application
+. Retrieve all MBean and composite data from the application
+. Select specific MBeans and composite data objects which should be collected by {page-component-title}
 . Generate JMX Collectd configuration file and RRD graph definitions for {page-component-title} as downloadable archive
 
 The following connection settings are supported:
@@ -46,7 +46,7 @@ image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
 The left sidebar shows the tree with the JMX Domain, MBeans, and composite data hierarchy retrieved from the MBean Server.
 To select or deselect all attributes use *Mouse right click -> select/deselect*.
 
-The right panel shows the MBean Attributes with the RRD-specific mapping and lets you select or deselect specific MBean Attriubtes or composite data attributes for the data collection configuration.
+The right panel shows the MBean Attributes with the RRD-specific mapping, and lets you select or deselect specific MBean Attributes or composite data attributes for the data collection configuration.
 
 .Configure MBean attributes for data collection configuration
 image::operation/jmx-config-generator/03-webui-mbean-details.png[]

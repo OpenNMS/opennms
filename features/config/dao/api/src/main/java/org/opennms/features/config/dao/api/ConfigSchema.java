@@ -27,24 +27,36 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.api;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+=======
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 /**
  * This class include meta-data of the config
  */
 public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private String name;
+<<<<<<< HEAD
     private int majorVersion;
     private int minorVersion;
     private int patchVersion;
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     private Class<T> converterClass;
     private T converter;
 
     @JsonCreator
+<<<<<<< HEAD
     public ConfigSchema(@JsonProperty("name") String name, @JsonProperty("majorVersion") int majorVersion,
                         @JsonProperty("minorVersion") int minorVersion, @JsonProperty("patchVersion") int patchVersion,
                         @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
@@ -52,6 +64,12 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
         this.patchVersion = patchVersion;
+=======
+    public ConfigSchema(@JsonProperty("name") String name,
+                        @JsonProperty("converterClass") Class<T> converterClass, @JsonProperty("converter") T converter) {
+        this.name = name;
+        this.converterClass = converterClass;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         this.setConverter(converter);
     }
 
@@ -63,6 +81,7 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
         this.name = name;
     }
 
+<<<<<<< HEAD
     public int getMajorVersion() {
         return majorVersion;
     }
@@ -92,6 +111,8 @@ public class ConfigSchema<T extends ConfigConverter> implements Serializable {
         return majorVersion + "." + minorVersion + "." + patchVersion;
     }
 
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     public Class<T> getConverterClass() {
         return converterClass;
     }

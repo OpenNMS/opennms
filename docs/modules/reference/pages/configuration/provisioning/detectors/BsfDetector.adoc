@@ -1,0 +1,212 @@
+= BSF Detector
+
+The BSF Detector lets you run arbitrary scripts using the Bean Scripting Framework to determine the existence of a service.
+This can be a script written in any of the languages BSF supports.
+The only requirement is that the script returns the string `OK` if it passes.
+
+The BSF Detector passes the `map`, `ip_addr`, `svc_name`, and `results` variables as beans to the script.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.bsf.BSFDetector`
+|===
+
+== Configuration and use
+
+.Optional parameters for the BSF service detector
+[options="header"]
+[cols="1,3a,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| fileName
+| The path to the file on the OpenNMS server which contains the BSF-compatible script to run.
+| none
+
+| langClass
+| The short name of the language the script is written in. Choices:
+
+* jython
+* beanshell
+* groovy
+| none
+
+| bsfEngine
+| The BSF engine to use when running the script. Choices:
+
+* bsh.util.BeanShellBSFEngine
+* org.codehaus.groovy.bsf.GroovyEngine
+* org.apache.bsf.engines.jython.JythonEngine
+| none
+
+| fileExtensions
+| A comma-separated list of file extensions to consider a valid script for this BSF instance.
+| none
+
+| runType
+| Mode to run the BSF script. Choices:
+
+* *eval*: expects the script to print the OK/NOK status for validation
+* *exec*: expects the script to manipulate the provided results hashmap directly
+| eval
+|===
+
+CAUTION: Avoid non-character names for parameters to avoid problems in the script languages.
+
+== Timeout and Retry
+
+The BSFDetector does not perform any timeout or retry processing on its own.
+If you require retry and/or timeout behavior, you must implement it in the script itself.
+
+== Requirements for the script (run-types)
+
+Depending on the `run-type`, the script must provide its results in different ways.
+For minimal scripts with simple logic, a `run-type` of `eval` is the easiest option.
+Scripts running in `eval` mode must return a string matching a status code of `OK` or `NOK`.
+
+A script with more than one line of logic requires a `run-type` of `exec`.
+Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the `results` object.
+Additionally, the `results` object can also carry a `"reason":"message"` entry that is used in non-`OK` states.
+
+== Commonly used language settings
+
+The BSF detector supports many languages.
+The following table provides the required setup for commonly used languages.
+
+.BSF language options
+[options="header, autowidth"]
+[cols="2,1,2,2"]
+|===
+| Language
+| langClass parameter
+| bsfEngine parameter
+| Required library
+
+| http://www.beanshell.org[BeanShell]
+| beanshell
+| bsh.util.BeanShellBSFEngine
+| supported by default
+
+| https://groovy-lang.org/[Groovy]
+| groovy
+| org.codehaus.groovy.bsf.GroovyEngine
+| groovy-all-[version].jar
+
+| http://www.jython.org[Jython]
+| jython
+| org.apache.bsf.engines.jython.JythonEngine
+| jython-[version].jar
+|===
+
+IMPORTANT: If you will be using a Groovy or Jython script, you will need to place the required library file in the `$\{OPENNMS_HOME}/lib` directory and restart the {page-component-title} service.
+
+== Example configurations
+
+=== BeanShell example
+
+.BeanShell example
+[source, xml]
+----
+<detector name="MinimalBeanShell" class="org.opennms.netmgt.provision.detector.bsf.BSFDetector">
+    <parameter key="bsfEngine" value="bsh.util.BeanShellBSFEngine"/>
+    <parameter key="langClass" value="beanshell"/>
+    <parameter key="fileName" value="/opt/opennms/etc/scripts/MinimalBeanShell.bsh"/>
+    <parameter key="runType" value="eval"/>
+</detector>
+----
+
+.BeanShell example `MinimalBeanShell.bsh` script file
+[source, java]
+----
+File testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  return "OK";
+} else {
+  results.put("reason", "file does not exist");
+  return "NOK";
+}
+----
+
+=== Groovy example
+
+The Groovy language requires the installation of an additional library.
+
+.Groovy example for `run-type` of `eval`
+[source, xml]
+----
+<detector name="MinimalGroovy" class="org.opennms.netmgt.provision.detector.bsf.BSFDetector">
+    <parameter key="bsfEngine" value="org.codehaus.groovy.bsf.GroovyEngine"/>
+    <parameter key="langClass" value="groovy"/>
+    <parameter key="fileName" value="/opt/opennms/etc/scripts/MinimalGroovy.groovy"/>
+    <parameter key="runType" value="eval"/>
+</detector>
+----
+
+.Groovy example `MinimalGroovy.groovy` script file for `run-type` of `eval`
+[source, groovy]
+----
+File testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  return "OK";
+} else {
+  results.put("reason", "file does not exist");
+  return "NOK";
+}
+----
+
+.Groovy example for `run-type` of `exec`
+[source, xml]
+----
+<detector name="MinimalGroovy" class="org.opennms.netmgt.provision.detector.bsf.BSFDetector">
+    <parameter key="bsfEngine" value="org.codehaus.groovy.bsf.GroovyEngine"/>
+    <parameter key="langClass" value="groovy"/>
+    <parameter key="fileName" value="/opt/opennms/etc/scripts/MinimalGroovy.groovy"/>
+    <parameter key="runType" value="exec"/>
+</detector>
+
+----
+
+.Groovy example `MinimalGroovy.groovy` script file for `run-type` of `exec`
+[source, groovy]
+----
+def testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  results.put("status", "OK")
+} else {
+  results.put("reason", "file does not exist");
+  results.put("status", "NOK");
+}
+----
+
+=== Jython example
+
+The Jython (Java implementation of Python) language requires the installation of an additional library.
+
+.Jython example for `run-type` of `exec`
+[source, xml]
+----
+<detector name="MinimalJython" class="org.opennms.netmgt.provision.detector.bsf.BSFDetector">
+    <parameter key="bsfEngine" value="org.apache.bsf.engines.jython.JythonEngine"/>
+    <parameter key="langClass" value="jython"/>
+    <parameter key="fileName" value="/opt/opennms/etc/scripts/MinimalJython.py"/>
+    <parameter key="runType" value="exec"/>
+</detector>
+----
+
+.Jython example `MinimalJython.py` script file for `run-type` of `exec`
+[source, python]
+----
+from java.io import File
+
+if (File("/tmp/TestFile").exists()):
+        results.put("status", "OK")
+else:
+        results.put("reason", "file does not exist")
+        results.put("status", "NOK")
+----
+
+NOTE: We have to use a run type of `exec` here because Jython chokes on the **import** keyword in `eval` mode.

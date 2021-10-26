@@ -30,6 +30,7 @@ package org.opennms.features.config.dao.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.net.URL;
 
@@ -45,6 +46,12 @@ public interface ConfigConverter<CONFIG_CLASS> {
      * @return configClass instance
      */
     CONFIG_CLASS xmlToJaxbObject(String xmlStr);
+=======
+public interface ConfigConverter {
+    enum SCHEMA_TYPE {XML, JSON, PROPERTY};
+
+    boolean validate(String config, SCHEMA_TYPE type);
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     /**
      * convert xml string to json string
@@ -63,6 +70,7 @@ public interface ConfigConverter<CONFIG_CLASS> {
     String jsonToXml(String jsonStr);
 
     /**
+<<<<<<< HEAD
      * convert json string to config object
      *
      * @param jsonStr input json config
@@ -95,11 +103,14 @@ public interface ConfigConverter<CONFIG_CLASS> {
     Class<CONFIG_CLASS> getConfigurationClass();
 
     /**
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
      * @return ServiceSchema
      */
     ValidationSchema<?> getValidationSchema();
 
     /**
+<<<<<<< HEAD
      * @return schema URL
      * @throws IOException
      */
@@ -107,6 +118,8 @@ public interface ConfigConverter<CONFIG_CLASS> {
     URL getSchemaPath() throws IOException;
 
     /**
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
      * @return schema type
      */
     @JsonIgnore
@@ -117,4 +130,8 @@ public interface ConfigConverter<CONFIG_CLASS> {
      */
     @JsonIgnore
     String getRawSchema();
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63

@@ -8,7 +8,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.service</groupId>
     <artifactId>org.opennms.features.config.service.impl</artifactId>
+<<<<<<< HEAD
     <name>OpenNMS :: Features :: Config Manager :: Service :: Impl</name>
+=======
+    <name>OpenNMS :: Features :: Config :: Service :: Impl</name>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     <packaging>bundle</packaging>
     <build>
       <plugins>
@@ -42,6 +46,15 @@
       </dependency>
       <!-- Dependencies used -->
       <dependency>
+<<<<<<< HEAD
+=======
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-model</artifactId>
+        <version>${project.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson2Version}</version>
@@ -100,6 +113,15 @@
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink</artifactId>
           <version>${eclipselinkVersion}</version>
+<<<<<<< HEAD
+=======
+          <exclusions>
+              <exclusion>
+                  <groupId>org.eclipse.persistence</groupId>
+                  <artifactId>javax.persistence</artifactId>
+              </exclusion>
+          </exclusions>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
       </dependency>
       <dependency>
           <groupId>com.sun.xml.bind</groupId>
@@ -125,6 +147,10 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config-model</artifactId>
         <version>${project.version}</version>
+<<<<<<< HEAD
+=======
+        <scope>provided</scope>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
       </dependency>
       <dependency>
         <groupId>org.opennms.features.distributed</groupId>
@@ -136,6 +162,7 @@
         <artifactId>json</artifactId>
         <version>${jsonVersion}</version>
       </dependency>
+<<<<<<< HEAD
       <!-- Testing -->
       <dependency>
         <groupId>junit</groupId>
@@ -195,5 +222,7 @@
         <artifactId>hibernate-validator</artifactId>
         <scope>test</scope>
       </dependency>
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     </dependencies>
 </project>

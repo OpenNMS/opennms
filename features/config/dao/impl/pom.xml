@@ -35,6 +35,15 @@
       <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
       <version>${project.version}</version>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency><!-- TODO: Patrick: remove after we eliminated the Jaxb classes from cm -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-model</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
@@ -56,6 +65,7 @@
       <version>${jackson2Version}</version>
     </dependency>
 
+<<<<<<< HEAD
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -97,5 +107,7 @@
       <artifactId>hibernate-validator</artifactId>
       <scope>test</scope>
     </dependency>
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
   </dependencies>
 </project>

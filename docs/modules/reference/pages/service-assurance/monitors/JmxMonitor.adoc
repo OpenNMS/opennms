@@ -1,0 +1,98 @@
+[[poller-jmx-monitor]]
+= JmxMonitor
+
+The JMX monitor lets you test the service availability of Java applications.
+The monitor offers the following functionalities:
+
+* test the application's connectivity via JMX
+* existence of management beans
+* test the status of a single or multiple management bean, and evaluate its value(s)
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.Jsr160Monitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the JmxMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of attempts to get a response.
+| 3
+
+| timeout
+| Time in milliseconds to wait for a response.
+| ?
+
+| port
+| Destination port where the JMX requests will be sent.
+| from jmx-config.xml
+
+| factory
+ Set this to PASSWORD-CLEAR if credentials are required.
+| STANDARD
+
+| protocol
+| Protocol used in the JMX connection string.
+| rmi
+
+| urlPath
+| Path used in JMX connection string.
+| /jmxrmi
+
+| rmiServerPort
+| RMI port.
+| 45444
+
+| remoteJMX
+| Use an alternative JMX URL scheme.
+| false
+
+| beans.<variable>
+| Defines an MBeans objectname to access.
+The <variable> name is arbitrary.
+| n/a
+
+| tests.<variable>
+| Tests an MBeans attribute value.
+The <variable> name is arbitrary.
+| n/a
+|===
+
+== Examples
+
+.Test if a JMX connection can be established
+[source, xml]
+----
+<service name="JMX-Connection-Test" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="3"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="port" value="18980"/>
+</service>
+<monitor service="JMX-Connection-Test" class-name="org.opennms.netmgt.poller.monitors.JmxMonitor"/>
+----
+
+.Test a specific management bean for a value
+[source, xml]
+----
+<service name="JMX-BeanValue-Test" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="3"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="port" value="18980"/>
+    <parameter key="beans.connected" value="org.opennms.workflow:name=client.onms.connected"/>
+    <parameter key="tests.isConnected" value="connected.get(&quot;Value&quot;) == true"/>
+</service>
+<monitor service="JMX-BeanValue-Test" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
+----
+
+CAUTION: You must escape reserved XML characters like *>*, *<*, *"*.

@@ -901,6 +901,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin.jms</groupId>
+      <artifactId>org.opennms.core.ipc.twin.jms.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.twin.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.twin.kafka.publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc</groupId>
       <artifactId>org.opennms.core.ipc.osgi</artifactId>
       <version>${project.version}</version>
@@ -1219,6 +1229,14 @@
       <artifactId>org.opennms.features.config.service.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.upgrade</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
   </dependencies>
 
   <pluginRepositories>

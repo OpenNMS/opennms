@@ -36,8 +36,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <bootRepositories>
-                        <!-- OPENNMS: Replace the standard, spring, and spring-legacy features files with our modified versions -->
-                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/standard</repository>
+                        <!--Karaf standard features-->
+                        <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
+                        <!-- OPENNMS: Replace the spring, and spring-legacy features files with our modified versions -->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring</repository>
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
                         <!-- OPENNMS: Add the OpenNMS feature repository -->
@@ -73,8 +74,7 @@
                         <feature>system</feature>
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
-                        <feature>http</feature>
-                        <feature>http-whiteboard</feature>
+                        <feature>opennms-http-whiteboard</feature>
                     </bootFeatures>
                     <libraries>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/2.11.0_1;type:=endorsed;export:=true;delegate:=true</library>
@@ -194,13 +194,6 @@
                     <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.karaf</groupId>
-            <artifactId>opennms</artifactId>
-            <version>${project.version}</version>
-            <classifier>standard</classifier>
-            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.karaf</groupId>

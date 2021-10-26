@@ -65,6 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
@@ -91,7 +92,7 @@ public class DefaultClassificationServiceIT {
     private Group userGroupCsv; // the user group that is not attached to hibernate
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         FilterService filterService = new DefaultFilterService(filterDao);
         classificationService = new DefaultClassificationService(
                 ruleDao,

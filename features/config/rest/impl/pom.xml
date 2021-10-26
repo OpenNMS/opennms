@@ -23,6 +23,10 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Karaf-Commands>*</Karaf-Commands>
+<<<<<<< HEAD
+=======
+            <Import-Package>!org.json,*</Import-Package>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
           </instructions>
         </configuration>
       </plugin>
@@ -55,6 +59,13 @@
       <artifactId>org.opennms.features.config.rest.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-model</artifactId>
+    </dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 
     <!-- Dependencies used -->
     <dependency>
@@ -64,7 +75,11 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
+<<<<<<< HEAD
       <artifactId>org.osgi.core</artifactId>
+=======
+      <artifactId>osgi.core</artifactId>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -73,9 +88,105 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+<<<<<<< HEAD
+=======
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
+      <version>${servicemixSpecsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+
+   <dependency>
+     <groupId>com.atlassian.oai</groupId>
+     <artifactId>swagger-request-validator-core</artifactId>
+     <version>${swaggerRequestValidatorVersion}</version>
+   </dependency>
+   <dependency>
+     <groupId>io.swagger.parser.v3</groupId>
+     <artifactId>swagger-parser</artifactId>
+     <version>${swaggerParserVersion}</version>
+   </dependency>
+
+    <dependency>
+      <groupId>io.springfox</groupId>
+      <artifactId>springfox-swagger-ui</artifactId>
+      <version>3.0.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+
+      </exclusions>
+    </dependency>
+
+   <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-models</artifactId>
+      <version>${swaggerVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyamlVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson2Version}</version>
+    </dependency>
+
+    <!-- test -->
+    <dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency>
+      <groupId>org.skyscreamer</groupId>
+      <artifactId>jsonassert</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+      <dependency>
+          <groupId>org.opennms.core.test-api</groupId>
+          <artifactId>org.opennms.core.test-api.db</artifactId>
+      </dependency>
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
   </dependencies>
 </project>

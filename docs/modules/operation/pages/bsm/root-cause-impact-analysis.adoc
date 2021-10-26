@@ -20,7 +20,7 @@ In figure <<ug-bsm-example-rca-results, View after performing Root Cause Analysi
 .View after performing Root Cause Analysis
 image:bsm/04_bsm-rca-results.png[]
 
-Similar to identifying a root cause for a BS it is also possible to identfy which business services from a specific edge are affected.
+Similar to identifying a root cause for a BS it is also possible to identify which business services from a specific edge are affected.
 Use the context menu on a specific edge element and select impact analysis shown in figure <<ug-bsm-example-ia-action, View before performing Impact Analysis>>.
 
 [[ug-bsm-example-ia-action]]

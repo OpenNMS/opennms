@@ -32,9 +32,13 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
+<<<<<<< HEAD
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.apache.ws.commons.schema.XmlSchemaElement;
+=======
+import org.apache.ws.commons.schema.*;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
 import org.apache.ws.commons.schema.walker.XmlSchemaAttrInfo;
 import org.apache.ws.commons.schema.walker.XmlSchemaRestriction;
 import org.apache.ws.commons.schema.walker.XmlSchemaTypeInfo;
@@ -76,11 +80,18 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     @Override
     public void onEnterElement(XmlSchemaElement xmlSchemaElement, XmlSchemaTypeInfo xmlSchemaTypeInfo, boolean b) {
         currentConfigItem = configItemsByQName.get(xmlSchemaElement.getQName());
+<<<<<<< HEAD
 
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         if (currentConfigItem == null) {
             ConfigItem.Type baseType = getConfigType(xmlSchemaTypeInfo.getBaseType().name());
             currentConfigItem = new ConfigItem();
             currentConfigItem.setName(xmlSchemaElement.getQName().getLocalPart());
+<<<<<<< HEAD
+=======
+            currentConfigItem.setDocumentation(getDocumentation(xmlSchemaElement.getAnnotation()));
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
             currentConfigItem.setSchemaRef(xmlSchemaElement.getQName().toString());
             currentConfigItem.setType(baseType);
             setRestrictions(currentConfigItem, xmlSchemaTypeInfo.getFacets());
@@ -126,17 +137,26 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
     @Override
     public void onVisitAttribute(XmlSchemaElement xmlSchemaElement, XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         currentConfigItem.getChildren().add(getConfigItemForAttribute(xmlSchemaAttrInfo));
+<<<<<<< HEAD
 
         // Check current type -> needs to be an object to create children
         // Special case where parent is a simple type with an attribute
         if (currentConfigItem.isPrimitiveType(currentConfigItem.getType())) {
+=======
+        // Check current type -> needs to be an object to create children
+        // Special case where parent is a simple type with an attribute
+        if (currentConfigItem.isPrimitiveType()) {
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
             // Make a duplicate of the current item for the primitive type; current then becomes an object with children
             ConfigItem child = new ConfigItem();
             child.setName(currentConfigItem.getName());
             child.setType(currentConfigItem.getType());
             child.setSchemaRef(currentConfigItem.getSchemaRef());
             child.setRequired(currentConfigItem.isRequired());
+<<<<<<< HEAD
 
+=======
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
             currentConfigItem.setType(ConfigItem.Type.OBJECT);
             currentConfigItem.setSchemaRef("");
             currentConfigItem.getChildren().add(child);
@@ -145,6 +165,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     private static void setRestrictions(ConfigItem item, HashMap<XmlSchemaRestriction.Type, List<XmlSchemaRestriction>> facets) {
         if (facets != null) {
+<<<<<<< HEAD
             List<XmlSchemaRestriction> minfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
             if ((minfacets != null) && (minfacets.size() > 0)) {
                 // Should only be one minimum specified
@@ -171,6 +192,38 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
                 }
             }
 
+=======
+            if(item.getType() == ConfigItem.Type.STRING){
+                List<XmlSchemaRestriction> patternFacets = facets.get(XmlSchemaRestriction.Type.PATTERN);
+                if ((patternFacets != null) && (patternFacets.size() > 0)) {
+                    XmlSchemaRestriction restriction = patternFacets.get(0);
+                    Object obj = restriction.getValue();
+                    if (obj instanceof String) {
+                        item.setPattern((String) obj);
+                    }
+                }
+            } else {
+                List<XmlSchemaRestriction> minfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MIN);
+                if ((minfacets != null) && (minfacets.size() > 0)) {
+                    // Should only be one minimum specified
+                    XmlSchemaRestriction minRestriction = minfacets.get(0);
+                    Object minVal = minRestriction.getValue();
+                    if (minVal instanceof String) {
+                        item.setMin(Long.valueOf((String) minVal));
+                    }
+                }
+
+                List<XmlSchemaRestriction> maxfacets = facets.get(XmlSchemaRestriction.Type.INCLUSIVE_MAX);
+                if ((maxfacets != null) && (maxfacets.size() > 0)) {
+                    // Should only be one minimum specified
+                    XmlSchemaRestriction maxRestriction = maxfacets.get(0);
+                    Object maxVal = maxRestriction.getValue();
+                    if (maxVal instanceof String) {
+                        item.setMax(Long.valueOf((String) maxVal));
+                    }
+                }
+            }
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         }
     }
 
@@ -185,19 +238,82 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
         return elem;
     }
 
+<<<<<<< HEAD
     public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         ConfigItem configItem = new ConfigItem();
         configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
         configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
+=======
+    /**
+     * Reading documentation from xsd annotation
+     * @param xmlSchemaAnnotation
+     * @return
+     */
+    public static String getDocumentation(XmlSchemaAnnotation xmlSchemaAnnotation){
+        if(xmlSchemaAnnotation != null){
+            for(XmlSchemaAnnotationItem item: xmlSchemaAnnotation.getItems()){
+                if (item instanceof XmlSchemaDocumentation) {
+                    XmlSchemaDocumentation doc = (XmlSchemaDocumentation) item;
+                    if ( doc.getMarkup() != null ){
+                        StringBuffer sb = new StringBuffer();
+                        for(int i = 0 ; i < doc.getMarkup().getLength() ; i++){
+                            sb.append(doc.getMarkup().item(i).getNodeValue());
+                        }
+                        return sb.toString();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Convert xsd attribute into ConfigItem
+     * @param xmlSchemaAttrInfo
+     * @return
+     */
+    public static ConfigItem getConfigItemForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
+        ConfigItem configItem = new ConfigItem();
+        configItem.setName(xmlSchemaAttrInfo.getAttribute().getName());
+        if(xmlSchemaAttrInfo.getAttribute().getAnnotation() != null){
+            configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getAnnotation()));
+        } else if (xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation() != null){
+            configItem.setDocumentation(getDocumentation(xmlSchemaAttrInfo.getAttribute().getSchemaType().getAnnotation()));
+        }
+        configItem.setType(getTypeForAttribute(xmlSchemaAttrInfo));
+        configItem.setRequired("REQUIRED".equals(xmlSchemaAttrInfo.getAttribute().getUse()));
+        configItem.setDefaultValue(xmlSchemaAttrInfo.getAttribute().getDefaultValue());
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         configItem.setSchemaRef(xmlSchemaAttrInfo.getAttribute().getQName().toString());
         setRestrictions(configItem, xmlSchemaAttrInfo.getType().getFacets());
 
         return configItem;
     }
 
+<<<<<<< HEAD
     public static ConfigItem.Type getTypeForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
         String type = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
         return getConfigType(type);
+=======
+    /**
+     * Handle xsd type
+     * @param xmlSchemaAttrInfo
+     * @return
+     */
+    public static ConfigItem.Type getTypeForAttribute(XmlSchemaAttrInfo xmlSchemaAttrInfo) {
+        String strType;
+        ConfigItem.Type type = null;
+
+        if(xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName() != null) {
+            strType = xmlSchemaAttrInfo.getAttribute().getSchemaType().getQName().getLocalPart().toLowerCase();
+            type = getConfigType(strType);
+        }
+        if(ConfigItem.Type.OBJECT == type || type == null){
+            strType = xmlSchemaAttrInfo.getType().getBaseType().name().toLowerCase();
+            type = getConfigType(strType);
+        }
+        return type;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
     }
 
     private static ConfigItem.Type getConfigType(String type) {
@@ -206,11 +322,19 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
             case "decimal":
                 return ConfigItem.Type.NUMBER;
             case "string":
+<<<<<<< HEAD
+=======
+            case "id":
+            case "idref":
+            case "token":
+            case "anysimpletype":
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
                 return ConfigItem.Type.STRING;
             case "boolean":
                 return ConfigItem.Type.BOOLEAN;
             case "integer":
             case "int":
+<<<<<<< HEAD
                 return ConfigItem.Type.INTEGER;
             case "long":
                 return ConfigItem.Type.LONG;
@@ -218,6 +342,28 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
                 return ConfigItem.Type.OBJECT;
             default:
                 throw new UnsupportedOperationException("Unsupported attribute type: " + type);
+=======
+            case "short":
+                return ConfigItem.Type.INTEGER;
+            case "long":
+                return ConfigItem.Type.LONG;
+            case "positiveinteger":
+                return ConfigItem.Type.POSITIVE_INTEGER;
+            case "negativeinteger":
+                return ConfigItem.Type.NEGATIVE_INTEGER;
+            case "nonnegativeinteger":
+            case "unsignedbyte":
+            case "unsignedshort":
+            case "unsignedint":
+                return ConfigItem.Type.NON_NEGATIVE_INTEGER;
+            case "date":
+                return ConfigItem.Type.DATE;
+            case "datetime":
+                return ConfigItem.Type.DATE_TIME;
+            default:
+                // both anytype and complextype will be detected later
+                return ConfigItem.Type.OBJECT;
+>>>>>>> aad402a2f24c28b6220717cc8e172825bd940a63
         }
     }
 }
