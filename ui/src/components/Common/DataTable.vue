@@ -130,7 +130,6 @@ const onClickHandle = (selectedName: any, data: any, index: any) => {
                     requestPayload = { 'requisition-def': copyState };
                     const response = putProvisionDService(requestPayload);
                     if (response != null) {
-                        ;
                         notify({
                             title: "Notification",
                             text: `${data['import-name']} successfully deleted !`,
