@@ -69,9 +69,20 @@ function getGridRowDataFromInterestedNodes() {
 }
 
 let gridApi = ref({});
+let gridColumnApi = ref({});
 
 function onGridReady(params: any) {
   gridApi = params.api
+  gridColumnApi = params.columnApi
+  autoSizeAll(false);
+}
+
+function autoSizeAll(skipHeader: boolean) {
+  var allColumnIds: string[] = [];
+  gridColumnApi.getAllColumns().forEach(function (column) {
+    allColumnIds.push(column.colId);
+  });
+  gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
 }
 
 watch(

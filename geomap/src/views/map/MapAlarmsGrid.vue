@@ -188,6 +188,7 @@ const columnDefs = ref([
     headerName: "ID",
     field: "id",
     headerTooltip: "ID",
+    width: 50,
     headerCheckboxSelection: true,
     checkboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -200,6 +201,7 @@ const columnDefs = ref([
     headerName: "SEVERITY",
     field: "severity",
     headerTooltip: "Severity",
+    width: 100,
     floatingFilterComponentFramework: SeverityFloatingFilter,
     floatingFilterComponentParams: {
       suppressFilterButton: true,
@@ -228,6 +230,7 @@ const columnDefs = ref([
     headerName: "NODE",
     field: "node",
     headerTooltip: "Node",
+    width: 100,
   },
   {
     headerName: "UEI",
@@ -237,6 +240,7 @@ const columnDefs = ref([
   {
     headerName: "COUNT",
     field: "count",
+    width: 50,
     headerTooltip: "Count",
     comparator: (valueA: number, valueB: number) => {
       return valueA - valueB;
@@ -246,6 +250,7 @@ const columnDefs = ref([
     headerName: "LAST EVENT TIME",
     field: "lastEventTime",
     headerTooltip: "Last Event Time",
+    width: 120,
     filter: "agDateColumnFilter",
     cellRenderer: (data: any) => {
       return data.value ? new Date(data.value).toLocaleDateString() : "";
