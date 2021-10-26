@@ -11,5 +11,9 @@
         <cm:registerSchema id="provisiond" xsdFileName="provisiond-configuration.xsd" xsdFileHash="8a501f54269c52b7ba5c49d89a99b5967c33acfab3d953444828fa47d76dfbab" rootElement="provisiond-configuration"/>
         <cm:importConfig schemaId="provisiond" configId="default" filePath="provisiond-configuration.xml"/>
     </changeSet>
+    <changeSet author="ssuman" id="1.0-register-schema-enlinkd">
+        <cm:registerSchema id="enlinkd" xsdFileName="enlinkd-configuration.xsd" xsdFileHash="cf03a578f483997efbbd931700a2946bb08157352f802cf39be954aa84856471" rootElement="enlinkd-configuration"/>
+        <cm:importConfig schemaId="enlinkd" configId="default" filePath="enlinkd-configuration.xml"/>
+    </changeSet>
 
 </databaseChangeLog>
