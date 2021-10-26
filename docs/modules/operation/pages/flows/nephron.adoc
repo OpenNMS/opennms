@@ -121,7 +121,8 @@ scrape_configs:
 | cortex
 | response_failure_<kind>
 | Counter
-| The number of Cortex responses failures of certain kinds. Cortex persistence analyses response failures and tries to derive corresponding failure kinds (e.g. "out of order sample" or "per-user series limit reached").
+| The number of Cortex response failures of certain kinds. 
+Cortex persistence analyses response failures and tries to derive corresponding failure kinds (e.g., "out of order sample" or "per-user series limit reached").
 |===
 
 [options="header" cols="1,2,5"]
