@@ -43,7 +43,6 @@ import java.util.function.Consumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
@@ -52,10 +51,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimaps;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
-    private final Multimap<String, SessionImpl<?>> sessionMap = LinkedListMultimap.create();
+    private final Multimap<String, SessionImpl<?>> sessionMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     private final Map<String, TwinTracker> objMap = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private MinionIdentity minionIdentity;
@@ -94,6 +95,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 LOG.error("Exception while sending response to consumer", e);
             }
         }
+
+
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
     }
@@ -104,6 +107,21 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         if (twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
             return;
         }
+
+        // Got empty response
+        if (twinResponse.getObject() == null) {
+            return;
+        }
+
+        LOG.trace("Received object update with key {}", twinResponse.getKey());
+
+        // Send update to each session.
+        final var sessions = this.sessionMap.get(twinResponse.getKey());
+        if (sessions == null) {
+            LOG.trace("Session with key {} doesn't exist yet", twinResponse.getKey());
+            return;
+        }
+
         // Consume in our own thread instead of using broker's callback thread.
         executorService.execute(() -> {
             validateAndSendResponse(twinResponse);
@@ -138,8 +156,6 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                         LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
                     }
                 });
-            } else {
-                LOG.warn("Session with key {} doesn't exist yet", twinResponse.getKey());
             }
         }
     }
@@ -171,7 +187,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return !Arrays.equals(twinTracker.getObj(), twinResponse.getObject());
     }
 
-    public void shutdown() {
+
+    public void close() throws IOException {
         executorService.shutdown();
         objMap.clear();
         sessionMap.clear();

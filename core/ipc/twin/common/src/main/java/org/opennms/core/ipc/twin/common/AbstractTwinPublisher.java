@@ -86,8 +86,12 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return twinTracker;
     }
 
-    public void shutdown() {
-        twinTrackerMap.clear();
+    public void close() throws IOException {
+            twinTrackerMap.clear();
+    }
+
+    public Map<SessionKey, TwinTracker> getObjMap() {
+        return twinTrackerMap;
     }
 
     private class SessionImpl<T> implements Session<T> {

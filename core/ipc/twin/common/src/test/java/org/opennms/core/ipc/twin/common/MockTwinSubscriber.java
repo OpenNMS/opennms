@@ -160,7 +160,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
         }
     }
 
-    public void destroy() {
+    public void close() {
         if (kafkaConsumerRunner != null) {
             kafkaConsumerRunner.close();
         }

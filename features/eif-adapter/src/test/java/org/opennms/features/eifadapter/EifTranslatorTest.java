@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -74,7 +75,14 @@ public class EifTranslatorTest {
         OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
         OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
-        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), Address.getHostName(InetAddress.getLocalHost()));
+        OnmsNode localhostIpNode = null;
+        try {
+            final InetAddress localAddr = Address.getByName("localhost");
+            System.err.println("localAddr=" + localAddr);
+            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), InetAddressUtils.str(localAddr));
+        } catch (final Exception e) {
+            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), "127.0.0.1");
+        }
 
         fqhostnameNode.setForeignSource("eifTestSource");
         fqhostnameNode.setForeignId("eifTestId");
