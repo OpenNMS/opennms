@@ -44,7 +44,8 @@ Minion:: Instance of the Karaf OSGi service that enables OpenNMS to monitor devi
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 (See xref:development:minion/introduction.adoc#minion[Minion].)
 
-Nephron:: OpenNMS component that enables streaming analytics for flows.
+Nephron:: OpenNMS component that enables horizontal scaling of flow processing.
+Not required for flow processing, but can improve performance for deployments with a very high volume of flow documents.
 
 Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data store based on Apache Cassandra.
 Use it as an alternative persistence strategy instead of JRobin or RRDtool.
