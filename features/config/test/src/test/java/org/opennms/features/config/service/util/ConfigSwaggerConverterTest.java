@@ -26,25 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.rest.impl;
+package org.opennms.features.config.service.util;
 
 
 import com.google.common.io.Resources;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
 public class ConfigSwaggerConverterTest {
@@ -75,7 +74,7 @@ public class ConfigSwaggerConverterTest {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
         OpenAPI api = configSwaggerConverter.convert(parent, "/svc");
 
-        assertThat(api.getPaths().keySet(), contains("/svc", "/svc/{configId}"));
+        MatcherAssert.assertThat(api.getPaths().keySet(), contains("/svc", "/svc/{configId}"));
     }
 
     @Test
@@ -90,7 +89,8 @@ public class ConfigSwaggerConverterTest {
         ConfigItem configItem = xsdModelConverter.convert(schemaCol, TOP_ELEMENT);
 
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration", MediaType.APPLICATION_JSON);
+        String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration",
+                org.springframework.http.MediaType.APPLICATION_JSON.toString());
 
         final String expectedSwaggerJson = Resources.toString(
                 Resources.getResource("swagger.generated.json"), StandardCharsets.UTF_8);

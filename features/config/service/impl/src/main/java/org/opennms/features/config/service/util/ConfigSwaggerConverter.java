@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.config.rest.impl;
+package org.opennms.features.config.service.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -282,6 +282,7 @@ public class ConfigSwaggerConverter {
         Content messageContent = new Content();
         messageResponse.setContent(messageContent);
         MediaType mediaType = new MediaType();
+
         messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
 
         ObjectSchema parentSchema = new ObjectSchema();

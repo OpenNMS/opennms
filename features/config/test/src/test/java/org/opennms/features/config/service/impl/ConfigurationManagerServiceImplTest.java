@@ -38,9 +38,7 @@ import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.*;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -76,7 +74,10 @@ public class ConfigurationManagerServiceImplTest {
 
     @Before
     public void init() throws IOException, JAXBException {
-        if(configManagerService.getRegisteredSchema(CONFIG_NAME).isEmpty()) {
+        if(configManagerService.getRegisteredConfigDefinition(CONFIG_NAME).isEmpty()){
+//            ConfigDefinition definition = new ConfigDefinition();
+//            definition.setConfigName(CONFIG_NAME);
+//            definition.setSchema(new ConfigItem());
             configManagerService.registerSchema(CONFIG_NAME, "provisiond-configuration.xsd", "provisiond-configuration");
         }
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");

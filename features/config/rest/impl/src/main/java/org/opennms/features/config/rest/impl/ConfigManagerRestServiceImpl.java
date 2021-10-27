@@ -36,16 +36,15 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.converter.SwaggerConverter;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigSwaggerConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
