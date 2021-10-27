@@ -53,9 +53,6 @@ Newts:: Newts (New-Fangled Time Series Datastore) is an OpenNMS time series data
 Use it as an alternative persistence strategy instead of JRobin or RRDtool.
 (See xref:deployment:time-series-storage/newts/introduction.adoc#ga-opennms-operation-newts[Newts].)
 
-Okta:: Identity-as-a-service provider to identify and authenticate users.
-Used with Minion Appliance.
-
 PostgreSQL:: Commonly used open-source relational database known for its stability.
 PostgreSQL scales up but not out.
 (See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL].)
