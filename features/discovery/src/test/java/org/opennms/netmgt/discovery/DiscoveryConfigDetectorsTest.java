@@ -60,9 +60,6 @@ public class DiscoveryConfigDetectorsTest {
 
     @Test
     public void testGetDetectorsFromDefinitions() throws IOException {
-        String resourcePath = DiscoveryConfigDetectorsTest.class.getResource("/mock/etc/discovery-configuration.xml").getPath();
-        Path etcPath = Paths.get(resourcePath).getParent().getParent();
-        System.setProperty("opennms.home", etcPath.toString());
         DiscoveryConfiguration config = configFactory.getConfiguration();
         // Check that configuration loaded properly from the test resources
         assertEquals(2, config.getDefinitions().size());
