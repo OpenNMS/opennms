@@ -1805,9 +1805,20 @@
     <feature name="opennms-core-ipc-twin-common" description="OpenNMS :: Core :: IPC :: Twin :: Common" version="${project.version}">
         <feature>guava</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/${jsonPatchVersion}</bundle>
+        <feature>json-patch</feature>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
+    </feature>
+
+    <feature name="json-patch" description="OpenNMS :: Json Patch " version="${project.version}">
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.11.0</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.11.0</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.11.0</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/jackson-coreutils/2.0$overwrite=merge&amp;Import-Package=javax.annotation</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/1.13$overwrite=merge&amp;Import-Package=javax.annotation&amp;Export-Package=com.github.fge.jsonpatch.diff,com.github.fge.jsonpatch</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-jms" description="OpenNMS :: Core :: IPC :: JMS" version="${project.version}">
