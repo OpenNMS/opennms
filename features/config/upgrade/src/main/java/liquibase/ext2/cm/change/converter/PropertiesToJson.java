@@ -36,6 +36,7 @@ import java.util.Properties;
 import org.json.JSONObject;
 import org.opennms.features.config.service.api.JsonAsString;
 
+/** Converts a configuration properties file into json format to be stored in the cm manger. */
 public class PropertiesToJson {
     final private JsonAsString json;
 

@@ -33,6 +33,7 @@ import java.util.Objects;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.JsonAsString;
 
+/** Converts a xml configuration file into json format to be stored in the cm manger. */
 public class XmlToJson {
 
     final private JsonAsString json;

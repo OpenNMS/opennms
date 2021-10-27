@@ -57,6 +57,7 @@ import liquibase.ext2.cm.change.converter.XmlToJson;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
+import liquibase.util.file.FilenameUtils;
 
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
@@ -118,18 +119,10 @@ public class ImportConfiguration extends AbstractCmChange {
 
         if(this.filePath == null) return; // nothing to do
 
-        String fileType = getFileType();
+        String fileType = FilenameUtils.getExtension(this.filePath);
         if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
             validationErrors.addError(String.format("Unknown file type: '%s'", fileType));
         }
-    }
-
-    String getFileType() {
-
-        if(this.filePath == null) return "";
-
-        int index = Math.max(0, this.filePath.lastIndexOf('.'));
-        return (index == this.filePath.length()-1) ? "" : this.filePath.substring(index + 1);
     }
 
     @Override
@@ -145,7 +138,7 @@ public class ImportConfiguration extends AbstractCmChange {
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
 
-                        String fileType = getFileType();
+                        String fileType = FilenameUtils.getExtension(this.filePath);
                         JsonAsString configObject;
                         if("xml".equalsIgnoreCase(fileType)) {
                             configObject = new XmlToJson(asString(this.configResource), configSchema.get()).getJson();
