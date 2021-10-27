@@ -57,4 +57,15 @@ public abstract class AbstractCmChange extends AbstractChange {
     }
 
     protected abstract ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors);
+
+    protected void checkRequiredField(ValidationErrors validationErrors, String name, String value) {
+        if(value == null || value.isBlank()) {
+            validationErrors.addError(String.format("Attribute %s is missing", name));
+        }
+    }
+
+    @FunctionalInterface
+    protected interface RunnableWithException {
+        void doRun() throws Exception;
+    }
 }

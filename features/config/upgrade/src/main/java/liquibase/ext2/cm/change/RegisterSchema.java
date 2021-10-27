@@ -28,21 +28,63 @@
 
 package liquibase.ext2.cm.change;
 
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
+import liquibase.database.Database;
+import liquibase.exception.ValidationErrors;
+import liquibase.ext2.cm.database.CmDatabase;
+import liquibase.ext2.cm.statement.GenericCmStatement;
+import liquibase.statement.SqlStatement;
 
 /** Used in changelog.xml */
 @DatabaseChange(name = "registerSchema", description = "Registers a new schema", priority = ChangeMetaData.PRIORITY_DATABASE)
-public class RegisterSchema extends AbstractSchemaChange {
+public class RegisterSchema extends AbstractCmChange {
 
-    protected String getChangeName() {
-        return "Register";
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSchemaChange.class);
+
+    protected String id;
+
+    @Override
+    public ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
+        checkRequiredField(validationErrors, "id", this.id);
+        return validationErrors;
     }
 
-    protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.registerSchema(id, xsdFileName, this.rootElement);
+    @Override
+    public String getConfirmationMessage() {
+        return String.format("Registered new schema with schemaName=%s", this.id);
+    }
+
+    @Override
+    public SqlStatement[] generateStatements(Database database) {
+        return new SqlStatement[] {
+                new GenericCmStatement((ConfigurationManagerService m) -> {
+                    LOG.info("Registering new schema with schemaName={}",
+                            this.id);
+                    try {
+                        ConfigDefinition definition = new ConfigDefinition();
+                        definition.setConfigName(this.id);
+                        definition.setSchema(new ConfigItem());
+                        m.registerConfigDefinition(id, definition);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+        };
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 
