@@ -69,4 +69,10 @@ a {
 .headline4 {
   @include headline4();
 }
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
+}
 </style>

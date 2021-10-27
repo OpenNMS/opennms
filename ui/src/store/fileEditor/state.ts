@@ -1,11 +1,21 @@
 export interface State {
   fileNames: string[],
-  file: string
+  file: string,
+  snippets: string,
+  searchValue: string,
+  contentModified: boolean,
+  selectedFileName: string,
+  modifiedFileString: string
 }
 
 const state: State = {
   fileNames: [],
-  file: ''
+  file: '',
+  snippets: '',
+  searchValue: '',
+  contentModified: false,
+  selectedFileName: '',
+  modifiedFileString: ''
 }
 
 export default state

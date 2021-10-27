@@ -12,7 +12,7 @@ import { getNodeIfServices } from './ifService'
 import { search } from './searchService'
 import { getLocations } from './locationsService'
 import { scanIPRanges, detectSNMPAvailable, provision } from './inventoryService'
-import { getFileNames, getFile, postFile } from './configService'
+import { getFileNames, getFile, getSnippets, postFile } from './configService'
 
 export default {
   search,
@@ -30,5 +30,6 @@ export default {
   getLocations,
   getFileNames,
   getFile,
-  postFile
+  postFile,
+  getSnippets
 }

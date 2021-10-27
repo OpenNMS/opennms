@@ -20,7 +20,16 @@ const getFile = async (fileName: string): Promise<string> => {
   }
 }
 
-const postFile = async ({ formData, fileName }: { formData: File, fileName: string }): Promise<File | null> => {
+const getSnippets = async (fileName: string): Promise<string> => {
+  try {
+    const resp = await rest.get(`${endpoint}/help?f=${fileName}`)
+    return resp.data
+  } catch (err) {
+    return ''
+  }
+}
+
+const postFile = async (fileName: string, formData: FormData): Promise<File | null> => {
   try {
     const resp = await restFile.post(`${endpoint}/contents?f=${fileName}`, formData)
     return resp.data
@@ -32,5 +41,6 @@ const postFile = async ({ formData, fileName }: { formData: File, fileName: stri
 export {
   getFileNames,
   getFile,
-  postFile
+  postFile,
+  getSnippets
 }
