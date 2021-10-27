@@ -33,6 +33,9 @@ Free, community-driven project includes the latest technology and features deliv
 IFTTT:: If This Then That (https://ifttt.com/[IFTTT]) service integrates apps, devices, and services. Horizon and Meridian can integrate with IFTTT to trigger actions on other services based on customized alarms.
 (See xref:operation:ifttt/ifttt-integration.adoc#ifttt[IFTTT Integration].)
 
+JRobin:: JRobin is a clone of RRDTool (see below) written in Java.
+Default time series database for new {page-component-title} instances.
+
 Kafka:: Clusterable, open-source message broker designed for high-throughput/low-latency event streaming originally developed at LinkedIn, now supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
