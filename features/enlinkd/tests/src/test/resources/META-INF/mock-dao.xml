@@ -7,6 +7,6 @@
 		<property name="configFile" value="enlinkd-configuration.xml"/>
 	</bean>
 
-	<!--<bean id="configurationManagerService" class="org.opennms.netmgt.enlinkd.ConfigurationManagerServiceMock" />-->
+
 
 </beans>

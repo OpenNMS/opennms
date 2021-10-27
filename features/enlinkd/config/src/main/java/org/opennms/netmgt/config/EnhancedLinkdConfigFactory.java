@@ -78,7 +78,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     /**
      * <p>Constructor for LinkdConfigFactory.</p>
      *
-   //  * @param currentVersion a long.
+     * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
