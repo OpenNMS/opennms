@@ -121,7 +121,6 @@ public class Trapd extends AbstractServiceDaemon {
 
         try {
             m_twinSession = m_twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
-            m_twinSession.publish(from(m_config));
         } catch (IOException e) {
             LOG.error("Failed to register twin for trap listener config", e);
             throw new RuntimeException(e);
@@ -142,6 +141,13 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = STARTING;
 
         LOG.debug("start: Initializing the Trapd receiver");
+
+        try {
+            m_twinSession.publish(from(m_config));
+        } catch (IOException e) {
+            LOG.error("Failed to register twin for trap listener config", e);
+            throw new RuntimeException(e);
+        }
 
         m_trapListener.start();
 
