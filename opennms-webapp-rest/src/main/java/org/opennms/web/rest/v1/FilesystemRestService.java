@@ -140,6 +140,7 @@ public class FilesystemRestService {
             "search-actions.xml",
             "xmp-config.xml",
             // non-xml
+            "opennms.properties",
             "javamail-configuration.properties",
             "org.opennms.features.topology.app.cfg"
     ); static {
@@ -151,6 +152,16 @@ public class FilesystemRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getFiles() {
         return FILES;
+    }
+
+    @GET
+    @Path("/help")
+    @Produces("text/markdown")
+    public InputStream getFileHelp(@QueryParam("f") String fileName) throws IOException {
+        if (!FILES.contains(fileName)) {
+            throw new RuntimeException("Unsupported filename: '" + fileName + "'");
+        }
+        return this.getClass().getResourceAsStream("/help/" + fileName + ".md");
     }
 
     @GET
