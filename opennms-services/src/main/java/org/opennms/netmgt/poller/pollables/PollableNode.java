@@ -112,7 +112,7 @@ public class PollableNode extends PollableContainer {
                 retVal[0] = iface;
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
         return retVal[0];
     }
 
@@ -181,7 +181,7 @@ public class PollableNode extends PollableContainer {
                 retVal[0] = iface.createService(svcName);
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
         return retVal[0];
     }
 
@@ -241,6 +241,7 @@ public class PollableNode extends PollableContainer {
      */
     @Override
     protected void obtainTreeLock() {
+        LOG.debug("lock {}", this);
         m_lock.lock();
     }
 
@@ -257,11 +258,14 @@ public class PollableNode extends PollableContainer {
             obtainTreeLock();
         } else {
             try {
+                LOG.debug("try lock {}", this);
                 if (m_lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
                     // Lock was successful
+                    LOG.debug("locked {}", this);
                     return;
                 } else {
                     // Lock was unsuccessful
+                    LOG.debug("could not lock within time {}", this);
                     throw new LockUnavailable("Unable to obtain lock for " + PollableNode.this + " within " + timeout + " milliseconds");
                 }
             } catch (InterruptedException e) {
@@ -275,7 +279,13 @@ public class PollableNode extends PollableContainer {
      */
     @Override
     protected void releaseTreeLock() {
-        m_lock.unlock();
+        LOG.debug("unlock {}", this);
+        try {
+            m_lock.unlock();
+        } catch (RuntimeException e) {
+            LOG.error("could not unlock " + this, e);
+            throw new RuntimeException("could not unlock " + this, e);
+        }
     }
     
     /** {@inheritDoc} */

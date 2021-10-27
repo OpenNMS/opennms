@@ -365,8 +365,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public void run() {
-        // the poll got just started processStatusChange is fired on completion
-        doRun(500);
+        // the poll is just started; processStatusChange is fired on completion
+        LOG.debug("start poll {}", this);
+        doRun(500).whenComplete((v, t) -> {
+            if (t != null) {
+                LOG.error("poll failed - service: " + this, t);
+            }
+        });
     }
 
     private CompletionStage<PollStatus> startPoll() {
@@ -414,7 +419,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
                 m_schedule.unschedule();
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
     }
 
     /**

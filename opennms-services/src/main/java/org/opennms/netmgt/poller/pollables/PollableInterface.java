@@ -141,7 +141,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     public PollableService createService(final String svcName) {
-        return withSyncTreeLock(new Callable<PollableService>() {
+        return withTreeLock(new Callable<PollableService>() {
             @Override
             public PollableService call() {
 
@@ -240,7 +240,7 @@ public class PollableInterface extends PollableContainer {
         
         if (critSvc != null && getStatus().isUp()) {
             if (member != critSvc)
-                critSvc.poll();
+                return critSvc.poll();
 
             return CompletableFuture.completedFuture(critSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down());
         }
@@ -329,11 +329,11 @@ public class PollableInterface extends PollableContainer {
         Runnable lockSecondNodeAndRun = new Runnable() {
             @Override
             public void run() {
-                secondNode.withSyncTreeLock(reparent);
+                secondNode.withTreeLock(reparent);
             }
         };
         
-        firstNode.withSyncTreeLock(lockSecondNodeAndRun);
+        firstNode.withTreeLock(lockSecondNodeAndRun);
         
     }
 

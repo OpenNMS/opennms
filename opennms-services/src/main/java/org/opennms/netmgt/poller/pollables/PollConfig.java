@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.Timer;
 

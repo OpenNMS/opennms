@@ -2378,7 +2378,7 @@ public class PollablesIT {
         final Runnable locker = new Runnable() {
             @Override
             public void run() {
-                pNode1.withSyncTreeLock(r);
+                pNode1.withTreeLock(r);
             }
         };
 
@@ -2414,7 +2414,7 @@ public class PollablesIT {
                 boolean called = false;
                 while (!called) {
                     try {
-                        called = pNode1.withSyncTreeLock(call, 200);
+                        called = pNode1.withTreeLock(call, 200);
                     } catch (LockUnavailable e) {
                         //LOG.debug(e.getMessage());
                     } catch (Throwable e) {
@@ -2460,7 +2460,7 @@ public class PollablesIT {
             m_recursionDepth.incrementAndGet();
             try { Thread.sleep(20); } catch (InterruptedException e) {}
             if (m_iterations > 0) {
-                m_lock.withSyncTreeLock(new RecursiveCallable(m_lock, m_counter, m_recursionDepth, m_iterations - 1));
+                m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_recursionDepth, m_iterations - 1));
             }
             return null;
         }
@@ -2483,7 +2483,7 @@ public class PollablesIT {
         public void run() {
             while (m_counter.get() < 100) {
                 try {
-                    m_lock.withSyncTreeLock(new RecursiveCallable(m_lock, m_counter, m_invocations, m_recursionDepth - 1), 5);
+                    m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_invocations, m_recursionDepth - 1), 5);
                 } catch (LockUnavailable e) {
                     //LOG.debug(e.getMessage());
                 }
@@ -2566,7 +2566,7 @@ public class PollablesIT {
         final Runnable locker = new Runnable() {
             @Override
             public void run() {
-                pNode1.withSyncTreeLock(r);
+                pNode1.withTreeLock(r);
             }
         };
 
@@ -2574,7 +2574,7 @@ public class PollablesIT {
             @Override
             public void run() {
                 try {
-                    pNode1.withSyncTreeLock(r, 500);
+                    pNode1.withTreeLock(r, 500);
                     fail("Expected LockUnavailable");
                 } catch (LockUnavailable e) {
                     MockUtil.println("Received expected exception "+e);
@@ -2734,7 +2734,7 @@ public class PollablesIT {
 
         final PollableNode svcNode = m_network.createNodeIfNecessary(nodeId, nodeLabel, nodeLocation);
 
-        return svcNode.withSyncTreeLock(new Callable<PollableService>() {
+        return svcNode.withTreeLock(new Callable<PollableService>() {
 
             @Override
             public PollableService call() throws Exception {

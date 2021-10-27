@@ -225,13 +225,13 @@ public abstract class PollableElement {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public final void withSyncTreeLock(Runnable r) {
-        withSyncTreeLock(Executors.callable(r));
+    public final void withTreeLock(Runnable r) {
+        withTreeLock(Executors.callable(r));
     }
 
-    protected final <T> T withSyncTreeLock(Callable<T> c) {
+    protected final <T> T withTreeLock(Callable<T> c) {
+        obtainTreeLock();
         try {
-            obtainTreeLock();
             return c.call();
         } catch (RuntimeException e) {
             throw e;
@@ -245,32 +245,31 @@ public abstract class PollableElement {
     /**
      * <p>withTreeLock</p>
      *
-     * @param c a {@link java.util.concurrent.Callable} object.
+     * @param supplier a {@link java.util.concurrent.Callable} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> c) {
+    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> supplier) {
         obtainTreeLock();
         try {
-            final var future = c.get();
-            future.thenRun(this::releaseTreeLock);
-            return future;
-        } finally {
+            return supplier.get().whenComplete((v, t) -> releaseTreeLock());
+        } catch (RuntimeException | Error t) {
+            LOG.error("could not create CompletionStage", t);
             releaseTreeLock();
+            throw t;
         }
     }
 
-    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> c, long timeout) throws LockUnavailable {
+    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> supplier, long timeout) throws LockUnavailable {
         obtainTreeLock(timeout);
         try {
-            final var future = c.get();
-            future.thenRun(this::releaseTreeLock);
-            return future;
-        } finally {
+            return supplier.get().whenComplete((v, t) -> releaseTreeLock());
+        } catch (RuntimeException | Error t) {
+            LOG.error("could not create CompletionStage", t);
             releaseTreeLock();
+            throw t;
         }
     }
-
 
     /**
      * <p>withTreeLock</p>
@@ -279,8 +278,8 @@ public abstract class PollableElement {
      * @param timeout Lock timeout in milliseconds
      * @throws LockUnavailable 
      */
-    protected final void withSyncTreeLock(Runnable r, long timeout) throws LockUnavailable {
-        withSyncTreeLock(Executors.callable(r), timeout);
+    protected final void withTreeLock(Runnable r, long timeout) throws LockUnavailable {
+        withTreeLock(Executors.callable(r), timeout);
     }
 
     /**
@@ -292,7 +291,7 @@ public abstract class PollableElement {
      * @return a T object.
      * @throws LockUnavailable 
      */
-    protected final <T> T withSyncTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
+    protected final <T> T withTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
         boolean locked = false;
         try {
             obtainTreeLock(timeout);
@@ -491,7 +490,7 @@ public abstract class PollableElement {
                 }
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
     }
 
     /**
@@ -517,7 +516,7 @@ public abstract class PollableElement {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
      */
     public PollEvent extrapolateCause() {
-        return withSyncTreeLock(new Callable<PollEvent>() {
+        return withTreeLock(new Callable<PollEvent>() {
             @Override
             public PollEvent call() throws Exception {
                 return doExtrapolateCause();
@@ -539,7 +538,7 @@ public abstract class PollableElement {
      * <p>inheritParentalCause</p>
      */
     public void inheritParentalCause() {
-        withSyncTreeLock(new Runnable() {
+        withTreeLock(new Runnable() {
 
             @Override
             public void run() {

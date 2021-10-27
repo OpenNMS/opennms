@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.concurrent.FutureUtils;
 import org.opennms.netmgt.poller.PollStatus;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -50,6 +51,8 @@ import org.opennms.netmgt.poller.PollStatus;
  * @version $Id: $
  */
 abstract public class PollableContainer extends PollableElement {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PollableContainer.class);
 
     private final Map<Object, PollableElement> m_members = new HashMap<Object, PollableElement>();
 
@@ -147,7 +150,7 @@ abstract public class PollableContainer extends PollableElement {
                 PollableContainer.super.delete();
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
         
     }
     
@@ -253,7 +256,7 @@ abstract public class PollableContainer extends PollableElement {
         };
         
         if (withTreeLock) {
-            withSyncTreeLock(r);
+            withTreeLock(r);
         } else {
             r.run();
         }
@@ -279,7 +282,7 @@ abstract public class PollableContainer extends PollableElement {
                 updateStatus(iter.getResult());
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
     }
     
     /**
@@ -300,7 +303,7 @@ abstract public class PollableContainer extends PollableElement {
                 forEachMember(iter);
             }
         };
-        withSyncTreeLock(r);
+        withTreeLock(r);
     }
     
     PollableElement findMemberWithDescendent(PollableElement elem) {
@@ -321,11 +324,14 @@ abstract public class PollableContainer extends PollableElement {
             PollableElement member = findMemberWithDescendent(elem);
             return member.poll(elem).thenCompose(memberStatus -> {
                 if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
-                    return pollRemainingMembers(member).thenApply(pollStatus -> {
-                        updateStatus(pollStatus);
+                    LOG.debug("member state changed and 'upness' is different from container state - container: {}; member: {}; container state: {}", PollableContainer.this, member, getStatus());
+                    return pollRemainingMembers(member).thenApply(remainingMemberStatus -> {
+                        LOG.debug("update status - container: {}; status: {}", PollableContainer.this, remainingMemberStatus);
+                        updateStatus(remainingMemberStatus);
                         return getStatus();
                     });
                 }
+                LOG.debug("member state did not change or is same as container - container: {}; member: {}; container state: {}", PollableContainer.this, member, getStatus());
                 return CompletableFuture.completedFuture(getStatus());
             });
         });
@@ -338,10 +344,13 @@ abstract public class PollableContainer extends PollableElement {
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public CompletionStage<PollStatus> pollRemainingMembers(final PollableElement member) {
+        var memberStatus = member.getStatus();
+        final var remainingMembers = getMembers().stream().filter(elem -> elem != member).collect(Collectors.toList());
         return FutureUtils.traverse(
-                getMembers().stream().filter(elem -> elem != member).collect(Collectors.toList()),
+                remainingMembers,
                 elem -> elem.poll()
-        ).thenApply(list -> list.stream().anyMatch(PollStatus::isUp) ? PollStatus.up() : member.getStatus());
+        ).thenApply(list -> list.stream().anyMatch(PollStatus::isUp) ? PollStatus.up() : memberStatus)
+                .whenComplete((v, t) -> LOG.debug("polled remaining members - pollStatus: " + v + "; remaining members: " + remainingMembers, t));
     }
 
     /**
@@ -362,6 +371,7 @@ abstract public class PollableContainer extends PollableElement {
     @Override
     public CompletionStage<PollStatus> poll() {
         PollableElement leaf = selectPollElement();
+        LOG.debug("found leaf - container: {}; leaf: {}", this, leaf);
         if (leaf == null) {
             return CompletableFuture.completedFuture(PollStatus.up());
         }
@@ -396,8 +406,7 @@ abstract public class PollableContainer extends PollableElement {
                 }
             }
         };
-        withSyncTreeLock(r);
-        
+        withTreeLock(r);
     }
 
     /**

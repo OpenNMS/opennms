@@ -72,6 +72,7 @@ import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
+import org.opennms.netmgt.poller.client.rpc.PollerResponseDTO;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Timer;
@@ -161,7 +162,10 @@ public class PollableServiceConfigIT {
         when(pollerRequestBuilder.withService(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withTimeToLive(any())).thenReturn(pollerRequestBuilder);
         when(pollerRequestBuilder.withAdaptor(any())).thenReturn(pollerRequestBuilder);
-        
+        when(pollerRequestBuilder.withAttributes(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.withPatternVariables(any())).thenReturn(pollerRequestBuilder);
+        when(pollerRequestBuilder.execute()).thenReturn(CompletableFuture.completedFuture(new PollerResponseDTO(PollStatus.up())));
+
         final LocationAwarePollerClient locationAwarePollerClient = mock(LocationAwarePollerClient.class);
         when(locationAwarePollerClient.poll()).thenReturn(pollerRequestBuilder);
 
