@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -57,9 +58,93 @@ import org.springframework.stereotype.Component;
 public class FilesystemRestService {
 
     private static final List<String> FILES = Arrays.asList(
+            "availability-reports.xml",
+            "bsf-northbounder-configuration.xml",
+            "collectd-configuration.xml",
+            "discovery-configuration.xml",
+            "drools-northbounder-configuration.xml",
+            "http-datacollection-config.xml",
+            "jdbc-datacollection-config.xml",
+            "log4j2.xml",
             "poller-configuration.xml",
-            "collectd-configuration.xml"
-    );
+            "provisiond-configuration.xml",
+            "rancid-configuration.xml",
+            "snmp-asset-adapter-configuration.xml",
+            "statsd-configuration.xml",
+            "syslogd-configuration.xml",
+            "telemetryd-configuration.xml",
+            "trend-configuration.xml",
+            "viewsdisplay.xml",
+            "wmi-config.xml",
+            "wsman-asset-adapter-configuration.xml",
+            "wsman-config.xml",
+            "snmp-config.xml",
+            "notifd-configuration.xml",
+            "snmptrap-northbounder-configuration.xml",
+            "elastic-credentials.xml",
+            "ksc-performance-reports.xml",
+            "ifttt-config.xml",
+            "rtc-configuration.xml",
+            "enlinkd-configuration.xml",
+            "microblog-configuration.xml",
+            "snmp-metadata-adapter-configuration.xml",
+            "datacollection-config.xml",
+            "javamail-configuration.xml",
+            "threshd-configuration.xml",
+            "ackd-configuration.xml",
+            "tl1d-configuration.xml",
+            "log4j2-tools.xml",
+            "eventd-configuration.xml",
+            "surveillance-views.xml",
+            "opennms-activemq.xml",
+            "nsclient-config.xml",
+            "trapd-configuration.xml",
+            "vmware-datacollection-config.xml",
+            "nsclient-datacollection-config.xml",
+            "jmx-datacollection-config.xml",
+            "users.xml",
+            "destinationPaths.xml",
+            "snmp-hardware-inventory-adapter-configuration.xml",
+            "prometheus-datacollection.d/node-exporter.xml",
+            "xmp-datacollection-config.xml",
+            "thresholds.xml",
+            "translator-configuration.xml",
+            "vacuumd-configuration.xml",
+            "eventconf.xml",
+            "site-status-views.xml",
+            "email-northbounder-configuration.xml",
+            "notifications.xml",
+            "xml-datacollection-config.xml",
+            "remote-repository.xml",
+            "jmx-config.xml",
+            "vmware-config.xml",
+            "ami-config.xml",
+            "syslog-northbounder-configuration.xml",
+            "service-configuration.xml",
+            "notificationCommands.xml",
+            "actiond-configuration.xml",
+            "prometheus-datacollection-config.xml",
+            "vmware-cim-datacollection-config.xml",
+            "jasper-reports.xml",
+            "scriptd-configuration.xml",
+            "reportd-configuration.xml",
+            "tca-datacollection-config.xml",
+            "categories.xml",
+            "database-reports.xml",
+            "wsman-datacollection-config.xml",
+            "poll-outages.xml",
+            "rws-configuration.xml",
+            "snmp-interface-poller-configuration.xml",
+            "wmi-datacollection-config.xml",
+            "chart-configuration.xml",
+            "search-actions.xml",
+            "xmp-config.xml",
+            // non-xml
+            "javamail-configuration.properties",
+            "org.opennms.features.topology.app.cfg"
+    ); static {
+        FILES.sort(Comparator.naturalOrder());
+    }
 
     @GET
     @Path("/")
