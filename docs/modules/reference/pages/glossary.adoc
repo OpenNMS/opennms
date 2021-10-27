@@ -57,6 +57,9 @@ PostgreSQL:: Commonly used open-source relational database known for its stabili
 PostgreSQL scales up but not out.
 (See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL].)
 
+PRIS:: PRovisioning Integration Server, an optional service to gather node inventory information from an external source.
+Use to generate requisition XML files for creating/updating/removing nodes for monitoring.
+
 Provisioning:: The process of getting your devices, applications, and services into monitoring.
 (See xref:operation:provisioning/introduction.adoc#discovery-auto[Provisioning].)
 
