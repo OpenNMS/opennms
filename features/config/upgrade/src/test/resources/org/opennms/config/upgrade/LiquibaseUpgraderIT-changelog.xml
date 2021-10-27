@@ -29,5 +29,7 @@
             <cm:delete name="tobedeleted"/>
             <cm:put name="property3" type="boolean" default="false" />
         </cm:changeSchema>
+        <cm:registerSchema id="datachoices"/>
+        <cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/>
     </changeSet>
 </databaseChangeLog>

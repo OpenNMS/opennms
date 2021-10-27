@@ -55,6 +55,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,6 +118,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         Path etcDir = Files.createDirectories(Paths.get(this.opennmsHome + "/etc"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
+        Files.copy(Path.of("../../../smoke-test/src/main/resources/opennms-overlay/etc/org.opennms.features.datachoices.cfg"),
+                Path.of(etcDir + "/org.opennms.features.datachoices.cfg"));
+
+
         this.db = new DBUtils();
         this.connection = dataSource.getConnection();
         db.watch(connection);
@@ -155,8 +160,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
             liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog.xml", dataSource.getConnection());
 
-            // check if CM was called for schema
-            verify(cmSpy, times(3)).registerConfigDefinition(anyString(), any());
+            // check if CM was called for schemas
+            verify(cmSpy, times(4)).registerConfigDefinition(anyString(), any());
 
             // check if CM was called for config
             verify(cmSpy).registerConfiguration(eq(SCHEMA_NAME_PROVISIOND), eq(CONFIG_ID), any());
@@ -191,6 +196,12 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertEquals(".*", schema.getChildren().get(0).getPattern());
             assertEquals(ConfigItem.Type.BOOLEAN, schema.getChildren().get(1).getType());
             assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
+
+            // check for org.opennms.features.datachoices.cfg
+            Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
+            assertEquals(2, config.get().keySet().size());
+            assertEquals("false", config.get().get("enabled"));
+            assertEquals("admin", config.get().get("acknowledged-by"));
         } finally {
             this.db.cleanUp();
         }
