@@ -42,6 +42,10 @@ KSC Reports:: Key SNMP customized (KSC) reports provide a way to generate prefab
 Meridian:: Subscription-based, optimized, and stable version of the OpenNMS Horizon platform.
 Annual release with monthly security patches that includes only the most stable and secure Horizon features.
 
+Message broker:: When using Minions and Sentinels, a message broker is required for communication between servers.
+{page-component-title} has an embedded ActiveMQ server available for smaller deployments.
+You can swap the broker with a dedicated ActiveMQ, gRPC, or Kafaka cluster to provide scalability and load balancing.
+
 Minion:: Instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that OpenNMS cannot reach.
 Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 (See xref:development:minion/introduction.adoc#minion[Minion].)
