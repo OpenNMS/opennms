@@ -28,14 +28,19 @@
 
 package org.opennms.netmgt.trapd;
 
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,11 +49,16 @@ import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.distributed.core.api.RestClient;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,6 +82,9 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 	@Autowired
 	private DistPollerDao distPollerDao;
 
+	@Autowired
+	private TwinPublisher twinPublisher;
+
 	@Override
 	protected String setConfigAdminInitialConfiguration(Properties props) {
 		getAvailablePort(m_port, 2162);
@@ -81,27 +94,17 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		final RestClient client;
-		try {
-			client = mock(RestClient.class);
-			when(client.getSnmpV3Users()).thenReturn("<?xml version='1.0'?>"
-				+ "<trapd-configuration xmlns='http://xmlns.opennms.org/xsd/config/trapd' snmp-trap-address='127.0.0.1' snmp-trap-port='10500' new-suspect-on-trap='true'>"
-				+ "     <snmpv3-user security-name='opennms' security-level='0' auth-protocol='MD5' auth-passphrase='0p3nNMSv3' privacy-protocol='DES' privacy-passphrase='0p3nNMSv3' />"
-				+ "</trapd-configuration>");
-		} catch (Exception e) {
-			throw Throwables.propagate(e);
-		}
 		// add mocked services to osgi mocked container (Felix Connect)
-		services.put(RestClient.class.getName(), asService(client, null, null));
 		services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
 		services.put(MessageDispatcherFactory.class.getName(), asService(new MockMessageDispatcherFactory<>(), null, null));
 		services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
+		services.put(CamelContext.class.getName(), asService(new DefaultCamelContext(), null, null));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "OSGI-INF/blueprint/blueprint-trapd-listener.xml";
+		return "OSGI-INF/blueprint/blueprint-empty.xml";
 	}
 
 	@Test
@@ -109,11 +112,29 @@ public class TrapdConfigReloadIT extends CamelBlueprintTest {
 		// Check that it has not yet been refreshed
 		TrapdConfig trapdConfig = getOsgiService(TrapdConfig.class);
 		Assert.assertEquals(true, trapdConfig.getSnmpV3Users().isEmpty());
+		var session = twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+		session.publish(createTrapListenerConfig());
 
 		// The setSnmpV3Users method must have been invoked
 		Thread.sleep(20000);
 
 		// Verify
 		Assert.assertEquals(1, trapdConfig.getSnmpV3Users().size());
+	}
+
+	private TrapListenerConfig createTrapListenerConfig() {
+		TrapdConfiguration config = new TrapdConfiguration();
+		config.setSnmpTrapPort(1162);
+		config.setSnmpTrapAddress("localhost");
+		Snmpv3User snmpv3User = TrapListenerTest.createUser("MD5", "0p3nNMSv3", "some-engine-id",
+				"DES", "0p3nNMSv3", "some-security-name");
+		List<Snmpv3User> snmpv3UserList = new ArrayList<>();
+		snmpv3UserList.add(snmpv3User);
+		config.setSnmpv3User(snmpv3UserList);
+
+		TrapListenerConfig trapListenerConfig = new TrapListenerConfig();
+		TrapdConfigBean configBean = new TrapdConfigBean(config);
+		trapListenerConfig.setSnmpV3Users(configBean.getSnmpV3Users());
+		return trapListenerConfig;
 	}
 }

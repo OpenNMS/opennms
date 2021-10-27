@@ -97,7 +97,6 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
         // add mocked services to osgi mocked container (Felix Connect)
         services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
         services.put(MessageDispatcherFactory.class.getName(), asService(mockMessageDispatcherFactory, null, null));
-        services.put(RestClient.class.getName(), asService(mock(RestClient.class), null, null));
         services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
     }
 
@@ -123,6 +122,6 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "OSGI-INF/blueprint/blueprint-trapd-listener.xml";
+        return "OSGI-INF/blueprint/blueprint-empty.xml";
     }
 }
