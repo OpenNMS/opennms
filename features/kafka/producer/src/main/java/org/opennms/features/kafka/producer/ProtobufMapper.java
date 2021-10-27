@@ -429,6 +429,13 @@ public class ProtobufMapper {
         if (node.getForeignId() != null) {
             builder.setForeignId(node.getForeignId());
         }
+        if (node.getLabel() != null) {
+            builder.setNodeLabel(node.getLabel());
+        }
+        String location = node.getLocation() != null ? node.getLocation().getLocationName() : null;
+        if (location != null) {
+            builder.setLocation(location);
+        }
         return builder;
     }
 
