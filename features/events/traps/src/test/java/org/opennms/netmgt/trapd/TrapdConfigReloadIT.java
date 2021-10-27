@@ -28,113 +28,115 @@
 
 package org.opennms.netmgt.trapd;
 
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.hasSize;
 
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.net.InetAddress;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.util.KeyValueHolder;
-import org.junit.Assert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.sink.api.MessageConsumerManager;
-import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
-import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.distributed.core.api.RestClient;
-import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
-import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.snmp.TrapListenerConfig;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.base.Throwables;
-
-/**
- * Verifies that the {@link org.opennms.netmgt.config.TrapdConfig} is reloaded regularly from OpenNMS
- */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
+@ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath:/META-INF/opennms/applicationContext-twin-memory.xml"
+		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath*:/META-INF/opennms/component-dao.xml",
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
+		"classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
+		// Overrides the port that Trapd binds to and sets newSuspectOnTrap to 'true'
+		"classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"
 })
 @JUnitConfigurationEnvironment
-public class TrapdConfigReloadIT extends CamelBlueprintTest {
-
-	private AtomicInteger m_port = new AtomicInteger(1162);
-
-	@Autowired
-	private DistPollerDao distPollerDao;
+@JUnitTemporaryDatabase
+public class TrapdConfigReloadIT {
 
 	@Autowired
-	private TwinPublisher twinPublisher;
+	private TrapdConfigFactory trapdConfig;
 
-	@Override
-	protected String setConfigAdminInitialConfiguration(Properties props) {
-		getAvailablePort(m_port, 2162);
-		props.put("trapd.listen.port", String.valueOf(m_port.get()));
-		return "org.opennms.netmgt.trapd";
+	@Autowired
+	private Trapd trapd;
+
+	@Autowired
+	private TrapListener trapListener;
+
+	@Autowired
+	private MockEventIpcManager events;
+
+	private final static InetAddress LOCALHOST = InetAddressUtils.addr("127.0.0.1");
+
+	@Before
+	public void setUp() {
+		this.events.setSynchronous(true);
+		this.events.getEventAnticipator().reset();
+
+		this.trapd.onStart();
 	}
 
-	@Override
-	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// add mocked services to osgi mocked container (Felix Connect)
-		services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
-		services.put(MessageDispatcherFactory.class.getName(), asService(new MockMessageDispatcherFactory<>(), null, null));
-		services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
-		services.put(CamelContext.class.getName(), asService(new DefaultCamelContext(), null, null));
-	}
+	@After
+	public void tearDown() {
+		this.trapd.onStop();
 
-	// The location of our Blueprint XML files to be used for testing
-	@Override
-	protected String getBlueprintDescriptor() {
-		return "OSGI-INF/blueprint/blueprint-empty.xml";
+		this.events.getEventAnticipator().verifyAnticipated();
 	}
 
 	@Test
-	public void verifyReload() throws Exception {
-		// Check that it has not yet been refreshed
-		TrapdConfig trapdConfig = getOsgiService(TrapdConfig.class);
-		Assert.assertEquals(true, trapdConfig.getSnmpV3Users().isEmpty());
-		var session = twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
-		session.publish(createTrapListenerConfig());
+	public void testSnmpV3UserUpdate() throws Exception {
+		final var user = this.trapdConfig.getConfig().getSnmpv3User(0);
 
-		// The setSnmpV3Users method must have been invoked
-		Thread.sleep(20000);
+		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/default/trap", "trapd")
+																  .setInterface(LOCALHOST).getEvent());
+		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/internal/discovery/newSuspect", "trapd")
+																  .setInterface(LOCALHOST).getEvent());
 
-		// Verify
-		Assert.assertEquals(1, trapdConfig.getSnmpV3Users().size());
+		this.sendTrap(user, 1);
+		await().until(this.events.getEventAnticipator()::getAnticipatedEventsReceived, hasSize(2));
+
+		// Update SNMPv3 users
+		user.setPrivacyPassphrase(user.getPrivacyPassphrase() + "-changed");
+		user.setAuthPassphrase(user.getAuthPassphrase() + "-altered");
+
+		this.trapd.publishListenerConfig();
+
+		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/default/trap", "trapd")
+																  .setInterface(LOCALHOST).getEvent());
+		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/internal/discovery/newSuspect", "trapd")
+																  .setInterface(LOCALHOST).getEvent());
+
+		this.sendTrap(user, 2);
+		await().until(this.events.getEventAnticipator()::getAnticipatedEventsReceived, hasSize(4));
 	}
 
-	private TrapListenerConfig createTrapListenerConfig() {
-		TrapdConfiguration config = new TrapdConfiguration();
-		config.setSnmpTrapPort(1162);
-		config.setSnmpTrapAddress("localhost");
-		Snmpv3User snmpv3User = TrapListenerTest.createUser("MD5", "0p3nNMSv3", "some-engine-id",
-				"DES", "0p3nNMSv3", "some-security-name");
-		List<Snmpv3User> snmpv3UserList = new ArrayList<>();
-		snmpv3UserList.add(snmpv3User);
-		config.setSnmpv3User(snmpv3UserList);
+	private void sendTrap(final Snmpv3User user, final int marker) throws Exception {
+		final SnmpTrapHelper snmpTrapHelper = new SnmpTrapHelper();
 
-		TrapListenerConfig trapListenerConfig = new TrapListenerConfig();
-		TrapdConfigBean configBean = new TrapdConfigBean(config);
-		trapListenerConfig.setSnmpV3Users(configBean.getSnmpV3Users());
-		return trapListenerConfig;
+		final var trap = snmpTrapHelper.createV3Trap(".1.3.6.1.4.1.5813.1.1", "0");
+		snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", Integer.toString(marker));
+
+		trap.send(InetAddressUtils.toIpAddrString(LOCALHOST),
+				  this.trapdConfig.getSnmpTrapPort(),
+				  user.getSecurityLevel(),
+				  user.getSecurityName(),
+				  user.getAuthPassphrase(),
+				  user.getAuthProtocol(),
+				  user.getPrivacyPassphrase(),
+				  user.getPrivacyProtocol());
 	}
 }
