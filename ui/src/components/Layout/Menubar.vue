@@ -25,6 +25,9 @@ import { FeatherIcon } from '@featherds/icon'
 import LightDark from '@/assets/LightDark.vue'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
+import { useStore } from 'vuex'
+
+const store = useStore()
 const returnHandler = () => window.location.href = '/opennms/'
 const logo = Logo
 const lightDark = LightDark
@@ -53,6 +56,7 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   // save the new theme in data and localStorage
   theme.value = newTheme
   localStorage.setItem('theme', theme.value)
+  store.dispatch('appModule/setTheme', theme.value)
 }
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
