@@ -520,6 +520,7 @@
                 <feature>opennms-syslogd-listener-javanet</feature>
                 <feature>opennms-syslogd-listener-camel-netty</feature>
                 <feature>opennms-trapd</feature>
+                <feature>opennms-util</feature>
                 <feature>jax-rs-connector</feature>
                 <feature>jax-rs-shell-commands</feature>
                 <feature>opennms-osgi-core-rest</feature>
