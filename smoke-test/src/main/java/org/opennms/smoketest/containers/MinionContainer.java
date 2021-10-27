@@ -184,6 +184,19 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "\t}\n" +
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaSink, Map.class));
+            
+            String kafkaTwin = "{\n" +
+                    "\t\"ipc\": {\n" +
+                    "\t\t\"twin\": {\n" +
+                    "\t\t\t\"kafka\": {\n" +
+                    "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
+                    "\t\t\t\t\"acks\": 1,\n" +
+                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
+                    "\t\t\t}\n" +
+                    "\t\t}\n" +
+                    "\t}\n" +
+                    "}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaTwin, Map.class));
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             String grpc = "{\n" +
                     "\t\"ipc\": {\n" +
