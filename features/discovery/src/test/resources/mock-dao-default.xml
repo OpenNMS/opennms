@@ -11,9 +11,7 @@
 		<constructor-arg value="true"/>
 	</bean>
 
-	<bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
-
 	<bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
-		<property name="configFile" value="mock/etc/discovery-configuration.xml"/>
+		<property name="configFile" value="etc/discovery-configuration-default.xml"/>
 	</bean>
 </beans>
