@@ -2,6 +2,7 @@
 [glossary]
 = Glossary
 
+[glossary]
 ActiveMQ:: Java-based open-source message broker supported by the Apache community.
 (See xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set Up Message Broker].)
 
