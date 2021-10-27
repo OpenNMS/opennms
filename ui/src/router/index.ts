@@ -32,7 +32,7 @@ const router = createRouter({
       component: DataTableDemo
     },
     {
-      path: '/provisionConfig',
+      path: '/provisionDConfig',
       name: 'provisionDConfig',
       component: ProvisionDConfig,
       children: [
