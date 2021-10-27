@@ -31,10 +31,30 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 
-public class MikrotikLldpRemTableTracker extends LldpRemTableTracker{
+public class MikrotikLldpRemTableTracker extends LldpRemTableTracker {
 
     public MikrotikLldpRemTableTracker() {
         super();
+    }
+
+    public static class MikrotikLldpRemRow extends LldpRemRow {
+
+        public MikrotikLldpRemRow(int columnCount, SnmpInstId instance) {
+            super(columnCount, instance);
+        }
+
+        public Integer getMtxrNeighborIndex() {
+            return getInstance().getSubIdAt(2);
+        }
+
+        public MikrotikLldpLink getMtxrLldpLink() {
+            MikrotikLldpLink mtxrLink = new MikrotikLldpLink();
+            mtxrLink.setMtxrNeighborIndex(getMtxrNeighborIndex());
+            mtxrLink.setLldpLink(getLldpLink());
+            return mtxrLink;
+        }
+
+
     }
 
     /** {@inheritDoc} */
@@ -43,16 +63,19 @@ public class MikrotikLldpRemTableTracker extends LldpRemTableTracker{
         return new MikrotikLldpRemRow(columnCount, instance);
     }
 
-    public static class MikrotikLldpRemRow extends LldpRemRow {
-
-        public MikrotikLldpRemRow(int columnCount, SnmpInstId instance) {
-            super(columnCount, instance);
-        }
-        @Override
-        public Integer getLldpRemLocalPortNum() {
-            return getInstance().getSubIdAt(2);
-        }
-
+    /** {@inheritDoc} */
+    @Override
+    public void rowCompleted(final SnmpRowResult row) {
+        processLldpRemRow((MikrotikLldpRemRow)row);
     }
+
+    /**
+     * <p>processLldpRemRow</p>
+     *
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
+     */
+    public void processLldpRemRow(final MikrotikLldpRemRow row) {
+    }
+
 
 }

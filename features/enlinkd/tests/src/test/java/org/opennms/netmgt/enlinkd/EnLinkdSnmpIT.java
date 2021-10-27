@@ -709,9 +709,90 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     }
 
     /**
-     * This test is designed to test the issues in bug NMS-13593.
+     * This test is designed to test the issues in bug NMS-13637.
      *
-     * @see "https://issues.opennms.org/browse/NMS-13593"
+     * @see "https://issues.opennms.org/browse/NMS-13637"
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=MKT_CISCO_SW01_IP, port=161, resource=MKT_CISCO_SW01_RESOURCE)
+    })
+    public void testCiscoHomeLldpWalk() throws Exception {
+        LOG.info(MKT_CISCO_SW01_IP);
+        String trackerName00 = "lldpLocalGroup00";
+
+        SnmpAgentConfig  config00 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(MKT_CISCO_SW01_IP));
+        LldpLocalGroupTracker lldpLocalGroup00 = new LldpLocalGroupTracker();
+        try {
+            m_client.walk(config00,lldpLocalGroup00)
+                    .withDescription(trackerName00)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+        }
+
+        assertEquals(MKT_CISCO_SW01_LLDP_ID,lldpLocalGroup00.getLldpElement().getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,lldpLocalGroup00.getLldpElement().getLldpChassisIdSubType());
+        assertEquals(MKT_CISCO_SW01_NAME,lldpLocalGroup00.getLldpElement().getLldpSysname());
+
+        final List<LldpLink> links00 = new ArrayList<>();
+
+        LldpRemTableTracker lldpRemTable00 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                links00.add(row.getLldpLink());
+            }
+        };
+
+        try {
+            m_client.walk(config00,
+                            lldpRemTable00)
+                    .withDescription("lldpRemTable00")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+        }
+
+        assertEquals(9,links00.size());
+
+        LldpLocPortGetter lldpLocPortGetter = new LldpLocPortGetter(config00,m_client,null,1);
+
+        links00.stream().filter(link -> link.getLldpRemSysname().equals(MKTROUTER1_NAME))
+                .forEach(link -> {
+                    link = lldpLocPortGetter.getLldpLink(link);
+                    assertEquals(5,link.getLldpLocalPortNum().intValue());
+                    assertEquals("gi5",link.getLldpPortId());
+                    assertEquals("GigabitEthernet5", link.getLldpPortDescr());
+                    assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+                    assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,link.getLldpRemChassisIdSubType());
+                    assertEquals(MKTROUTER1_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpRemPortIdSubType());
+                    assertEquals("ether1",link.getLldpRemPortId());
+                });
+
+        links00.stream().filter(link -> link.getLldpRemSysname().equals(MKTROUTER2_NAME))
+                .forEach(link -> {
+                    link = lldpLocPortGetter.getLldpLink(link);
+                    assertEquals(5,link.getLldpLocalPortNum().intValue());
+                    assertEquals("gi5",link.getLldpPortId());
+                    assertEquals("GigabitEthernet5", link.getLldpPortDescr());
+                    assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+                    assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,link.getLldpRemChassisIdSubType());
+                    assertEquals(MKTROUTER2_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpRemPortIdSubType());
+                    assertEquals("ether1",link.getLldpRemPortId());
+                });
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-13637.
+     *
+     * @see "https://issues.opennms.org/browse/NMS-13637"
      *
      */
     @Test
@@ -736,14 +817,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         assertNull(lldpLocalGroup01.getLldpLocChassisid());
         assertNull(lldpLocalGroup01.getLldpLocChassisidSubType());
-        assertNull(lldpLocalGroup01.getLldpLocSysname());
+        assertEquals(MKTROUTER1_NAME,lldpLocalGroup01.getLldpLocSysname());
 
-        final List<LldpLink> links01 = new ArrayList<>();
+        final List<MikrotikLldpLink> links01 = new ArrayList<>();
 
-        LldpRemTableTracker lldpRemTable01 = new LldpRemTableTracker() {
+        MikrotikLldpRemTableTracker lldpRemTable01 = new MikrotikLldpRemTableTracker() {
 
-            public void processLldpRemRow(final LldpRemRow row) {
-                links01.add(row.getLldpLink());
+            public void processLldpRemRow(final MikrotikLldpRemRow row) {
+                links01.add(row.getMtxrLldpLink());
             }
         };
 
@@ -758,37 +839,60 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.info("run: collection interrupted, exiting {}",e.getMessage());
         }
 
-        assertEquals(1,links01.size());
+        assertEquals(5,links01.size());
+        
+        MikrotikLldpLocalTableTracker mikrotikLldpLocalTable01 = new MikrotikLldpLocalTableTracker();
 
-        LldpLink router1Link=links01.iterator().next();
-        assertEquals(0,router1Link.getLldpLocalPortNum().intValue());
-        assertEquals(MKTROUTER2_LLDP_ID,router1Link.getLldpRemChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,router1Link.getLldpRemChassisIdSubType());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,router1Link.getLldpRemPortIdSubType());
-        assertEquals("ether1",router1Link.getLldpRemPortId());
-        assertEquals("",router1Link.getLldpRemPortDescr());
-        assertEquals(MKTROUTER2_NAME,router1Link.getLldpRemSysname());
+        try {
+            m_client.walk(config01,
+                            mikrotikLldpLocalTable01)
+                    .withDescription("mikrotikLldpLocalTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+        }
 
-        router1Link.setLldpLocalPortNum(1);
-        assertNull(router1Link.getLldpPortIdSubType());
-        assertNull(router1Link.getLldpPortIdSubType());
-        assertNull(router1Link.getLldpPortDescr());
+        MikrotikMtxrIndexTableTracker mikrotikMtxrIndexTable01 = new MikrotikMtxrIndexTableTracker();
+        try {
+            m_client.walk(config01,
+                            mikrotikMtxrIndexTable01)
+                    .withDescription("mikrotikMtxrIndexTable01")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+        }
 
-        final LldpLocPortGetter lldpLocPort01 = new LldpLocPortGetter(config01,
-                m_client,
-                null,0);
+        links01.forEach(link -> {
+                assertNull(link.getMtxrIndex());
+                assertNull(link.getLldpLink().getLldpPortId());
+                assertNotNull(link.getMtxrNeighborIndex());
+                link = mikrotikMtxrIndexTable01.getLldpLink(link);
+                assertEquals(1, link.getMtxrIndex().intValue());
+                link = mikrotikLldpLocalTable01.getLldpLink(link);
+                assertEquals("ether1",link.getLldpLink().getLldpPortId());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpLink().getLldpPortIdSubType());
+        });
 
-        LldpLink update1 = lldpLocPort01.getLldpLink(router1Link);
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,update1.getLldpPortIdSubType());
-        assertEquals(MKTROUTER1_LLDP_ID,update1.getLldpPortId());
-        assertEquals("ether1",update1.getLldpPortDescr());
+        Map<Integer, MikrotikLldpLocalTableTracker.LldpLocalPortRow> portRowMap = mikrotikLldpLocalTable01.getMikrotikPortTable();
+        assertTrue(portRowMap.containsKey(1));
+        assertEquals(MKTROUTER1_LLDP_ID,portRowMap.get(1).getLldpLocPortId());
+        assertEquals(3,portRowMap.get(1).getLldpLocalPortIdSubtype().intValue());
+
+        LldpElement mktelem = mikrotikLldpLocalTable01.getLldpElement(lldpLocalGroup01.getLldpLocSysname());
+        assertEquals(MKTROUTER1_LLDP_ID,mktelem.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,mktelem.getLldpChassisIdSubType());
+
     }
 
 
     /**
-     * This test is designed to test the issues in bug NMS-13593.
+     * This test is designed to test the issues in bug NMS-13637.
      *
-     * @see "https://issues.opennms.org/browse/NMS-13593"
+     * @see "https://issues.opennms.org/browse/NMS-13637"
      *
      */
     @Test
@@ -813,11 +917,11 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         assertNull(lldpLocalGroup02.getLldpLocChassisid());
         assertNull(lldpLocalGroup02.getLldpLocChassisidSubType());
-        assertNull(lldpLocalGroup02.getLldpLocSysname());
+        assertEquals(MKTROUTER2_NAME,lldpLocalGroup02.getLldpLocSysname());
 
         final List<LldpLink> links02 = new ArrayList<>();
 
-        MikrotikLldpRemTableTracker lldpRemTable02 = new MikrotikLldpRemTableTracker() {
+        LldpRemTableTracker lldpRemTable02 = new LldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
                 links02.add(row.getLldpLink());
@@ -835,30 +939,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.info("run: collection interrupted, exiting {}",e.getMessage());
         }
 
-        assertEquals(1,links02.size());
-
-        LldpLink router2Link=links02.iterator().next();
-        assertEquals(1,router2Link.getLldpLocalPortNum().intValue());
-        assertEquals(MKTROUTER1_LLDP_ID,router2Link.getLldpRemChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,router2Link.getLldpRemChassisIdSubType());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,router2Link.getLldpRemPortIdSubType());
-        assertEquals("ether1",router2Link.getLldpRemPortId());
-        assertEquals("",router2Link.getLldpRemPortDescr());
-        assertEquals(MKTROUTER1_NAME,router2Link.getLldpRemSysname());
-
-        router2Link.setLldpLocalPortNum(1);
-        assertNull(router2Link.getLldpPortIdSubType());
-        assertNull(router2Link.getLldpPortIdSubType());
-        assertNull(router2Link.getLldpPortDescr());
-
-        final LldpLocPortGetter lldpLocPort02 = new LldpLocPortGetter(config02,
-                m_client,
-                null,0);
-
-        LldpLink update2 = lldpLocPort02.getLldpLink(router2Link);
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,update2.getLldpPortIdSubType());
-        assertEquals(MKTROUTER2_LLDP_ID,update2.getLldpPortId());
-        assertEquals("ether1",update2.getLldpPortDescr());
+        assertEquals(5,links02.size());
     }
 
     @Test
