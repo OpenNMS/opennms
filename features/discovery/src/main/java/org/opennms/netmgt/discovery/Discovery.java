@@ -66,7 +66,7 @@ public class Discovery extends AbstractServiceDaemon {
     protected static final String LOG4J_CATEGORY = "discovery";
 
     @Autowired
-    private DiscoveryConfigurationFactory m_discoveryFactory;
+    private DiscoveryConfigFactory m_discoveryFactory;
 
     @Autowired
     private DiscoveryTaskExecutor m_discoveryTaskExecutor;
