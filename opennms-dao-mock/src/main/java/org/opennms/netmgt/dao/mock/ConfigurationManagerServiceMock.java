@@ -116,17 +116,19 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             return configOptional;
         }
         if (configFile == null) {
-            this.configOptional = Optional.empty();
-        } else {
-            try {
-                InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
-                String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
-                configOptional = Optional.of(xmlStr);
-                LOG.debug("xmlStr: {}", xmlStr);
-            } catch (Exception e) {
-                LOG.error("FAIL TO LOAD XML: {}", configFile, e);
-            }
+          // if configFile is null, assume config file in opennms-dao-mock resource etc directly 
+          configFile = "etc/" + configName + "-" + configId + ".xml";
         }
+
+        try {
+            InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+            String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
+            configOptional = Optional.of(xmlStr);
+            LOG.debug("xmlStr: {}", xmlStr);
+        } catch (Exception e) {
+            LOG.error("FAIL TO LOAD XML: {}", configFile, e);
+        }
+
         return configOptional;
     }
 
