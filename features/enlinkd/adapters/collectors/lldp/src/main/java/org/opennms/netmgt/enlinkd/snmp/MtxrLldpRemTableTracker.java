@@ -50,7 +50,7 @@ public class MtxrLldpRemTableTracker extends LldpRemTableTracker {
         public MtxrLldpLink getMtxrLldpLink() {
             MtxrLldpLink mtxrLink = new MtxrLldpLink();
             mtxrLink.setMtxrNeighborIndex(getMtxrNeighborIndex());
-            mtxrLink.setLldpLink(getLldpLink());
+            mtxrLink.setLldpLink(super.getLldpLink());
             return mtxrLink;
         }
 

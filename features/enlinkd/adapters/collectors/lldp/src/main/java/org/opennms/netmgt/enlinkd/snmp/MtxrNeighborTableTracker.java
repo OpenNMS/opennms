@@ -39,13 +39,9 @@ public class MtxrNeighborTableTracker extends TableTracker {
 
     private final static Logger LOG = LoggerFactory.getLogger(MtxrNeighborTableTracker.class);
 
-    public final static SnmpObjId MTXR_NEIGHBOR_MAC_ADDRESS =SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.3");
-    public final static SnmpObjId MTXR_NEIGHBOR_IDENTITY =SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.6");
     public final static SnmpObjId MTXR_NEIGHBOR_INTERFACE_ID = SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.8");
 
     public static final SnmpObjId[] s_mtxrneiinterfaceid_elemList = new SnmpObjId[] {
-            MTXR_NEIGHBOR_MAC_ADDRESS,
-            MTXR_NEIGHBOR_IDENTITY,
             MTXR_NEIGHBOR_INTERFACE_ID
     };
 
@@ -62,16 +58,6 @@ public class MtxrNeighborTableTracker extends TableTracker {
         public Integer getMtxrNeighborInterfaceId() {
             return getValue(MTXR_NEIGHBOR_INTERFACE_ID).toInt();
         }
-
-        public String getMtxrNeighborIdentity() {
-            return getValue(MTXR_NEIGHBOR_IDENTITY).toDisplayString();
-        }
-
-        public String getMtxrNeighborMacAddress() {
-            return LldpLocalGroupTracker.getDisplayable(getValue(MTXR_NEIGHBOR_MAC_ADDRESS));
-        }
-
-
 
     }
 
@@ -108,8 +94,10 @@ public class MtxrNeighborTableTracker extends TableTracker {
     public MtxrLldpLink getLldpLink(MtxrLldpLink mtxrlldplink) {
        if (mtxrNeighborMap.containsKey(mtxrlldplink.getMtxrNeighborIndex())) {
             mtxrlldplink.setMtxrIndex(mtxrNeighborMap.get(mtxrlldplink.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId());
+            mtxrlldplink.getLldpLink().setLldpLocalPortNum(mtxrlldplink.getMtxrNeighborIndex());
         }
-        return mtxrlldplink;
+       LOG.debug("getLldpLink: neiIndex {} -> interfaceId {}", mtxrlldplink.getMtxrNeighborIndex(), mtxrlldplink.getMtxrIndex());
+       return mtxrlldplink;
     }
 
 }

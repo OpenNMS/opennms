@@ -60,6 +60,8 @@ public final class NodeDiscoveryLldp extends NodeCollector {
 
     private static final String TIMETETRA_SYSOID=".1.3.6.1.4.1.6527";
 
+    private static final String MTXR_SYSOID=".1.3.6.1.4.1.14988";
+
     private final LldpTopologyService m_lldpTopologyService;
     /**
      * Constructs a new SNMP collector for Lldp Node Discovery. 
@@ -102,99 +104,179 @@ public final class NodeDiscoveryLldp extends NodeCollector {
         }
         
         if (lldpLocalGroup.getLldpLocChassisid() == null ) {
-    		LOG.info( "run: node[{}]: LLDP_MIB not supported",
-    				getNodeId());
+            if (walkMtrx(peer,lldpLocalGroup.getLldpLocSysname())) {
+                m_lldpTopologyService.reconcile(getNodeId(), now);
+                return;
+            }
+            LOG.info("run: node[{}]: LLDP_MIB not supported",
+                    getNodeId());
             return;
-        } else {
-    		LOG.debug( "run: node[{}]: lldp identifier : {}",
+        }
+        LOG.debug( "run: node[{}]: lldp identifier : {}",
     				getNodeId(),
     				lldpLocalGroup.getLldpElement().getLldpChassisId());
-        }
 
         m_lldpTopologyService.store(getNodeId(),
                 lldpLocalGroup.getLldpElement());
 
+        if (isInactiveDragonWave(lldpLocalGroup)) {
+            m_lldpTopologyService.reconcile(getNodeId(),now);
+            return;
+        }
+
+        if (!walkLldpRemTable(peer)) {
+            if (getSysoid() != null && getSysoid().startsWith(TIMETETRA_SYSOID)) {
+                walkTimeTetra(peer);
+            }
+        }
+        m_lldpTopologyService.reconcile(getNodeId(),now);
+    }
+
+    private boolean isInactiveDragonWave(LldpLocalGroupTracker lldpLocalGroup) {
         if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
             if (lldpLocalGroup.getLldpLocChassisid().toHexString().equals(DW_NULL_CHASSIS_ID) &&
-                    lldpLocalGroup.getLldpLocChassisidSubType() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
-        		LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
-        				getNodeId(),
-        				getPrimaryIpAddressString(),
-        				lldpLocalGroup.getLldpElement());
-                return;
+                    lldpLocalGroup.getLldpLocChassisidSubType().intValue() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
+                LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
+                        getNodeId(),
+                        getPrimaryIpAddressString(),
+                        lldpLocalGroup.getLldpElement());
+                return true;
             }
-    
+
             if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID) ) {
-        		LOG.info( "run: node[{}]: lldp identifier : {}. lldp not active for Dragon Wave Device.",
-        				getNodeId(),
-        				lldpLocalGroup.getLldpElement());
-                return;
+                LOG.info( "run: node[{}]: lldp identifier : {}. lldp not active for Dragon Wave Device.",
+                        getNodeId(),
+                        lldpLocalGroup.getLldpElement());
+                return true;
             }
         }
 
+        return false;
+    }
+
+    private boolean walkLldpRemTable(SnmpAgentConfig peer) {
         List<LldpLink> links = new ArrayList<>();
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
-        	public void processLldpRemRow(final LldpRemRow row) {
-        	    links.add(row.getLldpLink());
-        	}
+            public void processLldpRemRow(final LldpRemRow row) {
+                links.add(row.getLldpLink());
+            }
         };
         try {
             getLocationAwareSnmpClient().walk(peer,
-                                      lldpRemTable)
-                                  .withDescription("lldpRemTable")
-                                  .withLocation(getLocation())
-                                  .execute()
-                                  .get();
+                            lldpRemTable)
+                    .withDescription("lldpRemTable")
+                    .withLocation(getLocation())
+                    .execute()
+                    .get();
         } catch (ExecutionException e) {
-            LOG.debug("run: node [{}]: ExecutionException: {}", 
-                     getNodeId(), e.getMessage());
-            return;
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage());
+            return false;
         } catch (final InterruptedException e) {
-            LOG.debug("run: node [{}]: InterruptedException: {}", 
-                     getNodeId(), e.getMessage());
-            return;
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage());
+            return false;
         }
-        if (links.size() == 0) {
-            if (getSysoid() != null && getSysoid().startsWith(TIMETETRA_SYSOID)) {
-                LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
-                List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
-                TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
-                    @Override
-                    public void processLldpRemRow(LldpRemRow row) {
-                        ttlinks.add(row.getLldpLink());
-                    }
-                };
-
-                try {
-                    getLocationAwareSnmpClient().walk(peer,
-                                    timeTetraLldpRemTableTracker)
-                            .withDescription("timeTetraLldpRemTable")
-                            .withLocation(getLocation())
-                            .execute()
-                            .get();
-                } catch (ExecutionException e) {
-                    LOG.debug("run: node [{}]: ExecutionException: {}",
-                            getNodeId(), e.getMessage());
-                    return;
-                } catch (final InterruptedException e) {
-                    LOG.debug("run: node [{}]: InterruptedException: {}",
-                            getNodeId(), e.getMessage());
-                    return;
-                }
-                LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
-                storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
+        if (links.isEmpty()) {
+            LOG.info("run: no remote table entry found walking LLDP-MIB");
+            return false;
+        }
+        LOG.info("run: {} remote table entry found walking LLDP-MIB", links.size());
+        storeLldpLinks(links,
+                new LldpLocPortGetter(peer,
                         getLocationAwareSnmpClient(),
                         getLocation(), getNodeId()));
-            }
-        } else {
-            LOG.info("run: {} remote table entry found walking LLDP-MIB", links.size());
-            storeLldpLinks(links,
-                    new LldpLocPortGetter(peer,
-                            getLocationAwareSnmpClient(),
-                            getLocation(), getNodeId()));
+        return true;
+    }
+
+    private boolean walkMtrx(SnmpAgentConfig peer, String sysname) {
+        if (getSysoid() == null || !getSysoid().startsWith(MTXR_SYSOID)) {
+            return false;
         }
-        m_lldpTopologyService.reconcile(getNodeId(),now);
+
+        final List<MtxrLldpLink> mtxrlldplinks = new ArrayList<>();
+
+        MtxrLldpLocalTableTracker mtxrLldpLocalTable = new MtxrLldpLocalTableTracker();
+        MtxrNeighborTableTracker mtxrNeighborTable = new MtxrNeighborTableTracker();
+        MtxrLldpRemTableTracker mtxrLldpRemTable = new MtxrLldpRemTableTracker() {
+
+            public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
+                mtxrlldplinks.add(row.getMtxrLldpLink());
+            }
+        };
+
+        try {
+            getLocationAwareSnmpClient().walk(peer,
+                            mtxrLldpRemTable)
+                    .withDescription("mtxrLldpRemTable")
+                    .withLocation(getLocation())
+                    .execute()
+                    .get();
+            getLocationAwareSnmpClient().walk(peer,
+                            mtxrLldpLocalTable)
+                    .withDescription("mtxrLldpLocalTable")
+                    .withLocation(getLocation())
+                    .execute()
+                    .get();
+            getLocationAwareSnmpClient().walk(peer,
+                            mtxrNeighborTable)
+                    .withDescription("mtxrNeighborTable")
+                    .withLocation(getLocation())
+                    .execute()
+                    .get();
+        } catch (ExecutionException e) {
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage());
+            return false;
+        } catch (final InterruptedException e) {
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage());
+            return false;
+        }
+
+        m_lldpTopologyService.store(getNodeId(),mtxrLldpLocalTable.getLldpElement(sysname));
+
+        for (MtxrLldpLink mtxrLldpLink: mtxrlldplinks) {
+            m_lldpTopologyService.store(getNodeId(),
+                    mtxrLldpLocalTable.getLldpLink(
+                            mtxrNeighborTable.getLldpLink(mtxrLldpLink)
+                    ).getLldpLink()
+            );
+        }
+        return true;
+    }
+
+    private void walkTimeTetra(SnmpAgentConfig peer) {
+        LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
+        List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
+        TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
+            @Override
+            public void processLldpRemRow(LldpRemRow row) {
+                ttlinks.add(row.getLldpLink());
+            }
+        };
+
+        try {
+            getLocationAwareSnmpClient().walk(peer,
+                            timeTetraLldpRemTableTracker)
+                    .withDescription("timeTetraLldpRemTable")
+                    .withLocation(getLocation())
+                    .execute()
+                    .get();
+        } catch (ExecutionException e) {
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        } catch (final InterruptedException e) {
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        }
+        LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
+        storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
+                getLocationAwareSnmpClient(),
+                getLocation(), getNodeId()));
     }
 
     private void storeTimeTetraLldpLinks(List<TimeTetraLldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
