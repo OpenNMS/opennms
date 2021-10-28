@@ -206,6 +206,9 @@
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowQueryService" ref="smartQueryService" />
 
+    <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
+    <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start" destroy-method="stop">
@@ -220,6 +223,8 @@
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
+        <argument ref="thresholdingService"/>
+        <argument ref="collectionAgentFactory"/>
 
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>
