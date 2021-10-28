@@ -24,7 +24,7 @@
   import { useRouter } from 'vue-router'
 
   const router = useRouter()
-  const returnHandler = () => window.location.href = '/opennms/'
+  const returnHandler = () => window.location.href = '/opennms/admin/index.jsp'
   const returnHomeHandler = () => router.push('/')
 </script>
     
