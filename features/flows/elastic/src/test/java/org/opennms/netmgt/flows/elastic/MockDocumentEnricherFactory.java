@@ -86,9 +86,7 @@ public class MockDocumentEnricherFactory {
                     .withName("flows.node")
                     .withMaximumSize(1000)
                     .withExpireAfterWrite(300)
-                    .build(), clockSkewCorrectionThreshold,
-                // TODO: fix this
-                null, null);
+                    .build(), clockSkewCorrectionThreshold);
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);
