@@ -186,7 +186,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
         storeLldpLinks(links,
                 new LldpLocPortGetter(peer,
                         getLocationAwareSnmpClient(),
-                        getLocation(), getNodeId()));
+                        getLocation()));
         return true;
     }
 
@@ -276,7 +276,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
         LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
         storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
                 getLocationAwareSnmpClient(),
-                getLocation(), getNodeId()));
+                getLocation()));
     }
 
     private void storeTimeTetraLldpLinks(List<TimeTetraLldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {

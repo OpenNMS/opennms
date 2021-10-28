@@ -177,12 +177,18 @@ public class LldpRemTableTracker extends TableTracker {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
-    	
+
+        public Integer getLldpRemTimeMark() {
+            return getInstance().getSubIdAt(0);
+        }
 	    public Integer getLldpRemLocalPortNum() {
 	    	return getInstance().getSubIdAt(1);
 	    }
-	    
-	    public Integer getLldpRemChassisidSubtype() {
+        public Integer getLldpRemIndex() {
+            return getInstance().getSubIdAt(2);
+        }
+
+        public Integer getLldpRemChassisidSubtype() {
 	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
 	    }
 	    
