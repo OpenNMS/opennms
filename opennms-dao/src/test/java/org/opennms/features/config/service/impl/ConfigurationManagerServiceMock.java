@@ -28,34 +28,52 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-//Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+/**
+ * //Configuration Service. We specify here our own mock implementation, otherwise we introduce a circular dependency
+ */
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
 
-    /** Registers a new schema. The schema name must not have been used before. */
-    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{
+    private String configFile;
+    private Optional<String> configOptional;
 
+    public void setConfigFile(String configFile) {
+        this.configFile = configFile;
     }
 
-    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
-    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{
+    /**
+     * Registers a new schema. The schema name must not have been used before.
+     */
+    @Override
+    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
+    }
 
+    /**
+     * Upgrades an existing schema to a new version. Existing da is validated against the new schema.
+     */
+    @Override
+    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
     }
 
     @Override
@@ -65,7 +83,6 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer) {
-
     }
 
     @Override
@@ -79,7 +96,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-
+        configOptional = Optional.of(configObject.toString());
     }
 
     @Override
@@ -94,7 +111,24 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        return Optional.empty();
+        if (configOptional != null) {
+            return configOptional;
+        }
+        if (configFile == null) {
+          // if configFile is null, assume config file in resource etc directly 
+          configFile = "etc/" + configName + "-" + configId + ".xml";
+        }
+
+        try {
+            InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
+            String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
+            configOptional = Optional.of(xmlStr);
+            LOG.debug("xmlStr: {}", xmlStr);
+        } catch (Exception e) {
+            LOG.error("FAIL TO LOAD XML: {}", configFile, e);
+        }
+
+        return configOptional;
     }
 
     @Override
