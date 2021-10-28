@@ -21,6 +21,7 @@
                         optionLabel="name"
                         optionValue="value"
                         :filter="true"
+                        @change="generateURL"
                     ></DropDown>
                 </div>
 
@@ -29,6 +30,7 @@
                     <InputText
                         id="host"
                         v-model="model.reqDef.host.$model"
+                        @change="generateURL"
                         :class="{ 'p-invalid': model.reqDef.host.$error }"
                         :placeholder="hostPlaceholder"
                     />
@@ -40,6 +42,7 @@
                     <InputText
                         id="foreignSource"
                         v-model="model.reqDef.foreignSource.$model"
+                        @change="generateURL"
                         :class="{ 'p-invalid': model.reqDef.foreignSource.$error }"
                     />
                     <ValidationMessage :model="model.reqDef.foreignSource"></ValidationMessage>
@@ -54,6 +57,7 @@
                                 icon="pi pi-times"
                                 style="font-size: 12px;"
                                 @click="closeIcon(add.id)"
+                                @change="generateURL"
                                 label
                             ></Button>
                         </p>
@@ -62,11 +66,13 @@
                             :options="stateAdvancedDropdown"
                             optionLabel="name"
                             optionValue="value"
+                            @change="generateURL"
                         ></DropDown>
                         <p class="inputText-margin">
                             <InputText
                                 v-model="add.advTextVal"
                                 placeholder="please enter parameter"
+                                @change="generateURL"
                             />
                         </p>
                     </div>
@@ -86,13 +92,7 @@
                     <p>
                         <b>URL :</b>
                         {{ generatedURL }}
-                    </p>
-                    <Button
-                        :icon="urlIcon"
-                        :label="urlBtnTitle"
-                        @click="generateURL"
-                        :disabled="model.reqDef.type.$invalid || model.reqDef.host.$invalid || model.reqDef.foreignSource.$invalid"
-                    ></Button>
+                    </p>                    
                 </div>
 
                 <div class="p-field">
@@ -156,12 +156,8 @@ const reqDefinition = reactive(State);
 const minVal = ref(1);
 const count = ref(0);
 const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }]);
-
-const urlBtnTitle = ref('Generate URL');
 const generatedURL = ref('');
 const advString: any = ref([]);
-
-const urlIcon = ref('pi pi-check-circle');
 
 const hostPlaceholder = ref('(0-255).(0-255).(0-255).(0-255)');
 
@@ -263,16 +259,14 @@ const addAnother = () => {
 };
 
 //Dismiss dropdown
-const closeIcon = (id: any) => {
+const closeIcon = (id: any) => {    
     const findIndex = addAnotherArr.value.findIndex((index: any) => index.id === id);
     addAnotherArr.value.splice(findIndex, 1);
+    generateURL();
 };
 
 //Show Generated URL
 const generateURL = () => {
-    urlIcon.value = 'pi pi-refresh';
-    urlBtnTitle.value = 'Refresh URL';
-
     if (addAnotherArr.value[0].dropdownVal != '') {
         advString.value = [];
         addAnotherArr.value.forEach((ele: any) => {
