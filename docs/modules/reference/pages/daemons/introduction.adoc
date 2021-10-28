@@ -35,7 +35,7 @@
 | Ticketer | The ticketing integration lets Horizon create trouble tickets in external systems. 
 | Tl1d |
 | Trapd | Trap daemon provides an SNMP server that accepts SNMP traps that can be converted to events.
-| Vacuumd | Vacuum daemon takes care about cleaning processes in the PostgreSQL database.
+| Vacuumd | Vacuum daemon takes care of cleaning processes in the PostgreSQL database.
 |===
 
 
