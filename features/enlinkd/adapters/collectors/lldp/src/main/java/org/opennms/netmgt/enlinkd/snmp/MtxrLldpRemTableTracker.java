@@ -31,15 +31,15 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 
-public class MikrotikLldpRemTableTracker extends LldpRemTableTracker {
+public class MtxrLldpRemTableTracker extends LldpRemTableTracker {
 
-    public MikrotikLldpRemTableTracker() {
+    public MtxrLldpRemTableTracker() {
         super();
     }
 
-    public static class MikrotikLldpRemRow extends LldpRemRow {
+    public static class MtxrLldpRemRow extends LldpRemRow {
 
-        public MikrotikLldpRemRow(int columnCount, SnmpInstId instance) {
+        public MtxrLldpRemRow(int columnCount, SnmpInstId instance) {
             super(columnCount, instance);
         }
 
@@ -47,8 +47,8 @@ public class MikrotikLldpRemTableTracker extends LldpRemTableTracker {
             return getInstance().getSubIdAt(2);
         }
 
-        public MikrotikLldpLink getMtxrLldpLink() {
-            MikrotikLldpLink mtxrLink = new MikrotikLldpLink();
+        public MtxrLldpLink getMtxrLldpLink() {
+            MtxrLldpLink mtxrLink = new MtxrLldpLink();
             mtxrLink.setMtxrNeighborIndex(getMtxrNeighborIndex());
             mtxrLink.setLldpLink(getLldpLink());
             return mtxrLink;
@@ -60,21 +60,21 @@ public class MikrotikLldpRemTableTracker extends LldpRemTableTracker {
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
-        return new MikrotikLldpRemRow(columnCount, instance);
+        return new MtxrLldpRemRow(columnCount, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processLldpRemRow((MikrotikLldpRemRow)row);
+        processMtxrLldpRemRow((MtxrLldpRemRow)row);
     }
 
     /**
-     * <p>processLldpRemRow</p>
+     * <p>processMtxrLldpRemRow</p>
      *
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
      */
-    public void processLldpRemRow(final MikrotikLldpRemRow row) {
+    public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
     }
 
 

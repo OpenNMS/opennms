@@ -31,7 +31,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MikrotikLldpLocalTableTracker extends TableTracker {
-    private final static Logger LOG = LoggerFactory.getLogger(MikrotikLldpLocalTableTracker.class);
+public class MtxrLldpLocalTableTracker extends TableTracker {
+    private final static Logger LOG = LoggerFactory.getLogger(MtxrLldpLocalTableTracker.class);
 
 
     public static final SnmpObjId[] s_lldploctable_elemList = new SnmpObjId[] {
@@ -83,29 +82,29 @@ public class MikrotikLldpLocalTableTracker extends TableTracker {
 	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID));
 	    }
 
-	    public String getLldpRemLocalPortDescr() {
+	    public String getLldpLocalPortDesc() {
 	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR) != null)
 	    		return getValue(LldpLocPortGetter.LLDP_LOC_DESCR).toDisplayString();
 	    	return "";
 	    }
     }
 
-    public Map<Integer, LldpLocalPortRow> getMikrotikPortTable() {
-        return mikrotikPortTable;
+    public Map<Integer, LldpLocalPortRow> getMtxrLldpLocalPortMap() {
+        return mtxrLldpLocalPortMap;
     }
 
-    private final Map<Integer, LldpLocalPortRow> mikrotikPortTable = new HashMap<>();
+    private final Map<Integer, LldpLocalPortRow> mtxrLldpLocalPortMap = new HashMap<>();
 
-    public MikrotikLldpLocalTableTracker() {
+    public MtxrLldpLocalTableTracker() {
         super(s_lldploctable_elemList);
     }
 
     /**
-     * <p>Constructor for LldpRemTableTracker.</p>
+     * <p>Constructor for MikrotikLldpLocalTableTracker.</p>
      *
      * @param rowProcessor a {@link RowCallback} object.
      */
-    public MikrotikLldpLocalTableTracker(final RowCallback rowProcessor) {
+    public MtxrLldpLocalTableTracker(final RowCallback rowProcessor) {
         super(rowProcessor, s_lldploctable_elemList);
     }
     
@@ -124,27 +123,31 @@ public class MikrotikLldpLocalTableTracker extends TableTracker {
     /**
      * <p>processLldpRemRow</p>
      *
-     * @param row a {@link MikrotikLldpLocalTableTracker.LldpLocalPortRow} object.
+     * @param row a {@link MtxrLldpLocalTableTracker.LldpLocalPortRow} object.
      */
     public void processLldpLocPortRow(final LldpLocalPortRow row) {
-        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {}", row.getMtxrIndex(),row.getLldpRemLocalPortDescr());
-        mikrotikPortTable.put(row.getMtxrIndex(),row);
+        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {}", row.getMtxrIndex(),row.getLldpLocalPortDesc());
+        mtxrLldpLocalPortMap.put(row.getMtxrIndex(),row);
     }
 
-    //FIXME
-    public LldpElement getLldpElement(String sysnname) {
+    public LldpElement getLldpElement(String sysname, Integer mtrxIndex) {
         LldpElement element = new LldpElement();
-        element.setLldpSysname(sysnname);
-        element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-        element.setLldpChassisId(mikrotikPortTable.get(1).getLldpLocPortId());
+        element.setLldpSysname(sysname);
+        if (mtxrLldpLocalPortMap.containsKey(mtrxIndex)) {
+            element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+            element.setLldpChassisId(mtxrLldpLocalPortMap.get(mtrxIndex).getLldpLocPortId());
+        } else {
+            element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL);
+            element.setLldpChassisId(sysname);
+        }
         return element;
     }
 
-    public MikrotikLldpLink getLldpLink(MikrotikLldpLink mktlldpLink) {
-        if (mikrotikPortTable.containsKey(mktlldpLink.getMtxrIndex())) {
+    public MtxrLldpLink getLldpLink(MtxrLldpLink mktlldpLink) {
+        if (mtxrLldpLocalPortMap.containsKey(mktlldpLink.getMtxrIndex())) {
             mktlldpLink.getLldpLink().setLldpPortIfindex(mktlldpLink.getMtxrIndex());
             mktlldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME);
-            mktlldpLink.getLldpLink().setLldpPortId(mikrotikPortTable.get(mktlldpLink.getMtxrIndex()).getLldpRemLocalPortDescr());
+            mktlldpLink.getLldpLink().setLldpPortId(mtxrLldpLocalPortMap.get(mktlldpLink.getMtxrIndex()).getLldpLocalPortDesc());
         }
         return mktlldpLink;
     }

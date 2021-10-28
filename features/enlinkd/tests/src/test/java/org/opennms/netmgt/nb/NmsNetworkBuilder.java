@@ -1371,7 +1371,11 @@ public abstract class NmsNetworkBuilder {
     public static final String MKT_CISCO_SW01_IP="192.168.178.30";
     public static final String MKT_CISCO_SW01_RESOURCE="classpath:/linkd/nms13637/sw01-office-walk.txt";
     public static final String MKT_CISCO_SW01_LLDP_ID=    "5C 71 0D 26 AC 3E".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKT_CISCO_SW01_GB05_MAC=    "5C 71 0D 26 AC 43".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
 
+    public static final String MKT_HOST3_LLDP_ID="00 50 56 82 23 35".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKT_HOST4_LLDP_ID="00 50 56 82 20 E2".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKT_HOST5_LLDP_ID="00 50 56 82 62 AB".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     NetworkBuilder m_networkBuilder;
 
     NetworkBuilder getNetworkBuilder() {

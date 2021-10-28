@@ -30,13 +30,13 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 
-public class MikrotikLldpLink {
+public class MtxrLldpLink {
     private Integer mtxrNeighborIndex;
     private Integer mtxrIndex;
 
     private LldpLink lldpLink = new LldpLink();
 
-    public MikrotikLldpLink() {
+    public MtxrLldpLink() {
     }
 
     public LldpLink getLldpLink() {

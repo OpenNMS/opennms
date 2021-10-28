@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MikrotikMtxrIndexTableTracker extends TableTracker {
+public class MtxrNeighborTableTracker extends TableTracker {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MikrotikMtxrIndexTableTracker.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MtxrNeighborTableTracker.class);
 
     public final static SnmpObjId MTXR_NEIGHBOR_MAC_ADDRESS =SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.3");
     public final static SnmpObjId MTXR_NEIGHBOR_IDENTITY =SnmpObjId.get(".1.3.6.1.4.1.14988.1.1.11.1.1.6");
@@ -49,8 +49,8 @@ public class MikrotikMtxrIndexTableTracker extends TableTracker {
             MTXR_NEIGHBOR_INTERFACE_ID
     };
 
-    public static class MtxrIndexPortRow extends SnmpRowResult {
-        public MtxrIndexPortRow(int columnCount, SnmpInstId instance) {
+    public static class MtxrNeighborRow extends SnmpRowResult {
+        public MtxrNeighborRow(int columnCount, SnmpInstId instance) {
             super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
         }
@@ -67,7 +67,7 @@ public class MikrotikMtxrIndexTableTracker extends TableTracker {
             return getValue(MTXR_NEIGHBOR_IDENTITY).toDisplayString();
         }
 
-        public String getMtxrMacAddress() {
+        public String getMtxrNeighborMacAddress() {
             return LldpLocalGroupTracker.getDisplayable(getValue(MTXR_NEIGHBOR_MAC_ADDRESS));
         }
 
@@ -75,35 +75,39 @@ public class MikrotikMtxrIndexTableTracker extends TableTracker {
 
     }
 
-    private final Map<Integer, MtxrIndexPortRow> mikrotikIndexTable = new HashMap<>();
+    public Map<Integer, MtxrNeighborRow> getMtxrNeighborMap() {
+        return mtxrNeighborMap;
+    }
 
-    public MikrotikMtxrIndexTableTracker() {
+    private final Map<Integer, MtxrNeighborRow> mtxrNeighborMap = new HashMap<>();
+
+    public MtxrNeighborTableTracker() {
 	    super(s_mtxrneiinterfaceid_elemList);
 	}
 
-	public MikrotikMtxrIndexTableTracker(final RowCallback rowProcessor) {
+	public MtxrNeighborTableTracker(final RowCallback rowProcessor) {
         super(rowProcessor,s_mtxrneiinterfaceid_elemList);
     }
 
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
-        return new MtxrIndexPortRow(columnCount, instance);
+        return new MtxrNeighborRow(columnCount, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processMtxrIndexPortRow((MtxrIndexPortRow)row);
+        processMtxrIndexPortRow((MtxrNeighborRow)row);
     }
 
-    public void processMtxrIndexPortRow(final MtxrIndexPortRow row) {
-        mikrotikIndexTable.put(row.getMtxrNeighborIndex(),row);
+    public void processMtxrIndexPortRow(final MtxrNeighborRow row) {
+        mtxrNeighborMap.put(row.getMtxrNeighborIndex(),row);
     }
 
-    public MikrotikLldpLink getLldpLink(MikrotikLldpLink mtxrlldplink) {
-       if (mikrotikIndexTable.containsKey(mtxrlldplink.getMtxrNeighborIndex())) {
-            mtxrlldplink.setMtxrIndex(mikrotikIndexTable.get(mtxrlldplink.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId());
+    public MtxrLldpLink getLldpLink(MtxrLldpLink mtxrlldplink) {
+       if (mtxrNeighborMap.containsKey(mtxrlldplink.getMtxrNeighborIndex())) {
+            mtxrlldplink.setMtxrIndex(mtxrNeighborMap.get(mtxrlldplink.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId());
         }
         return mtxrlldplink;
     }
