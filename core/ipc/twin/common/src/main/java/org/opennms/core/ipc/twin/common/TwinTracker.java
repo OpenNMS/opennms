@@ -31,6 +31,14 @@ package org.opennms.core.ipc.twin.common;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This Tracks Twin Object Updates for a given SessionKey (key, location).
+ * Twin Tracker consists of marshalled object( byte[]), version and sessionId.
+ * Version is incremented whenever object updates.
+ * sessionId is created only once per a SessionKey.
+ * TwinTracker is created and updated by publisher and only consumed by Subscriber.
+ * Subscriber will ignore any stale updates based on version but resets version whenever there is new SessionId.
+ */
 public class TwinTracker {
 
     private AtomicInteger version = new AtomicInteger(0);

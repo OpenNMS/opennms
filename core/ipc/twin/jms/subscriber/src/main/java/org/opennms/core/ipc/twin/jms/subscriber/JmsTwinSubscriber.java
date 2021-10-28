@@ -43,8 +43,8 @@ import org.apache.camel.component.jms.JmsEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.spi.Synchronization;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
@@ -78,7 +78,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequest twinRequest) {
         TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
         LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
         template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
@@ -86,11 +86,11 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
             public void onComplete(Exchange exchange) {
                 try {
                     byte[] response = exchange.getOut().getBody(byte[].class);
-                    TwinResponseBean twinResponseBean = mapTwinResponseToProto(response);
-                    if (twinResponseBean.getLocation() == null ||
-                            twinResponseBean.getLocation().equals(getMinionIdentity().getLocation())) {
-                        LOG.trace("Received TwinResponse as RPC reply {}", twinResponseBean);
-                        accept(twinResponseBean);
+                    TwinUpdate twinUpdate = mapTwinResponseToProto(response);
+                    if (twinUpdate.getLocation() == null ||
+                            twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
+                        LOG.trace("Received TwinResponse as RPC reply {}", twinUpdate);
+                        accept(twinUpdate);
                     }
                 } catch (Exception e) {
                     LOG.error("Failed to process response", e);
@@ -127,11 +127,11 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
     @Override
     public void process(Exchange exchange) throws Exception {
         byte[] sinkUpdateBytes = exchange.getIn().getBody(byte[].class);
-        TwinResponseBean twinResponseBean = mapTwinResponseToProto(sinkUpdateBytes);
-        if (twinResponseBean.getLocation() == null ||
-                twinResponseBean.getLocation().equals(getMinionIdentity().getLocation())) {
-            LOG.trace("Received TwinResponse as sink update {}", twinResponseBean);
-            accept(twinResponseBean);
+        TwinUpdate twinUpdate = mapTwinResponseToProto(sinkUpdateBytes);
+        if (twinUpdate.getLocation() == null ||
+                twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
+            LOG.trace("Received TwinResponse as sink update {}", twinUpdate);
+            accept(twinUpdate);
         }
     }
 

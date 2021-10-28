@@ -33,25 +33,26 @@ import com.google.common.base.Objects;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-public class TwinResponseBean extends TwinRequestBean {
+public class TwinUpdate {
 
 
-    public TwinResponseBean() {
+    private final TwinRequest twinRequest;
+
+    public TwinUpdate() {
+        this.twinRequest = new TwinRequest();
     }
 
-    public TwinResponseBean(String key, String location, byte[] object) {
-        super(key, location);
+    public TwinUpdate(String key, String location, byte[] object) {
+        this.twinRequest = new TwinRequest(key, location);
         this.object = object;
     }
-    public TwinResponseBean(String key, String location) {
-        super(key, location);
+    public TwinUpdate(String key, String location) {
+        this.twinRequest = new TwinRequest(key, location);
     }
 
     private byte[] object;
 
     private int version;
-
-    private boolean isRpc;
 
     private boolean isPatch;
 
@@ -73,13 +74,6 @@ public class TwinResponseBean extends TwinRequestBean {
         this.version = version;
     }
 
-    public boolean isRpc() {
-        return isRpc;
-    }
-
-    public void setRpc(boolean rpc) {
-        isRpc = rpc;
-    }
 
     public String getSessionId() {
         return sessionId;
@@ -97,28 +91,42 @@ public class TwinResponseBean extends TwinRequestBean {
         isPatch = patch;
     }
 
+    public void setLocation(String location) {
+        twinRequest.setLocation(location);
+    }
+
+    public void setKey(String key) {
+        twinRequest.setKey(key);
+    }
+
+    public String getLocation() {
+        return twinRequest.getLocation();
+    }
+
+    public String getKey() {
+        return twinRequest.getKey();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TwinResponseBean)) return false;
-        if (!super.equals(o)) return false;
-        TwinResponseBean that = (TwinResponseBean) o;
-        return version == that.version && isRpc == that.isRpc && Objects.equal(object, that.object) && Objects.equal(sessionId, that.sessionId);
+        if (!(o instanceof TwinUpdate)) return false;
+        TwinUpdate that = (TwinUpdate) o;
+        return version == that.version && isPatch == that.isPatch && Objects.equal(twinRequest, that.twinRequest) && Objects.equal(object, that.object) && Objects.equal(sessionId, that.sessionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), object, version, isRpc, sessionId);
+        return Objects.hashCode(twinRequest, object, version, isPatch, sessionId);
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", TwinResponseBean.class.getSimpleName() + "[", "]")
-                .add("key='" + key + "'")
-                .add("location='" + location + "'")
+        return new StringJoiner(", ", TwinUpdate.class.getSimpleName() + "[", "]")
+                .add("twinRequest=" + twinRequest)
                 .add("object=" + Arrays.toString(object))
                 .add("version=" + version)
-                .add("isRpc=" + isRpc)
+                .add("isPatch=" + isPatch)
                 .add("sessionId='" + sessionId + "'")
                 .toString();
     }

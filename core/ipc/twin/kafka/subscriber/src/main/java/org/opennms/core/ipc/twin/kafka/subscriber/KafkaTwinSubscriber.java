@@ -46,8 +46,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
@@ -113,7 +113,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    protected void sendRpcRequest(final TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(final TwinRequest twinRequest) {
 
         TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
         final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), twinRequestProto.toByteArray());
@@ -126,7 +126,7 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinResponseBean response = mapTwinResponseToProto(record.value());
+        final TwinUpdate response = mapTwinResponseToProto(record.value());
         this.accept(response);
     }
 }

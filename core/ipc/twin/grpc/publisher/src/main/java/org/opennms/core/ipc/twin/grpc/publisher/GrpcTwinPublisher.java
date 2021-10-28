@@ -40,8 +40,8 @@ import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.grpc.common.MinionHeader;
 import org.opennms.core.ipc.twin.grpc.common.OpenNMSTwinIpcGrpc;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
@@ -71,7 +71,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(TwinResponseBean sinkUpdate) {
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
         sendTwinResponseForSink(mapTwinResponse(sinkUpdate));
     }
 
@@ -108,7 +108,6 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
 
     public void close() throws IOException {
-        super.close();
         grpcIpcServer.stopServer();
         LOG.info("Stopped Twin GRPC Server");
         twinRpcExecutor.shutdown();
@@ -124,10 +123,10 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                 @Override
                 public void onNext(TwinRequestProto twinRequestProto) {
                     CompletableFuture.runAsync(() -> {
-                        TwinRequestBean twinRequestBean = mapTwinRequestProto(twinRequestProto.toByteArray());
-                        TwinResponseBean twinResponseBean = getTwin(twinRequestBean);
-                        TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
-                        LOG.debug("Sent Twin response for key {} at location {}", twinRequestBean.getKey(), twinRequestBean.getLocation());
+                        TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
+                        TwinUpdate twinUpdate = getTwin(twinRequest);
+                        TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                        LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
                         sendTwinResponse(twinResponseProto, rpcStream);
                     }, twinRpcExecutor);
                 }
@@ -160,8 +159,8 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
 
             getObjMap().forEach(((sessionKey, twinTracker) -> {
                 if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
-                    TwinResponseBean twinResponseBean = new TwinResponseBean(sessionKey.key, sessionKey.location, twinTracker.getObj());
-                    TwinResponseProto twinResponseProto = mapTwinResponse(twinResponseBean);
+                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                    TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                     responseObserver.onNext(twinResponseProto);
                 }
             }));

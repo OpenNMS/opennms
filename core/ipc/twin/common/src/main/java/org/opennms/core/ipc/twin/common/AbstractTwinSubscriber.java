@@ -80,7 +80,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     /**
      * @param twinRequest Send RpcRequest from @{@link AbstractTwinSubscriber}
      */
-    protected abstract void sendRpcRequest(TwinRequestBean twinRequest);
+    protected abstract void sendRpcRequest(TwinRequest twinRequest);
 
 
     @Override
@@ -88,8 +88,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         SessionImpl<T> session = new SessionImpl<T>(key, clazz, consumer);
         sessionMap.put(key, session);
         String location = minionIdentity != null ? minionIdentity.getLocation() : null;
-        TwinRequestBean twinRequestBean = new TwinRequestBean(key, location);
-        sendRpcRequest(twinRequestBean);
+        TwinRequest twinRequest = new TwinRequest(key, location);
+        sendRpcRequest(twinRequest);
         TwinTracker twinTracker = objMap.get(key);
         // If there is an existing object, send that update to subscriber
         if (twinTracker != null) {
@@ -105,7 +105,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return session;
     }
 
-    protected void accept(TwinResponseBean twinResponse) {
+    protected void accept(TwinUpdate twinResponse) {
 
         // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
         if (twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
@@ -132,38 +132,38 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         });
     }
 
-    protected TwinResponseBean mapTwinResponseToProto(byte[] responseBytes) {
-        TwinResponseBean twinResponseBean = new TwinResponseBean();
+    protected TwinUpdate mapTwinResponseToProto(byte[] responseBytes) {
+        TwinUpdate twinUpdate = new TwinUpdate();
         try {
             TwinResponseProto twinResponseProto = TwinResponseProto.parseFrom(responseBytes);
 
             if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
-                twinResponseBean.setLocation(twinResponseProto.getLocation());
+                twinUpdate.setLocation(twinResponseProto.getLocation());
             }
             if(!Strings.isNullOrEmpty(twinResponseProto.getSessionId())) {
-                twinResponseBean.setSessionId(twinResponseProto.getSessionId());
+                twinUpdate.setSessionId(twinResponseProto.getSessionId());
             }
-            twinResponseBean.setKey(twinResponseProto.getConsumerKey());
+            twinUpdate.setKey(twinResponseProto.getConsumerKey());
             if (twinResponseProto.getTwinObject() != null) {
-                twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
+                twinUpdate.setObject(twinResponseProto.getTwinObject().toByteArray());
             }
-            twinResponseBean.setPatch(twinResponseProto.getIsPatchObject());
-            twinResponseBean.setVersion(twinResponseProto.getVersion());
-            return twinResponseBean;
+            twinUpdate.setPatch(twinResponseProto.getIsPatchObject());
+            twinUpdate.setVersion(twinResponseProto.getVersion());
+            return twinUpdate;
         } catch (InvalidProtocolBufferException e) {
             LOG.error("Failed to parse response from proto", e);
         }
-        return twinResponseBean;
+        return twinUpdate;
     }
 
-    protected TwinRequestProto mapTwinRequestToProto(TwinRequestBean twinRequest) {
+    protected TwinRequestProto mapTwinRequestToProto(TwinRequest twinRequest) {
         TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
         builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
                 .setSystemId(getMinionIdentity().getId());
         return builder.build();
     }
 
-    private void validateAndSendResponse(TwinResponseBean twinResponse) {
+    private void validateAndSendResponse(TwinUpdate twinResponse) {
         TwinTracker twinTracker = objMap.get(twinResponse.getKey());
         if (twinResponse.getObject() != null &&
                 isObjectUpdated(twinTracker, twinResponse)) {
@@ -178,7 +178,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             byte[] patchedBytes = applyPatch(twinTracker, twinResponse);
             // Invoke RPC when we can't apply patch properly.
             if (patchedBytes == null) {
-                sendRpcRequest(new TwinRequestBean(twinResponse.getKey(), twinResponse.getLocation()));
+                sendRpcRequest(new TwinRequest(twinResponse.getKey(), twinResponse.getLocation()));
                 return;
             }
             // Update twin object in local cache.
@@ -196,27 +196,27 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         }
     }
 
-    private byte[] applyPatch(TwinTracker twinTracker, TwinResponseBean twinResponseBean) {
-        if (twinTracker == null || !twinResponseBean.isPatch()) {
-            return twinResponseBean.getObject();
+    private byte[] applyPatch(TwinTracker twinTracker, TwinUpdate twinUpdate) {
+        if (twinTracker == null || !twinUpdate.isPatch()) {
+            return twinUpdate.getObject();
         }
         // We can't apply patch when the version jumps more than one version.
-        if (twinResponseBean.getVersion() != twinTracker.getVersion() + 1) {
+        if (twinUpdate.getVersion() != twinTracker.getVersion() + 1) {
             return null;
         }
         try {
-            JsonNode resultingDiff = objectMapper.readTree(twinResponseBean.getObject());
+            JsonNode resultingDiff = objectMapper.readTree(twinUpdate.getObject());
             JsonNode original = objectMapper.readTree(twinTracker.getObj());
             JsonPatch patch = JsonPatch.fromJson(resultingDiff);
             JsonNode resultNode = patch.apply(original);
             return resultNode.toString().getBytes(StandardCharsets.UTF_8);
         } catch (Exception e) {
-            LOG.error("Not able to apply patch for key {}", twinResponseBean.getKey(), e);
+            LOG.error("Not able to apply patch for key {}", twinUpdate.getKey(), e);
         }
         return null;
     }
 
-    boolean isObjectUpdated(TwinTracker twinTracker, TwinResponseBean twinResponse) {
+    boolean isObjectUpdated(TwinTracker twinTracker, TwinUpdate twinResponse) {
         if (twinTracker == null || twinResponse.isPatch()) {
             return true;
         }

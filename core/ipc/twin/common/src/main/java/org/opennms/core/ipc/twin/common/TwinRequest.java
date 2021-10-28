@@ -30,18 +30,18 @@ package org.opennms.core.ipc.twin.common;
 
 import java.util.Objects;
 
-public class TwinRequestBean {
+public class TwinRequest {
 
     protected String key;
 
     protected String location;
 
-    public TwinRequestBean(String key, String location) {
+    public TwinRequest(String key, String location) {
         this.key = key;
         this.location = location;
     }
 
-    public TwinRequestBean() {
+    public TwinRequest() {
     }
 
     public String getKey() {
@@ -64,7 +64,7 @@ public class TwinRequestBean {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TwinRequestBean that = (TwinRequestBean) o;
+        TwinRequest that = (TwinRequest) o;
         return Objects.equals(key, that.key) && Objects.equals(location, that.location);
     }
 

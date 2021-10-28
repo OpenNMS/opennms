@@ -39,8 +39,8 @@ import java.util.function.Supplier;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.grpc.common.*;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
@@ -125,7 +125,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequest twinRequest) {
         TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
         // Send RPC Request asynchronously.
         CompletableFuture.runAsync(() -> retrySendRpcRequest(twinRequestProto), twinRequestSenderExecutor);
@@ -196,8 +196,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
         @Override
         public void onNext(TwinResponseProto twinResponseProto) {
-            TwinResponseBean twinResponseBean = mapTwinResponseToProto(twinResponseProto.toByteArray());
-            accept(twinResponseBean);
+            TwinUpdate twinUpdate = mapTwinResponseToProto(twinResponseProto.toByteArray());
+            accept(twinUpdate);
         }
 
         @Override
