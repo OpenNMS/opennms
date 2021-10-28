@@ -31,15 +31,21 @@ package org.opennms.netmgt.trapd;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import javax.jms.MessageProducer;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,6 +54,10 @@ import org.mockito.Mockito;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
+import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.distributed.core.api.RestClient;
@@ -55,6 +65,8 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
+import org.opennms.netmgt.trapd.jmx.Trapd;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,7 +78,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-twin-memory.xml"
+        "classpath:/META-INF/opennms/applicationContext-twin-memory.xml",
 })
 @JUnitConfigurationEnvironment
 public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
@@ -75,6 +87,9 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
     @Autowired
     private DistPollerDao distPollerDao;
+
+    @Autowired
+    private TwinPublisher twinPublisher;
 
     private final CountDownLatch messageProcessedLatch = new CountDownLatch(1);
 
@@ -98,12 +113,19 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
         services.put(MessageConsumerManager.class.getName(), asService(new MockMessageConsumerManager(), null, null));
         services.put(MessageDispatcherFactory.class.getName(), asService(mockMessageDispatcherFactory, null, null));
         services.put(DistPollerDao.class.getName(), asService(distPollerDao, null, null));
+
+        final var context = new DefaultCamelContext(new SimpleRegistry());
+        services.put(CamelContext.class.getName(), asService(context, null, null));
     }
 
     // The CamelBlueprintTest should have started the bundle and therefore also started
     // the TrapListener (see blueprint-trapd-listener.xml), which listens to traps.
     @Test(timeout=30000)
     public void testWiring() throws Exception {
+        // Send empty listener config to get things started
+        this.twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class)
+                          .publish(new TrapListenerConfig());
+
         // No traps received or processed
         Assert.assertEquals(1, messageProcessedLatch.getCount());
 

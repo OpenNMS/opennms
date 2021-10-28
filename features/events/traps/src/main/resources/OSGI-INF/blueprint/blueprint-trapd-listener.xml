@@ -24,16 +24,6 @@
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 	<reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
-	<!-- Camel Event for unmarshalling processor -->
-	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
-	</bean>
-
-	<!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-		<property name="timeout" value="15"/>
-	</bean>
-
 	<!-- Config Bean -->
 	<bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
 		<property name="snmpTrapPort" value="${trapd.listen.port}"/>
