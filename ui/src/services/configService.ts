@@ -1,4 +1,5 @@
 import { rest, restFile } from './axiosInstances'
+import marked from 'marked'
 
 const endpoint = '/filesystem'
 
@@ -23,7 +24,7 @@ const getFile = async (fileName: string): Promise<string> => {
 const getSnippets = async (fileName: string): Promise<string> => {
   try {
     const resp = await rest.get(`${endpoint}/help?f=${fileName}`)
-    return resp.data
+    return marked(resp.data)
   } catch (err) {
     return ''
   }

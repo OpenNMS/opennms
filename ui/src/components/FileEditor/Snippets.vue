@@ -1,4 +1,6 @@
-<template>{{ snippets }}</template>
+<template>
+  <div v-html="snippets"></div>
+</template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
