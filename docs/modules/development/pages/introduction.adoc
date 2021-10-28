@@ -90,4 +90,4 @@ We recommend the following toolset:
 
  * https://opennms.discourse.group/t/how-to-compile-opennms/486[How to compile OpenNMS?]
  * https://opennms.discourse.group/t/developing-with-git[Developing with GIT]
- * https://opennms.discourse.group/t/set-up-local-development-environment-macos/485[Set up local develepment environment]
+ * https://opennms.discourse.group/t/set-up-local-development-environment-macos/485[Set up local development environment]
