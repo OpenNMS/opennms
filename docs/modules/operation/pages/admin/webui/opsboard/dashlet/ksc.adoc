@@ -1,6 +1,3 @@
-= KSC Reports
-This dashlet shows an existing KSC report. KSC Reports provide a way to generate prefabricated graphical views of collected data.
-
 [options="autowidth", cols="1,2"]
 |===
 | Boost support
