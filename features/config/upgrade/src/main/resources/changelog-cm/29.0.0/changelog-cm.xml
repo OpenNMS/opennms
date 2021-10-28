@@ -20,4 +20,5 @@
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
 
+
 </databaseChangeLog>

@@ -142,12 +142,10 @@ public interface EnhancedLinkdConfig {
      *
      * @throws java.io.IOException if any.
      */
-    void save() throws IOException;
-
     /**
      * <p>getConfiguration</p>
      *
-     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
      */
      EnlinkdConfiguration getConfiguration();    
         

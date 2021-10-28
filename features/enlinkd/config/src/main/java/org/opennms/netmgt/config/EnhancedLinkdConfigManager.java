@@ -34,6 +34,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 
 /**
@@ -42,7 +43,7 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig {
+abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao<EnlinkdConfiguration> implements EnhancedLinkdConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -60,6 +61,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
      * @throws java.io.IOException if any.
      */
     public EnhancedLinkdConfigManager() {
+        super(EnlinkdConfiguration.class ,"Enlinkd-Configuration");
     }
 
     public Lock getReadLock() {
@@ -74,7 +76,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     /**
      * Return the linkd configuration object.
      *
-     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
+     * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
      */
     public EnlinkdConfiguration getConfiguration() {
         getReadLock().lock();
@@ -176,13 +178,4 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         if (m_config.getDiscoveryBridgeThreads() != null) return m_config.getDiscoveryBridgeThreads();
         return 1;
     }
-
-    /**
-     * <p>saveXml</p>
-     *
-     * @param xml a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    protected abstract void saveXml(final String xml) throws IOException;
-    
 }
