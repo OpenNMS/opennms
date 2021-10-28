@@ -140,6 +140,7 @@ start() {
   -Dcom.sun.management.jmxremote.login.config=opennms
   -Dcom.sun.management.jmxremote.access.file=/opt/opennms/etc/jmxremote.access
   -DisThreadContextMapInheritable=true
+  -Djdk.attach.allowAttachSelf=true
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=/opt/opennms/data/tmp
   -Djava.locale.providers=CLDR,COMPAT

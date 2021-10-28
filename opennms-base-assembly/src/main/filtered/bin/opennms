@@ -761,6 +761,11 @@ fi
 #	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.security.debug=all")
 #fi
 
+# see NMS-13437
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djdk.attach.allowAttachSelf=)" -eq 0 ]; then
+	ADDITIONAL_MANAGER_OPTIONS+=("-Djdk.attach.allowAttachSelf=true")
+fi
+
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -DisThreadContextMapInheritable=)" -eq 0 ]; then
 	ADDITIONAL_MANAGER_OPTIONS+=("-DisThreadContextMapInheritable=true")
 fi
