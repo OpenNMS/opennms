@@ -129,7 +129,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public void reload() throws IOException {
+    public synchronized void reload() throws IOException {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
         try {
             clearUrlSpecifics();
