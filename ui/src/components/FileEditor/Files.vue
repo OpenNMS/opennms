@@ -10,7 +10,7 @@
       <span
         class="subtitle1"
         :class="{ 'selected': filename === selectedFile }"
-      >{{ index + 1 }}:&nbsp</span>
+      >{{ Number(index) + 1 }}:&nbsp</span>
       <span class="subtitle2" :class="{ 'selected': filename === selectedFile }">{{ filename }}</span>
     </p>
   </div>
