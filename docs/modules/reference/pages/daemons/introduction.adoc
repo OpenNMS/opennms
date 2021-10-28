@@ -30,7 +30,7 @@
 | SnmpPoller |
 | Statsd |
 | Syslogd | A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
-| Telemetryd | The Telemetry daemon collects sensor data sent from nodes to Horizon. 
+| Telemetryd | The Telemetry daemon collects sensor data sent from nodes to {page-component-title}.
 | TestLoadLibraries |
 | Ticketer | The ticketing integration lets Horizon create trouble tickets in external systems. 
 | Tl1d |
