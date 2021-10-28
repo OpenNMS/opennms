@@ -21,7 +21,9 @@ const SAVE_IS_CONTENT_MODIFIED_TO_STATE = (state: State, contentModified: boolea
 }
 
 const TRIGGER_FILE_RESET = (state: State) => {
-  state.file = (' ' + state.file).slice(1) // copy/assign original file string
+  const savedFile = state.file
+  state.file = '' // trigger reaction
+  state.file = savedFile
   state.contentModified = false
 }
 

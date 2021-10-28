@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue"
+import { ref, computed, watchEffect } from "vue"
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
 import ace from 'ace-builds'
@@ -37,11 +37,7 @@ const lang = computed(() => {
   if (selectedFileName) return selectedFileName.split('.')[1]
   return 'xml'
 })
-
-watch(fileString, (fileString) => {
-  console.log(fileString)
-  content.value = fileString
-})
+watchEffect(() => content.value = fileString.value)
 
 const change = () => {
   store.dispatch('fileEditorModule/setIsFileContentModified', content.value !== fileString.value)

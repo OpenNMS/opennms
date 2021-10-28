@@ -422,6 +422,18 @@
     "@featherds/utils" "^0.2.11"
     vue "^3.1.0-0"
 
+"@featherds/drawer@^0.2.11":
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/@featherds/drawer/-/drawer-0.2.11.tgz#6866465df7dbf8d7d5cb1152c949f9ce1753e8c2"
+  integrity sha512-S5LHIlv1yC2w7SbYUTuIEcA9d8XjyQ8v5RN3GoQWLdsVzst41ofXc5JYqJyHEh9PRKU1LMS5UGG/p1NLK9OdPA==
+  dependencies:
+    "@featherds/composables" "^0.2.11"
+    "@featherds/dialog" "^0.2.11"
+    "@featherds/menu" "^0.2.11"
+    "@featherds/ripple" "^0.2.11"
+    "@featherds/styles" "^0.2.11"
+    vue "^3.1.0-0"
+
 "@featherds/dropdown@^0.2.11":
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/@featherds/dropdown/-/dropdown-0.2.11.tgz#30f8cdec061dc5da4133bdb63c08ecea3c1e0078"

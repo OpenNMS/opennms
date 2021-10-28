@@ -6,12 +6,10 @@
           <div class="feather-col-3">
             <Files />
           </div>
-          <div class="feather-col-6">
+          <div class="feather-col-9">
             <Editor />
           </div>
-          <div class="feather-col-2">
-            <Snippets />
-          </div>
+          <Snippets />
         </div>
       </div>
     </div>
@@ -36,5 +34,8 @@ onMounted(() => store.dispatch('fileEditorModule/getFileNames'))
   background: var(--feather-surface);
   margin: 15px;
   padding: 15px;
+}
+.feather-row {
+  flex-wrap: nowrap;
 }
 </style>
