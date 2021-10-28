@@ -61,6 +61,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
@@ -139,6 +140,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final EnrichedFlowForwarder enrichedFlowForwarder;
 
+    private final FlowThresholder thresholder;
+
     private boolean enableFlowForwarding = false;
 
     private int bulkSize = 1000;
@@ -176,7 +179,8 @@ public class ElasticFlowRepository implements FlowRepository {
                                  DocumentEnricher documentEnricher,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
-                                 IndexSettings indexSettings) {
+                                 IndexSettings indexSettings,
+                                 final FlowThresholder thresholder) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -187,6 +191,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
+        this.thresholder = thresholder;
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -226,9 +231,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
                                  final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
                                  final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
-                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final int bulkSize,
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final FlowThresholder thresholder, final int bulkSize,
                                  final int bulkFlushMs) {
-        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings);
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholder);
         this.bulkSize = bulkSize;
         this.bulkFlushMs = bulkFlushMs;
     }
@@ -294,6 +299,12 @@ public class ElasticFlowRepository implements FlowRepository {
             flowDocuments = documentEnricher.enrich(flows, source);
         } catch (Exception e) {
             throw new FlowException("Failed to enrich one or more flows.", e);
+        }
+
+        if (this.thresholder != null) {
+            // TODO: add flag to disable/enable
+            // TODO: add timer
+            flowDocuments.forEach(doc -> this.thresholder.threshold(doc, source));
         }
 
         if(enableFlowForwarding) {

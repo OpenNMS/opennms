@@ -113,9 +113,7 @@ public class NodeIdentificationIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                // TODO: fix this
-                null, null);
+                        .build(), 0);
 
         final FlowDocument flowDocument = new FlowDocument();
         flowDocument.setSrcAddr("1.1.1.1");

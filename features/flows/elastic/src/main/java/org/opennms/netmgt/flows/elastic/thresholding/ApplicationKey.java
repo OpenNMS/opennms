@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.util.Objects;
 
