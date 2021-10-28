@@ -1359,14 +1359,27 @@ public abstract class NmsNetworkBuilder {
     public static final Map<Integer,String>      ZHBGO1Zsr002_IF_IFALIAS_MAP = new HashMap<>();
 
     //NMS-13637
+    public static final String MKTROUTER1_SYSOID=".1.3.6.1.4.1.14988.1";
     public static final String MKTROUTER1_NAME="router-1";
     public static final String MKTROUTER1_IP="192.168.178.73";
     public static final String MKTROUTER1_RESOURCE="classpath:/linkd/nms13637/router-1-walk.txt";
     public static final String MKTROUTER1_ETHER1_MAC =    "00 50 56 82 A1 05".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+
+    public static final String MKTROUTER2_SYSOID=".1.3.6.1.4.1.14988.1";
     public static final String MKTROUTER2_NAME="router-2";
     public static final String MKTROUTER2_IP="192.168.178.74";
     public static final String MKTROUTER2_RESOURCE="classpath:/linkd/nms13637/router-2-walk.txt";
     public static final String MKTROUTER2_ETHER1_MAC =    "00 50 56 82 EF FC".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+
+    public static final String MKTROUTER3_SYSOID=".1.3.6.1.4.1.14988.1";
+    public static final String MKTROUTER3_NAME="router-3";
+    public static final String MKTROUTER3_IP="192.168.180.73";
+    public static final String MKTROUTER3_RESOURCE="classpath:/linkd/nms13637/router-3-walk.txt";
+    public static final String MKTROUTER3_ETHER1_MAC =    "00 50 56 82 A1 35".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKTROUTER3_ETHER2_MAC =    "00 50 56 82 04 D6".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKTROUTER3_ETHER3_MAC =    "00 50 56 82 7D A0".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+
+    public static final String MKT_CISCO_SW01_SYSOID=".1.3.6.1.4.1.9.6.1.95.10.3";
     public static final String MKT_CISCO_SW01_NAME="sw01-office";
     public static final String MKT_CISCO_SW01_IP="192.168.178.30";
     public static final String MKT_CISCO_SW01_RESOURCE="classpath:/linkd/nms13637/sw01-office-walk.txt";
@@ -1376,6 +1389,26 @@ public abstract class NmsNetworkBuilder {
     public static final String MKT_HOST3_LLDP_ID="00 50 56 82 23 35".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     public static final String MKT_HOST4_LLDP_ID="00 50 56 82 20 E2".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     public static final String MKT_HOST5_LLDP_ID="00 50 56 82 62 AB".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+
+    public static final Map<InetAddress,Integer> MKTROUTER1_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER1_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER1_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER1_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER1_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final Map<InetAddress,Integer> MKTROUTER2_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER2_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER2_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER2_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKTROUTER2_IF_IFALIAS_MAP = new HashMap<>();
+
+    public static final Map<InetAddress,Integer> MKT_CISCO_SW01_IP_IF_MAP =  new HashMap<>();
+    public static final Map<Integer,String>      MKT_CISCO_SW01_IF_IFNAME_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKT_CISCO_SW01_IF_IFDESCR_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKT_CISCO_SW01_IF_MAC_MAP = new HashMap<>();
+    public static final Map<Integer,String>      MKT_CISCO_SW01_IF_IFALIAS_MAP = new HashMap<>();
+
+
     NetworkBuilder m_networkBuilder;
 
     NetworkBuilder getNetworkBuilder() {

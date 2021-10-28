@@ -74,15 +74,15 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
 	    	return getInstance().getSubIdAt(0);
 	    }
 
-	    public Integer getLldpLocalPortIdSubtype() {
-	    	return getValue(LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE).toInt();
+	    public LldpUtils.LldpPortIdSubType getLldpLocalPortIdSubtype() {
+	    	return LldpUtils.LldpPortIdSubType.get(getValue(LldpLocPortGetter.LLDP_LOC_PORTID_SUBTYPE).toInt());
 	    }
 
 	    public String getLldpLocPortId() {
-	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID));
+	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype().getValue(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID));
 	    }
 
-	    public String getLldpLocalPortDesc() {
+	    public String getLldpLocPortDesc() {
 	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR) != null)
 	    		return getValue(LldpLocPortGetter.LLDP_LOC_DESCR).toDisplayString();
 	    	return "";
@@ -126,20 +126,28 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
      * @param row a {@link MtxrLldpLocalTableTracker.LldpLocalPortRow} object.
      */
     public void processLldpLocPortRow(final LldpLocalPortRow row) {
-        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {}", row.getMtxrIndex(),row.getLldpLocalPortDesc());
+        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {} {} {}", row.getMtxrIndex(),row.getLldpLocalPortIdSubtype(),row.getLldpLocPortId(), row.getLldpLocPortDesc());
         mtxrLldpLocalPortMap.put(row.getMtxrIndex(),row);
     }
 
-    public LldpElement getLldpElement(String sysname, Integer mtrxIndex) {
+    public LldpElement getLldpElement(String sysname) {
         LldpElement element = new LldpElement();
         element.setLldpSysname(sysname);
-        if (mtxrLldpLocalPortMap.containsKey(mtrxIndex)) {
-            element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
-            element.setLldpChassisId(mtxrLldpLocalPortMap.get(mtrxIndex).getLldpLocPortId());
-        } else {
+        for (LldpLocalPortRow row: mtxrLldpLocalPortMap.values()) {
+            if (row.getLldpLocalPortIdSubtype().equals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS)) {
+                LOG.debug("getLldpElement: parsing lldp_chassis_id {}", row.getLldpLocPortId());
+                if (element.getLldpChassisId() == null || element.getLldpChassisId().compareTo(row.getLldpLocPortId()) > 0 ) {
+                    LOG.debug("getLldpElement: set lldp_chassis_id {}", row.getLldpLocPortId());
+                    element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS);
+                    element.setLldpChassisId(row.getLldpLocPortId());
+                }
+            }
+        }
+        if (element.getLldpChassisId() == null) {
             element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL);
             element.setLldpChassisId(sysname);
         }
+        LOG.info("getLldpElement: {}", element);
         return element;
     }
 
@@ -147,7 +155,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
         if (mtxrLldpLocalPortMap.containsKey(mktlldpLink.getMtxrIndex())) {
             mktlldpLink.getLldpLink().setLldpPortIfindex(mktlldpLink.getMtxrIndex());
             mktlldpLink.getLldpLink().setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME);
-            mktlldpLink.getLldpLink().setLldpPortId(mtxrLldpLocalPortMap.get(mktlldpLink.getMtxrIndex()).getLldpLocalPortDesc());
+            mktlldpLink.getLldpLink().setLldpPortId(mtxrLldpLocalPortMap.get(mktlldpLink.getMtxrIndex()).getLldpLocPortDesc());
         }
         return mktlldpLink;
     }
