@@ -29,7 +29,7 @@
 | Scriptd | Scriptd allows the user to configure Bean Shell script to run in response to events. 
 | SnmpPoller |
 | Statsd |
-| Syslogd | A syslog daemon that allows to retreive and parse syslog messages to generate events.
+| Syslogd | A syslog daemon that allows retrieval and parsing of syslog messages to generate events.
 | Telemetryd | The Telemetry daemon collects sensor data sent from nodes to Horizon. 
 | TestLoadLibraries |
 | Ticketer | The ticketing integration lets Horizon create trouble tickets in external systems. 
