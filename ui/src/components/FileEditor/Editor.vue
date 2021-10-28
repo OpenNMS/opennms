@@ -38,7 +38,10 @@ const lang = computed(() => {
   return 'xml'
 })
 
-watch(fileString, (fileString) => content.value = fileString)
+watch(fileString, (fileString) => {
+  console.log(fileString)
+  content.value = fileString
+})
 
 const change = () => {
   store.dispatch('fileEditorModule/setIsFileContentModified', content.value !== fileString.value)

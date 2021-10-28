@@ -14,7 +14,7 @@ const getFileNames = async (): Promise<string[]> => {
 const getFile = async (fileName: string): Promise<string> => {
   try {
     const resp = await rest.get(`${endpoint}/contents?f=${fileName}`)
-    return new XMLSerializer().serializeToString(resp.data)
+    return resp.data
   } catch (err) {
     return ''
   }
