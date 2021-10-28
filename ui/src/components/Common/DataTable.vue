@@ -43,6 +43,8 @@ import Column from 'primevue/column'
 import router from '@/router'
 import Button from "./Button.vue"
 import { useStore } from 'vuex'
+import { notify } from "@kyvg/vue3-notification"
+import { putProvisionDService } from "./../../services/configurationService"
 
 const store = useStore();
 
@@ -118,10 +120,46 @@ const onClickHandle = (selectedName: any, data: any, index: any) => {
             router.push({ path: `/${selectedName}/${data['import-name']}` });
             break;
         case "delete":
-            confirm(`Please confirm delete ${data['import-name']}?`);
+            const confirmResponse = confirm(`Please confirm delete ${data['import-name']}?`);
+            deleteAction(confirmResponse, data['tablePosition']);
             break;
         default:
             alert(`please add logic for ${selectedName}`);
+    }
+};
+
+const deleteAction = (response: boolean, removePosition: number) => {
+    if (response == true) {
+        try {
+            const provisionData = store.state.configuration.provisionDService['requisition-def'];
+            let copyState = [...provisionData];
+            copyState.splice(removePosition, 1);
+            const requestPayload = { 'requisition-def': copyState };
+            const response = putProvisionDService(requestPayload);
+            notification(response);
+        } catch {
+            notify({
+                title: "Notification",
+                text: 'ProvisionDService PUT API Error',
+                type: 'error',
+            });
+        }
+    }
+};
+
+const notification = (response: any) => {
+    if (response != null) {
+        notify({
+            title: "Notification",
+            text: `Requisition definition data successfully deleted !`,
+            type: 'success',
+        });
+
+        //Route to table and refresh the data
+        router.push({ name: 'requisitionDefinitionsLayout' });
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
     }
 };
 
