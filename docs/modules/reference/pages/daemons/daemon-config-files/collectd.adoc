@@ -22,7 +22,7 @@
 | yes
 
 | http-datacollection-config.xml
-| Defines HTTP datacollections. Attributes are extracted from the HTTP responses using a regular expression.
+| Defines HTTP data collections. Attributes are extracted from the HTTP responses using a regular expression.
 | no
 | yes
 
