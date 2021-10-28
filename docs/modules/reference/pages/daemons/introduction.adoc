@@ -7,7 +7,7 @@
 | Name | Description
 | Ackd | Acknowledge daemon is responsible for alarm acknowledgment.
 | Actiond | 
-| Alarmd | Alarm daemon is handling the alarm workflows.
+| Alarmd | Alarm daemon handles the alarm workflows.
 | AsteriskGateway |
 | Bsmd |
 | Collectd | Collect daemon is responsible for collecting data from nodes.
