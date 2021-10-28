@@ -1362,11 +1362,11 @@ public abstract class NmsNetworkBuilder {
     public static final String MKTROUTER1_NAME="router-1";
     public static final String MKTROUTER1_IP="192.168.178.73";
     public static final String MKTROUTER1_RESOURCE="classpath:/linkd/nms13637/router-1-walk.txt";
-    public static final String MKTROUTER1_LLDP_ID=    "00 50 56 82 A1 05".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKTROUTER1_ETHER1_MAC =    "00 50 56 82 A1 05".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     public static final String MKTROUTER2_NAME="router-2";
     public static final String MKTROUTER2_IP="192.168.178.74";
     public static final String MKTROUTER2_RESOURCE="classpath:/linkd/nms13637/router-2-walk.txt";
-    public static final String MKTROUTER2_LLDP_ID=    "00 50 56 82 EF FC".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
+    public static final String MKTROUTER2_ETHER1_MAC =    "00 50 56 82 EF FC".replaceAll("\\s+","").toLowerCase(Locale.ROOT);
     public static final String MKT_CISCO_SW01_NAME="sw01-office";
     public static final String MKT_CISCO_SW01_IP="192.168.178.30";
     public static final String MKT_CISCO_SW01_RESOURCE="classpath:/linkd/nms13637/sw01-office-walk.txt";
