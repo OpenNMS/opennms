@@ -32,6 +32,7 @@ NOTE: On Debian, you must install and configure `sudo` yourself.
 
 endif::[]
 
+[[setup-postgresql]]
 == Set up PostgreSQL
 
 [{tabs}]
