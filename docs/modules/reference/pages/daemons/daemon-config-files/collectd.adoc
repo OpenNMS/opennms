@@ -17,7 +17,7 @@
 | yes
 
 | jdbc-datacollection-config.xml
-| Defines JDBC datacollections. Attributes are retrieved using SQL queries.
+| Defines JDBC data collections. Attributes are retrieved using SQL queries.
 | no
 | yes
 
