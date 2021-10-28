@@ -12,6 +12,6 @@
 
 | $\{OPENNMS_HOME}/etc/alarmd/drools-rules.d
 | Configure specific Drools rules.
-| ?
-| ?
+| no
+| yes
 |===
