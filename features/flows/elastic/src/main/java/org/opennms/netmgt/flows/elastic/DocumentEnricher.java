@@ -29,14 +29,15 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.net.InetAddress;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.opennms.core.cache.Cache;
@@ -45,6 +46,15 @@ import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.PerspectiveResponseTimeResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -55,6 +65,10 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
+import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +76,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Maps;
 
 public class DocumentEnricher {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentEnricher.class);
@@ -86,10 +101,20 @@ public class DocumentEnricher {
 
     private final long clockSkewCorrectionThreshold;
 
+    private final ThresholdingService thresholdingService;
+
+    private final Map<ApplicationKey, AtomicLong> applicationAccumulator = Maps.newHashMap();
+
+    private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
+
+    private final CollectionAgentFactory collectionAgentFactory;
+
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
                             SessionUtils sessionUtils, ClassificationEngine classificationEngine,
                             CacheConfig cacheConfig,
-                            final long clockSkewCorrectionThreshold) {
+                            final long clockSkewCorrectionThreshold,
+                            final ThresholdingService thresholdingService,
+                            final CollectionAgentFactory collectionAgentFactory) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
@@ -117,6 +142,9 @@ public class DocumentEnricher {
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
 
         this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
+
+        this.thresholdingService = Objects.requireNonNull(thresholdingService);
+        this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
     }
 
     public List<FlowDocument> enrich(final Collection<Flow> flows, final FlowSource source) {
@@ -178,6 +206,45 @@ public class DocumentEnricher {
                     document.setFirstSwitched(document.getFirstSwitched() - skew);
                     document.setDeltaSwitched(document.getDeltaSwitched() - skew);
                     document.setLastSwitched(document.getLastSwitched() - skew);
+                }
+            }
+
+            if (document.getNodeExporter() != null &&
+                !Strings.isNullOrEmpty(document.getApplication())) {
+                final var key = new ApplicationKey(document.getNodeExporter().getNodeId(),
+                                                   document.getDirection() == Direction.INGRESS
+                                                   ? document.getInputSnmp()
+                                                   : document.getOutputSnmp(),
+                                                   document.getApplication());
+
+                final var accumulator = applicationAccumulator.computeIfAbsent(key, k -> new AtomicLong(0L));
+
+                final var counter = accumulator.addAndGet(document.getBytes());
+
+                try {
+                    // TODO: Cache this session along with the counter
+                    final var thresholdingSession = this.thresholdingService.createSession(key.nodeId,
+                                                           document.getDirection() == Direction.INGRESS
+                                                                       ? document.getSrcAddr()
+                                                                       : document.getDstAddr(),
+                                                           "flow-application",
+                                                           FLOW_APP_RRD_REPO,
+                                                           new ServiceParameters(Collections.emptyMap()));
+
+                    final var collectionAgent = this.collectionAgentFactory.createCollectionAgent(
+                            Integer.toString(key.nodeId),
+                            InetAddressUtils.addr(source.getSourceAddress()));
+
+                    final var nodeResource = new NodeLevelResource(key.nodeId);
+                    final var appResource = new DeferredGenericTypeResource(nodeResource, "flow-application", key.application);
+
+                    final var collectionSetBuilder = new CollectionSetBuilder(collectionAgent);
+                    collectionSetBuilder.withCounter(appResource, "flow-application", "bytes", counter);
+
+                    thresholdingSession.accept(collectionSetBuilder.build());
+
+                } catch (final ThresholdInitializationException e) {
+                    LOG.warn("Failed to create thresholding session", e);
                 }
             }
 
