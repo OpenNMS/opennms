@@ -22,7 +22,7 @@ This gives great flexibility to how the service levels will be determined for a 
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /><3>
 ----
 <1> Unique name of the polling package.
-<2> Base filter on IP address, categories, or asset attributes of nodes based on xref:reference:configuration/filters/rule-format.adoc[filter rules].
+<2> Base filter on IP address, categories, or asset attributes of nodes based on xref:reference:configuration/filters/rule-formats.adoc[filter rules].
     The filter is evaluated first and is *required*.
     This package is used for all IP interfaces that do not have 0.0.0.0 as an assigned IP address and is *required*.
 <3> Allow to specify if the configuration of services is applied on a range of IP interfaces_ (IPv4 or IPv6).
