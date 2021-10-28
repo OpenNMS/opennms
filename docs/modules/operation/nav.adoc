@@ -99,7 +99,7 @@
 
 * xref:topology/introduction.adoc[]
 ** xref:topology/topology.adoc[]
-** xref:topology/asset-topology/graphml-asset-topology-provider.adoc[]
+** xref:topology/graphml-asset-topology-provider.adoc[]
 ** xref:topology/enlinkd/introduction.adoc[]
 *** xref:topology/enlinkd/layer-2-discovery.adoc[]
 **** xref:topology/enlinkd/layer-2/lldp-discovery.adoc[]
