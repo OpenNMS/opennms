@@ -678,6 +678,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         @Override
         public void authenticationFailure(final AuthenticationFailureEvent authenticationFailureEvent) {
             final MessageDispatcher messageDispatcher = (MessageDispatcher) authenticationFailureEvent.getSource();
+            // the dispatchers for different credentials have only the v3 processing model assigned, so we can check whether the v2 processing model is null
             if (messageDispatcher.getMessageProcessingModel(MPv2c.ID) == null) {
                 LOG.debug("Error authenticating SNMP v3 trap PDU received from {} (error status code {}). Tried #{} of {} different dispatchers.", authenticationFailureEvent.getAddress(), authenticationFailureEvent.getError(), currentDispatcher, maxDispatcher);
             }
