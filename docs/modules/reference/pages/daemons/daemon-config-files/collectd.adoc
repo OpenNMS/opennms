@@ -27,7 +27,7 @@
 | yes
 
 | xml-datacollection-config.xml
-| Defines datacollections that can be extracted from XML or JSON documents.
+| Defines data collections that can be extracted from XML or JSON documents.
 | no
 | yes
 |===
