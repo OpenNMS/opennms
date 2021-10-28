@@ -71,6 +71,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageDispatcher;
 import org.snmp4j.MessageDispatcherImpl;
@@ -80,6 +81,8 @@ import org.snmp4j.SNMP4JSettings;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.event.AuthenticationFailureEvent;
+import org.snmp4j.event.AuthenticationFailureListener;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.MPv1;
@@ -642,7 +645,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
                         .forEach(u -> usm.addUser(u.getSecurityName(), u));
 
                 // Create another dispatcher for this context
-                final MessageDispatcher nextDispatcher = new BufferRewindingMessageDispatcher();
+                final MessageDispatcherImpl nextDispatcher = new BufferRewindingMessageDispatcher();
+
+                AuthenticationFailureLogger authenticationFailureLogger = new AuthenticationFailureLogger(k, maxNumUniqueDefs - 1);
+                nextDispatcher.addAuthenticationFailureListener(authenticationFailureLogger);
+                nextDispatcher.addCommandResponder(authenticationFailureLogger);
+
                 nextDispatcher.addMessageProcessingModel(new MPv3(usm));
                 // Use the same trap notifier
                 nextDispatcher.addCommandResponder(trapNotifier);
@@ -658,7 +666,31 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         snmp.listen();
     }
-    
+
+    private static class AuthenticationFailureLogger implements AuthenticationFailureListener, CommandResponder {
+        private int currentDispatcher, maxDispatcher;
+
+        private AuthenticationFailureLogger(final int currentDispatcher, final int maxDispatchers) {
+            this.currentDispatcher = currentDispatcher;
+            this.maxDispatcher = maxDispatchers;
+        }
+
+        @Override
+        public void authenticationFailure(final AuthenticationFailureEvent authenticationFailureEvent) {
+            final MessageDispatcher messageDispatcher = (MessageDispatcher) authenticationFailureEvent.getSource();
+            if (messageDispatcher.getMessageProcessingModel(MPv2c.ID) == null) {
+                LOG.debug("Error authenticating SNMP v3 trap PDU received from {} (error status code {}). Tried #{} of {} different dispatchers.", authenticationFailureEvent.getAddress(), authenticationFailureEvent.getError(), currentDispatcher, maxDispatcher);
+            }
+        }
+
+        @Override
+        public void processPdu(final CommandResponderEvent event) {
+            if (event.getMessageProcessingModel() == MPv3.ID) {
+                LOG.debug("Authenticated SNMP v3 trap PDU received from {}. Tried #{} of {} different dispatchers.", event.getPeerAddress(), currentDispatcher, maxDispatcher);
+            }
+        }
+    }
+
     @Override
     public void registerForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
         registerForTraps(listener, address, snmpTrapPort, null);
