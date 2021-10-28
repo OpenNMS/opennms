@@ -163,9 +163,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                // TODO: fix this
-                null, null);
+                        .build(), 0);
 
 
         final JestClientFactory factory = new JestClientFactory();
@@ -175,7 +173,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -208,9 +206,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                // TODO: fix this
-                null, null);
+                        .build(), 0);
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
@@ -219,7 +215,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), is(empty()));
             Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), is(empty()));
@@ -254,9 +250,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                // TODO: fix this
-                null, null);
+                        .build(), 0);
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
@@ -265,7 +259,7 @@ public class MarkerCacheIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     client, IndexStrategy.MONTHLY, documentEnricher,
                     sessionUtils, nodeDao, snmpInterfaceDao,
-                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
 
             final int ingress = 2;
             final int egress = 3;

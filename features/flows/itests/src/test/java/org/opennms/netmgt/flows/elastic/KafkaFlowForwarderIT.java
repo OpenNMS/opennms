@@ -130,7 +130,7 @@ public class KafkaFlowForwarderIT {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
                     jestClient, IndexStrategy.MONTHLY, documentEnricher,
                     new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                    new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings());
+                    new MockIdentity(), new MockTracerRegistry(), flowForwarder, new IndexSettings(), null);
             elasticFlowRepository.setEnableFlowForwarding(true);
             elasticFlowRepository.persist(Lists.newArrayList(FlowDocumentTest.getMockFlow()), FlowDocumentTest.getMockFlowSource());
         }

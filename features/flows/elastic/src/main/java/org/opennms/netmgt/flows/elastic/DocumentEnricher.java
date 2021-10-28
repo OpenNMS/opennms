@@ -101,20 +101,10 @@ public class DocumentEnricher {
 
     private final long clockSkewCorrectionThreshold;
 
-    private final ThresholdingService thresholdingService;
-
-    private final Map<ApplicationKey, AtomicLong> applicationAccumulator = Maps.newHashMap();
-
-    private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
-
-    private final CollectionAgentFactory collectionAgentFactory;
-
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
                             SessionUtils sessionUtils, ClassificationEngine classificationEngine,
                             CacheConfig cacheConfig,
-                            final long clockSkewCorrectionThreshold,
-                            final ThresholdingService thresholdingService,
-                            final CollectionAgentFactory collectionAgentFactory) {
+                            final long clockSkewCorrectionThreshold) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
@@ -142,9 +132,6 @@ public class DocumentEnricher {
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
 
         this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
-
-        this.thresholdingService = Objects.requireNonNull(thresholdingService);
-        this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
     }
 
     public List<FlowDocument> enrich(final Collection<Flow> flows, final FlowSource source) {
@@ -206,45 +193,6 @@ public class DocumentEnricher {
                     document.setFirstSwitched(document.getFirstSwitched() - skew);
                     document.setDeltaSwitched(document.getDeltaSwitched() - skew);
                     document.setLastSwitched(document.getLastSwitched() - skew);
-                }
-            }
-
-            if (document.getNodeExporter() != null &&
-                !Strings.isNullOrEmpty(document.getApplication())) {
-                final var key = new ApplicationKey(document.getNodeExporter().getNodeId(),
-                                                   document.getDirection() == Direction.INGRESS
-                                                   ? document.getInputSnmp()
-                                                   : document.getOutputSnmp(),
-                                                   document.getApplication());
-
-                final var accumulator = applicationAccumulator.computeIfAbsent(key, k -> new AtomicLong(0L));
-
-                final var counter = accumulator.addAndGet(document.getBytes());
-
-                try {
-                    // TODO: Cache this session along with the counter
-                    final var thresholdingSession = this.thresholdingService.createSession(key.nodeId,
-                                                           document.getDirection() == Direction.INGRESS
-                                                                       ? document.getSrcAddr()
-                                                                       : document.getDstAddr(),
-                                                           "flow-application",
-                                                           FLOW_APP_RRD_REPO,
-                                                           new ServiceParameters(Collections.emptyMap()));
-
-                    final var collectionAgent = this.collectionAgentFactory.createCollectionAgent(
-                            Integer.toString(key.nodeId),
-                            InetAddressUtils.addr(source.getSourceAddress()));
-
-                    final var nodeResource = new NodeLevelResource(key.nodeId);
-                    final var appResource = new DeferredGenericTypeResource(nodeResource, "flow-application", key.application);
-
-                    final var collectionSetBuilder = new CollectionSetBuilder(collectionAgent);
-                    collectionSetBuilder.withCounter(appResource, "flow-application", "bytes", counter);
-
-                    thresholdingSession.accept(collectionSetBuilder.build());
-
-                } catch (final ThresholdInitializationException e) {
-                    LOG.warn("Failed to create thresholding session", e);
                 }
             }
 

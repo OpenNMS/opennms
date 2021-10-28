@@ -88,7 +88,7 @@ public class BulkingIT {
     private FlowRepository createFlowRepository(final JestClient jestClient, final DocumentEnricher documentEnricher, int bulkSize, int bulkFlushMs) {
         final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(), jestClient,
                 IndexStrategy.MONTHLY, documentEnricher, new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings());
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(), null);
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
         return new InitializingFlowRepository(elasticFlowRepository, jestClient);
