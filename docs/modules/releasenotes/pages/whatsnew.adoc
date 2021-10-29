@@ -58,7 +58,7 @@ Nephron and flow processing have gone through a number of major enhancements.
 
 === Minion
 
-The Minion is continuing to receive improvements in performance and features.
+The Minion continues to receive improvements in performance and features.
 
 * The Minion no longer needs to make a ReST call to the OpenNMS core to retrieve SNMPv3 auth data.
 * A new API (the "Twin API") has been created for pushing configuration to Minion
