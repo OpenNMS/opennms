@@ -8,7 +8,7 @@ We recommend creating a new user with admin privileges instead of using the defa
 Ideally, each user account corresponds to a person, to help track who performs tasks in your {page-component-title} system.
 Assigning different <<user-management/security-roles.adoc#ga-role-user-management-roles, security roles>> to each user helps restrict what tasks the user can perform. 
 
-In addition to local users, you can configure external authentication services including link:https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP/LDAPS], link:https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[Single Sign On (SSO]).
+In addition to local users, you can configure external authentication services including link:https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP/LDAPS], link:https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and link:https://opennms.discourse.group/t/single-sign-on-sso-using-spring-security-and-kerberos/[Single Sign On (SSO]).
 Configuration specifics for these services are outside the scope of this documentation.
 
 WARNING: Do not delete the default _admin_ and _rtc_ users.
