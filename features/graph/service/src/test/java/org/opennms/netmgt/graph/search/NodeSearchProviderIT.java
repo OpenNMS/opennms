@@ -71,7 +71,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml"
+})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class NodeSearchProviderIT {
