@@ -262,8 +262,14 @@ const columnDefs = ref([
     field: "logMessage",
     headerTooltip: "Log Message",
     cellRenderer: (data: any) => {
-            return data.value;
-        }
+      let newData = `<style type = "text/css">
+            p
+            {
+                margin: 0px;
+            }
+        </style> ${data.value}`;
+      return newData;
+      }
   },
 ]
 )
