@@ -24,7 +24,7 @@ const getFile = async (fileName: string): Promise<string> => {
 const getSnippets = async (fileName: string): Promise<string> => {
   try {
     const resp = await rest.get(`${endpoint}/help?f=${fileName}`)
-    return marked(resp.data)
+    return marked(resp.data, { breaks: true })
   } catch (err) {
     return ''
   }
