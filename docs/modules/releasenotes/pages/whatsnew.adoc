@@ -32,7 +32,7 @@ RUNAS=root
 === SQS Minion RPC Support Dropped
 
 Support for Amazon SQS for Minion RPC has been removed.
-It is recommended to instead use Kafka for use cases that require horizontal scaling of Minion communication.
+We recommend to instead use Kafka for use cases that require horizontal scaling of Minion communication.
 
 === Time Series Integration Layer Changes
 
