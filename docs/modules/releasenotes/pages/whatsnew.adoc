@@ -62,7 +62,7 @@ The Minion continues to receive improvements in performance and features.
 
 * The Minion no longer needs to make a REST call to the OpenNMS core to retrieve SNMPv3 auth data.
 * A new API (the "Twin API") has been created for pushing configuration to Minion
-  over RPC which reduces the amount of data that needs to be passed over the wire.
+  over RPC, which reduces the amount of data that needs to be passed over the wire.
   Over time, all configuration information will be migrated to this new API.
 
 === Polling and Metadata
