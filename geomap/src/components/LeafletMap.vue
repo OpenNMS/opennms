@@ -22,22 +22,24 @@
             :attribution="tileProvider.attribution"
             layer-type="base"
           />
-          <marker-cluster :options="{ showCoverageOnHover: false, chunkedLoading: true }">
+          <marker-cluster
+            :options="{ showCoverageOnHover: false, chunkedLoading: true }"
+          >
             <l-marker
-          v-for="(node, index) in interestedNodes"
-          :key="index"
-          :lat-lng="getCoordinateFromNode(node)"
-          :icon ="setIcon"
-add         
->
-        <l-popup> {{ node.label }} </l-popup>
-        </l-marker>
-        <l-polyline
-          v-for="(coordinatePair, index) in edges"
-          :key="index"
-          :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
-          color="green"
-        />
+              v-for="(node, index) in interestedNodes"
+              :key="index"
+              :lat-lng="getCoordinateFromNode(node)"
+              :icon="setIcon"
+              add
+            >
+              <l-popup> {{ node.label }} </l-popup>
+            </l-marker>
+            <l-polyline
+              v-for="(coordinatePair, index) in edges"
+              :key="index"
+              :lat-lngs="[coordinatePair[0], coordinatePair[1]]"
+              color="green"
+            />
           </marker-cluster>
         </template>
       </l-map>
@@ -58,11 +60,8 @@ import {
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
-// import commonjs from 'rollup-plugin-commonjs';
- import L from "leaflet";
-// import { Console } from "console";
-
-
+import L from "leaflet";
+import { Alarm } from "@/types";
 import { Coordinates } from "@/types";
 
 let leafletReady = ref(false);
@@ -72,32 +71,32 @@ let map: any = ref();
 const store = useStore();
 
 let center = computed(() => {
-  const coordinates: Coordinates = store.getters['mapModule/getMapCenter']
+  const coordinates: Coordinates = store.getters["mapModule/getMapCenter"];
   return [coordinates.latitude, coordinates.longitude];
-})
+});
 
 let zoom = ref(2);
 
 let interestedNodes = computed(() => {
-  return store.getters['mapModule/getInterestedNodes'];
-})
+  return store.getters["mapModule/getInterestedNodes"];
+});
 
-console.log("interestedNodes>>>>>>", interestedNodes.value)
+   let interestedAlarms = computed(() => {
+      console.log("interestedAlarms",store.getters["mapModule/getAlarmsFromSelectedNodes"]);
+      return store.getters["mapModule/getAlarmsFromSelectedNodes"];  
+  });
 
-let interestedAlarms = computed(() => {
-    return store.getters['mapModule/getAlarmsFromSelectedNodes'];
-  // return store.state.mapModule.alarms
-})
-console.log("interestedAlarms>>>>>>", interestedAlarms.value)
+// watch:{
+//   let alarmvalue =  store.getters["mapModule/getAlarmsFromSelectedNodes"];
+//   console.log("interestedAlarmsconsole2",alarmvalue);
+// }
+  
+//    console.log("interestedAlarmsconsole2",interestedAlarms);
 
 
 //  onMounted(async () => {
-//    const alarmData = await store.getters['mapModule/getAlarmsFromSelectedNodes'];
-//    console.log("alarm data", alarmData);
-//  })
-
-
-
+  
+//  });
 
 function getCoordinateFromNode(node: any) {
   let coordinate: string[] = [];
@@ -107,21 +106,24 @@ function getCoordinateFromNode(node: any) {
 }
 
 let interestedNodesID = computed(() => {
-  return store.getters['mapModule/getInterestedNodesID'];
-})
+  return store.getters["mapModule/getInterestedNodesID"];
+});
 
 let edges = computed(() => {
   let ids = interestedNodesID.value;
   let interestedNodesCoordinateMap = getInterestedNodesCoordinateMap();
 
-  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0]) && ids.includes(edge[1]))
+  return store.getters["mapModule/getEdges"]
+    .filter(
+      (edge: [number, number]) => ids.includes(edge[0]) && ids.includes(edge[1])
+    )
     .map((edge: [number, number]) => {
       let edgeCoordinatesPair = [];
       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]));
       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[1]));
-      return edgeCoordinatesPair
+      return edgeCoordinatesPair;
     });
-})
+});
 
 function getInterestedNodesCoordinateMap() {
   var map = new Map();
@@ -159,89 +161,42 @@ const tileProviders = [
 ];
 
 
+var iconPath;
+let setIcon = new L.Icon({
+  iconUrl: setMarkerColor(),
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
-// onMounted(async () => {
-      // const {
-      //   bind,
-      //   Browser,
-      //   DivIcon,
-      //   DomEvent,
-      //   DomUtil,
-      //   extend,
-      //   FeatureGroup,
-      //   featureGroup,
-      //   Icon,
-      //   LatLng,
-      //   LatLngBounds,
-      //   LayerGroup,
-      //   Marker,
-      //   marker,
-      //   Point,
-      //   Util,
-      // } = await import("leaflet/dist/leaflet-src.esm");
+function setMarkerColor() {
+  let severity = "NORMAL";
 
-      /** create a fake window.L from just the bits we need to make markercluster load properly **/
-//       const L = {
-//         bind,
-//         Browser,
-//         DivIcon,
-//         DomUtil,
-//         extend,
-//         FeatureGroup,
-//         featureGroup,
-//         Icon,
-//         LatLng,
-//         LatLngBounds,
-//         LayerGroup,
-//         Marker,
-//         Point,
-//         Util,
-//       } as any;
-//       window['L'] = L;
-//  });
-// const {AwesomeMarkers} = await import ("leaflet.awesome-markers");
-
-//  const redMarker = AwesomeMarkers.icon({
-//      icon: 'coffee',
-//      markerColor: 'red'
-//    });
-var iconPath
- let setIcon = new L.Icon({
-   iconUrl: setMarkerColor(),
-   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-   iconSize: [25, 41],
-   iconAnchor: [12, 41],
-   popupAnchor: [1, -34],
-   shadowSize: [41, 41]
- });
-
- function setMarkerColor(){
- let severity = "MAJOR";
-
-switch(severity) {
-  case "NORMAL":
-    return iconPath = "src/assets/Normal-icon.png";
-    break;
-  case "WARNING":
-    return iconPath = "src/assets/Warning-icon.png";
-    break;
-  case "MINOR":
-    return iconPath = "src/assets/Minor-icon.png";
-    break;
+  switch (severity) {
+    case "NORMAL":
+      return (iconPath = "src/assets/Normal-icon.png");
+      break;
+    case "WARNING":
+      return (iconPath = "src/assets/Warning-icon.png");
+      break;
+    case "MINOR":
+      return (iconPath = "src/assets/Minor-icon.png");
+      break;
     case "MAJOR":
-    return iconPath = "src/assets/Major-icon.png";
-    break;
+      return (iconPath = "src/assets/Major-icon.png");
+      break;
     case "CRITICAL":
-    return iconPath = "src/assets/Critical-icon.png";
-    break;
-  default:
-    return iconPath = "src/assets/Normal-icon.png";
-} 
- }
-      
-  // L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
+      return (iconPath = "src/assets/Critical-icon.png");
+      break;
+    default:
+      return (iconPath = "src/assets/Normal-icon.png");
+  }
+}
 
-
+// L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
 </script>
 
 <style scoped>
