@@ -99,14 +99,14 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected CdpLinkDao m_cdpLinkDao;
 
     @Autowired
-    protected CdpElementDao m_cdpElementDao;    
+    protected CdpElementDao m_cdpElementDao;
 
     @Autowired
     protected LldpLinkDao m_lldpLinkDao;
-        
+
     @Autowired
     protected LldpElementDao m_lldpElementDao;
-        
+
     @Autowired
     protected OspfLinkDao m_ospfLinkDao;
 
@@ -168,7 +168,7 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         p.setProperty("log4j.logger.org.springframework","WARN");
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd", "DEBUG");
-               MockLogAppender.setupLogging(p);
+        MockLogAppender.setupLogging(p);
     }
 
     @After
@@ -196,5 +196,5 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
                 .map(p -> ProtocolSupported.valueOf(p.getId()))
                 .collect(Collectors.toSet());
     }
-    
+
 }

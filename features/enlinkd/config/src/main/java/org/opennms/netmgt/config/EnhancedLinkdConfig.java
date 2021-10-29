@@ -136,7 +136,7 @@ public interface EnhancedLinkdConfig {
      * @throws java.io.IOException if any.
      */
     void reload() throws IOException;
-    
+
     /**
      * <p>save</p>
      *
@@ -147,8 +147,8 @@ public interface EnhancedLinkdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration} object.
      */
-     EnlinkdConfiguration getConfiguration();    
-        
+    EnlinkdConfiguration getConfiguration();
+
     Lock getReadLock();
 
     Lock getWriteLock();

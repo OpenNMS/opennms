@@ -65,7 +65,7 @@ public final class EnhancedLinkdConfigFactory extends EnhancedLinkdConfigManager
     private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdConfigFactory.class);
     private static final String CONFIG_NAME = "enlinkd";
     private static final String DEFAULT_CONFIG_ID = "default";
-    
+
     public EnhancedLinkdConfigFactory() {
         // move to postConstruct to prevent dao bean not ready
     }

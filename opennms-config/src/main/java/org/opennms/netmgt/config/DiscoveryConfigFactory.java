@@ -92,7 +92,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      */
     private DiscoveryConfiguration m_config;
 
-    /**l
+    /**
      * @deprecated Inject this value instead of using singleton access.
      */
     public static DiscoveryConfigFactory getInstance() {
