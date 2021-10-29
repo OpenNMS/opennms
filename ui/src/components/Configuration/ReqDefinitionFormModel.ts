@@ -1,7 +1,7 @@
 import useVuelidate from '@vuelidate/core'
 import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 import { ref } from 'vue'
-import { firstCharValidator, nameValidator, hostValidator } from '../../Validators/CustomValidators'
+import { firstCharValidator, nameValidator, hostAndIPValidator } from '../../Validators/CustomValidators'
 
 export default class reqDefModel {
   name = ref('')
@@ -23,7 +23,7 @@ export default class reqDefModel {
       type: { required },
       host: {
         required: helpers.withMessage('Please enter hostname or ip address', required),
-        hostValidator
+        hostAndIPValidator
       },
       foreignSource: {
         required: helpers.withMessage('Please enter foreign source', required),

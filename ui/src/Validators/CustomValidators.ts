@@ -24,15 +24,16 @@ export const nameValidator = {
   $message: 'Allowed characters are A-Z a-z 0-9 - _ space'
 }
 
-export const hostValidator = {
+export const hostAndIPValidator = {
   $validator: (value: any) => {
     if (value !== '') {
+      let validHost: boolean = false
       const ipRegex = new RegExp(
         '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
       )
       const hostRegex = new RegExp('^(?:[-A-Za-z0-9]+.)+[A-Za-z]{2,6}$')
-      const validIP = hostRegex.test(value) || ipRegex.test(value)
-      if (validIP) return validIP
+      validHost = hostRegex.test(value) || ipRegex.test(value)
+      if (validHost) return validHost
     } else {
       return true
     }
