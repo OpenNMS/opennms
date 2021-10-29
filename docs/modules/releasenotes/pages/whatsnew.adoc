@@ -77,7 +77,7 @@ The Minion continues to receive improvements in performance and features.
 * A link:https://issues.opennms.org/browse/NMS-13313[`localhost` node is now monitored] and enumerates some useful OpenNMS metrics by default.
 * LLDP scanning in Enlinkd has link:[added support for `TIMETRA-LLDP-MIB`].
 
-=== ReST API
+=== REST API
 
 * RTC data now includes link:https://issues.opennms.org/browse/NMS-13238[an additional boolean field] for service up/down status.
 
