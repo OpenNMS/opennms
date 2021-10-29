@@ -801,7 +801,6 @@ public class FlowDocument {
         enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
         enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
         enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
-        enrichedFlow.setConvoKey(flowDocument.getConvoKey());
         enrichedFlow.setClockCorrection(flowDocument.getClockCorrection());
         return enrichedFlow;
 
