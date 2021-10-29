@@ -41,7 +41,7 @@ The Time Series integration layer has gone through link:https://issues.opennms.o
 * Time series plugins need to be compatible with OIA 0.6.x.
 * Resource level string attributes are now also stored via the plugin in the respective time series database.
   The `timeseries_meta` table which previously stored this metadata has been removed.
-  There is no migration, string values are generally updated on the next poll.
+  There is no migration; string values are generally updated on the next poll.
 
 == New Features and Improvements
 
