@@ -233,7 +233,7 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         await().until(tracker::getLog, hasItems("Test1", "Test2"));
 
-        ((JmsTwinPublisher) publisher).destroy();
+        ((JmsTwinPublisher) publisher).close();
         ((JmsTwinPublisher) publisher).init();
         session.publish("Test3");
 

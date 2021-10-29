@@ -17,6 +17,7 @@
         <module>common</module>
         <module>grpc</module>
         <module>jms</module>
+        <module>kafka</module>
         <module>test</module>
         <module>memory</module>
     </modules>

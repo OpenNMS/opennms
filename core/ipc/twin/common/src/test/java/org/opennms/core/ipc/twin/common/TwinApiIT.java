@@ -127,8 +127,8 @@ public class TwinApiIT {
 
     @After
     public void destroy() {
-        mockTwinSubscriber.destroy();
-        mockTwinPublisher.destroy();
+        mockTwinSubscriber.close();
+        mockTwinPublisher.close();
     }
 
     private class ConsumerImpl implements Consumer<MinionInfoBean> {
