@@ -67,9 +67,7 @@ cd ~/dev/opennms
 ./assemble.pl -p dir
 ----
 
-For more information on how to build OpenNMS from source, check this wiki link:https://wiki.opennms.org/wiki/Installation:Source#Building[Install from Source].
-
-After successfully building OpenNMS, please follow the wiki link:https://wiki.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
+For more information on how to build OpenNMS from source, check this article link:https://opennms.discourse.group/t/how-to-compile-opennms/486[How to compile OpenNMS?].
 
 == Tooling
 We recommend the following toolset:
@@ -84,15 +82,12 @@ We recommend the following toolset:
 
 === General
  * https://www.github.com/OpenNMS/opennms[source code] hosted on GitHub
- * http://wiki.opennms.org[Our Wiki], especially the start page. 
- It points you in the right direction.
  * Our http://issues.opennms.org[issue/bug tracker]
  * https://github.com/opennms-forge/vagrant-opennms-dev[Vagrant box] to set up a virtual box to build OpenNMS
  * https://github.com/opennms-forge/vagrant-opennms[Vagrant box] to set up a virtual box to run OpenNMS
 
 === Installation/Setup
 
- * https://wiki.opennms.org/wiki/Installation:Source[]
- * https://wiki.opennms.org/wiki/Developing_with_Git[]
- * https://wiki.opennms.org/wiki/Eclipse_and_OpenNMS[]
- * https://wiki.opennms.org/wiki/IDEA_and_OpenNMS[]
+ * https://opennms.discourse.group/t/how-to-compile-opennms/486[How to compile OpenNMS?]
+ * https://opennms.discourse.group/t/developing-with-git[Developing with GIT]
+ * https://opennms.discourse.group/t/set-up-local-development-environment-macos/485[Set up local development environment]
