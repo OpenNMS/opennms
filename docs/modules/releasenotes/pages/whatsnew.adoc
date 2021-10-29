@@ -84,7 +84,7 @@ The Minion continues to receive improvements in performance and features.
 === Documentation
 
 * A ton of work has gone into cleaning up, rearranging, and standardizing terms in the documentation.
-* A bunch of additional ReST APIs are now documented through OpenAPI.
+* A bunch of additional REST APIs are now documented through OpenAPI.
 
 == Important Internal Changes
 
