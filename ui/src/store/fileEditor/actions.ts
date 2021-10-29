@@ -20,14 +20,22 @@ const getFile = async (context: VuexContext, fileName: string) => {
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
+  const xml = 'xml', plain = 'plain'
   const filename = context.state.selectedFileName
   const fileString = context.state.modifiedFileString
-  const filetype = filename.split('.')[1]
-  const doc = new File([fileString], filename, { type: `text/${filetype}` })
+  const splitFilename = filename.split('.')
+  const filetype = splitFilename[splitFilename.length - 1]
+  const mimetype = filetype === xml ? xml : plain
+  const doc = new File([fileString], filename, { type: `text/${mimetype}` })
 
   const formData = new FormData()
   formData.append('upload', doc)
-  await API.postFile(filename, formData)
+  const saved = await API.postFile(filename, formData)
+
+  if (saved) {
+    context.commit('SAVE_FILE_TO_STATE', fileString)
+    context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
+  }
 }
 
 const setModifiedFileString = async (context: VuexContext, modifiedFileString: string) => {

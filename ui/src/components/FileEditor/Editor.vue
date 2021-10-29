@@ -33,9 +33,14 @@ const content = ref('')
 
 const fileString = computed(() => store.state.fileEditorModule.file)
 const lang = computed(() => {
+  const xml = 'xml', properties = 'properties'
   const selectedFileName = store.state.fileEditorModule.selectedFileName
-  if (selectedFileName) return selectedFileName.split('.')[1]
-  return 'xml'
+  if (selectedFileName) {
+    const splitSelectedFileName = selectedFileName.split('.')
+    const filetype = splitSelectedFileName[splitSelectedFileName.length - 1]
+    if (filetype !== xml) return properties
+  }
+  return xml
 })
 watchEffect(() => content.value = fileString.value)
 
