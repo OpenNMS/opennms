@@ -1,4 +1,5 @@
 
+[[asset-topology]]
 = Asset Topology Provider
 
 {page-component-title} lets users define arbitrarily complex layered topologies using http://graphml.graphdrawing.org/[GraphML].

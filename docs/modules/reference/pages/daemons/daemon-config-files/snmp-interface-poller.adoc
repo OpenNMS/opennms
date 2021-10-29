@@ -1,25 +1,34 @@
-
-[[ga-opennms-operation-daemon-config-files-snmppoller]]
+[[ref-daemon-config-files-snmppoller]]
 = SNMP Interface Poller
 
 [options="header"]
 [cols="1,3"]
 |===
-| Internal Daemon Name | Reload Event
-| SnmpPoller            | `uei.opennms.org/internal/reloadSnmpPollerConfig`
+| Internal Daemon Name
+| Reload Event
+
+| SnmpPoller
+| `uei.opennms.org/internal/reloadSnmpPollerConfig`
 |===
 
 .SNMP Interface Poller configuration file overview
 [options="header"]
-[cols="2,3,1,1"]
+[cols="2,1,1,3"]
 |===
 | File
-| Description
 | Restart Required
 | Reload Event
+| Description
 
 | snmp-interface-poller-configuration.xml
 | Change how and when polling is performed globally or define fine-grained settings for specific packages.
-| no
 | yes
+| no
 |===
+
+.Example reload command
+[source, console]
+----
+cd $\{OPENNMS_HOME}/bin
+./send-event.pl uei.opennms.org/internal/reloadSnmpPollerConfig
+----
