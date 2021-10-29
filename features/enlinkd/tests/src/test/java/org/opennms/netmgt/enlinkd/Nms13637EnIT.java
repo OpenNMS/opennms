@@ -130,6 +130,31 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
 
         for (LldpLink link: m_lldpLinkDao.findAll()) {
             printLldpLink(link);
+            Assert.assertNotNull(link.getLldpRemPortDescr());
+            if (link.getNode().getId().intValue() == router1.getId().intValue()) {
+                Assert.assertEquals("", link.getLldpRemPortDescr());
+            } else  if (link.getNode().getId().intValue() == router2.getId().intValue()) {
+                Assert.assertEquals("", link.getLldpRemPortDescr());
+            } else {
+                Assert.assertEquals(ciscohomesw.getId().intValue(),link.getNode().getId().intValue());
+                switch (link.getLldpLocalPortNum()) {
+                    case 9:
+                    case 73:
+                    case 74:
+                        Assert.assertEquals("", link.getLldpRemPortDescr());
+                        break;
+                    case 10:
+                    case 55:
+                    case 56:
+                    case 58:
+                    case 59:
+                    case 66:
+                        Assert.assertNotEquals("", link.getLldpRemPortDescr());
+                        break;
+                    default:
+                        fail();
+                }
+            }
         }
 
         m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
@@ -140,7 +165,6 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         OnmsTopology topology = updater.getTopology();
         Assert.assertNotNull(topology);
         assertEquals(3,topology.getVertices().size());
-        assertEquals(3,topology.getEdges().size());
         int i=0;
         int j=0;
         int k=0;
@@ -164,14 +188,17 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         assertEquals(1,j);
         assertEquals(1,k);
 
+        assertEquals(3,topology.getEdges().size());
         for (OnmsTopologyEdge e : topology.getEdges()) {
-            System.err.println(e.getSource().getVertex().getLabel());
-            System.err.println(e.getSource().getIfindex());
-            System.err.println(e.getSource().getIfname());
-            System.err.println(e.getTarget().getVertex().getLabel());
-            System.err.println(e.getTarget().getIfindex());
-            System.err.println(e.getTarget().getIfname());
+            System.err.println("-------------Edge-------------------");
+            System.err.println(e.getSource().getVertex().getLabel()+":"+e.getSource().getIfname()+"<->"+e.getTarget().getIfname()+":"+e.getTarget().getVertex().getLabel());
+            System.err.println(e.getSource().getToolTipText());
+            System.err.println(e.getTarget().getToolTipText());
+            assertEquals("ether1",e.getSource().getIfname());
+            assertNotNull(e.getTarget().getIfname());
         }
+
+
 
 
     }

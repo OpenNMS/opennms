@@ -57,10 +57,11 @@ public class LldpLocPortGetter extends SnmpGetter {
         return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE),SnmpObjId.get(LLDP_LOC_PORTID),SnmpObjId.get(LLDP_LOC_DESCR)),lldpRemLocalPortNum);
     }
 
-    public LldpLink getLldpLink(LldpLink lldplink) {
+    public LldpLink getLldpLink(LldpRemTableTracker.LldpRemRow row) {
 
-        List<SnmpValue> val = get(lldplink.getLldpLocalPortNum());
+        List<SnmpValue> val = get(row.getLldpRemLocalPortNum());
 
+        LldpLink lldplink=row.getLldpLink();
         if (val == null ) {
             LOG.debug("getLldpLink: cannot find local instance for lldp local port number {}",
                      lldplink.getLldpLocalPortNum());

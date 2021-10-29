@@ -217,7 +217,7 @@ public class LldpRemTableTracker extends TableTracker {
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setLldpLocalPortNum(getLldpRemIndex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());

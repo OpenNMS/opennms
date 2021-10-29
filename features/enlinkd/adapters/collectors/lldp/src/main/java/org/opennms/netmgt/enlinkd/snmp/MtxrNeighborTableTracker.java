@@ -91,13 +91,13 @@ public class MtxrNeighborTableTracker extends TableTracker {
         mtxrNeighborMap.put(row.getMtxrNeighborIndex(),row);
     }
 
-    public MtxrLldpLink getLldpLink(MtxrLldpLink mtxrlldplink) {
-       if (mtxrNeighborMap.containsKey(mtxrlldplink.getMtxrNeighborIndex())) {
-            mtxrlldplink.setMtxrIndex(mtxrNeighborMap.get(mtxrlldplink.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId());
-            mtxrlldplink.getLldpLink().setLldpLocalPortNum(mtxrlldplink.getMtxrNeighborIndex());
+    public Integer getMtxrinterfaceId(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow) {
+        Integer mtxrInterfaceId=null;
+        if (mtxrNeighborMap.containsKey(mtxrlldprow.getMtxrNeighborIndex())) {
+            mtxrInterfaceId = mtxrNeighborMap.get(mtxrlldprow.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId();
         }
-       LOG.debug("getLldpLink: neiIndex {} -> interfaceId {}", mtxrlldplink.getMtxrNeighborIndex(), mtxrlldplink.getMtxrIndex());
-       return mtxrlldplink;
+       LOG.debug("getLldpLink: neiIndex {} -> interfaceId {}", mtxrlldprow.getMtxrNeighborIndex(), mtxrInterfaceId);
+       return mtxrInterfaceId;
     }
 
 }

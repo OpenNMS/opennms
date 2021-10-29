@@ -198,6 +198,15 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                         targetLink.getLldpPortDescr(),
                         targetLink.getLldpRemPortDescr());
                 targetLinkMap.put(descrkey,targetLink);
+                CompositeKey sysnameKey = new CompositeKey(
+                    targetLink.getLldpRemSysname(),
+                    nodelldpelementidMap.get(targetLink.getNodeId()).getLldpSysname(),
+                    targetLink.getLldpPortId(),
+                    targetLink.getLldpPortIdSubType(),
+                    targetLink.getLldpRemPortId(),
+                    targetLink.getLldpRemPortIdSubType()
+                );
+                targetLinkMap.put(sysnameKey,targetLink);
             }
 
             // 2.) iterate
@@ -214,8 +223,17 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                     parsed.add(sourceLink.getId());
                     continue;
                 }
+                String sourceLldpSysname = nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname();
+                if (sourceLldpSysname.equals(sourceLink.getLldpRemSysname())) {
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("getLldpLinks: self link not adding source: {}",sourceLink);
+                    }
+                    parsed.add(sourceLink.getId());
+                    continue;
+                }
+
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("getLldpLinks: source: {}",sourceLink);
+                    LOG.info("getLldpLinks: checking target for source: {}",sourceLink);
                 }
 
                 CompositeKey key = new CompositeKey(
@@ -239,13 +257,26 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                 }
                 if (targetLink == null) {
                     if (LOG.isInfoEnabled()) {
-                        LOG.info("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                        LOG.info("getLldpLinks: cannot found target using descr key for source: '{}'", sourceLink.getId());
+                    }
+                    CompositeKey sysnamekey = new CompositeKey(
+                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname(),
+                            sourceLink.getLldpRemSysname(),
+                            sourceLink.getLldpRemPortId(),
+                            sourceLink.getLldpRemPortIdSubType(),
+                            sourceLink.getLldpPortId(),
+                            sourceLink.getLldpPortIdSubType());
+                    targetLink = targetLinkMap.get(sysnamekey);
+                }
+                if (targetLink == null) {
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("getLldpLinks: cannot found target using sysname key for source: '{}'", sourceLink.getId());
                     }
                     continue;
                 }
 
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink);
+                    LOG.info("getLldpLinks: source: '{}' found target: {}", sourceLink.getId(), targetLink);
                 }
 
                 parsed.add(sourceLink.getId());

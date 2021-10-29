@@ -30,7 +30,6 @@ package org.opennms.netmgt.enlinkd;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.*;
@@ -155,11 +154,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     }
 
     private boolean walkLldpRemTable(SnmpAgentConfig peer) {
-        List<LldpLink> links = new ArrayList<>();
+        List<LldpRemTableTracker.LldpRemRow> links = new ArrayList<>();
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
-                links.add(row.getLldpLink());
+                links.add(row);
             }
         };
         try {
@@ -195,14 +194,14 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return false;
         }
 
-        final List<MtxrLldpLink> mtxrlldplinks = new ArrayList<>();
+        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> mtxrlldprowss = new ArrayList<>();
 
         MtxrLldpLocalTableTracker mtxrLldpLocalTable = new MtxrLldpLocalTableTracker();
         MtxrNeighborTableTracker mtxrNeighborTable = new MtxrNeighborTableTracker();
         MtxrLldpRemTableTracker mtxrLldpRemTable = new MtxrLldpRemTableTracker() {
 
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
-                mtxrlldplinks.add(row.getMtxrLldpLink());
+                mtxrlldprowss.add(row);
             }
         };
 
@@ -237,11 +236,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
 
         m_lldpTopologyService.store(getNodeId(),mtxrLldpLocalTable.getLldpElement(sysname));
 
-        for (MtxrLldpLink mtxrLldpLink: mtxrlldplinks) {
+        for (MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrLldpRemRow: mtxrlldprowss) {
             m_lldpTopologyService.store(getNodeId(),
-                    mtxrLldpLocalTable.getLldpLink(
-                            mtxrNeighborTable.getLldpLink(mtxrLldpLink)
-                    ).getLldpLink()
+                    mtxrLldpLocalTable.getLldpLink(mtxrLldpRemRow,
+                            mtxrNeighborTable.getMtxrinterfaceId(mtxrLldpRemRow)
+                    )
             );
         }
         return true;
@@ -249,11 +248,11 @@ public final class NodeDiscoveryLldp extends NodeCollector {
 
     private void walkTimeTetra(SnmpAgentConfig peer) {
         LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
-        List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
+        List<TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow> ttlinks = new ArrayList<>();
         TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
             @Override
-            public void processLldpRemRow(LldpRemRow row) {
-                ttlinks.add(row.getLldpLink());
+            public void processLldpRemRow(TimeTetraLldpRemRow row) {
+                ttlinks.add(row);
             }
         };
 
@@ -279,15 +278,15 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                 getLocation()));
     }
 
-    private void storeTimeTetraLldpLinks(List<TimeTetraLldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
-        for (TimeTetraLldpLink link : links) {
-            m_lldpTopologyService.store(getNodeId(), timeTetraLldpLocPortGetter.getLldpLink(link));
+    private void storeTimeTetraLldpLinks(List<TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow> rows, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
+        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow row : rows) {
+            m_lldpTopologyService.store(getNodeId(), timeTetraLldpLocPortGetter.getLldpLink(row));
         }
     }
 
-    private void storeLldpLinks(List<LldpLink> links, final LldpLocPortGetter lldpLocPortGetter) {
-        for (LldpLink link : links) {
-            m_lldpTopologyService.store(getNodeId(), lldpLocPortGetter.getLldpLink(link));
+    private void storeLldpLinks(List<LldpRemTableTracker.LldpRemRow> links, final LldpLocPortGetter lldpLocPortGetter) {
+        for (LldpRemTableTracker.LldpRemRow row : links) {
+            m_lldpTopologyService.store(getNodeId(), lldpLocPortGetter.getLldpLink(row));
         }
     }
 	@Override

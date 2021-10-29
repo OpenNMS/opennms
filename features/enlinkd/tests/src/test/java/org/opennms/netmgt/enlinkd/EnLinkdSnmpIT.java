@@ -56,6 +56,7 @@ import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -407,14 +408,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
-        
-                LldpLink link = new LldpLink();
-                link.setLldpLocalPortNum(1);
-                link = lldpLocPort.getLldpLink(link);
-                assertEquals(1, link.getLldpLocalPortNum().intValue());
-                assertEquals("cf", link.getLldpPortId());
-                assertEquals("NuDesign", link.getLldpPortDescr());
-                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link.getLldpPortIdSubType());
+
+        List<SnmpValue> val = lldpLocPort.get(1);
+        assertEquals(3,val.size());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, LldpPortIdSubType.get(val.get(0).toInt()));
+        assertEquals("cf", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("NuDesign", val.get(2).toDisplayString());
     }
 
     @Test
@@ -500,8 +499,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config02 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr002_IP));
         LldpLocalGroupTracker lldpLocalGroup01 = new LldpLocalGroupTracker();
         LldpLocalGroupTracker lldpLocalGroup02 = new LldpLocalGroupTracker();
-        final List<TimeTetraLldpLink> links01 = new ArrayList<>();
-        final List<TimeTetraLldpLink> links02 = new ArrayList<>();
+        final List<TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow> links01 = new ArrayList<>();
+        final List<TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow> links02 = new ArrayList<>();
 
         try {
             m_client.walk(config01,lldpLocalGroup01)
@@ -569,31 +568,29 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         TimeTetraLldpRemTableTracker timetetralldpRemTable01
                 = new TimeTetraLldpRemTableTracker() {
 
-            public void processLldpRemRow(final LldpRemRow row) {
+            public void processLldpRemRow(final TimeTetraLldpRemRow row) {
                 assertEquals(6, row.getColumnCount());
-                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
-                assertNotNull(timeTetraLldpLinklink.getLldpLink());
-                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
-                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                LldpLink link = row.getLldpLink();
+                assertNotNull(link);
+                assertNotNull(row.getTmnxLldpRemLocalDestMACAddress());
                 assertNotNull(link.getLldpLocalPortNum());
                 assertNotNull(link.getLldpPortIfindex());
-                links01.add(timeTetraLldpLinklink);
+                links01.add(row);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
         TimeTetraLldpRemTableTracker timetetralldpRemTable02
                 = new TimeTetraLldpRemTableTracker() {
 
-            public void processLldpRemRow(final LldpRemRow row) {
+            public void processLldpRemRow(final TimeTetraLldpRemRow row) {
 
                 assertEquals(6, row.getColumnCount());
-                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
-                assertNotNull(timeTetraLldpLinklink.getLldpLink());
-                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
-                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                LldpLink link = row.getLldpLink();
+                assertNotNull(link);
+                assertNotNull(row.getTmnxLldpRemLocalDestMACAddress());
                 assertNotNull(link.getLldpLocalPortNum());
                 assertNotNull(link.getLldpPortIfindex());
-                links02.add(timeTetraLldpLinklink);
+                links02.add(row);
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
             }
         };
@@ -618,38 +615,6 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(3,links01.size());
         assertEquals(4,links02.size());
 
-        final LldpLocPortGetter lldpLocPort01 = new LldpLocPortGetter(config01,
-                m_client,
-                null);
-
-        final LldpLocPortGetter lldpLocPort02 = new LldpLocPortGetter(config02,
-                m_client,
-                null);
-
-        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
-            LldpLink link01 = timeTetraLldpLink01.getLldpLink();
-            assertNull(link01.getLldpPortId());
-            assertNull(link01.getLldpPortIdSubType());
-            assertNull(link01.getLldpPortDescr());
-
-            LldpLink updated = lldpLocPort01.getLldpLink(link01);
-            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
-            assertEquals("",updated.getLldpPortDescr());
-        }
-
-        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
-            LldpLink link02 = timeTetraLldpLink02.getLldpLink();
-            assertNull(link02.getLldpPortId());
-            assertNull(link02.getLldpPortIdSubType());
-            assertNull(link02.getLldpPortDescr());
-
-            LldpLink updated = lldpLocPort02.getLldpLink(link02);
-            assertEquals("\"Not Found On lldpLocPortTable\"",updated.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, updated.getLldpPortIdSubType());
-            assertEquals("",updated.getLldpPortDescr());
-        }
-
         final TimeTetraLldpLocPortGetter ttlldpLocPort01 = new TimeTetraLldpLocPortGetter(config01,
                 m_client,
                 null);
@@ -658,11 +623,11 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 m_client,
                 null);
 
-        for (TimeTetraLldpLink timeTetraLldpLink01: links01) {
+        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink01: links01) {
             LldpLink link01 = timeTetraLldpLink01.getLldpLink();
-            assertEquals("\"Not Found On lldpLocPortTable\"",link01.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link01.getLldpPortIdSubType());
-            assertEquals("",link01.getLldpPortDescr());
+            assertNull(link01.getLldpPortId());
+            assertNull(link01.getLldpPortIdSubType());
+            assertNull(link01.getLldpPortDescr());
             assertEquals(1,timeTetraLldpLink01.getTmnxLldpRemLocalDestMACAddress().intValue());
 
             LldpLink updated = ttlldpLocPort01.getLldpLink(timeTetraLldpLink01);
@@ -681,11 +646,11 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.warn("01 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
         }
 
-        for (TimeTetraLldpLink timeTetraLldpLink02: links02) {
+        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink02: links02) {
             LldpLink link02 = timeTetraLldpLink02.getLldpLink();
-            assertEquals("\"Not Found On lldpLocPortTable\"",link02.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link02.getLldpPortIdSubType());
-            assertEquals("",link02.getLldpPortDescr());
+            assertNull(link02.getLldpPortId());
+            assertNull(link02.getLldpPortIdSubType());
+            assertNull(link02.getLldpPortDescr());
             assertEquals(1,timeTetraLldpLink02.getTmnxLldpRemLocalDestMACAddress().intValue());
 
             LldpLink updated = ttlldpLocPort02.getLldpLink(timeTetraLldpLink02);
@@ -738,12 +703,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,lldpLocalGroup00.getLldpElement().getLldpChassisIdSubType());
         assertEquals(MKT_CISCO_SW01_NAME,lldpLocalGroup00.getLldpElement().getLldpSysname());
 
-        final List<LldpLink> links00 = new ArrayList<>();
+        final List<LldpRemTableTracker.LldpRemRow> links00 = new ArrayList<>();
 
         LldpRemTableTracker lldpRemTable00 = new LldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
-                links00.add(row.getLldpLink());
+                links00.add(row);
             }
         };
 
@@ -762,10 +727,10 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         LldpLocPortGetter lldpLocPortGetter = new LldpLocPortGetter(config00,m_client,null);
 
-        links00.stream().filter(link -> link.getLldpRemSysname().equals(MKTROUTER1_NAME))
-                .forEach(link -> {
-                    link = lldpLocPortGetter.getLldpLink(link);
-                    assertEquals(5,link.getLldpLocalPortNum().intValue());
+        links00.stream().filter(row -> row.getLldpRemSysname().equals(MKTROUTER1_NAME))
+                .forEach(row -> {
+                    LldpLink link = lldpLocPortGetter.getLldpLink(row);
+                    assertEquals(73,link.getLldpLocalPortNum().intValue());
                     assertEquals("gi5",link.getLldpPortId());
                     assertEquals("GigabitEthernet5", link.getLldpPortDescr());
                     assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
@@ -775,10 +740,10 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     assertEquals("ether1",link.getLldpRemPortId());
                 });
 
-        links00.stream().filter(link -> link.getLldpRemSysname().equals(MKTROUTER2_NAME))
-                .forEach(link -> {
-                    link = lldpLocPortGetter.getLldpLink(link);
-                    assertEquals(5,link.getLldpLocalPortNum().intValue());
+        links00.stream().filter(row -> row.getLldpRemSysname().equals(MKTROUTER2_NAME))
+                .forEach(row -> {
+                    LldpLink link = lldpLocPortGetter.getLldpLink(row);
+                    assertEquals(74,link.getLldpLocalPortNum().intValue());
                     assertEquals("gi5",link.getLldpPortId());
                     assertEquals("GigabitEthernet5", link.getLldpPortDescr());
                     assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
@@ -819,12 +784,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertNull(lldpLocalGroup01.getLldpLocChassisidSubType());
         assertEquals(MKTROUTER1_NAME,lldpLocalGroup01.getLldpLocSysname());
 
-        final List<MtxrLldpLink> links01 = new ArrayList<>();
+        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> links01 = new ArrayList<>();
 
         MtxrLldpRemTableTracker lldpRemTable01 = new MtxrLldpRemTableTracker() {
 
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
-                links01.add(row.getMtxrLldpLink());
+                links01.add(row);
             }
         };
 
@@ -866,45 +831,43 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.info("run: collection interrupted, exiting {}",e.getMessage());
         }
 
-        links01.forEach(link -> {
-                assertNull(link.getMtxrIndex());
-                assertNull(link.getLldpLink().getLldpPortId());
-                assertNotNull(link.getMtxrNeighborIndex());
-                link = mikrotikMtxrIndexTable01.getLldpLink(link);
-                assertEquals(1, link.getMtxrIndex().intValue());
-                link = mikrotikLldpLocalTable01.getLldpLink(link);
-                assertEquals("ether1",link.getLldpLink().getLldpPortId());
-                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpLink().getLldpPortIdSubType());
-                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpLink().getLldpRemChassisIdSubType());
-                assertEquals("",link.getLldpLink().getLldpRemPortDescr());
-                assertEquals(0,link.getLldpLink().getLldpLocalPortNum().intValue());
-                switch(link.getMtxrNeighborIndex()) {
+        links01.forEach(row -> {
+                assertNull(row.getLldpLink().getLldpPortId());
+                assertNotNull(row.getMtxrNeighborIndex());
+                Integer mtxrIndex = mikrotikMtxrIndexTable01.getMtxrinterfaceId(row);
+                assertEquals(1, mtxrIndex.intValue());
+                LldpLink link = mikrotikLldpLocalTable01.getLldpLink(row,mtxrIndex);
+                assertEquals("ether1",link.getLldpPortId());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+                assertEquals("",link.getLldpRemPortDescr());
+                switch(link.getLldpLocalPortNum()) {
                     case 1:
-                        assertEquals("gi5",link.getLldpLink().getLldpRemPortId());
-                        assertEquals(MKT_CISCO_SW01_NAME,link.getLldpLink().getLldpRemSysname());
+                        assertEquals("gi5",link.getLldpRemPortId());
+                        assertEquals(MKT_CISCO_SW01_NAME,link.getLldpRemSysname());
                         //this is a clear violation of LLDP-MIB implementation by Mikrotik
-                        assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
-                        assertEquals(MKT_CISCO_SW01_GB05_MAC,link.getLldpLink().getLldpRemChassisId());
+                        assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpRemChassisId());
+                        assertEquals(MKT_CISCO_SW01_GB05_MAC,link.getLldpRemChassisId());
                         break;
                     case 2:
-                        assertEquals("ether1",link.getLldpLink().getLldpRemPortId());
-                        assertEquals(MKTROUTER2_NAME,link.getLldpLink().getLldpRemSysname());
-                        assertEquals(MKTROUTER2_ETHER1_MAC,link.getLldpLink().getLldpRemChassisId());
+                        assertEquals("ether1",link.getLldpRemPortId());
+                        assertEquals(MKTROUTER2_NAME,link.getLldpRemSysname());
+                        assertEquals(MKTROUTER2_ETHER1_MAC,link.getLldpRemChassisId());
                         break;
                     case 3:
-                        assertEquals("ens160",link.getLldpLink().getLldpRemPortId());
-                        assertEquals("elastic-01",link.getLldpLink().getLldpRemSysname());
-                        assertEquals(MKT_HOST3_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                        assertEquals("ens160",link.getLldpRemPortId());
+                        assertEquals("elastic-01",link.getLldpRemSysname());
+                        assertEquals(MKT_HOST3_LLDP_ID,link.getLldpRemChassisId());
                         break;
                     case 4:
-                        assertEquals("vmx1",link.getLldpLink().getLldpRemPortId());
-                        assertEquals("opn-fw-01.clab.labmonkeys.tech",link.getLldpLink().getLldpRemSysname());
-                        assertEquals(MKT_HOST4_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                        assertEquals("vmx1",link.getLldpRemPortId());
+                        assertEquals("opn-fw-01.clab.labmonkeys.tech",link.getLldpRemSysname());
+                        assertEquals(MKT_HOST4_LLDP_ID,link.getLldpRemChassisId());
                         break;
                     case 5:
-                        assertEquals("ens160",link.getLldpLink().getLldpRemPortId());
-                        assertEquals("onms-hzn",link.getLldpLink().getLldpRemSysname());
-                        assertEquals(MKT_HOST5_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                        assertEquals("ens160",link.getLldpRemPortId());
+                        assertEquals("onms-hzn",link.getLldpRemSysname());
+                        assertEquals(MKT_HOST5_LLDP_ID,link.getLldpRemChassisId());
                         break;
                     default:
                         fail();
@@ -950,14 +913,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertNull(lldpLocalGroup02.getLldpLocChassisidSubType());
         assertEquals(MKTROUTER2_NAME,lldpLocalGroup02.getLldpLocSysname());
 
-        final List<MtxrLldpLink> links02 = new ArrayList<>();
+        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> links02 = new ArrayList<>();
 
         MtxrLldpLocalTableTracker mikrotikLldpLocalTable02 = new MtxrLldpLocalTableTracker();
         MtxrNeighborTableTracker mikrotikMtxrIndexTable02 = new MtxrNeighborTableTracker();
         MtxrLldpRemTableTracker mikrotikRemTable02 = new MtxrLldpRemTableTracker() {
 
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
-                links02.add(row.getMtxrLldpLink());
+                links02.add(row);
             }
         };
 
@@ -997,44 +960,42 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(MKTROUTER2_ETHER1_MAC,mktelem.getLldpChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,mktelem.getLldpChassisIdSubType());
 
-        links02.forEach(link -> {
-            assertNull(link.getMtxrIndex());
-            assertNull(link.getLldpLink().getLldpPortId());
-            assertNotNull(link.getMtxrNeighborIndex());
-            link = mikrotikMtxrIndexTable02.getLldpLink(link);
-            assertEquals(1, link.getMtxrIndex().intValue());
-            link = mikrotikLldpLocalTable02.getLldpLink(link);
-            assertEquals("ether1",link.getLldpLink().getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpLink().getLldpPortIdSubType());
-            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpLink().getLldpRemChassisIdSubType());
-            assertEquals("",link.getLldpLink().getLldpRemPortDescr());
-            assertEquals(0,link.getLldpLink().getLldpLocalPortNum().intValue());
-            switch(link.getMtxrNeighborIndex()) {
+        links02.forEach(row -> {
+            assertNull(row.getLldpLink().getLldpPortId());
+            assertNotNull(row.getMtxrNeighborIndex());
+            Integer mtxrIndex = mikrotikMtxrIndexTable02.getMtxrinterfaceId(row);
+            assertEquals(1, mtxrIndex.intValue());
+            LldpLink link = mikrotikLldpLocalTable02.getLldpLink(row,mtxrIndex);
+            assertEquals("ether1",link.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            assertEquals("",link.getLldpRemPortDescr());
+            switch(link.getLldpLocalPortNum()) {
                 case 1:
-                    assertEquals("ether1",link.getLldpLink().getLldpRemPortId());
-                    assertEquals(MKTROUTER1_NAME,link.getLldpLink().getLldpRemSysname());
-                    assertEquals(MKTROUTER1_ETHER1_MAC,link.getLldpLink().getLldpRemChassisId());
+                    assertEquals("ether1",link.getLldpRemPortId());
+                    assertEquals(MKTROUTER1_NAME,link.getLldpRemSysname());
+                    assertEquals(MKTROUTER1_ETHER1_MAC,link.getLldpRemChassisId());
                     break;
                 case 2:
-                    assertEquals("ens160",link.getLldpLink().getLldpRemPortId());
-                    assertEquals("elastic-01",link.getLldpLink().getLldpRemSysname());
-                    assertEquals(MKT_HOST3_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                    assertEquals("ens160",link.getLldpRemPortId());
+                    assertEquals("elastic-01",link.getLldpRemSysname());
+                    assertEquals(MKT_HOST3_LLDP_ID,link.getLldpRemChassisId());
                     break;
                 case 3:
-                    assertEquals("vmx1",link.getLldpLink().getLldpRemPortId());
-                    assertEquals("opn-fw-01.clab.labmonkeys.tech",link.getLldpLink().getLldpRemSysname());
-                    assertEquals(MKT_HOST4_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                    assertEquals("vmx1",link.getLldpRemPortId());
+                    assertEquals("opn-fw-01.clab.labmonkeys.tech",link.getLldpRemSysname());
+                    assertEquals(MKT_HOST4_LLDP_ID,link.getLldpRemChassisId());
                     break;
                 case 4:
-                    assertEquals("ens160",link.getLldpLink().getLldpRemPortId());
-                    assertEquals("onms-hzn",link.getLldpLink().getLldpRemSysname());
-                    assertEquals(MKT_HOST5_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
+                    assertEquals("ens160",link.getLldpRemPortId());
+                    assertEquals("onms-hzn",link.getLldpRemSysname());
+                    assertEquals(MKT_HOST5_LLDP_ID,link.getLldpRemChassisId());
                     break;
                 case 5:
-                    assertEquals("gi5",link.getLldpLink().getLldpRemPortId());
-                    assertEquals(MKT_CISCO_SW01_NAME,link.getLldpLink().getLldpRemSysname());
-                    assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpLink().getLldpRemChassisId());
-                    assertEquals(MKT_CISCO_SW01_GB05_MAC,link.getLldpLink().getLldpRemChassisId());
+                    assertEquals("gi5",link.getLldpRemPortId());
+                    assertEquals(MKT_CISCO_SW01_NAME,link.getLldpRemSysname());
+                    assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals(MKT_CISCO_SW01_GB05_MAC,link.getLldpRemChassisId());
                     break;
                 default:
                     fail();
@@ -1076,14 +1037,14 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertNull(lldpLocalGroup03.getLldpLocChassisidSubType());
         assertEquals(MKTROUTER3_NAME,lldpLocalGroup03.getLldpLocSysname());
 
-        final List<MtxrLldpLink> links03 = new ArrayList<>();
+        final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> links03 = new ArrayList<>();
 
         MtxrLldpLocalTableTracker mikrotikLldpLocalTable03 = new MtxrLldpLocalTableTracker();
         MtxrNeighborTableTracker mikrotikMtxrIndexTable03 = new MtxrNeighborTableTracker();
         MtxrLldpRemTableTracker mikrotikRemTable03 = new MtxrLldpRemTableTracker() {
 
             public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
-                links03.add(row.getMtxrLldpLink());
+                links03.add(row);
             }
         };
 
@@ -1129,20 +1090,18 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,mikrotikLldpLocalPortMap03.get(3).getLldpLocalPortIdSubtype());
         assertEquals("ether3",mikrotikLldpLocalPortMap03.get(3).getLldpLocPortDesc());
 
-        links03.forEach(link -> {
-            assertNull(link.getMtxrIndex());
-            assertNull(link.getLldpLink().getLldpPortId());
-            assertNotNull(link.getMtxrNeighborIndex());
-            link = mikrotikMtxrIndexTable03.getLldpLink(link);
-            assertNotNull(link.getMtxrIndex());
-            link = mikrotikLldpLocalTable03.getLldpLink(link);
-            assertNotNull(link.getLldpLink().getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpLink().getLldpPortIdSubType());
-            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpLink().getLldpRemChassisIdSubType());
-            assertEquals("",link.getLldpLink().getLldpRemPortDescr());
-            assertEquals(0,link.getLldpLink().getLldpLocalPortNum().intValue());
-            if (link.getLldpLink().getLldpRemSysname().equals(MKTROUTER3_NAME)) {
-                LOG.error("self link {} -> {} id {}", link.getLldpLink().getLldpPortId(), link.getLldpLink().getLldpRemPortId(),link.getLldpLink().getLldpRemChassisId() );
+        links03.forEach(row -> {
+            assertNull(row.getLldpLink().getLldpPortId());
+            assertNotNull(row.getMtxrNeighborIndex());
+            Integer mtxrIndex = mikrotikMtxrIndexTable03.getMtxrinterfaceId(row);
+            assertNotNull(mtxrIndex);
+            LldpLink link = mikrotikLldpLocalTable03.getLldpLink(row,mtxrIndex);
+            assertNotNull(link.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+            assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            assertEquals("",link.getLldpRemPortDescr());
+            if (link.getLldpRemSysname().equals(MKTROUTER3_NAME)) {
+                LOG.error("self link {} -> {} id {}", link.getLldpPortId(), link.getLldpRemPortId(),link.getLldpRemChassisId() );
             }
         });
 
@@ -1193,21 +1152,17 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH1_IP));
 		
     	final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
-		LldpLink link = new LldpLink();
-		link.setLldpLocalPortNum(9);
-		link = lldpLocPort.getLldpLink(link);
-		assertEquals(9, link.getLldpLocalPortNum().intValue());
-		assertEquals("Gi0/9", link.getLldpPortId());
-		assertEquals("GigabitEthernet0/9", link.getLldpPortDescr());
-		assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
-		
-                link = new LldpLink();
-                link.setLldpLocalPortNum(10);
-	        link = lldpLocPort.getLldpLink(link);
-                assertEquals(10, link.getLldpLocalPortNum().intValue());
-                assertEquals("Gi0/10", link.getLldpPortId());
-                assertEquals("GigabitEthernet0/10", link.getLldpPortDescr());
-                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+        List<SnmpValue> val = lldpLocPort.get(9);
+        assertEquals(3,val.size());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
+        assertEquals("Gi0/9", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("GigabitEthernet0/9", val.get(2).toDisplayString());
+
+        val =lldpLocPort.get(10);
+        assertEquals(3,val.size());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
+        assertEquals("Gi0/10", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("GigabitEthernet0/10", val.get(2).toDisplayString());
 
     }
 
@@ -1220,21 +1175,17 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
                 
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
-        LldpLink link = new LldpLink();
-        link.setLldpLocalPortNum(1);
-        link = lldpLocPort.getLldpLink(link);
-                assertEquals(1, link.getLldpLocalPortNum().intValue());
-                assertEquals("Gi0/1", link.getLldpPortId());
-                assertEquals("GigabitEthernet0/1", link.getLldpPortDescr());
-                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
-                
-                link = new LldpLink();
-                link.setLldpLocalPortNum(2);
-                link = lldpLocPort.getLldpLink(link);
-                assertEquals(2, link.getLldpLocalPortNum().intValue());
-                assertEquals("Gi0/2", link.getLldpPortId());
-                assertEquals("GigabitEthernet0/2", link.getLldpPortDescr());
-                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
+        List<SnmpValue> val = lldpLocPort.get(1);
+        assertEquals(3,val.size());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
+        assertEquals("Gi0/1", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("GigabitEthernet0/1", val.get(2).toDisplayString());
+
+        val =lldpLocPort.get(2);
+        assertEquals(3,val.size());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
+        assertEquals("Gi0/2", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("GigabitEthernet0/2", val.get(2).toDisplayString());
 
     }
 
@@ -1245,12 +1196,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void test3LldpRemoteTableWalk() throws Exception {
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(SWITCH2_IP));
-        final List<LldpLink> links = new ArrayList<>();
+        final List<LldpRemTableTracker.LldpRemRow> links = new ArrayList<>();
                 
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
             public void processLldpRemRow(final LldpRemRow row) {
-                    links.add(row.getLldpLink());
+                    links.add(row);
             }
         };
         try {
@@ -1272,14 +1223,15 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                                                                     m_client,
                                                                     null);
 
-        for (LldpLink link : links) {
-            assertNotNull(link);
+        for (LldpRemTableTracker.LldpRemRow row : links) {
+            assertNotNull(row);
+            LldpLink link = row.getLldpLink();
             assertNotNull(link.getLldpLocalPortNum());
             assertNull(link.getLldpPortId());
             assertNull(link.getLldpPortIdSubType());
             assertNull(link.getLldpPortDescr());
             
-            LldpLink updated = lldpLocPort.getLldpLink(link);
+            LldpLink updated = lldpLocPort.getLldpLink(row);
             assertNotNull(updated.getLldpPortId());
             assertEquals(5, updated.getLldpPortIdSubType().getValue().intValue());
             assertNotNull(updated.getLldpPortDescr());

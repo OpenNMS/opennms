@@ -44,16 +44,8 @@ public class MtxrLldpRemTableTracker extends LldpRemTableTracker {
         }
 
         public Integer getMtxrNeighborIndex() {
-            return getInstance().getSubIdAt(2);
+            return super.getLldpRemIndex();
         }
-
-        public MtxrLldpLink getMtxrLldpLink() {
-            MtxrLldpLink mtxrLink = new MtxrLldpLink();
-            mtxrLink.setMtxrNeighborIndex(getMtxrNeighborIndex());
-            mtxrLink.setLldpLink(super.getLldpLink());
-            return mtxrLink;
-        }
-
 
     }
 
