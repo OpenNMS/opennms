@@ -28,6 +28,7 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,20 +42,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TwinTracker {
 
-    private AtomicInteger version = new AtomicInteger(0);
+    private final AtomicInteger version;
     private byte[] obj;
-    private String sessionId;
-    private boolean isPatch;
+    private final String sessionId;
 
     public TwinTracker(byte[] obj) {
-        this.obj = obj;
-        this.sessionId = UUID.randomUUID().toString();
+        this(obj, 0, UUID.randomUUID().toString());
     }
-
     public TwinTracker(byte[] obj, int version, String sessionId) {
-        this(obj);
+        this.obj = obj;
         this.version = new AtomicInteger(version);
-        this.sessionId = sessionId;
+        this.sessionId = Objects.requireNonNull(sessionId);
     }
 
     public int getVersion() {
@@ -65,10 +63,6 @@ public class TwinTracker {
         return version.incrementAndGet();
     }
 
-    public void setVersion(int version) {
-        this.version = new AtomicInteger(version);
-    }
-
     public byte[] getObj() {
         return obj;
     }
@@ -77,13 +71,6 @@ public class TwinTracker {
         return sessionId;
     }
 
-    public boolean isPatch() {
-        return isPatch;
-    }
-
-    public void setPatch(boolean patch) {
-        isPatch = patch;
-    }
 
     public void setObj(byte[] obj) {
         this.obj = obj;

@@ -112,7 +112,10 @@ public class TwinUpdate {
         if (this == o) return true;
         if (!(o instanceof TwinUpdate)) return false;
         TwinUpdate that = (TwinUpdate) o;
-        return version == that.version && isPatch == that.isPatch && Objects.equal(twinRequest, that.twinRequest) && Objects.equal(object, that.object) && Objects.equal(sessionId, that.sessionId);
+        return version == that.version && isPatch == that.isPatch
+                && Objects.equal(twinRequest, that.twinRequest)
+                && Objects.equal(object, that.object)
+                && Objects.equal(sessionId, that.sessionId);
     }
 
     @Override

@@ -134,8 +134,12 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinRequest request = mapTwinRequestProto(record.value());
-        final var response = this.getTwin(request);
-        this.handleSinkUpdate(response);
+        try {
+            final TwinRequest request = mapTwinRequestProto(record.value());
+            final var response = this.getTwin(request);
+            this.handleSinkUpdate(response);
+        } catch (Exception e) {
+            LOG.error("Exception while processing request", e);
+        }
     }
 }

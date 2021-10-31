@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jsonpatch.diff.JsonDiff;
@@ -58,8 +58,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     private final LocalTwinSubscriber localTwinSubscriber;
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
-        Objects.requireNonNull(localTwinSubscriber);
-        this.localTwinSubscriber = localTwinSubscriber;
+        this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
     }
 
     /**
@@ -75,22 +74,26 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     }
 
     protected TwinUpdate getTwin(TwinRequest twinRequest) {
-        TwinTracker twinTracker = getTwinTracker(twinRequest);
-        byte[] objValue = twinTracker != null ? twinTracker.getObj() : null;
-        String sessionId = twinTracker != null ? twinTracker.getSessionId() : null;
-        int version = twinTracker != null ? twinTracker.getVersion() : 0;
-        TwinUpdate twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), objValue);
-        twinUpdate.setSessionId(sessionId);
-        twinUpdate.setPatch(false);
-        twinUpdate.setVersion(version);
+        TwinTracker twinTracker = getTwinTracker(twinRequest.getKey(), twinRequest.getLocation());
+        TwinUpdate twinUpdate;
+        if (twinTracker == null) {
+            // No twin object exists for this key yet, return with null object.
+            twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), null);
+        } else {
+            // Fill TwinUpdate fields from TwinTracker.
+            twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), twinTracker.getObj());
+            twinUpdate.setPatch(false);
+            twinUpdate.setVersion(twinTracker.getVersion());
+            twinUpdate.setSessionId(twinTracker.getSessionId());
+        }
         return twinUpdate;
     }
 
-    private TwinTracker getTwinTracker(TwinRequest twinRequest) {
+    private synchronized TwinTracker getTwinTracker(String key, String location) {
         // Check if we have a session key specific to location else check session key without location.
-        TwinTracker twinTracker = twinTrackerMap.get(new SessionKey(twinRequest.getKey(), twinRequest.getLocation()));
+        TwinTracker twinTracker = twinTrackerMap.get(new SessionKey(key, location));
         if(twinTracker == null) {
-            twinTracker = twinTrackerMap.get(new SessionKey(twinRequest.getKey(), null));
+            twinTracker = twinTrackerMap.get(new SessionKey(key, null));
         }
         return twinTracker;
     }
@@ -122,15 +125,13 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             }
         } catch (InvalidProtocolBufferException e) {
             LOG.warn("Failed to parse protobuf for the request", e);
+            throw new RuntimeException(e);
         }
         return twinRequest;
     }
 
-    /**
-     *
-     */
     private synchronized TwinUpdate getResponseFromUpdatedObj(byte[] updatedObj, SessionKey sessionKey) {
-        TwinTracker twinTracker = twinTrackerMap.get(sessionKey);
+        TwinTracker twinTracker = getTwinTracker(sessionKey.key, sessionKey.location);
         if (twinTracker == null || !Arrays.equals(twinTracker.getObj(), updatedObj)) {
             TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, updatedObj);
             if (twinTracker == null) {
@@ -170,8 +171,8 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         twinTrackerMap.remove(sessionKey);
     }
 
-    public Map<SessionKey, TwinTracker> getObjMap() {
-        return twinTrackerMap;
+    public synchronized void forEachSession(BiConsumer<SessionKey, TwinTracker> consumer) {
+        twinTrackerMap.forEach(consumer);
     }
 
     private class SessionImpl<T> implements Session<T> {

@@ -196,8 +196,12 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
         @Override
         public void onNext(TwinResponseProto twinResponseProto) {
-            TwinUpdate twinUpdate = mapTwinResponseToProto(twinResponseProto.toByteArray());
-            accept(twinUpdate);
+            try {
+                TwinUpdate twinUpdate = mapTwinResponseToProto(twinResponseProto.toByteArray());
+                accept(twinUpdate);
+            } catch (Exception e) {
+                LOG.error("Exception while processing twin update for key {} ", twinResponseProto.getConsumerKey(), e);
+            }
         }
 
         @Override

@@ -106,11 +106,15 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     public boolean process(Exchange exchange, AsyncCallback callback) {
         byte[] requestBytes = exchange.getIn().getBody(byte[].class);
         CompletableFuture.runAsync(() -> {
-            TwinRequest twinRequest = mapTwinRequestProto(requestBytes);
-            TwinUpdate twinUpdate = getTwin(twinRequest);
-            TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-            exchange.getOut().setBody(twinResponseProto.toByteArray());
-            callback.done(false);
+            try {
+                TwinRequest twinRequest = mapTwinRequestProto(requestBytes);
+                TwinUpdate twinUpdate = getTwin(twinRequest);
+                TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                exchange.getOut().setBody(twinResponseProto.toByteArray());
+                callback.done(false);
+            } catch (Exception e) {
+                LOG.error("Exception while processing request", e);
+            }
         }, executor);
         return false;
     }

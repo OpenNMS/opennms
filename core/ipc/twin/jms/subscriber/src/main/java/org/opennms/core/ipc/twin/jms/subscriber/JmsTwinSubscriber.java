@@ -89,11 +89,11 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
                     TwinUpdate twinUpdate = mapTwinResponseToProto(response);
                     if (twinUpdate.getLocation() == null ||
                             twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
-                        LOG.trace("Received TwinResponse as RPC reply {}", twinUpdate);
+                        LOG.trace("Received TwinUpdate as RPC reply {}", twinUpdate);
                         accept(twinUpdate);
                     }
                 } catch (Exception e) {
-                    LOG.error("Failed to process response", e);
+                    LOG.error("Failed to process twin update for the key {} ", twinRequest.getKey(), e);
                 }
             }
 

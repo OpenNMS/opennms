@@ -123,11 +123,15 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                 @Override
                 public void onNext(TwinRequestProto twinRequestProto) {
                     CompletableFuture.runAsync(() -> {
-                        TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
-                        TwinUpdate twinUpdate = getTwin(twinRequest);
-                        TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-                        LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
-                        sendTwinResponse(twinResponseProto, rpcStream);
+                        try {
+                            TwinRequest twinRequest = mapTwinRequestProto(twinRequestProto.toByteArray());
+                            TwinUpdate twinUpdate = getTwin(twinRequest);
+                            TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                            LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
+                            sendTwinResponse(twinResponseProto, rpcStream);
+                        } catch (Exception e) {
+                            LOG.error("Exception while processing request", e);
+                        }
                     }, twinRpcExecutor);
                 }
 
@@ -157,9 +161,12 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             sinkStreamsByLocation.put(request.getLocation(), responseObserver);
             sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
 
-            getObjMap().forEach(((sessionKey, twinTracker) -> {
+            forEachSession(((sessionKey, twinTracker) -> {
                 if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
                     TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                    twinUpdate.setSessionId(twinTracker.getSessionId());
+                    twinUpdate.setVersion(twinTracker.getVersion());
+                    twinUpdate.setPatch(false);
                     TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                     responseObserver.onNext(twinResponseProto);
                 }

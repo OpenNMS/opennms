@@ -126,7 +126,11 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
-        final TwinUpdate response = mapTwinResponseToProto(record.value());
-        this.accept(response);
+        try {
+            final TwinUpdate response = mapTwinResponseToProto(record.value());
+            this.accept(response);
+        } catch (Exception e) {
+            LOG.error("Exception while processing twin update", e);
+        }
     }
 }

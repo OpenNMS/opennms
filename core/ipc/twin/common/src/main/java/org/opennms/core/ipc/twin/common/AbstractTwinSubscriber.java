@@ -105,32 +105,97 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return session;
     }
 
-    protected void accept(TwinUpdate twinResponse) {
+    protected void accept(TwinUpdate twinUpdate) {
 
         // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
-        if (twinResponse.getLocation() != null && !twinResponse.getLocation().equals(getLocation())) {
+        if (twinUpdate.getLocation() != null && !twinUpdate.getLocation().equals(getLocation())) {
             return;
         }
 
         // Got empty response
-        if (twinResponse.getObject() == null) {
-            return;
-        }
-
-        LOG.trace("Received object update with key {}", twinResponse.getKey());
-
-        // Send update to each session.
-        final var sessions = this.sessionMap.get(twinResponse.getKey());
-        if (sessions == null) {
-            LOG.trace("Session with key {} doesn't exist yet", twinResponse.getKey());
+        if (twinUpdate.getObject() == null || twinUpdate.getSessionId() == null) {
             return;
         }
 
         // Consume in our own thread instead of using broker's callback thread.
         executorService.execute(() -> {
-            validateAndSendResponse(twinResponse);
+            validateAndHandleUpdate(twinUpdate);
         });
     }
+
+    private void validateAndHandleUpdate(TwinUpdate twinUpdate) {
+        TwinTracker twinTracker = objMap.get(twinUpdate.getKey());
+        if (twinTracker == null) {
+            if (!twinUpdate.isPatch()) {
+                updateSessions(twinUpdate, twinUpdate.getObject());
+            }
+            return;
+        }
+        if (isObjectUpdated(twinTracker, twinUpdate)) {
+            LOG.trace("Received object update with key {}", twinUpdate.getKey());
+            // No need to update if version we are getting is less than what we have with the same session.
+            if (twinTracker.getSessionId().equals(twinUpdate.getSessionId())
+                    && twinTracker.getVersion() > twinUpdate.getVersion()) {
+                return;
+            }
+            // If this is coming completely from new session, reset tracker.
+            if (!twinTracker.getSessionId().equals(twinUpdate.getSessionId())) {
+                if (!twinUpdate.isPatch()) {
+                    updateSessions(twinUpdate, twinUpdate.getObject());
+                }
+                return;
+            }
+            // We can't apply patch when the version jumps more than one version.
+            if (twinUpdate.getVersion() != twinTracker.getVersion() + 1) {
+                sendRpcRequest(new TwinRequest(twinUpdate.getKey(), twinUpdate.getLocation()));
+                return;
+            }
+            byte[] patchedBytes = applyPatch(twinTracker, twinUpdate);
+            // Invoke RPC when we can't apply patch properly.
+            if (patchedBytes != null) {
+                // Update twin object for sessions.
+                updateSessions(twinUpdate, patchedBytes);
+            } else {
+                sendRpcRequest(new TwinRequest(twinUpdate.getKey(), twinUpdate.getLocation()));
+            }
+        }
+    }
+
+    private byte[] applyPatch(TwinTracker twinTracker, TwinUpdate twinUpdate) {
+        try {
+            JsonNode resultingDiff = objectMapper.readTree(twinUpdate.getObject());
+            JsonNode original = objectMapper.readTree(twinTracker.getObj());
+            JsonPatch patch = JsonPatch.fromJson(resultingDiff);
+            JsonNode resultNode = patch.apply(original);
+            return resultNode.toString().getBytes(StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            LOG.error("Not able to apply patch for key {}", twinUpdate.getKey(), e);
+        }
+        return null;
+    }
+
+    private boolean isObjectUpdated(TwinTracker twinTracker, TwinUpdate twinUpdate) {
+        if (twinUpdate.isPatch()) {
+            return true;
+        }
+        return !Arrays.equals(twinTracker.getObj(), twinUpdate.getObject());
+    }
+
+    private void updateSessions(TwinUpdate twinUpdate, byte[] newObjBytes) {
+        // Update twin object in local cache.
+        objMap.put(twinUpdate.getKey(), new TwinTracker(newObjBytes, twinUpdate.getVersion(), twinUpdate.getSessionId()));
+        // Send update to each session.
+        if (sessionMap.containsKey(twinUpdate.getKey())) {
+            sessionMap.get(twinUpdate.getKey()).forEach(session -> {
+                try {
+                    session.accept(newObjBytes);
+                } catch (Exception e) {
+                    LOG.error("Exception while sending update to Session {} for key {}", session, twinUpdate.getKey(), e);
+                }
+            });
+        }
+    }
+
 
     protected TwinUpdate mapTwinResponseToProto(byte[] responseBytes) {
         TwinUpdate twinUpdate = new TwinUpdate();
@@ -152,8 +217,8 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             return twinUpdate;
         } catch (InvalidProtocolBufferException e) {
             LOG.error("Failed to parse response from proto", e);
+            throw new RuntimeException(e);
         }
-        return twinUpdate;
     }
 
     protected TwinRequestProto mapTwinRequestToProto(TwinRequest twinRequest) {
@@ -162,67 +227,6 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 .setSystemId(getMinionIdentity().getId());
         return builder.build();
     }
-
-    private void validateAndSendResponse(TwinUpdate twinResponse) {
-        TwinTracker twinTracker = objMap.get(twinResponse.getKey());
-        if (twinResponse.getObject() != null &&
-                isObjectUpdated(twinTracker, twinResponse)) {
-            LOG.trace("Received object update with key {}", twinResponse.getKey());
-
-            // No need to update if version we are getting is less than what we have with the same session.
-            if (twinTracker != null && twinTracker.getSessionId() != null
-                    && twinTracker.getSessionId().equals(twinResponse.getSessionId())
-                    && twinTracker.getVersion() > twinResponse.getVersion()) {
-                return;
-            }
-            byte[] patchedBytes = applyPatch(twinTracker, twinResponse);
-            // Invoke RPC when we can't apply patch properly.
-            if (patchedBytes == null) {
-                sendRpcRequest(new TwinRequest(twinResponse.getKey(), twinResponse.getLocation()));
-                return;
-            }
-            // Update twin object in local cache.
-            objMap.put(twinResponse.getKey(), new TwinTracker(patchedBytes, twinResponse.getVersion(), twinResponse.getSessionId()));
-            // Send update to each session.
-            if (sessionMap.containsKey(twinResponse.getKey())) {
-                sessionMap.get(twinResponse.getKey()).forEach(session -> {
-                    try {
-                        session.accept(patchedBytes);
-                    } catch (Exception e) {
-                        LOG.error("Exception while sending response to Session {} for key {}", session, twinResponse.getKey(), e);
-                    }
-                });
-            }
-        }
-    }
-
-    private byte[] applyPatch(TwinTracker twinTracker, TwinUpdate twinUpdate) {
-        if (twinTracker == null || !twinUpdate.isPatch()) {
-            return twinUpdate.getObject();
-        }
-        // We can't apply patch when the version jumps more than one version.
-        if (twinUpdate.getVersion() != twinTracker.getVersion() + 1) {
-            return null;
-        }
-        try {
-            JsonNode resultingDiff = objectMapper.readTree(twinUpdate.getObject());
-            JsonNode original = objectMapper.readTree(twinTracker.getObj());
-            JsonPatch patch = JsonPatch.fromJson(resultingDiff);
-            JsonNode resultNode = patch.apply(original);
-            return resultNode.toString().getBytes(StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            LOG.error("Not able to apply patch for key {}", twinUpdate.getKey(), e);
-        }
-        return null;
-    }
-
-    boolean isObjectUpdated(TwinTracker twinTracker, TwinUpdate twinResponse) {
-        if (twinTracker == null || twinResponse.isPatch()) {
-            return true;
-        }
-        return !Arrays.equals(twinTracker.getObj(), twinResponse.getObject());
-    }
-
 
     public void close() throws IOException {
         executorService.shutdown();
@@ -287,29 +291,5 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                     .toString();
         }
     }
-
-    private class SessionKey {
-        public final String sessionId;
-        public final String key;
-
-        public SessionKey(String key, String sessionId) {
-            this.key = key;
-            this.sessionId = sessionId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof SessionKey)) return false;
-            SessionKey that = (SessionKey) o;
-            return com.google.common.base.Objects.equal(sessionId, that.sessionId) && com.google.common.base.Objects.equal(key, that.key);
-        }
-
-        @Override
-        public int hashCode() {
-            return com.google.common.base.Objects.hashCode(sessionId, key);
-        }
-    }
-
 
 }

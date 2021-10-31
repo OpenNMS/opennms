@@ -40,8 +40,8 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
     }
 
     @Override
-    public void accept(TwinUpdate twinResponse) {
-        super.accept(twinResponse);
+    public void accept(TwinUpdate twinUpdate) {
+        super.accept(twinUpdate);
     }
 
     @Override
