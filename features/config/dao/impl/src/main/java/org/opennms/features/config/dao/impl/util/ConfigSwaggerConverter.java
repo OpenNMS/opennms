@@ -40,6 +40,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,13 +140,55 @@ public class ConfigSwaggerConverter {
     }
 
     /**
-     * It will only generate components
+     * replace servers part of openapi
      *
-     * @param item
-     * @return OpenAPI without paths
+     * @param openapi
+     * @param urls
+     * @return
      */
-    public OpenAPI convert(ConfigItem item) {
-        return convert(item, null);
+    public OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
+        final List<Server> servers = new ArrayList<>(1);
+        urls.forEach(url -> {
+            Server server = new Server();
+            server.setUrl(url);
+            servers.add(server);
+        });
+        openapi.setServers(servers);
+        return openapi;
+    }
+
+    /**
+     * It will extract all API paths to generate a giant openapi with remote $ref schema
+     * @param openapiMap
+     * @param prefix (must include context path)
+     * @return
+     */
+    public OpenAPI mergeAllPathsWithRemoteRef(Map<String, OpenAPI> openapiMap, String prefix) {
+        OpenAPI allApi = new OpenAPI();
+        allApi.setInfo(this.genInfo());
+        allApi.setPaths(new Paths());
+
+        openapiMap.forEach((configName, openapi) -> {
+            Paths paths = openapi.getPaths();
+            paths.forEach((name, path) -> {
+                if (path.readOperations() == null)
+                    return;
+                path.readOperations().forEach((oper -> {
+                    oper.getResponses().forEach((resK, resV) -> {
+                        if (resV.getContent() == null)
+                            return;
+                        resV.getContent().forEach((ck, cv) -> {
+                            LOG.info(cv.getSchema().get$ref());
+                            if (cv.getSchema().get$ref() != null) {
+                                cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                            }
+                        });
+                    });
+                }));
+                allApi.getPaths().putIfAbsent(name, path);
+            });
+        });
+        return allApi;
     }
 
     public OpenAPI convert(ConfigItem item, String prefix) {

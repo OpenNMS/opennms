@@ -85,17 +85,18 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
         Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
-        OpenAPI openapi = new OpenAPI();
+
+        Map<String, OpenAPI> apis = new HashMap<>(defs.size());
         defs.forEach((key, def) -> {
-            Paths paths = def.getSchema().getPaths();
-            paths.forEach((name, path) -> {
-                LOG.info(path.get$ref());
-                path.set$ref(BASE_PATH + "schema/" + def.getConfigName() + "#/components/schemas/" + path.get$ref());
-                openapi.getPaths().putIfAbsent(name, path);
-            });
+            OpenAPI api = def.getSchema();
+            if(api != null && api.getPaths() != null){
+                apis.put(key, api);
+            }
         });
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
+        OpenAPI allAPI = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, request.getContextPath() + BASE_PATH);
+        allAPI = configSwaggerConverter.setupServers(allAPI, Arrays.asList(new String[]{request.getContextPath()}));
+        String outStr = configSwaggerConverter.convertOpenAPIToString(allAPI, acceptType);
         return Response.ok(outStr).build();
     }
 
@@ -108,11 +109,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             OpenAPI openapi = def.get().getSchema();
-            List<Server> servers = new ArrayList<>(1);
-            Server server = new Server();
-            server.setUrl(request.getContextPath());
-            servers.add(server);
-            openapi.setServers(servers);
+            openapi = configSwaggerConverter.setupServers(openapi, Arrays.asList(new String[]{request.getContextPath()}));
             String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {
