@@ -31,6 +31,7 @@ package org.opennms.core.ipc.twin.test;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 import java.io.Closeable;
@@ -39,23 +40,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.MinionIdentity;
 
 public abstract class AbstractTwinBrokerIT {
 
-    protected abstract TwinPublisher createPublisher();
-    protected abstract TwinSubscriber createSubscriber();
+
+    protected abstract TwinPublisher createPublisher() throws Exception;
+    protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
     private TwinPublisher publisher;
     private TwinSubscriber subscriber;
 
+    private final MinionIdentity standardIdentity = new MockMinionIdentity("remote");
+
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         this.publisher = this.createPublisher();
-        this.subscriber = this.createSubscriber();
+        this.subscriber = this.createSubscriber(this.standardIdentity);
+    }
+
+    @After
+    public void teardown() throws Exception {
+        this.subscriber.close();
+        this.publisher.close();
     }
 
     /**
@@ -68,7 +80,7 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
     }
 
     /**
@@ -80,11 +92,13 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
+        // Ensure Test1 is received.
+        await().until(tracker::getLog, hasItems("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
 
-        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -96,9 +110,10 @@ public abstract class AbstractTwinBrokerIT {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
+        await().until(tracker::getLog, hasItems("Test1"));
         session.publish("Test2");
 
-        await().until(tracker::getLog, contains("Test1", "Test2"));
+        await().until(tracker::getLog, hasItems("Test2"));
     }
 
     /**
@@ -109,13 +124,17 @@ public abstract class AbstractTwinBrokerIT {
         final var tracker1 = Tracker.subscribe(this.subscriber, "test", String.class);
 
         final var session = this.publisher.register("test", String.class);
+
         session.publish("Test1");
+        await().until(tracker1::getLog, contains("Test1"));
+
         session.publish("Test2");
+        await().until(tracker1::getLog, contains("Test1", "Test2"));
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
+        await().until(tracker2::getLog, contains("Test2"));
 
         session.publish("Test3");
-
         await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));
         await().until(tracker2::getLog, contains("Test2", "Test3"));
     }
@@ -125,24 +144,33 @@ public abstract class AbstractTwinBrokerIT {
      */
     @Test
     public void testMultipleSubscribers() throws Exception {
-        final var subscriber1 = this.createSubscriber();
-        final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
-
         final var session = this.publisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
 
-        final var subscriber2 = this.createSubscriber();
+        final var subscriber1 = this.createSubscriber(new MockMinionIdentity("location_a", "minion_1"));
+        final var tracker1 = Tracker.subscribe(subscriber1, "test", String.class);
+        await().until(tracker1::getLog, empty());
+
+        session.publish("Test1");
+        await().until(tracker1::getLog, contains("Test1"));
+
+        session.publish("Test2");
+        await().until(tracker1::getLog, contains("Test1", "Test2"));
+
+        final var subscriber2 = this.createSubscriber(new MockMinionIdentity("location_a", "minion_2"));
         final var tracker2 = Tracker.subscribe(subscriber2, "test", String.class);
+        await().until(tracker2::getLog, contains("Test2"));
 
         session.publish("Test3");
-
-        final var subscriber3 = this.createSubscriber();
-        final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
-
         await().until(tracker1::getLog, contains("Test1", "Test2", "Test3"));
         await().until(tracker2::getLog, contains("Test2", "Test3"));
+
+        final var subscriber3 = this.createSubscriber(new MockMinionIdentity("location_b", "minion_3"));
+        final var tracker3 = Tracker.subscribe(subscriber3, "test", String.class);
         await().until(tracker3::getLog, contains("Test3"));
+
+        subscriber1.close();
+        subscriber2.close();
+        subscriber3.close();
     }
 
     /**
@@ -152,14 +180,17 @@ public abstract class AbstractTwinBrokerIT {
     public void testPublisherRestart() throws Exception {
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        final var session = this.publisher.register("test", String.class);
-        session.publish("Test1");
-        session.publish("Test2");
+        final var session1 = this.publisher.register("test", String.class);
+        session1.publish("Test1");
+        session1.publish("Test2");
 
         await().until(tracker::getLog, contains("Test1", "Test2"));
 
+        this.publisher.close();
         this.publisher = this.createPublisher();
-        session.publish("Test3");
+
+        final var session2 = this.publisher.register("test", String.class);
+        session2.publish("Test3");
 
         await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
     }
@@ -181,7 +212,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test3");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, contains("Test3"));
+        await().until(tracker2::getLog, hasItems("Test3"));
 
         assertThat(tracker1.getLog(), contains("Test1"));
     }

@@ -54,6 +54,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
     private final Executor executor = Executors.newCachedThreadPool();
 
     public MockTwinPublisher(Hashtable<String, Object> config) {
+        super(new LocalTwinSubscriberImpl());
         kafkaConfig.putAll(config);
         kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "OpenNMS");
     }
@@ -118,7 +119,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
         }
     }
 
-    public void destroy() {
+    public void close() {
         if (kafkaConsumerRunner != null) {
             kafkaConsumerRunner.close();
         }

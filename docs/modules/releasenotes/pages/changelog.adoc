@@ -2,6 +2,43 @@
 
 = Changelog
 
+[releasenotes-changelog-28.1.1]
+
+==== Release 28.1.1
+
+Release 28.1.1 contains a number of bug fixes and enhancements, including web UI,
+Minion, Docker, and documentation improvements.
+
+The codename for Horizon 28.1.1 is https://transformers.fandom.com/wiki/Mikaela_Banes[_Mikaela Banes_].
+
+===== Bug
+
+* Fix example configuration for Scriptd (Issue http://issues.opennms.org/browse/NMS-13271[NMS-13271])
+* Strings with URL arguments are truncated in the eventdescr field (Issue http://issues.opennms.org/browse/NMS-13428[NMS-13428])
+* SNMPv3 traps are not counted correctly in JMX metrics (Issue http://issues.opennms.org/browse/NMS-13489[NMS-13489])
+* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
+* Some of the tests of ClassificationRulePageIT are flaky (Issue http://issues.opennms.org/browse/NMS-13566[NMS-13566])
+* Signed Minion container bleeding image shows revision as meridian-foundation-2021.1.4-1-487 (Issue http://issues.opennms.org/browse/NMS-13587[NMS-13587])
+* Meridian Minion images do not include release (Issue http://issues.opennms.org/browse/NMS-13591[NMS-13591])
+* Horizon release-28.x builds fail with a certificate error (Issue http://issues.opennms.org/browse/NMS-13609[NMS-13609])
+
+===== Enhancement
+
+* Document data types in collectd (Issue http://issues.opennms.org/browse/NMS-10476[NMS-10476])
+* Update adapters documentation (Issue http://issues.opennms.org/browse/NMS-12999[NMS-12999])
+* Move monitors docs to the Reference section (Issue http://issues.opennms.org/browse/NMS-13524[NMS-13524])
+* Move detectors to reference section (Issue http://issues.opennms.org/browse/NMS-13525[NMS-13525])
+* Move collectors to reference section (Issue http://issues.opennms.org/browse/NMS-13526[NMS-13526])
+* Move telemetryd (streaming telemetry) to reference section (Issue http://issues.opennms.org/browse/NMS-13527[NMS-13527])
+* Move ticketing docs to reference section (Issue http://issues.opennms.org/browse/NMS-13529[NMS-13529])
+* Add search term highlight functionality in documentation (Issue http://issues.opennms.org/browse/NMS-13540[NMS-13540])
+* Minion: Health ReST API: Lightweight/passive health check for broker/OpenNMS  (Issue http://issues.opennms.org/browse/NMS-13547[NMS-13547])
+* Move provisioning policies to the reference section (Issue http://issues.opennms.org/browse/NMS-13562[NMS-13562])
+* Implement HW inventory Provisioning adapter API to support Juniper HW  (Issue http://issues.opennms.org/browse/NMS-13575[NMS-13575])
+* Add full trapoid for Snmp V1 (Issue http://issues.opennms.org/browse/NMS-13586[NMS-13586])
+* Geolocator Doc Clarification (Issue http://issues.opennms.org/browse/NMS-13611[NMS-13611])
+
+
 [[releasenotes-changelog-28.1.0]]
 
 == Release 28.1.0
@@ -25,7 +62,6 @@ The codename for Horizon 28.1.0 is https://wikipedia.org/wiki/$$Bumblebee_(Trans
 * IFTTT integration not working anymore (Issue http://issues.opennms.org/browse/NMS-13501[NMS-13501])
 * Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
 * Service Parameters box misses Poller Patterns (Issue http://issues.opennms.org/browse/NMS-13517[NMS-13517])
-* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
 
 === Enhancement
 
