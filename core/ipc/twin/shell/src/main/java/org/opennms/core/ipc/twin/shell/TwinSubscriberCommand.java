@@ -37,17 +37,13 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 
-import java.io.Closeable;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Command(scope = "opennms", name = "twin-subscribe", description = "Get current Twin Object for the key specified")
 @Service
 public class TwinSubscriberCommand implements Action {
-
-    private AtomicBoolean objectReceived = new AtomicBoolean(false);
 
     @Reference
     private TwinSubscriber twinSubscriber;
@@ -61,22 +57,25 @@ public class TwinSubscriberCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
-        Instant initialTime = Instant.now();
-        Closeable closeable = twinSubscriber.subscribe(key, TwinKeyCompleter.twinClazzMap.get(key), this::accept);
-        while (!objectReceived.get() &&
-                Duration.between(initialTime, Instant.now()).compareTo(Duration.of(timeout, ChronoUnit.MILLIS)) < 0) {
-            System.out.printf(".");
-            Thread.sleep(1000);
+        final var clazz = TwinKeyCompleter.twinClazzMap.get(this.key);
+        if (clazz == null) {
+            System.err.println("Unknown key: " + this.key);
+            return null;
         }
-        closeable.close();
-        return null;
-    }
 
-    private void accept(Object obj) {
-        if (obj != null) {
-            System.out.printf("Object returned for key '%s' = \n", key);
-            System.out.println(obj);
-            objectReceived.set(true);
+        final var received = new CompletableFuture<>();
+
+        try(final var subscription = twinSubscriber.subscribe(this.key,
+                                                              clazz,
+                                                              received::complete)) {
+            final var result = received.get(this.timeout, TimeUnit.MILLISECONDS);
+            System.out.println("Object returned for key:" + this.key);
+            System.out.println(result);
+
+        } catch (final TimeoutException e) {
+            System.err.println("Timeout");
         }
+
+        return null;
     }
 }

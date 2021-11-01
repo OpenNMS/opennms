@@ -484,6 +484,7 @@
                 <feature>opennms-core-db</feature>
                 <feature>opennms-core-ipc-rpc-commands</feature>
                 <feature>opennms-core-ipc-kafka-shell</feature>
+                <feature>opennms-core-ipc-twin-shell</feature>
                 <feature>opennms-core</feature>
                 <feature>opennms-core-web</feature>
                 <feature>opennms-dao-api</feature>

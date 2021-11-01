@@ -42,6 +42,7 @@
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-ipc-jms</feature>
                                 <feature>opennms-core-ipc-kafka</feature>
+                                <feature>opennms-core-ipc-twin-shell</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-offheap</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
