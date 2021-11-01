@@ -31,14 +31,17 @@ package org.opennms.core.ipc.twin.test;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 
+import java.util.UUID;
+
 public class MockMinionIdentity implements MinionIdentity {
 
     private final String location;
 
-    private String id = "minionId";
+    private final String id;
 
     public MockMinionIdentity(String location) {
         this.location = location;
+        this.id = UUID.randomUUID().toString();
     }
 
     public MockMinionIdentity(String location, String id) {

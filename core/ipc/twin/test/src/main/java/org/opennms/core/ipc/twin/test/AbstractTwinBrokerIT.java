@@ -49,6 +49,7 @@ import org.opennms.distributed.core.api.MinionIdentity;
 
 public abstract class AbstractTwinBrokerIT {
 
+
     protected abstract TwinPublisher createPublisher() throws Exception;
     protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
@@ -79,7 +80,7 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
     }
 
     /**
@@ -92,12 +93,12 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
         // Ensure Test1 is received.
-        await().until(tracker::getLog, contains("Test1"));
+        await().until(tracker::getLog, hasItems("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
 
-        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -109,9 +110,10 @@ public abstract class AbstractTwinBrokerIT {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
+        await().until(tracker::getLog, hasItems("Test1"));
         session.publish("Test2");
 
-        await().until(tracker::getLog, contains("Test1", "Test2"));
+        await().until(tracker::getLog, hasItems("Test2"));
     }
 
     /**

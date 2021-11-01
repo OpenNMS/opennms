@@ -305,15 +305,21 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.opennms-identity/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-util" version="${project.version}" description="OpenNMS :: Util">
+        <feature>owasp-encoder</feature>
+        <feature>owasp-html-sanitizer</feature>
+        <feature>commons-jexl</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-core" version="${project.version}" description="OpenNMS :: Core">
         <feature version="[4.2,4.3)">spring</feature>
         <feature version="[4.2,4.3)">spring-orm</feature>
         <feature>commons-io</feature>
         <feature>dnsjava</feature>
         <feature>jaxb</feature>
-        <feature>owasp-encoder</feature>
-        <feature>owasp-html-sanitizer</feature>
-        <feature>commons-jexl</feature>
+        <feature>opennms-util</feature>
         <bundle dependency="true">wrap:mvn:javax.inject/javax.inject/1</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -326,7 +332,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
-        <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
         <feature>camel-core</feature>
@@ -1078,7 +1083,11 @@
         <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
     </feature>
     <feature name="opennms-health" version="${project.version}" description="OpenNMS :: Health">
+        <feature>commons-io</feature>
+        <feature>commons-lang3</feature>
         <feature>dropwizard-metrics</feature>
+        <feature>opennms-util</feature>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>

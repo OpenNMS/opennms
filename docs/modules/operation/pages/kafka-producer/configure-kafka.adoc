@@ -62,12 +62,6 @@ Set this to an empty string to disable filtering, and forward all alarms.
 Decrease this value to improve accuracy at the cost of additional database lookups.
 | 300000 (5 minutes)
 
-| alarmSyncIntervalMs
-| Number of milliseconds at which the contents of the alarm topic will be synchronized with the local database.
-Decrease this to improve accuracy at the cost of additional database lookups.
-Set this value to 0 to disable alarm synchronization.
-| 300000 (5 minutes)
-
 | suppressIncrementalAlarms
 | Suppresses forwarding alarms that differ only by count or last event time.
 Set this to `false` to prevent suppressing these alarms.
