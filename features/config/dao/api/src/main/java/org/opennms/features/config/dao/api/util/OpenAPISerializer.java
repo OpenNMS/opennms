@@ -33,53 +33,23 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.v3.oas.models.OpenAPI;
 
 import java.io.IOException;
-import java.util.Map;
 
+/**
+ * Custom serializer to prevent too much null write into database
+ */
 public class OpenAPISerializer extends JsonSerializer<OpenAPI> {
+    private ObjectMapper mapper;
+
+    public OpenAPISerializer() {
+        mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
     @Override
     public void serialize(OpenAPI o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        jsonGenerator.writeStartObject();
         mapper.writeValue(jsonGenerator, o);
-//        jsonGenerator.writeEndObject();
-//        if (o != null) {
-//            jsonGenerator.writeStartObject();
-//            jsonGenerator.writeStringField("openapi", o.getOpenapi());
-//            if(o.getInfo() != null) {
-//                jsonGenerator.writeObjectField("info", o.getInfo());
-//            }
-//            if(o.getExternalDocs() != null) {
-//                jsonGenerator.writeObjectField("externalDocs", o.getExternalDocs());
-//            }
-//            if(o.getServers() != null) {
-//                jsonGenerator.writeObjectField("servers", o.getServers());
-//            }
-//            if(o.getSecurity() != null) {
-//                jsonGenerator.writeObjectField("security", o.getSecurity());
-//            }
-//            if(o.getTags() != null) {
-//                jsonGenerator.writeObjectField("tags", o.getTags());
-//            }
-//            if(o.getPaths() != null) {
-//                jsonGenerator.writeObjectField("paths", o.getPaths());
-//            }
-//            if(o.getComponents() != null) {
-//                jsonGenerator.writeObjectField("components", o.getComponents());
-//            }
-//            if(o.getExtensions() != null) {
-//                for (Map.Entry<String, Object> e : o.getExtensions().entrySet()) {
-//                    jsonGenerator.writeObjectField(e.getKey(), e.getValue());
-//                }
-//            }
-//            jsonGenerator.writeEndObject();
-//        }
     }
-
-
 }

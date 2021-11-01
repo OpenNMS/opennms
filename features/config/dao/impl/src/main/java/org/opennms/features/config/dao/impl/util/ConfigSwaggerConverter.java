@@ -227,6 +227,7 @@ public class ConfigSwaggerConverter {
         configIdParam.setName("configId");
         configIdParam.setRequired(true);
         configIdParam.in("path");
+        configIdParam.setStyle(Parameter.StyleEnum.SIMPLE);
         configIdParam.setSchema(new StringSchema());
         parameters.add(configIdParam);
 

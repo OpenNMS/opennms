@@ -30,7 +30,9 @@ package org.opennms.features.config.rest.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
@@ -43,10 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <b>Currently for testing OSGI integration</b>
@@ -109,11 +108,11 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
             ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
             OpenAPI openapi = def.get().getSchema();
-            final Paths newPaths = new Paths();
-            openapi.getPaths().forEach((url, path)->{
-                newPaths.put(request.getContextPath() + url, path);
-            });
-            openapi.setPaths(newPaths);
+            List<Server> servers = new ArrayList<>(1);
+            Server server = new Server();
+            server.setUrl(request.getContextPath());
+            servers.add(server);
+            openapi.setServers(servers);
             String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
             return Response.ok(outStr).build();
         } catch (IOException | RuntimeException e) {

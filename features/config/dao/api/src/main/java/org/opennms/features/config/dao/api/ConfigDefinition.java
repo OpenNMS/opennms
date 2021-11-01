@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.opennms.features.config.dao.api.util.OpenAPIDeseralizer;
+import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
 import org.opennms.features.config.dao.api.util.OpenAPISerializer;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class ConfigDefinition {
     protected int maxInstances = 1;
 
     @JsonSerialize(using = OpenAPISerializer.class)
-    @JsonDeserialize(using = OpenAPIDeseralizer.class)
+    @JsonDeserialize(using = OpenAPIDeserializer.class)
     protected OpenAPI schema;
     protected TYPE type;
 

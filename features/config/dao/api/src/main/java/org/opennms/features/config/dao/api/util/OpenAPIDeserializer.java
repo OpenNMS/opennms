@@ -28,7 +28,6 @@
 package org.opennms.features.config.dao.api.util;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -36,11 +35,14 @@ import io.swagger.v3.parser.OpenAPIV3Parser;
 
 import java.io.IOException;
 
-public class OpenAPIDeseralizer extends JsonDeserializer<OpenAPI> {
+/**
+ * OpenAPI have its own deserializer, ObjectMapper may have problem
+ */
+public class OpenAPIDeserializer extends JsonDeserializer<OpenAPI> {
+
     @Override
-    public OpenAPI deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public OpenAPI deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String json = jsonParser.getCodec().readTree(jsonParser).toString();
-        OpenAPI tmp = new OpenAPIV3Parser().readContents(json, null, null).getOpenAPI();
-        return tmp;
+        return new OpenAPIV3Parser().readContents(json, null, null).getOpenAPI();
     }
 }
