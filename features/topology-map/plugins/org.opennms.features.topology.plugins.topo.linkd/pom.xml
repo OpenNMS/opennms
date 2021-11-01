@@ -192,6 +192,11 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.mock</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <repositories>

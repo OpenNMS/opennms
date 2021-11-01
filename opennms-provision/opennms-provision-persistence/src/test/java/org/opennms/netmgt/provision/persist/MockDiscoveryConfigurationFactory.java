@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -106,6 +107,16 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     @Override
     public long getInitialSleepTime() {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public void reload() throws IOException {
+
+    }
+
+    @Override
+    public void saveConfiguration(DiscoveryConfiguration configuration) throws IOException {
+
     }
 
 }

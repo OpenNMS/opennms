@@ -47,13 +47,13 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
+
     /**
-	 * Object containing all EnhancedLinkd-configuration objects parsed from the XML
-	 * file
-	 */
-	protected static EnlinkdConfiguration m_config;
-	 
+     * Object containing all EnhancedLinkd-configuration objects parsed from the XML
+     * file
+     */
+    protected static EnlinkdConfiguration m_config;
+
     /**
      * <p>Constructor for LinkdConfigManager.</p>
      *
@@ -67,7 +67,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
     public Lock getReadLock() {
         return m_readLock;
     }
-    
+
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -87,7 +87,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
         }
     }
 
-    
+
     /**
      * <p>useCdpDiscovery</p>
      *
@@ -97,7 +97,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
         if (m_config.getUseCdpDiscovery() != null) return m_config.getUseCdpDiscovery();
         return true;
     }
-    
+
     /**
      * <p>useBridgeDiscovery</p>
      *
@@ -168,7 +168,7 @@ abstract public class EnhancedLinkdConfigManager extends AbstractCmJaxbConfigDao
         if (m_config.getThreads() != null) return m_config.getThreads();
         return 5;
     }
-    
+
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
         return 100;
