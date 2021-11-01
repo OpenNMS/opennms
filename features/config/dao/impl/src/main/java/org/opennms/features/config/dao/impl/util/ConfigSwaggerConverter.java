@@ -210,7 +210,7 @@ public class ConfigSwaggerConverter {
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
-        jsonObjectContent.addMediaType(APPLICATION_JSON.toString(), mediaType);
+        jsonObjectContent.addMediaType(APPLICATION_JSON, mediaType);
 
         // configId result content
         Content configIdContent = new Content();
@@ -219,7 +219,7 @@ public class ConfigSwaggerConverter {
         Schema configIdSchema = new StringSchema();
         configIdParent.setItems(configIdSchema);
         configIdMediaType.schema(configIdParent);
-        configIdContent.addMediaType(APPLICATION_JSON.toString(), configIdMediaType);
+        configIdContent.addMediaType(APPLICATION_JSON, configIdMediaType);
 
         // configId path param
         List<Parameter> parameters = new ArrayList<>();

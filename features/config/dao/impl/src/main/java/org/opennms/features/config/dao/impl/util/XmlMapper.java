@@ -110,8 +110,18 @@ public class XmlMapper {
         }
     }
 
-    private static final Pattern VALUE_PATTERN = Pattern.compile("\"__VALUE__\"\\s*:\\s*\"[^\"]*\"\\s*,*");
     public String xmlToJson(String sourceXml) {
+        return this.xmlToJson(sourceXml, true);
+    }
+
+    public static final String __VALUE__TAG = "__VALUE__";
+    /**
+     * Convert xml to json
+     * @param sourceXml
+     * @param removeValue (true to remove extra xml element from the json output)
+     * @return json string
+     */
+    public String xmlToJson(String sourceXml, boolean removeValue) {
         try {
             final XMLFilter filter = JaxbUtils.getXMLFilterForNamespace(this.xmlSchema.getNamespace());
             final InputSource inputSource = new InputSource(new StringReader(sourceXml));
@@ -119,31 +129,25 @@ public class XmlMapper {
 
             final Unmarshaller u = jaxbContext.createUnmarshaller();
             DynamicEntity entity = (DynamicEntity) u.unmarshal(source);
-            //FIXME: dirty tricks to remove value
-
-//            if(entity instanceof DynamicEntityImpl){
-//                DynamicEntityImpl entityImpl = (DynamicEntityImpl) entity;
-//                if(entityImpl.getPropertiesMap().containsKey("value")){
-//                    Object tmp =  entity.get("value");
-//                    if(tmp instanceof String && ((String)tmp).trim().length() == 0) {
-//                        entityImpl.getPropertiesMap().remove("value");
-//                    }
-//                }
-//            }
 
             final Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-            //FIXME: dirty tricks to remove xml value (use for JSONObject remove)
-            m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "__VALUE__");
+            if(removeValue) {
+                //dirty tricks to remove xml value (use for JSONObject remove)
+                m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, __VALUE__TAG);
+            }
 
             final StringWriter writer = new StringWriter();
             m.marshal(entity, writer);
             String jsonStr = writer.toString();
 
-            if(jsonStr.indexOf("__VALUE__") != -1){
+            if(removeValue && jsonStr.indexOf(__VALUE__TAG) != -1){
                 JSONObject json = new JSONObject(jsonStr);
-                json.remove("__VALUE__");
+                String value = json.getString(__VALUE__TAG);
+                if(value != null && value.trim().length() == 0) {
+                    json.remove(__VALUE__TAG);
+                }
                 return json.toString();
             }
             return jsonStr;

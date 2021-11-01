@@ -121,10 +121,6 @@
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>com.atlassian.oai</groupId>
-          <artifactId>swagger-request-validator-core</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>io.swagger.core.v3</groupId>
           <artifactId>swagger-models</artifactId>
         </exclusion>

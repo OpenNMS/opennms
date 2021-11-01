@@ -148,20 +148,5 @@
         <artifactId>spring-web-dependencies</artifactId>
         <type>pom</type>
       </dependency>
-      <dependency>
-        <groupId>com.atlassian.oai</groupId>
-        <artifactId>swagger-request-validator-core</artifactId>
-        <version>${swaggerRequestValidatorVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-models</artifactId>
-        <version>${swaggerVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.parser.v3</groupId>
-        <artifactId>swagger-parser</artifactId>
-        <version>${swaggerParserVersion}</version>
-      </dependency>
     </dependencies>
 </project>
