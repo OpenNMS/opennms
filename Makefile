@@ -31,7 +31,7 @@ help:
 	@echo "  docs-serve-stop:  Stop the local web server for serving the docs"
 	@echo ""
 	@echo "Arguments: "
-	@echo "  DOCKER_ANTORA_IMAGE: Antora Docker image to build the documenation, default: $(DOCKER_ANTORA_IMAGE)"
+	@echo "  DOCKER_ANTORA_IMAGE: Antora Docker image to build the documentation, default: $(DOCKER_ANTORA_IMAGE)"
 	@echo "  SITE_FILE:           Antora site.yml file to build the site"
 	@echo ""
 	@echo "Example: "

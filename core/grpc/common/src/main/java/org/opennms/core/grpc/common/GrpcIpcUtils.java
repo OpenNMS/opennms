@@ -111,7 +111,6 @@ public class GrpcIpcUtils {
         if (Strings.isNullOrEmpty(certChainFilePath) || Strings.isNullOrEmpty(privateKeyFilePath)) {
             return null;
         }
-
         SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
                 new File(privateKeyFilePath));
         if (!Strings.isNullOrEmpty(trustCertCollectionFilePath)) {

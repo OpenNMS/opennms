@@ -1,0 +1,161 @@
+
+= Geocoder Service
+
+The Geocoder Service resolves geolocation information within {page-component-title}.
+{page-component-title} supports several geocoder services.
+By default, geolocation resolution is disabled.
+
+When enabled, geolocation is performed based on the presence of address-related asset fields assigned to a node.
+See the xref:provisioning/directed-discovery.adoc[provisioning] documentation for steps to define asset fields on a requisition.
+
+== Configuration
+
+To enable or configure the Geocoder Service, use the web-based configuration tool.
+In the web UI, click the menu:Gear Icon[Provisioning > Configure Geocoder Service].
+
+NOTE: If you would prefer to manually edit the config files, you can set the active Geocoder Service via the property `activeGeocoderId` in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.cfg`.
+
+=== Google
+
+The Google Geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
+For more details, see the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation].
+
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| Property
+| Description
+| Type
+| Default
+
+4+|*Required*
+
+| apiKey
+| The apiKey provided by the Google Cloud Platform.
+Required only if `useEnterpriseCredentials` is false.
+| String
+| empty string
+
+| clientId
+| The Google Geocoder API client ID.
+Required only if `useEnterpriseCredentials` is true.
+| String
+| empty string
+
+| signature
+| The Google Geocoder API signature.
+| String
+| empty string
+
+4+| *Optional*
+
+| useEnterpriseCredentials
+| If authentication with clientId and signature is required, set this to true.
+| Boolean
+| false
+
+| useSystemProxy
+| Should the system-wide proxy settings be used?
+  Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+| Boolean
+| false
+
+| timeout
+| The connection timeout in milliseconds the Geocoder tries to resolve a single geolocation.
+| Integer
+| 500
+|===
+
+NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.google.cfg`.
+
+
+=== MapQuest
+
+For more details, refer to the link:https://developer.mapquest.com/documentation/geocoding-api/[official documentation].
+
+[options="header"]
+[cols="1,3,1,3"]
+|===
+| Property
+| Description
+| Type
+| Default
+
+4+| *Required*
+| apiKey
+| The API key.
+| String
+| empty string
+
+| url
+| The URL template for the MapQuest Geocoder API.
+The `apikey` and `query` strings are substituted before making the request.
+| String
+| \http://www.mapquestapi.com/geocoding/v1/address?format=json&key=\{apikey}&amp;maxResults=1&location=\{query}
+
+
+4+| *Optional*
+
+| useSystemProxy
+| Should the system-wide proxy settings be used?
+Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>.
+| Boolean
+| false
+|===
+
+NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.mapquest.cfg`.
+
+=== Nominatim
+
+For more details, see the link:https://wiki.openstreetmap.org/wiki/Nominatim[official documentation]
+and check the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using
+the geocoder service.
+
+[options="header"]
+[cols="2,3,1,2"]
+|===
+| Property
+| Description
+| Type
+| Default
+
+4+| *Required*
+
+| acceptUsageTerms
+| To use the Nominatim Geocoder Service you must accept the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy].
+Set this to `true` to agree to their terms.
+| Boolean
+| false
+
+| url
+| The URL template for the Nominatim Geocoder API.
+The `email` and `query` strings are substituted before making the request.
+| String
+| \https://nominatim.openstreetmap.org/search?format=json&amp;email=\{email}&limit=1&q=\{query}
+
+| email
+| According to the official documentation, provide this in case you are making a large number of requests.
+Alternatively, provide this information in the userAgent property.
+| String
+| empty string
+
+| referer
+| Note that either `referer` or `userAgent` is required.
+| String
+| empty string
+
+| userAgent
+| Note that either `referer` or `userAgent` is required.
+| String
+| OpenNMS-NominatimGeocoderService/2.0
+
+4+| *Optional*
+
+| useSystemProxy
+| Should the system-wide proxy settings be used?
+Configure the system proxy settings in <<admin/system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>.
+| Boolean
+| false
+|===
+
+NOTE: These properties are recorded in `$\{OPENNMS_HOME}/etc/org.opennms.features.geocoder.nominatim.cfg`.

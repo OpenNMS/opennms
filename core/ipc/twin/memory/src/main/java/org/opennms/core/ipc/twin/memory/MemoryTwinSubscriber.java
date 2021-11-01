@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.twin.memory;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -49,5 +50,9 @@ public class MemoryTwinSubscriber implements TwinSubscriber {
     @Override
     public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
         return this.publisher.subscribe(key, this.location, clazz, consumer);
+    }
+
+    @Override
+    public void close() {
     }
 }

@@ -76,26 +76,20 @@ public enum NetflowVersion
 
   public final int getNumber() {
     if (this == UNRECOGNIZED) {
-      throw new java.lang.IllegalArgumentException(
+      throw new IllegalArgumentException(
           "Can't get the number of an unknown enum value.");
     }
     return value;
   }
 
   /**
-   * @param value The numeric wire value of the corresponding enum entry.
-   * @return The enum associated with the given numeric wire value.
    * @deprecated Use {@link #forNumber(int)} instead.
    */
-  @java.lang.Deprecated
+  @Deprecated
   public static NetflowVersion valueOf(int value) {
     return forNumber(value);
   }
 
-  /**
-   * @param value The numeric wire value of the corresponding enum entry.
-   * @return The enum associated with the given numeric wire value.
-   */
   public static NetflowVersion forNumber(int value) {
     switch (value) {
       case 0: return V5;
@@ -120,10 +114,6 @@ public enum NetflowVersion
 
   public final com.google.protobuf.Descriptors.EnumValueDescriptor
       getValueDescriptor() {
-    if (this == UNRECOGNIZED) {
-      throw new java.lang.IllegalStateException(
-          "Can't get the descriptor of an unrecognized enum value.");
-    }
     return getDescriptor().getValues().get(ordinal());
   }
   public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -132,7 +122,7 @@ public enum NetflowVersion
   }
   public static final com.google.protobuf.Descriptors.EnumDescriptor
       getDescriptor() {
-    return org.opennms.netmgt.flows.persistence.model.EnrichedFlowProtos.getDescriptor().getEnumTypes().get(2);
+    return EnrichedFlowProtos.getDescriptor().getEnumTypes().get(2);
   }
 
   private static final NetflowVersion[] VALUES = values();
@@ -140,7 +130,7 @@ public enum NetflowVersion
   public static NetflowVersion valueOf(
       com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
-      throw new java.lang.IllegalArgumentException(
+      throw new IllegalArgumentException(
         "EnumValueDescriptor is not for this type.");
     }
     if (desc.getIndex() == -1) {
