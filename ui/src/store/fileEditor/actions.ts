@@ -38,11 +38,15 @@ const saveModifiedFile = async (context: ContextWithState) => {
 
   const formData = new FormData()
   formData.append('upload', doc)
-  const saved = await API.postFile(filename, formData)
+  const response = await API.postFile(filename, formData)
 
-  if (saved) {
+  if (response.data) context.commit('ADD_LOG_TO_STATE', response.data)
+
+  if (response.success) {
     context.commit('SAVE_FILE_TO_STATE', fileString)
     context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
+  } else {
+    context.commit('SET_IS_CONSOLE_OPEN', true)
   }
 }
 
@@ -62,6 +66,18 @@ const triggerFileReset = async (context: VuexContext) => {
   context.commit('TRIGGER_FILE_RESET')
 }
 
+const addLog = (context: VuexContext, log: string) => {
+  context.commit('ADD_LOG_TO_STATE', log)
+}
+
+const clearLogs = (context: VuexContext) => {
+  context.commit('CLEAR_LOGS')
+}
+
+const setIsConsoleOpen = (context: VuexContext, isOpen: boolean) => {
+  context.commit('SET_IS_CONSOLE_OPEN', isOpen)
+}
+
 export default {
   getFileNames,
   getFile,
@@ -69,5 +85,8 @@ export default {
   setSearchValue,
   setIsFileContentModified,
   setModifiedFileString,
-  triggerFileReset
+  triggerFileReset,
+  addLog,
+  clearLogs,
+  setIsConsoleOpen
 }

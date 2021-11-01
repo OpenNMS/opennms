@@ -1,20 +1,26 @@
 <template>
-  <VAceEditor
-    v-model:value="content"
-    @change="change"
-    :lang="lang"
-    :theme="theme"
-    style="height: calc(100vh - 120px)"
-    :printMargin="false"
-    :options="{ useWorker: true }"
-    @init="init"
-  />
+  <div style="height: calc(100vh - 120px)">
+    <div class="editor-with-console">
+      <VAceEditor
+        v-model:value="content"
+        @change="change"
+        :lang="lang"
+        :theme="theme"
+        style="height: 100%"
+        :printMargin="false"
+        :options="{ useWorker: true }"
+        @init="init"
+      />
+      <Console />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watchEffect } from "vue"
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
+import Console from './Console.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-xml'
 import 'ace-builds/src-noconflict/mode-properties'
@@ -58,3 +64,11 @@ const init = (editor: any) => {
   })
 }
 </script>
+
+<style lang="scss" scoped>
+.editor-with-console {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>

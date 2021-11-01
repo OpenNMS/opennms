@@ -5,7 +5,9 @@ export interface State {
   searchValue: string,
   contentModified: boolean,
   selectedFileName: string,
-  modifiedFileString: string
+  modifiedFileString: string,
+  logs: string[],
+  isConsoleOpen: boolean
 }
 
 const state: State = {
@@ -15,7 +17,9 @@ const state: State = {
   searchValue: '',
   contentModified: false,
   selectedFileName: '',
-  modifiedFileString: ''
+  modifiedFileString: '',
+  logs: [],
+  isConsoleOpen: false
 }
 
 export default state

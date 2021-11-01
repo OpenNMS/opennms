@@ -75,4 +75,7 @@ a {
 .subtitle2 {
   @include subtitle2();
 }
+.body-small {
+  @include body-small();
+}
 </style>

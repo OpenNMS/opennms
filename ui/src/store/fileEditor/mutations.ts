@@ -35,6 +35,18 @@ const SAVE_MODIFIED_FILE_STRING = (state: State, modifiedFileString: string) => 
   state.modifiedFileString = modifiedFileString
 }
 
+const ADD_LOG_TO_STATE = (state: State, log: string) => {
+  state.logs = [...state.logs, log]
+}
+
+const CLEAR_LOGS = (state: State) => {
+  state.logs = []
+}
+
+const SET_IS_CONSOLE_OPEN = (state: State, isOpen: boolean) => {
+  state.isConsoleOpen = isOpen
+}
+
 export default {
   SAVE_FILE_NAMES_TO_STATE,
   SAVE_FILE_TO_STATE,
@@ -43,5 +55,8 @@ export default {
   SAVE_IS_CONTENT_MODIFIED_TO_STATE,
   TRIGGER_FILE_RESET,
   SAVE_SELECTED_FILE_NAME_TO_STATE,
-  SAVE_MODIFIED_FILE_STRING
+  SAVE_MODIFIED_FILE_STRING,
+  ADD_LOG_TO_STATE,
+  CLEAR_LOGS,
+  SET_IS_CONSOLE_OPEN
 }
