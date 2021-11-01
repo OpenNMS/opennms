@@ -12,8 +12,14 @@ const getFileNames = async (context: VuexContext) => {
 }
 
 const getFile = async (context: VuexContext, fileName: string) => {
+  // reset modified file string, snippets
+  context.commit('SAVE_MODIFIED_FILE_STRING', '')
+  context.commit('SAVE_SNIPPETS_TO_STATE', '')
+  context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
+
   const file = await API.getFile(fileName)
   const snippets = await API.getSnippets(fileName)
+
   context.commit('SAVE_FILE_TO_STATE', file)
   context.commit('SAVE_SNIPPETS_TO_STATE', snippets)
   context.commit('SAVE_SELECTED_FILE_NAME_TO_STATE', fileName)
@@ -22,6 +28,8 @@ const getFile = async (context: VuexContext, fileName: string) => {
 const saveModifiedFile = async (context: ContextWithState) => {
   const xml = 'xml', plain = 'plain'
   const filename = context.state.selectedFileName
+  if (!filename) return
+
   const fileString = context.state.modifiedFileString
   const splitFilename = filename.split('.')
   const filetype = splitFilename[splitFilename.length - 1]

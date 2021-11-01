@@ -7,6 +7,7 @@
     style="height: calc(100vh - 120px)"
     :printMargin="false"
     :options="{ useWorker: true }"
+    @init="init"
   />
 </template>
 
@@ -47,5 +48,13 @@ watchEffect(() => content.value = fileString.value)
 const change = () => {
   store.dispatch('fileEditorModule/setIsFileContentModified', content.value !== fileString.value)
   store.dispatch('fileEditorModule/setModifiedFileString', content.value)
+}
+
+const init = (editor: any) => {
+  editor.commands.addCommand({
+    name: 'save',
+    bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
+    exec: () => store.dispatch('fileEditorModule/saveModifiedFile')
+  })
 }
 </script>

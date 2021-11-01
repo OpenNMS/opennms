@@ -1,5 +1,11 @@
 <template>
-  <FeatherButton text class="btn-drawer" @click="triggerDrawer">Help</FeatherButton>
+  <FeatherButton 
+    text
+    v-if="snippets" 
+    class="btn-drawer" 
+    @click="triggerDrawer">
+    Help
+  </FeatherButton>
 
   <FeatherDrawer
     id="drawer"
@@ -38,6 +44,6 @@ const triggerDrawer = () => visible.value = !visible.value
 }
 .snippets {
   padding: 15px;
-  color: var(--feather-primary-text-on-surface)
+  color: var(--feather-primary-text-on-surface);
 }
 </style>

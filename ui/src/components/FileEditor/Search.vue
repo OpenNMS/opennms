@@ -4,10 +4,10 @@
       <FeatherInput label="Search files" v-model="searchValue" @update:modelValue="search" />
     </div>
     <div class="save">
-      <FeatherButton :disabled="!contentModified" primary @click="save">Save</FeatherButton>
+      <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>
     </div>
     <div class="reset">
-      <FeatherButton :disabled="!contentModified" primary @click="reset">Reset</FeatherButton>
+      <FeatherButton :disabled="disableBtn" primary @click="reset">Reset</FeatherButton>
     </div>
   </div>
   <hr />
@@ -23,6 +23,8 @@ const store = useStore()
 const searchValue = ref('')
 
 const contentModified = computed(() => store.state.fileEditorModule.contentModified)
+const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
+const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
 const search = () => store.dispatch('fileEditorModule/setSearchValue', searchValue.value)
 const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
 const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
