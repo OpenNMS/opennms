@@ -185,14 +185,17 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         // Update twin object in local cache.
         objMap.put(twinUpdate.getKey(), new TwinTracker(newObjBytes, twinUpdate.getVersion(), twinUpdate.getSessionId()));
         // Send update to each session.
-        if (sessionMap.containsKey(twinUpdate.getKey())) {
-            sessionMap.get(twinUpdate.getKey()).forEach(session -> {
-                try {
-                    session.accept(newObjBytes);
-                } catch (Exception e) {
-                    LOG.error("Exception while sending update to Session {} for key {}", session, twinUpdate.getKey(), e);
-                }
-            });
+        synchronized(sessionMap) {
+            final var sessions = sessionMap.get(twinUpdate.getKey());
+            if (sessions != null) {
+                sessions.forEach(session -> {
+                    try {
+                        session.accept(newObjBytes);
+                    } catch (Exception e) {
+                        LOG.error("Exception while sending update to Session {} for key {}", session, twinUpdate.getKey(), e);
+                    }
+                });
+            }
         }
     }
 
