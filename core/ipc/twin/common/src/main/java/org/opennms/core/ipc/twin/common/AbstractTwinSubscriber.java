@@ -88,8 +88,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         SessionImpl<T> session = new SessionImpl<T>(key, clazz, consumer);
         sessionMap.put(key, session);
         String location = minionIdentity != null ? minionIdentity.getLocation() : null;
-        TwinRequest twinRequest = new TwinRequest(key, location);
-        sendRpcRequest(twinRequest);
+
         TwinTracker twinTracker = objMap.get(key);
         // If there is an existing object, send that update to subscriber
         if (twinTracker != null) {
@@ -98,8 +97,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             } catch (Exception e) {
                 LOG.error("Exception while sending response to consumer", e);
             }
+        } else {
+            TwinRequest twinRequest = new TwinRequest(key, location);
+            sendRpcRequest(twinRequest);
         }
-
 
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
