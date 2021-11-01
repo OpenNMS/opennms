@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,22 +24,24 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.features.config.dao.api;
+package org.opennms.features.config.dao.impl.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.features.config.dao.api.util.XsdModelConverter;
+import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.api.ValidationSchema;
 
 import java.util.Objects;
 
 /**
  * This is sepcial for existing xsd validation use
  */
-public final class XmlValidationSchema implements ValidationSchema<XmlSchema>{
+@Deprecated
+public final class XmlValidationSchema implements ValidationSchema<XmlSchema> {
     private final XmlSchema xmlSchema;
 
     // reduce duplicated data store in database

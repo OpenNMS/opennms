@@ -41,9 +41,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <groupId>org.openapi4j</groupId>
+      <artifactId>openapi-schema-validator</artifactId>
+      <version>${openapiSchemaValidatorVersion}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

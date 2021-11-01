@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * This class include meta-data of the config
  */
+@Deprecated
 public class ConfigSchema<T extends ConfigConverter> implements Serializable {
     private String name;
     private Class<T> converterClass;

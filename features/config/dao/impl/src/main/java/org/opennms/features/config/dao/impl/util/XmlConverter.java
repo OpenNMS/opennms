@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -24,7 +24,7 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
 package org.opennms.features.config.dao.impl.util;
 
@@ -36,20 +36,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.XmlAccessType;
 
 import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ValidationSchema;
-import org.opennms.features.config.dao.api.XmlSchema;
-import org.opennms.features.config.dao.api.XmlValidationSchema;
-import org.opennms.features.config.dao.api.util.SchemaUtil;
-import org.opennms.features.config.dao.api.util.XsdModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.io.Resources;
 
 /**
@@ -65,32 +59,32 @@ public class XmlConverter implements ConfigConverter {
 
     public XmlConverter(final String xsdName,
                         final String rootElement)
-            throws IllegalArgumentException, IOException, JAXBException {
+            throws IOException {
         this.xsdName = Objects.requireNonNull(xsdName);
         this.rootElement = Objects.requireNonNull(rootElement);
         this.validationSchema = this.readXmlSchema();
         this.xmlMapper = new XmlMapper(validationSchema.getSchema());
     }
 
-    /**
-     * For object mapper use
-     * @param xsdName
-     * @param rootElement
-     * @param xmlAccessorType
-     * @param validationSchema
-     * @throws JAXBException
-     */
-    @JsonCreator
-    public XmlConverter(
-            @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
-            @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
-            @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {
-
-        this.xsdName = xsdName;
-        this.rootElement = rootElement;
-        this.validationSchema = validationSchema;
-        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
-    }
+//    /**
+//     * For object mapper use
+//     * @param xsdName
+//     * @param rootElement
+//     * @param xmlAccessorType
+//     * @param validationSchema
+//     * @throws JAXBException
+//     */
+//    @JsonCreator
+//    public XmlConverter(
+//            @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
+//            @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
+//            @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {
+//
+//        this.xsdName = xsdName;
+//        this.rootElement = rootElement;
+//        this.validationSchema = validationSchema;
+//        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
+//    }
     /**
      * It searches the xsd defined in configuration class and load into schema.
      *

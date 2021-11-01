@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,8 +24,8 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
-package org.opennms.features.config.dao.api.util;
+ ******************************************************************************/
+package org.opennms.features.config.dao.impl.util;
 
 import java.io.StringReader;
 import java.util.*;
@@ -44,7 +44,6 @@ import org.opennms.features.config.dao.api.ConfigItem;
  */
 public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
-    XmlSchemaCollection schemaCollection;
     final Map<QName, ConfigItem> configItemsByQName = new LinkedHashMap<>();
     final List<ConfigItem> configItemStack = new LinkedList<>();
     ConfigItem currentConfigItem;
@@ -176,7 +175,7 @@ public class XsdModelConverter extends NoopXmlSchemaVisitor {
 
     private static XmlSchemaElement getElementOf(XmlSchemaCollection collection, String name) {
         XmlSchemaElement elem = null;
-        for (XmlSchema schema : collection.getXmlSchemas()) {
+        for (org.apache.ws.commons.schema.XmlSchema schema : collection.getXmlSchemas()) {
             elem = schema.getElementByName(name);
             if (elem != null) {
                 break;

@@ -38,8 +38,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.impl.XmlConfigDefinition;
+import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,17 +70,23 @@ public class ConfigSwaggerConverterAllTest {
 
     @Before
     public void init() throws IOException, JAXBException {
-        configurationManagerService.registerSchema(CONFIG_NAME, XSD_PATH, TOP_ELEMENT);
-        configurationManagerService.registerSchema(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT);
+        XmlConfigDefinition def = new XmlConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT);
+        XmlConfigDefinition def2 = new XmlConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT);
+        configurationManagerService.registerConfigDefinition(CONFIG_NAME, def);
+        configurationManagerService.registerConfigDefinition(CONFIG_NAME + "2", def2);
     }
 
     @Test
-    public void canConvertAllXsd() throws IOException {
+    public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        Map<String, ConfigSchema<?>> schemas = configurationManagerService.getAllConfigSchema();
+        Map<String, ConfigDefinition> schemas = configurationManagerService.getAllConfigDefinition();
         Map<String, ConfigItem> items = new HashMap<>();
         schemas.forEach((key, schema) -> {
-            items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
+            try {
+                items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
         OpenAPI openapi = configSwaggerConverter.convert("/opennms/rest/cm/schema/", items);

@@ -15,7 +15,7 @@
 
         <!-- eventd -->
         <cm:registerSchema id="eventd"/>
-        <cm:importSchemaFromXsd id="eventd" xsdFileName="eventd-configuration.xsd" xsdFileHash="dba9c50b58600a7003ed4e34735628bb656b0430864288ccbe7813a30cedf407" rootElement="eventd-configuration"/>
+        <cm:importSchemaFromXsd id="eventd" xsdFileName="eventd-configuration.xsd" xsdFileHash="dba9c50b58600a7003ed4e34735628bb656b0430864288ccbe7813a30cedf407" rootElement="EventdConfiguration"/>
         <cm:importConfig schemaId="eventd" configId="default" filePath="eventd-configuration.xml"/>
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-schema-provisiond">
@@ -23,13 +23,14 @@
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-properties">
         <cm:registerSchema id="propertiesTest"/>
-        <cm:changeSchema schemaId="propertiesTest">
+        <!-- converter & validation for property is not implemented yet -->
+        <!--cm:changeSchema schemaId="propertiesTest">
             <cm:put name="property1" type="string" default="" pattern=".*" />
             <cm:put name="tobedeleted" type="string" default="" pattern=".*" />
             <cm:delete name="tobedeleted"/>
             <cm:put name="property3" type="boolean" default="false" />
-        </cm:changeSchema>
+        </cm:changeSchema-->
         <cm:registerSchema id="datachoices"/>
-        <cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/>
+        <!--cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/-->
     </changeSet>
 </databaseChangeLog>

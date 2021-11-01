@@ -32,11 +32,13 @@ import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.createConfigItemForP
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.findPropertyDefinition;
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.getAttributeValueOrThrowException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -85,26 +87,41 @@ public class ChangeSchema extends AbstractCmChange {
                 // we wrap all changes into one statement to be atomic and save some time
                 new GenericCmStatement((ConfigurationManagerService cm) -> {
                     // 1.) find schema
-                    Optional<ConfigDefinition> definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
+                    Optional<ConfigDefinition> definitionOpt = null;
+                    try {
+                        definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
+                    } catch (JsonProcessingException e) {
+                        LOG.error("Fail to get config definition.", e);
+                        throw new RuntimeException(e);
+                    }
                     ConfigDefinition definition;
                     if (definitionOpt.isEmpty()) {
                         // Create a new one
-                        definition = new ConfigDefinition();
+                        definition = new ConfigDefinition(this.schemaId);
                         definition.setConfigName(this.schemaId);
-                        definition.setSchema(new ConfigItem());
-                        cm.registerConfigDefinition(this.schemaId, definition);
+                        try {
+                            cm.registerConfigDefinition(this.schemaId, definition);
+                        } catch (JsonProcessingException e) {
+                            LOG.error("Fail to register config definition.", e);
+                            throw new RuntimeException(e);
+                        }
                     } else {
                         definition = definitionOpt.get();
                     }
-                    ConfigItem schema = definition.getSchema();
 
                     // 2.) apply all changes
-                    for (Consumer<ConfigItem> change : changes) {
-                        change.accept(schema);
-                    }
+                    // FIXME: not implement yet
+//                    for (Consumer<ConfigItem> change : changes) {
+//                        change.accept(schema);
+//                    }
 
                     // 3.) write definition
-                    cm.changeConfigDefinition(this.schemaId, definition);
+                    try {
+                        cm.changeConfigDefinition(this.schemaId, definition);
+                    } catch (IOException e) {
+                        LOG.error("Fail to change config definition.", e);
+                        throw new RuntimeException(e);
+                    }
                 })
         };
     }

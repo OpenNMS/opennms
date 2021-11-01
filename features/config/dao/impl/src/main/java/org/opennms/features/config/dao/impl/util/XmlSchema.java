@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,30 +24,39 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.features.config.dao.api.util;
+package org.opennms.features.config.dao.impl.util;
 
-import java.io.IOException;
-import java.net.URL;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+@Deprecated
+public class XmlSchema {
 
-public class SchemaUtil {
-    /**
-     * It will search xsds first, otherwise it will search across classpath
-     *
-     * @return URL of the xsd file
-     */
-    public static URL getSchemaPath(String xsdName) throws IOException {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("xsds/" + xsdName);
-        if (url == null) {
-            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] resources = resolver.getResources("classpath*:**/" + xsdName);
-            if (resources != null && resources.length > 0)
-                url = resources[0].getURL();
-        }
-        return url;
+    private final String xsdContent;
+    private final String namespace;
+    private final String topLevelObject;
+
+    @JsonCreator
+    public XmlSchema(@JsonProperty("xsdContent") String xsdContent,
+                     @JsonProperty("namespace") String namespace,
+                     @JsonProperty("topLevelObject") String topLevelObject) {
+        this.xsdContent = xsdContent;
+        this.namespace = namespace;
+        this.topLevelObject = topLevelObject;
     }
+
+    public String getXsdContent() {
+        return xsdContent;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public String getTopLevelObject() {
+        return topLevelObject;
+    }
+
 }

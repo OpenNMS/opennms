@@ -35,7 +35,8 @@ import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.api.util.XsdModelConverter;
+import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
+import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import javax.xml.transform.stream.StreamSource;
@@ -90,7 +91,7 @@ public class ConfigSwaggerConverterTest {
 
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
         String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration",
-                org.springframework.http.MediaType.APPLICATION_JSON.toString());
+                ConfigSwaggerConverter.APPLICATION_JSON);
 
         final String expectedSwaggerJson = Resources.toString(
                 Resources.getResource("swagger.generated.json"), StandardCharsets.UTF_8);

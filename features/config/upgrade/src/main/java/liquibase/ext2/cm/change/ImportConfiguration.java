@@ -38,7 +38,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.XmlConfigDefinition;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -58,6 +59,8 @@ import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
 import liquibase.util.file.FilenameUtils;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
@@ -136,12 +139,12 @@ public class ImportConfiguration extends AbstractCmChange {
                 new GenericCmStatement((ConfigurationManagerService m) -> {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
-                        Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
+                        Optional<ConfigDefinition> configDefinition = m.getRegisteredConfigDefinition(this.schemaId);
 
                         String fileType = FilenameUtils.getExtension(this.filePath);
                         JsonAsString configObject;
                         if("xml".equalsIgnoreCase(fileType)) {
-                            configObject = new XmlToJson(asString(this.configResource), configSchema.get()).getJson();
+                            configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
                             configObject = new PropertiesToJson(this.configResource.getInputStream()).getJson();
                         } else {
@@ -155,7 +158,7 @@ public class ImportConfiguration extends AbstractCmChange {
                             Files.move(etcFile, archiveFile); // move to archive
                             LOG.info("Configuration file {} moved to {}", etcFile, this.archivePath);
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

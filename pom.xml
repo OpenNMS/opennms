@@ -1502,6 +1502,7 @@
     <swaggerVersion>2.1.5</swaggerVersion>
     <swaggerParserVersion>2.0.24</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.15.1</swaggerRequestValidatorVersion>
+    <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>

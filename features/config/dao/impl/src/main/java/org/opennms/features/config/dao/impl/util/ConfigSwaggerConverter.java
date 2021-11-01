@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,9 +24,9 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.features.config.service.util;
+package org.opennms.features.config.dao.impl.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
-
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -52,6 +51,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfigSwaggerConverter {
+    public static final String APPLICATION_JSON = "application/json";
     private final Logger LOG = LoggerFactory.getLogger(ConfigSwaggerConverter.class);
 
     private final Map<ConfigItem, Schema<?>> schemasByItem = new LinkedHashMap<>();
@@ -60,7 +60,7 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException{
+    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException {
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
     }
@@ -68,7 +68,7 @@ public class ConfigSwaggerConverter {
     /**
      * convert open api object to specific string (default is yaml)
      *
-     * @param openapi schema
+     * @param openapi    schema
      * @param acceptType (json / yaml)
      * @return
      * @throws JsonProcessingException
@@ -76,14 +76,13 @@ public class ConfigSwaggerConverter {
     public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws JsonProcessingException {
         ObjectMapper objectMapper;
         try {
-            org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.valueOf(acceptType);
-            if (org.springframework.http.MediaType.APPLICATION_JSON.equals(mediaType) && mediaType != null) {
+            if (APPLICATION_JSON.equals(acceptType)) {
                 objectMapper = new ObjectMapper();
             } else {
                 objectMapper = new ObjectMapper(new YAMLFactory());
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage()+ " using media type = yaml instead.");
+            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage() + " using media type = yaml instead.");
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 
@@ -102,7 +101,7 @@ public class ConfigSwaggerConverter {
         }
     }
 
-    private Info genInfo(){
+    private Info genInfo() {
         // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
@@ -113,6 +112,7 @@ public class ConfigSwaggerConverter {
 
     /**
      * It will generate a big openapi path with external $ref to schema
+     *
      * @param prefix
      * @param items
      * @return path openapi doc
@@ -138,6 +138,16 @@ public class ConfigSwaggerConverter {
         return openAPI;
     }
 
+    /**
+     * It will only generate components
+     *
+     * @param item
+     * @return OpenAPI without paths
+     */
+    public OpenAPI convert(ConfigItem item) {
+        return convert(item, null);
+    }
+
     public OpenAPI convert(ConfigItem item, String prefix) {
         // Create an empty set of components
         Components components = new Components();
@@ -155,19 +165,30 @@ public class ConfigSwaggerConverter {
             }
         });
 
-        // Create an empty set of paths
-        Paths paths = new Paths();
-        openAPI.setPaths(paths);
+        if (prefix != null) {
+            // Create an empty set of paths
+            Paths paths = new Paths();
+            openAPI.setPaths(paths);
 
-        // Generate paths for the items
-        this.generatePathsForItems(item, prefix, null);
-        pathItemsByPath.forEach(paths::addPathItem);
+            // Generate paths for the items
+            this.generatePathsForItems(item, prefix, null);
+            pathItemsByPath.forEach(paths::addPathItem);
+        }
 
         return openAPI;
     }
 
+//    public OpenAPI appendPaths(OpenAPI openapi, String prefix){
+//        // Create an empty set of paths
+//        Paths paths = new Paths();
+//        openAPI.setPaths(paths);
+//
+//        // Generate paths for the items
+//        this.generatePathsForItems(item, prefix, null);
+//        pathItemsByPath.forEach(paths::addPathItem);
+//    }
+
     /**
-     *
      * @param item
      * @param prefix
      * @param externalConfigName (use for generate external $ref)
@@ -189,7 +210,7 @@ public class ConfigSwaggerConverter {
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
-        jsonObjectContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+        jsonObjectContent.addMediaType(APPLICATION_JSON.toString(), mediaType);
 
         // configId result content
         Content configIdContent = new Content();
@@ -198,7 +219,7 @@ public class ConfigSwaggerConverter {
         Schema configIdSchema = new StringSchema();
         configIdParent.setItems(configIdSchema);
         configIdMediaType.schema(configIdParent);
-        configIdContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), configIdMediaType);
+        configIdContent.addMediaType(APPLICATION_JSON.toString(), configIdMediaType);
 
         // configId path param
         List<Parameter> parameters = new ArrayList<>();
@@ -283,7 +304,7 @@ public class ConfigSwaggerConverter {
         messageResponse.setContent(messageContent);
         MediaType mediaType = new MediaType();
 
-        messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+        messageContent.addMediaType(APPLICATION_JSON.toString(), mediaType);
 
         ObjectSchema parentSchema = new ObjectSchema();
 
@@ -408,19 +429,20 @@ public class ConfigSwaggerConverter {
         schemasByItem.put(item, schema);
     }
 
-    private String generate$ref(ConfigItem item){
+    private String generate$ref(ConfigItem item) {
         return this.generate$ref(item, null);
     }
 
     /**
      * It help to generate $ref for openapi
+     *
      * @param item
      * @param configName (It will generate external reference when it is not null)
      * @return
      */
-    private String generate$ref(ConfigItem item, String configName){
-        if(configName != null) {
-            return "/opennms/rest/cm/schema/"+ configName + "#/components/schemas/" + item.getName();
+    private String generate$ref(ConfigItem item, String configName) {
+        if (configName != null) {
+            return "/opennms/rest/cm/schema/" + configName + "#/components/schemas/" + item.getName();
         } else
             return "#/components/schemas/" + item.getName();
     }

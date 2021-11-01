@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,21 +24,26 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
-
+ ******************************************************************************/
 package org.opennms.features.config.dao.impl.util;
 
-import static org.opennms.features.config.dao.impl.util.TopLevelElementToClass.topLevelElementToClass;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import com.google.common.base.Strings;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.oxm.ByteArraySource;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.oxm.MediaType;
+import org.json.JSONObject;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.eventd.EventdConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLFilter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
@@ -48,23 +53,12 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.oxm.ByteArraySource;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
-import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.oxm.MediaType;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.XmlSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLFilter;
-
-import com.google.common.base.Strings;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class XmlMapper {
     private static final Logger LOG = LoggerFactory.getLogger(XmlMapper.class);
@@ -116,6 +110,7 @@ public class XmlMapper {
         }
     }
 
+    private static final Pattern VALUE_PATTERN = Pattern.compile("\"__VALUE__\"\\s*:\\s*\"[^\"]*\"\\s*,*");
     public String xmlToJson(String sourceXml) {
         try {
             final XMLFilter filter = JaxbUtils.getXMLFilterForNamespace(this.xmlSchema.getNamespace());
@@ -124,15 +119,36 @@ public class XmlMapper {
 
             final Unmarshaller u = jaxbContext.createUnmarshaller();
             DynamicEntity entity = (DynamicEntity) u.unmarshal(source);
+            //FIXME: dirty tricks to remove value
+
+//            if(entity instanceof DynamicEntityImpl){
+//                DynamicEntityImpl entityImpl = (DynamicEntityImpl) entity;
+//                if(entityImpl.getPropertiesMap().containsKey("value")){
+//                    Object tmp =  entity.get("value");
+//                    if(tmp instanceof String && ((String)tmp).trim().length() == 0) {
+//                        entityImpl.getPropertiesMap().remove("value");
+//                    }
+//                }
+//            }
 
             final Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+            //FIXME: dirty tricks to remove xml value (use for JSONObject remove)
+            m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "__VALUE__");
 
             final StringWriter writer = new StringWriter();
             m.marshal(entity, writer);
-            return writer.toString();
+            String jsonStr = writer.toString();
+
+            if(jsonStr.indexOf("__VALUE__") != -1){
+                JSONObject json = new JSONObject(jsonStr);
+                json.remove("__VALUE__");
+                return json.toString();
+            }
+            return jsonStr;
         } catch (JAXBException | SAXException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -140,7 +156,7 @@ public class XmlMapper {
     private Class<? extends DynamicEntity> getTopLevelEntity(DynamicJAXBContext jc) {
         String className= namespace2package(xmlSchema.getNamespace()) +
                 "." +
-                topLevelElementToClass(xmlSchema.getTopLevelObject());
+                TopLevelElementToClass.topLevelElementToClass(xmlSchema.getTopLevelObject());
         return jc.newDynamicEntity(className).getClass();
     }
 

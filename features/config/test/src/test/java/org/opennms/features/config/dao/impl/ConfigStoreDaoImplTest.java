@@ -27,11 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.OpenAPIV3Parser;
 
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -41,13 +41,15 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Optional;
+import java.util.Set;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -62,12 +64,13 @@ public class ConfigStoreDaoImplTest {
     private ConfigStoreDao configStoreDao;
 
     @Test
-    public void testData() throws IOException, JAXBException {
+    public void testData() throws Exception {
         // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-
-        configStoreDao.register(configSchema);
+//        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+//        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
+        XmlConfigDefinition def = new XmlConfigDefinition(configName,
+                "provisiond-configuration.xsd", "provisiond-configuration");
+        configStoreDao.register(def);
 
         // config
         JSONObject config = new JSONObject();
@@ -76,21 +79,22 @@ public class ConfigStoreDaoImplTest {
         configData.getConfigs().put(filename, config);
 
         // register
-        configStoreDao.register(configSchema);
+        configStoreDao.register(def);
         configStoreDao.addConfigs(configName, configData);
         Optional<ConfigData> configsInDb = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO getConfigData", configsInDb.isPresent());
 
         // get
-        Optional<ConfigSchema> result = configStoreDao.getConfigSchema(configName);
+        Optional<ConfigDefinition> result = configStoreDao.getConfigDefinition(configName);
         Assert.assertTrue("FAIL TO getConfigSchema", result.isPresent());
 
         // register more and update
         String configName2 = configName + "_2";
-        ConfigSchema<XmlConverter> configSchema2 = new ConfigSchema<>(configName2, XmlConverter.class, converter);
-        configStoreDao.register(configSchema2);
-        configStoreDao.updateConfigSchema(configSchema2);
-        Optional<ConfigSchema> tmpConfigSchema2 = configStoreDao.getConfigSchema(configName2);
+        XmlConfigDefinition def2 = new XmlConfigDefinition(configName2,
+                "provisiond-configuration.xsd", "provisiond-configuration");
+        configStoreDao.register(def2);
+        configStoreDao.updateConfigDefinition(def2);
+        Optional<ConfigDefinition> tmpConfigSchema2 = configStoreDao.getConfigDefinition(configName2);
 
         // list all
         Optional<Set<String>> all = configStoreDao.getConfigNames();
@@ -99,7 +103,8 @@ public class ConfigStoreDaoImplTest {
         // add config
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
-        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config2)));
+
+        JSONObject config2AsJson = new JSONObject(def2.getConverter().xmlToJson(JaxbUtils.marshal(config2)));
         configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
@@ -107,16 +112,18 @@ public class ConfigStoreDaoImplTest {
         // delete config
         configStoreDao.deleteConfig(configName, filename + "_2");
         Optional<ConfigData> resultAfterDelete = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 1", resultAfterDelete.get().getConfigs().size() == 1);
+        Assert.assertTrue("FAIL configs count is not equal to 1",
+                resultAfterDelete.get().getConfigs().size() == 1);
 
         // updateConfigs
         configStoreDao.updateConfigs(configName, new ConfigData());
         Optional<ConfigData> resultAfterUpdateConfigs = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 0", resultAfterUpdateConfigs.get().getConfigs().size() == 0);
+        Assert.assertTrue("FAIL configs count is not equal to 0",
+                resultAfterUpdateConfigs.get().getConfigs().size() == 0);
 
         // deregister
         configStoreDao.unregister(configName);
-        Optional<ConfigSchema<?>> schemaAfterDeregister = configStoreDao.getConfigSchema(configName);
+        Optional<ConfigDefinition> schemaAfterDeregister = configStoreDao.getConfigDefinition(configName);
         Optional<ConfigData> configAfterDeregister = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL TO deregister schema", schemaAfterDeregister.isEmpty());
         Assert.assertTrue("FAIL TO deregister config", configAfterDeregister.isEmpty());

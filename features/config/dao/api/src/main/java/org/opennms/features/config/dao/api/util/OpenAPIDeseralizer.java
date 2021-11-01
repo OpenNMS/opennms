@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -24,27 +24,23 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
+package org.opennms.features.config.dao.api.util;
 
-package liquibase.ext2.cm.change.converter;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.OpenAPIV3Parser;
 
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.service.api.JsonAsString;
+import java.io.IOException;
 
-import java.util.Objects;
-
-/** Converts a xml configuration file into json format to be stored in the cm manger. */
-public class XmlToJson {
-
-    final private JsonAsString json;
-
-    public XmlToJson(final String xml, ConfigDefinition xmlConfigDefinition) throws Exception {
-        Objects.requireNonNull(xml);
-        Objects.requireNonNull(xmlConfigDefinition);
-        json = new JsonAsString(xmlConfigDefinition.getConverter().xmlToJson(xml));
-    }
-
-    public JsonAsString getJson() {
-       return json;
+public class OpenAPIDeseralizer extends JsonDeserializer<OpenAPI> {
+    @Override
+    public OpenAPI deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        String json = jsonParser.getCodec().readTree(jsonParser).toString();
+        OpenAPI tmp = new OpenAPIV3Parser().readContents(json, null, null).getOpenAPI();
+        return tmp;
     }
 }

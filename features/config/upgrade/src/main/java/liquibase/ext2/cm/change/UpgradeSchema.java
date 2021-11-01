@@ -28,10 +28,6 @@
 
 package liquibase.ext2.cm.change;
 
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
@@ -39,6 +35,10 @@ import liquibase.exception.ValidationErrors;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
+import org.opennms.features.config.dao.impl.XmlConfigDefinition;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Used in changelog.xml */
 @DatabaseChange(name = "importSchemaFromXsd", description = "Imports a schema from a xsd file.", priority = ChangeMetaData.PRIORITY_DATABASE)
@@ -81,7 +81,9 @@ public class UpgradeSchema extends AbstractSchemaChange {
     }
 
     protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
-        return () -> m.upgradeSchema(id, xsdFileName, this.rootElement);
+        return () -> {
+            m.changeConfigDefinition(id, new XmlConfigDefinition(id, xsdFileName, rootElement));
+        };
     }
 
     @Override
@@ -143,5 +145,3 @@ public class UpgradeSchema extends AbstractSchemaChange {
     }
 
 }
-
-
