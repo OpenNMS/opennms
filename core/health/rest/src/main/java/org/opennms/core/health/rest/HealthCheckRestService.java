@@ -44,9 +44,9 @@ public interface HealthCheckRestService {
     @GET
     @Path("probe")
     @Produces(MediaType.TEXT_PLAIN)
-    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("0") int maxAgeMs, @Context final UriInfo uriInfo);
+    Response probeHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("0") int maxAgeMs, @Context final UriInfo uriInfo);
+    Response getHealth(@QueryParam("t") @DefaultValue("5000") int timeoutInMs, @QueryParam("maxAgeMs") @DefaultValue("90000") int maxAgeMs, @Context final UriInfo uriInfo);
 }

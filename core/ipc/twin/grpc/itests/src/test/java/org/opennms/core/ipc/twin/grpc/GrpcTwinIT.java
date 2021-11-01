@@ -28,43 +28,58 @@
 
 package org.opennms.core.ipc.twin.grpc;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.core.grpc.common.GrpcIpcServer;
+import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GrpcTwinIT {
+public class GrpcTwinIT extends AbstractTwinBrokerIT {
 
-    protected GrpcTwinSubscriber twinSubscriber;
-    protected GrpcTwinPublisher twinPublisher;
-    protected Set<MinionInfoBean> minionInfoBeanSet = new HashSet<>();
+    protected GrpcTwinSubscriber subscriber;
+    protected GrpcTwinPublisher publisher;
+    protected ConfigurationAdmin configAdmin;
+    protected int port;
 
+    @Override
+    protected TwinPublisher createPublisher() throws IOException {
+        GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
+        this.publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
+        publisher.start();
+        return publisher;
+    }
+
+    @Override
+    protected TwinSubscriber createSubscriber(MinionIdentity identity) throws Exception {
+        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
+        subscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
+        subscriber.start();
+        return subscriber;
+    }
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         Hashtable<String, Object> serverConfig = new Hashtable<>();
-        int port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
+        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
         serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
         serverConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
         Hashtable<String, Object> clientConfig = new Hashtable<>();
@@ -72,46 +87,29 @@ public class GrpcTwinIT {
 
         clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
         clientConfig.put(GrpcIpcUtils.TLS_ENABLED, false);
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
+        configAdmin = mock(ConfigurationAdmin.class, Mockito.RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
+        super.setup();
+    }
 
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
-        twinSubscriber.start();
-        twinPublisher = new GrpcTwinPublisher(configAdmin, port);
-        twinPublisher.start();
+    public void setupAbstract() throws Exception {
+        super.setup();
     }
 
     @Test
-    public void testGrpcTwinConsumption() throws IOException {
-        String key = "minion-info-bean";
-        TwinPublisher.Session<MinionInfoBean> session = twinPublisher.register(key, MinionInfoBean.class);
-        session.publish(new MinionInfoBean(5, "Twin-Node"));
-        twinSubscriber.subscribe(key, MinionInfoBean.class, new TwinConsumer());
-        await().atMost(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> minionInfoBeanSet, Matchers.hasSize(1));
-        minionInfoBeanSet.clear();
-        // Send update to MinionInfoBean
-        String updatedLabel = "Twin-Node-Update-Label";
-        session.publish(new MinionInfoBean(5, updatedLabel));
-        await().atMost(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> minionInfoBeanSet, Matchers.hasSize(1));
-        MinionInfoBean minionInfoBean = minionInfoBeanSet.iterator().next();
-        Assert.assertThat(minionInfoBean.getNodeLabel(), Matchers.equalTo(updatedLabel));
+    public void testPublisherRestart() throws Exception {
+        // It takes a while to initialized RPC/Sink streams. Sleep allows that.
+        Thread.sleep(5000);
+        super.testPublisherRestart();
     }
 
     @After
-    public void destroy() {
-        twinSubscriber.shutdown();
-        twinPublisher.shutdown();
+    public void destroy() throws IOException {
+        subscriber.close();
+        publisher.close();
     }
 
-    private class TwinConsumer implements Consumer<MinionInfoBean> {
-
-        @Override
-        public void accept(MinionInfoBean minionInfoBean) {
-            minionInfoBeanSet.add(minionInfoBean);
-        }
-    }
 
     static int getAvailablePort(final AtomicInteger current, final int max) {
         while (current.get() < max) {

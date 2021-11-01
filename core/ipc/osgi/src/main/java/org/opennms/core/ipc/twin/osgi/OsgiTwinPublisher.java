@@ -47,13 +47,22 @@ public class OsgiTwinPublisher implements TwinPublisher {
         ;
     }
 
-    @Override
-    public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
-        TwinPublisher twinPublisher = blockingServiceLookup.lookup(TwinPublisher.class, "(!(strategy=delegate))");
+    private TwinPublisher getDelegate() throws IOException {
+        final TwinPublisher twinPublisher = this.blockingServiceLookup.lookup(TwinPublisher.class, "(!(strategy=delegate))");
         if (twinPublisher != null) {
-            return twinPublisher.register(key, clazz, location);
+            return twinPublisher;
         } else {
             throw new IOException("Only delegate publisher is registered. No real publisher available");
         }
+    }
+
+    @Override
+    public <T> Session<T> register(String key, Class<T> clazz, String location) throws IOException {
+        return this.getDelegate().register(key, clazz, location);
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.getDelegate().close();
     }
 }

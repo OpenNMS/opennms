@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * At boot up, a module that lives on Minion issues an RPC from Minion to OpenNMS to get an object.
  * Subsequent updates of the object will come as reverse sink messages from OpenNMS to Minion
  */
-public interface TwinSubscriber {
+public interface TwinSubscriber extends Closeable {
 
     /**
      * @param key      Unique key for the object.
