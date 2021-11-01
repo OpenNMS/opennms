@@ -18,8 +18,8 @@ public class InfoRestIT extends AbstractRestIT {
                 .then().log().status()
                 .assertThat()
                 .statusCode(200)
-                .body("packageName", is("opennms"))
-                .body("packageDescription", is("OpenNMS"))
+                .body("packageName", is("meridian"))
+                .body("packageDescription", is("OpenNMS Meridian"))
                 .body("services.Eventd", is("running"))
                 .body("services.Pollerd", is("running"));
     }
