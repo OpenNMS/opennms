@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.collectors;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
@@ -94,7 +95,10 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return new RrdRepository();
+        final RrdRepository rrdRepository = new RrdRepository();
+        // FIXME: HACKZ
+        rrdRepository.setRrdBaseDir(new File("/opt/opennms/share/rrd/snmp"));
+        return rrdRepository;
     }
 
     @Override
