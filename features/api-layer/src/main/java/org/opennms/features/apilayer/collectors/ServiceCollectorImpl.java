@@ -94,7 +94,7 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return null;
+        return new RrdRepository();
     }
 
     @Override
