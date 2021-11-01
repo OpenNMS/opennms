@@ -92,7 +92,7 @@ public class XmlConfigDefinition extends ConfigDefinition {
             String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
             XmlSchemaCollection collection = xsdConverter.convertToSchemaCollection(xsdStr);
             ConfigItem item = xsdConverter.convert(collection, this.getTopLevelElement());
-            this.schema = converter.convert(item, "/rest/cm");
+            this.schema = converter.convert(item, "/rest/cm/" + this.getConfigName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
