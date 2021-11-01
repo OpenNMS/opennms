@@ -1,0 +1,386 @@
+
+= SnmpMonitor
+
+The SNMP monitor provides a common platform to monitor states and results from SNMP agents.
+This monitor has two basic operation modes:
+
+* Test the response value of one specific OID (scalar object identifier)
+* Test multiple values in a whole table
+
+To decide which mode to use, use the `walk` and `match-all` parameters.
+
+The _Operating mode selection_ and _Monitor specific parameters for the SnmpMonitor_ tables below provide more information about these operation modes.
+
+.Operating mode selection
+[options="header"]
+[cols="1,1,3"]
+|===
+| walk
+| match-all
+| Operating mode
+
+.3+|true
+
+| true
+| tabular, all values must match
+
+| false
+| tabular, any value must match
+
+| count
+| specifies that the value of at least minimum and at most maximum objects encountered in
+
+.3+|false
+
+| true
+| scalar
+
+| false
+| scalar
+
+| count
+| tabular, between minimum and maximum values must match
+|===
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.SnmpMonitor`
+|===
+
+When the monitor is configured to persist the response time, it counts the total amount of time spent until it obtains a successful one, including the retries.
+It stores the entire poll time, not just the time spent during the last successful attempt.
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the SnmpMonitor
+[options="header"]
+[cols="1,3a,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| hex
+| Specifies that the value monitored should be compared against its hexadecimal representation.
+Useful when the monitored value is a string containing non-printable characters.
+| false
+
+| match-all
+| Can be set to:
+
+* `count`: specifies that the value of at least minimum and at most maximum objects encountered in
+the walk must match the criteria specified by `operand` and `operator`.
+* `true` (and `walk` is set to `true`): specifies that the value of every object encountered in
+the walk must match the criteria specified by the `operand` and `operator` parameters.
+* `false` (and `walk` is set to `true`): specifies that the value of any object encountered in
+the walk must match the criteria specified by the `operand` and `operator` parameters.
+| true
+
+| maximum
+| Valid only when match-all is set to `count`, otherwise ignored.
+Use in conjunction with the `minimum` parameter.
+Specifies that the value of at most `maximum` objects
+encountered in the walk must meet the criteria specified by the `operand` and `operator` parameters.
+| 0
+
+| minimum
+| Valid only when match-all is set to `count`, otherwise ignored.
+Use in conjunction with the `maximum` parameter.
+Specifies that the value of at least `minimum` objects encountered in the walk must meet the criteria the `operand` and `operator` parameters specify.
+| 0
+
+| oid
+| The object identifier of the MIB object to monitor.
+If no other parameters are present, the monitor asserts that the agent's response for this object must include a valid value (as opposed to an error, no-such-name, or end-of-view condition) that is non-null.
+| .1.3.6.1.2.1.1.2.0 (SNMPv2-MIB::SysObjectID)
+
+| operand
+| The value to compare against the observed value of the monitored object.
+Note: Comparison will always succeed if either the `operand` or `operator` parameter isn't set and the monitored value is non-null.
+| n/a
+
+| operator
+| The operator to use for comparing the monitored object against the operand parameter.
+Must be one of the following symbolic operators:
+
+* `&amp;lt;`: Less than (<).
+Both operand and observed object value must be numeric.
+* `&amp;gt;`: Greater than (>).
+Both operand and observed object value must be numeric.
+* `&amp;lt;=`: Less than or equal to (<=).
+Both operand and observed object value must be numeric.
+* `&amp;gt;=`: Greater than or equal to (>=).
+Both operand and observed object value must be numeric.
+* `=`: Equal to.
+Applied in numeric context if both operand and observed object value are numeric, otherwise in string context as a case-sensitive exact match.
+* `!=`: Not equal to.
+Applied in numeric context if both operand and observed object value are numeric, otherwise in string context as a case-sensitive exact non-match.
+* `~`:  Regular expression match.
+Always applied in string context.
+
+Note: Comparison will always succeed if either the operand or operator parameter isn't set and the monitored value is non-null.
+Keep in mind that you need to escape all < and > characters as XML entities (`&amp;lt;` and `&amp;gt;` respectively).
+| n/a
+
+| port
+| Destination port where the SNMP requests are sent.
+| from `snmp-config.xml`
+
+| reason-template
+| A user-provided template used for the monitor's reason code if the service is unavailable.
+Defaults to a reasonable value if unset.
+See below for an explanation of the possible template parameters.
+| depends on operation mode
+
+| retries
+| *Deprecated* Same as retry.
+Parameter retry takes precedence if both are set.
+| from `snmp-config.xml`
+
+| walk
+| `false`: Sets the monitor to poll for a scalar object unless the match-all parameter is set to `count`, in which case the match-all parameter takes precedence. +
+`true`: Sets the monitor to poll for a tabular object where the match-all parameter defines how the tabular object's values must match the criteria defined by the operator and operand parameters.
+See also the match-all, minimum, and maximum parameters.
+| false
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Variables that can be used in the reason-template parameter
+[options="header"]
+[cols="1,3"]
+|===
+| Variable
+| Description
+
+| $\{hex}
+| Value of the `hex` parameter.
+
+| $\{ipaddr}
+| IP address polled.
+
+| $\{matchall}
+| Value of the `match-all` parameter.
+
+| $\{matchcount}
+| When `match-all` is set to `count`, contains the number of matching instances encountered.
+
+| $\{maximum}
+| Value of the `maximum` parameter.
+
+| $\{minimum}
+| Value of the `minimum` paramater.
+
+| $\{observedvalue}
+| Polled value that made the monitor succeed or fail.
+
+| $\{oid}
+| Value of the `oid` parameter.
+
+| $\{operand}
+| Value of the `operand` parameter.
+
+| $\{operator}
+| Value of the `operator` parameter.
+
+| $\{port}
+| Value of the `port` parameter.
+
+| $\{retry}
+| Value of the `retry` parameter.
+
+| $\{timeout}
+| Value of the `timeout` parameter.
+
+| $\{walk}
+| Value of the `walk` parameter.
+|===
+
+== Example: monitoring a scalar object
+
+As a working example, we want to monitor the thermal system fan status which is provided as a scalar object ID.
+
+ cpqHeThermalSystemFanStatus .1.3.6.1.4.1.232.6.2.6.4.0
+
+The manufacturer MIB gives the following information:
+
+
+.Description of the cpqHeThermalSystemFanStatus from https://www.circitor.fr/Mibs/Mib/C/CPQHLTH-MIB.mib[CPQHLTH-MIB]
+[source, snmp-mib]
+----
+SYNTAX 	INTEGER  {
+    other    (1),
+    ok       (2),
+    degraded (3),
+    failed   (4)
+}
+ACCESS 	read-only
+DESCRIPTION
+"The status of the fan(s) in the system.
+
+This value will be one of the following:
+other(1)
+Fan status detection is not supported by this system or driver.
+
+ok(2)
+All fans are operating properly.
+
+degraded(3)
+A non-required fan is not operating properly.
+
+failed(4)
+A required fan is not operating properly.
+
+If the cpqHeThermalDegradedAction is set to shutdown(3) the
+system will be shutdown if the failed(4) condition occurs."
+----
+
+The SnmpMonitor is configured to test if the fan status returns `ok(2)`.
+If so, the service is marked as up.
+Any other value indicates a problem with the thermal fan status and marks the service down.
+
+.Example SnmpMonitor as HP InsightManager fan monitor in poller-configuration.xml
+[source, xml]
+----
+<service name="HP-Insight-Fan-System" interval="300000" user-defined="false" status="on">
+    <parameter key="oid" value=".1.3.6.1.4.1.232.6.2.6.4.0"/><1>
+    <parameter key="operator" value="="/><2>
+    <parameter key="operand" value="2"/><3>
+    <parameter key="reason-template" value="System fan status is not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), degraded(3), failed(4)"/><4>
+</service>
+
+<monitor service="HP-Insight-Fan-System" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+----
+<1> Scalar object ID to test.
+<2> Operator for testing the response value.
+<3> Integer 2 as operand for the test.
+<4> Encode MIB status in the reason code to give more detailed information if the service goes down.
+
+== Example: test SNMP table with all matching values
+
+The second mode shows how to monitor the values of a whole SNMP table.
+As a practical use case, the status of a set of physical drives is monitored.
+This example configuration shows the status monitoring from the http://www.circitor.fr/Mibs/Html/C/CPQIDA-MIB.php[CPQIDA-MIB].
+
+We use the physical drive status given by the following tabular OID as a scalar object ID:
+
+`cpqDaPhyDrvStatus .1.3.6.1.4.1.232.3.2.5.1.1.6`
+
+.Description of the cpqDaPhyDrvStatus object ID from CPQIDA-MIB
+[source, snmp-mib]
+----
+SYNTAX 	INTEGER  {
+    other             (1),
+    ok                (2),
+    failed            (3),
+    predictiveFailure (4)
+}
+ACCESS 	read-only
+DESCRIPTION
+Physical Drive Status.
+This shows the status of the physical drive.
+The following values are valid for the physical drive status:
+
+other (1)
+ Indicates that the instrument agent does not recognize
+ the drive.  You may need to upgrade your instrument agent
+ and/or driver software.
+
+ok (2)
+ Indicates the drive is functioning properly.
+
+failed (3)
+ Indicates that the drive is no longer operating and
+ should be replaced.
+
+predictiveFailure(4)
+ Indicates that the drive has a predictive failure error and
+ should be replaced.
+----
+
+The configuration in our monitor tests all physical drives for status `ok(2)`.
+
+.Example SnmpMonitor as HP Insight physical drive monitor in poller-configuration.xml
+[source, xml]
+----
+<service name="HP-Insight-Drive-Physical" interval="300000" user-defined="false" status="on">
+    <parameter key="oid" value=".1.3.6.1.4.1.232.3.2.5.1.1.6"/><1>
+    <parameter key="walk" value="true"/><2>
+    <parameter key="operator" value="="/><3>
+    <parameter key="operand" value="2"/><4>
+    <parameter key="match-all" value="true"/><5>
+    <parameter key="reason-template" value="One or more physical drives are not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), failed(3), predictiveFailure(4), erasing(5), eraseDone(6), eraseQueued(7)"/><6>
+</service>
+
+<monitor service="HP-Insight-Drive-Physical" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+----
+<1> OID for SNMP table with all physical drive states.
+<2> Enable walk mode to test every entry in the table against the test criteria.
+<3> Test operator for integer.
+<4> Integer 2 as operand for the test.
+<5> Test in walk mode has to pass for every entry in the table.
+<6> Encode MIB status in the reason code to give more detailed information if the service goes down.
+
+== Example: test SNMP table with some matching values
+
+This example shows how to use the SnmpMonitor to test if the number of static routes are within a given boundary.
+The service is marked as up if at least three and at maximum of 10 static routes are set on a network device.
+This status can be monitored by polling the table ipRouteProto from the http://www.ietf.org/rfc/rfc1213.txt[RFC1213-MIB2].
+
+`ipRouteProto 1.3.6.1.2.1.4.21.1.9`
+
+The MIB description provides the following information:
+
+[source, snmp-mib]
+----
+SYNTAX 	INTEGER  {
+    other(1),
+    local(2),
+    netmgmt(3),
+    icmp(4),
+    egp(5),
+    ggp(6),
+    hello(7),
+    rip(8),
+    is-is(9),
+    es-is(10),
+    ciscoIgrp(11),
+    bbnSpfIgp(12),
+    ospf(13),
+    bgp(14)}
+
+ACCESS 	read-only
+DESCRIPTION
+"The routing mechanism via which this route was learned.
+Inclusion of values for gateway routing protocols is not
+intended to imply that hosts should support those protocols."
+----
+
+To monitor only local routes, apply the test only on entries in the ipRouteProto table with value `2`.
+The number of entries in the whole ipRouteProto table has to be counted and the boundaries on the number has to be applied.
+
+.Example SnmpMonitor used to test if the number of local static route entries are between 3 or 10.
+[source, xml]
+----
+<service name="All-Static-Routes" interval="300000" user-defined="false" status="on">
+ <parameter key="oid" value=".1.3.6.1.2.1.4.21.1.9" /><1>
+ <parameter key="walk" value="true" /><2>
+ <parameter key="operator" value="=" /><3>
+ <parameter key="operand" value="2" /><4>
+ <parameter key="match-all" value="count" /><5>
+ <parameter key="minimum" value="3" /><6>
+ <parameter key="maximum" value="10" /><7>
+</service>
+
+<monitor service="All-Static-Routes" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+----
+<1> OID for SNMP table ipRouteProto.
+<2> Enable walk mode to test every entry in the table against the test criteria.
+<3> Test operator for integer.
+<4> Integer 2 as operand for testing local route entries.
+<5> Test in walk mode is set to `count` to get the number of entries in the table regarding operator and operand.
+<6> Lower count boundary set to 3.
+<7> High count boundary is set to 10.

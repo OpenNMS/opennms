@@ -46,7 +46,7 @@ See `dstAddress` for more details.
 
 | exporterFilter
 | The exporter of the flow must match this criteria.
-This parameter supports all capabilities of the https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API].
+This parameter supports all capabilities of the {page-component-title} xref:reference:configuration/filters/filters.adoc[Filters API].
 
 | protocol
 | The IP protocol of the flow to match.

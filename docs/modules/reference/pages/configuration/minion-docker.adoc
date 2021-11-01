@@ -8,7 +8,7 @@
 | Argument | Description
 | `-h`     | Display help with available arguments.
 | `-c`     | Start Minion and use environment credentials to register Minion on {page-component-title}.
-| `-s`     | One-time command to initialze an encrypted keystore file with credentials in `/keystory/scv.jce`.
+| `-s`     | One-time command to initialize an encrypted keystore file with credentials in `/keystore/scv.jce`.
 | `-f`     | Initialize and start Minion in foreground.
 |===
 

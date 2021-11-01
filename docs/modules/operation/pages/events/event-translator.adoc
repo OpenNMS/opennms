@@ -8,7 +8,7 @@ These transformations can come from the result of SQL queries, regular expressio
 
 == Event Translator Service
 
-As with most OpenNMS daemons, the EventTranslator has a companion configuration "factory" class that marshals its configuration from an XML-formated file.
+As with most OpenNMS daemons, the EventTranslator has a companion configuration "factory" class that marshals its configuration from an XML-formatted file.
 The _translator-configuration.xml_ file contains elements and attributes that create/change the fields or parameters of one event and publish a new event with these changes.
 
 === Example 1: associate traps with a node other than the SNMP manager

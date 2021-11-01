@@ -1,0 +1,158 @@
+
+= Resource Management Tool (resourcecli)
+
+The resourcecli tool simplifies the process of listing or manually deleting collected data (resources) of a {page-component-title} instance.
+
+With RRDTool- or JRobin-based storage, this process is easy: traverse the `$\{OPENNMS_HOME}/share/rrd` directory and its subdirectories.
+The `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
+
+Newts-based storage stores and indexes the data remotely on a Cassandra cluster.
+In this case, you must query the cluster for available resources.
+To delete resources you must gather and remove the data and all generated indexes.
+
+The resourcecli tool works with Newts-based storage as well as with RRDTool and JRobin files.
+
+== Use
+The utility is installed by default and its wrapper script is located in the `$\{OPENNMS_HOME}/bin` directory.
+
+[source, console]
+----
+$ cd /path/to/opennms/bin
+$ ./resourcecli
+----
+
+TIP: When invoked without parameters, the usage and help information is printed.
+
+The resourcecli tool uses subcommands for the different tasks.
+Each of these subcommands provides different options and parameters.
+The command line tool accepts the following subcommands.
+
+[options="header"]
+[cols="1,3"]
+|===
+| Subcommand
+| Description
+
+| list
+| Queries a {page-component-title} server for available resources.
+
+| show
+| Displays details for a given resource.
+
+| delete
+| Deletes a given resource and all of its child resources.
+|===
+
+The following global options are available in each of the subcommands of the tool:
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| --help
+| Displays help and exits.
+| false
+
+| --username VALUE
+| Username to connect to {page-component-title}.
+| admin
+
+| --password VALUE
+| Password to connect to {page-component-title}.
+| admin
+
+| --url VALUE
+| URL of the {page-component-title} instance to connect to.
+| \http://localhost:8980/opennms
+|===
+
+== Subcommand: list
+
+This subcommand queries a {page-component-title} instance for its available resources.
+The following example queries the local {page-component-title} instance with the credentials `admin/secret`.
+
+[source, console]
+----
+$ ./resourcecli --username admin --password secret list
+node[72]
+  node[72].nodeSnmp[]
+  node[72].responseTime[192.168.0.2]
+node[70]
+  node[70].nodeSnmp[]
+  node[70].interfaceSnmp[bridge0]
+  node[70].interfaceSnmp[bridge1]
+  node[70].interfaceSnmp[vlan0-002500fe1bf3]
+	node[70].responseTime[50.16.15.18]
+  node[70].responseTime[192.168.0.1]
+
+<output omitted>
+----
+
+== Subcommand: show
+
+This subcommand shows details for a given resource.
+The following example displays details for the resource identified by resourceId `node[70]`.
+
+[source, console]
+----
+$ ./resourcecli --username admin --password secret show node[70]
+ID:         node[70]
+Name:       70
+Label:      MyRouter
+Type:       Node
+Link:       element/node.jsp?node=70
+Parent ID:  null
+Children:
+  node[70].nodeSnmp[]
+  node[70].interfaceSnmp[bridge0]
+  node[70].interfaceSnmp[bridge1]
+  node[70].interfaceSnmp[vlan0-002500fe1bf3]
+	node[70].responseTime[50.16.15.18]
+  node[70].responseTime[192.168.0.1]
+Attributes:
+  External:
+  Graphs:
+  Strings:
+----
+
+The following options are available for the _show_ subcommand:
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Option/Argument
+|Description
+| Default
+
+| <resource>
+| The resourceId of the resource to display.
+| -
+|===
+
+== Subcommand: delete
+
+Use this subcommand to delete a given resource and its child resources.
+The following example deletes the resource identified by resourceId `node[70]`.
+When successful, this command does not generate any output.
+
+[source, console]
+----
+$ ./resourcecli --username admin --password secret delete node[70]
+----
+
+The following options are available for the _delete_ subcommand:
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Option/Argument
+| Description
+| Default
+
+| <resource>
+| The resourceId of the resource to be deleted.
+| -
+|===

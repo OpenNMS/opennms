@@ -34,14 +34,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -58,6 +55,7 @@ import org.opennms.web.rest.support.CriteriaBehaviors;
 import org.opennms.web.rest.support.IpLikeCriteriaBehavior;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.v2.api.EventRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-@Path("events")
 @Transactional
-public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> {
+public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,EventDTO,SearchBean,Integer,Integer> implements EventRestApi {
 
     @Autowired
     private EventDao m_dao;
@@ -169,6 +166,31 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
         return getDao().get(id);
     }
 
+    @Override
+    public Response get(UriInfo uriInfo, SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response get(UriInfo uriInfo, Integer id) {
+        return super.get(uriInfo, id);
+    }
+
+    @Override
+    public Response getCount(UriInfo uriInfo, SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    public Response getProperties(String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    public Response getPropertyValues(String propertyId, String query, Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
     /**
      * NOTE: This method defines an unused parameter of 0 length in the @Path annotation
      * in order to get CXF to prioritize this method definition instead of the create method
@@ -181,9 +203,7 @@ public class EventRestService extends AbstractDaoRestServiceWithDTO<OnmsEvent,Ev
      * @param event the event to forward
      * @return a response containing "no content" (204) when the event was succesfully forwarded
      */
-    @POST
-    @Path("{tiebreaker: $}")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Override
     public Response create(Event event) {
         if (event.getTime() == null) event.setTime(new Date());
         if (event.getSource() == null) event.setSource("ReST");

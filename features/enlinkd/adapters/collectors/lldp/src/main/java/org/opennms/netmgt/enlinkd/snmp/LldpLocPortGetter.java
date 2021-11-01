@@ -54,7 +54,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        List<SnmpObjId> oids = new ArrayList<SnmpObjId>(3);
+        List<SnmpObjId> oids = new ArrayList<>(3);
         oids.add(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE));
         oids.add(SnmpObjId.get(LLDP_LOC_PORTID));
         oids.add(SnmpObjId.get(LLDP_LOC_DESCR)) ;
@@ -100,7 +100,7 @@ public class LldpLocPortGetter extends SnmpGetter {
         else
             lldplink.setLldpPortDescr("");
         if (val.get(0).isNumeric()
-                && val.get(0).toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue().intValue()) {
+                && val.get(0).toInt() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue()) {
             try {
                 lldplink.setLldpPortIfindex((val.get(1).toInt()));
             } catch (Exception e) {
