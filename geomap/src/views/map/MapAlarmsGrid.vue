@@ -51,6 +51,10 @@ let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
+let alarms = computed(() => {
+  return store.getters['mapModule/getAlarmsFromSelectedNodes'];
+})
+
 let rowData = ref(getAlarmsFromSelectedNodes());
 
 let gridApi = ref({});
@@ -68,7 +72,7 @@ function sizeToFit() {
 }
 
 watch(
-  () => interestedNodesID.value,
+  () => [interestedNodesID.value, alarms.value],
   () => {
     gridApi.setRowData(
       getAlarmsFromSelectedNodes()
