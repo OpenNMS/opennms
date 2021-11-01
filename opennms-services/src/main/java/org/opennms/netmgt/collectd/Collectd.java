@@ -1034,8 +1034,7 @@ public class Collectd extends AbstractServiceDaemon implements
             if (getServiceCollector(svcName) == null) {
                 try {
                     LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
-                    Class<?> cc = Class.forName(collector.getClassName());
-                    ServiceCollector sc = (ServiceCollector) cc.newInstance();
+                    ServiceCollector sc = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
                     sc.initialize();
                     setServiceCollector(svcName, sc);
                 } catch (Throwable t) {
