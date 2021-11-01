@@ -96,8 +96,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             });
         });
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        String outStr = configSwaggerConverter.convertOpenAPIToString(openapi,
-                request.getContextPath(), acceptType);
+        String outStr = configSwaggerConverter.convertOpenAPIToString(openapi, acceptType);
         return Response.ok(outStr).build();
     }
 
