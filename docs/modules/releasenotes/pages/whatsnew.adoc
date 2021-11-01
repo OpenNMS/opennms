@@ -75,6 +75,10 @@ Over time, all configuration information will be migrated to this new API.
 * A link:https://issues.opennms.org/browse/NMS-13313[`localhost` node is now monitored] and enumerates some useful OpenNMS metrics by default.
 * LLDP scanning in Enlinkd has link:https://issues.opennms.org/browse/NMS-13593[added support for `TIMETRA-LLDP-MIB`].
 
+=== GeoIP Provisioning Adapter
+The GeoIP Provisioning Adapter can be used to enrich node's asset data with location information.
+It also allows to utilize the GeoIP2 databases from Maxmind to lookup longitude/latitude values for a given IP address.
+
 === REST API
 
 * RTC data now includes link:https://issues.opennms.org/browse/NMS-13238[an additional boolean field] for service up/down status.
