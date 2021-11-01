@@ -107,6 +107,7 @@ import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
+import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
@@ -255,6 +256,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-config.xml", SnmpConfig.class, true, null);
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
+        addFile(Source.CONFIG, "snmp-metadata-adapter-configuration.xml", SnmpMetadataConfig.class, false, null);
         addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, false, null);
         addFile(Source.CONFIG, "search-actions.xml", Actions.class, false, null);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);

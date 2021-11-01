@@ -38,7 +38,7 @@ import java.util.List;
  * 
  * The util class maintains a dynamically created list of SnmpSyntax object that
  * is uses to lookup received messages. The typeId() method of each SnmpSyntax
- * object provides the comparision data for the received ASN.1 type.
+ * object provides the comparison data for the received ASN.1 type.
  * 
  * @see SnmpInt32
  * @see SnmpCounter32

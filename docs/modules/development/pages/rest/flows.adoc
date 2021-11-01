@@ -111,7 +111,7 @@ NOTE: Make sure to URL encode the conversation value in your request.
 Both endpoints require one of `N` or `conversation` query parameters to be set and will return an error if neither or
 both are set.
 
-The `converstations/series` endpoint also supports:
+The `conversations/series` endpoint also supports:
 
 [options="header"]
 |===

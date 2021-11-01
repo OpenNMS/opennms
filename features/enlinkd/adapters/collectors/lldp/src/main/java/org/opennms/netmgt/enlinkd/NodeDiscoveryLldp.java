@@ -28,23 +28,21 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
-import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
-import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.*;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -64,12 +62,9 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     /**
      * Constructs a new SNMP collector for Lldp Node Discovery. 
      * The collection does not occur until the
-     * <code>run</code> method is invoked.
+     * <code>collect</code> method is invoked.
      * 
-     * @param EnhancedLinkd linkd
-     * 
-     * @param LinkableNode node
-     * 
+     *
      */
     public NodeDiscoveryLldp(
             final LldpTopologyService lldpTopologyService,
@@ -158,19 +153,57 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                      getNodeId(), e.getMessage());
             return;
         }
-        
-        
-        final LldpLocPortGetter lldpLocPort = 
-                new LldpLocPortGetter(peer,
-                                getLocationAwareSnmpClient(),
-                                getLocation(),getNodeId());
-        for (LldpLink link: links) {
-            m_lldpTopologyService.store(getNodeId(),lldpLocPort.getLldpLink(link));
+        if (links.size() == 0) {
+            LOG.info("run: no remote table entry found. Try to walk TimeTetra-LLDP-MIB");
+            List<TimeTetraLldpLink> ttlinks = new ArrayList<>();
+            TimeTetraLldpRemTableTracker timeTetraLldpRemTableTracker = new TimeTetraLldpRemTableTracker() {
+               @Override
+                public void processLldpRemRow(LldpRemRow row) {
+                    ttlinks.add(row.getLldpLink());
+                }
+            };
+
+            try {
+                getLocationAwareSnmpClient().walk(peer,
+                                timeTetraLldpRemTableTracker)
+                        .withDescription("timeTetraLldpRemTable")
+                        .withLocation(getLocation())
+                        .execute()
+                        .get();
+            } catch (ExecutionException e) {
+                LOG.debug("run: node [{}]: ExecutionException: {}",
+                        getNodeId(), e.getMessage());
+                return;
+            } catch (final InterruptedException e) {
+                LOG.debug("run: node [{}]: InterruptedException: {}",
+                        getNodeId(), e.getMessage());
+                return;
+            }
+            LOG.info("run: {} remote table entry found walking TIMETETRA-LLDP-MIB", ttlinks.size());
+            storeTimeTetraLldpLinks(ttlinks, new TimeTetraLldpLocPortGetter(peer,
+                    getLocationAwareSnmpClient(),
+                    getLocation(), getNodeId()));
+        } else {
+            LOG.info("run: {} remote table entry found walking LLDP-MIB", links.size());
+            storeLldpLinks(links,
+                    new LldpLocPortGetter(peer,
+                            getLocationAwareSnmpClient(),
+                            getLocation(), getNodeId()));
         }
-        
         m_lldpTopologyService.reconcile(getNodeId(),now);
     }
 
+    private void storeTimeTetraLldpLinks(List<TimeTetraLldpLink> links, final TimeTetraLldpLocPortGetter timeTetraLldpLocPortGetter) {
+        for (TimeTetraLldpLink link : links) {
+            m_lldpTopologyService.store(getNodeId(), timeTetraLldpLocPortGetter.getLldpLink(link));
+        }
+    }
+
+    private void storeLldpLinks(List<LldpLink> links, final LldpLocPortGetter lldpLocPortGetter) {
+        for (LldpLink link : links) {
+            m_lldpTopologyService.store(getNodeId(), lldpLocPortGetter.getLldpLink(link));
+        }
+    }
 	@Override
 	public String getName() {
 		return "NodeDiscoveryLldp";

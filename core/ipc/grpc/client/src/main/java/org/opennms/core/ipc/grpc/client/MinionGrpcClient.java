@@ -122,7 +122,7 @@ import io.opentracing.util.GlobalTracer;
 public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MinionGrpcClient.class);
-    private static final long SINK_BLOCKING_TIMEOUT = 3000;
+    private static final long SINK_BLOCKING_TIMEOUT = 1000;
     private static final int SINK_BLOCKING_THREAD_POOL_SIZE = 100;
     private ManagedChannel channel;
     private OpenNMSIpcGrpc.OpenNMSIpcStub asyncStub;
