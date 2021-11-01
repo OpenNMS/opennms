@@ -52,9 +52,12 @@ import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.exception.ValidationErrors;
+import liquibase.ext2.cm.change.converter.PropertiesToJson;
+import liquibase.ext2.cm.change.converter.XmlToJson;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
+import liquibase.util.file.FilenameUtils;
 
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
@@ -90,6 +93,7 @@ public class ImportConfiguration extends AbstractCmChange {
                     opennmsHome, this.filePath, this.filePath));
         }
         checkArchiveDir(validationErrors);
+        checkFileType(validationErrors);
         return validationErrors;
     }
 
@@ -111,6 +115,16 @@ public class ImportConfiguration extends AbstractCmChange {
         }
     }
 
+    void checkFileType(ValidationErrors validationErrors) {
+
+        if(this.filePath == null) return; // nothing to do
+
+        String fileType = FilenameUtils.getExtension(this.filePath);
+        if (!"xml".equalsIgnoreCase(fileType) && !"cfg".equalsIgnoreCase(fileType)) {
+            validationErrors.addError(String.format("Unknown file type: '%s'", fileType));
+        }
+    }
+
     @Override
     public String getConfirmationMessage() {
         return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, this.configId, this.schemaId);
@@ -123,8 +137,16 @@ public class ImportConfiguration extends AbstractCmChange {
                     LOG.info("Importing configuration from {} with id={} for schema={}", this.filePath, this.configId, this.schemaId);
                     try {
                         Optional<ConfigSchema<?>> configSchema = m.getRegisteredSchema(this.schemaId);
-                        String xmlStr = asString(this.configResource);
-                        JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
+
+                        String fileType = FilenameUtils.getExtension(this.filePath);
+                        JsonAsString configObject;
+                        if("xml".equalsIgnoreCase(fileType)) {
+                            configObject = new XmlToJson(asString(this.configResource), configSchema.get()).getJson();
+                        } else if("cfg".equalsIgnoreCase(fileType)) {
+                            configObject = new PropertiesToJson(this.configResource.getInputStream()).getJson();
+                        } else {
+                            throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
+                        }
                         m.registerConfiguration(this.schemaId, this.configId, configObject);
                         LOG.info("Configuration with id={} imported.", this.configId);
                         if(etcFile != null) {

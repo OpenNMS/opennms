@@ -29,12 +29,14 @@
 package org.opennms.features.config.dao.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.bind.UnmarshalException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -47,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -88,7 +91,33 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException {
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        Map<String, ConfigSchema<?>> output = new HashMap<>();
+        jsonStore.enumerateContext(CONTEXT_SCHEMA).forEach((key, value)->{
+            //TODO: START to be remove after PE-118
+            JSONObject json = new JSONObject(value);
+            String className = (String) json.get("converterClass");
+            Class<?> converterClass = null;
+            try {
+                converterClass = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Invalid schema for configName: " + key);
+            }
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
+            ConfigSchema<?> schema = null;
+            try {
+                schema = mapper.readValue(value, javaType);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            //TODO: END
+            output.put(key, schema);
+        });
+        return output;
+    }
+
+    @Override
+    public Optional<ConfigSchema<?>> getConfigSchema(String configName) {
         Optional<String> jsonStr = jsonStore.get(configName, CONTEXT_SCHEMA);
         if (jsonStr.isEmpty()) {
             return Optional.empty();
@@ -102,7 +131,13 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             throw new IllegalArgumentException("Invalid schema for configName: " + configName);
         }
         JavaType javaType = mapper.getTypeFactory().constructParametricType(ConfigSchema.class, converterClass);
-        ConfigSchema<?> schema = mapper.readValue(jsonStr.get(), javaType);
+        ConfigSchema<?> schema = null;
+        try {
+            schema = mapper.readValue(jsonStr.get(), javaType);
+        } catch (JsonProcessingException e) {
+            // This should not happen since we only write valid json into the database
+            throw new RuntimeException(e);
+        }
         return Optional.ofNullable(schema);
     }
 

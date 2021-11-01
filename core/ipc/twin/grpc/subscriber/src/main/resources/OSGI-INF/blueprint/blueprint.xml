@@ -8,10 +8,12 @@
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <cm:property-placeholder id="serverProperties" persistent-id="org.opennms.core.ipc.twin.grpc.subscriber"
+    <cm:property-placeholder id="serverProperties" persistent-id="org.opennms.core.ipc.grpc.client"
                              update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="port" value="8991"/>
+            <cm:property name="host" value="localhost"/>
+            <cm:property name="port" value="8990"/>
+            <cm:property name="tlsEnabled" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 

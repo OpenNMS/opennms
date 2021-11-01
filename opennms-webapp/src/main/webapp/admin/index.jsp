@@ -84,8 +84,8 @@
     {
         document.snmpConfig.action = "admin/snmpConfig?action=default";
         document.snmpConfig.submit();
-    }
-
+    } 
+     
     function networkConnection()
     {
         document.networkConnection.submit();
@@ -151,6 +151,7 @@
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+            <li><a href="ui/index.html/#/provisionDConfig">Configure Provisioning Requisitions</a></li>
             <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
         </ul>
       </div> <!-- card-body -->

@@ -36,7 +36,12 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.converter.SwaggerConverter;
+import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.rest.api.ConfigManagerRestService;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
@@ -78,6 +83,18 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             e.printStackTrace();
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    @Override
+    public Response getAllOpenApiSchema(String acceptType, HttpServletRequest request) throws JsonProcessingException {
+        Map<String, ConfigSchema<?>> schemas = configurationManagerService.getAllConfigSchema();
+        Map<String, ConfigItem> items = new HashMap<>();
+        schemas.forEach((key, schema) -> {
+            items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
+        });
+        ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
+        OpenAPI openapi = configSwaggerConverter.convert(request.getContextPath() + BASE_PATH, items);
+        return Response.ok(configSwaggerConverter.convertOpenAPIToString(openapi, acceptType)).build();
     }
 
     @Override

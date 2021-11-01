@@ -59,13 +59,15 @@ public interface ConfigStoreDao<CONFIG_DATATYPE> {
      */
     Optional<Set<String>> getConfigNames();
 
+    Map<String, ConfigSchema<?>> getAllConfigSchema();
+
     /**
      * get configs meta by configName
      *
      * @param configName
      * @return status
      */
-    Optional<ConfigSchema<?>> getConfigSchema(String configName) throws IOException;
+    Optional<ConfigSchema<?>> getConfigSchema(String configName);
 
     /**
      * update configs meta by configName

@@ -5,13 +5,17 @@
     <parent>
         <artifactId>org.opennms.core.ipc.twin</artifactId>
         <groupId>org.opennms.core.ipc</groupId>
-        <version>29.0.0-SNAPSHOT</version>
+        <version>30.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.twin</groupId>
     <artifactId>org.opennms.core.ipc.twin.common</artifactId>
     <name>OpenNMS :: Core :: IPC :: Twin :: Common</name>
     <packaging>bundle</packaging>
+    <properties>
+        <protobuf.source.dir>${project.basedir}/src/main</protobuf.source.dir>
+    </properties>
+
     <build>
         <!-- Enable below extension and plugin when you need to generate java source files from proto -->
 <!--                <extensions>
@@ -21,7 +25,50 @@
                         <version>1.6.2</version>
                     </extension>
                 </extensions>-->
+        <!-- Include core protos in the bundle as resources -->
+        <resources>
+            <resource>
+                <directory>${protobuf.source.dir}</directory>
+                <includes>
+                    <include>proto/twin-message.proto</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
+           <!-- &lt;!&ndash; Use Antrun plugin to generate sources with protoc &ndash;&gt;
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    &lt;!&ndash; Generate core protos &ndash;&gt;
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+
+            <!-- Add the generated sources to the build -->
+<!--            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${generated.sources.dir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -34,7 +81,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-<!--            <plugin>
+            <!--<plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>

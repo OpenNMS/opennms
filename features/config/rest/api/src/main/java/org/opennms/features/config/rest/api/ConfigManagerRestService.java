@@ -28,6 +28,8 @@
 
 package org.opennms.features.config.rest.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -57,6 +59,10 @@ public interface ConfigManagerRestService {
     @GET
     @Path("/schema/raw/{configName}")
     Response getRawSchema(@PathParam("configName") String configName);
+
+    @GET
+    @Path("/schema/all")
+    Response getAllOpenApiSchema(@HeaderParam("accept") String acceptType, @Context HttpServletRequest request) throws JsonProcessingException;
 
     /**
      * get filtered OpenApi schema

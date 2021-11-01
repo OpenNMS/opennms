@@ -8,12 +8,9 @@
     <xsd:element name="registerSchema">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
-            <xsd:attribute name="xsdFileName" type="xsd:string" use="required"/>
-            <xsd:attribute name="xsdFileHash" type="xsd:string" use="required"/>
-            <xsd:attribute name="rootElement" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="upgradeSchema">
+    <xsd:element name="importSchemaFromXsd">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required"/>
             <xsd:attribute name="xsdFileName" type="xsd:string" use="required"/>
@@ -21,6 +18,29 @@
             <xsd:attribute name="rootElement" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
+    <xsd:element name="changeSchema">
+        <xsd:complexType>
+            <xsd:choice maxOccurs="unbounded">
+                <xsd:element name="put" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        <xsd:attribute name="type" type="xsd:string" use="required"/>
+                        <xsd:attribute name="default" type="xsd:string" use="required"/>
+                        <xsd:attribute name="pattern" type="xsd:string"/>
+                        <xsd:attribute name="min" type="xsd:string"/>
+                        <xsd:attribute name="max" type="xsd:string"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="delete" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="importConfig">
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>

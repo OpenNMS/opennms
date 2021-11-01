@@ -78,7 +78,6 @@ public class ConfigSwaggerConverterTest {
         assertThat(api.getPaths().keySet(), contains("/svc", "/svc/{configId}"));
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Test
     public void canConvertXsd() throws IOException {
         final XmlSchemaCollection schemaCol = new XmlSchemaCollection();

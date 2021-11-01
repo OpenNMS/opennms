@@ -7,7 +7,7 @@
 import TabMenu from 'primevue/tabmenu';
 
 const TabMenuItem = [
-    { label: 'Requisition Definitions', to: '/provisionConfig' },
+    { label: 'Requisition Definitions', to: '/provisionDConfig' },
     { label: 'Thread Pools', to: '/threadPools' },
 ];
 </script>

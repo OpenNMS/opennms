@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.rest</artifactId>
-        <version>29.0.0-SNAPSHOT</version>
+        <version>30.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.rest</groupId>
@@ -168,5 +168,9 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.core.test-api</groupId>
+          <artifactId>org.opennms.core.test-api.db</artifactId>
+      </dependency>
   </dependencies>
 </project>

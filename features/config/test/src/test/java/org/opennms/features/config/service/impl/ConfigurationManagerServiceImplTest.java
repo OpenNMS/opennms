@@ -55,11 +55,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath*:/META-INF/opennms/applicationContext-config-service.xml",
@@ -90,10 +92,21 @@ public class ConfigurationManagerServiceImplTest {
     }
 
     @Test
-    public void testRegisterSchema() throws IOException {
+    public void testGetRegisterSchema() throws IOException {
         Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(CONFIG_NAME);
         Assert.assertTrue(CONFIG_NAME + " fail to register", configSchema.isPresent());
         Assert.assertTrue("Wrong converter", configSchema.get().getConverter() instanceof XmlConverter);
+    }
+
+    @Test
+    public void testRegisterExtraSchema() throws IOException, JAXBException {
+        String VACUUMD_CONFIG_NAME = "vacuumd";
+        configManagerService.registerSchema(VACUUMD_CONFIG_NAME, "vacuumd-configuration.xsd", "VacuumdConfiguration");
+        Optional<ConfigSchema<?>> configSchema = configManagerService.getRegisteredSchema(VACUUMD_CONFIG_NAME);
+        Assert.assertTrue(VACUUMD_CONFIG_NAME + " fail to register", configSchema.isPresent());
+
+        Map<String, ConfigSchema<?>> map = configManagerService.getAllConfigSchema();
+        Assert.assertArrayEquals("It should contain 2 schemas.", new String[]{CONFIG_NAME, VACUUMD_CONFIG_NAME}, map.keySet().toArray());
     }
 
     @Test

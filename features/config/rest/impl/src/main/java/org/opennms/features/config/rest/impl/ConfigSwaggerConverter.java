@@ -60,8 +60,6 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    private String prefix = "/";
-
     public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException{
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
@@ -104,19 +102,49 @@ public class ConfigSwaggerConverter {
         }
     }
 
-    public OpenAPI convert(ConfigItem item, String prefix) {
-        this.prefix = prefix;
-
-        // Create an empty set of components
-        Components components = new Components();
-        openAPI.setComponents(components);
-
-        // Create a basic info section
+    private Info genInfo(){
         // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
         info.setVersion("1.0.0");
         info.setTitle("OpenNMS Model");
+        return info;
+    }
+
+    /**
+     * It will generate a big openapi path with external $ref to schema
+     * @param prefix
+     * @param items
+     * @return path openapi doc
+     */
+    public OpenAPI convert(String prefix, Map<String, ConfigItem> items) {
+        // Create an empty set of components
+        Components components = new Components();
+        openAPI.setComponents(components);
+
+        // Create an empty set of paths
+        Paths paths = new Paths();
+        openAPI.setPaths(paths);
+
+        // Create a basic info section
+        Info info = this.genInfo();
+
+        openAPI.setInfo(info);
+        items.forEach((configName, item) -> {
+            // Generate paths for the items
+            this.generatePathsForItems(item, prefix + configName, configName);
+            pathItemsByPath.forEach(paths::addPathItem);
+        });
+        return openAPI;
+    }
+
+    public OpenAPI convert(ConfigItem item, String prefix) {
+        // Create an empty set of components
+        Components components = new Components();
+        openAPI.setComponents(components);
+
+        // Create a basic info section
+        Info info = this.genInfo();
 
         openAPI.setInfo(info);
         // Generate schemas for the items
@@ -132,17 +160,19 @@ public class ConfigSwaggerConverter {
         openAPI.setPaths(paths);
 
         // Generate paths for the items
-        this.generatePathsForItems(item);
+        this.generatePathsForItems(item, prefix, null);
         pathItemsByPath.forEach(paths::addPathItem);
 
         return openAPI;
     }
 
     /**
-     * It handles path for each config
-     * @param item config
+     *
+     * @param item
+     * @param prefix
+     * @param externalConfigName (use for generate external $ref)
      */
-    private void generatePathsForItems(ConfigItem item) {
+    private void generatePathsForItems(ConfigItem item, String prefix, String externalConfigName) {
         String path = prefix;
 
         // Index the path for future reference
@@ -150,12 +180,12 @@ public class ConfigSwaggerConverter {
 
         Schema schemaForCurrentItem = new Schema();
         schemaForCurrentItem.setName(item.getName());
-        schemaForCurrentItem.set$ref("#/components/schemas/" + item.getName());
+        schemaForCurrentItem.set$ref(this.generate$ref(item, externalConfigName));
 
         PathItem configNamePathItem = new PathItem();
         PathItem configIdPathItem = new PathItem();
 
-        String tagName = getTagName(path);
+        String tagName = getTagName(path, prefix);
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
@@ -261,7 +291,7 @@ public class ConfigSwaggerConverter {
         return messageResponse;
     }
 
-    private String getTagName(String path) {
+    private String getTagName(String path, String prefix) {
         String relevantPath = path.replace(prefix, "");
 
         if (relevantPath.isEmpty()) {
@@ -358,7 +388,7 @@ public class ConfigSwaggerConverter {
                 // Use a reference - these have no actual type set
                 schemaForCurrentItem = new Schema();
                 schemaForCurrentItem.setName(schema.getName());
-                schemaForCurrentItem.set$ref("#/components/schemas/" + schema.getName());
+                schemaForCurrentItem.set$ref(this.generate$ref(item));
             }
 
             if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
@@ -375,6 +405,23 @@ public class ConfigSwaggerConverter {
 
         // Index the schema for future reference
         schemasByItem.put(item, schema);
+    }
+
+    private String generate$ref(ConfigItem item){
+        return this.generate$ref(item, null);
+    }
+
+    /**
+     * It help to generate $ref for openapi
+     * @param item
+     * @param configName (It will generate external reference when it is not null)
+     * @return
+     */
+    private String generate$ref(ConfigItem item, String configName){
+        if(configName != null) {
+            return "/opennms/rest/cm/schema/"+ configName + "#/components/schemas/" + item.getName();
+        } else
+            return "#/components/schemas/" + item.getName();
     }
 
     public void walk(ConfigItem parent, ConfigItem item, BiConsumer<ConfigItem, ConfigItem> consumer) {
