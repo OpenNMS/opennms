@@ -273,10 +273,17 @@ public class CollectionSpecification {
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
         m_instrumentation.beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
+            String className = getCollector().getClass().getCanonicalName();
+            // FIXME: HACKZZZ
+            if ("org.opennms.features.apilayer.collectors.ServiceCollectorImpl".equals(className)) {
+                className = "org.opennms.plugins.zabbix.ZabbixAgentCollector";
+            }
+
             final CollectionSet set = m_locationAwareCollectorClient.collect()
                 .withAgent(agent)
                 .withAttributes(getPropertyMap())
                 .withCollector(getCollector())
+                .withCollectorClassName(className)
                 // Use the service interval as the TTL
                 .withTimeToLive(getService().getInterval())
                 .execute()
