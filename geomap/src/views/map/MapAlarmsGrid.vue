@@ -51,6 +51,10 @@ let interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
+let alarms = computed(() => {
+  return store.getters['mapModule/getAlarmsFromSelectedNodes'];
+})
+
 let rowData = ref(getAlarmsFromSelectedNodes());
 
 let gridApi = ref({});
@@ -68,7 +72,7 @@ function sizeToFit() {
 }
 
 watch(
-  () => interestedNodesID.value,
+  () => [interestedNodesID.value, alarms.value],
   () => {
     gridApi.setRowData(
       getAlarmsFromSelectedNodes()
@@ -261,6 +265,17 @@ const columnDefs = ref([
     headerName: "LOG MESSAGE",
     field: "logMessage",
     headerTooltip: "Log Message",
+    cellRenderer: (data: any) => {
+      //This is a temporary solution. Currently the settings user set make the "Log Message" saved in database in html style. But the style may not 
+      //fit our new Vue UI. That's the reason we add css to change it. This part of code will eventually be removed in future project design.   
+      let newData = `<style type = "text/css">
+            p
+            {
+                margin: 0px;
+            }
+        </style> ${data.value}`;
+      return newData;
+      }
   },
 ]
 )
