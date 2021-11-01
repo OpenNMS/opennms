@@ -31,7 +31,8 @@ package org.opennms.core.ipc.twin.test;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -49,7 +50,6 @@ import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.distributed.core.api.MinionIdentity;
 
 public abstract class AbstractTwinBrokerIT {
-
 
     protected abstract TwinPublisher createPublisher() throws Exception;
     protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
@@ -81,7 +81,7 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
 
-        await().until(tracker::getLog, hasItems("Test1"));
+        await().until(tracker::getLog, contains("Test1"));
     }
 
     /**
@@ -94,12 +94,12 @@ public abstract class AbstractTwinBrokerIT {
 
         final var tracker = Tracker.subscribe(this.subscriber, "test", String.class);
         // Ensure Test1 is received.
-        await().until(tracker::getLog, hasItems("Test1"));
+        await().until(tracker::getLog, contains("Test1"));
 
         session.publish("Test2");
         session.publish("Test3");
 
-        await().until(tracker::getLog, hasItems("Test1", "Test2", "Test3"));
+        await().until(tracker::getLog, contains("Test1", "Test2", "Test3"));
     }
 
     /**
@@ -111,10 +111,10 @@ public abstract class AbstractTwinBrokerIT {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
-        await().until(tracker::getLog, hasItems("Test1"));
-        session.publish("Test2");
+        await().until(tracker::getLog, contains("Test1"));
 
-        await().until(tracker::getLog, hasItems("Test2"));
+        session.publish("Test2");
+        await().until(tracker::getLog, contains("Test1", "Test2"));
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker1 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker1::getLog, hasItems("Test1"));
+        await().until(tracker1::getLog, contains("Test1"));
 
         tracker1.close();
 
@@ -213,10 +213,12 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test3");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, hasItems("Test3"));
+        // Maybe contains elements from the `publish`s above.
+        // Due to transport latency, the subscriber receive the elements even if published before subscribe.
+        await().until(tracker2::getLog, hasItem("Test3"));
 
-        assertThat(tracker1.getLog(), not(hasItems("Test2")));
-        assertThat(tracker1.getLog(), not(hasItems("Test3")));
+        assertThat(tracker1.getLog(), not(hasItem("Test2")));
+        assertThat(tracker1.getLog(), not(hasItem("Test3")));
     }
 
     /**
@@ -231,7 +233,7 @@ public abstract class AbstractTwinBrokerIT {
         session.publish("Test1");
 
         final var tracker2 = Tracker.subscribe(this.subscriber, "test", String.class);
-        await().until(tracker2::getLog, hasItems("Test1"));
+        await().until(tracker2::getLog, contains("Test1"));
 
         assertThat(tracker1.getLog(), empty());
     }
