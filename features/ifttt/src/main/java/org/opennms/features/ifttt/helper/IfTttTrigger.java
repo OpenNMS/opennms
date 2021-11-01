@@ -30,14 +30,18 @@ package org.opennms.features.ifttt.helper;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -53,8 +57,15 @@ public class IfTttTrigger {
     private String value1 = "";
     private String value2 = "";
     private String value3 = "";
+    private SSLContext sslContext;
 
     public IfTttTrigger() {
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { new RelaxedX509ExtendedTrustManager() }, new java.security.SecureRandom());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            LOG.error("Error creating SSL context", e);
+        }
     }
 
     public IfTttTrigger key(final String key) {
@@ -83,7 +94,7 @@ public class IfTttTrigger {
     }
 
     public void trigger() {
-        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(SSLContext.getInstance("Default")).build()) {
+        try (final CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(sslContext).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build()) {
             LOG.debug("Sending '" + event + "' event to IFTTT.");
 
             final HttpPost httpPost = new HttpPost(String.format(IFTTT_URL, event, key));
@@ -98,7 +109,7 @@ public class IfTttTrigger {
             if (statusCode != 200) {
                 LOG.warn("Received HTTP Status {} for request to {} with body {}", statusCode, httpPost.getURI(), httpPost.getEntity());
             }
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             LOG.error("Error invoking request: {}", e);
         }
     }

@@ -1,0 +1,33 @@
+[[ref-daemon-config-files-collectd]]
+= Collectd
+
+.Collectd configuration file overview
+[options="header"]
+[cols="2,1,1,3"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| collectd-configuration.xml
+| This file defines which collections are being collected and assigned to which nodes.
+ A reload command changed configuration parameters of existing monitors.
+| yes
+| yes
+
+| jdbc-datacollection-config.xml
+| Defines JDBC data collections. Attributes are retrieved using SQL queries.
+| no
+| yes
+
+| http-datacollection-config.xml
+| Defines HTTP data collections. Attributes are extracted from the HTTP responses using a regular expression.
+| no
+| yes
+
+| xml-datacollection-config.xml
+| Defines data collections that can be extracted from XML or JSON documents.
+| no
+| yes
+|===

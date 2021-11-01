@@ -30,10 +30,15 @@ package org.opennms.core.ipc.twin.grpc;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.grpc.common.GrpcIpcServer;
+import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -47,7 +52,7 @@ import static org.mockito.Mockito.when;
 public class GrpcSSLTwinIT extends GrpcTwinIT {
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
         String serverKeyFilePath = this.getClass().getResource("/tls/server.pem").getPath();
         String trustCertFilePath = this.getClass().getResource("/tls/ca.crt").getPath();
@@ -55,7 +60,7 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
         String clientPrivateKeyFilePath = this.getClass().getResource("/tls/client.pem").getPath();
 
         Hashtable<String, Object> serverConfig = new Hashtable<>();
-        int port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
+        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
         serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
         serverConfig.put(GrpcIpcUtils.TLS_ENABLED, "true");
         serverConfig.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, serverCertFilePath);
@@ -70,19 +75,10 @@ public class GrpcSSLTwinIT extends GrpcTwinIT {
         clientConfig.put(GrpcIpcUtils.CLIENT_CERTIFICATE_FILE_PATH, clientCertFilePath);
         clientConfig.put(GrpcIpcUtils.CLIENT_PRIVATE_KEY_FILE_PATH, clientPrivateKeyFilePath);
 
-        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
+        configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
         when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
-
-        MinionIdentity minionIdentity = new MockMinionIdentity("remote");
-        twinSubscriber = new GrpcTwinSubscriber(minionIdentity, configAdmin, port);
-        twinSubscriber.start();
-        twinPublisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), configAdmin, port);
-        twinPublisher.start();
+        super.setupAbstract();
     }
 
-    @After
-    public void destroy() {
-        super.destroy();
-    }
 }

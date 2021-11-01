@@ -192,7 +192,7 @@ public class RadiusAuthMonitorTest {
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
-        MockLogAppender.assertLogMatched(Level.DEBUG, "Error while attempting to connect to the RADIUS service on localhost");
+        MockLogAppender.assertLogMatched(Level.DEBUG, "Error while attempting to connect to the RADIUS service on " /* localhost or 127.0.0.1 */);
     }
 
     @Test

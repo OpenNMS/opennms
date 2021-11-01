@@ -36,15 +36,22 @@ import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * Represents the "Health", by holding a list of {@link Response}s.
+ * Represents the "Health", by holding a list of {@link HealthCheck}s and their {@link Response}s.
  * It allows accessing the responses and also provides some helper methods (e.g. to get the worst response).
  *
  * @author mvrueden
  */
 public class Health {
 
-    private List<Pair<HealthCheck, Response>> responses = new ArrayList<>();
-    private String errorMessage;
+    private final List<Pair<HealthCheck, Response>> responses;
+
+    public Health() {
+        responses = new ArrayList<>();
+    }
+
+    public Health(List<Pair<HealthCheck, Response>> responses) {
+        this.responses = responses;
+    }
 
     public Health withResponse(HealthCheck healthCheck, Response response) {
         add(healthCheck, response);
@@ -52,28 +59,15 @@ public class Health {
     }
 
     public boolean isSuccess() {
-        if (responses.isEmpty() && errorMessage != null) {
-            return false;
-        }
         return responses.stream().allMatch(r -> r.getRight().getStatus() == Status.Success);
     }
 
     public Optional<Pair<HealthCheck, Response>> getWorst() {
-        return responses.stream()
-                .sorted(Comparator.comparingInt(pair -> -1 * pair.getRight().getStatus().ordinal()))
-                .findFirst();
+        return responses.stream().max(Comparator.comparing(p -> p.getRight().getStatus()));
     }
 
     public void add(HealthCheck healthCheck, Response response) {
         this.responses.add(Pair.of(healthCheck, response));
-    }
-
-    public void setError(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public List<Pair<HealthCheck, Response>> getResponses() {

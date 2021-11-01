@@ -1,0 +1,99 @@
+[[search-functionality]]
+= Search
+
+{page-component-title} provides two ways to search in the web UI: through the search bar and the *Search* view.
+
+== Search bar
+
+The search bar uses keywords to return both nodes that match the keyword(s) and a list of actions you can perform that relate to the keyword.
+Press the btn:[Shift] key twice or click in the search bar to activate it for typing.
+
+image::search/search-sample.png[]
+
+Note that the search results for nodes also display any nodes with xref:meta-data.adoc#metadata-overview[metadata] that match the keyword, such as a label, location, admin user, and so on.
+For example, if you search for 'foo' and get a node match of 'foobar', the result displays no metadata.
+However, if you search for 'foo' and a match is found in a node's metadata customkey='somefoo' (even if the node name does not contain 'foo'), the result displays the name of the node (for example, 'node1') and the 'foo' metadata associated with it.
+See xref:search-customize[Customize search results] below for more information.
+
+Click on a node to navigate to the node's page.
+Click on one of the actions to navigate to the screen that lets you complete the specified action.
+For example, clicking on *Edit Requisition 'Test'* takes you to the screen where you can edit the requisition named 'Test'.
+
+== Search view
+
+The Search view provides a number of search options for nodes.
+Click *Search* on the main menu to access the *Search* view.
+
+=== Quick-search links
+
+Click on the following links to quickly search for the associated information:
+
+* All nodes
+* All nodes and their interfaces
+* All nodes with asset info
+
+=== Name search
+
+Search by name is a case-insensitive, inclusive search.
+For example, searching on `serv` finds any of `serv`, `Service`, `Reserved`, `NTSERV`, `UserVortex`, and so on.
+Use the underscore character as a single-character wildcard.
+Use the percent character as a multiple-character wildcard.
+
+=== IP address search
+
+Searching by IP address uses a flexible search format that lets you separate the four or eight (in the case of IPv6) fields of an IP address into specific searches.
+An asterisk (`*`) in place of any octet matches any value for that octet.
+Separate two numbers by a dash (`-`) to indicate a range.
+Use a comma for list demarcation.
+
+For example, the following search fields are all valid and each creates the same result set: all IP addresses from 192.168.0.0 through 192.168.255.255:
+
+* 192.168.\*.*
+* 192.168.0-255.0-255
+* 192.168.0,1,2,3-255.*
+* 2001:6a8:3c80:8000-8fff:*:*:*:*
+* fc00,fe80:*:*:*:*:*:*:*
+
+=== System or interface search
+
+A system/interface attribute search finds nodes with systems or interfaces that match a given search string.
+The "contains" modifier provides a case-insensitive, inclusive search similar to the "name containing" search described above.
+The "equals" modifier requires the search to find an exact match.
+
+=== Location search
+
+Select the location or service to search for from the appropriate drop-down menu.
+
+=== MAC address search
+Case-insensitive, partial string match to find interfaces with hardware (MAC) addresses that match the search string.
+For example, to find all interfaces with a specified manufacturer's code, enter the first six characters of the MAC address.
+Octet separators (dash or colon) are optional.
+
+=== Foreign service name search
+Case-insensitive, inclusive search on the foreign service name.
+Use the underscore character as a single-character wildcard.
+Use the percent character as a multiple-character wildcard.
+
+=== Flows search
+Find nodes with or without flows data.
+
+=== Enhanced Linkd topology search
+
+Find nodes with CDP/LLDP data that match the given search string.
+
+=== Category or field search
+Search for nodes that have assets associated with a particular category or field.
+The field search includes a list of fields and a text box to match a value.
+The field search is case-insensitive and inclusive.
+Use the underscore character as a single-character wildcard.
+Use the percent character as a multiple-character wildcard.
+
+[[search-customize]]
+== Customize search results
+
+Customize search results to show additional metadata in the search results pop up.
+Create a new file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` and specify a value for `org.opennms.netmgt.search.info`, to pick additional metadata fields to display.
+
+This example displays the node's sys-contact and the associated department:
+
+`org.opennms.netmgt.search.info=${node:sys-contact} (Department: ${asset:department})`

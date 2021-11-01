@@ -37,6 +37,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -48,6 +50,8 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @version $Id: $
  */
 public class UserFactory extends UserManager {
+    private static final long RELOAD_CHECK_INTERVAL_MS = TimeUnit.SECONDS.toMillis(1);
+
     /**
      * The static singleton instance of the UserFactory
      */
@@ -72,6 +76,8 @@ public class UserFactory extends UserManager {
      * 
      */
     private long m_fileSize;
+
+    private AtomicLong m_lastReloadCheck = new AtomicLong(0);
 
     /**
      * Initializes the factory
@@ -126,7 +132,7 @@ public class UserFactory extends UserManager {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public void reload() throws IOException, FileNotFoundException {
+    public synchronized void reload() throws IOException, FileNotFoundException {
         // Form the complete filename for the config file
         //
         m_usersConfFile = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME);
@@ -165,13 +171,21 @@ public class UserFactory extends UserManager {
     public boolean isUpdateNeeded() {
         if (m_usersConfFile == null) {
             return true;
-        } else {
+        }
+
+        final long now = System.currentTimeMillis();
+        if (now < (m_lastReloadCheck.get() + RELOAD_CHECK_INTERVAL_MS)) {
+            return false;
+        }
+        m_lastReloadCheck.set(now);
+
+        synchronized (this) {
             final long fileLastModified = m_usersConfFile.lastModified();
 
             // Check to see if the file size has changed
             if (m_fileSize != m_usersConfFile.length()) {
                 return true;
-            // Check to see if the timestamp has changed
+                // Check to see if the timestamp has changed
             } else if (m_lastModified != fileLastModified) {
                 return true;
             } else {

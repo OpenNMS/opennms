@@ -29,6 +29,8 @@
 package org.opennms.netmgt.model.snmpmetadata;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+
 import org.opennms.netmgt.model.OnmsMetaData;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -164,7 +166,7 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
     }
 
     private static SnmpMetadataBase createStructuredMetaData(final SnmpMetadataBase structure, final Map<String, String> data, final String prefix) {
-        final Set<String> prefixes = new TreeSet<>();
+        final Set<String> prefixes = Sets.newConcurrentHashSet();
 
         if (data.containsKey(prefix)) {
             if (structure instanceof SnmpMetadataObject) {
@@ -200,6 +202,9 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
             final Matcher matcher = PATTERN_INDEX.matcher(p);
             if (matcher.find()) {
                 final String newPrefix = (prefix == null ? "" : prefix + ".") + matcher.group(1);
+
+                prefixes.removeIf(e -> e.startsWith(matcher.group(1)) && PATTERN_INDEX.matcher(e).find());
+
                 final SnmpMetadataTable table = ((SnmpMetadataObject) structure).addTable(matcher.group(1));
 
                 for (final Map.Entry<String, String> dataEntry : data.entrySet()) {
@@ -213,16 +218,19 @@ public class SnmpMetadataObject extends SnmpMetadataBase {
                         }
                     }
                     final SnmpMetadataEntry entry = table.addEntry(key);
-                    createStructuredMetaData(entry, data, newPrefix + "[" + key + "]");
+
+                    final String prefixAndKey = newPrefix + "[" + key + "]";
+
+                    createStructuredMetaData(entry, data.entrySet().stream().filter(e->e.getKey().startsWith(prefixAndKey)).collect(Collectors.toMap(e->e.getKey(), e->e.getValue())), prefixAndKey);
                 }
             } else {
                 final String newPrefix = (prefix == null ? "" : prefix + ".") + p;
 
                 if (structure instanceof SnmpMetadataObject) {
-                    createStructuredMetaData(((SnmpMetadataObject) structure).addObject(p), data, newPrefix);
+                    createStructuredMetaData(((SnmpMetadataObject) structure).addObject(p), data.entrySet().stream().filter(e->e.getKey().startsWith(newPrefix)).collect(Collectors.toMap(e->e.getKey(), e->e.getValue())), newPrefix);
                 }
                 if (structure instanceof SnmpMetadataEntry) {
-                    createStructuredMetaData(structure, data, newPrefix);
+                    createStructuredMetaData(structure, data.entrySet().stream().filter(e->e.getKey().startsWith(newPrefix)).collect(Collectors.toMap(e->e.getKey(), e->e.getValue())), newPrefix);
                 }
             }
         }
