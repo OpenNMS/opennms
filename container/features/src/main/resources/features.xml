@@ -1680,7 +1680,6 @@
 
     <feature name="opennms-core-ipc-twin-grpc-publisher" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Publisher" version="${project.version}">
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.publisher/${project.version}</bundle>
@@ -1808,7 +1807,6 @@
         <feature>guava</feature>
         <feature>opennms-core-camel</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.jms/org.opennms.core.ipc.twin.jms.subscriber/${project.version}</bundle>
     </feature>
@@ -1827,7 +1825,6 @@
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
@@ -1839,7 +1836,6 @@
     </feature>
 
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 </features>
