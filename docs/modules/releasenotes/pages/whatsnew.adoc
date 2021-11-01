@@ -73,7 +73,7 @@ Over time, all configuration information will be migrated to this new API.
 === Provisioning
 
 * A link:https://issues.opennms.org/browse/NMS-13313[`localhost` node is now monitored] and enumerates some useful OpenNMS metrics by default.
-* LLDP scanning in Enlinkd has link:[added support for `TIMETRA-LLDP-MIB`].
+* LLDP scanning in Enlinkd has link:https://issues.opennms.org/browse/NMS-13593[added support for `TIMETRA-LLDP-MIB`].
 
 === REST API
 
