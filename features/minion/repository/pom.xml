@@ -417,6 +417,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.twin</groupId>
+            <artifactId>org.opennms.core.ipc.twin.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.twin.kafka</groupId>
             <artifactId>org.opennms.core.ipc.twin.kafka.subscriber</artifactId>
             <version>${project.version}</version>

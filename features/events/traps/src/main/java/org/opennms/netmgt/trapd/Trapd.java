@@ -118,13 +118,6 @@ public class Trapd extends AbstractServiceDaemon {
     @Override
     protected synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
-
-        try {
-            m_twinSession = m_twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
-        } catch (IOException e) {
-            LOG.error("Failed to register twin for trap listener config", e);
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -141,7 +134,14 @@ public class Trapd extends AbstractServiceDaemon {
         m_status = STARTING;
 
         LOG.debug("start: Initializing the Trapd receiver");
-
+        // Register session with Publisher for once.
+        try {
+            m_twinSession = m_twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
+        } catch (IOException e) {
+            LOG.error("Failed to register twin for trap listener config", e);
+            throw new RuntimeException(e);
+        }
+        // Publish existing config.
         try {
             m_twinSession.publish(from(m_config));
         } catch (IOException e) {
