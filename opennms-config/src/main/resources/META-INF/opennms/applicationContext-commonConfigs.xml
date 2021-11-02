@@ -85,8 +85,9 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
-
-  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
+  <!-- FIXME: dirty hack for unblock CM2 MUST DELETE depends-on  -->
+  <bean name="forceUpgradeExecutor" class="org.opennms.config.upgrade.ForceUpgradeExecutor"/>
+  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="forceUpgradeExecutor"/>
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
 
@@ -162,5 +163,12 @@
   <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
+
+  <!-- config manager -->
+  <import resource="classpath*:/META-INF/opennms/applicationContext-postgresJsonStore.xml"/>
+  <bean name="jsonConfigStoreDao" class="org.opennms.features.config.dao.impl.JsonConfigStoreDaoImpl">
+    <constructor-arg name="jsonStore" ref="jsonStore" />
+  </bean>
+  <import resource="classpath*:/META-INF/opennms/applicationContext-config-service.xml"/>
 
 </beans>
