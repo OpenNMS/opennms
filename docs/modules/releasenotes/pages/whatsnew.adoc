@@ -6,7 +6,7 @@
 == System Requirements
 
 * *Java 11*: OpenNMS Horizon 29 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 13.
+* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 14.
 
 == Breaking Changes
 
