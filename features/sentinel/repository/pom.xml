@@ -42,14 +42,12 @@
                             <features>
                                 <!-- OpenNMS features -->
                                 <feature>opennms-core-ipc-rpc-jms</feature>
-                                <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
                                 <feature>opennms-core-ipc-sink-camel-server</feature>
                                 <feature>opennms-core-ipc-sink-kafka-server</feature>
-                                <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-send-event-command</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
@@ -271,11 +269,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core.ipc.sink.camel</groupId>
             <artifactId>org.opennms.core.ipc.sink.camel.common</artifactId>
             <version>${project.version}</version>
@@ -288,16 +281,6 @@
         <dependency>
             <groupId>org.opennms.core.ipc.sink.kafka</groupId>
             <artifactId>org.opennms.core.ipc.sink.kafka.server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
-            <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

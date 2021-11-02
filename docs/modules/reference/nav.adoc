@@ -13,7 +13,6 @@
 ** xref:configuration/tuning-kafka.adoc[]
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
-** xref:configuration/aws-sqs.adoc[]
 * xref:configuration/performance-data-collection/introduction.adoc[]
 ** xref:configuration/performance-data-collection/collectors/http.adoc[]
 ** xref:configuration/performance-data-collection/collectors/jdbc.adoc[]
