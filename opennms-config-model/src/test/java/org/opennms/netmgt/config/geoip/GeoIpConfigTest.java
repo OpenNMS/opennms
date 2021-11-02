@@ -67,7 +67,7 @@ public class GeoIpConfigTest  extends XmlTestNoCastor<GeoIpConfig> {
         final GeoIpConfig geoIpConfig = new GeoIpConfig();
         geoIpConfig.setDatabase("/foo/bar");
         geoIpConfig.setEnabled(true);
-        geoIpConfig.setResolve("public");
+        geoIpConfig.setResolve(GeoIpConfig.Resolve.PUBLIC);
 
         final Location location = new Location();
 

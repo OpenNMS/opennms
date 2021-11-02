@@ -36,7 +36,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.camel.component.netty4.util.SubnetUtils;
 import org.opennms.core.xml.ValidateUsing;
@@ -45,6 +48,15 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("geoip-configuration.xsd")
 public class GeoIpConfig {
+    @XmlType
+    @XmlEnum(String.class)
+    public enum Resolve {
+        @XmlEnumValue("primary") PRIMARY,
+        @XmlEnumValue("public") PUBLIC,
+        @XmlEnumValue("public-ipv4") PUBLIC_IPV4,
+        @XmlEnumValue("public-ipv6") PUBLIC_IPV6
+    }
+
     @XmlAttribute(name = "enabled", required = true)
     private boolean enabled = false;
 
@@ -55,7 +67,7 @@ public class GeoIpConfig {
     private String database = "";
 
     @XmlAttribute(name = "resolve", required = false)
-    private String resolve = "public";
+    private Resolve resolve = Resolve.PUBLIC;
 
     @XmlElement(name = "location")
     private List<Location> locations = new ArrayList<>();
@@ -79,11 +91,11 @@ public class GeoIpConfig {
         this.database = database;
     }
 
-    public String getResolve() {
+    public Resolve getResolve() {
         return resolve;
     }
 
-    public void setResolve(final String resolve) {
+    public void setResolve(final Resolve resolve) {
         this.resolve = resolve;
     }
 

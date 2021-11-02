@@ -140,15 +140,22 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
 
         InetAddress addressToUse = node.getPrimaryInterface().getIpAddress();
 
-        if (geoIpConfig.getResolve().startsWith("public")) {
-            final Set<OnmsIpInterface> ipInterfaceSet = node.getIpInterfaces();
-            for (final OnmsIpInterface onmsIpInterface : ipInterfaceSet) {
-                if (isPublicAddress(onmsIpInterface.getIpAddress())) {
-                    if (("public-ipv4".equals(geoIpConfig.getResolve()) && onmsIpInterface.getIpAddress() instanceof Inet4Address) ||
-                            ("public-ipv6".equals(geoIpConfig.getResolve()) && onmsIpInterface.getIpAddress() instanceof Inet6Address) ||
-                            ("public".equals(geoIpConfig.getResolve()))) {
-                        addressToUse = onmsIpInterface.getIpAddress();
-                        break;
+        if (GeoIpConfig.Resolve.PUBLIC.equals(geoIpConfig.getResolve()) || GeoIpConfig.Resolve.PUBLIC_IPV4.equals(geoIpConfig.getResolve()) || GeoIpConfig.Resolve.PUBLIC_IPV6.equals(geoIpConfig.getResolve())) {
+            // prefer primary address if public
+            if (!isPublicAddress(addressToUse) || !(
+                    (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC_IPV4.equals(geoIpConfig.getResolve()) && (addressToUse instanceof Inet4Address)) ||
+                            (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC_IPV6.equals(geoIpConfig.getResolve()) && (addressToUse instanceof Inet6Address)) ||
+                            (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC.equals(geoIpConfig.getResolve())))) {
+
+                final Set<OnmsIpInterface> ipInterfaceSet = node.getIpInterfaces();
+                for (final OnmsIpInterface onmsIpInterface : ipInterfaceSet) {
+                    if (isPublicAddress(onmsIpInterface.getIpAddress())) {
+                        if ((GeoIpConfig.Resolve.PUBLIC_IPV4.equals(geoIpConfig.getResolve()) && onmsIpInterface.getIpAddress() instanceof Inet4Address) ||
+                                (GeoIpConfig.Resolve.PUBLIC_IPV6.equals(geoIpConfig.getResolve()) && onmsIpInterface.getIpAddress() instanceof Inet6Address) ||
+                                (GeoIpConfig.Resolve.PUBLIC.equals(geoIpConfig.getResolve()))) {
+                            addressToUse = onmsIpInterface.getIpAddress();
+                            break;
+                        }
                     }
                 }
             }
@@ -214,6 +221,10 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
                 assetRecordDao.flush();
             } else {
                 try {
+                    if (!isPublicAddress(addressToUse)) {
+                        return;
+                    }
+
                     final CityResponse cityResponse = getDatabaseReader().city(addressToUse);
 
                     if (geoIpConfig.isOverwrite() || assetRecord.getLongitude() == null) {
@@ -225,6 +236,7 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
                         assetRecord.setLatitude(cityResponse.getLocation().getLatitude());
                         LOG.debug("Asset 'latitude' set to '{}' for node {} with IP address {} (lookup)...", cityResponse.getLocation().getLatitude(), nodeId, InetAddressUtils.str(addressToUse));
                     }
+
                     if (geoIpConfig.isOverwrite() || assetRecord.getCity() == null) {
                         if (cityResponse.getCity() != null && !Strings.isNullOrEmpty(cityResponse.getCity().getName())) {
                             assetRecord.setCity(cityResponse.getCity().getName());
@@ -262,6 +274,7 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
             LOG.debug("Reloading the Hardware Inventory adapter configuration");
             try {
                 geoIpConfigDao.getContainer().reload();
+                databaseReader = null;
 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, PREFIX + NAME);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, PREFIX + NAME);
