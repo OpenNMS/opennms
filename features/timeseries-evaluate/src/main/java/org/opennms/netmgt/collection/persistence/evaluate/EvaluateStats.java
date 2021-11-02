@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
@@ -137,13 +138,14 @@ public class EvaluateStats {
     /**
      * Checks a node.
      *
-     * @param nodeId the node identifier
+     * @param resource the collection resource
      */
-    public void checkNode(final String nodeId) {
-        if (nodeId.startsWith("fs") || nodeId.matches("\\d+")) {
-            nodeMap.putIfAbsent(nodeId, true);
-        } else {
-            interfaceMap.putIfAbsent(nodeId, true);
+    public void checkNode(final CollectionResource resource) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resource.getResourceTypeName())) {
+            nodeMap.putIfAbsent(resource.getParent().getName(), true);
+        }
+        if (CollectionResource.RESOURCE_TYPE_LATENCY.equals(resource.getResourceTypeName())) {
+            interfaceMap.putIfAbsent(resource.getParent().getName(), true);
         }
     }
 
