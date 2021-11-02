@@ -53,25 +53,9 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     // This map contains key: ConfigUpdateInfo value: list of Consumer
     private final ConcurrentHashMap<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
 
-   // private final Map<String, ConfigDefinition> configDefinitions = new HashMap<>(); // TODO: Patrick: need to be replaced with proper implementations
-
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
         this.configStoreDao = configStoreDao;
     }
-
-//    @Deprecated
-//    @Override
-//    public void registerSchema(String configName, String xsdName, String topLevelElement)
-//            throws IOException, JAXBException {
-//        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
-//        Objects.requireNonNull(configName);
-//        Objects.requireNonNull(converter);
-//        if (this.getRegisteredSchema(configName).isPresent()) {
-//            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
-//        }
-//        final ConfigSchema configSchema = new ConfigSchema(configName, converter.getClass(), converter);
-//        configStoreDao.register(configSchema);
-//    }
 
     @Override
     public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException {
@@ -81,51 +65,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (this.getRegisteredConfigDefinition(configName).isPresent()) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
         }
-        //this.configDefinitions.put(configName, configDefinition); // TODO: Patrick fix this mock:
         try {
-
-            // CONVERTER !!!! ??
-//            ConfigSchema<?> schema = new ConfigSchema<>(configDefinition.getConfigName(),
-//                    XmlConverter.class,
-//                    new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration"));
-//            SwaggerConverter swaggerConverter = new SwaggerConverter();
-//            swaggerConverter.
-            //freddy
             configStoreDao.register(configDefinition);
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
     }
-
-//    @Override
-//    public void upgradeSchema(String configName, String xsdName, String topLevelElement)
-//            throws IOException, JAXBException {
-//        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
-//
-//        Objects.requireNonNull(configName);
-//        Objects.requireNonNull(converter);
-//        if (this.getRegisteredSchema(configName).isEmpty()) {
-//            throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
-//        }
-//
-//        final ConfigSchema configSchema = new ConfigSchema(configName,
-//                converter.getClass(), converter);
-//        Map<String, JSONObject> configs = configStoreDao
-//                .getConfigs(configName)
-//                .orElse(Collections.emptyMap());
-//
-//        // Check if all existing configuration match the new schema. If not => throw Exception
-//        for (Map.Entry<String, JSONObject> config : configs.entrySet()) {
-//            String xml = converter.jsonToXml(config.getValue().toString());
-//            if (!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)) {
-//                throw new IllegalArgumentException(
-//                        String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));
-//            }
-//        }
-//
-//        // all good => save new schema version.
-//        configStoreDao.register(configSchema);
-//    }
 
     @Override
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException {
@@ -141,13 +86,6 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     public Map<String, ConfigDefinition> getAllConfigDefinition() {
         return configStoreDao.getAllConfigDefinition();
     }
-
-//    @Deprecated
-//    @Override
-//    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) {
-//        Objects.requireNonNull(configName);
-//        return configStoreDao.getConfigSchema(configName);
-//    }
 
     @Override
     public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) throws JsonProcessingException {

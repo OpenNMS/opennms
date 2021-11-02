@@ -93,7 +93,6 @@ public class ConfigSwaggerConverterTest {
         String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration",
                 ConfigSwaggerConverter.APPLICATION_JSON);
 
-        System.out.println(openapiStr);
         final String expectedSwaggerJson = Resources.toString(
                 Resources.getResource("swagger.generated.json"), StandardCharsets.UTF_8);
 

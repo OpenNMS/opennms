@@ -79,29 +79,29 @@ public class ConfigSwaggerConverterAllTest {
     @Test
     public void canConvertAllXsd() throws Exception {
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        Map<String, ConfigDefinition> schemas = configurationManagerService.getAllConfigDefinition();
+        Map<String, ConfigDefinition> defs = configurationManagerService.getAllConfigDefinition();
         Map<String, ConfigItem> items = new HashMap<>();
-        schemas.forEach((key, schema) -> {
-            try {
-                items.put(key, schema.getConverter().getValidationSchema().getConfigItem());
-            } catch (Exception e) {
-                e.printStackTrace();
+        Map<String, OpenAPI> apis = new HashMap<>(defs.size());
+        defs.forEach((key, def) -> {
+            OpenAPI api = def.getSchema();
+            if(api != null && api.getPaths() != null){
+                apis.put(key, api);
             }
         });
 
-        OpenAPI openapi = configSwaggerConverter.convert("/opennms/rest/cm/schema/", items);
+        OpenAPI openapi = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, "/opennms/rest/cm/");
         String yaml = configSwaggerConverter.convertOpenAPIToString(openapi, "application/yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
         Map<String, Object> map = mapper.readValue(yaml, typeRef);
 
-        Assert.assertEquals("It should have empty components.", ((Map) map.get("components")).size(), 0);
+        Assert.assertNull("It should have empty components.", (map.get("components")));
         Map<String, Map> paths = (Map) map.get("paths");
         Assert.assertEquals("It should have 4 paths.", paths.size(), 4);
-        Map<String,Map> getVaccuumdContent = (Map)((Map)((Map)((Map)paths.get("/opennms/rest/cm/schema/vacuumd/{configId}")
+        Map<String,Map> getVaccuumdContent = (Map)((Map)((Map)((Map)paths.get("/rest/cm/vacuumd/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
-        Map<String,Map> getVaccuumd2Content = (Map)((Map)((Map)((Map)paths.get("/opennms/rest/cm/schema/vacuumd2/{configId}")
+        Map<String,Map> getVaccuumd2Content = (Map)((Map)((Map)((Map)paths.get("/rest/cm/vacuumd2/{configId}")
                 .get("get")).get("responses")).get("200")).get("content");
         String ref = (String) ((Map)getVaccuumdContent.get("application/json").get("schema")).get("$ref");
         String ref2 = (String) ((Map)getVaccuumd2Content.get("application/json").get("schema")).get("$ref");

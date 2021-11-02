@@ -37,7 +37,6 @@ import com.google.common.io.Resources;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;

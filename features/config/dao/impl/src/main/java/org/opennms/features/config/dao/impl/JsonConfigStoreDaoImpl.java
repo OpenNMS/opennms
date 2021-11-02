@@ -194,7 +194,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         });
         ValidationReport report = this.validateConfig(configName, existingJson);
         if (report.hasErrors()) {
-            throw new IllegalArgumentException(report.toString());
+            throw new IllegalArgumentException(mapper.writeValueAsString(report));
         }
         this.putConfig(configName, configData.get());
     }
@@ -276,15 +276,15 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
             LOG.error("ConfigDefinition not found!");
             throw new RuntimeException("ConfigDefinition not found!");
         }
-        Map<String, ValidationReport> reportMap = new HashMap<>(configData.getConfigs().size());
+        ValidationReport finalReport = ValidationReport.empty();
         configData.getConfigs().forEach((key, config) -> {
             ValidationReport report = this.validateConfig(configDefinition, config);
             if (report.hasErrors()) {
-                reportMap.put(key, report);
+                finalReport.merge(report);
             }
         });
-        if (reportMap.size() > 0) {
-            throw new IllegalArgumentException(mapper.writeValueAsString(reportMap));
+        if (finalReport.hasErrors()) {
+            throw new IllegalArgumentException(mapper.writeValueAsString(finalReport));
         }
     }
 

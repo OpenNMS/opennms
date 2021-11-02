@@ -28,6 +28,12 @@
 
 package org.opennms.features.config.dao.impl.util;
 
+import com.google.common.io.Resources;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -35,63 +41,32 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
-
-import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.dao.api.ConfigConverter;
-import org.opennms.features.config.dao.api.ValidationSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.io.Resources;
-
 /**
  * It handles all kinds of xml <> json conventions.
  */
 public class XmlConverter implements ConfigConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigConverter.class);
     private XmlMapper xmlMapper;
+    private XmlSchema xmlSchema;
     private String xsdName;
     private String rootElement;
-    private XmlValidationSchema validationSchema;
-    private SCHEMA_TYPE schemaType = SCHEMA_TYPE.XML;
 
     public XmlConverter(final String xsdName,
                         final String rootElement)
             throws IOException {
         this.xsdName = Objects.requireNonNull(xsdName);
         this.rootElement = Objects.requireNonNull(rootElement);
-        this.validationSchema = this.readXmlSchema();
-        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
+        this.xmlSchema = this.readXmlSchema();
+        this.xmlMapper = new XmlMapper(xmlSchema);
     }
 
-//    /**
-//     * For object mapper use
-//     * @param xsdName
-//     * @param rootElement
-//     * @param xmlAccessorType
-//     * @param validationSchema
-//     * @throws JAXBException
-//     */
-//    @JsonCreator
-//    public XmlConverter(
-//            @JsonProperty("xsdName") String xsdName, @JsonProperty("rootElement") String rootElement,
-//            @JsonProperty("xmlAccessorType") XmlAccessType xmlAccessorType,
-//            @JsonProperty("validationSchema") XmlValidationSchema validationSchema) throws JAXBException {
-//
-//        this.xsdName = xsdName;
-//        this.rootElement = rootElement;
-//        this.validationSchema = validationSchema;
-//        this.xmlMapper = new XmlMapper(validationSchema.getSchema());
-//    }
     /**
      * It searches the xsd defined in configuration class and load into schema.
      *
-     * @return ServiceSchema with xsds
+     * @return XmlSchema
      * @throws IOException
      */
-    private XmlValidationSchema readXmlSchema() throws IOException {
+    private XmlSchema readXmlSchema() throws IOException {
         String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
         final XsdModelConverter xsdModelConverter = new XsdModelConverter();
         final XmlSchemaCollection schemaCollection = xsdModelConverter.convertToSchemaCollection(xsdStr);
@@ -101,12 +76,11 @@ public class XmlConverter implements ConfigConverter {
                 .filter(targetNamespace -> targetNamespace.contains("opennms")).collect(Collectors.toList());
 
         if (namespaces.size() != 1) {
-            LOG.error("XSD must contain one 'opennms' namespaces! " + this.validationSchema);
+            LOG.error("XSD must contain one 'opennms' namespaces!");
             throw new IllegalArgumentException("XSD must contain one 'opennms' namespaces!");
         }
 
-        XmlSchema xmlSchema = new XmlSchema(xsdStr, namespaces.get(0), rootElement);
-        return new XmlValidationSchema(xmlSchema);
+        return new XmlSchema(xsdStr, namespaces.get(0), rootElement);
     }
 
     public String getRootElement() {
@@ -114,22 +88,8 @@ public class XmlConverter implements ConfigConverter {
     }
 
     @Override
-    public SCHEMA_TYPE getSchemaType() {
-        return schemaType;
-    }
-
-    @Override
     public String getRawSchema() {
-        return this.validationSchema.getSchema().getXsdContent();
-    }
-
-    @Override
-    public boolean validate(String config, SCHEMA_TYPE type) throws RuntimeException {
-        if(SCHEMA_TYPE.XML == type) {
-            return xmlMapper.validate(config);
-        } else {
-            throw new IllegalArgumentException("Implement me");
-        }
+        return this.xmlSchema.getXsdContent();
     }
 
     @Override
@@ -140,10 +100,5 @@ public class XmlConverter implements ConfigConverter {
     @Override
     public String jsonToXml(final String jsonStr) {
         return xmlMapper.jsonToXml(jsonStr);
-    }
-
-    @Override
-    public ValidationSchema<?> getValidationSchema() {
-        return validationSchema;
     }
 }

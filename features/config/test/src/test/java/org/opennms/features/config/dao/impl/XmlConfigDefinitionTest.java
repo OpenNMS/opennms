@@ -25,37 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  ******************************************************************************/
+package org.opennms.features.config.dao.impl;
 
-package org.opennms.features.config.dao.impl.util;
+import com.atlassian.oai.validator.report.EmptyValidationReport;
+import com.atlassian.oai.validator.report.ValidationReport;
+import org.junit.Test;
+import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class XmlConfigDefinitionTest {
+    XmlConfigDefinition def = new XmlConfigDefinition("provisiond", "provisiond-configuration.xsd", "provisiond-configuration");
 
-public class XmlSchema {
-
-    private final String xsdContent;
-    private final String namespace;
-    private final String topLevelObject;
-
-    @JsonCreator
-    public XmlSchema(@JsonProperty("xsdContent") String xsdContent,
-                     @JsonProperty("namespace") String namespace,
-                     @JsonProperty("topLevelObject") String topLevelObject) {
-        this.xsdContent = xsdContent;
-        this.namespace = namespace;
-        this.topLevelObject = topLevelObject;
+    @Test
+    public void testPassValidation() {
+        ValidationReport report = def.validate("{\"importThreads\": 11}");
+        Assert.isInstanceOf(EmptyValidationReport.class, report, "It should be empty report!");
     }
 
-    public String getXsdContent() {
-        return xsdContent;
-    }
+    @Test
+    public void testFailValidation() {
+        ValidationReport report = def.validate("{\"importThreads\": -1}");
+        Assert.isTrue(report.hasErrors(), "It should detect -1.");
 
-    public String getNamespace() {
-        return namespace;
-    }
+        report = def.validate("{\"importThreads\": \"test\"}");
+        Assert.isTrue(report.hasErrors(), "It should detect invalid datatype.");
 
-    public String getTopLevelObject() {
-        return topLevelObject;
+        report = def.validate("{\"test\": 11}");
+        Assert.isTrue(report.hasErrors(), "It should detect invalid attribute.");
     }
-
 }
