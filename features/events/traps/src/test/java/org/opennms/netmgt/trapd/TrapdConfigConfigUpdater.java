@@ -84,8 +84,7 @@ public class TrapdConfigConfigUpdater {
         config.setSnmpV3Users(v3users);
 
         m_config.update(config);
-
-        this.trapd.publishListenerConfig();
+        
     }
 
 }
