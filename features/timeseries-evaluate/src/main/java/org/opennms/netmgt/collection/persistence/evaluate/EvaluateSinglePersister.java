@@ -65,7 +65,7 @@ public class EvaluateSinglePersister extends AbstractEvaluatePersister {
             final String resourceId = getResourceId(attribute.getResource());
             final String attribId = resourceId + '/' + attribute.getName();
             LOG.debug("visitAttribute: {}", attribId);
-            stats.checkNode(attribute.getResource().getParent().getName());
+            stats.checkNode(attribute.getResource());
             stats.checkResource(resourceId);
             if (attribute.getAttributeType().getType().isNumeric()) {
                 stats.checkAttribute(attribId, true);
