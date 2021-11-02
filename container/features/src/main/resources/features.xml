@@ -1801,7 +1801,7 @@
         </conditional>
     </feature>
 
-    <feature name="opennms-core-ipc-twin-jms-subscriber" description="OpenNMS :: Core :: IPC :: Twin :: JMS :: Subscriber" version="${project.version}">
+    <feature name="opennms-core-ipc-twin-jms" description="OpenNMS :: Core :: IPC :: Twin :: JMS" version="${project.version}">
         <feature>camel-blueprint</feature>
         <feature>camel-jms</feature>
         <feature>guava</feature>
@@ -1814,7 +1814,7 @@
     <feature name="opennms-core-ipc-jms" description="OpenNMS :: Core :: IPC :: JMS" version="${project.version}">
         <feature>opennms-core-ipc-sink-camel</feature>
         <feature>opennms-core-ipc-rpc-jms</feature>
-        <feature>opennms-core-ipc-twin-jms-subscriber</feature>
+        <feature>opennms-core-ipc-twin-jms</feature>
     </feature>
     <feature name="opennms-core-ipc-kafka" description="OpenNMS :: Core :: IPC :: Kafka" version="${project.version}">
         <feature>opennms-core-ipc-sink-kafka</feature>

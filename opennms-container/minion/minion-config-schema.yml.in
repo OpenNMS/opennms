@@ -375,6 +375,36 @@ categories:
                 description: "Additional Kafka configuration properties"
                 key: "/ipc/rpc/kafka"
                 example: "compression.type: gzip"
+       # IPC Configuration :: Twin
+            - name: "twin"
+              label: "Twin"
+              description: "Configuration settings for Twin"
+              categories:
+                # IPC Configuration :: Twin :: Kafka
+                - name: "kafka"
+                  label: "Kafka"
+                  description: "Configuration for Twin using Apache Kafka as message broker"
+                  config:
+                    - name: "bootstrap-servers"
+                      type:
+                        name: "collection"
+                        strategy: "concat"
+                        items:
+                          label: "Server"
+                          type:
+                            name: "host-with-port"
+                          separator: ","
+                      label: "Bootstrap Servers"
+                      description: "Kafka bootstrap servers"
+                      key: "/ipc/twin/kafka/bootstrap.servers"
+                      example: "kafka-01-ip:9092, kafka-02-ip:9092"
+                    - name: "properties"
+                      type:
+                        name: "properties"
+                      label: "Properties"
+                      description: "Additional Kafka configuration properties"
+                      key: "/ipc/twin/kafka"
+                      example: "compression.type: gzip"
       # IPC Configuration :: Sink
       - name: "sink"
         label: "Sink"

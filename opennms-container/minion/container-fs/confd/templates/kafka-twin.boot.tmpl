@@ -1,9 +1,6 @@
 {{- /* Upon updating this file please ensure that the schema minion-config-schema.yml accurately reflects the keys that
 are used by this template. */ -}}
-{{if exists "/ipc/grpc/host" -}}
-!opennms-core-ipc-rpc-jms
-!opennms-core-ipc-sink-camel
+{{if exists "/ipc/twin/kafka/bootstrap.servers" -}}
 !opennms-core-ipc-twin-jms
-!minion-jms
-opennms-core-ipc-grpc-client
+opennms-core-ipc-twin-kafka
 {{end -}}

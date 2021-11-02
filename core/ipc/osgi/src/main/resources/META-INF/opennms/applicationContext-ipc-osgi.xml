@@ -20,6 +20,14 @@
   <bean id="osgiTwinPublisher" class="org.opennms.core.ipc.twin.osgi.OsgiTwinPublisher" primary="true">
   </bean>
 
+  <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
+
+  <onmsgi:service  interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
   <bean id="osgiLocalDispatcherFactory" class="org.opennms.core.ipc.osgi.OsgiLocalDispatcherFactory" >
     <property name="metrics" ref="osgiLocalSinkMetricRegistry"/>
   </bean>
