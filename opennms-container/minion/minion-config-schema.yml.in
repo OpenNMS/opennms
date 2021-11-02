@@ -294,31 +294,6 @@ categories:
     label: "IPC"
     description: "Core, Minion, and Sentinel distributed inter-process communication (IPC) settings"
     categories:
-      # IPC Configuration :: AWS
-      - name: "aws"
-        label: "AWS"
-        description: "Configuration for Amazon Web Services Simple Queue Service (AWS SQS) as message broker"
-        config:
-          - name: "properties"
-            type:
-              name: "properties"
-            label: "Properties"
-            description: "Global AWS SQS properties"
-            key: "/aws"
-            example: "aws_region: us-east-1, aws_access_key_id: xxxxxx or aws_secret_access_key: yyyyyy"
-        categories:
-          # IPC Configuration :: AWS :: SQS
-          - name: "sqs"
-            label: "SQS"
-            description: "Configuration for IPC messaging using AWS SQS"
-            config:
-              - name: "properties"
-                type:
-                  name: "properties"
-                label: "Properties"
-                description: "Generic AWS SQS IPC properties"
-                key: "/ipc/sqs"
-                example: "sink.MaximumMessageSize: 262144"
       # IPC Configuration :: gRPC
       - name: "grpc"
         label: "gRPC"

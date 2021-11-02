@@ -15,7 +15,6 @@
     <module>common</module>
     <module>camel</module>
     <module>kafka</module>
-    <module>aws-sqs</module>
     <module>mock-impl</module>
     <module>xml</module>
     <module>off-heap</module>
