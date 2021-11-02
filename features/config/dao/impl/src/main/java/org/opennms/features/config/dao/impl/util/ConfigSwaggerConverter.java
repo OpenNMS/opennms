@@ -33,6 +33,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.*;
@@ -78,9 +80,9 @@ public class ConfigSwaggerConverter {
         ObjectMapper objectMapper;
         try {
             if (APPLICATION_JSON.equals(acceptType)) {
-                objectMapper = new ObjectMapper();
+                objectMapper = Json.mapper();
             } else {
-                objectMapper = new ObjectMapper(new YAMLFactory());
+                objectMapper = Yaml.mapper();
             }
         } catch (Exception e) {
             LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage() + " using media type = yaml instead.");
@@ -159,8 +161,9 @@ public class ConfigSwaggerConverter {
 
     /**
      * It will extract all API paths to generate a giant openapi with remote $ref schema
+     *
      * @param openapiMap
-     * @param prefix (must include context path)
+     * @param prefix     (must include context path)
      * @return
      */
     public OpenAPI mergeAllPathsWithRemoteRef(Map<String, OpenAPI> openapiMap, String prefix) {
@@ -174,16 +177,24 @@ public class ConfigSwaggerConverter {
                 if (path.readOperations() == null)
                     return;
                 path.readOperations().forEach((oper -> {
-                    oper.getResponses().forEach((resK, resV) -> {
-                        if (resV.getContent() == null)
-                            return;
-                        resV.getContent().forEach((ck, cv) -> {
-                            LOG.info(cv.getSchema().get$ref());
+                    if (oper.getResponses() != null) {
+                        oper.getResponses().forEach((resK, resV) -> {
+                            if (resV.getContent() != null) {
+                                resV.getContent().forEach((ck, cv) -> {
+                                    if (cv.getSchema().get$ref() != null) {
+                                        cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    if (oper.getRequestBody() != null && oper.getRequestBody().getContent() != null) {
+                        oper.getRequestBody().getContent().forEach((ck, cv) -> {
                             if (cv.getSchema().get$ref() != null) {
                                 cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
                             }
                         });
-                    });
+                    }
                 }));
                 allApi.getPaths().putIfAbsent(name, path);
             });
@@ -270,7 +281,6 @@ public class ConfigSwaggerConverter {
         configIdParam.setName("configId");
         configIdParam.setRequired(true);
         configIdParam.in("path");
-        configIdParam.setStyle(Parameter.StyleEnum.SIMPLE);
         configIdParam.setSchema(new StringSchema());
         parameters.add(configIdParam);
 

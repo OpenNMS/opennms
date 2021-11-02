@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class OpenAPISerializer extends JsonSerializer<OpenAPI> {
     private ObjectMapper mapper;
 
     public OpenAPISerializer() {
-        mapper = new ObjectMapper();
+        mapper = Json.mapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
