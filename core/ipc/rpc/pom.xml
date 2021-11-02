@@ -12,7 +12,6 @@
   <name>OpenNMS :: Core :: IPC :: RPC</name>
   <modules>
     <module>api</module>
-    <module>aws-sqs-impl</module>
     <module>camel</module>
     <module>common</module>
     <module>jms-impl</module>
