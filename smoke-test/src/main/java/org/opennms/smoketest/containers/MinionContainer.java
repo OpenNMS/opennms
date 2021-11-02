@@ -29,9 +29,7 @@
 package org.opennms.smoketest.containers;
 
 import static java.nio.file.Files.createTempDirectory;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
+import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
 import java.io.File;
@@ -46,16 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
-import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DevDebugUtils;
-import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -189,6 +184,19 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
                     "\t}\n" +
                     "}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaSink, Map.class));
+            
+            String kafkaTwin = "{\n" +
+                    "\t\"ipc\": {\n" +
+                    "\t\t\"twin\": {\n" +
+                    "\t\t\t\"kafka\": {\n" +
+                    "\t\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
+                    "\t\t\t\t\"acks\": 1,\n" +
+                    "\t\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
+                    "\t\t\t}\n" +
+                    "\t\t}\n" +
+                    "\t}\n" +
+                    "}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaTwin, Map.class));
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             String grpc = "{\n" +
                     "\t\"ipc\": {\n" +
@@ -264,15 +272,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
         protected void waitUntilReady() {
             LOG.info("Waiting for Minion health check...");
             final InetSocketAddress sshAddr = container.getSshAddress();
-            final long timeoutMins = 5;
-            final AtomicReference<String> lastOutput = new AtomicReference<>();
-            try {
-                await().atMost(timeoutMins, MINUTES).pollInterval(5, SECONDS)
-                        .until(() -> KarafShellUtils.testHealthCheck(sshAddr, lastOutput));
-            } catch(ConditionTimeoutException e) {
-                LOG.error("Minion did not finish starting after {} minutes. Last output: {}", lastOutput);
-                throw new RuntimeException(e);
-            }
+            awaitHealthCheckSucceeded(sshAddr, 5, "Minion");
         }
     }
 

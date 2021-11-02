@@ -24,7 +24,7 @@
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
     <bean id="jmsTwinSubscriber" class="org.opennms.core.ipc.twin.jms.subscriber.JmsTwinSubscriber"
-    init-method="init" destroy-method="destroy">
+    init-method="init" destroy-method="close">
         <argument ref="minionIdentity"/>
         <argument ref="queuingservice"/>
         <argument value="${body.debug}"/>

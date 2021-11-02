@@ -20,16 +20,7 @@
 
 	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
-
-	<!-- Camel Event for unmarshalling processor -->
-	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
-	</bean>
-
-	<!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
-	<bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-		<property name="timeout" value="15"/>
-	</bean>
+	<reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
 	<!-- Config Bean -->
 	<bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
@@ -51,5 +42,6 @@
 		<argument ref="trapdConfig"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>
+		<property name="twinSubscriber" ref="twinSubscriber"/>
 	</bean>
 </blueprint>

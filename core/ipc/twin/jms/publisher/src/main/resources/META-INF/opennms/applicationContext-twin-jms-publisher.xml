@@ -18,12 +18,13 @@
 
 
     <bean id="jmsTwinPublisher" class="org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher" primary="true"
-          init-method="init" destroy-method="destroy" >
+          init-method="init" destroy-method="close" >
         <constructor-arg ref="twinRpcServer"/>
         <constructor-arg ref="localTwinSubscriber"/>
     </bean>
 
     <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
+    <onmsgi:service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
     <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">

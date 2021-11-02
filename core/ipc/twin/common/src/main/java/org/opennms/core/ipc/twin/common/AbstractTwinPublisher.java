@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +72,12 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         return new TwinResponseBean(twinRequest.getKey(), twinRequest.getLocation(), value);
     }
 
-    public void shutdown() {
+    public void close() throws IOException {
         objMap.clear();
+    }
+
+    public Map<SessionKey, byte[]> getObjMap() {
+        return objMap;
     }
 
     private class SessionImpl<T> implements Session<T> {

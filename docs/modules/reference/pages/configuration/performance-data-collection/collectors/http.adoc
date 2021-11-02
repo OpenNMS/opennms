@@ -50,7 +50,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 
 | use-system-proxy
 | Should the system-wide proxy settings be used? Configure system proxy settings
-via <<operation:system-properties/introduction.adoc#system-properties, system properties>>.
+via <<operation:admin/system-properties/introduction.adoc#system-properties, system properties>>.
 | false
 |===
 

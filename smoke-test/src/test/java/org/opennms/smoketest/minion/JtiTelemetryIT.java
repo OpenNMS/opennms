@@ -137,14 +137,16 @@ public class JtiTelemetryIT {
         minionEvent.setInterfaceAddress(Inet4Address.getByName(SENDER_IP));
         minionEvent.setSource("system-test");
         minionEvent.setSeverity("4");
+        String foreignSource = null;
         if (isMinion) {
-            Parm parm = new Parm();
-            parm.setParmName("location");
-            Value minion = new Value(stack.minion().getLocation());
-            parm.setValue(minion);
-            List<Parm> parms = new ArrayList<>();
-            parms.add(parm);
-            minionEvent.setParmCollection(parms);
+            foreignSource ="jti-test-minion";
+            minionEvent.addParm(new Parm(EventConstants.PARM_FOREIGN_SOURCE, foreignSource));
+            minionEvent.addParm(new Parm(EventConstants.PARM_FOREIGN_ID, "1212312341"));
+            minionEvent.addParm(new Parm(EventConstants.PARM_LOCATION, stack.minion().getLocation()));
+        } else {
+            foreignSource = "jti-test";
+            minionEvent.addParm(new Parm(EventConstants.PARM_FOREIGN_SOURCE, foreignSource));
+            minionEvent.addParm(new Parm(EventConstants.PARM_FOREIGN_ID, "1212312342"));
         }
         stack.opennms().getRestClient().sendEvent(minionEvent);
 
@@ -159,7 +161,7 @@ public class JtiTelemetryIT {
                 greaterThan(0));
 
         final OnmsNode onmsNode = await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class).eq("label", SENDER_IP)
+                .until(DaoUtils.findMatchingCallable(nodeDao, new CriteriaBuilder(OnmsNode.class).eq("foreignSource", foreignSource)
                         .ge("createTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull(onmsNode);
