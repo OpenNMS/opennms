@@ -9,15 +9,13 @@
 
     <reference id="grpcIpcServer" interface="org.opennms.core.grpc.common.GrpcIpcServer" />
 
+    <reference id="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
+
     <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
           init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
         <argument ref="grpcIpcServer"/>
     </bean>
-
-    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
-
-    <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
 
     <service ref="grpcTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher">
         <service-properties>

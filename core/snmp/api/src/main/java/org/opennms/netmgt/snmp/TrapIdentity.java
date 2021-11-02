@@ -154,7 +154,7 @@ public class TrapIdentity {
                 setTrapOID(snmpTrapOidValue);
             } else {
                 setEnterpriseId(snmpTrapOidValue.substring(0, lastIndex));
-                setTrapOID(getEnterpriseId());
+                setTrapOID(snmpTrapOidValue);
             }
         }
     }

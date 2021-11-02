@@ -91,7 +91,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
         // Start this context after Eventd is available
         "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",
-        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
+        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-twin-memory.xml"}
 )
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment

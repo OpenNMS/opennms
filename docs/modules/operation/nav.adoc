@@ -74,6 +74,8 @@
 ** xref:alarms/alarm-notes.adoc[]
 ** xref:alarms/alarm-sound-flash.adoc[]
 ** xref:alarms/history.adoc[]
+** xref:alarms/ifttt-integration.adoc[]
+
 
 * xref:notifications/introduction.adoc[]
 ** xref:notifications/getting-started.adoc[]
@@ -95,23 +97,23 @@
 ** xref:bsm/reduce-functions.adoc[]
 ** xref:bsm/bsmd.adoc[]
 
-* xref:topology/topology.adoc[]
-* xref:asset-topology/graphml-asset-topology-provider.adoc[]
-* xref:database-reports/database.adoc[]
+* xref:topology/introduction.adoc[]
+** xref:topology/topology.adoc[]
+** xref:topology/graphml-asset-topology-provider.adoc[]
+** xref:topology/enlinkd/introduction.adoc[]
+*** xref:topology/enlinkd/layer-2-discovery.adoc[]
+**** xref:topology/enlinkd/layer-2/lldp-discovery.adoc[]
+**** xref:topology/enlinkd/layer-2/cdp-discovery.adoc[]
+**** xref:topology/enlinkd/layer-2/bridge-discovery.adoc[]
+*** xref:topology/enlinkd/layer-3-discovery.adoc[]
+**** xref:topology/enlinkd/layer-3/ospf-discovery.adoc[]
+**** xref:topology/enlinkd/layer-3/is-is-discovery.adoc[]
 
-* xref:enlinkd/introduction.adoc[]
-** xref:enlinkd/layer-2-discovery.adoc[]
-*** xref:enlinkd/layer-2/lldp-discovery.adoc[]
-*** xref:enlinkd/layer-2/cdp-discovery.adoc[]
-*** xref:enlinkd/layer-2/bridge-discovery.adoc[]
-** xref:enlinkd/layer-3-discovery.adoc[]
-*** xref:enlinkd/layer-3/ospf-discovery.adoc[]
-*** xref:enlinkd/layer-3/is-is-discovery.adoc[]
+* xref:database-reports/database.adoc[]
 
 * xref:ticketing/introduction.adoc[]
 
 * xref:workarounds/snmp.adoc[]
-* xref:ifttt/ifttt-integration.adoc[]
 * xref:dnsresolver/introduction.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
@@ -175,3 +177,4 @@
 ** xref:admin/http-ssl.adoc[]
 ** xref:admin/request-logging.adoc[]
 ** xref:admin/restart.adoc[]
+** xref:admin/daemon-config-files.adoc[]
