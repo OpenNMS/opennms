@@ -63,7 +63,7 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
     @Override
     protected TwinPublisher createPublisher() throws IOException {
         GrpcIpcServer grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
-        this.publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(), grpcIpcServer);
+        this.publisher = new GrpcTwinPublisher(new LocalTwinSubscriberImpl(new MockMinionIdentity("Default")), grpcIpcServer);
         publisher.start();
         return publisher;
     }
