@@ -43,6 +43,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -54,7 +55,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
     private final Executor executor = Executors.newCachedThreadPool();
 
     public MockTwinPublisher(Hashtable<String, Object> config) {
-        super(new LocalTwinSubscriberImpl());
+        super(new LocalTwinSubscriberImpl(new MockMinionIdentity("Default")));
         kafkaConfig.putAll(config);
         kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "OpenNMS");
     }

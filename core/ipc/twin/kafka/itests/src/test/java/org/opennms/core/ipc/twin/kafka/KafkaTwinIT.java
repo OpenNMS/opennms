@@ -39,6 +39,7 @@ import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher;
 import org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
+import org.opennms.core.ipc.twin.test.MockMinionIdentity;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.core.utils.SystemInfoUtils;
@@ -65,7 +66,7 @@ public class KafkaTwinIT extends AbstractTwinBrokerIT {
             return properties;
         };
 
-        final var kafkaTwinPublisher = new KafkaTwinPublisher(new LocalTwinSubscriberImpl(), config);
+        final var kafkaTwinPublisher = new KafkaTwinPublisher(new LocalTwinSubscriberImpl(new MockMinionIdentity("Default")), config);
         kafkaTwinPublisher.init();
 
         try {

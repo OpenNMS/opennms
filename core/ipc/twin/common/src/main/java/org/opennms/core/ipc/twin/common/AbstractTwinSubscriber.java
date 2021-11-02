@@ -30,11 +30,9 @@ package org.opennms.core.ipc.twin.common;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,17 +41,17 @@ import java.util.function.Consumer;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
-import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.Identity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -61,141 +59,51 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
 
-    private final MinionIdentity minionIdentity;
+    private final Identity identity;
 
-    private final Multimap<String, SessionImpl<?>> sessionMap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
-    private final Map<String, TwinTracker> objMap = new ConcurrentHashMap<>();
+    private final Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
                                                                                               .setNameFormat("abstract-twin-subscriber-%d")
                                                                                               .build());
 
-    protected AbstractTwinSubscriber(MinionIdentity minionIdentity) {
-        this.minionIdentity = minionIdentity;
+    protected AbstractTwinSubscriber(final Identity identity) {
+        this.identity = Objects.requireNonNull(identity);
     }
 
     protected abstract void sendRpcRequest(TwinRequest twinRequest);
 
 
     @Override
-    public <T> Closeable subscribe(String key, Class<T> clazz, Consumer<T> consumer) {
-        SessionImpl<T> session = new SessionImpl<T>(key, clazz, consumer);
-        sessionMap.put(key, session);
-        String location = minionIdentity != null ? minionIdentity.getLocation() : null;
-
-        TwinTracker twinTracker = objMap.get(key);
-        // If there is an existing object, send that update to subscriber
-        if (twinTracker != null) {
-            try {
-                session.accept(twinTracker.getObj());
-            } catch (Exception e) {
-                LOG.error("Exception while sending response to consumer", e);
-            }
-        } else {
-            TwinRequest twinRequest = new TwinRequest(key, location);
-            sendRpcRequest(twinRequest);
-        }
-
-        LOG.info("Subscribed to object updates with key {}", key);
-        return session;
+    public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
+        final var subscription = this.subscriptions.computeIfAbsent(key, Subscription::new);
+        return subscription.consume(clazz, consumer);
     }
 
-    protected void accept(TwinUpdate twinUpdate) {
-
-        // If Response is targeted to a location, ignore if it doesn't belong to the location of subscriber.
-        if (twinUpdate.getLocation() != null && !twinUpdate.getLocation().equals(getLocation())) {
+    protected void accept(final TwinUpdate twinUpdate) {
+        // Ignore update if not broadcast but foreign location
+        if (twinUpdate.getLocation() != null && !twinUpdate.getLocation().equals(this.identity.getLocation())) {
             return;
         }
 
-        // Got empty response
+        // Ignore empty response
         if (twinUpdate.getObject() == null || twinUpdate.getSessionId() == null) {
             return;
         }
 
-        // Consume in our own thread instead of using broker's callback thread.
-        executorService.execute(() -> {
-            validateAndHandleUpdate(twinUpdate);
+        // Consume in thread instead of using broker's callback thread.
+        this.executorService.execute(() -> {
+            final var subscription = this.subscriptions.computeIfAbsent(twinUpdate.getKey(), Subscription::new);
+
+            try {
+                subscription.update(twinUpdate);
+            } catch (final IOException e) {
+                LOG.error("Processing update failed: {}", twinUpdate.getKey(), e);
+                subscription.request();
+            }
         });
-    }
-
-    private void validateAndHandleUpdate(TwinUpdate twinUpdate) {
-        TwinTracker twinTracker = objMap.get(twinUpdate.getKey());
-        if (twinTracker == null) {
-            if (!twinUpdate.isPatch()) {
-                updateSessions(twinUpdate, twinUpdate.getObject());
-            }
-            return;
-        }
-        if (isObjectUpdated(twinTracker, twinUpdate)) {
-            LOG.trace("Received object update with key {}", twinUpdate.getKey());
-            // No need to update if version we are getting is less than what we have with the same session.
-            if (twinTracker.getSessionId().equals(twinUpdate.getSessionId())
-                    && twinTracker.getVersion() > twinUpdate.getVersion()) {
-                return;
-            }
-            // If this is from new session, reset tracker.
-            if (!twinTracker.getSessionId().equals(twinUpdate.getSessionId())) {
-                if (!twinUpdate.isPatch()) {
-                    updateSessions(twinUpdate, twinUpdate.getObject());
-                }
-                return;
-            }
-            // We can't apply patch when the version jumps more than one version.
-            if (twinUpdate.getVersion() != twinTracker.getVersion() + 1) {
-                sendRpcRequest(new TwinRequest(twinUpdate.getKey(), twinUpdate.getLocation()));
-                return;
-            }
-            byte[] patchedBytes = applyPatch(twinTracker, twinUpdate);
-            // Invoke RPC when we can't apply patch properly.
-            if (patchedBytes != null) {
-                // Update twin object for sessions.
-                updateSessions(twinUpdate, patchedBytes);
-            } else {
-                sendRpcRequest(new TwinRequest(twinUpdate.getKey(), twinUpdate.getLocation()));
-            }
-        }
-    }
-
-    private byte[] applyPatch(TwinTracker twinTracker, TwinUpdate twinUpdate) {
-        if (!twinUpdate.isPatch()) {
-            return twinUpdate.getObject();
-        }
-        try {
-            JsonNode resultingDiff = objectMapper.readTree(twinUpdate.getObject());
-            JsonNode original = objectMapper.readTree(twinTracker.getObj());
-            JsonPatch patch = JsonPatch.fromJson(resultingDiff);
-            JsonNode resultNode = patch.apply(original);
-            return resultNode.toString().getBytes(StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            LOG.error("Not able to apply patch for key {}", twinUpdate.getKey(), e);
-        }
-        return null;
-    }
-
-    private boolean isObjectUpdated(TwinTracker twinTracker, TwinUpdate twinUpdate) {
-        if (twinUpdate.isPatch()) {
-            return true;
-        }
-        return !Arrays.equals(twinTracker.getObj(), twinUpdate.getObject());
-    }
-
-    private void updateSessions(TwinUpdate twinUpdate, byte[] newObjBytes) {
-        // Update twin object in local cache.
-        objMap.put(twinUpdate.getKey(), new TwinTracker(newObjBytes, twinUpdate.getVersion(), twinUpdate.getSessionId()));
-        // Send update to each session.
-        synchronized(sessionMap) {
-            final var sessions = sessionMap.get(twinUpdate.getKey());
-            if (sessions != null) {
-                sessions.forEach(session -> {
-                    try {
-                        session.accept(newObjBytes);
-                    } catch (Exception e) {
-                        LOG.error("Exception while sending update to Session {} for key {}", session, twinUpdate.getKey(), e);
-                    }
-                });
-            }
-        }
     }
 
 
@@ -225,72 +133,159 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     protected TwinRequestProto mapTwinRequestToProto(TwinRequest twinRequest) {
         TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
-        builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
-                .setSystemId(getMinionIdentity().getId());
+        builder.setConsumerKey(twinRequest.getKey())
+               .setLocation(getIdentity().getLocation())
+               .setSystemId(getIdentity().getId());
         return builder.build();
     }
 
     public void close() throws IOException {
-        executorService.shutdown();
-        objMap.clear();
-        sessionMap.clear();
+        this.executorService.shutdown();
+        this.subscriptions.clear();
     }
 
-    public MinionIdentity getMinionIdentity() {
-        return minionIdentity;
+    public Identity getIdentity() {
+        return this.identity;
     }
 
-    private String getLocation() {
-        if (minionIdentity != null) {
-            return minionIdentity.getLocation();
+    private static class Value {
+        public final String sessionId;
+        public final int version;
+
+        public final JsonNode value;
+
+        private Value(final String sessionId,
+                      final int version,
+                      final JsonNode value) {
+            this.sessionId = Objects.requireNonNull(sessionId);
+            this.version = version;
+            this.value = Objects.requireNonNull(value);
         }
-        return null;
     }
 
-    private class SessionImpl<T> implements Closeable {
-
+    private class Subscription {
         private final String key;
-        private final Consumer<T> consumer;
-        private final Class<T> clazz;
 
-        public SessionImpl(String key, Class<T> clazz, Consumer<T> consumer) {
-            this.key = key;
-            this.clazz = clazz;
-            this.consumer = consumer;
+        private final Set<Consumer<JsonNode>> consumers = Sets.newConcurrentHashSet();
+
+        private Value value = null;
+
+        private Subscription(final String key) {
+            this.key = Objects.requireNonNull(key);
         }
 
-        @Override
-        public void close() throws IOException {
-            sessionMap.remove(key, this);
-            LOG.info("Closed session with key {} ", key);
+        /**
+         * Consume the subscription.
+         *
+         * Adds a consumer to the subscription. Incoming values will be forwarded to the passed consumer until the
+         * returned value is closed. If there is a value already available for the subscription, the consumer will be
+         * called with this value immediately.
+         *
+         * @param clazz The class of the value to consume
+         * @param consumer The consumer accepting the values
+         * @param <T> The class of the value to consume
+         * @return a Closable, stopping the consumption when closed
+         */
+        public synchronized <T> Closeable consume(final Class<T> clazz, final Consumer<T> consumer) {
+            final Consumer<JsonNode> jsonConsumer = (json) -> {
+                try {
+                    // Deserialize to the final class
+                    final var value = AbstractTwinSubscriber.this.objectMapper.treeToValue(json, clazz);
+
+                    // Forward to typed consumer
+                    consumer.accept(value);
+
+                } catch (final JsonProcessingException e) {
+                    LOG.error("Deserialize twin failed: {} as {}", this.key, clazz, e);
+                }
+            };
+
+            if (this.value == null) {
+                // Initially request value
+                this.request();
+            } else {
+                // If value already exists, forward to consumer without requesting
+                jsonConsumer.accept(this.value.value);
+            }
+
+            // Add the consumer to the subscription
+            this.consumers.add(jsonConsumer);
+
+            // Return the closable removing the consumer
+            return () -> {
+                this.consumers.remove(jsonConsumer);
+
+                // Drop the subscription if it becomes empty
+                if (this.consumers.isEmpty()) {
+                    AbstractTwinSubscriber.this.subscriptions.remove(this.key);
+                }
+            };
         }
 
-        public void accept(byte[] objValue) throws IOException {
-            final T value = objectMapper.readValue(objValue, clazz);
-            LOG.trace("Updated consumer with key {}", key);
-            consumer.accept(value);
+        private synchronized void accept(final Value value) {
+            Objects.requireNonNull(value);
+
+            // Skip if value has not changed
+            if (this.value != null && Objects.equals(this.value.value, value.value)) {
+                return;
+            }
+
+            // Remember value
+            this.value = value;
+
+            // Call all consumers
+            this.consumers.forEach(c -> c.accept(this.value.value));
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            SessionImpl<?> session = (SessionImpl<?>) o;
-            return Objects.equals(key, session.key) && Objects.equals(consumer, session.consumer) && Objects.equals(clazz, session.clazz);
+        private synchronized void request() {
+            final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
+            AbstractTwinSubscriber.this.sendRpcRequest(request);
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(key, consumer, clazz);
-        }
+        public synchronized void update(final TwinUpdate update) throws IOException {
+            if (this.value == null || !Objects.equals(this.value.sessionId, update.getSessionId())) {
+                // Either there was no previous known value or the session has restarted
 
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", SessionImpl.class.getSimpleName() + "[", "]")
-                    .add("key='" + key + "'")
-                    .add("consumer=" + consumer)
-                    .add("clazz=" + clazz)
-                    .toString();
+                if (!update.isPatch()) {
+                    this.accept(new Value(update.getSessionId(),
+                                          update.getVersion(),
+                                          AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject())));
+                } else {
+                    this.request();
+                }
+
+            } else {
+                // Same session
+
+                // Ignore update if version is not advancing
+                if (update.getVersion() <= this.value.version) {
+                    return;
+                }
+
+                if (!update.isPatch()) {
+                    this.accept(new Value(update.getSessionId(),
+                                          update.getVersion(),
+                                          AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject())));
+                } else {
+                    if (update.getVersion() == this.value.version + 1) {
+                        // Version advanced - apply path
+                        try {
+                            final var patchObj = AbstractTwinSubscriber.this.objectMapper.readTree(update.getObject());
+                            final var patch = JsonPatch.fromJson(patchObj);
+
+                            final var value = patch.apply(this.value.value);
+
+                            this.accept(new Value(update.getSessionId(), update.getVersion(), value));
+                        } catch (JsonPatchException e) {
+                            throw new IOException("Unable to apply patch", e);
+                        }
+
+                    } else {
+                        // Version jumped
+                        this.request();
+                    }
+                }
+            }
         }
     }
 

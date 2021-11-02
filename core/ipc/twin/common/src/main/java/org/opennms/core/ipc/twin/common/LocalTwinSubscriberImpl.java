@@ -31,11 +31,12 @@ package org.opennms.core.ipc.twin.common;
 
 import java.io.IOException;
 
+import org.opennms.distributed.core.api.Identity;
+
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
-
-    public LocalTwinSubscriberImpl() {
-        super(null);
+    public LocalTwinSubscriberImpl(final Identity identity) {
+        super(identity);
     }
 
     @Override
