@@ -182,7 +182,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         // Save the IP interface
         clickId("save-interface", false);
         wait.until(visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
-        wait.until(invisibilityOfElementLocated(By.xpath("//div[contains(@class,'modal-backdrop')]")));
+        wait.until(invisibilityOfElementLocated(By.cssSelector("div.modal-backdrop")));
 
         // Add an asset to the node
         clickId("tab-assets", false);
