@@ -111,11 +111,14 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
     }
 
     private boolean isPublicAddress(final InetAddress address) {
+        final boolean isUla = address.getAddress().length == 16 ? (address.getAddress()[0] & 0xfe) == 0xfc : false;
+
         return !(address.isSiteLocalAddress() ||
                 address.isAnyLocalAddress() ||
                 address.isLinkLocalAddress() ||
                 address.isLoopbackAddress() ||
-                address.isMulticastAddress());
+                address.isMulticastAddress() ||
+                isUla);
     }
 
     public void queryNode(final int nodeId) {
