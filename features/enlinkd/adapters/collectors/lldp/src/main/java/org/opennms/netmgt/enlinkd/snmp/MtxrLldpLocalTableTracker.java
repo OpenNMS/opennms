@@ -128,7 +128,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
      * @param row a {@link MtxrLldpLocalTableTracker.LldpLocalPortRow} object.
      */
     public void processLldpLocPortRow(final LldpLocalPortRow row) {
-        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {} {} {}", row.getMtxrIndex(),row.getLldpLocalPortIdSubtype(),row.getLldpLocPortId(), row.getLldpLocPortDesc());
+        LOG.debug("processLldpLocPortRow: mtxrIndex {} -> {} {} {}", row.getMtxrIndex(), row.getLldpLocalPortIdSubtype(), row.getLldpLocPortId(), row.getLldpLocPortDesc());
         mtxrLldpLocalPortMap.put(row.getMtxrIndex(),row);
     }
 
