@@ -836,7 +836,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 assertNotNull(row.getMtxrNeighborIndex());
                 Integer mtxrIndex = mikrotikMtxrIndexTable01.getMtxrinterfaceId(row);
                 assertEquals(1, mtxrIndex.intValue());
-                LldpLink link = mikrotikLldpLocalTable01.getLldpLink(row,mtxrIndex);
+                LldpLink link = mikrotikLldpLocalTable01.getLldpLink(row, mtxrIndex);
                 assertEquals("ether1",link.getLldpPortId());
                 assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
