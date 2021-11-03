@@ -62,7 +62,7 @@ public class LldpLinkTopologyEntity {
         this.lldpRemPortId = lldpRemPortId;
         this.lldpRemPortIdSubType = lldpRemPortIdSubType;
         this.lldpPortId = lldpPortId;
-        this.lldpRemPortDescr=remportdescr;
+        this.lldpRemPortDescr = remportdescr;
         this.lldpPortIdSubType = lldpPortIdSubType;
         this.lldpPortDescr = lldpPortDescr;
         this.lldpPortIfindex = lldpPortIfindex;
