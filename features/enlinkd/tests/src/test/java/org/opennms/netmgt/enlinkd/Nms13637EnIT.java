@@ -197,10 +197,5 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
             assertEquals("ether1",e.getSource().getIfname());
             assertNotNull(e.getTarget().getIfname());
         }
-
-
-
-
     }
-
 }
