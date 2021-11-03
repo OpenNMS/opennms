@@ -1679,9 +1679,8 @@
     </feature>
 
     <feature name="opennms-core-ipc-twin-grpc-publisher" description="OpenNMS :: Core :: IPC :: Twin :: GRPC :: Publisher" version="${project.version}">
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.publisher/${project.version}</bundle>
     </feature>
@@ -1825,8 +1824,8 @@
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsr305/3.0.2_1</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/btf/1.3</bundle>
         <bundle>wrap:mvn:com.github.java-json-tools/msg-simple/1.2</bundle>
-        <bundle>wrap:mvn:com.github.java-json-tools/jackson-coreutils/2.0$overwrite=merge&amp;Import-Package=javax.annotation</bundle>
-        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/1.13$overwrite=merge&amp;Import-Package=javax.annotation&amp;Export-Package=com.github.fge.jsonpatch.diff,com.github.fge.jsonpatch</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/jackson-coreutils/2.0$overwrite=merge&amp;Import-Package=*;</bundle>
+        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/1.13$overwrite=merge&amp;Import-Package=*;resolution:=optional&amp;Export-Package=com.github.fge.jsonpatch.diff,com.github.fge.jsonpatch</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-jms" description="OpenNMS :: Core :: IPC :: JMS" version="${project.version}">
@@ -1842,9 +1841,8 @@
 
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <feature>opennms-core-ipc-twin-common</feature>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>

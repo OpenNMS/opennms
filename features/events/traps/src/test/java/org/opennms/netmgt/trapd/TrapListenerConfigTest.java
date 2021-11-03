@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.snmp.SnmpV3User;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

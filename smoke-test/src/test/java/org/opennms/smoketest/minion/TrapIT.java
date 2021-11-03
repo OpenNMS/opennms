@@ -40,6 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opennms.core.criteria.Criteria;
@@ -56,9 +57,11 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
+import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.slf4j.Logger;
@@ -74,10 +77,17 @@ import org.slf4j.LoggerFactory;
 public class TrapIT {
     private static final Logger LOG = LoggerFactory.getLogger(TrapIT.class);
 
-    @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    @Rule
+    public final OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
+            .withMinion()
+            .withIpcStrategy(getIpcStrategy())
+            .build());
 
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+    public IpcStrategy getIpcStrategy() {
+        return IpcStrategy.JMS;
+    }
 
     @Test
     public void canReceiveTraps() {
