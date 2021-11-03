@@ -43,7 +43,7 @@ public class LldpElementTopologyEntity {
     public LldpElementTopologyEntity(Integer id, String lldpChassisId, String sysname, Integer nodeId) {
         this.id = id;
         this.lldpChassisId = lldpChassisId;
-        this.lldpSysname=sysname;
+        this.lldpSysname = sysname;
         this.nodeId = nodeId;
     }
 
