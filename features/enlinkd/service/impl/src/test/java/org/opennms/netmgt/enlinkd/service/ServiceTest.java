@@ -149,7 +149,7 @@ public class ServiceTest {
         createLldpElement(31,nodes.get(1), "match1.1", "host31"),
         createLldpElement(32,nodes.get(2), "Element2", "host32"),
         createLldpElement(33,nodes.get(3), "match1.2", "host33"),
-        createLldpElement(34,nodes.get(4), "match2.1","host34"),
+        createLldpElement(34,nodes.get(4), "match2.1", "host34"),
         createLldpElement(35,nodes.get(5), "match2.2","host35"));
 
         lldpLinks = Arrays.asList(
