@@ -965,36 +965,36 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             Integer mtxrIndex = mikrotikMtxrIndexTable02.getMtxrinterfaceId(row);
             assertEquals(1, mtxrIndex.intValue());
             LldpLink link = mikrotikLldpLocalTable02.getLldpLink(row,mtxrIndex);
-            assertEquals("ether1",link.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+            assertEquals("ether1", link.getLldpPortId());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
-            assertEquals("",link.getLldpRemPortDescr());
+            assertEquals("", link.getLldpRemPortDescr());
             switch(link.getLldpLocalPortNum()) {
                 case 1:
-                    assertEquals("ether1",link.getLldpRemPortId());
-                    assertEquals(MKTROUTER1_NAME,link.getLldpRemSysname());
-                    assertEquals(MKTROUTER1_ETHER1_MAC,link.getLldpRemChassisId());
+                    assertEquals("ether1", link.getLldpRemPortId());
+                    assertEquals(MKTROUTER1_NAME, link.getLldpRemSysname());
+                    assertEquals(MKTROUTER1_ETHER1_MAC, link.getLldpRemChassisId());
                     break;
                 case 2:
-                    assertEquals("ens160",link.getLldpRemPortId());
-                    assertEquals("elastic-01",link.getLldpRemSysname());
-                    assertEquals(MKT_HOST3_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals("ens160", link.getLldpRemPortId());
+                    assertEquals("elastic-01", link.getLldpRemSysname());
+                    assertEquals(MKT_HOST3_LLDP_ID, link.getLldpRemChassisId());
                     break;
                 case 3:
-                    assertEquals("vmx1",link.getLldpRemPortId());
-                    assertEquals("opn-fw-01.clab.labmonkeys.tech",link.getLldpRemSysname());
-                    assertEquals(MKT_HOST4_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals("vmx1", link.getLldpRemPortId());
+                    assertEquals("opn-fw-01.clab.labmonkeys.tech", link.getLldpRemSysname());
+                    assertEquals(MKT_HOST4_LLDP_ID, link.getLldpRemChassisId());
                     break;
                 case 4:
-                    assertEquals("ens160",link.getLldpRemPortId());
-                    assertEquals("onms-hzn",link.getLldpRemSysname());
-                    assertEquals(MKT_HOST5_LLDP_ID,link.getLldpRemChassisId());
+                    assertEquals("ens160", link.getLldpRemPortId());
+                    assertEquals("onms-hzn", link.getLldpRemSysname());
+                    assertEquals(MKT_HOST5_LLDP_ID, link.getLldpRemChassisId());
                     break;
                 case 5:
                     assertEquals("gi5",link.getLldpRemPortId());
-                    assertEquals(MKT_CISCO_SW01_NAME,link.getLldpRemSysname());
-                    assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpRemChassisId());
-                    assertEquals(MKT_CISCO_SW01_GB05_MAC,link.getLldpRemChassisId());
+                    assertEquals(MKT_CISCO_SW01_NAME, link.getLldpRemSysname());
+                    assertNotEquals(MKT_CISCO_SW01_LLDP_ID, link.getLldpRemChassisId());
+                    assertEquals(MKT_CISCO_SW01_GB05_MAC, link.getLldpRemChassisId());
                     break;
                 default:
                     fail();
