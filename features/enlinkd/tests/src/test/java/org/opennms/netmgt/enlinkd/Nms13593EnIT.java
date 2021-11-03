@@ -266,9 +266,9 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             System.err.println(e.getSource().getToolTipText());
             System.err.println(e.getTarget().getToolTipText());
 
-            assertEquals("ZHBGO1Zsr001",e.getSource().getVertex().getLabel());
-            assertEquals("ZHBGO1Zsr002",e.getTarget().getVertex().getLabel());
-            assertEquals(e.getSource().getIfname(),e.getTarget().getIfname());
+            assertEquals("ZHBGO1Zsr001", e.getSource().getVertex().getLabel());
+            assertEquals("ZHBGO1Zsr002", e.getTarget().getVertex().getLabel());
+            assertEquals(e.getSource().getIfname(), e.getTarget().getIfname());
             assertEquals(e.getSource().getIfindex().intValue(),e.getTarget().getIfindex().intValue());
             switch (e.getSource().getIfindex()) {
                 case 105037825:
