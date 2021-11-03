@@ -191,7 +191,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         assertEquals(3,topology.getEdges().size());
         for (OnmsTopologyEdge e : topology.getEdges()) {
             System.err.println("-------------Edge-------------------");
-            System.err.println(e.getSource().getVertex().getLabel()+":"+e.getSource().getIfname()+"<->"+e.getTarget().getIfname()+":"+e.getTarget().getVertex().getLabel());
+            System.err.println(e.getSource().getVertex().getLabel() + ":" + e.getSource().getIfname() + "<->" + e.getTarget().getIfname() + ":" + e.getTarget().getVertex().getLabel());
             System.err.println(e.getSource().getToolTipText());
             System.err.println(e.getTarget().getToolTipText());
             assertEquals("ether1", e.getSource().getIfname());
