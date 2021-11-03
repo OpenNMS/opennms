@@ -48,6 +48,10 @@ const SET_IS_CONSOLE_OPEN = (state: State, isOpen: boolean) => {
   state.isConsoleOpen = isOpen
 }
 
+const SET_IS_HELP_OPEN = (state: State, isOpen: boolean) => {
+  state.isHelpOpen = isOpen
+}
+
 export default {
   SAVE_FILE_NAMES_TO_STATE,
   SAVE_FILE_TO_STATE,
@@ -59,5 +63,6 @@ export default {
   SAVE_MODIFIED_FILE_STRING,
   ADD_LOG_TO_STATE,
   CLEAR_LOGS,
-  SET_IS_CONSOLE_OPEN
+  SET_IS_CONSOLE_OPEN,
+  SET_IS_HELP_OPEN
 }

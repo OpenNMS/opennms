@@ -2,14 +2,32 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <div class="card">
+
+        <TopBar v-if="isHelpOpen" />
+
         <div class="feather-row">
-          <div class="feather-col-3">
-            <Files />
-          </div>
-          <div class="feather-col-9">
+          <transition name="fade">
+            <div class="feather-col-3" v-if="!isHelpOpen">
+              <Files />
+            </div>
+          </transition>
+
+          <div :class="`feather-col-${isHelpOpen ? 8 : 9}`">
             <Editor />
           </div>
-          <Snippets />
+
+          <transition name="fade">
+            <div class="feather-col-4" v-if="isHelpOpen">
+              <Help />
+            </div>
+          </transition>
+
+          <FeatherButton
+            v-if="!isHelpOpen && snippets"
+            class="help-btn"
+            text
+            @click="triggerHelp"
+          >Help</FeatherButton>
         </div>
       </div>
     </div>
@@ -17,12 +35,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { onMounted, computed } from "vue"
 import { useStore } from 'vuex'
+import { FeatherButton } from '@featherds/button'
 import Editor from '@/components/FileEditor/Editor.vue'
 import Files from '@/components/FileEditor/Files.vue'
-import Snippets from '@/components/FileEditor/Snippets.vue'
+import Help from '@/components/FileEditor/Help.vue'
+import TopBar from '@/components/FileEditor/TopBar.vue'
 const store = useStore()
+const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
+const snippets = computed(() => store.state.fileEditorModule.snippets)
+const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', true)
 onMounted(() => store.dispatch('fileEditorModule/getFileNames'))
 </script>
 
@@ -34,8 +57,21 @@ onMounted(() => store.dispatch('fileEditorModule/getFileNames'))
   background: var(--feather-surface);
   margin: 15px;
   padding: 15px;
+  position: relative;
 }
 .feather-row {
   flex-wrap: nowrap;
+}
+.help-btn {
+  position: absolute;
+  right: 30px;
+  top: -10px;
+}
+.fade-enter-active {
+  transition: opacity 0.7s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
 }
 </style>

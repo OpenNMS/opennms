@@ -78,6 +78,10 @@ const setIsConsoleOpen = (context: VuexContext, isOpen: boolean) => {
   context.commit('SET_IS_CONSOLE_OPEN', isOpen)
 }
 
+const setIsHelpOpen = (context: VuexContext, isOpen: boolean) => {
+  context.commit('SET_IS_HELP_OPEN', isOpen)
+}
+
 export default {
   getFileNames,
   getFile,
@@ -88,5 +92,6 @@ export default {
   triggerFileReset,
   addLog,
   clearLogs,
-  setIsConsoleOpen
+  setIsConsoleOpen,
+  setIsHelpOpen
 }
