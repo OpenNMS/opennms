@@ -116,7 +116,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     })
     public void testCdpInterfaceGetter() throws Exception {
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
-        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config,m_client,null);
+        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config, m_client, null);
 
         assertEquals("FastEthernet0", get.getInterfaceNameFromCiscoCdpMib(1).toDisplayString());
         assertEquals("FastEthernet1", get.getInterfaceNameFromCiscoCdpMib(2).toDisplayString());
