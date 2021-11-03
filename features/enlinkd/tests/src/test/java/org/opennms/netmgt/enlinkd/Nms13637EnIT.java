@@ -184,9 +184,9 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
             }
 
         }
-        assertEquals(1,i);
-        assertEquals(1,j);
-        assertEquals(1,k);
+        assertEquals(1, i);
+        assertEquals(1, j);
+        assertEquals(1, k);
 
         assertEquals(3,topology.getEdges().size());
         for (OnmsTopologyEdge e : topology.getEdges()) {
