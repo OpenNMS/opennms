@@ -315,7 +315,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
         // Cleanup for sanity
         strategy.clearUsers();
         // unregister listener
-        strategy.unregisterForTraps(trapListener, getAgentAddress(), 9162);
+        strategy.unregisterForTraps(trapListener);
     }
 
 
