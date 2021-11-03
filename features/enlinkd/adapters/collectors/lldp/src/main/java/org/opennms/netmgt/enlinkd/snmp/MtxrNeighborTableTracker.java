@@ -92,7 +92,7 @@ public class MtxrNeighborTableTracker extends TableTracker {
     }
 
     public Integer getMtxrinterfaceId(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow) {
-        Integer mtxrInterfaceId=null;
+        Integer mtxrInterfaceId = null;
         if (mtxrNeighborMap.containsKey(mtxrlldprow.getMtxrNeighborIndex())) {
             mtxrInterfaceId = mtxrNeighborMap.get(mtxrlldprow.getMtxrNeighborIndex()).getMtxrNeighborInterfaceId();
         }
