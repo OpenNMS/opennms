@@ -723,7 +723,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.info("run: collection interrupted, exiting {}", e.getMessage());
         }
 
-        assertEquals(9,links00.size());
+        assertEquals(9, links00.size());
 
         LldpLocPortGetter lldpLocPortGetter = new LldpLocPortGetter(config00,m_client,null);
 
