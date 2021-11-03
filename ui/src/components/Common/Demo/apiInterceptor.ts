@@ -1,10 +1,11 @@
 import axios from 'axios'
-import { BASE_REST_URL, BASE_REST_AUTH } from '../../../../devConfig'
+//import { BASE_REST_URL, BASE_REST_AUTH } from '../../../../devConfig'
 
 export const axiosAuth = axios.create()
-
+/*
 axiosAuth.defaults.baseURL = BASE_REST_URL
 axiosAuth.defaults.headers.common['Authorization'] = 'Basic ' + BASE_REST_AUTH
+*/
 
 axiosAuth.interceptors.request.use(
   function (config) {
