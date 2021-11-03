@@ -136,7 +136,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
             } else  if (link.getNode().getId().intValue() == router2.getId().intValue()) {
                 Assert.assertEquals("", link.getLldpRemPortDescr());
             } else {
-                Assert.assertEquals(ciscohomesw.getId().intValue(),link.getNode().getId().intValue());
+                Assert.assertEquals(ciscohomesw.getId().intValue(), link.getNode().getId().intValue());
                 switch (link.getLldpLocalPortNum()) {
                     case 9:
                     case 73:
