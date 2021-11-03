@@ -623,7 +623,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 m_client,
                 null);
 
-        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink01: links01) {
+        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink01 : links01) {
             LldpLink link01 = timeTetraLldpLink01.getLldpLink();
             assertNull(link01.getLldpPortId());
             assertNull(link01.getLldpPortIdSubType());
