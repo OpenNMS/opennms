@@ -128,7 +128,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
                 walkTimeTetra(peer);
             }
         }
-        m_lldpTopologyService.reconcile(getNodeId(),now);
+        m_lldpTopologyService.reconcile(getNodeId(), now);
     }
 
     private boolean isInactiveDragonWave(LldpLocalGroupTracker lldpLocalGroup) {
