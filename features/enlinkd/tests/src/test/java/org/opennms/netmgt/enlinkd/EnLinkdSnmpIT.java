@@ -910,7 +910,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         assertNull(lldpLocalGroup02.getLldpLocChassisid());
         assertNull(lldpLocalGroup02.getLldpLocChassisidSubType());
-        assertEquals(MKTROUTER2_NAME,lldpLocalGroup02.getLldpLocSysname());
+        assertEquals(MKTROUTER2_NAME, lldpLocalGroup02.getLldpLocSysname());
 
         final List<MtxrLldpRemTableTracker.MtxrLldpRemRow> links02 = new ArrayList<>();
 
