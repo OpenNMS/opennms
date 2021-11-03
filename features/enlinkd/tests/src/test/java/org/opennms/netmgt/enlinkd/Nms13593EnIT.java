@@ -272,12 +272,12 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             assertEquals(e.getSource().getIfindex().intValue(),e.getTarget().getIfindex().intValue());
             switch (e.getSource().getIfindex()) {
                 case 105037825:
-                    assertEquals("3/2/c5/1",e.getSource().getIfname());
-                    assertEquals("3/2/c5/1",e.getTarget().getIfname());
+                    assertEquals("3/2/c5/1", e.getSource().getIfname());
+                    assertEquals("3/2/c5/1", e.getTarget().getIfname());
                     break;
                 case 105070593:
-                    assertEquals("3/2/c6/1",e.getSource().getIfname());
-                    assertEquals("3/2/c6/1",e.getTarget().getIfname());
+                    assertEquals("3/2/c6/1", e.getSource().getIfname());
+                    assertEquals("3/2/c6/1", e.getTarget().getIfname());
                     break;
                 default:
                     fail();
