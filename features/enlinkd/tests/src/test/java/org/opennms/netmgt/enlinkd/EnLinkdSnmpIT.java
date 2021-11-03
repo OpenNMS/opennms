@@ -843,7 +843,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 assertEquals("",link.getLldpRemPortDescr());
                 switch(link.getLldpLocalPortNum()) {
                     case 1:
-                        assertEquals("gi5",link.getLldpRemPortId());
+                        assertEquals("gi5", link.getLldpRemPortId());
                         assertEquals(MKT_CISCO_SW01_NAME, link.getLldpRemSysname());
                         //this is a clear violation of LLDP-MIB implementation by Mikrotik
                         assertNotEquals(MKT_CISCO_SW01_LLDP_ID,link.getLldpRemChassisId());
