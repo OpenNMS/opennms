@@ -234,7 +234,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
             return false;
         }
 
-        m_lldpTopologyService.store(getNodeId(),mtxrLldpLocalTable.getLldpElement(sysname));
+        m_lldpTopologyService.store(getNodeId(), mtxrLldpLocalTable.getLldpElement(sysname));
 
         for (MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrLldpRemRow: mtxrlldprowss) {
             m_lldpTopologyService.store(getNodeId(),
