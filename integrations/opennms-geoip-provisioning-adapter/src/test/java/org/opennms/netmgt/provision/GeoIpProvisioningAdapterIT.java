@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -223,5 +224,17 @@ public class GeoIpProvisioningAdapterIT implements InitializingBean {
         assertEquals(-40.0, node6.getAssetRecord().getLongitude().doubleValue(), 0.00000000000001);
         assertEquals(30.0, node6.getAssetRecord().getLatitude().doubleValue(), 0.00000000000001);
         assertEquals(null, node6.getAssetRecord().getBuilding());
+    }
+
+    @Test
+    public void testIpRanges() throws UnknownHostException {
+        assertEquals(true, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("8.8.8.8")));
+        assertEquals(true, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("1.2.3.4")));
+        assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("192.168.42.1")));
+        assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("10.11.12.13")));
+        assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("172.17.32.32")));
+        assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("fd99::1")));
+        assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("fc11::1")));
+        assertEquals(true, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("2001::1")));
     }
 }

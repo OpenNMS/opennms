@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.util.Optional;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -110,7 +111,7 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
         queryNode(nodeId);
     }
 
-    private boolean isPublicAddress(final InetAddress address) {
+    protected boolean isPublicAddress(final InetAddress address) {
         final boolean isUla = address.getAddress().length == 16 ? (address.getAddress()[0] & 0xfe) == 0xfc : false;
 
         return !(address.isSiteLocalAddress() ||
@@ -141,11 +142,22 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
             assetRecord.setNode(node);
         }
 
-        InetAddress addressToUse = node.getPrimaryInterface().getIpAddress();
+        final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+        InetAddress addressToUse = null;
+
+        if (primaryInterface != null) {
+           addressToUse = primaryInterface.getIpAddress();
+        } else {
+            final Optional<OnmsIpInterface> optionalOnmsIpInterface = node.getIpInterfaces().stream().findFirst();
+            if (optionalOnmsIpInterface.isPresent()) {
+                addressToUse = optionalOnmsIpInterface.get().getIpAddress();
+            }
+       }
+
 
         if (GeoIpConfig.Resolve.PUBLIC.equals(geoIpConfig.getResolve()) || GeoIpConfig.Resolve.PUBLIC_IPV4.equals(geoIpConfig.getResolve()) || GeoIpConfig.Resolve.PUBLIC_IPV6.equals(geoIpConfig.getResolve())) {
             // prefer primary address if public
-            if (!isPublicAddress(addressToUse) || !(
+            if (addressToUse == null || !isPublicAddress(addressToUse) || !(
                     (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC_IPV4.equals(geoIpConfig.getResolve()) && (addressToUse instanceof Inet4Address)) ||
                             (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC_IPV6.equals(geoIpConfig.getResolve()) && (addressToUse instanceof Inet6Address)) ||
                             (isPublicAddress(addressToUse) && GeoIpConfig.Resolve.PUBLIC.equals(geoIpConfig.getResolve())))) {
