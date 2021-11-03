@@ -164,10 +164,10 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
 
         OnmsTopology topology = updater.getTopology();
         Assert.assertNotNull(topology);
-        assertEquals(3,topology.getVertices().size());
-        int i=0;
-        int j=0;
-        int k=0;
+        assertEquals(3, topology.getVertices().size());
+        int i = 0;
+        int j = 0;
+        int k = 0;
         for (OnmsTopologyVertex v : topology.getVertices()) {
             switch (v.getLabel()) {
                 case "router-1":
