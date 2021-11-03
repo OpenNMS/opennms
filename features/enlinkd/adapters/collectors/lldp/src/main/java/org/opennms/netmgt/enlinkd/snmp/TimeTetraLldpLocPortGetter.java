@@ -53,7 +53,7 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
 	}
 
     public List<SnmpValue> get(Integer ifindex,Integer tmnxLldpRemLocalDestMACAddress) {
-        return get(Arrays.asList(SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID_SUBTYPE).append(ifindex.toString()),SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID).append(ifindex.toString()),SnmpObjId.get(TIMETETRA_LLDP_LOC_DESCR).append(ifindex.toString())),tmnxLldpRemLocalDestMACAddress);
+        return get(Arrays.asList(SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID_SUBTYPE).append(ifindex.toString()), SnmpObjId.get(TIMETETRA_LLDP_LOC_PORTID).append(ifindex.toString()), SnmpObjId.get(TIMETETRA_LLDP_LOC_DESCR).append(ifindex.toString())), tmnxLldpRemLocalDestMACAddress);
     }
 
     // In case port sub type is local the portid is the ifindex and then we need to convert the exa decimal to int.
