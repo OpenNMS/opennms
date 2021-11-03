@@ -725,7 +725,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         assertEquals(9, links00.size());
 
-        LldpLocPortGetter lldpLocPortGetter = new LldpLocPortGetter(config00,m_client,null);
+        LldpLocPortGetter lldpLocPortGetter = new LldpLocPortGetter(config00, m_client, null);
 
         links00.stream().filter(row -> row.getLldpRemSysname().equals(MKTROUTER1_NAME))
                 .forEach(row -> {
