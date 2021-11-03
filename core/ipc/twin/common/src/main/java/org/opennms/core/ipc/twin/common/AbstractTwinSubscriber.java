@@ -164,7 +164,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private byte[] applyPatch(TwinTracker twinTracker, TwinUpdate twinUpdate) {
         if (!twinUpdate.isPatch()) {
-            twinUpdate.getObject();
+            return twinUpdate.getObject();
         }
         try {
             JsonNode resultingDiff = objectMapper.readTree(twinUpdate.getObject());
