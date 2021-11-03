@@ -38,7 +38,7 @@ public class Dot1dBasePortIfIndexGetter extends SnmpGetter {
     public final static SnmpObjId DOT1DBASE_PORT_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
 
     public Dot1dBasePortIfIndexGetter(SnmpAgentConfig peer,LocationAwareSnmpClient client, String location) {
-        super(peer, client,location);
+        super(peer, client, location);
     }
 
     public SnmpValue get(Integer bridgeport) {
