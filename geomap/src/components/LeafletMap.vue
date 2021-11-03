@@ -1,6 +1,7 @@
 <template>
   <div class="leaflet">
     <!-- <img src="src/assets/red-marker.png"> -->
+    <!-- <p style="height:20px">Alarm Data : {{ interestedAlarms }}</p> -->
     <div class="geo-map">
       <l-map
         ref="map"
@@ -29,7 +30,7 @@
               v-for="(node, index) in interestedNodes"
               :key="index"
               :lat-lng="getCoordinateFromNode(node)"
-              :icon="setIcon"
+              :icon="setIcon(node)"
               add
             >
               <l-popup> {{ node.label }} </l-popup>
@@ -80,22 +81,83 @@ let zoom = ref(2);
 let interestedNodes = computed(() => {
   return store.getters["mapModule/getInterestedNodes"];
 });
+// console.log("interestedNodes",interestedNodes);
 
-   let interestedAlarms = computed(() => {
-      console.log("interestedAlarms",store.getters["mapModule/getAlarmsFromSelectedNodes"]);
-      return store.getters["mapModule/getAlarmsFromSelectedNodes"];  
-  });
+let interestedAlarms = computed(() => {
+  // console.log("interestedAlarms",store.getters["mapModule/getAlarmsFromSelectedNodes"]);
+  return store.getters["mapModule/getAlarmsFromSelectedNodes"];
+});
 
-// watch:{
-//   let alarmvalue =  store.getters["mapModule/getAlarmsFromSelectedNodes"];
-//   console.log("interestedAlarmsconsole2",alarmvalue);
-// }
-  
-//    console.log("interestedAlarmsconsole2",interestedAlarms);
+// console.log("interestedAlarms",interestedAlarms);
 
+ function setIcon(node: any) {
+   console.log("node data",node.label);
+   let nodelabelval = node.label; 
+ interestedAlarms.value.forEach((element: any) => {
+   let severityicon;
+   let label = element.nodeLabel
+   if(nodelabelval === label){
+     let alarmSeverity = element.severity;
+     console.log("severity icon", alarmSeverity)
+      let markerColor = new L.Icon({
+          iconUrl: setMarkerColor(alarmSeverity),
+          shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41],
+        });
+        return markerColor; 
+   }
+ });
+ }
 
-//  onMounted(async () => {
-  
+// let setIcon = new L.Icon({
+//           iconUrl: setMarkerColor(),
+//           shadowUrl:
+//             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+//           iconSize: [25, 41],
+//           iconAnchor: [12, 41],
+//           popupAnchor: [1, -34],
+//           shadowSize: [41, 41],
+//         });
+
+let iconPath;
+function setMarkerColor(severity: any) {
+  switch (severity) {
+    case "NORMAL":
+      return (iconPath = "src/assets/Normal-icon.png");
+      break;
+    case "WARNING":
+      return (iconPath = "src/assets/Warning-icon.png");
+      break;
+    case "MINOR":
+      return (iconPath = "src/assets/Minor-icon.png");
+      break;
+    case "MAJOR":
+      return (iconPath = "src/assets/Major-icon.png");
+      break;
+    case "CRITICAL":
+      return (iconPath = "src/assets/Critical-icon.png");
+      break;
+    default:
+      return (iconPath = "src/assets/Normal-icon.png");
+  }
+}
+
+//  let alarmSeverity = computed(() => {
+//     for(var i = 0; i < interestedNodes.value.length; i++){
+//       let nodelabelval = interestedNodes.value[i].label;
+//       console.log("interestedNodes.value", nodelabelval)
+//       interestedAlarms.value.filter((alarmlabelval: any) => {
+//         if(alarmlabelval.nodeLabel == nodelabelval){
+
+//            console.log("alarmlabelval", alarmlabelval)
+//         }
+
+//       })
+//     }
 //  });
 
 function getCoordinateFromNode(node: any) {
@@ -159,42 +221,6 @@ const tileProviders = [
       'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   },
 ];
-
-
-var iconPath;
-let setIcon = new L.Icon({
-  iconUrl: setMarkerColor(),
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-function setMarkerColor() {
-  let severity = "NORMAL";
-
-  switch (severity) {
-    case "NORMAL":
-      return (iconPath = "src/assets/Normal-icon.png");
-      break;
-    case "WARNING":
-      return (iconPath = "src/assets/Warning-icon.png");
-      break;
-    case "MINOR":
-      return (iconPath = "src/assets/Minor-icon.png");
-      break;
-    case "MAJOR":
-      return (iconPath = "src/assets/Major-icon.png");
-      break;
-    case "CRITICAL":
-      return (iconPath = "src/assets/Critical-icon.png");
-      break;
-    default:
-      return (iconPath = "src/assets/Normal-icon.png");
-  }
-}
 
 // L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
 </script>

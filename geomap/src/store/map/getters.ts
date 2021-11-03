@@ -13,10 +13,11 @@ const getAlarmsFromSelectedNodes = (state: State) => {
     let selectedNodesLabel = state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id)).map(
         (node: Node) => node.label
     );
-    console.log("GettersAlarm",state.alarms)
-    return state.alarms.filter((alarm: Alarm) =>
-        selectedNodesLabel.includes(alarm.nodeLabel)
-    )
+    //  console.log("GettersAlarm",state.alarms)
+    //  return state.alarms.filter((alarm: Alarm) =>
+    //      selectedNodesLabel.includes(alarm.nodeLabel)
+    //  )
+     return state.alarms
 }
 
 const getEdges = (state: State) => {
