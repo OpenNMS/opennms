@@ -646,7 +646,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.warn("01 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
         }
 
-        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink02: links02) {
+        for (TimeTetraLldpRemTableTracker.TimeTetraLldpRemRow timeTetraLldpLink02 : links02) {
             LldpLink link02 = timeTetraLldpLink02.getLldpLink();
             assertNull(link02.getLldpPortId());
             assertNull(link02.getLldpPortIdSubType());
