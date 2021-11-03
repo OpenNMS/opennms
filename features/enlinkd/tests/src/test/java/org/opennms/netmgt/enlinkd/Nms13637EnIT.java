@@ -123,9 +123,9 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
                     break;
             }
         }
-        assertEquals(1,ei);
-        assertEquals(1,ej);
-        assertEquals(1,ek);
+        assertEquals(1, ei);
+        assertEquals(1, ej);
+        assertEquals(1, ek);
 
 
         for (LldpLink link : m_lldpLinkDao.findAll()) {
