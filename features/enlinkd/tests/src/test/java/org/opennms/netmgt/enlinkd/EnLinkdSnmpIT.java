@@ -260,7 +260,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         assertEquals(TruthValue.FALSE, ospfElement.getOspfBdrRtrStatus());
         assertEquals(TruthValue.FALSE, ospfElement.getOspfASBdrRtrStatus());
 
-        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config,m_client,null);
+        final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(config, m_client, null);
 
         OspfElement ospfElementN = ipAddrTableGetter.get(ospfElement);
         assertEquals(InetAddress.getByName("192.168.100.246"), ospfElementN.getOspfRouterId());
