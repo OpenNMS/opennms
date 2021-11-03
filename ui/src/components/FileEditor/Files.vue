@@ -2,16 +2,18 @@
   <Search />
   <div class="file-sidebar">
     <p
+      :class="{ 'selected': filename === selectedFile }"
       class="pointer"
       v-for="(filename, index) in fileNames"
       :key="filename"
       @click="getFile(filename)"
     >
-      <span
-        class="subtitle1"
-        :class="{ 'selected': filename === selectedFile }"
-      >{{ Number(index) + 1 }}:&nbsp</span>
-      <span class="subtitle2" :class="{ 'selected': filename === selectedFile }">{{ filename }}</span>
+      <span class="subtitle1">
+        {{ Number(index) + 1 }}:&nbsp
+      </span>
+      <span class="subtitle2">
+        {{ filename }}
+      </span>
     </p>
   </div>
 </template>
@@ -29,16 +31,21 @@ const getFile = (filename: string) => store.dispatch('fileEditorModule/getFile',
 
 <style lang="scss" scoped>
 p {
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 0px;
+  padding: 5px;
+  padding-left: 10px;
 }
 .file-sidebar {
   overflow-y: scroll;
   overflow-x: hidden;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 182px);
   word-break: break-all;
+  border: 1px solid var(--feather-border-on-surface)
 }
 .selected {
-  color: var(--feather-primary);
+  background: var(--feather-shade-3);
+  span {
+    color: var(--feather-primary);
+  }
 }
 </style>

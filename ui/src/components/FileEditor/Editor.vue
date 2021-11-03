@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100vh - 120px)">
+  <div :class="{ 'help-open' : isHelpOpen, 'help-closed': !isHelpOpen }">
     <div class="editor-with-console">
       <VAceEditor
         v-model:value="content"
@@ -38,6 +38,7 @@ const theme = computed(() => {
 const store = useStore()
 const content = ref('')
 
+const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const fileString = computed(() => store.state.fileEditorModule.file)
 const lang = computed(() => {
   const xml = 'xml', properties = 'properties'
@@ -70,5 +71,12 @@ const init = (editor: any) => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--feather-border-on-surface)
+}
+.help-open {
+  height: calc(100vh - 180px)
+}
+.help-closed {
+  height: calc(100vh - 120px)
 }
 </style>

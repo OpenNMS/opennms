@@ -45,6 +45,7 @@ const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
     margin-left: 10px;
     button {
       margin-top: 5px;
+      margin-bottom: 0px;
     }
   }
 }

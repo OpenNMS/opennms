@@ -26,8 +26,9 @@
             v-if="!isHelpOpen && snippets"
             class="help-btn"
             text
-            @click="triggerHelp"
-          >Help</FeatherButton>
+            @click="triggerHelp">
+            Help
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -65,7 +66,7 @@ onMounted(() => store.dispatch('fileEditorModule/getFileNames'))
 .help-btn {
   position: absolute;
   right: 30px;
-  top: -10px;
+  top: 0px;
 }
 .fade-enter-active {
   transition: opacity 0.7s ease;

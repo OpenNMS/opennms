@@ -41,8 +41,8 @@ const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', false
     margin-right: 10px;
   }
   .filename {
-    margin-left: 50px;
-    line-height: 2.7;
+    margin-left: 23px;
+    line-height: 2.5;
     margin-bottom: -8px;
   }
   .save,
