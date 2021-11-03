@@ -28,6 +28,19 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -37,24 +50,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigData;
-import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigSchema;
-import org.opennms.features.config.service.api.ConfigUpdateInfo;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.features.config.service.api.JsonAsString;
-import org.springframework.stereotype.Component;
-
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
  * Otherwise, I will return a new instance.
  */
 @Component
 public class ConfigurationManagerServiceMock implements ConfigurationManagerService {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceMock.class);
 
     private String configFile;
     private Optional<String> configOptional;
@@ -63,27 +65,29 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
         this.configFile = configFile;
     }
 
-    /** Registers a new schema. The schema name must not have been used before. */
     @Override
-    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
+    public void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
+
+    }
 
     @Override
     public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
 
     }
 
-    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
     @Override
-    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException{}
+    public void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException {
 
-    @Override
-    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
-        return null;
     }
 
     @Override
     public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
 
+    }
+
+    @Override
+    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
+        return null;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-
+        configOptional = Optional.of(configObject.toString());
     }
 
     @Override
@@ -130,12 +134,19 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             return configOptional;
         }
         if (configFile == null) {
-            this.configOptional = Optional.empty();
-        } else {
+            // if configFile is null, assume config file in opennms-dao-mock resource etc directly
+            configFile = "etc/" + configName + "-" + configId + ".xml";
+        }
+
+        try {
             InputStream in = ConfigurationManagerServiceMock.class.getClassLoader().getResourceAsStream(configFile);
             String xmlStr = IOUtils.toString(in, StandardCharsets.UTF_8);
             configOptional = Optional.of(xmlStr);
+            LOG.debug("xmlStr: {}", xmlStr);
+        } catch (Exception e) {
+            LOG.error("FAIL TO LOAD XML: {}", configFile, e);
         }
+
         return configOptional;
     }
 
