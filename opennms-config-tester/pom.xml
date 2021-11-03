@@ -85,6 +85,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-geoip-provisioning-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-vmware</artifactId>
     </dependency>
     <dependency>

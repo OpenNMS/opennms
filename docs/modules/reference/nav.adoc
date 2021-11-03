@@ -103,6 +103,7 @@
 * Provisioning
 ** xref:provisioning/adapters/introduction.adoc[]
 *** xref:provisioning/adapters/ddns.adoc[]
+*** xref:provisioning/adapters/geoip.adoc[]
 *** xref:provisioning/adapters/hardware-inventory.adoc[]
 *** xref:provisioning/adapters/rdns.adoc[]
 *** xref:provisioning/adapters/snmp-asset.adoc[]
