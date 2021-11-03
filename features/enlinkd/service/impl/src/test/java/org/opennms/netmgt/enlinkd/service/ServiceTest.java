@@ -150,7 +150,7 @@ public class ServiceTest {
         createLldpElement(32,nodes.get(2), "Element2", "host32"),
         createLldpElement(33,nodes.get(3), "match1.2", "host33"),
         createLldpElement(34,nodes.get(4), "match2.1", "host34"),
-        createLldpElement(35,nodes.get(5), "match2.2","host35"));
+        createLldpElement(35,nodes.get(5), "match2.2", "host35"));
 
         lldpLinks = Arrays.asList(
            createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3","host0"),
