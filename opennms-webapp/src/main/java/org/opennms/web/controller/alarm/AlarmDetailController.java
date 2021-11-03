@@ -225,6 +225,9 @@ public class AlarmDetailController extends MultiActionController {
         final List<RelatedEvent> relatedEvents = new ArrayList<>();
 
         final List<Filter> filters = getFilters(alarm, request.getServletContext());
+        if (filters.size() == 0) {
+            return relatedEvents;
+        }
 
         SortStyle sortStyle = SortStyle.ID;
         final String sortStyleString = request.getParameter("sortby");
