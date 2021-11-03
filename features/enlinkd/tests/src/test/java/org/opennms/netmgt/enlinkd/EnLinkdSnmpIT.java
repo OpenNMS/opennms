@@ -407,7 +407,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
                 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config,m_client,null);
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config, m_client, null);
 
         List<SnmpValue> val = lldpLocPort.get(1);
         assertEquals(3,val.size());
