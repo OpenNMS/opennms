@@ -32,7 +32,15 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
 import org.opennms.netmgt.enlinkd.service.api.LldpTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.Node;
-import org.opennms.netmgt.enlinkd.snmp.*;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrLldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
+
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;

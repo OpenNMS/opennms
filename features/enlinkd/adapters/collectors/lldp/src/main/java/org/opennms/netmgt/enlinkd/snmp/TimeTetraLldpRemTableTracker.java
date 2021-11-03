@@ -32,7 +32,14 @@ package org.opennms.netmgt.enlinkd.snmp;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.snmp.*;
+import org.opennms.netmgt.snmp.TableTracker;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpRowResult;
+import org.opennms.netmgt.snmp.RowCallback;
+import org.opennms.netmgt.snmp.SnmpValue;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

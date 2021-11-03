@@ -39,21 +39,63 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.enlinkd.model.*;
+
+import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.enlinkd.model.BridgeStpLink;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortEnable;
 import org.opennms.netmgt.enlinkd.model.BridgeStpLink.BridgeDot1dStpPortState;
 import org.opennms.netmgt.enlinkd.model.IpNetToMedia.IpNetToMediaType;
+import org.opennms.netmgt.enlinkd.model.LldpElement;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.enlinkd.model.IpNetToMedia;
+import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
+import org.opennms.netmgt.enlinkd.model.OspfLink;
+
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.enlinkd.snmp.*;
+
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
+
+import org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.IsisSysObjectGroupTracker;
+
+import org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker;
+
+import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
+import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.TimeTetraLldpLocPortGetter;
+
+import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrLldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
+
+import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
+import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
+
+import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
+
 import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -67,11 +109,22 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {

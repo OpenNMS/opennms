@@ -74,7 +74,7 @@ public class LldpOnmsTopologyUpdater extends TopologyUpdater {
             port.setIfname(targetlink.getLldpRemPortId());
         } else if (!"".equals(sourceLink.getLldpPortDescr())) {
             port.setIfname(sourceLink.getLldpPortDescr());
-        }  else if (!!!.equals(targetlink.getLldpRemPortDescr())) {
+        }  else if (!"".equals(targetlink.getLldpRemPortDescr())) {
             port.setIfname(targetlink.getLldpRemPortDescr());
         } else {
             port.setIfname(sourceLink.getLldpPortId());

@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.snmp.*;
+import org.opennms.netmgt.snmp.TableTracker;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpRowResult;
+import org.opennms.netmgt.snmp.RowCallback;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
