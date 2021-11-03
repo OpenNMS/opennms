@@ -110,7 +110,7 @@ public class ChangeSchema extends AbstractCmChange {
                     }
 
                     // 2.) apply all changes
-                    // FIXME: not implement yet
+                    // TODO: It will implement in other issue about property config (Patrick / Freddy)
 //                    for (Consumer<ConfigItem> change : changes) {
 //                        change.accept(schema);
 //                    }

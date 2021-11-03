@@ -30,9 +30,11 @@ package org.opennms.features.config.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
-import org.opennms.features.config.dao.api.*;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
-import org.opennms.features.config.dao.impl.XmlConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ConfigData;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -67,7 +69,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         }
         try {
             configStoreDao.register(configDefinition);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -176,7 +178,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException, JAXBException {
+    public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
         Optional<ConfigDefinition> configDefinition = configStoreDao.getConfigDefinition(configName);
         if (configDefinition.isEmpty()) {
             LOG.error("Fail to get configDefinition for configName: {}, configId: {}", configName, configId);
@@ -188,11 +190,9 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             return Optional.empty();
         }
         JSONObject json = config.get();
-        if(!(configDefinition.get() instanceof XmlConfigDefinition)){
-            throw new RuntimeException("Only xml schema are supported");
-        }
-        XmlConfigDefinition xmlConfigDef = (XmlConfigDefinition) configDefinition.get();
-        XmlConverter converter = new XmlConverter(xmlConfigDef.getXsdName(), xmlConfigDef.getTopLevelElement());
+        ConfigDefinition xmlConfigDef = configDefinition.get();
+
+        ConfigConverter converter = XsdHelper.getConverter(xmlConfigDef);
         return Optional.of(converter.jsonToXml(json.toString()));
     }
 

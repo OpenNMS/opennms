@@ -35,7 +35,7 @@ import liquibase.exception.ValidationErrors;
 import liquibase.ext2.cm.database.CmDatabase;
 import liquibase.ext2.cm.statement.GenericCmStatement;
 import liquibase.statement.SqlStatement;
-import org.opennms.features.config.dao.impl.XmlConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class UpgradeSchema extends AbstractSchemaChange {
 
     protected RunnableWithException getCmFunction(ConfigurationManagerService m) {
         return () -> {
-            m.changeConfigDefinition(id, new XmlConfigDefinition(id, xsdFileName, rootElement));
+            m.changeConfigDefinition(id, XsdHelper.buildConfigDefinition(id, xsdFileName, rootElement));
         };
     }
 

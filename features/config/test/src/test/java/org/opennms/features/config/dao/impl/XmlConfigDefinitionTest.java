@@ -30,10 +30,12 @@ package org.opennms.features.config.dao.impl;
 import com.atlassian.oai.validator.report.EmptyValidationReport;
 import com.atlassian.oai.validator.report.ValidationReport;
 import org.junit.Test;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.springframework.util.Assert;
 
 public class XmlConfigDefinitionTest {
-    XmlConfigDefinition def = new XmlConfigDefinition("provisiond", "provisiond-configuration.xsd", "provisiond-configuration");
+    ConfigDefinition def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd", "provisiond-configuration");
 
     @Test
     public void testPassValidation() {

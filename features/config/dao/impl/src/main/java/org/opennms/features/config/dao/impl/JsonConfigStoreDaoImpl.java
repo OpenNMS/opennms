@@ -101,14 +101,7 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
     }
 
     private ConfigDefinition deserializeConfigDefinition(String jsonStr) throws JsonProcessingException {
-        JSONObject json = new JSONObject(jsonStr);
-        switch (ConfigDefinition.TYPE.valueOf((String) json.get("type"))) {
-            case XML:
-                return mapper.readValue(jsonStr, XmlConfigDefinition.class);
-            case PROPERTY:
-            default:
-                return mapper.readValue(jsonStr, ConfigDefinition.class);
-        }
+        return mapper.readValue(jsonStr, ConfigDefinition.class);
     }
 
     @Override
@@ -122,9 +115,14 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 
     @Override
     public void updateConfigDefinition(ConfigDefinition configDefinition) throws IOException {
-        Optional<ConfigDefinition> schema = this.getConfigDefinition(configDefinition.getConfigName());
-        if (schema.isEmpty()) {
+        Optional<ConfigDefinition> oldDef = this.getConfigDefinition(configDefinition.getConfigName());
+        if (oldDef.isEmpty()) {
             throw new IllegalArgumentException("ConfigName not found: " + configDefinition.getConfigName());
+        }
+        // check config are still valid for the new schema
+        Optional<ConfigData<JSONObject>> configData = this.getConfigData(configDefinition.getConfigName());
+        if(configData.isPresent()) {
+            this.validateConfigData(Optional.of(configDefinition), configData.get());
         }
         this.putConfigDefinition(configDefinition);
     }
@@ -270,8 +268,17 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
 //        }
 //    }
 
+    /**
+     * Validate the whole config set
+     * @param configName
+     * @param configData
+     * @throws IOException
+     */
     private void validateConfigData(final String configName, final ConfigData<JSONObject> configData) throws IOException {
-        Optional<ConfigDefinition> configDefinition = this.getConfigDefinition(configName);
+        this.validateConfigData(this.getConfigDefinition(configName), configData);
+    }
+
+    private void validateConfigData(final Optional<ConfigDefinition> configDefinition, final ConfigData<JSONObject> configData) throws IOException {
         if (configDefinition.isEmpty()) {
             LOG.error("ConfigDefinition not found!");
             throw new RuntimeException("ConfigDefinition not found!");
@@ -288,6 +295,13 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         }
     }
 
+    /**
+     * Validate a single config
+     * @param configName
+     * @param configObject
+     * @return
+     * @throws JsonProcessingException
+     */
     private ValidationReport validateConfig(final String configName, final JSONObject configObject) throws JsonProcessingException {
         Optional<ConfigDefinition> configDefinition = this.getConfigDefinition(configName);
         if (configDefinition.isEmpty()) {

@@ -40,14 +40,13 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.XmlConfigDefinition;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,9 +68,9 @@ public class ConfigSwaggerConverterAllTest {
     private ConfigurationManagerService configurationManagerService;
 
     @Before
-    public void init() throws IOException, JAXBException {
-        XmlConfigDefinition def = new XmlConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT);
-        XmlConfigDefinition def2 = new XmlConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT);
+    public void init() throws IOException {
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(CONFIG_NAME, XSD_PATH, TOP_ELEMENT);
+        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(CONFIG_NAME + "2", XSD2_PATH, TOP_ELEMENT);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME, def);
         configurationManagerService.registerConfigDefinition(CONFIG_NAME + "2", def2);
     }

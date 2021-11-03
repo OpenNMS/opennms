@@ -39,7 +39,6 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.impl.XmlConfigDefinition;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;

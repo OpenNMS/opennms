@@ -28,34 +28,9 @@
 
 package org.opennms.config.upgrade;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
-import static org.opennms.core.test.OnmsAssert.assertThrowsException;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Optional;
-
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-
-import org.json.JSONObject;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.MigrationFailedException;
+import liquibase.exception.ValidationFailedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,17 +43,31 @@ import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.XmlConfigDefinition;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.FileSystemUtils;
 
-import liquibase.exception.LiquibaseException;
-import liquibase.exception.MigrationFailedException;
-import liquibase.exception.ValidationFailedException;
+import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Optional;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.opennms.config.upgrade.LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG;
+import static org.opennms.core.test.OnmsAssert.assertThrowsException;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @TestExecutionListeners({TemporaryDatabaseExecutionListener.class})
@@ -128,20 +117,20 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         db.watch(connection);
         cmSpy = spy(cm);
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isEmpty());
-        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isEmpty());
         assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isEmpty());
-        assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
+        assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isEmpty());
     }
 
     @After
     public void tearDown() throws IOException, JAXBException {
-        if (cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
+        if (cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
             this.cm.unregisterConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID);
         }
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
         }
-        if (cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
+        if (cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
             this.cm.unregisterConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID);
         }
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent()) {
@@ -173,9 +162,9 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
             // check for the data itself
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
-            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent());
             assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent());
-            assertTrue(this.cm.getXmlConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
 
             // check if CM was called for schema
             verify(cmSpy, times(3)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
@@ -188,7 +177,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
             assertTrue(configDefinition.isPresent());
-            // FIXME: converter & validation for property is not implemented yet
+            // TODO: converter & validation for property is going to implemented in other task (Patrick/Freddy)
 //            ConfigItem schema = null;//(ConfigItem) configDefinition.get().getSchema();
 //            assertNotNull(schema);
 //            assertEquals(2, schema.getChildren().size());

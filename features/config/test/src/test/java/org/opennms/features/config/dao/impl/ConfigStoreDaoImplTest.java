@@ -27,12 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.config.dao.impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.OpenAPIV3Parser;
-
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,9 +34,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +62,7 @@ public class ConfigStoreDaoImplTest {
     @Test
     public void testData() throws Exception {
         // register
-//        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-//        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-        XmlConfigDefinition def = new XmlConfigDefinition(configName,
-                "provisiond-configuration.xsd", "provisiond-configuration");
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(configName, "provisiond-configuration.xsd", "provisiond-configuration");
         configStoreDao.register(def);
 
         // config
@@ -90,7 +83,7 @@ public class ConfigStoreDaoImplTest {
 
         // register more and update
         String configName2 = configName + "_2";
-        XmlConfigDefinition def2 = new XmlConfigDefinition(configName2,
+        ConfigDefinition def2 = XsdHelper.buildConfigDefinition(configName2,
                 "provisiond-configuration.xsd", "provisiond-configuration");
         configStoreDao.register(def2);
         configStoreDao.updateConfigDefinition(def2);
@@ -104,7 +97,8 @@ public class ConfigStoreDaoImplTest {
         ProvisiondConfiguration config2 = new ProvisiondConfiguration();
         config2.setImportThreads(20L);
 
-        JSONObject config2AsJson = new JSONObject(def2.getConverter().xmlToJson(JaxbUtils.marshal(config2)));
+        ConfigConverter converter = XsdHelper.getConverter(tmpConfigSchema2.get());
+        JSONObject config2AsJson = new JSONObject(converter.xmlToJson(JaxbUtils.marshal(config2)));
         configStoreDao.addConfig(configName, filename + "_2", config2AsJson);
         Optional<ConfigData> resultAfterUpdate = configStoreDao.getConfigData(configName);
         Assert.assertTrue("FAIL configs count is not equal to 2", resultAfterUpdate.isPresent());
@@ -112,14 +106,13 @@ public class ConfigStoreDaoImplTest {
         // delete config
         configStoreDao.deleteConfig(configName, filename + "_2");
         Optional<ConfigData> resultAfterDelete = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 1",
-                resultAfterDelete.get().getConfigs().size() == 1);
+        Assert.assertEquals("FAIL configs count is not equal to 1", 1, resultAfterDelete.get().getConfigs().size());
 
         // updateConfigs
         configStoreDao.updateConfigs(configName, new ConfigData());
         Optional<ConfigData> resultAfterUpdateConfigs = configStoreDao.getConfigData(configName);
-        Assert.assertTrue("FAIL configs count is not equal to 0",
-                resultAfterUpdateConfigs.get().getConfigs().size() == 0);
+        Assert.assertEquals("FAIL configs count is not equal to 0", 0,
+                resultAfterUpdateConfigs.get().getConfigs().size());
 
         // deregister
         configStoreDao.unregister(configName);

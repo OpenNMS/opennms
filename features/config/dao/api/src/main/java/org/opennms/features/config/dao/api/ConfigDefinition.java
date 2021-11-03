@@ -28,21 +28,21 @@
 
 package org.opennms.features.config.dao.api;
 
-/**
- * TODO Patrick: Discuss with Freddy
- */
-
+import com.atlassian.oai.validator.report.MessageResolver;
 import com.atlassian.oai.validator.report.ValidationReport;
+import com.atlassian.oai.validator.schema.SchemaValidator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 import org.opennms.features.config.dao.api.util.OpenAPIDeserializer;
 import org.opennms.features.config.dao.api.util.OpenAPISerializer;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class holds the definition for a configuration.
@@ -50,20 +50,20 @@ import java.io.IOException;
  */
 
 public class ConfigDefinition {
-    public enum TYPE {XML, PROPERTY}
+    transient public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
+    transient public static final String XSD_FILENAME_TAG = "xsdFilename";
 
-    protected String configName;
-    protected int maxInstances = 1;
+    private String configName;
+    private int maxInstances = 1;
+    private Map<String, String> meta = new HashMap<>();
 
     @JsonSerialize(using = OpenAPISerializer.class)
     @JsonDeserialize(using = OpenAPIDeserializer.class)
     protected OpenAPI schema;
-    protected TYPE type;
 
     @JsonCreator
     public ConfigDefinition(@JsonProperty("configName") String configName) {
         this.configName = configName;
-        type = TYPE.PROPERTY;
     }
 
     public OpenAPI getSchema() {
@@ -90,21 +90,34 @@ public class ConfigDefinition {
         this.maxInstances = maxInstances;
     }
 
-    public TYPE getType() {
-        return type;
+    public Map<String, String> getMeta() {
+        return meta;
     }
 
-    public void setType(TYPE type) {
-        this.type = type;
+    public void setMeta(Map<String, String> meta) {
+        this.meta = meta;
     }
 
-    @JsonIgnore
-    public ConfigConverter getConverter() throws IOException {
-        throw new RuntimeException("getConverter NOT IMPLEMENT YET");
+    public String getMetaValue(String key) {
+        return meta.get(key);
+    }
+
+    public void setMetaValue(String key, String value) {
+        this.meta.put(key, value);
     }
 
     @JsonIgnore
     public ValidationReport validate(String json) {
-        throw new RuntimeException("validate NOT IMPLEMENT YET");
+        String topSchemaName = meta.get(TOP_LEVEL_ELEMENT_NAME_TAG);
+        if(topSchemaName == null) {
+            topSchemaName = configName;
+        }
+        if(this.getSchema() == null){
+            throw new RuntimeException("Empty schema!");
+        }
+        SchemaValidator validator = new SchemaValidator(this.getSchema(), new MessageResolver());
+        final Schema schema = new Schema().$ref("#/components/schemas/" + topSchemaName);
+        ValidationReport report = validator.validate(json, schema, null);
+        return report;
     }
 }

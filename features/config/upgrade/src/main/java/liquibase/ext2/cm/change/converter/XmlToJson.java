@@ -29,11 +29,14 @@
 package liquibase.ext2.cm.change.converter;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.JsonAsString;
 
 import java.util.Objects;
 
-/** Converts a xml configuration file into json format to be stored in the cm manger. */
+/**
+ * Converts a xml configuration file into json format to be stored in the cm manger.
+ */
 public class XmlToJson {
 
     final private JsonAsString json;
@@ -41,10 +44,10 @@ public class XmlToJson {
     public XmlToJson(final String xml, ConfigDefinition xmlConfigDefinition) throws Exception {
         Objects.requireNonNull(xml);
         Objects.requireNonNull(xmlConfigDefinition);
-        json = new JsonAsString(xmlConfigDefinition.getConverter().xmlToJson(xml));
+        json = new JsonAsString(XsdHelper.getConverter(xmlConfigDefinition).xmlToJson(xml));
     }
 
     public JsonAsString getJson() {
-       return json;
+        return json;
     }
 }
