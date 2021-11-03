@@ -88,7 +88,7 @@ public class MtxrNeighborTableTracker extends TableTracker {
     }
 
     public void processMtxrIndexPortRow(final MtxrNeighborRow row) {
-        mtxrNeighborMap.put(row.getMtxrNeighborIndex(),row);
+        mtxrNeighborMap.put(row.getMtxrNeighborIndex(), row);
     }
 
     public Integer getMtxrinterfaceId(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow) {
