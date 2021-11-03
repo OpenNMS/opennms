@@ -1097,17 +1097,17 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             assertNotNull(mtxrIndex);
             LldpLink link = mikrotikLldpLocalTable03.getLldpLink(row,mtxrIndex);
             assertNotNull(link.getLldpPortId());
-            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
+            assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
-            assertEquals("",link.getLldpRemPortDescr());
+            assertEquals("", link.getLldpRemPortDescr());
             if (link.getLldpRemSysname().equals(MKTROUTER3_NAME)) {
-                LOG.error("self link {} -> {} id {}", link.getLldpPortId(), link.getLldpRemPortId(),link.getLldpRemChassisId() );
+                LOG.error("self link {} -> {} id {}", link.getLldpPortId(), link.getLldpRemPortId(), link.getLldpRemChassisId() );
             }
         });
 
         LldpElement element = mikrotikLldpLocalTable03.getLldpElement(MKTROUTER3_NAME);
-        assertEquals(MKTROUTER3_ETHER2_MAC,element.getLldpChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,element.getLldpChassisIdSubType());
+        assertEquals(MKTROUTER3_ETHER2_MAC, element.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, element.getLldpChassisIdSubType());
 
     }
 
