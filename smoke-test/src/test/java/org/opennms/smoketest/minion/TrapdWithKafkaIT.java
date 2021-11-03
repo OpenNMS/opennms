@@ -36,7 +36,7 @@ import org.opennms.smoketest.stacks.IpcStrategy;
  * Helps to validate Twin with Kafka
  */
 @Category(MinionTests.class)
-public class TrapdKafkaIT extends TrapIT {
+public class TrapdWithKafkaIT extends TrapIT {
 
     @Override
     public IpcStrategy getIpcStrategy() {

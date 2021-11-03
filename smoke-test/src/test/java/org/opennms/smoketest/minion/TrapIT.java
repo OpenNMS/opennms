@@ -132,40 +132,7 @@ public class TrapIT {
         }
         LOG.info("Trap has been sent");
     }
-
-    @Test
-    public void testSnmpV3Traps() {
-        Date startOfTest = new Date();
-        final InetSocketAddress snmpAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.SNMP);
-        AlarmDao alarmDao = stack.postgres().dao(AlarmDaoHibernate.class);
-
-        Criteria criteria = new CriteriaBuilder(OnmsAlarm.class)
-                .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault").ge("lastEventTime", startOfTest)
-                .toCriteria();
-
-        try {
-            executor.scheduleWithFixedDelay(() -> {
-                try {
-                    sendV3Trap(snmpAddress);
-                } catch (Exception e) {
-                    LOG.error("exception while sending traps");
-                }
-            }, 0, 5, TimeUnit.SECONDS);
-
-            // Check if there is at least one alarm
-            await().atMost(1, MINUTES).pollInterval(5, SECONDS)
-                    .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
-            // Check if multiple traps are getting received not just the first one
-            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
-                    .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
-                                    .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault")
-                                    .ge("counter", 5).toCriteria()),
-                            notNullValue());
-        } finally {
-            executor.shutdownNow();
-        }
-    }
-
+    
     @Test
     public void testSnmpV3TrapsOnMinion() {
         Date startOfTest = new Date();
@@ -190,7 +157,7 @@ public class TrapIT {
             await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                     .until(DaoUtils.countMatchingCallable(alarmDao, criteria), greaterThanOrEqualTo(1));
             // Check if multiple traps are getting received not just the first one
-            await().atMost(5, MINUTES).pollInterval(5, SECONDS)
+            await().atMost(2, MINUTES).pollInterval(5, SECONDS)
                     .until(DaoUtils.findMatchingCallable(alarmDao, new CriteriaBuilder(OnmsAlarm.class)
                                     .eq("uei", "uei.opennms.org/generic/traps/EnterpriseDefault")
                                     .ge("counter", 5).toCriteria()),
