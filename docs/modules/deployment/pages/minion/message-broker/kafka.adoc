@@ -19,7 +19,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 sudo vi etc/featuresBoot.d/kafka.boot
 ----
 
-.Add the following lines to install the remote producer call (RPC), sink and twin feature for Kafka on Minion start-up and save the file
+.Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion start-up and save the file
 [source, kafka.boot]
 ----
 opennms-core-ipc-rpc-kafka
