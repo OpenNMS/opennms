@@ -143,7 +143,7 @@ COMMAND=""
 
 show_help () {
 	cat <<END
-Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
+Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] [-s] <command> [<service>]
 
   command options: start|stop|restart|status|ssh|check|pause|resume|kill
 
@@ -166,6 +166,7 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -Q  Quick mode.  Don't wait for ${install.package.description} to start up.
           Useful if you want to watch the logs while ${install.package.description} starts up
           without wanting to open another terminal window.
+      -s  systemd mode. The foreground mode option, -f, is ignored when this option is used.
 
 END
 	return
@@ -454,7 +455,6 @@ doStart(){
 		echo "running ulimit -a"
 		ulimit -a
 		runCmd "${CMD[@]}" &
-		exit 0
 	else
 		if [ "$BACKGROUND" = 1 ]; then
 			# shellcheck disable=SC2129
