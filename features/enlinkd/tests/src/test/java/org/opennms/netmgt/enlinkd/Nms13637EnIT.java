@@ -168,7 +168,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         int i=0;
         int j=0;
         int k=0;
-        for (OnmsTopologyVertex v :topology.getVertices()) {
+        for (OnmsTopologyVertex v : topology.getVertices()) {
             switch (v.getLabel()) {
                 case "router-1":
                     i++;
