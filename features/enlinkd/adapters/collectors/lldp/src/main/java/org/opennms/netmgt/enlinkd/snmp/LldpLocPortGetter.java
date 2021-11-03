@@ -61,7 +61,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
         List<SnmpValue> val = get(row.getLldpRemLocalPortNum());
 
-        LldpLink lldplink=row.getLldpLink();
+        LldpLink lldplink = row.getLldpLink();
         if (val == null ) {
             LOG.debug("getLldpLink: cannot find local instance for lldp local port number {}",
                      lldplink.getLldpLocalPortNum());
