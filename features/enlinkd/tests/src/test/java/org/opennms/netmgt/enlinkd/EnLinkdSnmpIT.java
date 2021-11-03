@@ -1072,23 +1072,23 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
         Map<Integer, MtxrLldpLocalTableTracker.LldpLocalPortRow> mikrotikLldpLocalPortMap03 = mikrotikLldpLocalTable03.getMtxrLldpLocalPortMap();
         Map<Integer, MtxrNeighborTableTracker.MtxrNeighborRow> mikrotikMtrxIndexMap03 = mikrotikMtxrIndexTable03.getMtxrNeighborMap();
-        assertEquals(27,mikrotikMtrxIndexMap03.size());
-        assertEquals(27,links03.size());
-        assertEquals(3,mikrotikLldpLocalPortMap03.size());
+        assertEquals(27, mikrotikMtrxIndexMap03.size());
+        assertEquals(27, links03.size());
+        assertEquals(3, mikrotikLldpLocalPortMap03.size());
         assertTrue(mikrotikLldpLocalPortMap03.containsKey(1));
         assertTrue(mikrotikLldpLocalPortMap03.containsKey(2));
         assertTrue(mikrotikLldpLocalPortMap03.containsKey(3));
-        assertEquals(MKTROUTER3_ETHER1_MAC,mikrotikLldpLocalPortMap03.get(1).getLldpLocPortId());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,mikrotikLldpLocalPortMap03.get(1).getLldpLocalPortIdSubtype());
-        assertEquals("ether1",mikrotikLldpLocalPortMap03.get(1).getLldpLocPortDesc());
+        assertEquals(MKTROUTER3_ETHER1_MAC, mikrotikLldpLocalPortMap03.get(1).getLldpLocPortId());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, mikrotikLldpLocalPortMap03.get(1).getLldpLocalPortIdSubtype());
+        assertEquals("ether1", mikrotikLldpLocalPortMap03.get(1).getLldpLocPortDesc());
 
-        assertEquals(MKTROUTER3_ETHER2_MAC,mikrotikLldpLocalPortMap03.get(2).getLldpLocPortId());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,mikrotikLldpLocalPortMap03.get(2).getLldpLocalPortIdSubtype());
+        assertEquals(MKTROUTER3_ETHER2_MAC, mikrotikLldpLocalPortMap03.get(2).getLldpLocPortId());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, mikrotikLldpLocalPortMap03.get(2).getLldpLocalPortIdSubtype());
         assertEquals("ether2",mikrotikLldpLocalPortMap03.get(2).getLldpLocPortDesc());
 
-        assertEquals(MKTROUTER3_ETHER3_MAC,mikrotikLldpLocalPortMap03.get(3).getLldpLocPortId());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,mikrotikLldpLocalPortMap03.get(3).getLldpLocalPortIdSubtype());
-        assertEquals("ether3",mikrotikLldpLocalPortMap03.get(3).getLldpLocPortDesc());
+        assertEquals(MKTROUTER3_ETHER3_MAC, mikrotikLldpLocalPortMap03.get(3).getLldpLocPortId());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, mikrotikLldpLocalPortMap03.get(3).getLldpLocalPortIdSubtype());
+        assertEquals("ether3", mikrotikLldpLocalPortMap03.get(3).getLldpLocPortDesc());
 
         links03.forEach(row -> {
             assertNull(row.getLldpLink().getLldpPortId());
