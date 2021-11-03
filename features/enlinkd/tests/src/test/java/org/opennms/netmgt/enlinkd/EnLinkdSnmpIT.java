@@ -777,7 +777,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     .execute()
                     .get();
         } catch (final InterruptedException e) {
-            LOG.info("run: collection interrupted, exiting {}",e.getMessage());
+            LOG.info("run: collection interrupted, exiting {}", e.getMessage());
         }
 
         assertNull(lldpLocalGroup01.getLldpLocChassisid());
