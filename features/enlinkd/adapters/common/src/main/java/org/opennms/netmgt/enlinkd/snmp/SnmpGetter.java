@@ -85,7 +85,7 @@ public class SnmpGetter extends TableTracker {
            return null;
        } catch (ExecutionException e) {
            LOG.error("get: ExecutionException: snmp GET {}: {}",
-                    oids,e.getMessage());
+                    oids, e.getMessage());
            return null;
        }
        LOG.debug("get: oid '{}' found value '{}'", oids, val);
