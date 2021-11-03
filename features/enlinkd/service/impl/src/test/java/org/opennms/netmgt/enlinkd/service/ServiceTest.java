@@ -238,7 +238,7 @@ public class ServiceTest {
 
     private LldpLinkTopologyEntity createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
             , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId, String remoteSysname) {
-        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname,remotePortId, remotePortIdSubType, "dwscr",portId, portIdSubType, "dwscr", -1);
+        return new LldpLinkTopologyEntity(id, node.getId(), remoteChassisId, remoteSysname, remotePortId, remotePortIdSubType, "dwscr", portId, portIdSubType, "dwscr", -1);
     }
 
     private OspfLinkTopologyEntity createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
