@@ -60,7 +60,7 @@ public class SnmpGetter extends TableTracker {
        SnmpObjId instance = SnmpObjId.get(new int[] {index});
        List<SnmpObjId> oids = new ArrayList<>(1);
            oids.add(SnmpObjId.get(entryoid, instance));
-       List<SnmpValue> val= get(oids);
+       List<SnmpValue> val = get(oids);
        if (val == null || val.size() != 1 || val.get(0) == null || val.get(0).isError()) 
            return null;
        return val.get(0);
