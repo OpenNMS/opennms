@@ -877,9 +877,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         Map<Integer, MtxrLldpLocalTableTracker.LldpLocalPortRow> portRowMap = mikrotikLldpLocalTable01.getMtxrLldpLocalPortMap();
         assertTrue(portRowMap.containsKey(1));
-        assertEquals(MKTROUTER1_ETHER1_MAC,portRowMap.get(1).getLldpLocPortId());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,portRowMap.get(1).getLldpLocalPortIdSubtype());
-
+        assertEquals(MKTROUTER1_ETHER1_MAC, portRowMap.get(1).getLldpLocPortId());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, portRowMap.get(1).getLldpLocalPortIdSubtype());
     }
 
 
