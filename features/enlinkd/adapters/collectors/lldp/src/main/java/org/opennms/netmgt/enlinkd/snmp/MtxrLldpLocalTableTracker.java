@@ -154,7 +154,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
     }
 
     public LldpLink getLldpLink(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow, Integer mtxrIndex) {
-        LldpLink lldpLink=mtxrlldprow.getLldpLink();
+        LldpLink lldpLink = mtxrlldprow.getLldpLink();
         if (mtxrIndex != null && mtxrLldpLocalPortMap.containsKey(mtxrIndex)) {
             lldpLink.setLldpPortIfindex(mtxrIndex);
             lldpLink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME);
