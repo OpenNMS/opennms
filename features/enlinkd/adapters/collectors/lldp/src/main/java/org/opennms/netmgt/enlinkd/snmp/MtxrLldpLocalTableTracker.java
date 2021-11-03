@@ -84,7 +84,7 @@ public class MtxrLldpLocalTableTracker extends TableTracker {
 	    }
 
 	    public String getLldpLocPortDesc() {
-	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR) != null)
+	    	if (getValue(LldpLocPortGetter.LLDP_LOC_DESCR) != null) {
 	    		return getValue(LldpLocPortGetter.LLDP_LOC_DESCR).toDisplayString();
 	    	return "";
 	    }
