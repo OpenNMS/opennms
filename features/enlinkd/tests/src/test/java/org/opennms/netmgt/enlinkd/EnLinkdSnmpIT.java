@@ -700,7 +700,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
 
         assertEquals(MKT_CISCO_SW01_LLDP_ID,lldpLocalGroup00.getLldpElement().getLldpChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,lldpLocalGroup00.getLldpElement().getLldpChassisIdSubType());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpLocalGroup00.getLldpElement().getLldpChassisIdSubType());
         assertEquals(MKT_CISCO_SW01_NAME,lldpLocalGroup00.getLldpElement().getLldpSysname());
 
         final List<LldpRemTableTracker.LldpRemRow> links00 = new ArrayList<>();
