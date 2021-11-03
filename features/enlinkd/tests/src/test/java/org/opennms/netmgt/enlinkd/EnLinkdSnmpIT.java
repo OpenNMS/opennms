@@ -947,17 +947,17 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
         Map<Integer, MtxrLldpLocalTableTracker.LldpLocalPortRow> mikrotikLldpLocalPortMap02 = mikrotikLldpLocalTable02.getMtxrLldpLocalPortMap();
         Map<Integer, MtxrNeighborTableTracker.MtxrNeighborRow> mikrotikMtrxIndexMap02 = mikrotikMtxrIndexTable02.getMtxrNeighborMap();
-        assertEquals(5,mikrotikMtrxIndexMap02.size());
-        assertEquals(5,links02.size());
-        assertEquals(1,mikrotikLldpLocalPortMap02.size());
+        assertEquals(5, mikrotikMtrxIndexMap02.size());
+        assertEquals(5, links02.size());
+        assertEquals(1, mikrotikLldpLocalPortMap02.size());
         assertTrue(mikrotikLldpLocalPortMap02.containsKey(1));
-        assertEquals(MKTROUTER2_ETHER1_MAC,mikrotikLldpLocalPortMap02.get(1).getLldpLocPortId());
-        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,mikrotikLldpLocalPortMap02.get(1).getLldpLocalPortIdSubtype());
-        assertEquals("ether1",mikrotikLldpLocalPortMap02.get(1).getLldpLocPortDesc());
+        assertEquals(MKTROUTER2_ETHER1_MAC, mikrotikLldpLocalPortMap02.get(1).getLldpLocPortId());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, mikrotikLldpLocalPortMap02.get(1).getLldpLocalPortIdSubtype());
+        assertEquals("ether1", mikrotikLldpLocalPortMap02.get(1).getLldpLocPortDesc());
 
         LldpElement mktelem = mikrotikLldpLocalTable02.getLldpElement(lldpLocalGroup02.getLldpLocSysname());
-        assertEquals(MKTROUTER2_ETHER1_MAC,mktelem.getLldpChassisId());
-        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,mktelem.getLldpChassisIdSubType());
+        assertEquals(MKTROUTER2_ETHER1_MAC, mktelem.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, mktelem.getLldpChassisIdSubType());
 
         links02.forEach(row -> {
             assertNull(row.getLldpLink().getLldpPortId());
