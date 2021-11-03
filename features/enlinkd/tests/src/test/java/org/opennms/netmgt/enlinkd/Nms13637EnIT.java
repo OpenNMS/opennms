@@ -128,7 +128,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         assertEquals(1,ek);
 
 
-        for (LldpLink link: m_lldpLinkDao.findAll()) {
+        for (LldpLink link : m_lldpLinkDao.findAll()) {
             printLldpLink(link);
             Assert.assertNotNull(link.getLldpRemPortDescr());
             if (link.getNode().getId().intValue() == router1.getId().intValue()) {
