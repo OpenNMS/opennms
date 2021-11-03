@@ -72,7 +72,7 @@ public class MtxrNeighborTableTracker extends TableTracker {
 	}
 
 	public MtxrNeighborTableTracker(final RowCallback rowProcessor) {
-        super(rowProcessor,s_mtxrneiinterfaceid_elemList);
+        super(rowProcessor, s_mtxrneiinterfaceid_elemList);
     }
 
     /** {@inheritDoc} */
