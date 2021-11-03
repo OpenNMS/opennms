@@ -73,7 +73,7 @@ public class LldpLinkTopologyEntity {
                 link.getId()
                 , link.getNode().getId()
                 , link.getLldpRemChassisId()
-                ,link.getLldpRemSysname()
+                , link.getLldpRemSysname()
                 , link.getLldpRemPortId()
                 , link.getLldpRemPortIdSubType()
                 ,link.getLldpPortDescr()
