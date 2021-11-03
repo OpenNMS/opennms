@@ -1,6 +1,6 @@
 import { rest, restFile } from './axiosInstances'
 import marked from 'marked'
-import { AxiosError } from 'axios'
+import { FileEditorResponseLog } from '@/types'
 
 const endpoint = '/filesystem'
 
@@ -31,12 +31,12 @@ const getSnippets = async (fileName: string): Promise<string> => {
   }
 }
 
-const postFile = async (fileName: string, formData: FormData): Promise<{ success: boolean, data: string }> => {
+const postFile = async (fileName: string, formData: FormData): Promise<FileEditorResponseLog> => {
   try {
     const resp = await restFile.post(`${endpoint}/contents?f=${fileName}`, formData)
-    return { success: true, data: resp.data }
+    return { success: true, msg: resp.data }
   } catch (err) {
-    return { success: false, data: err as string}
+    return { success: false, msg: err as string}
   }
 }
 

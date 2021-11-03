@@ -1,3 +1,5 @@
+import { FileEditorResponseLog } from '@/types'
+
 export interface State {
   fileNames: string[],
   file: string,
@@ -6,7 +8,7 @@ export interface State {
   contentModified: boolean,
   selectedFileName: string,
   modifiedFileString: string,
-  logs: string[],
+  logs: FileEditorResponseLog[],
   isConsoleOpen: boolean
 }
 

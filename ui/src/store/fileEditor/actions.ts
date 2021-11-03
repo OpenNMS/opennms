@@ -40,7 +40,7 @@ const saveModifiedFile = async (context: ContextWithState) => {
   formData.append('upload', doc)
   const response = await API.postFile(filename, formData)
 
-  if (response.data) context.commit('ADD_LOG_TO_STATE', response.data)
+  context.commit('ADD_LOG_TO_STATE', response)
 
   if (response.success) {
     context.commit('SAVE_FILE_TO_STATE', fileString)

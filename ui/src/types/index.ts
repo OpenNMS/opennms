@@ -256,3 +256,8 @@ export interface ProvisionRequest {
   discoverIPRanges: IPRange[]
   snmpConfigList: SNMPDetectRequest[]
 }
+
+export interface FileEditorResponseLog {
+  success: boolean,
+  msg: string
+}

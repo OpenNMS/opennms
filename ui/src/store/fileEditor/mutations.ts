@@ -1,3 +1,4 @@
+import { FileEditorResponseLog } from '@/types'
 import { State } from './state'
 
 const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
@@ -35,7 +36,7 @@ const SAVE_MODIFIED_FILE_STRING = (state: State, modifiedFileString: string) => 
   state.modifiedFileString = modifiedFileString
 }
 
-const ADD_LOG_TO_STATE = (state: State, log: string) => {
+const ADD_LOG_TO_STATE = (state: State, log: FileEditorResponseLog) => {
   state.logs = [...state.logs, log]
 }
 
