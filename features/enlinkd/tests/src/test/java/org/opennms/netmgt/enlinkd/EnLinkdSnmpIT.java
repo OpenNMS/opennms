@@ -730,7 +730,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         links00.stream().filter(row -> row.getLldpRemSysname().equals(MKTROUTER1_NAME))
                 .forEach(row -> {
                     LldpLink link = lldpLocPortGetter.getLldpLink(row);
-                    assertEquals(73,link.getLldpLocalPortNum().intValue());
+                    assertEquals(73, link.getLldpLocalPortNum().intValue());
                     assertEquals("gi5",link.getLldpPortId());
                     assertEquals("GigabitEthernet5", link.getLldpPortDescr());
                     assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,link.getLldpPortIdSubType());
