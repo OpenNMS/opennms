@@ -138,7 +138,7 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
             LldpLink lldpLink = new LldpLink();
             lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
             lldpLink.setLldpPortIfindex(getIfindex());
-            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());
             lldpLink.setLldpRemPortId(getLldpRemPortid());
