@@ -58,7 +58,7 @@ public class LldpLinkTopologyEntity {
         this.id = id;
         this.nodeId = nodeId;
         this.lldpRemChassisId = lldpRemChassisId;
-        this.lldpRemSysname=lldpRemSysname;
+        this.lldpRemSysname = lldpRemSysname;
         this.lldpRemPortId = lldpRemPortId;
         this.lldpRemPortIdSubType = lldpRemPortIdSubType;
         this.lldpPortId = lldpPortId;
