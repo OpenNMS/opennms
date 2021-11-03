@@ -183,16 +183,6 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.dominion-grpc-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-rest-client" description="Minion :: ReST Client" version="${project.version}">
-        <feature>opennms-health</feature>
-        <feature>scv-api</feature>
-
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
-        <bundle>mvn:org.opennms.features.minion/minion-rest-client/${project.version}</bundle>
-    </feature>
-
   <feature name="minion-rest-service" version="${project.version}" description="Minion :: Rest :: Service">
     <feature>opennms-health-rest</feature>
     <feature version="${cxfVersion}">cxf-core</feature>
