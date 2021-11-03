@@ -7,7 +7,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-commonConfigs.xml</value>
-         <value>classpath*:/META-INF/opennms/applicationContext-configurationManager.xml</value>
+         <value>META-INF/opennms/applicationContext-configurationManager.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="soaContext" />
