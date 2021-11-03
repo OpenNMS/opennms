@@ -10,7 +10,7 @@
         <div class="min pointer" @click.stop="setIsConsoleOpen(false)">Minimize</div>
       </div>
     </div>
-    <div class="console-text" v-for="(log, index) in logs" :key="log.success + index">
+    <div class="console-text" v-for="(log, index) in logs" :key="String(log.success) + String(index)">
       <div :class="{ 'log-err': !log.success }">{{ log.msg }}</div>
     </div>
   </div>
