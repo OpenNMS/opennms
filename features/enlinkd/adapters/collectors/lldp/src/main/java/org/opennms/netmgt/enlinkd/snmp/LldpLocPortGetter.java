@@ -54,7 +54,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE),SnmpObjId.get(LLDP_LOC_PORTID),SnmpObjId.get(LLDP_LOC_DESCR)),lldpRemLocalPortNum);
+        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE), SnmpObjId.get(LLDP_LOC_PORTID), SnmpObjId.get(LLDP_LOC_DESCR)), lldpRemLocalPortNum);
     }
 
     public LldpLink getLldpLink(LldpRemTableTracker.LldpRemRow row) {
