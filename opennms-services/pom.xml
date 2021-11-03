@@ -310,8 +310,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>jakarta.mail</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
