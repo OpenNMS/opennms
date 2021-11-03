@@ -101,21 +101,21 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         int ek = 0;
         for (final LldpElement node: m_lldpElementDao.findAll()) {
             printLldpElement(node);
-            assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,node.getLldpChassisIdSubType());
+            assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, node.getLldpChassisIdSubType());
             switch (node.getLldpSysname()) {
                 case "router-1":
-                    assertEquals(router1.getId().intValue(),node.getNode().getId().intValue());
-                    assertEquals(MKTROUTER1_ETHER1_MAC,node.getLldpChassisId());
+                    assertEquals(router1.getId().intValue(), node.getNode().getId().intValue());
+                    assertEquals(MKTROUTER1_ETHER1_MAC, node.getLldpChassisId());
                     ei++;
                     break;
                 case "router-2":
-                    assertEquals(router2.getId().intValue(),node.getNode().getId().intValue());
-                    assertEquals(MKTROUTER2_ETHER1_MAC,node.getLldpChassisId());
+                    assertEquals(router2.getId().intValue(), node.getNode().getId().intValue());
+                    assertEquals(MKTROUTER2_ETHER1_MAC, node.getLldpChassisId());
                     ej++;
                     break;
                 case "sw01-office":
-                    assertEquals(ciscohomesw.getId().intValue(),node.getNode().getId().intValue());
-                    assertEquals(MKT_CISCO_SW01_LLDP_ID,node.getLldpChassisId());
+                    assertEquals(ciscohomesw.getId().intValue(), node.getNode().getId().intValue());
+                    assertEquals(MKT_CISCO_SW01_LLDP_ID, node.getLldpChassisId());
                     ek++;
                     break;
                 default:
