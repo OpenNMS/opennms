@@ -233,7 +233,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                 }
 
                 if (LOG.isInfoEnabled()) {
-                    LOG.info("getLldpLinks: checking target for source: {}",sourceLink);
+                    LOG.info("getLldpLinks: checking target for source: {}", sourceLink);
                 }
 
                 CompositeKey key = new CompositeKey(
