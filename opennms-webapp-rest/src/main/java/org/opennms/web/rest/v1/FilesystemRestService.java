@@ -96,6 +96,9 @@ public class FilesystemRestService {
             throw new RuntimeException("Unsupported filename: '" + fileName + "'");
         }
         final File file = Paths.get(System.getProperty("opennms.home"), "etc", fileName).toFile();
+        if (!file.exists()) {
+            return Response.noContent().build();
+        }
         final String mimeType = Files.probeContentType(file.toPath());
         return streamAll(file, mimeType, fileName);
     }

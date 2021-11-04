@@ -64,7 +64,10 @@ public class LogRestService {
         if (!LOGFILES.contains(fileName)) {
             throw new RuntimeException("Unsupported filename: '" + fileName + "'");
         }
-        final File file = Paths.get(System.getProperty("opennms.home"), "etc", fileName).toFile();
+        final File file = Paths.get(System.getProperty("opennms.home"), "logs", fileName).toFile();
+        if (!file.exists()) {
+            return Response.noContent().build();
+        }
         final String mimeType = Files.probeContentType(file.toPath());
         return streamAll(file, mimeType, fileName);
     }
