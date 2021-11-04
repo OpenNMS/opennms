@@ -43,6 +43,7 @@ public class ConfigItem {
     private List<ConfigItem> children = new LinkedList<>();
     private Long min = null;
     private Long max = null;
+    private Long multipleOf = null;
     private String pattern;
     private Object defaultValue;
     private String documentation;
@@ -141,6 +142,17 @@ public class ConfigItem {
 
     public void setMax(Long max) {
         this.max = max;
+    }
+
+    public Long getMultipleOf() {
+        return multipleOf;
+    }
+
+    public void setMultipleOf(Long multipleOf) {
+        if(multipleOf < 0){
+            throw new RuntimeException("multipleOf must > 0");
+        }
+        this.multipleOf = multipleOf;
     }
 
     public String getPattern() {
