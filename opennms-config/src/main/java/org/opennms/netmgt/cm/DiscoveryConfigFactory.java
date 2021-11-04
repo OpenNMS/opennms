@@ -160,7 +160,7 @@ public class DiscoveryConfigFactory extends AbstractCmJaxbConfigDao<DiscoveryCon
      * @throws java.io.IOException if any.
      */
   public void saveConfiguration(final DiscoveryConfiguration configuration) throws IOException {
-      this.updateConfig(JaxbUtils.marshal((Object)configuration));
+      this.updateConfig(configuration);
     }
     /**
      * <pre>
