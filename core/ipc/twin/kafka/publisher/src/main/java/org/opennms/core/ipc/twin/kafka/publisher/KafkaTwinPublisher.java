@@ -130,7 +130,6 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
                 RATE_LIMITED_LOG.error("Error publishing update", ex);
             }
         });
-        this.producer.flush();
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {

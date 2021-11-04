@@ -122,7 +122,6 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
                 RATE_LIMITED_LOG.error("Error sending request", ex);
             }
         });
-        this.producer.flush();
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
