@@ -1,5 +1,5 @@
 <template>
-  <h3 class="link">
+  <h3 class="link headline3">
     <router-link :to="to">
       <slot></slot>
     </router-link>
@@ -7,22 +7,16 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
-
-const props = defineProps({
+defineProps({
   to: {
     required: true,
     type: String
   }
 })
-
-const { to } = toRefs(props)
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
 .link {
-  @include headline3();
   width: 100%;
   a {
     color: var(--feather-primary-text-on-color);

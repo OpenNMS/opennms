@@ -25,6 +25,7 @@ import { FeatherIcon } from '@featherds/icon'
 import LightDark from '@/assets/LightDark.vue'
 import Logo from '@/assets/Logo.vue'
 import Search from './Search.vue'
+
 const returnHandler = () => window.location.href = '/opennms/'
 const logo = Logo
 const lightDark = LightDark

@@ -196,3 +196,9 @@ export interface NodeAvailability {
   'service-count': number
   'service-down-count': number
 }
+
+export interface BreadCrumb {
+  label: string
+  to: string
+  position?: string
+}

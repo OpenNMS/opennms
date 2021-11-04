@@ -22,17 +22,16 @@ import { FeatherAutocomplete } from "@featherds/autocomplete"
 
 const router = useRouter()
 const store = useStore()
-
-// data
 const searchStr = ref()
 const loading = ref(false)
 
-// methods
 const selectItem = (value: { url: string }) => {
+  if (!value) return
   // parse selected item url and redirect
   const path = value.url.split('?')[1].split('=')
   router.push(`/${path[0]}/${path[1]}`)
 }
+
 const search = debounce(async (value: string) => {
   const searchVal = value || 'node'
   loading.value = true
@@ -40,7 +39,6 @@ const search = debounce(async (value: string) => {
   loading.value = false
 }, 600)
 
-// computed
 const results = computed(() => {
   if (store.state.searchModule.searchResults[0]) {
     return store.state.searchModule.searchResults[0].results
@@ -54,10 +52,13 @@ const results = computed(() => {
   width: 400px !important;
   margin-right: 20px;
   .feather-input-border {
-    background: var(--feather-surface) !important;
+    background: var(--feather-surface);
   }
   &.feather-autocomplete-container {
-    padding-top: 0px !important;
+    padding-top: 0px;
+  }
+  .feather-autocomplete-input {
+    height: 25px !important;
   }
 }
 </style>

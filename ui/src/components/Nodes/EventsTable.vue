@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="feather-row">
-      <div class="feather-col-12 title">Recent Events</div>
+      <div class="feather-col-12 headline3">Recent Events</div>
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
@@ -62,15 +62,11 @@ const getFormattedCreatedTime = (time: number) => dayjs(time).format()
   
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 .card {
   @include elevation(2);
   padding: 15px;
   margin-bottom: 15px;
-  .title {
-    @include headline3();
-  }
 }
 table {
   width: 100%;

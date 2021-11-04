@@ -1,5 +1,5 @@
 <template>
-  <div class="breadcrumbs">
+  <div class="breadcrumbs subtitle2">
     <template v-for="item of items">
       <div class="link">
         <router-link :to="item.to">{{ item.label }}</router-link>
@@ -10,20 +10,22 @@
 </template>
   
 <script setup lang="ts">
+import { PropType } from 'vue';
+import { BreadCrumb } from '@/types';
 import { FeatherIcon } from "@featherds/icon"
 import ChevronRight from "@featherds/icon/navigation/ChevronRight"
-const items = [
-  { label: 'Nodes', to: '/' },
-  { label: 'Node Details', to: '#', position: 'last' }
-]
+defineProps({
+  items: {
+    required: true,
+    type: Array as PropType<BreadCrumb[]>
+  }
+})
 </script>
   
 <style lang="scss" scoped>
-@import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 .breadcrumbs {
   @include elevation(1);
-  @include subtitle2();
   width: 100%;
   display: flex;
   height: 47px;

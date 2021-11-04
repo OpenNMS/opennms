@@ -46,4 +46,12 @@ a {
 .pointer {
   cursor: pointer !important;
 }
+
+// global feather typography classes
+.headline1 { @include headline1(); }
+.headline2 { @include headline2(); }
+.headline3 { @include headline3(); }
+.headline4 { @include headline4(); }
+.subtitle1 { @include subtitle1(); }
+.subtitle2 { @include subtitle2(); }
 </style>

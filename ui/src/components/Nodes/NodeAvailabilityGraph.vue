@@ -1,8 +1,8 @@
 <template>
   <div class="card">
-    <div class="title">Availability (last 24 hours)</div>
+    <div class="title headline3">Availability (last 24 hours)</div>
 
-    <div class="flex-container availability-header">
+    <div class="flex-container availability-header headline4">
       <div>Availability</div>
       <div class="timeline" ref="timeline">{{ availability.availability }}%</div>
     </div>
@@ -11,7 +11,7 @@
       <div v-if="ipinterface.services.length">
         <hr class="divider" />
         <div class="flex-container">
-          <div class="service">{{ ipinterface.address }}</div>
+          <div class="service subtitle2">{{ ipinterface.address }}</div>
           <div class>
             <img
               :src="`${baseUrl}/opennms/rest/timeline/header/${startTime}/${endTime}/${width}`"
@@ -23,13 +23,13 @@
 
       <template v-for="service of ipinterface.services">
         <div class="flex-container">
-          <div class="service">{{ service.name }}</div>
+          <div class="service subtitle2">{{ service.name }}</div>
           <div>
             <img
               :src="`${baseUrl}/opennms/rest/timeline/image/${nodeId}/${ipinterface.address}/${service.name}/${startTime}/${endTime}/${width}`"
             />
           </div>
-          <div class="percentage">{{ service.availability }}%</div>
+          <div class="percentage subtitle2">{{ service.availability }}%</div>
         </div>
       </template>
     </template>
@@ -69,18 +69,15 @@ onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
 
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
 .card {
   @include elevation(2);
   padding: 15px;
   margin-bottom: 15px;
   .title {
-    @include headline3();
     padding: 5px 10px 0px 10px;
   }
 }
 .service {
-  @include subtitle2();
   min-width: 103px;
   margin-left: 8px;
 }
@@ -89,11 +86,9 @@ onUnmounted(() => window.removeEventListener("resize", recalculateWidth))
   text-align: end;
 }
 .availability-header {
-  @include headline4();
   padding: 0px 0px 0px 10px;
 }
 .percentage {
-  @include subtitle2();
   margin-left: 3px;
 }
 .divider {
