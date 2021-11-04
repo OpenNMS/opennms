@@ -156,7 +156,7 @@ public class LldpRemTableTracker extends TableTracker {
                 else 
                     return lldpportid.toHexString();
             case LLDP_PORTID_SUBTYPE_MACADDRESS:
-                return lldpportid.toHexString();
+                return LldpLocalGroupTracker.decodeMacAddress(lldpportid);
             case LLDP_PORTID_SUBTYPE_NETWORKADDRESS:
                 LldpUtils.decodeNetworkAddress(lldpportid.toDisplayString());
            }
