@@ -33,7 +33,7 @@
   java.util.Map,
   java.util.TreeMap,
   org.opennms.web.api.Util,
-  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.cm.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
   org.opennms.netmgt.provision.persist.requisition.Requisition,
   org.opennms.netmgt.dao.api.*,

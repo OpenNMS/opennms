@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
+    <bean id="discoveryFactory" class="org.opennms.netmgt.cm.DiscoveryConfigFactory" />
     <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
         <property name="configFile" value="discovery-configuration.xml"/>
     </bean>

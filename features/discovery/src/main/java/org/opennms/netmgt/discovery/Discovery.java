@@ -34,8 +34,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
-import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.cm.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;

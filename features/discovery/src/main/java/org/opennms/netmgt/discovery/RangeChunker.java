@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.opennms.core.network.IPAddress;
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.cm.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.discovery.IPPollRange;
