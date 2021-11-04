@@ -261,3 +261,170 @@ This is a very carefully wired bundle that includes classes related to:
 
 This is the bundle that loads the Spring contexts and wires the Hibernate DAOs using mostly the same code as the core with the current bootstrap
 
+### Spring Contexts
+
+The shaded JAR combines the Spring contexts from the dependencies using the: [XmlAppendingTransformer](https://github.com/OpenNMS/opennms/blob/opennms-28.1.1-1/features/distributed/dao/impl/pom.xml#L216)
+
+Here are some of the results.
+
+applicationContext-osgi.xml:
+```
+% head -n 40 META-INF/opennms/applicationContext-osgi.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+          http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+          http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <!-- NOTE: Contains only Minion/Sentinel-specific beans -->
+
+    <context:annotation-config />
+    <tx:annotation-driven />
+
+    <!-- Resolve references, which are usually provided by the OpenNMS Runtime Environment -->
+    <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry" />
+    <osgi:reference id="dataSource" interface="javax.sql.DataSource" />
+    <osgi:reference id="databaseSchemaConfigFactory" interface="org.opennms.netmgt.config.api.DatabaseSchemaConfig" />
+</beans>
+```
+
+applicationContext-shared.xml:
+```
+% head -n 40 META-INF/opennms/applicationContext-shared.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <!-- NOTE: Contains definitions, which are shared between all containers -->
+
+    <context:annotation-config />
+    <cache:annotation-driven />
+    <tx:annotation-driven />
+
+    <!-- Spring Cache Manager -->
+    <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+        <property name="caches">
+            <set>
+                <!-- For JdbcFilterDao -->
+                <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+                    <property name="name" value="activeIpAddressList"/>
+                </bean>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan">
+            <list>
+                <!-- TODO: Move into org.opennms.netmgt.model -->
+                <value>org.opennms.netmgt.bsm</value>
+                <value>org.opennms.netmgt.dao.hibernate</value>
+                <value>org.opennms.netmgt.model</value>
+```
+applicationContext-dao.xml:
+```
+% tail -n 40 META-INF/opennms/applicationContext-dao.xml
+  
+  <bean id="javamailConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
+  </bean>
+  <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao">
+    <property name="configResource" ref="javamailConfigResourceLocation" />
+    <property name="reloadCheckInterval" value="-1" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
+
+  <!-- DistPollerDAO should be exposed by each container individually -->
+  <bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
+
+  <!-- PathOutageManagerDaoImpl requires poller-configuration.xml which is not available in distributed containers -->
+  <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
+
+  <!--
+       This is required for the PathOutageManagerDaoImpl in order to get access to the underlying
+       PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules.
+       Ideally it would live in component-dao.xml, but that is already used by other modules such as bsm, which we require
+       to expose the bsm daos in an OSGI Container, therefore without having to re-define all existing integration tests,
+       it is placed here
+    -->
+  <bean id="pathOutageConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="poller-configuration.xml"/>
+    <property name="targetMethod" value="get"/>
+  </bean>
+  <!--
+    HACK:  This is a duplicate, as the original one is located in opennms-config/META-INF/opennms/component-dao.xml.
+    However, when executing tests, that application context may not be available, therefore we define it here as well.
+  -->
+  <bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+    <constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
+    <constructor-arg value="file:${opennms.home}/etc/poller-configuration.xml" />
+  </bean>
+</beans>
+```
+
+component-dao.xml:
+```
+% tail -n 40 META-INF/opennms/component-dao.xml 
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" ref="bmpAsnInfoDao" />
+  <bean id="bmpAsnPathDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpAsnPathAnalysisDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" ref="bmpAsnPathDao" />
+  <bean id="bmpRouteInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRouteInfoDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouteInfoDao" ref="bmpRouteInfoDao" />
+  <bean id="bmpIpRibLogDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpIpRibLogDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpIpRibLogDao" ref="bmpIpRibLogDao" />
+  <bean id="bmpStatsByPeerDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPeerDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPeerDao" ref="bmpStatsByPeerDao" />
+  <bean id="bmpStatsByAsnDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByAsnDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByAsnDao" ref="bmpStatsByAsnDao" />
+  <bean id="bmpStatsByPrefixDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsByPrefixDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsByPrefixDao" ref="bmpStatsByPrefixDao" />
+  <bean id="bmpStatsPeerRibDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsPeerRibDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsPeerRibDao" ref="bmpStatsPeerRibDao" />
+  <bean id="bmpStatsIpOriginsDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatsIpOriginsDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatsIpOriginsDao" ref="bmpStatsIpOriginsDao" />
+  <bean id="bmpRpkiInfoDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRpkiInfoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRpkiInfoDao" ref="bmpRpkiInfoDao" />
+</beans>
+```
