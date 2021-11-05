@@ -21,14 +21,18 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Private-Package>
-                org.opennms.features.config.*,
-                org.opennms.netmgt.cm,
-                com.fasterxml.jackson.*,
-                org.apache.ws.commons.schema.walker,
-                javax.activation,
-                com.sun.activation.registries,
-                org.codehaus.*
+              org.opennms.features.config.*,
+              org.opennms.netmgt.cm,
+              com.fasterxml.jackson.*,
+              org.apache.ws.commons.schema.walker,
+              javax.activation,
+              javax.ws.*,
+              com.sun.activation.registries,
+              org.codehaus.*
             </Private-Package>
+            <Import-Package>
+              !javax.ws.*
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>

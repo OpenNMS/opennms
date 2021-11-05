@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.impl.util.XmlConverter;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -92,7 +93,16 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
-        return Optional.empty();
+        ConfigSchema schema = null;
+        try {
+            XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
+            if ("discovery".equals(configName)) {
+                schema = new ConfigSchema(configName, XmlConverter.class, converter);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.of(schema);
     }
 
     @Override
@@ -115,7 +125,8 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public void updateConfiguration(String configName, String configId, JsonAsString configObject) throws IOException {
-        configOptional = Optional.of(configObject.toString());
+        Optional<ConfigSchema<?>> schema = this.getRegisteredSchema(configName);
+        configOptional = Optional.of(schema.get().getConverter().jsonToXml(configObject.toString()));
     }
 
     @Override
