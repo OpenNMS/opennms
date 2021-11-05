@@ -28,28 +28,46 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpRowResult;
 
-public class TimeTetraLldpLink  {
-    private Integer tmnxLldpRemLocalDestMACAddress;
-    private LldpLink lldpLink = new LldpLink();
+public class MtxrLldpRemTableTracker extends LldpRemTableTracker {
 
-    public TimeTetraLldpLink() {
+    public MtxrLldpRemTableTracker() {
+        super();
     }
 
-    public LldpLink getLldpLink() {
-        return lldpLink;
+    public static class MtxrLldpRemRow extends LldpRemRow {
+
+        public MtxrLldpRemRow(int columnCount, SnmpInstId instance) {
+            super(columnCount, instance);
+        }
+
+        public Integer getMtxrNeighborIndex() {
+            return super.getLldpRemIndex();
+        }
+
     }
 
-    public void setLldpLink(LldpLink lldpLink) {
-        this.lldpLink = lldpLink;
+    /** {@inheritDoc} */
+    @Override
+    public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
+        return new MtxrLldpRemRow(columnCount, instance);
     }
 
-    public Integer getTmnxLldpRemLocalDestMACAddress() {
-        return tmnxLldpRemLocalDestMACAddress;
+    /** {@inheritDoc} */
+    @Override
+    public void rowCompleted(final SnmpRowResult row) {
+        processMtxrLldpRemRow((MtxrLldpRemRow)row);
     }
 
-    public void setTmnxLldpRemLocalDestMACAddress(Integer tmnxLldpRemLocalDestMACAddress) {
-        this.tmnxLldpRemLocalDestMACAddress = tmnxLldpRemLocalDestMACAddress;
+    /**
+     * <p>processMtxrLldpRemRow</p>
+     *
+     * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
+     */
+    public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
     }
+
+
 }

@@ -68,7 +68,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities() {
         return (List<LldpLinkTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemPortId, l.lldpRemPortIdSubType,lldpRemPortDescr, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.enlinkd.model.LldpLink l");
+                "select new org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemSysname, l.lldpRemPortId, l.lldpRemPortIdSubType, l.lldpRemPortDescr, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.enlinkd.model.LldpLink l");
     }
 
     @Override
@@ -103,7 +103,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
         return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                "select new org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.lldpSysname, e.node.id)" +
                         "from org.opennms.netmgt.enlinkd.model.LldpElement e");
     }
 
