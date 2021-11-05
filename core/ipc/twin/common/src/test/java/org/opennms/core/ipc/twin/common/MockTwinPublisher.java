@@ -67,7 +67,7 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
     }
 
     @Override
-    protected void handleSinkUpdate(TwinResponseBean sinkUpdate) {
+    protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
         KafkaProducer<String, byte[]> producer = new KafkaProducer<>(kafkaConfig);
         try {
             byte[] value = objectMapper.writeValueAsBytes(sinkUpdate);
@@ -97,8 +97,8 @@ public class MockTwinPublisher extends AbstractTwinPublisher {
 
                         CompletableFuture.runAsync(() -> {
                             try {
-                                TwinRequestBean twinRequest = objectMapper.readValue(record.value(), TwinRequestBean.class);
-                                TwinResponseBean twinResponse = getTwin(twinRequest);
+                                TwinRequest twinRequest = objectMapper.readValue(record.value(), TwinRequest.class);
+                                TwinUpdate twinResponse = getTwin(twinRequest);
                                 byte[] response = objectMapper.writeValueAsBytes(twinResponse);
                                 ProducerRecord<String, byte[]> producerRecord =
                                         new ProducerRecord<>(TwinApiIT.rpcResponseTopic, twinResponse.getKey(), response);

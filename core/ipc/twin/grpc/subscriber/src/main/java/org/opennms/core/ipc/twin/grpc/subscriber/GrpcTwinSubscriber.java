@@ -36,12 +36,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
-import org.opennms.core.ipc.twin.common.TwinRequestBean;
-import org.opennms.core.ipc.twin.common.TwinResponseBean;
+import org.opennms.core.ipc.twin.common.TwinRequest;
+import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.grpc.common.*;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
@@ -126,8 +125,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
-        TwinRequestProto twinRequestProto = mapTwinRequest(twinRequest);
+    protected void sendRpcRequest(TwinRequest twinRequest) {
+        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
         // Send RPC Request asynchronously.
         CompletableFuture.runAsync(() -> retrySendRpcRequest(twinRequestProto), twinRequestSenderExecutor);
     }
@@ -193,19 +192,16 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         }
     }
 
-    private TwinRequestProto mapTwinRequest(TwinRequestBean twinRequest) {
-        TwinRequestProto.Builder builder = TwinRequestProto.newBuilder();
-        builder.setConsumerKey(twinRequest.getKey()).setLocation(getMinionIdentity().getLocation())
-                .setSystemId(getMinionIdentity().getId());
-        return builder.build();
-    }
-
     private class ResponseHandler implements StreamObserver<TwinResponseProto> {
 
         @Override
         public void onNext(TwinResponseProto twinResponseProto) {
-            TwinResponseBean twinResponseBean = mapTwinResponseProto(twinResponseProto);
-            accept(twinResponseBean);
+            try {
+                TwinUpdate twinUpdate = mapTwinResponseToProto(twinResponseProto.toByteArray());
+                accept(twinUpdate);
+            } catch (Exception e) {
+                LOG.error("Exception while processing twin update for key {} ", twinResponseProto.getConsumerKey(), e);
+            }
         }
 
         @Override
@@ -222,17 +218,6 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
             CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
-        private TwinResponseBean mapTwinResponseProto(TwinResponseProto twinResponseProto) {
-            TwinResponseBean twinResponseBean = new TwinResponseBean();
-            if (!Strings.isNullOrEmpty(twinResponseProto.getLocation())) {
-                twinResponseBean.setLocation(twinResponseProto.getLocation());
-            }
-            twinResponseBean.setKey(twinResponseProto.getConsumerKey());
-            if (twinResponseProto.getTwinObject() != null) {
-                twinResponseBean.setObject(twinResponseProto.getTwinObject().toByteArray());
-            }
-            return twinResponseBean;
-        }
     }
 
 

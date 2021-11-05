@@ -28,25 +28,56 @@
 
 package org.opennms.core.ipc.twin.common;
 
+import java.util.Objects;
 
-import java.io.IOException;
+public class TwinRequest {
 
-public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
+    protected String key;
 
+    protected String location;
 
-    @Override
-    protected void sendRpcRequest(TwinRequest twinRequest) {
-        // no need to send any RPC on local subscriber.
+    public TwinRequest(String key, String location) {
+        this.key = key;
+        this.location = location;
+    }
+
+    public TwinRequest() {
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override
-    public void accept(TwinUpdate twinUpdate) {
-        super.accept(twinUpdate);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TwinRequest that = (TwinRequest) o;
+        return Objects.equals(key, that.key) && Objects.equals(location, that.location);
     }
 
     @Override
-    public void close() throws IOException {
+    public int hashCode() {
+        return Objects.hash(key, location);
+    }
+
+    @Override
+    public String toString() {
+        return "TwinRequestBean{" +
+                "key='" + key + '\'' +
+                ", location='" + location + '\'' +
+                '}';
     }
 }
-
-

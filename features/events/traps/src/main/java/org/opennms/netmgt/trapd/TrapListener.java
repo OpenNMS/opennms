@@ -103,7 +103,7 @@ public class TrapListener implements TrapNotificationListener {
 
     public void start() {
         m_twinSubscription = m_twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, (config) ->  {
-            LOG.debug("Got listener config update - reloading");
+            LOG.info("Got listener config update - reloading");
             this.close();
             this.open(config);
         });

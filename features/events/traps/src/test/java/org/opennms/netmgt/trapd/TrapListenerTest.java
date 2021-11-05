@@ -111,6 +111,7 @@ public class TrapListenerTest {
         Assert.assertEquals(Boolean.FALSE, receiver.hasSnmpV3UsersChanged(new TrapdConfigBean(config)));
     }
 
+
     public static Snmpv3User createUser(String authProtocol,
                                          String autoPassPhrase,
                                          String engineId,

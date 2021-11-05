@@ -26,53 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.common;
+package org.opennms.smoketest.minion;
 
-import java.util.Arrays;
+import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.junit.MinionTests;
+import org.opennms.smoketest.stacks.IpcStrategy;
 
-public class TwinResponseBean extends TwinRequestBean {
-
-
-    public TwinResponseBean() {
-    }
-
-    public TwinResponseBean(String key, String location, byte[] object) {
-        super(key, location);
-        this.object = object;
-    }
-
-    private byte[] object;
-
-    public byte[] getObject() {
-        return object;
-    }
-
-    public void setObject(byte[] object) {
-        this.object = object;
-    }
+/**
+ * Helps to validate Twin with Kafka
+ */
+@Category(MinionTests.class)
+public class TrapdWithKafkaIT extends TrapIT {
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        TwinResponseBean that = (TwinResponseBean) o;
-        return Arrays.equals(object, that.object);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(object);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "TwinResponseBean{" +
-                "key='" + key + '\'' +
-                ", location='" + location + '\'' +
-                ", object=" + Arrays.toString(object) +
-                '}';
+    public IpcStrategy getIpcStrategy() {
+        return IpcStrategy.KAFKA;
     }
 }

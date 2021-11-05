@@ -29,55 +29,50 @@
 package org.opennms.core.ipc.twin.common;
 
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class TwinRequestBean {
+/**
+ * This Tracks Twin Object Updates for a given SessionKey (key, location).
+ * Twin Tracker consists of marshalled object( byte[]), version and sessionId.
+ * Version is incremented whenever object updates.
+ * sessionId is created only once per a SessionKey.
+ * TwinTracker is created and updated by publisher and only consumed by Subscriber.
+ * Subscriber will ignore any stale updates based on version but resets version whenever there is new SessionId.
+ */
+public class TwinTracker {
 
-    protected String key;
+    private final AtomicInteger version;
+    private byte[] obj;
+    private final String sessionId;
 
-    protected String location;
-
-    public TwinRequestBean(String key, String location) {
-        this.key = key;
-        this.location = location;
+    public TwinTracker(byte[] obj) {
+        this(obj, 0, UUID.randomUUID().toString());
+    }
+    public TwinTracker(byte[] obj, int version, String sessionId) {
+        this.obj = obj;
+        this.version = new AtomicInteger(version);
+        this.sessionId = Objects.requireNonNull(sessionId);
     }
 
-    public TwinRequestBean() {
+    public int getVersion() {
+        return version.get();
     }
 
-    public String getKey() {
-        return key;
+    public int incrementVersion() {
+        return version.incrementAndGet();
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public byte[] getObj() {
+        return obj;
     }
 
-    public String getLocation() {
-        return location;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TwinRequestBean that = (TwinRequestBean) o;
-        return Objects.equals(key, that.key) && Objects.equals(location, that.location);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, location);
-    }
-
-    @Override
-    public String toString() {
-        return "TwinRequestBean{" +
-                "key='" + key + '\'' +
-                ", location='" + location + '\'' +
-                '}';
+    public void setObj(byte[] obj) {
+        this.obj = obj;
     }
 }
