@@ -82,6 +82,9 @@
                                 <feature>sentinel-jsonstore-postgres</feature>
                                 <feature>sentinel-thresholding-service</feature>
 
+                                <!-- EventD specific features (and dependencies below) -->
+
+
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>
@@ -459,17 +462,17 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.dao-impl</artifactId>
+            <artifactId>org.opennms.features.distributed.dao-impl</artifactId> <!-- persistence -->
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.dao-distributed</artifactId>
+            <artifactId>org.opennms.features.distributed.dao-distributed</artifactId> <!-- persistence -->
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.datasource</artifactId>
+            <artifactId>org.opennms.features.distributed.datasource</artifactId> <!-- persistence -->
             <version>${project.version}</version>
         </dependency>
         <dependency>
