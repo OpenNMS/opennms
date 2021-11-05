@@ -1422,7 +1422,7 @@
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jackson2Version>2.10.5</jackson2Version>
+    <jackson2Version>2.12.4</jackson2Version>
     <snakeyamlVersion>1.29</snakeyamlVersion>
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -3808,7 +3808,7 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-scala_2.12</artifactId>
+        <artifactId>jackson-module-scala_2.13</artifactId>
         <version>${jackson2Version}</version>
       </dependency>
       <dependency>
