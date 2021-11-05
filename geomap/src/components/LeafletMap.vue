@@ -90,16 +90,39 @@ let interestedAlarms = computed(() => {
 
 // console.log("interestedAlarms",interestedAlarms);
 
- function setIcon(node: any) {
-   console.log("node data",node.label);
-   let nodelabelval = node.label; 
+//  let setIcon = computed((node: any) => {
+//    console.log("node data",node.label);
+//    let nodelabelval = node.label; 
+//  interestedAlarms.value.forEach((element: any) => {
+//    let severityicon;
+//    let label = element.nodeLabel
+//    if(nodelabelval === label){
+//      let alarmSeverity = element.severity;
+//      console.log("severity icon", alarmSeverity)
+//       const markerColor = new L.Icon({
+//           iconUrl: setMarkerColor(alarmSeverity),
+//           shadowUrl:
+//             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+//           iconSize: [25, 41],
+//           iconAnchor: [12, 41],
+//           popupAnchor: [1, -34],
+//           shadowSize: [41, 41],
+//         });
+//         return markerColor;
+//    }
+//  });
+//  })
+
+ const setIcon = computed((node: any)=>{
+  return (node: any) => {
+    let nodelabelval = node.label; 
  interestedAlarms.value.forEach((element: any) => {
    let severityicon;
    let label = element.nodeLabel
    if(nodelabelval === label){
      let alarmSeverity = element.severity;
      console.log("severity icon", alarmSeverity)
-      let markerColor = new L.Icon({
+      const markerColor = new L.Icon({
           iconUrl: setMarkerColor(alarmSeverity),
           shadowUrl:
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
@@ -108,10 +131,12 @@ let interestedAlarms = computed(() => {
           popupAnchor: [1, -34],
           shadowSize: [41, 41],
         });
+        console.log("marker return data", markerColor)
         return markerColor; 
    }
  });
- }
+  }
+})
 
 // let setIcon = new L.Icon({
 //           iconUrl: setMarkerColor(),
