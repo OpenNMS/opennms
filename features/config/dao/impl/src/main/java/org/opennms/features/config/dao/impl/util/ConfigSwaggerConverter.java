@@ -114,34 +114,6 @@ public class ConfigSwaggerConverter {
     }
 
     /**
-     * It will generate a big openapi path with external $ref to schema
-     *
-     * @param prefix
-     * @param items
-     * @return path openapi doc
-     */
-    public OpenAPI convert(String prefix, Map<String, ConfigItem> items) {
-        // Create an empty set of components
-        Components components = new Components();
-        openAPI.setComponents(components);
-
-        // Create an empty set of paths
-        Paths paths = new Paths();
-        openAPI.setPaths(paths);
-
-        // Create a basic info section
-        Info info = this.genInfo();
-
-        openAPI.setInfo(info);
-        items.forEach((configName, item) -> {
-            // Generate paths for the items
-            this.generatePathsForItems(item, prefix + configName, configName);
-            pathItemsByPath.forEach(paths::addPathItem);
-        });
-        return openAPI;
-    }
-
-    /**
      * replace servers part of openapi
      *
      * @param openapi
@@ -203,6 +175,18 @@ public class ConfigSwaggerConverter {
     }
 
     public OpenAPI convert(ConfigItem item, String prefix) {
+        return this.convert(item, prefix, false);
+    }
+
+    /**
+     * Convert ConfigItem to OpenAPI
+     *
+     * @param item
+     * @param prefix
+     * @param isSingleConfig (it will disable post & delete API)
+     * @return
+     */
+    public OpenAPI convert(ConfigItem item, String prefix, boolean isSingleConfig) {
         // Create an empty set of components
         Components components = new Components();
         openAPI.setComponents(components);
@@ -225,7 +209,7 @@ public class ConfigSwaggerConverter {
             openAPI.setPaths(paths);
 
             // Generate paths for the items
-            this.generatePathsForItems(item, prefix, null);
+            this.generatePathsForItems(item,prefix , null, isSingleConfig);
             pathItemsByPath.forEach(paths::addPathItem);
         }
 
@@ -247,7 +231,7 @@ public class ConfigSwaggerConverter {
      * @param prefix
      * @param externalConfigName (use for generate external $ref)
      */
-    private void generatePathsForItems(ConfigItem item, String prefix, String externalConfigName) {
+    private void generatePathsForItems(ConfigItem item, String prefix, String externalConfigName, boolean isSingleConfig) {
         String path = prefix;
 
         // Index the path for future reference
@@ -285,18 +269,20 @@ public class ConfigSwaggerConverter {
         parameters.add(configIdParam);
 
         //============= POST =================
-        Operation post = this.generateOperation(tagName, "Add " + item.getName() + " configuration", "empty",
-                parameters, jsonObjectContent, null);
-        configIdPathItem.setPost(post);
+        if (!isSingleConfig) {
+            Operation post = this.generateOperation(tagName, "Add " + item.getName() + " configuration", "empty",
+                    parameters, jsonObjectContent, null);
+            configIdPathItem.setPost(post);
+        }
 
         //============== PUT =================
         Operation put = this.generateOperation(tagName, "Overwrite " + item.getName() + " configuration", "OK",
-                parameters, jsonObjectContent, null);
+                isSingleConfig ? null : parameters, jsonObjectContent, null);
         configIdPathItem.setPut(put);
 
         //============== GET =================
         Operation get = this.generateOperation(tagName, "Get " + item.getName() + " configuration",
-                item.getName() + " configuration", parameters, null, jsonObjectContent);
+                item.getName() + " configuration", isSingleConfig ? null : parameters, null, jsonObjectContent);
         configIdPathItem.setGet(get);
 
         Operation getConfigIds = this.generateOperation(tagName, "Get " + item.getName() + " configIds",
@@ -304,13 +290,19 @@ public class ConfigSwaggerConverter {
         configNamePathItem.setGet(getConfigIds);
 
         //============== DELETE =================
-        Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
-                item.getName() + " configuration", parameters, null, null);
-        configIdPathItem.setDelete(delete);
+        if (!isSingleConfig) {
+            Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
+                    item.getName() + " configuration", parameters, null, null);
+            configIdPathItem.setDelete(delete);
+        }
 
         // Save
-        pathItemsByPath.put(path, configNamePathItem);
-        pathItemsByPath.put(path + "/{configId}", configIdPathItem);
+        if(!isSingleConfig) {
+            pathItemsByPath.put(path, configNamePathItem);
+            pathItemsByPath.put(path + "/{configId}", configIdPathItem);
+        } else {
+            pathItemsByPath.put(path + "/default", configIdPathItem);
+        }
     }
 
     private Operation generateOperation(String tagName, String summary, String description,
@@ -404,6 +396,9 @@ public class ConfigSwaggerConverter {
                 break;
             case STRING:
                 schema = new StringSchema();
+                if (item.getPattern() != null) { // pattern only work on string
+                    schema.setPattern(item.getPattern());
+                }
                 break;
             case NUMBER:
                 schema = new NumberSchema();
@@ -443,19 +438,31 @@ public class ConfigSwaggerConverter {
         if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
             schema.setDescription(item.getDocumentation());
         }
-
+        if (item.getMultipleOf() != null) {
+            if (schema instanceof NumberSchema || schema instanceof IntegerSchema)
+                schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
+        }
         if (item.getMin() != null) {
-            schema.setMinimum(BigDecimal.valueOf(item.getMin()));
+            if (schema instanceof StringSchema)
+                schema.setMinLength(Math.toIntExact(item.getMin()));
+            else if (schema instanceof ArraySchema)
+                schema.setMinItems(Math.toIntExact(item.getMin()));
+            else
+                schema.setMinimum(BigDecimal.valueOf(item.getMin()));
         }
         if (item.getMax() != null) {
-            schema.setMaximum(BigDecimal.valueOf(item.getMax()));
+            if (schema instanceof StringSchema)
+                schema.setMaxLength(Math.toIntExact(item.getMax()));
+            else if (schema instanceof ArraySchema)
+                schema.setMaxItems(Math.toIntExact(item.getMax()));
+            else
+                schema.setMaximum(BigDecimal.valueOf(item.getMax()));
         }
-        if (item.getPattern() != null) {
-            schema.setPattern(item.getPattern());
-        }
+
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
         }
+
         if (parent != null) {
             // Add the item to the parent
             Schema<?> schemaForParent = schemasByItem.get(parent);
@@ -468,7 +475,7 @@ public class ConfigSwaggerConverter {
             }
 
             if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
-                // If the parent is an array, then add the the child as an item, and not a property
+                // If the parent is an array, then add the child as an item, and not a property
                 ((ArraySchema) schemaForParent).setItems(schemaForCurrentItem);
             } else {
                 schemaForParent.addProperties(schemaForCurrentItem.getName(), schemaForCurrentItem);
