@@ -1,7 +1,5 @@
 <template>
   <div class="leaflet">
-    <!-- <img src="src/assets/red-marker.png"> -->
-    <!-- <p style="height:20px">Alarm Data : {{ interestedAlarms }}</p> -->
     <div class="geo-map">
       <l-map
         ref="map"
@@ -33,7 +31,7 @@
               :icon="setIcon(node)"
               add
             >
-              <l-popup> {{ node.label }} </l-popup>
+              <l-popup>{{ node.label }}</l-popup>
             </l-marker>
             <l-polyline
               v-for="(coordinatePair, index) in edges"
@@ -48,7 +46,7 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, watch, ref, nextTick, onMounted } from "vue";
+import { computed, ref, nextTick } from "vue";
 import "leaflet/dist/leaflet.css";
 import {
   LMap,
@@ -62,7 +60,7 @@ import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
 import L from "leaflet";
-import { Alarm } from "@/types";
+import { Alarm, Node } from "@/types";
 import { Coordinates } from "@/types";
 
 let leafletReady = ref(false);
@@ -70,6 +68,7 @@ let leafletObject = ref("");
 let visible = ref(false);
 let map: any = ref();
 const store = useStore();
+let iconPath;
 
 let center = computed(() => {
   const coordinates: Coordinates = store.getters["mapModule/getMapCenter"];
@@ -81,74 +80,30 @@ let zoom = ref(2);
 let interestedNodes = computed(() => {
   return store.getters["mapModule/getInterestedNodes"];
 });
-// console.log("interestedNodes",interestedNodes);
+
+/******Set marker color based on alarm severity******/
 
 let interestedAlarms = computed(() => {
-  // console.log("interestedAlarms",store.getters["mapModule/getAlarmsFromSelectedNodes"]);
   return store.getters["mapModule/getAlarmsFromSelectedNodes"];
 });
 
-// console.log("interestedAlarms",interestedAlarms);
 
-//  let setIcon = computed((node: any) => {
-//    console.log("node data",node.label);
-//    let nodelabelval = node.label; 
-//  interestedAlarms.value.forEach((element: any) => {
-//    let severityicon;
-//    let label = element.nodeLabel
-//    if(nodelabelval === label){
-//      let alarmSeverity = element.severity;
-//      console.log("severity icon", alarmSeverity)
-//       const markerColor = new L.Icon({
-//           iconUrl: setMarkerColor(alarmSeverity),
-//           shadowUrl:
-//             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-//           iconSize: [25, 41],
-//           iconAnchor: [12, 41],
-//           popupAnchor: [1, -34],
-//           shadowSize: [41, 41],
-//         });
-//         return markerColor;
-//    }
-//  });
-//  })
-
- const setIcon = computed((node: any)=>{
-  return (node: any) => {
-    let nodelabelval = node.label; 
- interestedAlarms.value.forEach((element: any) => {
-   let severityicon;
-   let label = element.nodeLabel
-   if(nodelabelval === label){
-     let alarmSeverity = element.severity;
-     console.log("severity icon", alarmSeverity)
-      const markerColor = new L.Icon({
-          iconUrl: setMarkerColor(alarmSeverity),
-          shadowUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        });
-        console.log("marker return data", markerColor)
-        return markerColor; 
-   }
- });
+const setIcon = (node: Node): L.Icon | void =>  {
+  for (const alarm of interestedAlarms.value) {
+    if (node.label === alarm.nodeLabel) {
+      return L.icon({
+        iconUrl: setMarkerColor(alarm.severity),
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    }
   }
-})
+}
 
-// let setIcon = new L.Icon({
-//           iconUrl: setMarkerColor(),
-//           shadowUrl:
-//             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-//           iconSize: [25, 41],
-//           iconAnchor: [12, 41],
-//           popupAnchor: [1, -34],
-//           shadowSize: [41, 41],
-//         });
 
-let iconPath;
 function setMarkerColor(severity: any) {
   switch (severity) {
     case "NORMAL":
@@ -170,20 +125,6 @@ function setMarkerColor(severity: any) {
       return (iconPath = "src/assets/Normal-icon.png");
   }
 }
-
-//  let alarmSeverity = computed(() => {
-//     for(var i = 0; i < interestedNodes.value.length; i++){
-//       let nodelabelval = interestedNodes.value[i].label;
-//       console.log("interestedNodes.value", nodelabelval)
-//       interestedAlarms.value.filter((alarmlabelval: any) => {
-//         if(alarmlabelval.nodeLabel == nodelabelval){
-
-//            console.log("alarmlabelval", alarmlabelval)
-//         }
-
-//       })
-//     }
-//  });
 
 function getCoordinateFromNode(node: any) {
   let coordinate: string[] = [];
@@ -247,7 +188,6 @@ const tileProviders = [
   },
 ];
 
-// L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
 </script>
 
 <style scoped>
