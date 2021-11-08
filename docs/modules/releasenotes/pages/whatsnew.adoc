@@ -32,7 +32,7 @@ RUNAS=root
 === Additional configuration needed when using Kafka/gRPC for Minion communication.
 
 The Twin API has replaced the OpenNMS REST API for synchronizing Trapd configuration updates.
-Additional settings are needed on both Minion and {page-component-title} to enable Twin when not using the embedded ActiveMQ message broker.
+Additional settings are needed on both Minion and {page-component-title} to enable Twin when not using the ActiveMQ message broker.
 
 Refer to the deployment section in the documentation for details.
 
