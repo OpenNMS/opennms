@@ -1,3 +1,4 @@
+[[ksc]]
 = KSC
 
 [options="autowidth", cols="1,2"]
