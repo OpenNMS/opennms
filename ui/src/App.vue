@@ -61,6 +61,12 @@ a {
 .body-small {
   @include body-small();
 }
+.subtitle1 {
+  @include subtitle1();
+}
+.subtitle2 {
+  @include subtitle2();
+}
 
 // global feather typography classes
 .headline1 { @include headline1(); }

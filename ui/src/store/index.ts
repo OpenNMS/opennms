@@ -9,6 +9,7 @@ import spinnerModule from './spinner'
 import inventoryModule from './inventory'
 import locationsModule from './locations'
 import fileEditorModule from './fileEditor'
+import logsModule from './logs'
 import appModule from './app'
 
 export default createStore({
@@ -21,6 +22,7 @@ export default createStore({
     inventoryModule,
     locationsModule,
     fileEditorModule,
+    logsModule,
     appModule
   }
 })

@@ -3,6 +3,7 @@ import Nodes from '@/containers/Nodes.vue'
 import NodeDetails from '@/containers/NodeDetails.vue'
 import Inventory from '@/containers/Inventory.vue'
 import FileEditor from '@/containers/FileEditor.vue'
+import Logs from '@/containers/Logs.vue'
 import StepAdd from '@/components/Inventory/StepAdd.vue'
 import StepSchedule from '@/components/Inventory/StepSchedule.vue'
 import StepConfigure from '@/components/Inventory/StepConfigure.vue'
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/file-editor',
       name: 'FileEditor',
       component: FileEditor
+    },
+    {
+      path: '/logs',
+      name: 'Logs',
+      component: Logs
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

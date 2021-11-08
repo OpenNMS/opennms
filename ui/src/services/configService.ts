@@ -1,7 +1,6 @@
 import { rest, restFile } from './axiosInstances'
 import marked from 'marked'
 import { FileEditorResponseLog } from '@/types'
-import { AxiosError } from 'axios'
 
 const endpoint = '/filesystem'
 

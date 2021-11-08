@@ -13,6 +13,7 @@ import { search } from './searchService'
 import { getLocations } from './locationsService'
 import { scanIPRanges, detectSNMPAvailable, provision } from './inventoryService'
 import { getFileNames, getFile, getSnippets, postFile } from './configService'
+import { getLogs, getLog } from './logsService'
 
 export default {
   search,
@@ -31,5 +32,7 @@ export default {
   getFileNames,
   getFile,
   postFile,
-  getSnippets
+  getSnippets,
+  getLogs,
+  getLog
 }

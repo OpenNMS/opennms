@@ -18,6 +18,7 @@ const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', false
 
 <style lang="scss" scoped>
 .help-bar {
+  height: calc(100vh - 200px);
   border: 1px solid var(--feather-border-on-surface);
   padding: 10px;
   overflow: auto;
