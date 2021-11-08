@@ -31,8 +31,10 @@ RUNAS=root
 
 === Additional config needed when using Kafka for Minion Communication.
 
-Minion no longer uses OpenNMS Rest API to get Trapd Config updates. It uses Twin mechanism to sync with Trapd config.
-Minion needs additional config both on Minion and OpenNMS to enable Twin. Refer to deployment section from the docs.
+The Twin API has replaced the OpenNMS REST API for synchronizing Trapd configuration updates.
+Additional settings are needed on both on Minion and {page-component-title} to enable Twin.
+
+Refer to deployment section from the docs for details.
 
 
 === SQS Minion IPC Support Dropped
