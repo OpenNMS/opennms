@@ -28,57 +28,37 @@
 
 package org.opennms.core.ipc.twin.grpc;
 
-import org.junit.After;
-import org.junit.Before;
-import org.opennms.core.grpc.common.GrpcIpcServer;
-import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
-import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
-import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;
-import org.opennms.core.ipc.twin.test.MockMinionIdentity;
-import org.opennms.distributed.core.api.MinionIdentity;
-import org.osgi.service.cm.ConfigurationAdmin;
-
-import java.io.IOException;
 import java.util.Hashtable;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 public class GrpcSSLTwinIT extends GrpcTwinIT {
 
-    @Before
-    public void setup() throws Exception {
-        String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
-        String serverKeyFilePath = this.getClass().getResource("/tls/server.pem").getPath();
-        String trustCertFilePath = this.getClass().getResource("/tls/ca.crt").getPath();
-        String clientCertFilePath = this.getClass().getResource("/tls/client.crt").getPath();
-        String clientPrivateKeyFilePath = this.getClass().getResource("/tls/client.pem").getPath();
+    private final String SERVER_CERT_FILE_PATH = GrpcSSLTwinIT.class.getResource("/tls/server.crt").getPath();
+    private final String SERVER_KEY_FILE_PATH = GrpcSSLTwinIT.class.getResource("/tls/server.pem").getPath();
+    private final String TRUST_CERT_FILE_PATH = GrpcSSLTwinIT.class.getResource("/tls/ca.crt").getPath();
+    private final String CLIENT_CERT_FILE_PATH = GrpcSSLTwinIT.class.getResource("/tls/client.crt").getPath();
+    private final String CLIENT_KEY_FILE_PATH = GrpcSSLTwinIT.class.getResource("/tls/client.pem").getPath();
 
-        Hashtable<String, Object> serverConfig = new Hashtable<>();
-        port = getAvailablePort(new AtomicInteger(GrpcIpcUtils.DEFAULT_TWIN_GRPC_PORT), 9090);
+    protected Hashtable<String, Object> getServerConfig(final int port) {
+        final Hashtable<String, Object> serverConfig = new Hashtable<>();
         serverConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
-        serverConfig.put(GrpcIpcUtils.TLS_ENABLED, "true");
-        serverConfig.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, serverCertFilePath);
-        serverConfig.put(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH, serverKeyFilePath);
-        serverConfig.put(GrpcIpcUtils.TRUST_CERTIFICATE_FILE_PATH, trustCertFilePath);
+        serverConfig.put(GrpcIpcUtils.TLS_ENABLED, true);
+        serverConfig.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, SERVER_CERT_FILE_PATH);
+        serverConfig.put(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH, SERVER_KEY_FILE_PATH);
+        serverConfig.put(GrpcIpcUtils.TRUST_CERTIFICATE_FILE_PATH, TRUST_CERT_FILE_PATH);
 
-        Hashtable<String, Object> clientConfig = new Hashtable<>();
-        clientConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
-        clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
-        clientConfig.put(GrpcIpcUtils.TLS_ENABLED, "true");
-        clientConfig.put(GrpcIpcUtils.TRUST_CERTIFICATE_FILE_PATH, trustCertFilePath);
-        clientConfig.put(GrpcIpcUtils.CLIENT_CERTIFICATE_FILE_PATH, clientCertFilePath);
-        clientConfig.put(GrpcIpcUtils.CLIENT_PRIVATE_KEY_FILE_PATH, clientPrivateKeyFilePath);
-
-        configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(serverConfig);
-        when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_CLIENT_PID).getProperties()).thenReturn(clientConfig);
-        super.setupAbstract();
+        return serverConfig;
     }
 
+    protected Hashtable<String, Object> getClientConfig(final int port) {
+        final Hashtable<String, Object> clientConfig = new Hashtable<>();
+        clientConfig.put(GrpcIpcUtils.GRPC_PORT, String.valueOf(port));
+        clientConfig.put(GrpcIpcUtils.GRPC_HOST, "localhost");
+        clientConfig.put(GrpcIpcUtils.TLS_ENABLED, true);
+        clientConfig.put(GrpcIpcUtils.TRUST_CERTIFICATE_FILE_PATH, TRUST_CERT_FILE_PATH);
+        clientConfig.put(GrpcIpcUtils.CLIENT_CERTIFICATE_FILE_PATH, CLIENT_CERT_FILE_PATH);
+        clientConfig.put(GrpcIpcUtils.CLIENT_PRIVATE_KEY_FILE_PATH, CLIENT_KEY_FILE_PATH);
+
+        return clientConfig;
+    }
 }
