@@ -1840,6 +1840,5 @@
     <feature name="opennms-core-ipc-twin-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Subscriber">
         <feature>opennms-core-ipc-twin-kafka-common</feature>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.subscriber/${project.version}</bundle>
->>>>>>> origin/develop
     </feature>
 </features>
