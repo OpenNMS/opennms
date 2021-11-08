@@ -30,4 +30,14 @@
     </bean>
 
     <service ref="kafkaTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
+    <!-- Kafka HealthCheck for Twin -->
+
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.core.ipc.common.kafka.KafkaHealthCheck" >
+            <argument ref="kafkaConfigProvider"/>
+            <argument value="Twin" />
+        </bean>
+    </service>
+
 </blueprint>
