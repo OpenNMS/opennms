@@ -32,5 +32,5 @@ import org.opennms.core.ipc.twin.api.TwinSubscriber;
 
 public interface LocalTwinSubscriber extends TwinSubscriber {
 
-    void accept(TwinResponseBean twinResponse);
+    void accept(TwinUpdate twinResponse);
 }

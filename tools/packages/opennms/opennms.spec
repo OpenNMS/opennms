@@ -743,6 +743,7 @@ rm -rf %{buildroot}
 			%{instprefix}/data
 			%{instprefix}/deploy
 %attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
+%attr(755,root,root)	%{instprefix}/lib/*geoip-provisioning-adapter*.jar
 
 %files jmx-config-generator
 %defattr(644 opennms opennms 755)
