@@ -29,12 +29,12 @@ If you wish to revert to the previous behavior, create an `$OPENNMS_HOME/etc/ope
 RUNAS=root
 ----
 
-=== Additional config needed when using Kafka/Grpc for Minion Communication.
+=== Additional configuration needed when using Kafka/gRPC for Minion communication.
 
 The Twin API has replaced the OpenNMS REST API for synchronizing Trapd configuration updates.
-Additional settings are needed on both on Minion and {page-component-title} to enable Twin.
+Additional settings are needed on both Minion and {page-component-title} to enable Twin when not using the embedded ActiveMQ message broker.
 
-Refer to deployment section from the docs for details.
+Refer to the deployment section in the documentation for details.
 
 
 === SQS Minion IPC Support Dropped
