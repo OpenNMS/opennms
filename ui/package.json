@@ -27,7 +27,7 @@
     "@featherds/table": "^0.2.11",
     "@featherds/tabs": "^0.2.11",
     "@featherds/utils": "^0.2.11",
-    "axios": "^0.21.1",
+    "axios": "^0.24.0",
     "dayjs": "^1.10.6",
     "lodash": "^4.17.21",
     "sass": "^1.37.5",
