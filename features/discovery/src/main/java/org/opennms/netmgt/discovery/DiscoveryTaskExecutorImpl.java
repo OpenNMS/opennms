@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.cm.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.Parameter;

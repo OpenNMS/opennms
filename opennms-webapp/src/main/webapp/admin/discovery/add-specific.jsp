@@ -39,7 +39,7 @@
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.web.svclayer.api.RequisitionAccessService,
   org.opennms.web.admin.discovery.DiscoveryScanServlet,
-  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.cm.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.*,
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet

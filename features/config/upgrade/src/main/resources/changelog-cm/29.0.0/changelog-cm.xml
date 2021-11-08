@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,4 +12,15 @@
         <cm:importConfig schemaId="provisiond" configId="default" filePath="provisiond-configuration.xml"/>
     </changeSet>
 
+    <changeSet author="ssuman" id="1.0-register-schema-enlinkd">
+        <cm:registerSchema id="enlinkd"/>
+        <cm:importSchemaFromXsd id="enlinkd" xsdFileName="enlinkd-configuration.xsd" xsdFileHash="cf03a578f483997efbbd931700a2946bb08157352f802cf39be954aa84856471" rootElement="enlinkd-configuration"/>
+        <cm:importConfig schemaId="enlinkd" configId="default" filePath="enlinkd-configuration.xml"/>
+    </changeSet>
+
+    <changeSet author="tmohanta" id="1.0-register-schema-discovery">
+        <cm:registerSchema id="discovery"/>
+        <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="05e182a8a059a6464f894ffd7d32f3b9f1b023a9e8da2593e238c79bae36359f" rootElement="discovery-configuration"/>
+        <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
+    </changeSet>
 </databaseChangeLog>

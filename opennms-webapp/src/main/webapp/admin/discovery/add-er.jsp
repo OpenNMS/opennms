@@ -35,7 +35,7 @@
   org.opennms.netmgt.dao.api.*,
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
-  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.cm.DiscoveryConfigFactory,
   org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
   org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet,

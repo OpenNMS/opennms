@@ -85,8 +85,7 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
-
-  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
+  <bean id="discoveryFactory" class="org.opennms.netmgt.cm.DiscoveryConfigFactory"/>
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
 
@@ -162,5 +161,4 @@
   <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
-
 </beans>

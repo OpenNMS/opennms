@@ -29,6 +29,7 @@
 package org.opennms.features.config.service.impl;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -157,31 +158,59 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
     /**
      * It will the config in cache, if nothing found it will load from db.
      * <b>Please notice that, config can be different in db.</b>
+     *
      * @param configId
      * @return config
      */
-    public ENTITY_CLASS getConfig(String configId){
+    public ENTITY_CLASS getConfig(String configId) {
         // cannot use computeIfAbsent, it will cause IllegalStateException
         ENTITY_CLASS config = lastKnownEntityMap.get(configId);
-        if (config == null){
+        if (config == null) {
             return this.loadConfig(configId);
         }
         return lastKnownEntityMap.computeIfAbsent(configId, this::loadConfig);
     }
 
-    public void updateConfig(final String configId, String configStr) throws IOException {
-        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(configStr));
+    /**
+     * Update config with configId
+     *
+     * @param configId
+     * @param config
+     * @throws IOException
+     */
+    public void updateConfig(final String configId, ENTITY_CLASS config) throws IOException {
+        String xmlStr = JaxbUtils.marshal(config);
+        Optional<ConfigSchema<?>> schema = configurationManagerService.getRegisteredSchema(this.getConfigName());
+        if (schema.isEmpty()) {
+            throw new RuntimeException("Schema not found: " + this.getConfigName());
+        }
+        this.updateConfig(configId, schema.get().getConverter().xmlToJson(xmlStr));
+    }
+
+    /**
+     * It is expected to have json String input
+     *
+     * @param configId
+     * @param jsonConfigString
+     * @throws IOException
+     */
+    public void updateConfig(final String configId, String jsonConfigString) throws IOException {
+        configurationManagerService.updateConfiguration(this.getConfigName(), configId, new JsonAsString(jsonConfigString));
     }
 
     /**
      * it will update the default config
      *
-     * @param configStr
+     * @param configJsonStr
      * @throws IOException
      * @see #updateConfig(String, String)
      */
-    public void updateConfig(String configStr) throws IOException {
-        this.updateConfig(this.getDefaultConfigId(), configStr);
+    public void updateConfig(String configJsonStr) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), configJsonStr);
+    }
+
+    public void updateConfig(ENTITY_CLASS config) throws IOException {
+        this.updateConfig(this.getDefaultConfigId(), config);
     }
 
     /**
