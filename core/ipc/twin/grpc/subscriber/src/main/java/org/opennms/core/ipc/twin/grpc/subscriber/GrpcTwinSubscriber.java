@@ -32,6 +32,9 @@ package org.opennms.core.ipc.twin.grpc.subscriber;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -40,7 +43,8 @@ import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequestBean;
 import org.opennms.core.ipc.twin.common.TwinResponseBean;
 import org.opennms.core.ipc.twin.grpc.common.*;
-import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.ipc.twin.model.TwinRequestProto;
+import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -48,16 +52,13 @@ import org.slf4j.LoggerFactory;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
-import static org.opennms.core.grpc.common.GrpcIpcUtils.GRPC_HOST;
 
 public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcTwinSubscriber.class);
-    private static final long RETRIEVAL_TIMEOUT = 3000;
+    private static final long RETRIEVAL_TIMEOUT = 1000;
     private static final int TWIN_REQUEST_POOL_SIZE = 100;
     private final int port;
     private final ConfigurationAdmin configAdmin;
@@ -65,6 +66,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private Properties clientProperties;
     private OpenNMSTwinIpcGrpc.OpenNMSTwinIpcStub asyncStub;
     private StreamObserver<TwinRequestProto> rpcStream;
+    private AtomicBoolean isShutDown = new AtomicBoolean(false);
+    private ResponseHandler responseHandler = new ResponseHandler();
     private final ThreadFactory twinRequestSenderThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("twin-request-sender-%d")
             .build();
@@ -78,43 +81,44 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     public void start() throws IOException {
-        // Twin inherits all properties from ipc client except for port.
+        // Twin inherits all properties from ipc client
         clientProperties = GrpcIpcUtils.getPropertiesFromConfig(configAdmin, GrpcIpcUtils.GRPC_CLIENT_PID);
-/*        String host = PropertiesUtils.getProperty(clientProperties, GRPC_HOST, GrpcIpcUtils.DEFAULT_GRPC_HOST);
-        boolean tlsEnabled = PropertiesUtils.getProperty(clientProperties, GrpcIpcUtils.TLS_ENABLED, false);
-        int maxInboundMessageSize = PropertiesUtils.getProperty(clientProperties, GrpcIpcUtils.GRPC_MAX_INBOUND_SIZE, GrpcIpcUtils.DEFAULT_MESSAGE_SIZE);*/
 
         channel = GrpcIpcUtils.getChannel(clientProperties, this.port);
-/*        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, this.port)
-                .keepAliveWithoutCalls(true)
-                .maxInboundMessageSize(maxInboundMessageSize);
 
-        if (tlsEnabled) {
-            channel = channelBuilder
-                    .negotiationType(NegotiationType.TLS)
-                    .sslContext(GrpcIpcUtils.buildSslContext(clientProperties).build())
-                    .build();
-            LOG.info("TLS enabled on Twin gRPC Subscriber");
-        } else {
-            channel = channelBuilder.usePlaintext().build();
-        }*/
         asyncStub = OpenNMSTwinIpcGrpc.newStub(channel);
+        retryInitializeRpcStream();
         LOG.info("Started Twin gRPC Subscriber at location {} with systemId {}", getMinionIdentity().getLocation(), getMinionIdentity().getId());
 
     }
 
-    private StreamObserver<TwinRequestProto> getRpcStream(ConnectivityState currentChannelState) {
+    private boolean initRpcStream() {
+        ConnectivityState currentChannelState = channel.getState(true);
         if (currentChannelState.equals(ConnectivityState.READY) && this.rpcStream == null) {
-            ResponseHandler responseHandler = new ResponseHandler();
             this.rpcStream = asyncStub.rpcStreaming(responseHandler);
-            MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
-                    .setSystemId(getMinionIdentity().getId()).build();
-            asyncStub.sinkStreaming(minionHeader, responseHandler);
+            // Send minion header whenever we re-initialize rpc stream.
+            sendMinionHeader();
+            return true;
         }
-        return this.rpcStream;
+        return false;
     }
 
-    public void shutdown() {
+    private void retryInitializeRpcStream() {
+        scheduleWithDelayUntilGetSucceeds(twinRequestSenderExecutor, this::initRpcStream, RETRIEVAL_TIMEOUT);
+    }
+
+    private synchronized void sendMinionHeader() {
+        // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
+        // gRPC Server needs at least one message to initialize the stream
+        MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getMinionIdentity().getLocation())
+                .setSystemId(getMinionIdentity().getId()).build();
+        asyncStub.sinkStreaming(minionHeader, responseHandler);
+    }
+
+
+    public void close() throws IOException {
+        isShutDown.set(true);
+        super.close();
         if (channel != null) {
             channel.shutdown();
         }
@@ -129,25 +133,60 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     private void retrySendRpcRequest(TwinRequestProto twinRequestProto) {
-        // It may be possible that TwinPublisher is Offline. Retry sending request till it succeeds.
-        ScheduledFuture<Boolean> future = twinRequestSenderExecutor.schedule(
-                () -> sendTwinRequest(twinRequestProto), RETRIEVAL_TIMEOUT, TimeUnit.MILLISECONDS);
-        try {
-            boolean succeeded = future.get();
-            if (succeeded) {
-                return;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error while attempting to send Twin Request with key {}", twinRequestProto.getConsumerKey(), e);
-        }
-        retrySendRpcRequest(twinRequestProto);
+        // We can only send RPC If channel is active and RPC stream is not in error.
+        // Schedule sending RPC request with given retrieval timeout until it succeeds.
+        scheduleWithDelayUntilFunctionSucceeds(twinRequestSenderExecutor, this::sendTwinRpcRequest, RETRIEVAL_TIMEOUT, twinRequestProto);
     }
 
-    private synchronized boolean sendTwinRequest(TwinRequestProto twinRequestProto) {
-        ConnectivityState currentChannelState = channel.getState(true);
-        StreamObserver<TwinRequestProto> requestSender = getRpcStream(currentChannelState);
-        if (requestSender != null && currentChannelState.equals(ConnectivityState.READY)) {
-            requestSender.onNext(twinRequestProto);
+    private <T> void scheduleWithDelayUntilFunctionSucceeds(ScheduledExecutorService executorService,
+                                                            Function<T, Boolean> function,
+                                                            long delayInMsec,
+                                                            T obj) {
+        boolean succeeded = function.apply(obj);
+        if (!succeeded) {
+            do {
+                ScheduledFuture<Boolean> future = executorService.schedule(() -> function.apply(obj), delayInMsec, TimeUnit.MILLISECONDS);
+                try {
+                    succeeded = future.get();
+                    if (succeeded) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    // It's likely that error persists, bail out
+                    succeeded = true;
+                    LOG.warn("Error while attempting to schedule the task", e);
+                }
+            } while (!succeeded || !isShutDown.get());
+        }
+    }
+
+    private void scheduleWithDelayUntilGetSucceeds(ScheduledExecutorService executorService,
+                                                   Supplier<Boolean> supplier,
+                                                   long delayInMsec) {
+        boolean succeeded = supplier.get();
+        if (!succeeded) {
+            do {
+                ScheduledFuture<Boolean> future = executorService.schedule(() -> supplier.get(), delayInMsec, TimeUnit.MILLISECONDS);
+                try {
+                    succeeded = future.get();
+                    if (succeeded) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    // It's likely that error persists, bail out
+                    succeeded = true;
+                    LOG.warn("Error while attempting to schedule the task", e);
+                }
+            } while (!succeeded || !isShutDown.get());
+        }
+    }
+
+    private synchronized boolean sendTwinRpcRequest(TwinRequestProto twinRequestProto) {
+        if(this.rpcStream == null) {
+            initRpcStream();
+        }
+        if (rpcStream != null) {
+            rpcStream.onNext(twinRequestProto);
             return true;
         } else {
             return false;
@@ -173,12 +212,14 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
         public void onError(Throwable throwable) {
             LOG.error("Error in Twin streaming", throwable);
             rpcStream = null;
+            CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
         @Override
         public void onCompleted() {
             LOG.error("Closing Twin Response Handler");
             rpcStream = null;
+            CompletableFuture.runAsync(() -> retryInitializeRpcStream(), twinRequestSenderExecutor);
         }
 
         private TwinResponseBean mapTwinResponseProto(TwinResponseProto twinResponseProto) {

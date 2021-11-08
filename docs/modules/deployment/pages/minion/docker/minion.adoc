@@ -44,7 +44,7 @@ services:
 <3> Optional. Use to control the minimal Java heap size.
 <4> Optional. Use to control the maximum Java heap size.
 <5> Configuration file for connectivity and features
-<6> Keystore file with enrypted credentials for authenticating REST and Broker endpoints
+<6> Keystore file with encrypted credentials for authenticating REST and Broker endpoints
 <7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
 <8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the Karaf shell.
 

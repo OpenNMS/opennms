@@ -1,0 +1,73 @@
+
+= Pop3Monitor
+
+The POP3 monitor tests for POP3 service availability on a node.
+The monitor first tries to establish a TCP connection on the specified port.
+If it establishes a connection, a service banner should have been received.
+The monitor makes sure the service banner is a valid POP3 banner (in other words, starts with +OK).
+If the banner is valid, the monitor sends a QUIT POP3 command and makes sure the service answers with a valid response (a response that starts with +OK).
+The service is considered available if the service's answer to the QUIT command is valid.
+
+Simulate the behavior with telnet:
+
+[source, console]
+----
+telnet mail.opennms.org 110
+Trying 192.168.0.100
+Connected to mail.opennms.org.
+Escape character is '^]'.
++OK <21860.1076718099@mail.opennms.org>
+quit
++OK
+Connection closed by foreign host.
+----
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.Pop3Monitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the Pop3Monitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| TCP port to connect to.
+| 110
+
+| retry
+| Number of attempts to find the service as available.
+| 0
+
+| strict-timeout
+| If set to true, makes sure that at least timeout milliseconds elapse between attempts.
+| false
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[source, xml]
+----
+<service name="POP3" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="pop3"/>
+  <parameter key="ds-name" value="pop3"/>
+</service>
+<monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
+----

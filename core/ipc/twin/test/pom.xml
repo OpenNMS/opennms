@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.core.ipc.twin</artifactId>
         <groupId>org.opennms.core.ipc</groupId>
-        <version>29.0.0-SNAPSHOT</version>
+        <version>30.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.twin</groupId>
@@ -50,6 +50,12 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>core-api</artifactId>
+	    <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

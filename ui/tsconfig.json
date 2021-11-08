@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "baseUrl": ".",
     "target": "esnext",
     "module": "esnext",

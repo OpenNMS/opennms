@@ -261,3 +261,9 @@ export interface FileEditorResponseLog {
   success: boolean,
   msg: string
 }
+
+export interface BreadCrumb {
+  label: string
+  to: string
+  position?: string
+}

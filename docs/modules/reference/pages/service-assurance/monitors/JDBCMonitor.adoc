@@ -1,0 +1,78 @@
+
+= JDBCMonitor
+
+The JDBCMonitor checks that it is able to connect to a database and if it can get the database catalog from that database management system (DBMS).
+It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.JDBCMonitor`
+|===
+
+== Configuration and use
+
+.Monitor-specific parameters for the JDBCMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default value
+
+3+|*Required*
+
+| driver
+| JDBC driver class to use.
+| org.postgresql.Driver
+
+| url kbd:[{}]
+| JDBC URL to connect to.
+| jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+
+| user kbd:[{}]
+| Database user
+| postgres
+
+| password kbd:[{}]
+| Database password
+| empty string
+
+3+|*Optional*
+
+| retries
+| How many retries to perform before failing the test.
+| 0
+|===
+
+kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+NOTE: The OPENNMS_JDBC_HOSTNAME is replaced in the url parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Database driver
+
+The JDBCMonitor is based on JDBC and requires a JDBC driver to communicate with any database.
+Since {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
+For all other database systems, you must provide a compatible JDBC driver to {page-component-title} as a JAR file.
+To provide a JDBC driver,  place the driver-jar in your `$OPENNMS_HOME/lib` folder.
+
+
+== Examples
+
+The following example checks if the PostgreSQL database that {page-component-title} uses is available.
+
+[source, xml]
+----
+<service name="OpenNMS-DBMS" interval="30000" user-defined="true" status="on">
+  <parameter key="driver" value="org.postgresql.Driver"/>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+  <parameter key="user" value="opennms"/>
+  <parameter key="password" value="opennms"/>
+</service>
+
+<monitor service="OpenNMS-DBMS" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
+----

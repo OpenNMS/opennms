@@ -99,7 +99,6 @@ public class FlowDocumentBuilder {
         getString(enrichedFlow.getApplication()).ifPresent(builder::setApplication);
         getString(enrichedFlow.getHost()).ifPresent(builder::setHost);
         getString(enrichedFlow.getLocation()).ifPresent(builder::setLocation);
-        getString(enrichedFlow.getConvoKey()).ifPresent(builder::setConvoKey);
         builder.setDstLocality(fromLocality(enrichedFlow.getDstLocality()));
         builder.setSrcLocality(fromLocality(enrichedFlow.getSrcLocality()));
         builder.setFlowLocality(fromLocality(enrichedFlow.getFlowLocality()));

@@ -28,26 +28,15 @@
 
 package org.opennms.core.ipc.grpc.server;
 
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_MESSAGE_SIZE;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_MAX_INBOUND_SIZE;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_SERVER_PID;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_SERVER_PORT;
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.GRPC_TTL_PROPERTY;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.PRIVATE_KEY_FILE_PATH;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TLS_ENABLED;
-import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
 import static org.opennms.core.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_LOCATION;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import static org.opennms.core.tracing.api.TracerConstants.TAG_TIMEOUT;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.opennms.core.ipc.grpc.common.ConfigUtils;
+import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.ipc.grpc.common.Empty;
 import org.opennms.core.ipc.grpc.common.OpenNMSIpcGrpc;
 import org.opennms.core.ipc.grpc.common.RpcRequestProto;
@@ -89,7 +78,6 @@ import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.distributed.core.api.Identity;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,12 +92,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
-import io.grpc.Server;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.stub.StreamObserver;
 import io.opentracing.References;
 import io.opentracing.Scope;
@@ -141,8 +123,7 @@ import io.opentracing.util.GlobalTracer;
 public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements RpcClientFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsGrpcServer.class);
-    private ConfigurationAdmin configAdmin;
-    private Server server;
+    private final GrpcIpcServer grpcIpcServer;
     private String location;
     private Identity identity;
     private Properties properties;
@@ -184,26 +165,19 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     // Maintains the map of sink consumer executor and by module Id.
     private final Map<String, ExecutorService> sinkConsumersByModuleId = new ConcurrentHashMap<>();
 
+    public OpennmsGrpcServer(GrpcIpcServer grpcIpcServer) {
+        this.grpcIpcServer = grpcIpcServer;
+    }
+
 
     public void start() throws IOException {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
-            properties = ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_SERVER_PID);
-            int port = PropertiesUtils.getProperty(properties, GRPC_SERVER_PORT, DEFAULT_GRPC_PORT);
-            int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
-            ttl = PropertiesUtils.getProperty(properties, GRPC_TTL_PROPERTY, DEFAULT_GRPC_TTL);
-            boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
 
-            NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
-                    .addService(new OpennmsIpcService())
-                    .maxInboundMessageSize(maxInboundMessageSize);
-            if (tlsEnabled) {
-                SslContextBuilder sslContextBuilder = getSslContextBuilder();
-                if (sslContextBuilder != null) {
-                    serverBuilder.sslContext(sslContextBuilder.build());
-                    LOG.info("TLS enabled for gRPC");
-                }
-            }
-            server = serverBuilder.build();
+            grpcIpcServer.startServer(new OpennmsIpcService());
+            LOG.info("Added RPC/Sink Service to OpenNMS IPC Grpc Server");
+
+            properties = grpcIpcServer.getProperties();
+            ttl = PropertiesUtils.getProperty(properties, GRPC_TTL_PROPERTY, DEFAULT_GRPC_TTL);
             rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
             rpcMetricsReporter = JmxReporter.forRegistry(getRpcMetrics())
                     .inDomain(JMX_DOMAIN_RPC)
@@ -213,34 +187,12 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                     .inDomain(SINK_METRIC_CONSUMER_DOMAIN)
                     .build();
             sinkMetricsReporter.start();
-            server.start();
             // Initialize tracer from tracer registry.
             if (tracerRegistry != null) {
                 tracerRegistry.init(identity.getId());
             }
-            LOG.info("OpenNMS gRPC server started");
         }
     }
-
-
-    private SslContextBuilder getSslContextBuilder() {
-        String certChainFilePath = properties.getProperty(SERVER_CERTIFICATE_FILE_PATH);
-        String privateKeyFilePath = properties.getProperty(PRIVATE_KEY_FILE_PATH);
-        String trustCertCollectionFilePath = properties.getProperty(TRUST_CERTIFICATE_FILE_PATH);
-        if (Strings.isNullOrEmpty(certChainFilePath) || Strings.isNullOrEmpty(privateKeyFilePath)) {
-            return null;
-        }
-
-        SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
-                new File(privateKeyFilePath));
-        if (!Strings.isNullOrEmpty(trustCertCollectionFilePath)) {
-            sslClientContextBuilder.trustManager(new File(trustCertCollectionFilePath));
-            sslClientContextBuilder.clientAuth(ClientAuth.REQUIRE);
-        }
-        return GrpcSslContexts.configure(sslClientContextBuilder,
-                SslProvider.OPENSSL);
-    }
-
 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
@@ -463,10 +415,6 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         this.identity = identity;
     }
 
-    public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
-    }
-
     private MetricRegistry getRpcMetrics() {
         if (rpcMetrics == null) {
             rpcMetrics = new MetricRegistry();
@@ -519,9 +467,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         if (sinkMetricsReporter != null) {
             sinkMetricsReporter.close();
         }
-        if (server != null) {
-            server.shutdown();
-        }
+        grpcIpcServer.stopServer();
         rpcTimeoutExecutor.shutdownNow();
         responseHandlerExecutor.shutdownNow();
         LOG.info("OpenNMS gRPC server stopped");

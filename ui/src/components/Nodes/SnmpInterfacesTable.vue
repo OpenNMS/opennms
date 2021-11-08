@@ -45,7 +45,7 @@ import useQueryParameters from '@/hooks/useQueryParams'
 const store = useStore()
 const route = useRoute()
 const optionalPayload = { id: route.params.id }
-const { queryParameters, updateQueryParameters, payload, sort } = useQueryParameters({
+const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
   limit: 5,
   offset: 0,
 }, 'nodesModule/getNodeSnmpInterfaces', optionalPayload)

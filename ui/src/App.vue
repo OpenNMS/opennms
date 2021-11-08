@@ -7,6 +7,7 @@
 
     <Sidebar />
     <Spinner />
+
     <router-view />
   </FeatherAppLayout>
 </template>
@@ -57,25 +58,16 @@ a {
 .feather-shade3 {
   background: var(--feather-shade-3);
 }
-.headline1 {
-  @include headline1();
-}
-.headline2 {
-  @include headline2();
-}
-.headline3 {
-  @include headline3();
-}
-.headline4 {
-  @include headline4();
-}
-.subtitle1 {
-  @include subtitle1();
-}
-.subtitle2 {
-  @include subtitle2();
-}
 .body-small {
   @include body-small();
 }
+
+// global feather typography classes
+.headline1 { @include headline1(); }
+.headline2 { @include headline2(); }
+.headline3 { @include headline3(); }
+.headline4 { @include headline4(); }
+.subtitle1 { @include subtitle1(); }
+.subtitle2 { @include subtitle2(); }
+
 </style>

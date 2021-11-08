@@ -15,7 +15,7 @@ executors:
       - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine:
-     image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -149,12 +149,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
@@ -317,6 +317,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -361,7 +362,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - update-maven-cache
       - run:
           name: Monitor JVM processes
           background: true
@@ -1308,7 +1308,7 @@ jobs:
             ./publish.sh
   integration-test:
     executor: integration-test-executor
-    parallelism: 4
+    parallelism: 8
     steps:
       - attach_workspace:
           at: ~/
@@ -1316,7 +1316,7 @@ jobs:
           rerun-failtest-count: 1
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 8
+    parallelism: 10
     steps:
       - attach_workspace:
           at: ~/

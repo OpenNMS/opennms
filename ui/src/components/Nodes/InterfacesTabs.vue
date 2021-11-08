@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <div class="feather-col-12 title">Node Interfaces</div>
+    <div class="feather-col-12 title headline3">Node Interfaces</div>
     <FeatherTabContainer>
       <template v-slot:tabs>
         <FeatherTab>IP Interfaces</FeatherTab>
@@ -26,13 +26,11 @@ import IpInterfacesTable from './IpInterfacesTable.vue'
 
 <style lang="scss" scoped>
 @import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
 .card {
   @include elevation(2);
   padding: 15px;
   margin-bottom: 15px;
   .title {
-    @include headline3();
     margin-bottom: 15px;
   }
 }

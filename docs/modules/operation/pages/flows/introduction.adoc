@@ -3,7 +3,7 @@
 = Flow Support
 
 {page-component-title} supports receiving, decoding, and persisting flow information sent from your network devices.
-A list of currently supported protocols is available in the <<telemetryd/protocols/introduction.adoc#protocol-ref, Telemetry>> section.
+A list of currently supported protocols is available in the <<reference:telemetryd/protocols/introduction.adoc#ref-protocol, Telemetry>> section.
 While flows offer a great breadth of information, the current focus of the support in {page-component-title} is aimed at:
 
 * Network diagnostic: viewing the top protocols and top talkers within the context of a particular network interface.
@@ -14,9 +14,13 @@ While flows offer a great breadth of information, the current focus of the suppo
 At a high level:
 
 * <<telemetryd/introduction.adoc#ga-telemetryd, Telemetryd>> receives and decodes flows on both {page-component-title} and Minion.
-* Telemetryd adapters convert the flows to a canonical flow model and dispatch these to the flow repository.
-* The flow repository enriches the flows and persists them to Elasticsearch:
+* Telemetryd adapters convert the flows to a canonical flow model.
+* Flows are enriched:
 ** Flows are tagged with an application name via the <<flows/classification-engine.adoc#ga-flow-support-classification-engine, classification engine>>.
 ** Metadata related to associated nodes (such as IDs and categories) are also added to the flows.
-* The REST API supports generating both summaries and time series data from the flows stored in the flow repository.
-* Use OpenNMS Helm to visualize the flow data using the flow datasource that interfaces with the {page-component-title} REST API.
+* Enriched flows are persisted in Elasticsearch and/or forwarded to Kafka.
+* You can use <<flows/nephron.adoc#ga-nephron, Nephron>> to aggregate flows and output aggregates to Elasticsearch, Cortex, or Kafka.
+* The REST API supports generating both summaries and time series data from the flows or flow aggregates stored in Elasticsearch.
+* Use OpenNMS Helm to visualize flows and/or flow aggregates:
+** Use the "Flow Deep Dive" dashboard to visualize flows and flow aggregates that are stored in Elasticsearch using the flow datasource that interfaces with the {page-component-title} REST API.
+** Use the "Cortex Flow Deep Dive" dashboard that uses a Prometheus datasource to access flow aggregates stored in Cortex.

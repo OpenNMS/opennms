@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>29.0.0-SNAPSHOT</version>
+  <version>30.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -163,6 +163,29 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateKeyPair</goal>
+            </goals>
+            <phase>generate-test-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <skipIfExist>true</skipIfExist>
+          <keystore>${test.keystore}</keystore>
+          <storepass>${test.storepass}</storepass>
+          <alias>${test.keyalias}</alias>
+          <keypass>${test.keypass}</keypass>
+          <dname>cn=${test.dnameCn}</dname>
+          <validity>2</validity>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
         <version>${sonarVersion}</version>
@@ -219,7 +242,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.1</version>
+        <version>5.1.2</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -1045,13 +1068,6 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
-            <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
-            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
-            <javax.net.ssl.keyStorePassword>changeit</javax.net.ssl.keyStorePassword>
-            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
-            <javax.net.ssl.trustStorePassword>changeit</javax.net.ssl.trustStorePassword>
-            <!-- <ssl.debug>true</ssl.debug> -->
-            <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
@@ -1267,7 +1283,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>29.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>30.0.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1323,6 +1339,12 @@
     <webstart.dnameL/>
     <webstart.dnameSt/>
     <webstart.dnameC/>
+
+    <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
+    <test.storepass>${webstart.storepass}</test.storepass>
+    <test.keyalias>${webstart.keyalias}</test.keyalias>
+    <test.keypass>${webstart.keypass}</test.keypass>
+    <test.dnameCn>cn=${webstart.dnameCn}</test.dnameCn>
 
     <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
     <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
@@ -1423,7 +1445,7 @@
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
-    <karafVersion>4.2.11</karafVersion>
+    <karafVersion>4.3.2</karafVersion>
     <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
     <kafkaVersion>2.8.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1438,7 +1460,7 @@
     <newtsVersion>1.5.5</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
-    <paxWebVersion>7.2.19</paxWebVersion>
+    <paxWebVersion>7.3.16</paxWebVersion>
     <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.18</postgresqlVersion>
@@ -1447,12 +1469,13 @@
     <okioVersion>1.14.0</okioVersion>
     <opennmsApiVersion>0.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>0.6.0</opennmsApiVersionOsgi>
-    <osgiVersion>6.0.0</osgiVersion>
-    <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
-    <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <osgiVersion>7.0.0</osgiVersion>
+    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
+    <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
+    <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.1</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.0.2.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.31.0</opentracingVersion>
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
@@ -3998,17 +4021,22 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
+        <artifactId>osgi.core</artifactId>
         <version>${osgiVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
+        <artifactId>osgi.cmpn</artifactId>
         <version>${osgiCompendiumVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.enterprise</artifactId>
+        <artifactId>osgi.annotation</artifactId>
+        <version>${osgiAnnotationVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi.enterprise</artifactId>
         <version>${osgiEnterpriseVersion}</version>
       </dependency>
       <dependency>

@@ -1,0 +1,72 @@
+
+[[poller-imap-monitor]]
+= ImapMonitor
+
+This monitor checks if an IMAP server is functional.
+The test initializes an IMAP connection to send a logout command and verify server response.
+
+You can simulate the behavior with `telnet`:
+
+[source, console]
+----
+telnet mail.myserver.de 143
+Trying 62.108.41.197...
+Connected to mail.myserver.de.
+Escape character is '^]'.
+* OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE STARTTLS LOGINDISABLED] Dovecot ready. <1>
+ONMSPOLLER LOGOUT <2>
+* BYE Logging out <3>
+ONMSPOLLER OK Logout completed.
+Connection closed by foreign host.
+----
+
+<1> Test IMAP server banner, it must start `* OK` to be up.
+<2> Sending an `ONMSPOLLER LOGOUT`.
+<3> Test server responds: it must start with `* BYE` to be up.
+
+If one of the steps in the sample above fails, the service is marked down.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.ImapMonitor`
+|===
+
+== Configuration and use
+
+.Optional monitor-specific parameters for the ImapMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| retry
+| Number of attempts to get a valid IMAP response.
+| 0
+
+| port
+| The IMAP server port.
+| 143
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Some example configuration how to configure the monitor in the `poller-configuration.xml`
+
+[source, xml]
+----
+<!-- Test IMAP service on port 143 only -->
+<service name="IMAP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="port" value="143"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+----

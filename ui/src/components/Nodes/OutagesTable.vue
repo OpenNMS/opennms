@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="feather-row">
-      <div class="feather-col-12 title">Recent Outages</div>
+      <div class="feather-col-12 headline3">Recent Outages</div>
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
@@ -52,15 +52,11 @@ const outages = computed(() => store.state.nodesModule.outages)
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
 .card {
   @include elevation(2);
   padding: 15px;
   margin-bottom: 15px;
-  .title {
-    @include headline3();
-  }
 }
 table {
   width: 100%;
