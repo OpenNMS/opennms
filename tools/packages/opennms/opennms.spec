@@ -703,6 +703,16 @@ find %{buildroot}%{instprefix}/bin \
 	-type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
+# Put various shared directories in the package
+find %{buildroot}%{instprefix}/bin \
+	%{buildroot}%{sharedir}/etc-pristine \
+	%{buildroot}%{sharedir}/mibs \
+	%{buildroot}%{sharedir}/reports \
+	%{buildroot}%{sharedir}/rrd \
+	%{buildroot}%{sharedir}/xsds \
+	-type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
+	sort >> %{_tmppath}/files.main
 
 # jetty
 find %{buildroot}%{jettydir} ! -type d | \
