@@ -49,7 +49,7 @@
             <from uri="direct:sendTwinUpdate" />
             <setExchangePattern pattern="InOnly"/>
             <recipientList>
-                <simple>queuingservice:${header.JmsQueueName}</simple>
+                <simple>queuingservice:topic:${header.JmsQueueName}</simple>
             </recipientList>
         </route>
     </camelContext>

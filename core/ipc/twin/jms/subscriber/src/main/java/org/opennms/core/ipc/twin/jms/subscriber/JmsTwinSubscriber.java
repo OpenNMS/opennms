@@ -147,7 +147,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         @Override
         public void configure() throws Exception {
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
-            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s",
+            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:topic:%s",
                     queueName), JmsEndpoint.class);
             from(endpoint).setExchangePattern(ExchangePattern.InOnly)
                     .process(processor)
