@@ -157,6 +157,7 @@
     <feature name="sentinel-telemetry-graphite" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-graphite</feature>
+        <feature>opennms-config</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
