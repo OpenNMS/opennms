@@ -20,19 +20,19 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Private-Package>
-              org.opennms.features.config.*,
-              org.opennms.netmgt.cm,
-              com.fasterxml.jackson.*,
-              org.apache.ws.commons.schema.walker,
-              javax.activation,
-              javax.ws.*,
-              com.sun.activation.registries,
-              org.codehaus.*
-            </Private-Package>
-            <!--Import-Package>
-              !javax.ws.*, org.opennms.core.xml*
-            </Import-Package-->
+            <Import-Package>
+              !com.sun.activation.registries,
+              !org.codehaus.*
+              !com.fasterxml.jackson.*,
+              !org.apache.ws.commons.schema.*,
+              !org.opennms.netmgt.config.DataCollectionConfigParser,
+              !org.opennms.netmgt.filter.FilterDaoFactory,
+              !org.opennms.features.config.*,
+              !org.opennms.netmgt.cm,
+              !javax.ws.*,
+              !javax.activation,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
