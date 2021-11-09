@@ -145,6 +145,7 @@
     <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-nxos</feature>
+        <feature>opennms-config</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
@@ -285,6 +286,7 @@
         <feature>opennms-jsonstore-shell</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>sentinel-persistence</feature>
+        <feature>opennms-config</feature>
         <bundle dependency="true">mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.postgres-shared/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
     </feature>
