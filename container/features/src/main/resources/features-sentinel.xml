@@ -334,7 +334,7 @@
         <feature>commons-lang</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
-        <feature>commons-io/</feature>
+        <feature>commons-io</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-core-ipc-sink-camel</feature>

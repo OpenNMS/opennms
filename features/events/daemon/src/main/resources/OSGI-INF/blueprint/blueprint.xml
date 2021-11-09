@@ -11,7 +11,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
 
-    <!-- service import (interface) -->
+    <!-- service import -->
     <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" />
     <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
     <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" />
@@ -31,10 +31,13 @@
         <property name="hwEntityDao" ref="hwEntityDao" />
     </bean>
 
+    <bean id="eventConfResourceLocation" class="java.lang.String">
+        <!-- system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/ ./opennms-base-assembly/target/classes ./target/opennms-29.0.0-SNAPSHOT/etc -->
+        <argument value="file:${opennms.home}/etc/eventconf.xml" />
+    </bean>
 
     <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="afterPropertiesSet">
-        <property name="configResource" value="file:/Users/markcbordelon/Documents/clodovicus/opennms/opennms/target/opennms-29.0.0-SNAPSHOT/etc
-/eventconf.xml"/> <!-- TODO  ref=eventConfResourceLocation-->
+        <property name="configResource" ref="eventConfResourceLocation" />
     </bean>
 
     <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
@@ -46,6 +49,7 @@
 
 
     <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
+        <argument ref="eventdMetricRegistry"/>
         <property name="nodeDao" ref="nodeDao" />
         <property name="eventUtil" ref="eventUtil" />
         <property name="distPollerDao" ref="distPollerDao" />
@@ -84,14 +88,20 @@
         <property name="nodeDao" ref="nodeDao" />
     </bean>
 
-    <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+    <bean id="eventIpcManagerHandlerPoolSize" factory-ref="eventdConfigManager" factory-method="getReceivers"/>
+    <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
+
+    <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl"> <!-- EventIpcManagerDefaultImpl = sub-interface of EventForwarder -->
         <argument ref="eventdMetricRegistry"/>
-        <property name="handlerPoolSize" value="1000"/> <!-- TODO ref="eventIpcManagerHandlerPoolSize"-->
-        <property name="handlerQueueLength" value="1000"/> <!-- TODO ref="eventIpcManagerHandlerQueueLength"-->
+        <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+        <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
         <property name="eventHandler" ref="eventdEventHandler"/>
     </bean>
 
-    <service ref="eventIpcManagerImpl" interface="org.opennms.netmgt.events.api.EventForwarder">
-    </service>
+
+    <service interface="org.opennms.netmgt.events.api.EventForwarder" ref="eventIpcManagerImpl" />
+
+    <!-- moreover, expose the only missing Dao reference that is needed for the shell commands -->
+    <service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
 </blueprint>
