@@ -105,22 +105,17 @@ const setIcon = (node: Node): L.Icon | void =>  {
 
 
 function setMarkerColor(severity: any) {
-  switch (severity) {
+  switch (severity.toUpperCase()) {
     case "NORMAL":
       return (iconPath = "src/assets/Normal-icon.png");
-      break;
     case "WARNING":
       return (iconPath = "src/assets/Warning-icon.png");
-      break;
     case "MINOR":
       return (iconPath = "src/assets/Minor-icon.png");
-      break;
     case "MAJOR":
       return (iconPath = "src/assets/Major-icon.png");
-      break;
     case "CRITICAL":
       return (iconPath = "src/assets/Critical-icon.png");
-      break;
     default:
       return (iconPath = "src/assets/Normal-icon.png");
   }
