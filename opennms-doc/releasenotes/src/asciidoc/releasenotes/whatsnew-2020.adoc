@@ -219,6 +219,28 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[[releasenotes-changelog-Meridian-2020.1.14]]
+
+==== Release Meridian-2020.1.14
+
+Release 2020.1.14 contains a few small features updates and a number of bug fixes, including an XSS security issue in the notifications wizard.
+
+The codename for 2020.1.14 is link:$$https://wikipedia.org/wiki/Tessellated_pavement$$[_Tessellated Pavement_].
+
+===== Bug
+
+* The node and interface counters of the Evaluation Layer are incorrect (Issue http://issues.opennms.org/browse/NMS-13283[NMS-13283])
+* EvaluationMetrics.log is contaminated with non-related metrics. (Issue http://issues.opennms.org/browse/NMS-13284[NMS-13284])
+* Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
+* macOS Monterey: older OpenNMS branches do not start anymore (Issue http://issues.opennms.org/browse/NMS-13703[NMS-13703])
+* related events box in alarm detail shows all events when alarm has no node / interface / service / ifindex (Issue http://issues.opennms.org/browse/NMS-13705[NMS-13705])
+
+===== Enhancement
+
+* Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
+* Support multiple auth params for same SNMPV3 username (Issue http://issues.opennms.org/browse/NMS-13490[NMS-13490])
+* Show Link State when viewing links on the Enlinkd topology maps (Issue http://issues.opennms.org/browse/NMS-13619[NMS-13619])
+
 [[releasenotes-changelog-Meridian-2020.1.13]]
 
 ==== Release Meridian-2020.1.13
