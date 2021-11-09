@@ -34,8 +34,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
@@ -65,9 +67,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
-                                                                                              .setNameFormat("abstract-twin-subscriber-%d")
-                                                                                              .build());
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
+            new ThreadFactoryBuilder()
+                    .setNameFormat("abstract-twin-subscriber-%d")
+                    .build());
 
     protected AbstractTwinSubscriber(final Identity identity) {
         this.identity = Objects.requireNonNull(identity);
@@ -170,6 +173,15 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private Value value = null;
 
+        /**
+         * A tasked scheduled to retry an outstanding request.
+         *
+         * This is a one-shot task re-executing the request. The task will be scheduled when a request is emitted and
+         * will be canceled when an update is accepted. Setting this to {@code null} shows that there is no outstanding
+         * request.
+         */
+        private ScheduledFuture<?> retry = null;
+
         private Subscription(final String key) {
             this.key = Objects.requireNonNull(key);
         }
@@ -233,13 +245,28 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             // Remember value
             this.value = value;
 
+            // Cancel outstanding retry
+            if (this.retry != null) {
+                this.retry.cancel(false);
+                this.retry = null;
+            }
+
             // Call all consumers
             this.consumers.forEach(c -> c.accept(this.value.value));
         }
 
         private synchronized void request() {
+            // Send a request
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             AbstractTwinSubscriber.this.sendRpcRequest(request);
+
+            // Cancel an outstanding retry
+            if (this.retry != null) {
+                this.retry.cancel(false);
+            }
+
+            // Schedule a retry
+            this.retry = AbstractTwinSubscriber.this.executorService.schedule(this::request, 5, TimeUnit.SECONDS);
         }
 
         public synchronized void update(final TwinUpdate update) throws IOException {
