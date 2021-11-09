@@ -2,7 +2,33 @@
 
 = Changelog
 
-[releasenotes-changelog-Meridian-2021.1.5]
+[[releasenotes-changelog-Meridian-2021.1.6]]
+
+== Release Meridian-2021.1.6
+
+Release 2021.1.6 contains a few enhancements and doc updates, plus a number of bug fixes including an XSS bug in the notification wizard.
+
+The codename for 2021.1.6 is link:https://wikipedia.org/wiki/$$Chang'e_2$$[_Chang'e 2_].
+
+=== Bug
+
+* The node and interface counters of the Evaluation Layer are incorrect (Issue http://issues.opennms.org/browse/NMS-13283[NMS-13283])
+* EvaluationMetrics.log is contaminated with non-related metrics. (Issue http://issues.opennms.org/browse/NMS-13284[NMS-13284])
+* The Info ReST endpoint is not showing the services status (Issue http://issues.opennms.org/browse/NMS-13437[NMS-13437])
+* Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
+* macOS Monterey: older OpenNMS branches do not start anymore (Issue http://issues.opennms.org/browse/NMS-13703[NMS-13703])
+* related events box in alarm detail shows all events when alarm has no node / interface / service / ifindex (Issue http://issues.opennms.org/browse/NMS-13705[NMS-13705])
+
+=== Enhancement
+
+* Documentation for reloadable daemons (Issue http://issues.opennms.org/browse/NMS-12611[NMS-12611])
+* Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
+* Show Link State when viewing links on the Enlinkd topology maps (Issue http://issues.opennms.org/browse/NMS-13619[NMS-13619])
+* Topologies menu (Issue http://issues.opennms.org/browse/NMS-13622[NMS-13622])
+* Check doc source for wiki links (Issue http://issues.opennms.org/browse/NMS-13688[NMS-13688])
+* Add hint for time sync on OpenNMS components (Issue http://issues.opennms.org/browse/NMS-13724[NMS-13724])
+
+[[releasenotes-changelog-Meridian-2021.1.5]]
 
 == Release Meridian-2021.1.5
 
