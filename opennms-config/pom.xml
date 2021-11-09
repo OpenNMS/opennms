@@ -30,9 +30,9 @@
               com.sun.activation.registries,
               org.codehaus.*
             </Private-Package>
-            <Import-Package>
-              !javax.ws.*
-            </Import-Package>
+            <!--Import-Package>
+              !javax.ws.*, org.opennms.core.xml*
+            </Import-Package-->
           </instructions>
         </configuration>
       </plugin>
