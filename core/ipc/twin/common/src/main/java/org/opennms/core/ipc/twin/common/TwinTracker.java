@@ -59,10 +59,6 @@ public class TwinTracker {
         return version.get();
     }
 
-    public int incrementVersion() {
-        return version.incrementAndGet();
-    }
-
     public byte[] getObj() {
         return obj;
     }
@@ -72,7 +68,8 @@ public class TwinTracker {
     }
 
 
-    public void setObj(byte[] obj) {
+    public int update(byte[] obj) {
         this.obj = obj;
+        return version.incrementAndGet();
     }
 }
