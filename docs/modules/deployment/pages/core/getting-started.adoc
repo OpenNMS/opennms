@@ -32,6 +32,8 @@ NOTE: On Debian, you must install and configure `sudo` yourself.
 
 endif::[]
 
+include::../time-sync.adoc[]
+
 [[setup-postgresql]]
 == Set up PostgreSQL
 
