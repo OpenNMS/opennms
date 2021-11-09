@@ -58,8 +58,15 @@ public class Schedule {
     // -> a ScheduleEntry reschedules itself after it has run
     private volatile int m_currentExpirationCode;
     private volatile boolean m_scheduled = false;
-	
-    
+
+    /**
+     * When run:
+     *
+     * - checks for some conditions
+     * - runs the m_schedulable
+     * - on a PostponeNecessary exception: reschedules itself with some jitter
+     * - on normal termination: reschedules itself in case it is not expired and m_scheduled is still true
+     */
     class ScheduleEntry implements ReadyRunnable {
         private final int m_expirationCode;
 

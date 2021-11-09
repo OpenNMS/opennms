@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -103,17 +104,11 @@ public class PollableNode extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
     public PollableInterface createInterface(final InetAddress addr) {
-        final PollableInterface[] retVal = new PollableInterface[1];
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
-                addMember(iface);
-                retVal[0] = iface;
-            }
-        };
-        withTreeLock(r);
-        return retVal[0];
+        return withTreeLock(() -> {
+            PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
+            addMember(iface);
+            return iface;
+        });
     }
 
     /**
@@ -170,19 +165,12 @@ public class PollableNode extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     public PollableService createService(final InetAddress addr, final String svcName) {
-        final PollableService[] retVal = new PollableService[1];
-        
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                PollableInterface iface = getInterface(addr);
-                if (iface == null)
-                    iface = createInterface(addr);
-                retVal[0] = iface.createService(svcName);
-            }
-        };
-        withTreeLock(r);
-        return retVal[0];
+        return withTreeLock(() -> {
+            PollableInterface iface = getInterface(addr);
+            if (iface == null)
+                iface = createInterface(addr);
+            return iface.createService(svcName);
+        });
     }
 
     /**

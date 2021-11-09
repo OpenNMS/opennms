@@ -141,18 +141,11 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     public PollableService createService(final String svcName) {
-        return withTreeLock(new Callable<PollableService>() {
-            @Override
-            public PollableService call() {
-
-                PollableService svc = new PollableService(PollableInterface.this, svcName);
-                addMember(svc);
-                return svc;
-
-            }
-            
+        return withTreeLock(() -> {
+            PollableService svc = new PollableService(PollableInterface.this, svcName);
+            addMember(svc);
+            return svc;
         });
-        
     }
 
     /**
