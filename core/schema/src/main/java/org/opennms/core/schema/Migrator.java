@@ -460,7 +460,7 @@ public class Migrator {
         }
     }
 
-    private String getUserForDDL() {
+    protected String getUserForDDL() {
         String user = getDatabaseUser();
         user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
         return user;
