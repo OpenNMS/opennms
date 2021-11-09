@@ -9,6 +9,10 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.soa</artifactId>
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>osgi bridge</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Core :: Service Registry</name>
   <dependencies>
     <dependency>

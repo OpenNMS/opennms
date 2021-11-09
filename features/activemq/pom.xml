@@ -15,6 +15,10 @@
   <artifactId>org.opennms.features.activemq</artifactId>
   <name>OpenNMS :: Features :: ActiveMQ</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>activemq embedded</opennms.doc.subcomponent>
+  </properties>
 
   <modules>
     <module>broker</module>

@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>dependencies</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>

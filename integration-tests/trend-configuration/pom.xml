@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.trend-configuration</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.subcomponent>trend</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Integration Tests :: Trend-Configuration</name>
 
   <dependencies>

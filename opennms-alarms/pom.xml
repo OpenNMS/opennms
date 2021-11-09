@@ -9,6 +9,9 @@
   <artifactId>opennms-alarms</artifactId>
   <name>OpenNMS :: Alarms</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>alarmd</opennms.doc.component>
+  </properties>
   <modules>
     <module>api</module>
     <module>daemon</module>
@@ -21,7 +24,4 @@
     <module>bsf-northbounder</module>
     <module>drools-northbounder</module>
   </modules>
-  <properties>
-    <opennms.doc.component>alarmd</opennms.doc.component>
-  </properties>
 </project>

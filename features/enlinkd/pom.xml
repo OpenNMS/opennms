@@ -9,6 +9,9 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.enlinkd</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>enlinkd</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Features :: Enlinkd</name>
   <modules>
     <module>config</module>

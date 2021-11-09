@@ -8,6 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Core</name>
   <build>
     <plugins>

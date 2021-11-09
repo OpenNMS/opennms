@@ -9,6 +9,10 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.dnsresolver</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>dns resolver</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Features :: DNS Resolver</name>
   <modules>
     <module>api</module>

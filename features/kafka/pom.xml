@@ -15,6 +15,10 @@
   <artifactId>org.opennms.features.kafka</artifactId>
   <name>OpenNMS :: Features :: Kafka</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>Enterprise Integration</opennms.doc.component>
+    <opennms.doc.subcomponent>Kafka</opennms.doc.subcomponent>
+  </properties>
 
   <modules>
     <module>producer</module>

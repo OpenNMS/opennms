@@ -8,6 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.config</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>config</opennms.doc.subcomponent>
+  </properties>
   <name>OpenNMS :: Integration Tests :: Config</name>
   <build>
     <plugins>

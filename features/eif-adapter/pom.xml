@@ -19,6 +19,10 @@
   <name>OpenNMS :: Features :: EIF Adapter</name>
 
   <packaging>bundle</packaging>
+  <properties>
+    <opennms.doc.component>Enterprise Integration</opennms.doc.component>
+    <opennms.doc.subcomponent>IBM EIF</opennms.doc.subcomponent>
+  </properties>
 
   <build>
     <plugins>

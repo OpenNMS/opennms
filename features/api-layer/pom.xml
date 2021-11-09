@@ -11,6 +11,9 @@
     <artifactId>org.opennms.features.api-layer</artifactId>
     <name>OpenNMS :: Features :: API Layer</name>
     <packaging>bundle</packaging>
+    <properties>
+      <opennms.doc.component>Plugin Support</opennms.doc.component>
+    </properties>
     <build>
         <plugins>
             <plugin>

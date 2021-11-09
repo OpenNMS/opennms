@@ -13,6 +13,7 @@
     <name>OpenNMS :: Features :: Data Choices</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <opennms.doc.component>Opt-in Usage Statistics</opennms.doc.component>
     </properties>
     <build>
         <plugins>

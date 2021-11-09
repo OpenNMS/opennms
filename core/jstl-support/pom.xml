@@ -8,6 +8,11 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.jstl-support</artifactId>
   <name>JSTL Support</name>
+
+  <properties>
+    <opennms.doc.component>webapp</opennms.doc.component>
+    <opennms.doc.subcomponent>jsp tags</opennms.doc.subcomponent>
+  </properties>
   
   <dependencies>
     <dependency>

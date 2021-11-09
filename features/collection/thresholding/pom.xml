@@ -9,6 +9,9 @@
   <groupId>org.opennms.features.collection</groupId>
   <artifactId>org.opennms.features.collection.thresholding</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>Thresholding</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Features :: Collection :: Thresholding</name>
   <modules>
     <module>api</module>

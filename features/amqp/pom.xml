@@ -15,6 +15,10 @@
   <artifactId>org.opennms.features.amqp</artifactId>
   <name>OpenNMS :: Features :: AMQP</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>Enterprise Integration</opennms.doc.component>
+    <opennms.doc.subcomponent>AMQP</opennms.doc.subcomponent>
+  </properties>
 
   <modules>
     <module>common</module>

@@ -16,6 +16,10 @@
   <name>OpenNMS :: Features :: Distributed (Parent)</name>
   <description>All features shared by distributed containers such as minion or sentinel</description>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.subcomponent>distributed container support</opennms.doc.subcomponent>
+  </properties>
   <modules>
     <module>collection</module>
     <module>core</module>

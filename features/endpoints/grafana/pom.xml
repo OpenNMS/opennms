@@ -10,6 +10,10 @@
   <artifactId>org.opennms.features.endpoints.grafana</artifactId>
   <name>OpenNMS :: Features :: Endpoints :: Grafana (Parent)</name>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>Enterprise Integration</opennms.doc.component>
+    <opennms.doc.subcomponent>Grafana</opennms.doc.subcomponent>
+  </properties>
   <modules>
     <module>api</module>
     <module>client</module>

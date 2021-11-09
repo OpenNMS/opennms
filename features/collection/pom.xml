@@ -9,6 +9,9 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.collection</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <opennms.doc.component>Data Collection</opennms.doc.component>
+  </properties>
   <name>OpenNMS :: Features :: Collection</name>
   <modules>
     <module>api</module>
