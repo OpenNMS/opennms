@@ -27,14 +27,17 @@
  ******************************************************************************/
 package org.opennms.features.config.dao.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.math.BigDecimal;
 
@@ -102,4 +105,59 @@ public class OpenAPIBuilderTest {
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addDateAttribute("att1", null, true, "date doc");
     }
+
+    @Test
+    public void testConvertBack() throws JsonProcessingException {
+        OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+                .addDateTimeAttribute("att1", null, true, "date time doc")
+                .addDateTimeAttribute("att2", null, true, "date time doc")
+                .addObject("obj1", OpenAPIBuilder.createBuilder()
+                        .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
+                        .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
+                        .addDateAttribute("data", null, false, "date field"), true, "test array")
+                .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")
+                .addArray("arr2", OpenAPIBuilder.createBuilder()
+                        .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
+                        .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
+                        .addDateAttribute("data", null, false, "date field"), 1L, 5L, true, "test array");
+        OpenAPI openapi = builder.build(false);
+        OpenAPIBuilder newBuilder = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi);
+        OpenAPI newOpenapi = newBuilder.build(false);
+
+
+        ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
+        String json = converter.convertOpenAPIToString(openapi, "application/json");
+        String newJson = converter.convertOpenAPIToString(newOpenapi, "application/json");
+
+        JSONAssert.assertEquals(new JSONObject(json), new JSONObject(newJson), true);
+    }
+
+    @Test
+    public void testOpenAPIAddAttribute() {
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+                .addStringAttribute("att1", null, null, "^\\d{3}-\\d{3}$", "val1", true, "att1 doc")
+                .addStringAttribute("att2", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
+                .build(false);
+
+        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi)
+                .addStringAttribute("att3", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
+                .build(false);
+
+        Assert.assertEquals("Should able to add new attribute!", newOpenapi.getComponents().getSchemas().get(elementName).getProperties().size(), 3);
+    }
+
+    @Test
+    public void testOpenAPIRemoveAttribute() throws JsonProcessingException {
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+                .addStringAttribute("att1", null, null, "^\\d{3}-\\d{3}$", "val1", true, "att1 doc")
+                .addStringAttribute("att2", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
+                .build(false);
+
+        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi)
+                .removeAttribute("att2")
+                .build(false);
+
+        Assert.assertEquals("Should able to add new attribute!", newOpenapi.getComponents().getSchemas().get(elementName).getProperties().size(), 1);
+    }
+
 }

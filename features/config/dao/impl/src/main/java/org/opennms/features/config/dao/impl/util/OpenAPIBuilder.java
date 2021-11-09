@@ -28,12 +28,16 @@
 package org.opennms.features.config.dao.impl.util;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.*;
 import org.opennms.features.config.dao.api.ConfigItem;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OpenAPIBuilder {
+    private static final String SCHEMA_REF_TAG = "#/components/schemas/";
     private ConfigItem rootConfig;
     private String configName;
     private String topElementName;
@@ -45,6 +49,7 @@ public class OpenAPIBuilder {
      * In most cases, configName and topElementName can be the same. It just gives you the flexibility.
      * If you only want to make a nested object use createBuilder()
      * More details of usage please refer to OpenAPIBuilderTest.class
+     *
      * @param name
      * @param topElementName
      * @param prefix
@@ -63,13 +68,151 @@ public class OpenAPIBuilder {
         return builder;
     }
 
+    /**
+     * This is use for modify existing OpenAPI object
+     * @param name
+     * @param topElementName
+     * @param prefix
+     * @param openapi (existing)
+     * @return
+     */
+    public static OpenAPIBuilder createBuilder(String name, String topElementName, String prefix, OpenAPI openapi) {
+        OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(name, topElementName, prefix);
+        if (openapi == null)
+            return builder;
+        Schema schema = openapi.getComponents().getSchemas().get(topElementName);
+        if (schema == null)
+            return builder;
+
+        ((Map<String, Schema>) schema.getProperties()).forEach((k, s) -> {
+            builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(),  openapi);
+        });
+        return builder;
+    }
+
+    /**
+     * handle for object schema ref lookup and build children attributes
+     * @param schema
+     * @param openapi
+     * @param item
+     */
+    private void handle$ref(Schema schema, OpenAPI openapi, ConfigItem item) {
+        String refObjName = schema.get$ref().replaceFirst("^" + SCHEMA_REF_TAG, "");
+        Schema refObjSchema = openapi.getComponents().getSchemas().get(refObjName);
+        if (refObjSchema != null && refObjSchema.getProperties() != null) {
+            ((Map<String, Schema>) refObjSchema.getProperties()).forEach((k, s) -> {
+                this.walkSchema(k, s, item, refObjSchema.getRequired(), openapi);
+            });
+        }
+    }
+
+    /**
+     * Walk through all attributes
+     * @param name
+     * @param schema
+     * @param currentItem
+     * @param required
+     * @param openapi
+     */
+    private void walkSchema(String name, Schema schema, ConfigItem currentItem, List<String> required, OpenAPI openapi) {
+        ConfigItem item = this.getConfigItem(schema, required);
+        if (item.getType() == ConfigItem.Type.ARRAY) {
+            Schema childSchema = ((ArraySchema) schema).getItems();
+            ConfigItem childrenItem = this.getConfigItem(childSchema, required);
+            if (childrenItem.getType() == ConfigItem.Type.OBJECT) {
+                if (childSchema.get$ref() != null && childSchema.get$ref().startsWith(SCHEMA_REF_TAG)) {
+                    this.handle$ref(childSchema, openapi, childrenItem);
+                }
+            }
+            item.getChildren().add(childrenItem);
+
+        }
+        if (schema.get$ref() != null && schema.get$ref().startsWith(SCHEMA_REF_TAG)) {
+            this.handle$ref(schema, openapi, item);
+        }
+        currentItem.getChildren().add(item);
+    }
+
+    /**
+     * Convert openapi schema to ConfigItem
+     * @param schema
+     * @param required
+     * @return
+     */
+    private ConfigItem getConfigItem(Schema schema, List<String> required) {
+        ConfigItem item = new ConfigItem();
+        item.setName(schema.getName());
+        if(required != null && required.contains(item.getName())){
+            item.setRequired(true);
+        }
+        this.usedAttributeNames.add(schema.getName());
+        item.setDefaultValue(schema.getDefault());
+        if (schema instanceof DateTimeSchema) {
+            item.setType(ConfigItem.Type.DATE_TIME);
+        } else if (schema instanceof StringSchema) {
+            item.setType(ConfigItem.Type.STRING);
+            if (schema.getPattern() != null) {
+                item.setPattern(schema.getPattern());
+            }
+            if (schema.getMinLength() != null)
+                item.setMin(Long.valueOf(schema.getMinLength().longValue()));
+            if (schema.getMaxLength() != null)
+                item.setMax(Long.valueOf(schema.getMaxLength().longValue()));
+        } else if (schema instanceof ArraySchema) {
+            item.setType(ConfigItem.Type.ARRAY);
+            if (schema.getMinItems() != null)
+                item.setMin(Long.valueOf(schema.getMinItems()));
+            if (schema.getMaxItems() != null)
+                item.setMax(Long.valueOf(schema.getMaxItems()));
+        } else if (schema instanceof ObjectSchema) {
+            item.setType(ConfigItem.Type.OBJECT);
+        } else if (schema instanceof NumberSchema || schema instanceof IntegerSchema) {
+            if ("int64".equals(schema.getFormat())) {
+                item.setType(ConfigItem.Type.LONG);
+            } else if (schema instanceof IntegerSchema) {
+                item.setType(ConfigItem.Type.INTEGER);
+            } else {
+                item.setType(ConfigItem.Type.NUMBER);
+            }
+            if (schema.getMinimum() != null)
+                item.setMin(Long.valueOf(schema.getMinimum().longValue()));
+            if (schema.getMaximum() != null)
+                item.setMax(Long.valueOf(schema.getMaximum().longValue()));
+            if (schema.getMultipleOf() != null)
+                item.setMultipleOf(Long.valueOf(schema.getMultipleOf().longValue()));
+        } else if (schema instanceof BooleanSchema) {
+            item.setType(ConfigItem.Type.BOOLEAN);
+        } else if (schema instanceof DateSchema) {
+            item.setType(ConfigItem.Type.DATE);
+        } else if (schema instanceof Schema) {
+            item.setType(ConfigItem.Type.OBJECT);
+        }
+        return item;
+    }
+
     public static OpenAPIBuilder createBuilder() {
         return OpenAPIBuilder.createBuilder(null, null, null);
     }
 
+    /**
+     * build OpenAPI, if isSingleConfig is false. It will only generate API path for get and update config. (default)
+     * NO add / delete config and list configIds
+     * @param isSingleConfig
+     * @return
+     */
     public OpenAPI build(boolean isSingleConfig) {
         ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
         return converter.convert(rootConfig, prefix + "/" + configName, isSingleConfig);
+    }
+
+    /**
+     * It will directly remove the first level attribute only
+     * @param attributeName
+     * @return
+     */
+    public OpenAPIBuilder removeAttribute(String attributeName) {
+        rootConfig.getChildren().removeIf(item -> attributeName.equals(item.getName()));
+        return this;
     }
 
     public OpenAPIBuilder addAttribute(ConfigItem configItem) {
@@ -96,7 +239,7 @@ public class OpenAPIBuilder {
 
     public OpenAPIBuilder addObject(String name, OpenAPIBuilder childrenBuilder, boolean required, String doc) {
         ConfigItem objectItem = this.getConfigItem(name, ConfigItem.Type.OBJECT, null, null, null, null, null, required, doc);
-        objectItem.getChildren().add(childrenBuilder.rootConfig);
+        objectItem.getChildren().addAll(childrenBuilder.rootConfig.getChildren());
         rootConfig.getChildren().add(objectItem);
         return this;
     }
