@@ -9,6 +9,10 @@
   <artifactId>opennms-alarm-api</artifactId>
   <name>OpenNMS :: Alarms :: API</name>
   <packaging>bundle</packaging>
+ <properties>
+    <opennms.doc.component>alarmd</opennms.doc.component>
+    <opennms.doc.subcomponent>api</opennms.doc.subcomponent>
+  </properties>
   <build>
     <plugins>
       <plugin>
