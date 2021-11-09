@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.Correlation;
 import org.opennms.netmgt.dao.util.Forward;
@@ -98,8 +99,10 @@ public class HibernateEventWriter implements EventWriter {
     public static final String LOG_MSG_DEST_LOG_ONLY = "logonly";
     public static final String LOG_MSG_DEST_DISPLAY_ONLY = "displayonly";
     
-    @Autowired
-    private TransactionOperations m_transactionManager;
+    //@Autowired
+    //private TransactionOperations m_transactionManager;
+
+    private SessionUtils sessionUtils;
     
     @Autowired
     private NodeDao nodeDao;
@@ -183,16 +186,13 @@ public class HibernateEventWriter implements EventWriter {
             try (Context context = writeTimer.time()) {
                 final AtomicReference<EventProcessorException> exception = new AtomicReference<>();
 
-                m_transactionManager.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        for (Event eachEvent : eventsToPersist) {
-                            try {
-                                process(eventLog.getHeader(), eachEvent);
-                            } catch (EventProcessorException e) {
-                                exception.set(e);
-                                return;
-                            }
+                sessionUtils.withTransaction(() -> {
+                    for (Event eachEvent : eventsToPersist) {
+                        try {
+                            process(eventLog.getHeader(), eachEvent);
+                        } catch (EventProcessorException e) {
+                            exception.set(e);
+                            return;
                         }
                     }
                 });
@@ -402,7 +402,36 @@ public class HibernateEventWriter implements EventWriter {
         return ovent;
     }
 
-    public void setTransactionManager(TransactionOperations transactionManager) {
-        m_transactionManager = transactionManager;
+//    public void setTransactionManager(TransactionOperations transactionManager) {
+//        m_transactionManager = transactionManager;
+//    }
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
+        this.monitoringSystemDao = monitoringSystemDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        this.distPollerDao = distPollerDao;
+    }
+
+    public void setEventDao(EventDao eventDao) {
+        this.eventDao = eventDao;
+    }
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        this.serviceTypeDao = serviceTypeDao;
+    }
+
+    public void setEventUtil(EventUtil eventUtil) {
+        this.eventUtil = eventUtil;
+    }
+
+
 }

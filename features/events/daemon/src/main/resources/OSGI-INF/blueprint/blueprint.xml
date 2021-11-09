@@ -10,54 +10,60 @@
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
-    <!-- MCB note 8nov21. input services here? or load packages (excluding them as well) in mvn bundle plugin?
-        [org.opennms.features.events.daemon 78] osgi.wiring.package; (osgi.wiring.package=org.opennms.netmgt.dao.hibernate)
-        [org.opennms.features.events.daemon 78] osgi.wiring.package; (osgi.wiring.package=org.opennms.netmgt.eventd)
-        [org.opennms.features.events.daemon 78] osgi.wiring.package; (osgi.wiring.package=org.opennms.netmgt.eventd.processor.expandable)`
-    -->
 
-    <!-- MCB note 8nov21. tcp and udp listeners not necessary to bring over into blueprint (yet) -->
+    <!-- service import (interface) -->
+    <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" />
+    <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
+    <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
+    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+    <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" />
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
 
 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-        <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan">
-            <list>
-                <value>org.opennms.netmgt.dao.hibernate</value>
-                <value>org.opennms.netmgt.model</value>
-                <value>org.opennms.netmgt.enlinkd</value>
-            </list>
-        </property>
-        <!--  property name="schemaUpdate" value="true">
-          </property -->
-        <property name="annotatedPackages">
-            <list>
-                <value>org.opennms.netmgt.dao.hibernate</value>
-                <value>org.opennms.netmgt.model</value>
-            </list>
-        </property>
-        <property name="hibernateProperties">
-            <value>
-                hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-                hibernate.cache.use_second_level_cache=false
-                hibernate.cache=false
-                hibernate.cache.use_query_cache=false
-                hibernate.jdbc.batch_size=0
-                <!-- hibernate.format_sql=true -->
-            </value>
-        </property>
+    <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
+        <argument ref="eventdMetricRegistry" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="assetRecordDao" ref="assetRecordDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+        <property name="hwEntityDao" ref="hwEntityDao" />
     </bean>
 
-    <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
+
+    <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="afterPropertiesSet">
+        <property name="configResource" value="file:/Users/markcbordelon/Documents/clodovicus/opennms/opennms/target/opennms-29.0.0-SNAPSHOT/etc
+/eventconf.xml"/> <!-- TODO  ref=eventConfResourceLocation-->
     </bean>
+
     <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
         <argument ref="eventdMetricRegistry"/>
         <property name="eventConfDao" ref="eventConfDao"/>
         <property name="eventUtil" ref="eventUtil"/>
     </bean>
 
+
+
+    <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="eventUtil" ref="eventUtil" />
+        <property name="distPollerDao" ref="distPollerDao" />
+        <property name="eventDao" ref="eventDao" />
+        <property name="monitoringSystemDao" ref="monitoringSystemDao" />
+        <property name="serviceTypeDao" ref="serviceTypeDao" />
+        <property name="sessionUtils" ref="sessionUtils" />
+    </bean>
+
+
+
     <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+    <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+        <argument ref="eventdMetricRegistry"/>
+        <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
+    </bean>
+
     <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
     <bean id="shouldLogEventSummaries" factory-ref="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
     <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
@@ -70,9 +76,8 @@
                 -->
                 <!-- <ref bean="eventParmRegexFilter"/> -->
                 <ref component-id="eventExpander"/>
-                <ref component-id="eventWriter"/>
+                <ref component-id="eventWriter"/> <!--HibernateEventWriter -->
                 <ref component-id="eventIpcBroadcastProcessor"/>
-
             </list>
         </property>
         <property name="logEventSummaries" ref="shouldLogEventSummaries" />
