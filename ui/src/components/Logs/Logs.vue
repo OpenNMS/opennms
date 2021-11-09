@@ -25,7 +25,7 @@ import Search from './Search.vue'
 
 const store = useStore()
 const selectedLog = computed(() => store.state.logsModule.selectedLog)
-const logs = computed(() => store.getters['logsModule/getFilteredlogs'])
+const logs = computed(() => store.getters['logsModule/getFilteredLogs'])
 const getLog = (log: string) => store.dispatch('logsModule/getLog', log)
 </script>
 
