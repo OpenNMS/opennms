@@ -34,11 +34,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import org.opennms.core.concurrent.FutureUtils;
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,29 +130,29 @@ abstract public class PollableContainer extends PollableElement {
      *
      * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
-    public void deleteMember(PollableElement member) {
+    public void deleteMember(AsyncReentrantLock.Locker locker, PollableElement member) {
         removeMember(member);
         if (m_members.size() == 0)
-            this.delete();
+            this.delete(locker);
     }
     
     /**
      * <p>delete</p>
      */
     @Override
-    public void delete() {
+    public void delete(AsyncReentrantLock.Locker locker) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 Collection<PollableElement> members = getMembers();
                 for (Iterator<PollableElement> it = members.iterator(); it.hasNext();) {
                     PollableElement member = it.next();
-                    member.delete();
+                    member.delete(locker);
                 }
-                PollableContainer.super.delete();
+                PollableContainer.super.delete(locker);
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
         
     }
     
@@ -211,7 +213,7 @@ abstract public class PollableContainer extends PollableElement {
      * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.Iter} object.
      */
     protected void forEachMember(Iter iter) {
-        forEachMember(false, iter);
+        forEachMember(Optional.empty(), iter);
     }
     
     /**
@@ -222,29 +224,29 @@ abstract public class PollableContainer extends PollableElement {
      * @return a T object.
      */
     protected <T> T deriveValueFromMembers(SimpleIter<T> iter) {
-        return deriveValueFromMembers(false, iter);
+        return deriveValueFromMembers(Optional.empty(), iter);
     }
     
     /**
      * <p>deriveValueFromMembers</p>
      *
-     * @param withTreeLock a boolean.
+     * @param locker an optional locker
      * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.SimpleIter} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    protected <T> T deriveValueFromMembers(boolean withTreeLock, SimpleIter<T> iter) {
-        forEachMember(withTreeLock, iter);
+    protected <T> T deriveValueFromMembers(Optional<AsyncReentrantLock.Locker> locker, SimpleIter<T> iter) {
+        forEachMember(locker, iter);
         return iter.getResult();
     }
     
     /**
      * <p>forEachMember</p>
      *
-     * @param withTreeLock a boolean.
+     * @param locker an optional locker
      * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.Iter} object.
      */
-    protected void forEachMember(boolean withTreeLock, final Iter iter) {
+    protected void forEachMember(Optional<AsyncReentrantLock.Locker> locker, final Iter iter) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -255,8 +257,8 @@ abstract public class PollableContainer extends PollableElement {
             }
         };
         
-        if (withTreeLock) {
-            withTreeLock(r);
+        if (locker.isPresent()) {
+            withTreeLock(locker.get(), r);
         } else {
             r.run();
         }
@@ -266,14 +268,14 @@ abstract public class PollableContainer extends PollableElement {
      * <p>recalculateStatus</p>
      */
     @Override
-    public void recalculateStatus() {
+    public void recalculateStatus(AsyncReentrantLock.Locker locker) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
                     @Override
                     public void forEachElement(PollableElement elem) {
-                        elem.recalculateStatus();
+                        elem.recalculateStatus(locker);
                         if (elem.getStatus().isUp())
                             setResult(PollStatus.up());
                     }
@@ -282,28 +284,28 @@ abstract public class PollableContainer extends PollableElement {
                 updateStatus(iter.getResult());
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
     }
     
     /**
      * <p>resetStatusChanged</p>
      */
     @Override
-    public void resetStatusChanged() {
+    public void resetStatusChanged(AsyncReentrantLock.Locker locker) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                PollableContainer.super.resetStatusChanged();
+                PollableContainer.super.resetStatusChanged(locker);
                 Iter iter = new Iter() {
                     @Override
                     public void forEachElement(PollableElement elem) {
-                        elem.resetStatusChanged();
+                        elem.resetStatusChanged(locker);
                     }
                 };
                 forEachMember(iter);
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
     }
     
     PollableElement findMemberWithDescendent(PollableElement elem) {
@@ -319,13 +321,13 @@ abstract public class PollableContainer extends PollableElement {
      * {@inheritDoc}
      */
     @Override
-    protected CompletionStage<PollStatus> poll(final PollableElement elem) {
-        return elem.withAsyncTreeLock(() -> {
+    protected CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker, final PollableElement elem) {
+        return elem.withAsyncTreeLock(locker, () -> {
             PollableElement member = findMemberWithDescendent(elem);
-            return member.poll(elem).thenCompose(memberStatus -> {
+            return member.poll(locker, elem).thenCompose(memberStatus -> {
                 if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
                     LOG.debug("member state changed and 'upness' is different from container state - container: {}; member: {}; container state: {}", PollableContainer.this, member, getStatus());
-                    return pollRemainingMembers(member).thenApply(remainingMemberStatus -> {
+                    return pollRemainingMembers(locker, member).thenApply(remainingMemberStatus -> {
                         LOG.debug("update status - container: {}; status: {}", PollableContainer.this, remainingMemberStatus);
                         updateStatus(remainingMemberStatus);
                         return getStatus();
@@ -343,12 +345,12 @@ abstract public class PollableContainer extends PollableElement {
      * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public CompletionStage<PollStatus> pollRemainingMembers(final PollableElement member) {
+    public CompletionStage<PollStatus> pollRemainingMembers(AsyncReentrantLock.Locker locker, final PollableElement member) {
         var memberStatus = member.getStatus();
         final var remainingMembers = getMembers().stream().filter(elem -> elem != member).collect(Collectors.toList());
         return FutureUtils.traverse(
                 remainingMembers,
-                elem -> elem.poll()
+                elem -> elem.poll(locker)
         ).thenApply(list -> list.stream().anyMatch(PollStatus::isUp) ? PollStatus.up() : memberStatus)
                 .whenComplete((v, t) -> LOG.debug("polled remaining members - pollStatus: " + v + "; remaining members: " + remainingMembers, t));
     }
@@ -369,13 +371,13 @@ abstract public class PollableContainer extends PollableElement {
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
-    public CompletionStage<PollStatus> poll() {
+    public CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker) {
         PollableElement leaf = selectPollElement();
         LOG.debug("found leaf - container: {}; leaf: {}", this, leaf);
         if (leaf == null) {
             return CompletableFuture.completedFuture(PollStatus.up());
         }
-        return poll(leaf);
+        return poll(locker, leaf);
     }
 
     /**
@@ -395,18 +397,18 @@ abstract public class PollableContainer extends PollableElement {
 
     /** {@inheritDoc} */
     @Override
-    public void processStatusChange(final Date date) {
+    public void processStatusChange(AsyncReentrantLock.Locker locker, final Date date) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 if (isStatusChanged()) {
-                    PollableContainer.super.processStatusChange(date);
+                    PollableContainer.super.processStatusChange(locker, date);
                 } else if (getStatus().isUp()) {
-                    processMemberStatusChanges(date);
+                    processMemberStatusChanges(locker, date);
                 }
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
     }
 
     /**
@@ -414,11 +416,11 @@ abstract public class PollableContainer extends PollableElement {
      *
      * @param date a {@link java.util.Date} object.
      */
-    public void processMemberStatusChanges(final Date date) {
+    public void processMemberStatusChanges(AsyncReentrantLock.Locker locker, final Date date) {
         Iter iter = new Iter() {
             @Override
             public void forEachElement(PollableElement elem) {
-                elem.processStatusChange(date);
+                elem.processStatusChange(locker, date);
             }
             
         };
@@ -478,10 +480,10 @@ abstract public class PollableContainer extends PollableElement {
 
     /** {@inheritDoc} */
     @Override
-    protected PollEvent doExtrapolateCause() {
+    protected PollEvent doExtrapolateCause(AsyncReentrantLock.Locker locker) {
 
         // find the member cause with the largest scope
-        PollEvent cause = extrapolateMemberCauseWithLargestScope();
+        PollEvent cause = extrapolateMemberCauseWithLargestScope(locker);
 
         // use this largest scope as the cause for the container
         setCause(cause);
@@ -494,10 +496,10 @@ abstract public class PollableContainer extends PollableElement {
         return cause;
     }
 
-    private PollEvent extrapolateMemberCauseWithLargestScope() {
+    private PollEvent extrapolateMemberCauseWithLargestScope(AsyncReentrantLock.Locker locker) {
         PollEvent cause = null;
         for(PollableElement member : getMembers()) {
-            PollEvent memberCause = member.extrapolateCause();
+            PollEvent memberCause = member.extrapolateCause(locker);
             if (memberCause != null && !memberCause.hasScopeSmallerThan(getScope())) {
                 // a cause has been found that exceeds the scope of the members
                 // choose between the current scope and the newly found scope be taking
@@ -511,10 +513,10 @@ abstract public class PollableContainer extends PollableElement {
 
     /** {@inheritDoc} */
     @Override
-    protected void doInheritParentalCause() {
-        super.doInheritParentalCause();
+    protected void doInheritParentalCause(AsyncReentrantLock.Locker locker) {
+        super.doInheritParentalCause(locker);
         for(PollableElement member : getMembers()) {
-            member.inheritParentalCause();
+            member.inheritParentalCause(locker);
         }
         
     }

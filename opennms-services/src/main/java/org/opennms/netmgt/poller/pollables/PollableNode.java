@@ -37,6 +37,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -54,7 +55,7 @@ public class PollableNode extends PollableContainer {
     private final int m_nodeId;
     private String m_nodeLabel;
     private final String m_nodeLocation;
-    private final ReentrantLock m_lock = new ReentrantLock(true);
+    private final AsyncReentrantLock m_lock = new AsyncReentrantLock(true);
 
     /**
      * <p>Constructor for PollableNode.</p>
@@ -103,8 +104,8 @@ public class PollableNode extends PollableContainer {
      * @param addr a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
-    public PollableInterface createInterface(final InetAddress addr) {
-        return withTreeLock(() -> {
+    public PollableInterface createInterface(AsyncReentrantLock.Locker locker, final InetAddress addr) {
+        return withTreeLock(locker, () -> {
             PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
             addMember(iface);
             return iface;
@@ -164,12 +165,12 @@ public class PollableNode extends PollableContainer {
      * @param addr a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
-    public PollableService createService(final InetAddress addr, final String svcName) {
-        return withTreeLock(() -> {
+    public PollableService createService(AsyncReentrantLock.Locker locker, final InetAddress addr, final String svcName) {
+        return withTreeLock(locker, () -> {
             PollableInterface iface = getInterface(addr);
             if (iface == null)
-                iface = createInterface(addr);
-            return iface.createService(svcName);
+                iface = createInterface(locker, addr);
+            return iface.createService(locker, svcName);
         });
     }
 
@@ -228,26 +229,26 @@ public class PollableNode extends PollableContainer {
      * until the lock is obtained. 
      */
     @Override
-    protected void obtainTreeLock() {
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker) {
         LOG.debug("lock {}", this);
-        m_lock.lock();
+        m_lock.lock(locker);
     }
 
     /** 
      * This method tries to obtain the lock within the given timeout.
-     * @param Timeout in milliseconds
+     * @param timeout in milliseconds
      * @throws LockUnavailable If the lock cannot be acquired before
      * the timeout or the thread is interrupted while trying to acquire the 
      * lock.
      */
     @Override
-    protected void obtainTreeLock(long timeout) throws LockUnavailable {
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker, long timeout) throws LockUnavailable {
         if (timeout < 1) {
-            obtainTreeLock();
+            obtainTreeLock(locker);
         } else {
             try {
                 LOG.debug("try lock {}", this);
-                if (m_lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {
+                if (m_lock.tryLock(locker, timeout, TimeUnit.MILLISECONDS)) {
                     // Lock was successful
                     LOG.debug("locked {}", this);
                     return;
@@ -266,10 +267,10 @@ public class PollableNode extends PollableContainer {
      * <p>releaseTreeLock</p>
      */
     @Override
-    protected void releaseTreeLock() {
+    protected void releaseTreeLock(AsyncReentrantLock.Locker locker) {
         LOG.debug("unlock {}", this);
         try {
-            m_lock.unlock();
+            m_lock.unlock(locker);
         } catch (RuntimeException e) {
             LOG.error("could not unlock " + this, e);
             throw new RuntimeException("could not unlock " + this, e);
@@ -278,10 +279,10 @@ public class PollableNode extends PollableContainer {
     
     /** {@inheritDoc} */
     @Override
-    public CompletionStage<PollStatus> doPoll(final PollableElement elem) {
-        return withAsyncTreeLock(() -> {
-            resetStatusChanged();
-            return poll(elem);
+    public CompletionStage<PollStatus> doPoll(AsyncReentrantLock.Locker locker, final PollableElement elem) {
+        return withAsyncTreeLock(locker, () -> {
+            resetStatusChanged(locker);
+            return poll(locker, elem);
         });
     }
 

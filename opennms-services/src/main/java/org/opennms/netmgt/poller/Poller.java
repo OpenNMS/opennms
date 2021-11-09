@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -305,7 +306,7 @@ public class Poller extends AbstractServiceDaemon {
         try {
             LOG.debug("start: Scheduling existing interfaces");
 
-            scheduleExistingServices();
+            scheduleExistingServices(new AsyncReentrantLock.Locker());
         } catch (Throwable sqlE) {
             LOG.error("start: Failed to schedule existing interfaces", sqlE);
         }
@@ -392,12 +393,12 @@ public class Poller extends AbstractServiceDaemon {
         getScheduler().resume();
     }
 
-    private void scheduleExistingServices() throws Exception {
-        scheduleServices();
+    private void scheduleExistingServices(AsyncReentrantLock.Locker locker) throws Exception {
+        scheduleServices(locker);
 
-        getNetwork().recalculateStatus();
-        getNetwork().propagateInitialCause();
-        getNetwork().resetStatusChanged();
+        getNetwork().recalculateStatus(locker);
+        getNetwork().propagateInitialCause(locker);
+        getNetwork().resetStatusChanged(locker);
 
 
         // Debug dump pollable network
@@ -415,7 +416,7 @@ public class Poller extends AbstractServiceDaemon {
      * @param svcName a {@link String} object.
      * @param pollableNode a {@link PollableNode} object
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName, PollableNode pollableNode) {
+    public void scheduleService(AsyncReentrantLock.Locker locker, final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName, PollableNode pollableNode) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -433,7 +434,7 @@ public class Poller extends AbstractServiceDaemon {
                     if(pollableNode != null) {
                         node.updateStatus(pollableNode.getStatus());
                         node.setCause(pollableNode.getCause());
-                        node.resetStatusChanged();
+                        node.resetStatusChanged(locker);
                     }
                 }
             }
@@ -447,9 +448,9 @@ public class Poller extends AbstractServiceDaemon {
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                             final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-                            if (scheduleService(service)) {
-                                svcNode.recalculateStatus();
-                                svcNode.processStatusChange(new Date());
+                            if (scheduleService(locker, service)) {
+                                svcNode.recalculateStatus(locker);
+                                svcNode.processStatusChange(locker, new Date());
                             } else {
                                 LOG.warn("Attempt to schedule service {}/{}/{} found no active service", nodeId, normalizedAddress, svcName);
                             }
@@ -457,14 +458,14 @@ public class Poller extends AbstractServiceDaemon {
                     });
                 }
             };
-            node.withTreeLock(r);
+            node.withTreeLock(locker, r);
 
         } catch (final Throwable e) {
             LOG.error("Unable to schedule service {}/{}/{}", nodeId, normalizedAddress, svcName);
         }
     }
 
-    private int scheduleServices() {
+    private int scheduleServices(AsyncReentrantLock.Locker locker) {
         final Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
 
@@ -473,14 +474,14 @@ public class Poller extends AbstractServiceDaemon {
             public Integer doInTransaction(TransactionStatus arg0) {
                 final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
                 for (OnmsMonitoredService service : services) {
-                    scheduleService(service);
+                    scheduleService(locker, service);
                 }
                 return services.size();
             }
         });
     }
 
-    private boolean scheduleService(OnmsMonitoredService service) {
+    private boolean scheduleService(AsyncReentrantLock.Locker locker, OnmsMonitoredService service) {
         final OnmsIpInterface iface = service.getIpInterface();
         final Set<OnmsOutage> outages = service.getCurrentOutages();
         final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
@@ -513,7 +514,7 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
 
-        PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
+        PollableService svc = getNetwork().createService(locker, service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
                                                                      m_locationAwarePollerClient, m_pollOutagesDao);

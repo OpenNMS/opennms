@@ -34,6 +34,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -154,13 +155,13 @@ public abstract class PollableElement {
     /**
      * <p>resetStatusChanged</p>
      */
-    public void resetStatusChanged() {
+    public void resetStatusChanged(AsyncReentrantLock.Locker locker) {
         setStatusChanged(false);
     }
     /**
      * <p>recalculateStatus</p>
      */
-    public void recalculateStatus() {
+    public void recalculateStatus(AsyncReentrantLock.Locker locker) {
         // do nothing for just an element
     }
     
@@ -177,13 +178,13 @@ public abstract class PollableElement {
      * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public CompletionStage<PollStatus> doPoll(PollableElement elem) {
+    public CompletionStage<PollStatus> doPoll(AsyncReentrantLock.Locker locker, PollableElement elem) {
         if (getParent() == null) {
-            resetStatusChanged();
-            return poll(elem);
+            resetStatusChanged(locker);
+            return poll(locker, elem);
         }
         else
-            return getParent().doPoll(elem);
+            return getParent().doPoll(locker, elem);
     }
     
     /**
@@ -199,8 +200,8 @@ public abstract class PollableElement {
     /**
      * <p>obtainTreeLock</p>
      */
-    protected void obtainTreeLock() {
-        getLockRoot().obtainTreeLock();
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker) {
+        getLockRoot().obtainTreeLock(locker);
     }
     
     /**
@@ -209,15 +210,15 @@ public abstract class PollableElement {
      * @param timeout Lock timeout in milliseconds
      * @throws LockUnavailable 
      */
-    protected void obtainTreeLock(long timeout) throws LockUnavailable {
-        getLockRoot().obtainTreeLock(timeout);
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker, long timeout) throws LockUnavailable {
+        getLockRoot().obtainTreeLock(locker, timeout);
     }
     
     /**
      * <p>releaseTreeLock</p>
      */
-    protected void releaseTreeLock() {
-        getLockRoot().releaseTreeLock();
+    protected void releaseTreeLock(AsyncReentrantLock.Locker locker) {
+        getLockRoot().releaseTreeLock(locker);
     }
 
     /**
@@ -225,12 +226,12 @@ public abstract class PollableElement {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public final void withTreeLock(Runnable r) {
-        withTreeLock(Executors.callable(r));
+    public final void withTreeLock(AsyncReentrantLock.Locker locker, Runnable r) {
+        withTreeLock(locker, Executors.callable(r));
     }
 
-    protected final <T> T withTreeLock(Callable<T> c) {
-        obtainTreeLock();
+    protected final <T> T withTreeLock(AsyncReentrantLock.Locker locker, Callable<T> c) {
+        obtainTreeLock(locker);
         try {
             return c.call();
         } catch (RuntimeException e) {
@@ -238,7 +239,7 @@ public abstract class PollableElement {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
-            releaseTreeLock();
+            releaseTreeLock(locker);
         }
     }
 
@@ -249,24 +250,24 @@ public abstract class PollableElement {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> supplier) {
-        obtainTreeLock();
+    protected final <T> CompletionStage<T> withAsyncTreeLock(AsyncReentrantLock.Locker locker, Supplier<CompletionStage<T>> supplier) {
+        obtainTreeLock(locker);
         try {
-            return supplier.get().whenComplete((v, t) -> releaseTreeLock());
+            return supplier.get().whenComplete((v, t) -> releaseTreeLock(locker));
         } catch (RuntimeException | Error t) {
             LOG.error("could not create CompletionStage", t);
-            releaseTreeLock();
+            releaseTreeLock(locker);
             throw t;
         }
     }
 
-    protected final <T> CompletionStage<T> withAsyncTreeLock(Supplier<CompletionStage<T>> supplier, long timeout) throws LockUnavailable {
-        obtainTreeLock(timeout);
+    protected final <T> CompletionStage<T> withAsyncTreeLock(AsyncReentrantLock.Locker locker, Supplier<CompletionStage<T>> supplier, long timeout) throws LockUnavailable {
+        obtainTreeLock(locker, timeout);
         try {
-            return supplier.get().whenComplete((v, t) -> releaseTreeLock());
+            return supplier.get().whenComplete((v, t) -> releaseTreeLock(locker));
         } catch (RuntimeException | Error t) {
             LOG.error("could not create CompletionStage", t);
-            releaseTreeLock();
+            releaseTreeLock(locker);
             throw t;
         }
     }
@@ -278,8 +279,8 @@ public abstract class PollableElement {
      * @param timeout Lock timeout in milliseconds
      * @throws LockUnavailable 
      */
-    protected final void withTreeLock(Runnable r, long timeout) throws LockUnavailable {
-        withTreeLock(Executors.callable(r), timeout);
+    protected final void withTreeLock(AsyncReentrantLock.Locker locker, Runnable r, long timeout) throws LockUnavailable {
+        withTreeLock(locker, Executors.callable(r), timeout);
     }
 
     /**
@@ -291,10 +292,10 @@ public abstract class PollableElement {
      * @return a T object.
      * @throws LockUnavailable 
      */
-    protected final <T> T withTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
+    protected final <T> T withTreeLock(AsyncReentrantLock.Locker locker, Callable<T> c, long timeout) throws LockUnavailable {
         boolean locked = false;
         try {
-            obtainTreeLock(timeout);
+            obtainTreeLock(locker, timeout);
             locked = true;
             return c.call();
         } catch (LockUnavailable e) {
@@ -305,7 +306,7 @@ public abstract class PollableElement {
             throw new RuntimeException(e);
         } finally {
             if (locked) {
-                releaseTreeLock();
+                releaseTreeLock(locker);
             }
         }
     }
@@ -317,7 +318,7 @@ public abstract class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    public abstract CompletionStage<PollStatus> poll();
+    public abstract CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker);
 
     /**
      * <p>poll</p>
@@ -325,11 +326,11 @@ public abstract class PollableElement {
      * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    protected CompletionStage<PollStatus> poll(PollableElement elem) {
+    protected CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker, PollableElement elem) {
         if (elem != this)
             throw new IllegalArgumentException("Invalid parameter to poll on "+this+": "+elem);
         
-        return poll();
+        return poll(locker);
     }
 
     /**
@@ -407,7 +408,7 @@ public abstract class PollableElement {
      *
      * @param date a {@link java.util.Date} object.
      */
-    public void processStatusChange(Date date) {
+    public void processStatusChange(AsyncReentrantLock.Locker locker, Date date) {
         if (getStatus().isDown() && isStatusChanged()) {
             processGoingDown(date);
         } else if (getStatus().isUp() && isStatusChanged()) {
@@ -479,18 +480,18 @@ public abstract class PollableElement {
     /**
      * <p>delete</p>
      */
-    public void delete() {
+    public void delete(AsyncReentrantLock.Locker locker) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 m_deleted = true;
                 if (m_parent != null) {
-                    getParent().deleteMember(PollableElement.this);
-                    getParent().recalculateStatus();
+                    getParent().deleteMember(locker, PollableElement.this);
+                    getParent().recalculateStatus(locker);
                 }
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
     }
 
     /**
@@ -515,11 +516,11 @@ public abstract class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
      */
-    public PollEvent extrapolateCause() {
-        return withTreeLock(new Callable<PollEvent>() {
+    public PollEvent extrapolateCause(AsyncReentrantLock.Locker locker) {
+        return withTreeLock(locker, new Callable<PollEvent>() {
             @Override
             public PollEvent call() throws Exception {
-                return doExtrapolateCause();
+                return doExtrapolateCause(locker);
             }
         });
     }
@@ -530,19 +531,19 @@ public abstract class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
      */
-    protected PollEvent doExtrapolateCause() {
+    protected PollEvent doExtrapolateCause(AsyncReentrantLock.Locker locker) {
         return getCause();
     }
     
     /**
      * <p>inheritParentalCause</p>
      */
-    public void inheritParentalCause() {
-        withTreeLock(new Runnable() {
+    public void inheritParentalCause(AsyncReentrantLock.Locker locker) {
+        withTreeLock(locker, new Runnable() {
 
             @Override
             public void run() {
-                doInheritParentalCause();
+                doInheritParentalCause(locker);
             }
             
         });
@@ -551,7 +552,7 @@ public abstract class PollableElement {
     /**
      * <p>doInheritParentalCause</p>
      */
-    protected void doInheritParentalCause() {
+    protected void doInheritParentalCause(AsyncReentrantLock.Locker locker) {
         if (getParent() == null) return;
             
         PollEvent parentalCause = getParent().getCause();

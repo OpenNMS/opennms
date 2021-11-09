@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -174,7 +175,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
-    public CompletionStage<PollStatus> poll() {
+    public CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker) {
         return m_pollConfig.poll().thenApply(newStatus -> {
             if (!newStatus.isUnknown()) {
                 updateStatus(newStatus);
@@ -198,13 +199,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return the top changed element whose status changes needs to be processed
      */
-    public CompletionStage<PollStatus> doPoll() {
+    public CompletionStage<PollStatus> doPoll(AsyncReentrantLock.Locker locker) {
         if (getContext().isNodeProcessingEnabled()) {
-            return getParent().doPoll(this);
+            return getParent().doPoll(locker, this);
         }
         else {
-            resetStatusChanged();
-            return poll();
+            resetStatusChanged(locker);
+            return poll(locker);
         }
     }
     
@@ -269,21 +270,21 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 
     /** {@inheritDoc} */
     @Override
-    public void processStatusChange(Date date) {
+    public void processStatusChange(AsyncReentrantLock.Locker locker, Date date) {
         
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {
                 getContext().sendEvent(createUnresponsiveEvent(date));
                 if (m_oldStatus.equals(PollStatus.up()))
-                    resetStatusChanged();
+                    resetStatusChanged(locker);
             }
             else if (isStatusChanged() && m_oldStatus.equals(PollStatus.unresponsive())) {
                 getContext().sendEvent(createResponsiveEvent(date));
                 if (getStatus().equals(PollStatus.up()))
-                    resetStatusChanged();
+                    resetStatusChanged(locker);
             }
         }
-        super.processStatusChange(date);
+        super.processStatusChange(locker, date);
     }
     
     /** {@inheritDoc} */
@@ -367,23 +368,23 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public void run() {
         // the poll is just started; processStatusChange is fired on completion
         LOG.debug("start poll {}", this);
-        doRun(500).whenComplete((v, t) -> {
+        doRun(new AsyncReentrantLock.Locker(), 500).whenComplete((v, t) -> {
             if (t != null) {
                 LOG.error("poll failed - service: " + this, t);
             }
         });
     }
 
-    private CompletionStage<PollStatus> startPoll() {
+    private CompletionStage<PollStatus> startPoll(AsyncReentrantLock.Locker locker) {
         long startDate = System.currentTimeMillis();
-        return doPoll().thenApply(status -> {
-            processStatusChange(new Date());
+        return doPoll(locker).thenApply(status -> {
+            processStatusChange(locker, new Date());
             LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
             return status;
         });
     }
 
-    private CompletionStage<PollStatus> doRun(int timeout) {
+    private CompletionStage<PollStatus> doRun(AsyncReentrantLock.Locker locker, int timeout) {
         final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putThreadContext("service", m_svcName);
@@ -393,14 +394,14 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             LOG.debug("Start Scheduled Poll of service {}", this);
             if (getContext().isNodeProcessingEnabled()) {
                 try {
-                    return withAsyncTreeLock(() -> startPoll(), timeout);
+                    return withAsyncTreeLock(locker, () -> startPoll(locker), timeout);
                 } catch (LockUnavailable e) {
                     LOG.info("Postponing poll for {}. Another service is currently holding the lock.", this);
                     throw new PostponeNecessary("LockUnavailable postpone poll");
                 }
             }
             else {
-                return startPoll();
+                return startPoll(locker);
             }
         } finally {
             Logging.setContextMap(mdc);
@@ -411,15 +412,15 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * <p>delete</p>
      */
     @Override
-    public void delete() {
+    public void delete(AsyncReentrantLock.Locker locker) {
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                PollableService.super.delete();
+                PollableService.super.delete(locker);
                 m_schedule.unschedule();
             }
         };
-        withTreeLock(r);
+        withTreeLock(locker, r);
     }
 
     /**

@@ -36,6 +36,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
@@ -140,8 +141,8 @@ public class PollableInterface extends PollableContainer {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
-    public PollableService createService(final String svcName) {
-        return withTreeLock(() -> {
+    public PollableService createService(AsyncReentrantLock.Locker locker, final String svcName) {
+        return withTreeLock(locker, () -> {
             PollableService svc = new PollableService(PollableInterface.this, svcName);
             addMember(svc);
             return svc;
@@ -186,13 +187,13 @@ public class PollableInterface extends PollableContainer {
      * <p>recalculateStatus</p>
      */
     @Override
-    public void recalculateStatus() {
+    public void recalculateStatus(AsyncReentrantLock.Locker locker) {
         PollableService criticalSvc = getCriticalService();
         if (criticalSvc != null) {
-            criticalSvc.recalculateStatus();
+            criticalSvc.recalculateStatus(locker);
             updateStatus(criticalSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down());
         } else {
-            super.recalculateStatus();
+            super.recalculateStatus(locker);
         }
     }
     
@@ -217,29 +218,29 @@ public class PollableInterface extends PollableContainer {
     
     /** {@inheritDoc} */
     @Override
-    protected CompletionStage<PollStatus> poll(PollableElement elem) {
+    protected CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker, PollableElement elem) {
         PollableService critSvc = getCriticalService();
         if (getStatus().isUp() || critSvc == null || elem == critSvc)
-            return super.poll(elem);
+            return super.poll(locker, elem);
     
         return CompletableFuture.completedFuture(PollStatus.down());
     }
     
     /** {@inheritDoc} */
     @Override
-    public CompletionStage<PollStatus> pollRemainingMembers(PollableElement member) {
+    public CompletionStage<PollStatus> pollRemainingMembers(AsyncReentrantLock.Locker locker, PollableElement member) {
         PollableService critSvc = getCriticalService();
         
         
         if (critSvc != null && getStatus().isUp()) {
             if (member != critSvc)
-                return critSvc.poll();
+                return critSvc.poll(locker);
 
             return CompletableFuture.completedFuture(critSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down());
         }
         
         if (getContext().isPollingAllIfCritServiceUndefined())
-            return super.pollRemainingMembers(member);
+            return super.pollRemainingMembers(locker, member);
         else {
             return getMemberStatus();
         }
@@ -271,7 +272,7 @@ public class PollableInterface extends PollableContainer {
      *
      * @param newNode a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
-    public void reparentTo(final PollableNode newNode) {
+    public void reparentTo(AsyncReentrantLock.Locker locker, final PollableNode newNode) {
         final PollableNode oldNode = getNode();
         
         if (oldNode.equals(newNode)) return;
@@ -283,8 +284,8 @@ public class PollableInterface extends PollableContainer {
         final Runnable reparent = new Runnable() {
             @Override
             public void run() {
-                oldNode.resetStatusChanged();
-                newNode.resetStatusChanged();
+                oldNode.resetStatusChanged(locker);
+                newNode.resetStatusChanged(locker);
                 
                 oldNode.removeMember(PollableInterface.this);
                 newNode.addMember(PollableInterface.this);
@@ -311,10 +312,10 @@ public class PollableInterface extends PollableContainer {
                 
                 // process the status changes related to the 
                 Date date = new Date();
-                oldNode.recalculateStatus();
-                oldNode.processStatusChange(date);
-                newNode.recalculateStatus();
-                newNode.processStatusChange(date);
+                oldNode.recalculateStatus(locker);
+                oldNode.processStatusChange(locker, date);
+                newNode.recalculateStatus(locker);
+                newNode.processStatusChange(locker, date);
 
             }
         };
@@ -322,11 +323,11 @@ public class PollableInterface extends PollableContainer {
         Runnable lockSecondNodeAndRun = new Runnable() {
             @Override
             public void run() {
-                secondNode.withTreeLock(reparent);
+                secondNode.withTreeLock(locker, reparent);
             }
         };
         
-        firstNode.withTreeLock(lockSecondNodeAndRun);
+        firstNode.withTreeLock(locker, lockSecondNodeAndRun);
         
     }
 

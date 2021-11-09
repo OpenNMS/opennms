@@ -58,6 +58,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -322,9 +323,9 @@ public class PollablesIT {
         querier.execute();
 
 
-        pNetwork.recalculateStatus();
-        pNetwork.propagateInitialCause();
-        pNetwork.resetStatusChanged();
+        pNetwork.recalculateStatus(new AsyncReentrantLock.Locker());
+        pNetwork.propagateInitialCause(new AsyncReentrantLock.Locker());
+        pNetwork.resetStatusChanged(new AsyncReentrantLock.Locker());
         return pNetwork;
     }
 
@@ -354,7 +355,7 @@ public class PollablesIT {
         int nodeId = 99;
         InetAddress addr = InetAddressUtils.addr("192.168.1.99");
 
-        PollableInterface iface = m_network.createInterface(nodeId, "WebServer99", null, addr);
+        PollableInterface iface = m_network.createInterface(new AsyncReentrantLock.Locker(), nodeId, "WebServer99", null, addr);
         assertNotNull("iface is null", iface);
         assertEquals(addr, iface.getAddress());
         assertEquals(nodeId, iface.getNodeId());
@@ -375,7 +376,7 @@ public class PollablesIT {
         InetAddress addr = InetAddressUtils.addr("192.168.1.99");
         String svcName = "HTTP-99";
 
-        PollableService svc = m_network.createService(nodeId, "WebServer99", null, addr, svcName);
+        PollableService svc = m_network.createService(new AsyncReentrantLock.Locker(), nodeId, "WebServer99", null, addr, svcName);
         assertNotNull("svc is null", svc);
         assertEquals(svcName, svc.getSvcName());
         assertEquals(addr, svc.getAddress());
@@ -451,25 +452,25 @@ public class PollablesIT {
     @Test
     public void testDeleteService() {
 
-        pDot1Icmp.delete();
+        pDot1Icmp.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot1Icmp);
         assertNotDeleted(pDot1);
         assertNotDeleted(pNode1);
 
-        pDot1Smtp.delete();
+        pDot1Smtp.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot1Smtp);
         assertDeleted(pDot1);
         assertNotDeleted(pNode1);
 
-        pDot2Smtp.delete();
+        pDot2Smtp.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot2Smtp);
         assertNotDeleted(pDot2);
         assertNotDeleted(pNode1);
 
-        pDot2Icmp.delete();
+        pDot2Icmp.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot2Icmp);
         assertDeleted(pDot2);
@@ -510,7 +511,7 @@ public class PollablesIT {
     @Test
     public void testDeleteInterface() throws Exception {
 
-        pDot1.delete();
+        pDot1.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot1Icmp);
         assertDeleted(pDot1Smtp);
@@ -518,7 +519,7 @@ public class PollablesIT {
         assertNotDeleted(pDot2);
         assertNotDeleted(pNode1);
 
-        pDot2.delete();
+        pDot2.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot2Icmp);
         assertDeleted(pDot2Smtp);
@@ -529,7 +530,7 @@ public class PollablesIT {
 
     @Test
     public void testDeleteNode() throws Exception {
-        pNode1.delete();
+        pNode1.delete(new AsyncReentrantLock.Locker());
 
         assertDeleted(pDot1Icmp);
         assertDeleted(pDot1Smtp);
@@ -546,9 +547,9 @@ public class PollablesIT {
 
         mDot1Icmp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -556,9 +557,9 @@ public class PollablesIT {
 
         anticipateUp(mDot1);
 
-        pDot1Icmp.delete();
+        pDot1Icmp.delete(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -610,7 +611,7 @@ public class PollablesIT {
     @Test
     public void testReparentInterface()  {
         InetAddress address = pDot1.getAddress();
-        pDot1.reparentTo(pNode2);
+        pDot1.reparentTo(new AsyncReentrantLock.Locker(), pNode2);
 
         assertNull(m_network.getInterface(1, address));
         assertNotNull(m_network.getInterface(2, address));
@@ -623,13 +624,13 @@ public class PollablesIT {
         // create some outages in the database
         mDot1.bringDown();
 
-        pDot1Icmp.doPoll();
-        m_network.processStatusChange(new Date());
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         mDot1.bringUp();
 
-        pDot1Icmp.doPoll();
-        m_network.processStatusChange(new Date());
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
         final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
@@ -640,7 +641,7 @@ public class PollablesIT {
         assertEquals(0, m_db.countRows(ifOutageOnNode2));
 
         m_db.reparentInterface(pDot1.getIpAddr(), pDot1.getNodeId(), pNode2.getNodeId());
-        pDot1.reparentTo(pNode2);
+        pDot1.reparentTo(new AsyncReentrantLock.Locker(), pNode2);
 
         assertEquals(0, m_db.countRows(ifOutageOnNode1));
         assertEquals(2, m_db.countRows(ifOutageOnNode2));
@@ -665,12 +666,12 @@ public class PollablesIT {
         mNode2.bringDown();
         mDot2.bringUp();
 
-        pDot1Icmp.doPoll();
-        m_network.processStatusChange(new Date());
-        pDot2Icmp.doPoll();
-        m_network.processStatusChange(new Date());
-        pDot3Icmp.doPoll();
-        m_network.processStatusChange(new Date());
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
+        pDot2Icmp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
+        pDot3Icmp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -682,7 +683,7 @@ public class PollablesIT {
         anticipateUp(mNode2);
         anticipateDown(mDot3);
 
-        pDot2.reparentTo(pNode2);
+        pDot2.reparentTo(new AsyncReentrantLock.Locker(), pNode2);
 
         verifyAnticipated();
 
@@ -705,7 +706,7 @@ public class PollablesIT {
             }
         };
         m_network.visit(downChecker);
-        m_network.resetStatusChanged();
+        m_network.resetStatusChanged(new AsyncReentrantLock.Locker());
         PollableVisitor statusChangedChecker = new PollableVisitorAdaptor() {
             @Override
             public void visitElement(PollableElement e) {
@@ -715,7 +716,7 @@ public class PollablesIT {
         m_network.visit(statusChangedChecker);
 
         pDot1Icmp.updateStatus(PollStatus.up());
-        m_network.recalculateStatus();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
 
         PollableVisitor upChecker = new PollableVisitorAdaptor() {
             @Override
@@ -748,19 +749,19 @@ public class PollablesIT {
 
 
         pDot2Smtp.updateStatus(PollStatus.down());
-        m_network.recalculateStatus();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
 
         assertDown(pDot2Smtp);
         assertUp(pDot2Smtp.getInterface());
 
         pDot2Smtp.updateStatus(PollStatus.up());
-        m_network.recalculateStatus();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
 
         assertUp(pDot2Smtp);
         assertUp(pDot2Smtp.getInterface());
 
         pDot2Icmp.updateStatus(PollStatus.down());
-        m_network.recalculateStatus();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
 
         assertDown(pDot2Icmp);
         assertDown(pDot2Icmp.getInterface());
@@ -786,7 +787,7 @@ public class PollablesIT {
 
         pDot1Smtp.updateStatus(PollStatus.unresponsive());
         pDot1Icmp.updateStatus(PollStatus.unresponsive());
-        m_network.recalculateStatus();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
 
         assertUp(pDot1);
 
@@ -800,13 +801,13 @@ public class PollablesIT {
 
         mDot1.bringUnresponsive();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         assertUp(pDot1);
         verifyAnticipated();
@@ -815,13 +816,13 @@ public class PollablesIT {
 
         mDot1.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         assertUp(pDot1);
         verifyAnticipated();
@@ -836,13 +837,13 @@ public class PollablesIT {
 
         mDot1.bringUnresponsive();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         assertUp(pDot1);
         verifyAnticipated();
@@ -851,9 +852,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -861,9 +862,9 @@ public class PollablesIT {
 
         mDot1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -871,13 +872,13 @@ public class PollablesIT {
 
         mDot1.bringUnresponsive();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         assertUp(pDot1);
         verifyAnticipated();
@@ -889,8 +890,8 @@ public class PollablesIT {
     public void testNoEventsOnNoOutages() throws Exception {
 
         // poll expecting no events
-        pDot1Smtp.doPoll();
-        m_network.processStatusChange(new Date());
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -903,29 +904,29 @@ public class PollablesIT {
         PollableService pSvc = pDot1Smtp;
         MockService mSvc = mDot1Smtp;
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
         assertUp(pSvc);
         assertUnchanged(pSvc);
 
         mSvc.bringDown();
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
         assertDown(pSvc);
         assertChanged(pSvc);
-        pSvc.resetStatusChanged();
+        pSvc.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         mSvc.bringUp();
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
         assertUp(pSvc);
         assertChanged(pSvc);
-        pSvc.recalculateStatus();
+        pSvc.recalculateStatus(new AsyncReentrantLock.Locker());
     }
 
     @Test
     public void testPollAllUp() throws Exception {
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
         assertUp(pDot1Icmp);
         assertUp(pDot1);
         assertUnchanged(pDot1Icmp);
@@ -941,7 +942,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
         assertDown(pDot1Smtp);
         assertUp(pDot1);
         assertChanged(pDot1Smtp);
@@ -959,7 +960,7 @@ public class PollablesIT {
 
         mDot1Icmp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Icmp);
         assertDown(pDot1);
@@ -981,8 +982,8 @@ public class PollablesIT {
         pDot1.updateStatus(PollStatus.down());
         pDot1Icmp.updateStatus(PollStatus.down());
 
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
+        m_network.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Icmp);
         assertDown(pDot1);
@@ -990,7 +991,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Icmp);
         assertDown(pDot1);
@@ -1010,15 +1011,15 @@ public class PollablesIT {
         pDot1Icmp.updateStatus(PollStatus.down());
         pDot1.setCause(new DbPollEvent(1, EventConstants.INTERFACE_DOWN_EVENT_UEI, new Date()));
 
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
+        m_network.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Icmp);
         assertDown(pDot1);
 
         mDot1Icmp.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Smtp);
         assertUp(pDot1Icmp);
@@ -1039,7 +1040,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Smtp);
         assertUp(pDot1);
@@ -1062,8 +1063,8 @@ public class PollablesIT {
         pDot1Icmp.updateStatus(PollStatus.down());
         pDot1Smtp.updateStatus(PollStatus.down());
 
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
+        m_network.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Smtp);
         assertDown(pDot1Icmp);
@@ -1071,7 +1072,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
         assertUp(pDot1Smtp);
         assertDown(pDot1Icmp);
@@ -1093,7 +1094,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Smtp);
         assertUp(pDot1);
@@ -1116,8 +1117,8 @@ public class PollablesIT {
         pDot1Icmp.updateStatus(PollStatus.down());
         pDot1Smtp.updateStatus(PollStatus.down());
 
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
+        m_network.recalculateStatus(new AsyncReentrantLock.Locker());
+        m_network.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         assertDown(pDot1Smtp);
         assertDown(pDot1Icmp);
@@ -1125,7 +1126,7 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
         assertUp(pDot1Smtp);
         assertDown(pDot1Icmp);
@@ -1143,7 +1144,7 @@ public class PollablesIT {
     public void testPollNode() throws Exception {
         mNode1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
         assertDown(pDot1Smtp);
         assertDown(pDot1Icmp);
         assertDown(pDot2Icmp);
@@ -1199,17 +1200,17 @@ public class PollablesIT {
 
         mSvc.bringDown();
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
         // anticipate nothin since service is still down
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1217,9 +1218,9 @@ public class PollablesIT {
 
         mSvc.bringUp();
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1231,9 +1232,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1241,9 +1242,9 @@ public class PollablesIT {
 
         mDot1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1255,9 +1256,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1265,9 +1266,9 @@ public class PollablesIT {
 
         mNode1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1279,9 +1280,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1291,9 +1292,9 @@ public class PollablesIT {
         mDot1.bringUp();
         mDot1Smtp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1301,9 +1302,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1315,9 +1316,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1327,9 +1328,9 @@ public class PollablesIT {
         mNode1.bringUp();
         mDot1Icmp.bringDown();
 
-        pDot2Icmp.doPoll();
+        pDot2Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1339,9 +1340,9 @@ public class PollablesIT {
         mDot1.bringUp();
         mDot1Smtp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1354,9 +1355,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        pDot1Smtp.processStatusChange(new Date());
+        pDot1Smtp.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1364,9 +1365,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        pDot1Smtp.processStatusChange(new Date());
+        pDot1Smtp.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1378,9 +1379,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1388,9 +1389,9 @@ public class PollablesIT {
 
         mDot1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
     }
@@ -1401,9 +1402,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1411,9 +1412,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1432,9 +1433,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1442,9 +1443,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1453,9 +1454,9 @@ public class PollablesIT {
 
         mNode1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1468,9 +1469,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1478,9 +1479,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1490,9 +1491,9 @@ public class PollablesIT {
         mNode1.bringUp();
         mDot1Smtp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1500,9 +1501,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
     }
@@ -1522,7 +1523,7 @@ public class PollablesIT {
         pDot1Smtp.updateStatus(PollStatus.down());
         assertEquals(1000, pDot1Smtp.getStatusChangeTime());
         assertDown(pDot1Smtp);
-        pDot1.resetStatusChanged();
+        pDot1.resetStatusChanged(new AsyncReentrantLock.Locker());
         assertEquals(100L, pollConfig.getInterval());
 
         m_timer.setCurrentTime(1234L);
@@ -1593,7 +1594,7 @@ public class PollablesIT {
         assertTime(1000);
         assertDown(pDot1Smtp);
         assertChanged(pDot1Smtp);
-        pDot1Smtp.resetStatusChanged();
+        pDot1Smtp.resetStatusChanged(new AsyncReentrantLock.Locker());
 
         // test scheduling for downTime model
 
@@ -1617,7 +1618,7 @@ public class PollablesIT {
         assertPoll(mDot1Smtp);
         assertUp(pDot1Smtp);
         assertChanged(pDot1Smtp);
-        pDot1Smtp.recalculateStatus();
+        pDot1Smtp.recalculateStatus(new AsyncReentrantLock.Locker());
 
 
     }
@@ -1875,9 +1876,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1891,9 +1892,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1919,9 +1920,9 @@ public class PollablesIT {
         PollableInterface pIface = pExistingSvc.getInterface();
         PollableNode pNode = pIface.getNode();
 
-        pExistingSvc.doPoll();
+        pExistingSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -1945,9 +1946,9 @@ public class PollablesIT {
 
         mSvc.bringDown();
 
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
     }
@@ -1976,9 +1977,9 @@ public class PollablesIT {
 
         mNode.bringDown();
 
-        pExistingSvc.doPoll();
+        pExistingSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2011,7 +2012,7 @@ public class PollablesIT {
         assertDown(pNode);
 
         // now to the first poll
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
         // everything should still be down
         assertDown(pSvc);
@@ -2019,7 +2020,7 @@ public class PollablesIT {
         assertDown(pIface);
         assertDown(pNode);
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         // and should have the same node down cause
         assertElementHasCause(pSvc, nodeCause);
@@ -2048,9 +2049,9 @@ public class PollablesIT {
         PollableNode pNode = pExistingSvc.getNode();
 
         // first we cause a poll for the up node just be make sure everythings working
-        pExistingSvc.doPoll();
+        pExistingSvc.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2081,7 +2082,7 @@ public class PollablesIT {
         assertUp(pNode);
 
         // now poll
-        pSvc.doPoll();
+        pSvc.doPoll(new AsyncReentrantLock.Locker());
 
         // expect the svc to be down and everythign else up
         assertDown(pSvc);
@@ -2090,7 +2091,7 @@ public class PollablesIT {
         assertUp(pNode);
 
         // no we send the events and update the causes
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         // only the svc has a cause
         assertNotNull(pSvc.getCause());
@@ -2107,9 +2108,9 @@ public class PollablesIT {
 
         mDot1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2131,9 +2132,9 @@ public class PollablesIT {
 
         mDot1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2170,9 +2171,9 @@ public class PollablesIT {
 
         mDot4.bringUp();
 
-        pDot4Http.doPoll();
+        pDot4Http.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2214,9 +2215,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         System.out.println("Cause is "+pNode1.getCause());
 
@@ -2235,9 +2236,9 @@ public class PollablesIT {
 
         mNode1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2250,9 +2251,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         PollEvent svcCause = pDot1Smtp.getCause();
 
@@ -2262,9 +2263,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         PollEvent nodeCause = pNode1.getCause();
 
@@ -2295,9 +2296,9 @@ public class PollablesIT {
 
         mNode1.bringUp();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2310,9 +2311,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringDown();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2320,9 +2321,9 @@ public class PollablesIT {
 
         mNode1.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2344,9 +2345,9 @@ public class PollablesIT {
         mNode1.bringUp();
         mDot1Smtp.bringDown();
 
-        pDot1Icmp.doPoll();
+        pDot1Icmp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
 
@@ -2354,9 +2355,9 @@ public class PollablesIT {
 
         mDot1Smtp.bringUp();
 
-        pDot1Smtp.doPoll();
+        pDot1Smtp.doPoll(new AsyncReentrantLock.Locker());
 
-        m_network.processStatusChange(new Date());
+        m_network.processStatusChange(new AsyncReentrantLock.Locker(), new Date());
 
         verifyAnticipated();
     }
@@ -2378,7 +2379,7 @@ public class PollablesIT {
         final Runnable locker = new Runnable() {
             @Override
             public void run() {
-                pNode1.withTreeLock(r);
+                pNode1.withTreeLock(new AsyncReentrantLock.Locker(), r);
             }
         };
 
@@ -2414,7 +2415,7 @@ public class PollablesIT {
                 boolean called = false;
                 while (!called) {
                     try {
-                        called = pNode1.withTreeLock(call, 200);
+                        called = pNode1.withTreeLock(new AsyncReentrantLock.Locker(), call, 200);
                     } catch (LockUnavailable e) {
                         //LOG.debug(e.getMessage());
                     } catch (Throwable e) {
@@ -2459,8 +2460,10 @@ public class PollablesIT {
             LOG.debug("Incremented value to {}, now sleeping for 20ms", m_counter.incrementAndGet());
             m_recursionDepth.incrementAndGet();
             try { Thread.sleep(20); } catch (InterruptedException e) {}
+            final var locker = new AsyncReentrantLock.Locker();
             if (m_iterations > 0) {
-                m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_recursionDepth, m_iterations - 1));
+                m_lock.withTreeLock(locker,
+                new RecursiveCallable(m_lock, m_counter, m_recursionDepth, m_iterations - 1));
             }
             return null;
         }
@@ -2483,7 +2486,7 @@ public class PollablesIT {
         public void run() {
             while (m_counter.get() < 100) {
                 try {
-                    m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_invocations, m_recursionDepth - 1), 5);
+                    m_lock.withTreeLock(new AsyncReentrantLock.Locker(), new RecursiveCallable(m_lock, m_counter, m_invocations, m_recursionDepth - 1), 5);
                 } catch (LockUnavailable e) {
                     //LOG.debug(e.getMessage());
                 }
@@ -2566,7 +2569,7 @@ public class PollablesIT {
         final Runnable locker = new Runnable() {
             @Override
             public void run() {
-                pNode1.withTreeLock(r);
+                pNode1.withTreeLock(new AsyncReentrantLock.Locker(), r);
             }
         };
 
@@ -2574,7 +2577,7 @@ public class PollablesIT {
             @Override
             public void run() {
                 try {
-                    pNode1.withTreeLock(r, 500);
+                    pNode1.withTreeLock(new AsyncReentrantLock.Locker(), r, 500);
                     fail("Expected LockUnavailable");
                 } catch (LockUnavailable e) {
                     MockUtil.println("Received expected exception "+e);
@@ -2734,7 +2737,7 @@ public class PollablesIT {
 
         final PollableNode svcNode = m_network.createNodeIfNecessary(nodeId, nodeLabel, nodeLocation);
 
-        return svcNode.withTreeLock(new Callable<PollableService>() {
+        return svcNode.withTreeLock(new AsyncReentrantLock.Locker(), new Callable<PollableService>() {
 
             @Override
             public PollableService call() throws Exception {
@@ -2761,7 +2764,7 @@ public class PollablesIT {
             return null;
         }
 
-        PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
+        PollableService svc = pNetwork.createService(new AsyncReentrantLock.Locker(), nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pkg,
                 scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, pollOutagesDao);
 

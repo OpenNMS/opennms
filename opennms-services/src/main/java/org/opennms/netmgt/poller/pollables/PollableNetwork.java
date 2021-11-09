@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -135,8 +136,8 @@ public class PollableNetwork extends PollableContainer {
      * @param addr a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
-    public PollableInterface createInterface(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr) {
-        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createInterface(addr);
+    public PollableInterface createInterface(AsyncReentrantLock.Locker locker, int nodeId, String nodeLabel, String nodeLocation, InetAddress addr) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createInterface(locker, addr);
     }
 
     /**
@@ -161,8 +162,8 @@ public class PollableNetwork extends PollableContainer {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
-    public PollableService createService(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr, String svcName) {
-        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createService(addr, svcName);
+    public PollableService createService(AsyncReentrantLock.Locker locker, int nodeId, String nodeLabel, String nodeLocation, InetAddress addr, String svcName) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createService(locker, addr, svcName);
     }
 
     /**
@@ -195,7 +196,7 @@ public class PollableNetwork extends PollableContainer {
 
     /** {@inheritDoc} */
     @Override
-    public CompletionStage<PollStatus> pollRemainingMembers(PollableElement member) {
+    public CompletionStage<PollStatus> pollRemainingMembers(AsyncReentrantLock.Locker locker, PollableElement member) {
         return getMemberStatus();
     }
 
@@ -257,32 +258,32 @@ public class PollableNetwork extends PollableContainer {
      * <p>delete</p>
      */
     @Override
-    public void delete() {
+    public void delete(AsyncReentrantLock.Locker locker) {
         LOG.debug("Can't delete the entire network.");
     }
 
     /** {@inheritDoc} */
     @Override
-    public CompletionStage<PollStatus> poll(PollableElement elem) {
+    public CompletionStage<PollStatus> poll(AsyncReentrantLock.Locker locker, PollableElement elem) {
         PollableElement member = findMemberWithDescendent(elem);
-        return member.poll(elem);
+        return member.poll(locker, elem);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void processStatusChange(Date date) {
+    public void processStatusChange(AsyncReentrantLock.Locker locker, Date date) {
         // no need to process status changes for the network itself
-        processMemberStatusChanges(date);
+        processMemberStatusChanges(locker, date);
     }
     /**
      * <p>recalculateStatus</p>
      */
     @Override
-    public void recalculateStatus() {
+    public void recalculateStatus(AsyncReentrantLock.Locker locker) {
         Iter iter = new Iter() {
             @Override
             public void forEachElement(PollableElement elem) {
-                elem.recalculateStatus();
+                elem.recalculateStatus(locker);
             }
         };
         forEachMember(iter);
@@ -291,12 +292,12 @@ public class PollableNetwork extends PollableContainer {
      * <p>resetStatusChanged</p>
      */
     @Override
-    public void resetStatusChanged() {
-        super.resetStatusChanged();
+    public void resetStatusChanged(AsyncReentrantLock.Locker locker) {
+        super.resetStatusChanged(locker);
         Iter iter = new Iter() {
             @Override
             public void forEachElement(PollableElement elem) {
-                elem.resetStatusChanged();
+                elem.resetStatusChanged(locker);
             }
         };
         forEachMember(iter);
@@ -313,29 +314,29 @@ public class PollableNetwork extends PollableContainer {
     
     /** {@inheritDoc} */
     @Override
-    protected void obtainTreeLock() {
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker) {
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock(AsyncReentrantLock.Locker locker, long timeout) {
     }
 
     /**
      * <p>releaseTreeLock</p>
      */
     @Override
-    protected void releaseTreeLock() {
+    protected void releaseTreeLock(AsyncReentrantLock.Locker locker) {
     }
 
     /** {@inheritDoc} */
     @Override
-    public PollEvent extrapolateCause() {
+    public PollEvent extrapolateCause(AsyncReentrantLock.Locker locker) {
 
         Iter iter = new Iter() {
             @Override
             public void forEachElement(PollableElement elem) {
-                elem.extrapolateCause();
+                elem.extrapolateCause(locker);
             }
         };
         forEachMember(iter);
@@ -346,9 +347,9 @@ public class PollableNetwork extends PollableContainer {
     /**
      * <p>propagateInitialCause</p>
      */
-    public void propagateInitialCause() {
-        extrapolateCause();
-        inheritParentalCause();
+    public void propagateInitialCause(AsyncReentrantLock.Locker locker) {
+        extrapolateCause(locker);
+        inheritParentalCause(locker);
     }
     
     

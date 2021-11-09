@@ -49,6 +49,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.AsyncReentrantLock;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -184,7 +185,7 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         m_pollContext.setLocationAwarePingClient(m_locationAwarePingClient);
 
        m_pNetwork = new PollableNetwork(m_pollContext);
-       m_pSvc = m_pNetwork.createService(1, "Router", null, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+       m_pSvc = m_pNetwork.createService(new AsyncReentrantLock.Locker(), 1, "Router", null, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
     }
 
