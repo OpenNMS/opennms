@@ -34,6 +34,10 @@ import java.io.IOException;
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
 
+    public LocalTwinSubscriberImpl() {
+        super(null);
+    }
+
     @Override
     protected void sendRpcRequest(TwinRequest twinRequest) {
         // no need to send any RPC on local subscriber.
