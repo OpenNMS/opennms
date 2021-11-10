@@ -1,241 +1,107 @@
-[[release-28-changelog]]
+[[release-29-changelog]]
 
 = Changelog
 
-[releasenotes-changelog-28.1.1]
+[[releasenotes-changelog-29.0.0]]
 
-==== Release 28.1.1
+== Release 29.0.0
 
-Release 28.1.1 contains a number of bug fixes and enhancements, including web UI,
-Minion, Docker, and documentation improvements.
+Release 29.0.0 is the first in the Horizon 29 series, introducing running as non-root by default,
+optimizations to Minion communication, time-series improvements, support for Cortex for storing
+flow data, and more.
 
-The codename for Horizon 28.1.1 is https://transformers.fandom.com/wiki/Mikaela_Banes[_Mikaela Banes_].
-
-===== Bug
-
-* Fix example configuration for Scriptd (Issue http://issues.opennms.org/browse/NMS-13271[NMS-13271])
-* Strings with URL arguments are truncated in the eventdescr field (Issue http://issues.opennms.org/browse/NMS-13428[NMS-13428])
-* SNMPv3 traps are not counted correctly in JMX metrics (Issue http://issues.opennms.org/browse/NMS-13489[NMS-13489])
-* missing fields in search autocomplete (Issue http://issues.opennms.org/browse/NMS-13518[NMS-13518])
-* Some of the tests of ClassificationRulePageIT are flaky (Issue http://issues.opennms.org/browse/NMS-13566[NMS-13566])
-* Signed Minion container bleeding image shows revision as meridian-foundation-2021.1.4-1-487 (Issue http://issues.opennms.org/browse/NMS-13587[NMS-13587])
-* Meridian Minion images do not include release (Issue http://issues.opennms.org/browse/NMS-13591[NMS-13591])
-* Horizon release-28.x builds fail with a certificate error (Issue http://issues.opennms.org/browse/NMS-13609[NMS-13609])
-
-===== Enhancement
-
-* Document data types in collectd (Issue http://issues.opennms.org/browse/NMS-10476[NMS-10476])
-* Update adapters documentation (Issue http://issues.opennms.org/browse/NMS-12999[NMS-12999])
-* Move monitors docs to the Reference section (Issue http://issues.opennms.org/browse/NMS-13524[NMS-13524])
-* Move detectors to reference section (Issue http://issues.opennms.org/browse/NMS-13525[NMS-13525])
-* Move collectors to reference section (Issue http://issues.opennms.org/browse/NMS-13526[NMS-13526])
-* Move telemetryd (streaming telemetry) to reference section (Issue http://issues.opennms.org/browse/NMS-13527[NMS-13527])
-* Move ticketing docs to reference section (Issue http://issues.opennms.org/browse/NMS-13529[NMS-13529])
-* Add search term highlight functionality in documentation (Issue http://issues.opennms.org/browse/NMS-13540[NMS-13540])
-* Minion: Health ReST API: Lightweight/passive health check for broker/OpenNMS  (Issue http://issues.opennms.org/browse/NMS-13547[NMS-13547])
-* Move provisioning policies to the reference section (Issue http://issues.opennms.org/browse/NMS-13562[NMS-13562])
-* Implement HW inventory Provisioning adapter API to support Juniper HW  (Issue http://issues.opennms.org/browse/NMS-13575[NMS-13575])
-* Add full trapoid for Snmp V1 (Issue http://issues.opennms.org/browse/NMS-13586[NMS-13586])
-* Geolocator Doc Clarification (Issue http://issues.opennms.org/browse/NMS-13611[NMS-13611])
-
-
-[[releasenotes-changelog-28.1.0]]
-
-== Release 28.1.0
-
-Release 28.1.0 contains a bunch of bug fixes and enhancements, including a dependency update
-related to a CVE.
-
-Note that we bumped the minor version on the release because of the changes made in
-http://issues.opennms.org/browse/NMS-13479[NMS-13479] -- in order to optimize the flow classification
-processing, some significant changes were made behind the scenes.  There _shouldn't_ be any change
-from a user perspective, but we bumped the version just in case.
-
-The codename for Horizon 28.1.0 is https://wikipedia.org/wiki/$$Bumblebee_(Transformers)$$[_Bumblebee_]
+The codename for Horizon 29.0.0 is https://wikipedia.org/wiki/$$Turkey_(bird)$$[_Turkey_].
 
 === Bug
 
-* OpenNMS Admin Guide HostResourceSwRunMonitor service-name not exact match string (Issue http://issues.opennms.org/browse/NMS-8968[NMS-8968])
-* Trailing whitespace breaks flow listener config (Issue http://issues.opennms.org/browse/NMS-13477[NMS-13477])
-* Syslog messages missing nodelabel, location, and interface (Issue http://issues.opennms.org/browse/NMS-13485[NMS-13485])
-* Minions > v27.0.0 stop processing flows after apprx 5 minutes (Issue http://issues.opennms.org/browse/NMS-13486[NMS-13486])
-* IFTTT integration not working anymore (Issue http://issues.opennms.org/browse/NMS-13501[NMS-13501])
-* Bump Apache Ant version to 1.10.11 (CVE-2021-36373, CVE-2021-36374) (Issue http://issues.opennms.org/browse/NMS-13509[NMS-13509])
-* Service Parameters box misses Poller Patterns (Issue http://issues.opennms.org/browse/NMS-13517[NMS-13517])
-
-=== Enhancement
-
-* Add the full trap oid for v2 snmp event (Issue http://issues.opennms.org/browse/NMS-13422[NMS-13422])
-* Update Provisiond Docs (Issue http://issues.opennms.org/browse/NMS-13446[NMS-13446])
-* Update table formatting in docs.  (Issue http://issues.opennms.org/browse/NMS-13472[NMS-13472])
-* Migrate VMware config from wiki to docs (Issue http://issues.opennms.org/browse/NMS-13473[NMS-13473])
-* Review classification rules in the flow pipeline (Issue http://issues.opennms.org/browse/NMS-13479[NMS-13479])
-* Use Karaf shell commands to secure Minion SSH Karaf access (Issue http://issues.opennms.org/browse/NMS-13511[NMS-13511])
-* Reformat tables (again) (Issue http://issues.opennms.org/browse/NMS-13515[NMS-13515])
-
-[[releasenotes-changelog-28.0.2]]
-
-== Release 28.0.2
-
-Release 28.0.2 contains a bunch of bug fixes and enhancements, as well as some fixes for
-XSS issues and a Jetty CVE.
-
-The codename for Horizon 28.0.2 is https://wikipedia.org/wiki/$$Soundwave_(Transformers)$$[_Soundwave_].
-
-=== Bug
-
-* The Dev Documentation doesn't have information about the Hardware Inventory (Issue http://issues.opennms.org/browse/NMS-11730[NMS-11730])
-* Admin guide still uses deprecated term "provisioning group" in places (Issue http://issues.opennms.org/browse/NMS-12373[NMS-12373])
-* Swagger UI hard coded to server via HTTP (Issue http://issues.opennms.org/browse/NMS-13353[NMS-13353])
-* OpenAPI spec fails validation (Issue http://issues.opennms.org/browse/NMS-13354[NMS-13354])
-* OutOfMemory issue on Minion (corner case related to Offheap) (Issue http://issues.opennms.org/browse/NMS-13405[NMS-13405])
-* vmwareconfigbuilder and vmwarecimquery not working anymore (Issue http://issues.opennms.org/browse/NMS-13444[NMS-13444])
-* Jetty 9.4.38 security issues CVE-2021-28164, CVE-2021-34428 and CVE-2021-28169 (Issue http://issues.opennms.org/browse/NMS-13449[NMS-13449])
+* Add Validation for Metadata in Thresholds (Issue http://issues.opennms.org/browse/NMS-12689[NMS-12689])
+* Prometheus collector won't process untyped metrics (Issue http://issues.opennms.org/browse/NMS-12717[NMS-12717])
+* Confd doesn't replace telemetryd config in etc  (Issue http://issues.opennms.org/browse/NMS-13265[NMS-13265])
+* The node and interface counters of the Evaluation Layer are incorrect (Issue http://issues.opennms.org/browse/NMS-13283[NMS-13283])
+* EvaluationMetrics.log is contaminated with non-related metrics. (Issue http://issues.opennms.org/browse/NMS-13284[NMS-13284])
+* Meta-Data cannot be deleted using UI (Issue http://issues.opennms.org/browse/NMS-13314[NMS-13314])
+* Maven: external HTTP insecure URLs are blocked (Issue http://issues.opennms.org/browse/NMS-13323[NMS-13323])
+* Installation with non-root user failes on CentOS 8 (Issue http://issues.opennms.org/browse/NMS-13415[NMS-13415])
+* Starting opennms with systemd as non-root fails with access denied for pid (Issue http://issues.opennms.org/browse/NMS-13417[NMS-13417])
+* Fresh install requires to run fix-permissions script for iplike.so (Issue http://issues.opennms.org/browse/NMS-13418[NMS-13418])
+* Docker not able to access etc overlay as non-root (Issue http://issues.opennms.org/browse/NMS-13436[NMS-13436])
+* The Info ReST endpoint is not showing the services status (Issue http://issues.opennms.org/browse/NMS-13437[NMS-13437])
+* Fix ipInterface PrimaryType Hibernate mapping (Issue http://issues.opennms.org/browse/NMS-13469[NMS-13469])
+* Relaunch of bin/opennms script as opennms user fails due to missing arguments (Issue http://issues.opennms.org/browse/NMS-13470[NMS-13470])
 * Reflected XSS in webapp notice wizard (Issue http://issues.opennms.org/browse/NMS-13496[NMS-13496])
-* Reflected XSS in scheduled outage editor (Issue http://issues.opennms.org/browse/NMS-13498[NMS-13498])
+* IFTTT integration not working anymore (Issue http://issues.opennms.org/browse/NMS-13501[NMS-13501])
+* Minion stops processing flows with "Invalid packet: null" until restart (Issue http://issues.opennms.org/browse/NMS-13539[NMS-13539])
+* Components that use JavaMail unable to use TLS 1.2+ (Issue http://issues.opennms.org/browse/NMS-13636[NMS-13636])
+* Hardware information not displayed for some devices (SnmpMetadataProvisioningAdapter) (Issue http://issues.opennms.org/browse/NMS-13648[NMS-13648])
+* Lock contention when processing large volume of REST API requests (Issue http://issues.opennms.org/browse/NMS-13655[NMS-13655])
+* Clean unused data in srv001.txt and srv002.txt (Issue http://issues.opennms.org/browse/NMS-13657[NMS-13657])
+* Nodes with complex hardware configuration are not correctly rendered (Issue http://issues.opennms.org/browse/NMS-13660[NMS-13660])
+* automation cleanUpRpStatusChanges that references removed action with same name remains in default vacuumd-configuration.xml configuration (Issue http://issues.opennms.org/browse/NMS-13661[NMS-13661])
+* ALEC in distributed mode doesn't start on Sentinel (Issue http://issues.opennms.org/browse/NMS-13664[NMS-13664])
+* property name  importer.adapter.dns.reverse.level is incorrect in commented out example (Issue http://issues.opennms.org/browse/NMS-13670[NMS-13670])
+* Fix JtiTelemetryIT smoke test (Issue http://issues.opennms.org/browse/NMS-13687[NMS-13687])
+* START_TIMEOUT ignored when run from systemd (Issue http://issues.opennms.org/browse/NMS-13702[NMS-13702])
+* macOS Monterey: older OpenNMS branches do not start anymore (Issue http://issues.opennms.org/browse/NMS-13703[NMS-13703])
+* related events box in alarm detail shows all events when alarm has no node / interface / service / ifindex (Issue http://issues.opennms.org/browse/NMS-13705[NMS-13705])
+* SNMP Metadata Provisioning Adapter: wrong line in debian/rules (Issue http://issues.opennms.org/browse/NMS-13717[NMS-13717])
+* invalid permissions in /var/opennms on fresh install (Issue http://issues.opennms.org/browse/NMS-13725[NMS-13725])
+* JMS Twin doesn't work with  minion user (Issue http://issues.opennms.org/browse/NMS-13726[NMS-13726])
+* Remove reference to DHCP plugin from docs (Issue http://issues.opennms.org/browse/NMS-13727[NMS-13727])
+* GeoIP Provisioning Adapter: SubnetUtils does not support IPv6 (Issue http://issues.opennms.org/browse/NMS-13728[NMS-13728])
 
 === Enhancement
 
-* Add missing Prometheus collectd example in our documenation (Issue http://issues.opennms.org/browse/NMS-12978[NMS-12978])
-* Nephron: Consider interfaces for unaligned windows (Issue http://issues.opennms.org/browse/NMS-13352[NMS-13352])
-* Table formatting issue in new docs (Issue http://issues.opennms.org/browse/NMS-13364[NMS-13364])
-* Hardware Inventory Plugin needs docs (Issue http://issues.opennms.org/browse/NMS-13370[NMS-13370])
-* Document search panel (Issue http://issues.opennms.org/browse/NMS-13408[NMS-13408])
-* The PageSequenceMonitor keys host and virtual-host are confusing (Issue http://issues.opennms.org/browse/NMS-13412[NMS-13412])
-* Only publish Docker images when system tests are green (Issue http://issues.opennms.org/browse/NMS-13433[NMS-13433])
-* Doc typos - improper character escaping (Issue http://issues.opennms.org/browse/NMS-13448[NMS-13448])
-* Update table formatting in collectors section of docs (Issue http://issues.opennms.org/browse/NMS-13456[NMS-13456])
-* Optimize node cache refresh to be non-blocking to flow data (Issue http://issues.opennms.org/browse/NMS-13481[NMS-13481])
-
-[[releasenotes-changelog-28.0.1]]
-== Release 28.0.1
-
-Release 28.0.1 contains a bunch of bug fixes and enhancements, plus a few security updates.
-
-The codename for Horizon 28.0.1 is https://wikipedia.org/wiki/$$Optimus_Prime$$[_Optimus Prime_].
-
-=== Bug
-
-* SNMP collection failing for "interface label is null or blank" (Issue http://issues.opennms.org/browse/NMS-11764[NMS-11764])
-* Typo in Graphs: "File Descritors" (Issue http://issues.opennms.org/browse/NMS-12876[NMS-12876])
-* Problems in Helm documentation (Issue http://issues.opennms.org/browse/NMS-12900[NMS-12900])
-* minion-config-schema.yml java agent example as a string (Issue http://issues.opennms.org/browse/NMS-13272[NMS-13272])
-* Minion container v28.0.0 refuse to start (Issue http://issues.opennms.org/browse/NMS-13347[NMS-13347])
-* Release notes display issues (Issue http://issues.opennms.org/browse/NMS-13351[NMS-13351])
-* Default Debian instructions don't work on a minimal install (Issue http://issues.opennms.org/browse/NMS-13355[NMS-13355])
-* CVE-2020-13956: Update commons-httpclient to 4.5.13 (Issue http://issues.opennms.org/browse/NMS-13360[NMS-13360])
-* CVE-2017-5929: bump logback-classic version to latest (Issue http://issues.opennms.org/browse/NMS-13361[NMS-13361])
-* Update images chapter in docs remove two chapters (Issue http://issues.opennms.org/browse/NMS-13371[NMS-13371])
-* Package diffutils is missing in Docker image (Issue http://issues.opennms.org/browse/NMS-13429[NMS-13429])
-
-=== Enhancement
-
-* Add Node ID reference to noticeWizard (Issue http://issues.opennms.org/browse/NMS-11790[NMS-11790])
+* Change the webUI so it runs as a non-root user easily and reliably (Issue http://issues.opennms.org/browse/NMS-1231[NMS-1231])
+* Create opennms user on install (Issue http://issues.opennms.org/browse/NMS-11970[NMS-11970])
+* syslogd as non-root user (Issue http://issues.opennms.org/browse/NMS-11982[NMS-11982])
+* opennms.service in non-root environment (Issue http://issues.opennms.org/browse/NMS-12005[NMS-12005])
+* opennms init script "runas" setting (Issue http://issues.opennms.org/browse/NMS-12007[NMS-12007])
+* TrapD won't run as non-root user (Issue http://issues.opennms.org/browse/NMS-12026[NMS-12026])
+* non-root user:group file permissions (Issue http://issues.opennms.org/browse/NMS-12034[NMS-12034])
+* Documentation for reloadable daemons (Issue http://issues.opennms.org/browse/NMS-12611[NMS-12611])
 * Incorporate node related information to events and alarms topic in opennms-kafka-producer feature (Issue http://issues.opennms.org/browse/NMS-12778[NMS-12778])
-* Create BSFDetector documenation (Issue http://issues.opennms.org/browse/NMS-13073[NMS-13073])
-* Add operator instructions for graphInvalidated (Issue http://issues.opennms.org/browse/NMS-13173[NMS-13173])
-* Nephron: add benchmark launcher (Issue http://issues.opennms.org/browse/NMS-13176[NMS-13176])
-* Enhance Availability (RTC) data via REST with current service status (Issue http://issues.opennms.org/browse/NMS-13238[NMS-13238])
-* PageSequenceMonitor not accepting metadata in <page/> element (Issue http://issues.opennms.org/browse/NMS-13257[NMS-13257])
-* Expand PageSequenceMonitor Documentation (Issue http://issues.opennms.org/browse/NMS-13260[NMS-13260])
-* Publish minion config schema (Issue http://issues.opennms.org/browse/NMS-13285[NMS-13285])
-* Health-check: provide restful api to query health for different tags (Issue http://issues.opennms.org/browse/NMS-13312[NMS-13312])
-* Check if Docker Content Trust and Docker Registry Proxies play together nicely (Issue http://issues.opennms.org/browse/NMS-13315[NMS-13315])
-* Use DCT to secure the Minion image (Issue http://issues.opennms.org/browse/NMS-13318[NMS-13318])
-* Provide OpenAPI doc to health-check REST API (Issue http://issues.opennms.org/browse/NMS-13319[NMS-13319])
-* update WMI dependencies (Issue http://issues.opennms.org/browse/NMS-13320[NMS-13320])
-* Add out-of-band monitoring content to main user documentation (Issue http://issues.opennms.org/browse/NMS-13330[NMS-13330])
-* Create DnsDetector docs (Issue http://issues.opennms.org/browse/NMS-13338[NMS-13338])
-* Create FtpDetector docs (Issue http://issues.opennms.org/browse/NMS-13339[NMS-13339])
-* Create HostResourceSWRunDetector docs (Issue http://issues.opennms.org/browse/NMS-13340[NMS-13340])
-* Documentation Typos (Issue http://issues.opennms.org/browse/NMS-13344[NMS-13344])
-* Setup DCT keys for the OpenNMS and OpenNMS-Forge organizations (Issue http://issues.opennms.org/browse/NMS-13345[NMS-13345])
-* Implement Kafka Consumer for events (protobuf) (Issue http://issues.opennms.org/browse/NMS-13362[NMS-13362])
-* Add info icon with a tooltip for effective meta-data values (Issue http://issues.opennms.org/browse/NMS-13365[NMS-13365])
-* Allow setting java heap minimum and maximum values in opennms.conf (Issue http://issues.opennms.org/browse/NMS-13367[NMS-13367])
-* Add tags as query params to /health/probe  Rest API (Issue http://issues.opennms.org/browse/NMS-13369[NMS-13369])
-* Add custom Meta-data in search results (Issue http://issues.opennms.org/browse/NMS-13378[NMS-13378])
-* Misc documentation fixes (Issue http://issues.opennms.org/browse/NMS-13426[NMS-13426])
+* Update Provisioning chapter (Issue http://issues.opennms.org/browse/NMS-12810[NMS-12810])
+* Create docs about Newts confd parameters (Issue http://issues.opennms.org/browse/NMS-13005[NMS-13005])
+* Allow OpenNMS Core service to run as non-root (Issue http://issues.opennms.org/browse/NMS-13016[NMS-13016])
+* Improve usability and self-contained features of the Kafka Producer payload for metrics (Issue http://issues.opennms.org/browse/NMS-13191[NMS-13191])
+* Upgrade Kafka components to 2.8.0 (Issue http://issues.opennms.org/browse/NMS-13264[NMS-13264])
+* Monitor localhost in a fresh install (Issue http://issues.opennms.org/browse/NMS-13313[NMS-13313])
+* Location dropdown on Add Node does not sort/filter (Issue http://issues.opennms.org/browse/NMS-13316[NMS-13316])
+* Persist monitor status in RRD (Issue http://issues.opennms.org/browse/NMS-13324[NMS-13324])
+* TSS 2.0: Improved Tag handling (Issue http://issues.opennms.org/browse/NMS-13356[NMS-13356])
+* Provide ability to store aggregated flow data from Nephron in Cortex (Issue http://issues.opennms.org/browse/NMS-13372[NMS-13372])
+* Investigate the Conversations related performance with Cortex & large amount of data (Issue http://issues.opennms.org/browse/NMS-13375[NMS-13375])
+* Nephron: Get rid of convo_key and grouped_by_key (Issue http://issues.opennms.org/browse/NMS-13377[NMS-13377])
+* Define Minion/OpenNMS Object replication Interfaces (Issue http://issues.opennms.org/browse/NMS-13401[NMS-13401])
+* Integrate Object replication with Trapd (for SNMPV3 Users)  (Issue http://issues.opennms.org/browse/NMS-13402[NMS-13402])
+* Limit CollectionSet size in Kafka Producer to less than 1MB. (Issue http://issues.opennms.org/browse/NMS-13407[NMS-13407])
+* Remove remote repository dependencies during Minion OCI build (Issue http://issues.opennms.org/browse/NMS-13432[NMS-13432])
+* Implement gRPC broker for Object replication (Twin) (Issue http://issues.opennms.org/browse/NMS-13460[NMS-13460])
+* Implement ActiveMQ broker for Object replication ( Twin) (Issue http://issues.opennms.org/browse/NMS-13461[NMS-13461])
+* Implement In-memory broker for Object replication ( Twin) (Issue http://issues.opennms.org/browse/NMS-13462[NMS-13462])
+* Implement Kafka broker for Object replication ( Twin) (Issue http://issues.opennms.org/browse/NMS-13463[NMS-13463])
+* Changes to review bulk indexing with raw flow data (Issue http://issues.opennms.org/browse/NMS-13478[NMS-13478])
+* Grpc IPC and Twin should be able to run from the same port (Issue http://issues.opennms.org/browse/NMS-13487[NMS-13487])
+* Add Karaf Command to add query and publish Twin Objects (Issue http://issues.opennms.org/browse/NMS-13488[NMS-13488])
+* delete the opennms-tools directory (Issue http://issues.opennms.org/browse/NMS-13563[NMS-13563])
+* Upgrade Karaf to v4.3.2 (Issue http://issues.opennms.org/browse/NMS-13565[NMS-13565])
+* Support partial updates to Twin API (Issue http://issues.opennms.org/browse/NMS-13576[NMS-13576])
+* Optimize ip address handling in flow classification engine (Issue http://issues.opennms.org/browse/NMS-13577[NMS-13577])
+* optimize repeated reloads of the flow classification engine (Issue http://issues.opennms.org/browse/NMS-13580[NMS-13580])
+* The implementation of HealthCheck.performAsyncHealthCheck is not async (Issue http://issues.opennms.org/browse/NMS-13590[NMS-13590])
+* Add 'tag' argument to health-check command (Issue http://issues.opennms.org/browse/NMS-13592[NMS-13592])
+* Provide basic implementation for patch support for Twin (Issue http://issues.opennms.org/browse/NMS-13594[NMS-13594])
+* Show Link State when viewing links on the Enlinkd topology maps (Issue http://issues.opennms.org/browse/NMS-13619[NMS-13619])
+* Topologies menu (Issue http://issues.opennms.org/browse/NMS-13622[NMS-13622])
+* Documentation for the new feature persisting flows in Cortex  (Issue http://issues.opennms.org/browse/NMS-13635[NMS-13635])
+* Discover LLDP topology on devices running MikroTik RouterOS (Issue http://issues.opennms.org/browse/NMS-13637[NMS-13637])
+* Drop SQS support  (Issue http://issues.opennms.org/browse/NMS-13640[NMS-13640])
+* Remove Rest Client / OpenNMS Rest Health Checks on Minion (Issue http://issues.opennms.org/browse/NMS-13641[NMS-13641])
+* Update docs with Twin implementation  (Issue http://issues.opennms.org/browse/NMS-13642[NMS-13642])
+* Check doc source for wiki links (Issue http://issues.opennms.org/browse/NMS-13688[NMS-13688])
+* Create Release Notes for Horizon 29 (Issue http://issues.opennms.org/browse/NMS-13700[NMS-13700])
+* Add Twin feature/strategy to conf.d/smoke test (Issue http://issues.opennms.org/browse/NMS-13701[NMS-13701])
+* GeoIP Provisioning Adapter (Issue http://issues.opennms.org/browse/NMS-13704[NMS-13704])
+* Allow PostgreSQL 14 (Issue http://issues.opennms.org/browse/NMS-13714[NMS-13714])
+* Add hint for time sync on OpenNMS components (Issue http://issues.opennms.org/browse/NMS-13724[NMS-13724])
 
-
-[[releasenotes-changelog-28.0.0]]
-
-== Release 28.0.0
-
-Release 28.0.0 is the first in the Horizon 28 series, introducing a requirement of Java 11,
-enhancements to flow aggregation to support DSCP ToS/QoS, and more.
-
-The codename for Horizon 28.0.0 is https://wikipedia.org/wiki/$$Jazz_(Transformers)$$[_Jazz_].
-
-=== Bug
-
-* Quick Search Typing anything but numbers in the Node list gets 404 (Issue http://issues.opennms.org/browse/NMS-8012[NMS-8012])
-* "Search/Filter Resources" on "Resource Graphs" not functioning as expected (Issue http://issues.opennms.org/browse/NMS-11752[NMS-11752])
-* Race condition on ALEC's config bundle after installation (Issue http://issues.opennms.org/browse/NMS-12766[NMS-12766])
-* Race condition when enabling the Situations Feedback feature (Issue http://issues.opennms.org/browse/NMS-12767[NMS-12767])
-* Add a warning when enabling forwarding metrics through the Kafka Producer (Issue http://issues.opennms.org/browse/NMS-13039[NMS-13039])
-* Nephron: optimize aggregation calculation (Issue http://issues.opennms.org/browse/NMS-13100[NMS-13100])
-* Setting Instance ID via minon-config.yaml doesn't work (Issue http://issues.opennms.org/browse/NMS-13101[NMS-13101])
-* Shipped minion flow listener config does not create a working listener (Issue http://issues.opennms.org/browse/NMS-13110[NMS-13110])
-* BouncyCastle breaks SSL support in OpenNMS (Issue http://issues.opennms.org/browse/NMS-13111[NMS-13111])
-* Wrong UEI is picked when threshold alarms are generated (Issue http://issues.opennms.org/browse/NMS-13120[NMS-13120])
-* IP interface link in Response Time graph page is broken (Issue http://issues.opennms.org/browse/NMS-13158[NMS-13158])
-* Use perl from env (Issue http://issues.opennms.org/browse/NMS-13174[NMS-13174])
-* The behavior of the Ticketing API differs from older versions. (Issue http://issues.opennms.org/browse/NMS-13189[NMS-13189])
-* The %dpname% breaks the alarm life-cycle when having multiple minions per location (Issue http://issues.opennms.org/browse/NMS-13210[NMS-13210])
-* Fix nephron/catheter build interaction (Issue http://issues.opennms.org/browse/NMS-13198[NMS-13198])
-* System settings for Minion in custom.system.properties are ignored (Issue http://issues.opennms.org/browse/NMS-13222[NMS-13222])
-* Change Jetty default settings to exclude vulnerable cipher suites, expose client-initiated renegotiation (Issue http://issues.opennms.org/browse/NMS-13227[NMS-13227])
-* LLDP REST api miss local port info (Issue http://issues.opennms.org/browse/NMS-13258[NMS-13258])
-* Notifications received despite Schedule Outage applies (Issue http://issues.opennms.org/browse/NMS-13266[NMS-13266])
-* Mark OIA Implementation for Timeseries as experimental (Issue http://issues.opennms.org/browse/NMS-13281[NMS-13281])
-* Favicon of OpenAPI page need to be updated  (Issue http://issues.opennms.org/browse/NMS-13292[NMS-13292])
-* Validate query parameters in snmpInterfaces.jsp (Issue http://issues.opennms.org/browse/NMS-13308[NMS-13308])
-* Validate name parameter in DestinationWizardServlet (Issue http://issues.opennms.org/browse/NMS-13309[NMS-13309])
-* CLONE - DOC Branding: Icon in tab is still the old one (Issue http://issues.opennms.org/browse/NMS-13329[NMS-13329])
-* Enumeration of DSCP values returns only 10 values (Issue http://issues.opennms.org/browse/NMS-13333[NMS-13333])
-
-=== Enhancement
-
-* Migrate OpenNMS core docs to Antora (Issue http://issues.opennms.org/browse/NMS-12497[NMS-12497])
-* Overview chapter (Issue http://issues.opennms.org/browse/NMS-12670[NMS-12670])
-* Raw Link Details via REST API (Issue http://issues.opennms.org/browse/NMS-12941[NMS-12941])
-* Nephron: add additional aggregations to support QoS filtering in Helm (Issue http://issues.opennms.org/browse/NMS-12945[NMS-12945])
-* Nephron: examine what additional compute and storage load is implied by the new QoS-based aggregations (Issue http://issues.opennms.org/browse/NMS-12946[NMS-12946])
-* Elastic Flow Repository: modify ReST API to support queries including QoS (aggregated and raw queries) (Issue http://issues.opennms.org/browse/NMS-12947[NMS-12947])
-* Upgrade Karaf to version 4.2.10 (Issue http://issues.opennms.org/browse/NMS-12977[NMS-12977])
-* Add out of band management capabilities (Issue http://issues.opennms.org/browse/NMS-13072[NMS-13072])
-* Create Win32ServiceDetector documentation (Issue http://issues.opennms.org/browse/NMS-13074[NMS-13074])
-* Create WmiDetector documenation (Issue http://issues.opennms.org/browse/NMS-13075[NMS-13075])
-* Create BgpSessionDetector documentation (Issue http://issues.opennms.org/browse/NMS-13076[NMS-13076])
-* Nephron: Use discarding accumulation (Issue http://issues.opennms.org/browse/NMS-13085[NMS-13085])
-* Optimize flow queries in case no DSCP or ECN filter exists (Issue http://issues.opennms.org/browse/NMS-13086[NMS-13086])
-* Centralize the OpenNMS Configuration (Issue http://issues.opennms.org/browse/NMS-13089[NMS-13089])
-* Build prototype of configuration  system for vacuumd config (Issue http://issues.opennms.org/browse/NMS-13090[NMS-13090])
-* Enhancement to Topology ReST Endpoint (Issue http://issues.opennms.org/browse/NMS-13091[NMS-13091])
-* Nephron: Add additional aggregations for backwards compatibilty and optimized access (Issue http://issues.opennms.org/browse/NMS-13099[NMS-13099])
-* Enable Single topic by default for Kafka RPC (Issue http://issues.opennms.org/browse/NMS-13104[NMS-13104])
-* Intergate support for OSGI into configuration system (Issue http://issues.opennms.org/browse/NMS-13122[NMS-13122])
-* Nephron: Use unaligned windows for different exporters (Issue http://issues.opennms.org/browse/NMS-13131[NMS-13131])
-* Nephron: derive aggregations for hosts and applications from the conversation aggregation (Issue http://issues.opennms.org/browse/NMS-13132[NMS-13132])
-* Drift (ES): Upgrade to ES 7.10.2 (Issue http://issues.opennms.org/browse/NMS-13134[NMS-13134])
-* Investigate using openAPI&Swagger to document v2 RESTful API (Issue http://issues.opennms.org/browse/NMS-13187[NMS-13187])
-* Upgrade Karaf from 4.2.6 to 4.2.10 (Issue http://issues.opennms.org/browse/NMS-13193[NMS-13193])
-* Compile OpenNMS with JDK11 (and remove support for JDK8) (Issue http://issues.opennms.org/browse/NMS-13197[NMS-13197])
-* Nephron should support Kafka over TLS (Issue http://issues.opennms.org/browse/NMS-13203[NMS-13203])
-* Add Antora Xref validation in Horizon/Meridian repository (Issue http://issues.opennms.org/browse/NMS-13209[NMS-13209])
-* Flows: Fallback config for flow timeouts (Issue http://issues.opennms.org/browse/NMS-13215[NMS-13215])
-* Upgrade Karaf to 4.2.11 (Issue http://issues.opennms.org/browse/NMS-13220[NMS-13220])
-* Incorrect reference to org.opennms.netmgt.syslog.cfg (Issue http://issues.opennms.org/browse/NMS-13223[NMS-13223])
-* Update Help page with doc links in the Web UI (Issue http://issues.opennms.org/browse/NMS-13225[NMS-13225])
-* Admin Guide Newts Instructions Incomplete (Issue http://issues.opennms.org/browse/NMS-13242[NMS-13242])
-* Minion - Meridian Installation Documents Incorrect (Issue http://issues.opennms.org/browse/NMS-13247[NMS-13247])
-* Provide documentation for context-sensitive help in UI form (Issue http://issues.opennms.org/browse/NMS-13255[NMS-13255])
-* Change Horizon to new brand icon and update navbar theme color (Issue http://issues.opennms.org/browse/NMS-13263[NMS-13263])
-* Doc update for PrometheusCollector parameters (Issue http://issues.opennms.org/browse/NMS-13267[NMS-13267])
-* Update Horizon log in page to the new design (Issue http://issues.opennms.org/browse/NMS-13270[NMS-13270])
-* Minion: A programmatic means of obtaining health (alternate to 'opennms:health-check') (Issue http://issues.opennms.org/browse/NMS-13274[NMS-13274])
-* PoC for Docker Content Trust (Issue http://issues.opennms.org/browse/NMS-13277[NMS-13277])
-* Location aware Requisitions from DNS (Issue http://issues.opennms.org/browse/NMS-13278[NMS-13278])
-* Support Rest API on Minion & Enable health-check REST feature  (Issue http://issues.opennms.org/browse/NMS-13311[NMS-13311])
-* Update conventions for text formatting (Issue http://issues.opennms.org/browse/NMS-13336[NMS-13336])
