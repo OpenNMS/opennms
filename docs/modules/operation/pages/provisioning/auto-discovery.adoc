@@ -88,9 +88,6 @@ In addition to the configuration above, there are some optional settings you can
 | packets-per-second
 | 1
 | Number of ICMP packets that will be generated each second.
-Note that there is a relationship between the packets per second and the number of threads.
-If your network has an average latency of 500ms, then setting packets per second to 2 would double the speed at which NewSuspect messages are created.
-But if there is only one thread available, setting this number to 3 would have little effect - the single thread would be processing as many packets as it could as fast as it could.
 
 | initial-sleep-time
 | 30000 ms (30 seconds)
