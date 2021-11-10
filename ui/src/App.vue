@@ -23,6 +23,45 @@ import { notify } from "@kyvg/vue3-notification"
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
+// theme colours
+$primary-blue: rgba(
+  $color: #0081ad,
+  $alpha: 1
+);
+$primary-green: rgba(
+  $color: #85d9a5,
+  $alpha: 1
+);
+$primary-dark-blue: rgba(
+  $color: #131736,
+  $alpha: 1
+);
+
+$primary-sky-blue: rgba(
+  $color: #14d1df,
+  $alpha: 1
+);
+$secondary-sky-blue: rgba(
+  $color: $primary-sky-blue,
+  $alpha: 0.5
+);
+$tertiary-sky-blue: rgba(
+  $color: $primary-sky-blue,
+  $alpha: 0.25
+);
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Segoe UI", Roboto, Helvetica;
+}
+a {
+  text-decoration: none;
+  color: $primary-blue;
+}
 .full-width {
   padding: 0px !important;
 }
@@ -105,58 +144,5 @@ input.p-dropdown-label {
   height: calc(100vh - 65px);
   overflow-y: scroll;
   margin-left: 230px;
-}
-</style>
-
-<style lang="scss">
-// theme colours
-$primary-blue: rgba(
-  $color: #0081ad,
-  $alpha: 1
-);
-$primary-green: rgba(
-  $color: #85d9a5,
-  $alpha: 1
-);
-$primary-dark-blue: rgba(
-  $color: #131736,
-  $alpha: 1
-);
-
-$primary-sky-blue: rgba(
-  $color: #14d1df,
-  $alpha: 1
-);
-$secondary-sky-blue: rgba(
-  $color: $primary-sky-blue,
-  $alpha: 0.5
-);
-$tertiary-sky-blue: rgba(
-  $color: $primary-sky-blue,
-  $alpha: 0.25
-);
-
-// utility classes
-.bg-primary-green {
-  background: $primary-green !important;
-}
-.bg-primary-blue {
-  background: $primary-blue !important;
-}
-.bg-tertiaty-sky-blue {
-  background: $tertiary-sky-blue !important;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Segoe UI", Roboto, Helvetica;
-}
-a {
-  text-decoration: none;
-  color: $primary-blue;
 }
 </style>

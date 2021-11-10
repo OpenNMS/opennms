@@ -15,7 +15,7 @@
     "cronstrue": "^1.117.0",
     "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
-    "primevue": "3.6.0",
+    "primevue": "^3.8.2",
     "@featherds/app-bar": "^0.2.11",
     "@featherds/app-layout": "^0.2.11",
     "@featherds/autocomplete": "^0.2.11",

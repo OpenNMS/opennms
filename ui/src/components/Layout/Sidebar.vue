@@ -2,6 +2,7 @@
 <template>
   <div class="sidebar">
     <Link to="/">Nodes</Link>
+    <Link to="/provisionDConfig">Configuration</Link>
   </div>
 </template>
     
