@@ -58,8 +58,7 @@
                                 style="font-size: 12px;"
                                 @click="closeIcon(add.id)"
                                 @change="generateURL"
-                                label
-                            ></Button>
+                                label="label"></Button>
                         </p>
                         <DropDown
                             v-model="add.dropdownVal"
@@ -289,7 +288,8 @@ const generateURL = () => {
 //Save 
 const onSave = () => {
     let provisionDService = store.state.configuration.provisionDService['requisition-def'];
-    //create copy state data
+    if(provisionDService != undefined){ 
+        //create copy state data
     let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
     //generate cron_expression
     const cron_expression = saveCronSchedule();
@@ -330,6 +330,39 @@ const onSave = () => {
             text: 'ProvisionDService PUT API Error',
             type: 'error',
         });
+    }
+    }else{
+        const cron_expression = saveCronSchedule();
+const paylod1 =
+    [{
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
+    }]
+    const requestPayload = { 'requisition-def': paylod1};
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
     }
 };
 

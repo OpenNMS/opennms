@@ -1,44 +1,18 @@
 import axios from 'axios'
-import { axiosAuth } from '../components/Common/Demo/apiInterceptor'
+import { rest } from '@/services/axiosInstances'
 import { useStore } from 'vuex'
+import typesUrl from '../../src/components/Common/Demo/MockupData/types.json'
+import periodUrl from '../../src/components/Common/Demo/MockupData/schedulePeriod.json'
+import advDropdownUrl from '../../src/components/Common/Demo/MockupData/advancedDropdown.json'
 
-let typesUrl = 'src/components/Common/Demo/MockupData/types.json'
-let periodUrl = 'src/components/Common/Demo/MockupData/schedulePeriod.json'
-let advDropdownUrl = 'src/components/Common/Demo/MockupData/advancedDropdown.json'
-let getProvisionD = '/opennms/rest/cm/provisiond/default'
+let getProvisionD = '/cm/provisiond/default'
 const store = useStore()
-const getDropdownTypes = axios.get(typesUrl).then((response) => {
+const getDropdownTypes = typesUrl;
+const getSchedulePeriod = periodUrl;
+const getAdvancedDropdown = advDropdownUrl;
+const getProvisionDService = rest.get(getProvisionD).then((response) => {
   try {
-    if (response.status === 200) {
-      return response.data
-    }
-  } catch {
-    console.error('issue with getDropdownTypes api')
-  }
-})
-
-const getSchedulePeriod = axios.get(periodUrl).then((response) => {
-  try {
-    if (response.status === 200) {
-      return response.data
-    }
-  } catch {
-    console.error('issue with getSchedulePeriod api')
-  }
-})
-
-const getAdvancedDropdown = axios.get(advDropdownUrl).then((response) => {
-  try {
-    if (response.status === 200) {
-      return response.data
-    }
-  } catch {
-    console.error('issue with getAdvancedDropdown api')
-  }
-})
-
-const getProvisionDService = axiosAuth.get(getProvisionD).then((response) => {
-  try {
+    console.log(response, response.data );
     if (response.status === 200) {
       return response.data
     }
@@ -48,7 +22,8 @@ const getProvisionDService = axiosAuth.get(getProvisionD).then((response) => {
 })
 
 const putProvisionDService = async (payload: any) => {
-  await axiosAuth.put(getProvisionD, payload).then((response) => {
+  await rest.put(getProvisionD, payload).then((response) => {
+   
     try {
       if (response.status === 200) {
         console.log('Data sucessfuly updated', response);
