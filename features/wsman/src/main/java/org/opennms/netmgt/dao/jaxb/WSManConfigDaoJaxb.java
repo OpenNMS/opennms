@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,9 +35,9 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.wsman.WSManEndpoint;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.opennms.netmgt.config.wsman.Definition;
-import org.opennms.netmgt.config.wsman.Range;
-import org.opennms.netmgt.config.wsman.WsmanConfig;
+import org.opennms.netmgt.config.wsman.credentials.Definition;
+import org.opennms.netmgt.config.wsman.credentials.Range;
+import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 
 public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, WsmanConfig> implements WSManConfigDao {

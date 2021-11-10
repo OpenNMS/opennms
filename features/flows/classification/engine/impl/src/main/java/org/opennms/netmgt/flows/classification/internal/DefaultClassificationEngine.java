@@ -60,11 +60,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     private final ClassificationRuleProvider ruleProvider;
     private final FilterService filterService;
 
-    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService) {
+    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService) throws InterruptedException {
         this(ruleProvider, filterService, true);
     }
 
-    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService, final boolean initialize) {
+    public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService, final boolean initialize) throws InterruptedException {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
         this.filterService = Objects.requireNonNull(filterService);
         if (initialize) {
@@ -73,7 +73,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     }
 
     @Override
-    public void reload() {
+    public void reload() throws InterruptedException {
         var start = System.currentTimeMillis();
         var invalid = new ArrayList<Rule>();
 

@@ -23,6 +23,16 @@ OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 E_ILLEGAL_ARGS=126
 E_INIT_CONFIG=127
 
+MYID="$(id -u)"
+MYUSER="$(getent passwd "${MYID}" | cut -d: -f1)"
+
+export RUNAS="${MYUSER}"
+
+if [ "$MYID" -eq 0 ]; then
+  echo "RUNAS=${MYUSER}" >> /opt/opennms/etc/opennms.conf
+  chown "$MYUSER" /opt/opennms/etc/opennms.conf
+fi
+
 # Help function used in error messages and -h option
 usage() {
   echo ""
@@ -142,6 +152,7 @@ start() {
   -Dcom.sun.management.jmxremote.login.config=opennms
   -Dcom.sun.management.jmxremote.access.file=/opt/opennms/etc/jmxremote.access
   -DisThreadContextMapInheritable=true
+  -Djdk.attach.allowAttachSelf=true
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=/opt/opennms/data/tmp
   -Djava.locale.providers=CLDR,COMPAT

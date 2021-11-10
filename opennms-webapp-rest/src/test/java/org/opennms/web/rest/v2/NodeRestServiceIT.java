@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import javax.ws.rs.core.MediaType;
 
@@ -97,6 +98,10 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, url, parseParamData("_s=assetRecord.id==2"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=node.label==*2;assetRecord.id==2"), 200));
         LOG.warn(sendRequest(GET, url, parseParamData("_s=(node.label==*2;assetRecord.id==2),(node.label==*1)"), 200));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=ipInterface.ipAddress==10.10.10.10"), 204));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=ipInterface.snmpPrimary==P"), 204));
+        LOG.warn(sendRequest(GET, url + "/1/ipinterfaces", Collections.emptyMap(), 204));
+        LOG.warn(sendRequest(GET, url + "/1/ipinterfaces", parseParamData("_s=snmpPrimary==P"), 204));
 
         // Use "Hello, Handsome" as a value to test CXF 'search.decode.values' property which will
         // URL-decode FIQL search values

@@ -50,7 +50,7 @@ Config specified will be written to `etc/opennms.properties.d/_confd.mattermost.
 ---
 opennms:
   cassandra: 
-    hostnames: localhost 
+    hostname: localhost 
     keyspace: newts
     port: 9042
     username: cassandra

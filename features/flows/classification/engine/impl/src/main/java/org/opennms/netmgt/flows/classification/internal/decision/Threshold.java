@@ -35,8 +35,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.IpAddr;
 import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 
@@ -371,17 +371,17 @@ public abstract class Threshold<T extends Comparable<T>> {
         }
     }
 
-    public static abstract class Address extends Threshold<IPAddress> {
-        protected final IPAddress address;
+    public static abstract class Address extends Threshold<IpAddr> {
+        protected final IpAddr address;
         private final Function<PreprocessedRule, IpValue> getRuleAddress;
-        private final Function<ClassificationRequest, String> getRequestAddress;
+        private final Function<ClassificationRequest, IpAddr> getRequestAddress;
 
         public Address(
-                Function<Bounds, Bound<IPAddress>> getBound,
-                BiFunction<Bounds, Bound<IPAddress>, Bounds> setBound,
-                IPAddress address,
+                Function<Bounds, Bound<IpAddr>> getBound,
+                BiFunction<Bounds, Bound<IpAddr>, Bounds> setBound,
+                IpAddr address,
                 Function<PreprocessedRule, IpValue> getRuleAddress,
-                Function<ClassificationRequest, String> getRequestAddress
+                Function<ClassificationRequest, IpAddr> getRequestAddress
         ) {
             super(getBound, setBound);
             this.address = address;
@@ -390,7 +390,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         }
 
         @Override
-        public final IPAddress getThreshold() {
+        public final IpAddr getThreshold() {
             return address;
         }
 
@@ -405,12 +405,12 @@ public abstract class Threshold<T extends Comparable<T>> {
                 var gt = false;
                 var bound = getBound.apply(bounds);
                 for (var range : ipValue.getIpAddressRanges()) {
-                    if (!bound.overlaps(range.getBegin(), range.getEnd())) {
+                    if (!bound.overlaps(range.begin, range.end)) {
                         continue;
                     }
-                    lt |= range.getBegin().compareTo(address) < 0;
+                    lt |= range.begin.compareTo(address) < 0;
                     eq |= range.contains(address);
-                    gt |= range.getEnd().compareTo(address) > 0;
+                    gt |= range.end.compareTo(address) > 0;
                     if (lt && eq && gt) {
                         break;
                     }
@@ -423,7 +423,7 @@ public abstract class Threshold<T extends Comparable<T>> {
         public final Order compare(ClassificationRequest request) {
             var s = getRequestAddress.apply(request);
             if (s != null) {
-                var c = new IPAddress(s).compareTo(address);
+                var c = s.compareTo(address);
                 return c < 0 ? Order.LT : c == 0 ? Order.EQ : Order.GT;
             } else {
                 return Order.NA;
@@ -449,7 +449,7 @@ public abstract class Threshold<T extends Comparable<T>> {
     }
 
     public final static class SrcAddress extends Address {
-        public SrcAddress(IPAddress address) {
+        public SrcAddress(IpAddr address) {
             super(
                     bs -> bs.srcAddr,
                     (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, b, bs.dstAddr),
@@ -468,7 +468,7 @@ public abstract class Threshold<T extends Comparable<T>> {
     }
 
     public final static class DstAddress extends Address {
-        public DstAddress(IPAddress address) {
+        public DstAddress(IpAddr address) {
             super(
                     bs -> bs.dstAddr,
                     (bs, b) -> new Bounds(bs.protocol, bs.srcPort, bs.dstPort, bs.srcAddr, b),

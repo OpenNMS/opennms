@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,7 +68,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<LldpLinkTopologyEntity> getLldpLinkTopologyEntities() {
         return (List<LldpLinkTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemPortId, l.lldpRemPortIdSubType, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.enlinkd.model.LldpLink l");
+                "select new org.opennms.netmgt.enlinkd.model.LldpLinkTopologyEntity(l.id, l.node.id, l.lldpRemChassisId, l.lldpRemSysname, l.lldpRemPortId, l.lldpRemPortIdSubType, l.lldpRemPortDescr, l.lldpPortId, l.lldpPortIdSubType, l.lldpPortDescr, l.lldpPortIfindex) from org.opennms.netmgt.enlinkd.model.LldpLink l");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     public List<IpInterfaceTopologyEntity> getIpTopologyEntities() {
         return (List<IpInterfaceTopologyEntity>)getHibernateTemplate().find(
                 "select new org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity(" +
-                        "i.id, i.ipAddress, i.isManaged, i.isSnmpPrimary, i.node.id, i.snmpInterface.id) " +
+                        "i.id, i.ipAddress, i.isManaged, i.snmpPrimary, i.node.id, i.snmpInterface.id) " +
                         "from org.opennms.netmgt.model.OnmsIpInterface i");
     }
 
@@ -103,7 +103,7 @@ public class TopologyEntityDaoHibernate extends HibernateDaoSupport implements T
     @Override
     public List<LldpElementTopologyEntity> getLldpElementTopologyEntities() {
         return (List<LldpElementTopologyEntity>)getHibernateTemplate().find(
-                "select new org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.node.id)" +
+                "select new org.opennms.netmgt.enlinkd.model.LldpElementTopologyEntity(e.id, e.lldpChassisId, e.lldpSysname, e.node.id)" +
                         "from org.opennms.netmgt.enlinkd.model.LldpElement e");
     }
 

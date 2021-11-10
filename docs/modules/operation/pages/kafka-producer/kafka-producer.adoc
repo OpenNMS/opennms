@@ -46,7 +46,7 @@ If the node is not associated with both a foreign source and foreign ID, then th
 == Topologies
 
 The Kafka Producer listens for changes made to the current set of topologies and forwards the resulting messages to the topologyEdgeTopic Kafka topic.
-The topologies are provided by the <<enlinkd/introduction.adoc#ga-enlinkd, Enhanced Linkd>> updaters via the OnmsTopology API.
+The topologies are provided by the <<topology/enlinkd/introduction.adoc#ga-enlinkd, Enhanced Linkd>> updaters via the OnmsTopology API.
 An updater sends OnmsTopologyMessage to the subscribers.
 The records are keyed by GPB-encoded key of the protocol and TopologyRef and contain a GPB-encoded model of the vertex or edge.
 When a vertex or an edge is deleted, a null value is sent with the corresponding encoded GPB key.

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
 import org.opennms.netmgt.collection.api.AbstractServiceCollector;
@@ -65,6 +66,8 @@ public class TcaCollector extends AbstractServiceCollector {
 
 	private LocationAwareSnmpClient m_locationAwareSnmpClient;
 
+	private BlobStore m_blobStore;
+
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.ServiceCollector#initialize(java.util.Map)
 	 */
@@ -88,6 +91,9 @@ public class TcaCollector extends AbstractServiceCollector {
 		if (m_locationAwareSnmpClient == null) {
 			m_locationAwareSnmpClient = BeanUtils.getBean("daoContext", "locationAwareSnmpClient", LocationAwareSnmpClient.class);
 		}
+		if(m_blobStore == null) {
+			m_blobStore = BeanUtils.getBean("daoContext", "blobStore", BlobStore.class);
+		}
 	}
 
 	@Override
@@ -101,7 +107,7 @@ public class TcaCollector extends AbstractServiceCollector {
 				throw new CollectionException("Parameter collection is required for the TCA Collector!");
 			}
 			TcaCollectionHandler collectionHandler = new TcaCollectionHandler((SnmpCollectionAgent)agent, getRrdRepository(collectionName),
-			        m_resourceStorageDao, m_resourceTypesDao, m_locationAwareSnmpClient);
+			        m_resourceTypesDao, m_locationAwareSnmpClient, m_blobStore);
 			return collectionHandler.collect();
 		} catch (CollectionException e) {
 			throw e;
@@ -152,4 +158,8 @@ public class TcaCollector extends AbstractServiceCollector {
     public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
         m_locationAwareSnmpClient = locationAwareSnmpClient;
     }
+
+	public void setBlobStore(BlobStore blobStore) {
+		m_blobStore = blobStore;
+	}
 }

@@ -135,6 +135,13 @@ install -c -m 644 "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" "%{bu
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconfdir}/sysconfig/sentinel"
 
+# fix the permissions-fixing scripts
+sed -i \
+    -e 's,OPENNMS_HOME,SENTINEL_HOME,g' \
+    -e 's,opennms,sentinel,g' \
+    '%{buildroot}%{sentinelinstprefix}/bin/fix-permissions' \
+    '%{buildroot}%{sentinelinstprefix}/bin/update-package-permissions'
+
 # sentinel package files
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
@@ -212,6 +219,8 @@ fi
 
 # Set up ICMP for non-root users
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
+
+"${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
 %preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

@@ -15,7 +15,7 @@ executors:
       - image: opennms/antora:2.3.4-b6293
   integration-test-executor:
     machine:
-     image: ubuntu-2004:202010-01
+      image: ubuntu-2004:202010-01
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
@@ -31,27 +31,27 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: foundation-2021
+      default: release-29.x
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: foundation-2021
+      default: release-29.x
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: release-28.x
+      default: master-29
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: release-28.x
+      default: master-29
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: develop
+      default: ""
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: develop
+      default: ""
 
 aliases:
   - &setup_dct_env
@@ -147,12 +147,12 @@ commands:
             keys:
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
               - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
         - run:
             name: Collect Maven Dependencies
             command: |
@@ -315,6 +315,7 @@ commands:
             .circleci/scripts/configure-signing.sh
             ./clean.pl
             << parameters.node-memory >>
+            export MAVEN_OPTS="$MAVEN_OPTS -Xmx8g -XX:ReservedCodeCacheSize=1g"
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -359,7 +360,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - update-maven-cache
       - run:
           name: Monitor JVM processes
           background: true

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,6 +57,12 @@ public class IpInterfaceTopologyEntity {
         this.snmpInterfaceId = snmpInterfaceId;
     }
 
+    public IpInterfaceTopologyEntity(Integer id,
+            InetAddress ipAddress, String isManaged, String snmpPrimary, Integer nodeId,
+            Integer snmpInterfaceId){
+        this(id, ipAddress, isManaged, PrimaryType.get(snmpPrimary), nodeId, snmpInterfaceId);
+    }
+
     public static IpInterfaceTopologyEntity create(OnmsIpInterface ipInterface) {
         return new IpInterfaceTopologyEntity(
                 ipInterface.getId(),
@@ -88,6 +94,10 @@ public class IpInterfaceTopologyEntity {
 
     public boolean isManaged() {
         return "M".equals(getIsManaged());
+    }
+
+    public char snmpPrimary() {
+        return isSnmpPrimary.getCharCode();
     }
 
     public PrimaryType getIsSnmpPrimary() {

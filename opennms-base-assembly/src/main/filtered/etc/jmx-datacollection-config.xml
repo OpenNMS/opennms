@@ -97,6 +97,14 @@
             <attrib name="MaxFileDescriptorCount" alias="OsMaxFDCount" type="gauge"/>
             <attrib name="OpenFileDescriptorCount" alias="OsOpenFDCount" type="gauge"/>
          </mbean>
+	 <mbean name="Heap Memory" objectname="java.lang:type=Memory">
+            <comp-attrib name="HeapMemoryUsage" alias="HeapUsed" type="Composite">
+               <comp-member name="init" alias="HeapUsageInit" type="gauge"/>
+               <comp-member name="max" alias="HeapUsageMax" type="gauge"/>
+               <comp-member name="used" alias="HeapUsageUsed" type="gauge"/>
+               <comp-member name="committed" alias="HeapUsgCmmttd" type="gauge"/>
+            </comp-attrib>
+         </mbean>
          <mbean name="JVM Threading" objectname="java.lang:type=Threading">
             <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
             <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
@@ -324,6 +332,16 @@
             <attrib name="StorePercentUsage" alias="StorePctUsage" type="gauge"/>
             <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
             <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
+         </mbean>
+	 <mbean name="org.apache.activemq" resource-type="queueMetrics" objectname="org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=*">
+            <attrib name="DequeueCount" alias="DequeCnt" type="counter"/>
+            <attrib name="EnqueueCount" alias="EnqueCnt" type="counter"/>
+            <attrib name="BlockedSends" alias="BlkdSends" type="gauge"/>
+            <attrib name="MemoryPercentUsage" alias="MemPctUsage" type="gauge"/>
+            <attrib name="MemoryLimit" alias="MemLimit" type="gauge"/>
+            <attrib name="AverageEnqueueTime" alias="AvgEnQTime" type="gauge"/>
+            <attrib name="MaxEnqueueTime" alias="MaxtEnQTime" type="gauge"/>
+            <attrib name="MinEnqueueTime" alias="MintEnQTime" type="gauge"/>
          </mbean>
          <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted">
             <attrib name="Count" alias="FlowPerst" type="counter"/>

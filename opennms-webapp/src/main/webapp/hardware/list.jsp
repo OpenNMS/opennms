@@ -158,7 +158,7 @@
     boolean snmpHardware = false;
 
     for(final OnmsMetaData onmsMetaData : onmsMetaDataList) {
-        if ("snmp-hardware".equals(onmsMetaData.getContext())) {
+        if ("snmp".equals(onmsMetaData.getContext())) {
             snmpHardware = true;
             break;
         }

@@ -1,0 +1,75 @@
+[[adapter-geoip]]
+= GeoIP
+
+Use the GeoIP Provisioning Adapter to enrich a node's asset data with location information.
+It uses the GeoIP2 Databases from MaxMind to look up longitude/latitude values for a given IP address.
+To use this adapter you must register and download the `GeoLite2-City.mmdb` file from https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en[MaxMind].
+This adapter is disabled by default and can be enabled by setting `enabled="true"` in the configuration file `geoip-adapter-configuration.xml`.
+
+[source, xml]
+----
+<geoip-config enabled="true" overwrite="true" database="/opt/opennms/GeoLite2-City.mmdb" resolve="public">
+
+    <location name="Default">
+        <subnet cidr="192.168.0.0/16">
+           <asset name="latitude" value="35.71572416796933"/>
+           <asset name="longitude" value="-79.1625700509753"/>
+           <asset name="city" value="Pittsboro"/>
+           <asset name="country" value="USA"/>
+        </subnet>
+        <subnet cidr="10.0.0.0/8">
+           <asset name="latitude" value="35.71572416796933"/>
+           <asset name="longitude" value="-79.1625700509753"/>
+           <asset name="city" value="Pittsboro"/>
+           <asset name="country" value="USA"/>
+        </subnet>
+    </location>
+
+    <location name="Office-Apex">,
+        <subnet cidr="192.168.0.0/16">
+           <asset name="latitude" value="35.74610980037554"/>
+           <asset name="longitude" value="-78.84409459259584"/>
+           <asset name="city" value="Apex"/>
+           <asset name="country" value="USA"/>
+           <asset name="building" value="A"/>
+        </subnet>
+        <subnet cidr="172.16.0.0/12">
+            <asset name="latitude" value="35.74610980037554"/>
+            <asset name="longitude" value="-78.84409459259584"/>
+            <asset name="city" value="Apex"/>
+            <asset name="country" value="USA"/>
+            <asset name="building" value="B"/>
+        </subnet>
+    </location>
+
+</geoip-config>
+----
+
+The sample configuration shows that the database file `GeoLite2-City.mmdb` is located in the directory `/opt/opennms`.
+By specifying `overwrite="true"` the adapter will overwrite existing asset values.
+
+The attribute `resolve` has four possible values:
+
+[options="header", cols="1,3"]
+|===
+| Option
+| Description
+
+| primary
+| Always use the node's primary interface address to resolve geographical location.
+
+| public-ipv4
+| Use a public IPv4 address to resolve geographical location; use primary interface address if no public IPv4 address exists.
+
+| public-ipv6
+| Use a public IPv6 address to resolve geographical location; use primary interface address if no public IPv6 address exists.
+
+| public
+| Use any public address to resolve geographical location; use primary interface address if no public address exists.
+|===
+
+By defining `location` entries, a user can add different predefined locations for given subnets.
+This also allows private IP addresses to be handled that cannot be resolved by the database.
+In the sample configuration, the `Default` location maps two private networks to an office building in Pittsboro, NC.
+The second entry for the location `Office-Apex` maps two private networks to an office building in Apex, NC.
+The definition given in the configuration takes precedence, so it is possible to even overwrite locations for public IP subnets.

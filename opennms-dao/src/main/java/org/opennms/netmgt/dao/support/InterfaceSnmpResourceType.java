@@ -71,6 +71,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceSnmpResourceType.class);
 
+    public static final String INTERFACE_RESOURCE_TYPE_NAME = "interfaceSnmp";
+
     private final ResourceStorageDao m_resourceStorageDao;
 
     /**
@@ -89,7 +91,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      */
     @Override
     public String getName() {
-        return "interfaceSnmp";
+        return INTERFACE_RESOURCE_TYPE_NAME;
     }
 
     /**

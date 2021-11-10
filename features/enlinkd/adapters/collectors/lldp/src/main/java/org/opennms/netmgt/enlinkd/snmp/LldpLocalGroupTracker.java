@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
@@ -41,6 +42,8 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 public final class LldpLocalGroupTracker extends AggregateTracker {
 
@@ -100,7 +103,23 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         }
         return decodedsnmpValue;
     }
-    
+
+    public static String decodeMacAddress(SnmpValue snmpValue) {
+        String mac = snmpValue.toHexString();
+        if (InetAddressUtils.isValidBridgeAddress(mac)) {
+            LOG.debug("decodeMacAddress: hexString {}", snmpValue.toHexString());
+            return mac;
+        }
+        LOG.debug("decodeMacAddress: displayable {} type {}", snmpValue.isDisplayable(),snmpValue.getType());
+        if (snmpValue.isDisplayable()) {
+            LOG.debug("decodeMacAddress: displayString {}", snmpValue.toDisplayString());
+            return snmpValue.toDisplayString().replaceAll("\\s+","")
+                    .replaceAll(":","").toLowerCase(Locale.ROOT);
+        }
+        LOG.debug("decodeMacAddress: hexString {}", snmpValue.toHexString());
+        return snmpValue.toHexString();
+    }
+
     public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
         if (lldpLocChassisidSubType == null) 
             return getDisplayable(lldpchassisid);
@@ -226,7 +245,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
              case LLDP_CHASSISID_SUBTYPE_LOCAL:
                  return getDisplayable(lldpchassisid);
              case LLDP_CHASSISID_SUBTYPE_MACADDRESS:
-                 return lldpchassisid.toHexString();
+                 return decodeMacAddress(lldpchassisid);
              case LLDP_CHASSISID_SUBTYPE_NETWORKADDRESS:
                  try {
                      return LldpUtils.decodeNetworkAddress(getDisplayable(lldpchassisid));

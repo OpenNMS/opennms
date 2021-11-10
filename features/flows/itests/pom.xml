@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>28.1.1</version>
+        <version>29.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -13,7 +13,7 @@
     <name>OpenNMS :: Features :: Flows :: Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <nephronVersion>0.2.1</nephronVersion>
+        <nephronVersion>0.3.0</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
     </properties>
     <build>
@@ -30,29 +30,30 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <javax.net.ssl.keyStore>${test.keystore}</javax.net.ssl.keyStore>
+                        <javax.net.ssl.keyStorePassword>${test.storepass}</javax.net.ssl.keyStorePassword>
+                        <javax.net.ssl.trustStore>${test.keystore}</javax.net.ssl.trustStore>
+                        <javax.net.ssl.trustStorePassword>${test.storepass}</javax.net.ssl.trustStorePassword>
+                    </systemPropertyVariables>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                </configuration>
+            </plugin>
             <!-- We create a key for 'localhost' for test purposes -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
                 <version>1.5</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateKeyPair</goal>
-                        </goals>
-                        <phase>generate-test-resources</phase>
-                    </execution>
-                </executions>
                 <configuration>
-                    <workingDirectory>${project.build.directory}</workingDirectory>
-                    <skipIfExist>true</skipIfExist>
                     <alias>localhost</alias>
                     <keysize>2048</keysize>
                     <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
-                    <keystore>${project.build.directory}/test-keystore.jks</keystore>
-                    <storepass>changeit</storepass>
-                    <validity>2</validity>
                     <ext>SubjectAlternativeName=dns:localhost</ext>
                 </configuration>
             </plugin>
@@ -61,11 +62,11 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.flows</groupId>

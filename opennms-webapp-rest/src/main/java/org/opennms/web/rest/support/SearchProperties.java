@@ -62,6 +62,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -288,7 +289,12 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsIpInterface.class, "netMask", "Network Mask", IP_ADDRESS),
 		new SearchProperty(OnmsIpInterface.class, "ipHostName", "Hostname", STRING),
 		new SearchProperty(OnmsIpInterface.class, "ipLastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
-		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING)
+		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING),
+		new SearchProperty(OnmsIpInterface.class, "snmpPrimary", "Primary SNMP Interface Status", STRING, ImmutableMap.<String,String>builder()
+				.put(PrimaryType.PRIMARY.getCode(), PrimaryType.PRIMARY.getCode())
+				.put(PrimaryType.SECONDARY.getCode(), PrimaryType.SECONDARY.getCode())
+				.put(PrimaryType.NOT_ELIGIBLE.getCode(), PrimaryType.NOT_ELIGIBLE.getCode())
+				.build())
 	));
 
 	static final SortedSet<SearchProperty> LOCATION_PROPERTIES = new TreeSet<>(Arrays.asList(

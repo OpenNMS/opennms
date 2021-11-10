@@ -29,8 +29,9 @@
 package org.opennms.netmgt.flows.classification.internal;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncReloadingClassificationEngine.class);
 
     private enum State {
-        READY, RELOADING, NEED_ANOTHER_RELOAD, FAILED
+        READY, RELOADING, FAILED
     }
 
     private final ClassificationEngine delegate;
@@ -62,12 +63,13 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     // -> uses no additional resources while being idle
     private final ExecutorService executorService = new ThreadPoolExecutor(0, 1,
             60L, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(1),
+            new LinkedBlockingQueue<>(), // multiple reloads may have been enqueued and cancelled
             runnable -> new Thread(runnable, "AsyncReloadingClassificationEngine")
     );
 
     private State state = State.READY;
     private Throwable reloadException;
+    private Future<?> reloadFuture;
 
     public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
         this.delegate = delegate;
@@ -102,42 +104,24 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         try {
             LOG.debug("reload classification engine");
             delegate.reload();
-            if (onReloadSucceeded()) {
-                LOG.debug("another classification engine reload is required");
-                doReload();
-            } else {
-                LOG.debug("classification engine reloaded");
-            }
+            LOG.debug("classification engine reloaded");
+            onReloadSucceeded();
+        } catch (InterruptedException e) {
+            LOG.debug("reload was interrupted");
+            // another reload is submitted or already under way that changes the state on its completion
         } catch (Throwable e) {
             LOG.error("reload of classification engine failed", e);
-            if (onReloadFailed(e)) {
-                LOG.debug("another classification engine reload is required");
-                doReload();
-            } else {
-                LOG.debug("classification engine reloaded");
-            }
+            onReloadFailed(e);
         }
     }
 
-    private synchronized boolean onReloadSucceeded() {
-        if (state == State.NEED_ANOTHER_RELOAD) {
-            setState(State.RELOADING);
-            return true;
-        } else {
-            setState(State.READY);
-            return false;
-        }
+    private synchronized void onReloadSucceeded() {
+        setState(State.READY);
     }
 
-    private synchronized boolean onReloadFailed(Throwable e) {
-        if (state == State.NEED_ANOTHER_RELOAD) {
-            setState(State.RELOADING);
-            return true;
-        } else {
-            reloadException = e;
-            setState(State.FAILED);
-            return false;
-        }
+    private synchronized void onReloadFailed(Throwable e) {
+        reloadException = e;
+        setState(State.FAILED);
     }
 
     @Override
@@ -158,7 +142,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
             case READY:
             case FAILED:
                 try {
-                    executorService.submit(this::doReload);
+                    reloadFuture = executorService.submit(this::doReload);
                     setState(State.RELOADING);
                 } catch (Throwable t) {
                     LOG.error("could not submit reload task", t);
@@ -167,7 +151,8 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
                 }
                 break;
             case RELOADING:
-                setState(State.NEED_ANOTHER_RELOAD);
+                reloadFuture.cancel(true);
+                reloadFuture = executorService.submit(this::doReload);
                 break;
         }
     }
