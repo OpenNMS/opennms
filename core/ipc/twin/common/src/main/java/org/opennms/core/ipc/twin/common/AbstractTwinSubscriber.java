@@ -122,7 +122,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 twinUpdate.setSessionId(twinResponseProto.getSessionId());
             }
             twinUpdate.setKey(twinResponseProto.getConsumerKey());
-            if (twinResponseProto.getTwinObject() != null) {
+            if (!twinResponseProto.getTwinObject().isEmpty()) {
                 twinUpdate.setObject(twinResponseProto.getTwinObject().toByteArray());
             }
             twinUpdate.setPatch(twinResponseProto.getIsPatchObject());
@@ -224,26 +224,11 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             this.consumers.add(jsonConsumer);
 
             // Return the closable removing the consumer
-            return () -> {
-                this.consumers.remove(jsonConsumer);
-
-                // Drop the subscription if it becomes empty
-                if (this.consumers.isEmpty()) {
-                    AbstractTwinSubscriber.this.subscriptions.remove(this.key);
-                }
-            };
+            return () -> this.consumers.remove(jsonConsumer);
         }
 
         private synchronized void accept(final Value value) {
             Objects.requireNonNull(value);
-
-            // Skip if value has not changed
-            if (this.value != null && Objects.equals(this.value.value, value.value)) {
-                return;
-            }
-
-            // Remember value
-            this.value = value;
 
             // Cancel outstanding retry
             if (this.retry != null) {
@@ -251,8 +236,13 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                 this.retry = null;
             }
 
-            // Call all consumers
-            this.consumers.forEach(c -> c.accept(this.value.value));
+            // // Call all consumers if value has changed
+            if (!(this.value != null && Objects.equals(this.value.value, value.value))) {
+                this.consumers.forEach(c -> c.accept(value.value));
+            }
+
+            // Remember value
+            this.value = value;
         }
 
         private synchronized void request() {
