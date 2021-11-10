@@ -83,6 +83,8 @@
                                 <feature>sentinel-thresholding-service</feature>
 
                                 <!-- EventD specific features (and dependencies below) -->
+                                <feature>sentinel-eventd</feature>
+                                <feature>opennms-events-commands</feature>
 
 
 

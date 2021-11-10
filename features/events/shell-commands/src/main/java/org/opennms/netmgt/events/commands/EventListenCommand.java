@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.events.commands;
 
+import com.google.common.base.Strings;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -40,14 +41,13 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 
-import com.google.common.base.Strings;
-
-@Command(scope = "opennms", name = "event-list", description = "Lists historical events meeting certain criteria")
+@Command(scope = "opennms", name = "event-listen", description = "Listens to an event sent by event-send")
 @Service
-public class EventListCommand implements Action {
+public class EventListenCommand implements Action {
 
     @Reference
     public EventConfDao eventConfDao;
@@ -55,12 +55,29 @@ public class EventListCommand implements Action {
     @Reference
     public EventDao eventDao;
 
+    @Reference
+    public EventForwarder eventForwarder;
+
+
+    // options and arguments -------------------------------------------------------------------------------------------
+
     @Option(name="-l", aliases="--limit", description="Limit the number of events that are shown.")
     int limit = 10;
+
+    @Option(name="-u", aliases="--uei", description="events uei", required=false, multiValued=false)
+    String eventUei = "uei.opennms.org/alarms/trigger";
+
+    @Option(name="-s", aliases="--seconds", description="number of seconds to run, defaults to 60", required=false, multiValued=false)
+    int numSeconds = 60;
+
+    @Option(name="-r", aliases="--report", description="number of seconds after which the report should be generated, defaults to 15", required=false, multiValued=false)
+    int reportIntervalInSeconds = 15;
 
     @Argument(name="uei", description="Event UEI to match (exact).", required = false, multiValued = false)
     @Completion(EventUeiCompleter.class)
     String eventUeiMatch;
+
+    // execute override ------------------------------------------------------------------------------------------------
 
     @Override
     public Object execute() {

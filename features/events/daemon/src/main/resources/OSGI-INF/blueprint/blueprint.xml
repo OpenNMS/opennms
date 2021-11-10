@@ -12,15 +12,15 @@
 
 
     <!-- service import -->
-    <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" />
-    <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
-    <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" />
-    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
-    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
+     <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" />
+     <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
+     <reference id="monitoringSystemDao" interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" />
+     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao" />
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
-    <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" />
-    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
+     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+     <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" />
+     <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
 
 
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
@@ -34,9 +34,14 @@
     <!-- Load system property -->
     <ext:property-placeholder />
 
+    <!--
+    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/features
+    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/spring
+    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/spring-legacy
+    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/sentinel
+    -->
 
-
-    <!-- set opennms.home in container to this: /Users/markcbordelon/Documents/clodovicus/opennms/opennms/target/opennms-29.0.0-SNAPSHOT-->
+    <!-- system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes  -->
     <!-- but do not use that to get to the eventConfResourceLocation -->
     <bean id="eventConfResourceLocation" class="java.lang.String">
         <!-- <argument value="file:${opennms.home}/etc/eventconf.xml" /> -->
@@ -99,7 +104,7 @@
     <bean id="eventIpcManagerHandlerPoolSize" factory-ref="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
 
-    <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl"> <!-- EventIpcManagerDefaultImpl = sub-interface of EventForwarder -->
+    <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl" init-method="afterPropertiesSet"> <!-- EventIpcManagerDefaultImpl = sub-interface of EventForwarder -->
         <argument ref="eventdMetricRegistry"/>
         <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
         <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>

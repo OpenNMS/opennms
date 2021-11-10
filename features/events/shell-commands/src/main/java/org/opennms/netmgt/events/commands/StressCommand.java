@@ -204,7 +204,7 @@ public class StressCommand implements Action {
 
         // Display the effective settings and rates
         double eventsPerSecond = (double)eventsPerSecondPerThread * (double)numberOfThreads;
-        System.out.printf("Generating %d events per second accross %d threads for %d seconds\n",
+        System.out.printf("Generating %d events per second across %d threads for %d seconds\n",
                 eventsPerSecondPerThread, numberOfThreads, numSeconds);
         System.out.printf("\t with UEI: %s\n", eventUei);
         System.out.printf("\t with batch size: %d\n", batchSize);
