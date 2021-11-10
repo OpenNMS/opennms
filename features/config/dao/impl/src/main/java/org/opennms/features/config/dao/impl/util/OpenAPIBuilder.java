@@ -70,6 +70,7 @@ public class OpenAPIBuilder {
 
     /**
      * This is use for modify existing OpenAPI object
+     *
      * @param name
      * @param topElementName
      * @param prefix
@@ -85,7 +86,7 @@ public class OpenAPIBuilder {
             return builder;
 
         ((Map<String, Schema>) schema.getProperties()).forEach((k, s) -> {
-            builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(),  openapi);
+            builder.walkSchema(k, s, builder.rootConfig, schema.getRequired(), openapi);
         });
         return builder;
     }
@@ -96,6 +97,7 @@ public class OpenAPIBuilder {
 
     /**
      * handle for object schema ref lookup and build children attributes
+     *
      * @param schema
      * @param openapi
      * @param item
@@ -112,6 +114,7 @@ public class OpenAPIBuilder {
 
     /**
      * Walk through all attributes
+     *
      * @param name
      * @param schema
      * @param currentItem
@@ -119,10 +122,10 @@ public class OpenAPIBuilder {
      * @param openapi
      */
     private void walkSchema(String name, Schema schema, ConfigItem currentItem, List<String> required, OpenAPI openapi) {
-        ConfigItem item = this.getConfigItem(schema, required);
+        ConfigItem item = this.getConfigItem(name, schema, required);
         if (item.getType() == ConfigItem.Type.ARRAY) {
             Schema childSchema = ((ArraySchema) schema).getItems();
-            ConfigItem childrenItem = this.getConfigItem(childSchema, required);
+            ConfigItem childrenItem = this.getConfigItem(name, childSchema, required);
             if (childrenItem.getType() == ConfigItem.Type.OBJECT) {
                 if (childSchema.get$ref() != null && childSchema.get$ref().startsWith(SCHEMA_REF_TAG)) {
                     this.handle$ref(childSchema, openapi, childrenItem);
@@ -139,14 +142,15 @@ public class OpenAPIBuilder {
 
     /**
      * Convert openapi schema to ConfigItem
+     *
      * @param schema
      * @param required
      * @return
      */
-    private ConfigItem getConfigItem(Schema schema, List<String> required) {
+    private ConfigItem getConfigItem(String schemaKey, Schema schema, List<String> required) {
         ConfigItem item = new ConfigItem();
-        item.setName(schema.getName());
-        if(required != null && required.contains(item.getName())){
+        item.setName((schema.getName() != null) ? schema.getName() : schemaKey);
+        if (required != null && required.contains(item.getName())) {
             item.setRequired(true);
         }
         this.usedAttributeNames.add(schema.getName());
@@ -201,6 +205,7 @@ public class OpenAPIBuilder {
     /**
      * build OpenAPI, if isSingleConfig is false. It will only generate API path for get and update config. (default)
      * NO add / delete config and list configIds
+     *
      * @param isSingleConfig
      * @return
      */
@@ -211,6 +216,7 @@ public class OpenAPIBuilder {
 
     /**
      * It will directly remove the first level attribute only
+     *
      * @param attributeName
      * @return
      */
