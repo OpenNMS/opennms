@@ -28,3 +28,18 @@ Before adding nodes to a requisition, you must <<provisioning/getting-started.ad
 . Repeat for each node you want to add.
 . Click *Return* to view the list of nodes you have added.
 . Click *Synchronize* to provision them to the {page-component-title} database.
+
+
+[[requisition-new-suspect]]
+== Add nodes via newSuspect events
+
+The `$\{OPENNMS_HOME}/bin/send-event.pl` script can be used to generate newSuspect events to trigger the Provisiond service to check a given IP address.
+Replace `ip-address` in the command below with the address you want to discover.
+
+[source, console]
+----
+# ${OPENNMS_HOME}/bin/send-event.pl --interface ip-address uei.opennms.org/internal/discovery/newSuspect
+----
+
+NOTE: This will directly add the discovered node into the database.
+It is strongly recommended to use <<requisition-add-nodes, requisitions>> when adding individual IP addresses, as it will be easier to manage the nodes over time.
