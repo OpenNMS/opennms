@@ -115,13 +115,17 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
     @Override
     protected void sendRpcRequest(final TwinRequest twinRequest) {
 
-        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
-        final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), twinRequestProto.toByteArray());
-        this.producer.send(record, (meta, ex) -> {
-            if (ex != null) {
-                RATE_LIMITED_LOG.error("Error sending request", ex);
-            }
-        });
+        try {
+            TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+            final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), twinRequestProto.toByteArray());
+            this.producer.send(record, (meta, ex) -> {
+                if (ex != null) {
+                    RATE_LIMITED_LOG.error("Error sending request", ex);
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while sending request with key {}", twinRequest.getKey());
+        }
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
