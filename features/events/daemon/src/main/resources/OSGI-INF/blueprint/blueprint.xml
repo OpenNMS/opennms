@@ -31,13 +31,20 @@
         <property name="hwEntityDao" ref="hwEntityDao" />
     </bean>
 
+    <!-- Load system property -->
+    <ext:property-placeholder />
+
+
+
+    <!-- set opennms.home in container to this: /Users/markcbordelon/Documents/clodovicus/opennms/opennms/target/opennms-29.0.0-SNAPSHOT-->
+    <!-- but do not use that to get to the eventConfResourceLocation -->
     <bean id="eventConfResourceLocation" class="java.lang.String">
-        <!-- system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/ ./opennms-base-assembly/target/classes ./target/opennms-29.0.0-SNAPSHOT/etc -->
-        <argument value="file:${opennms.home}/etc/eventconf.xml" />
+        <!-- <argument value="file:${opennms.home}/etc/eventconf.xml" /> -->
+        <argument value="/Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/eventconf.xml" />
     </bean>
 
     <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="afterPropertiesSet">
-        <property name="configResource" ref="eventConfResourceLocation" />
+        <property name="configResourcePath" ref="eventConfResourceLocation" />
     </bean>
 
     <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
@@ -70,7 +77,7 @@
 
     <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
     <bean id="shouldLogEventSummaries" factory-ref="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
-    <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl" init-method="afterPropertiesSet">
         <argument ref="eventdMetricRegistry"/>
         <property name="eventProcessors">
             <list>
@@ -87,6 +94,7 @@
         <property name="logEventSummaries" ref="shouldLogEventSummaries" />
         <property name="nodeDao" ref="nodeDao" />
     </bean>
+
 
     <bean id="eventIpcManagerHandlerPoolSize" factory-ref="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
