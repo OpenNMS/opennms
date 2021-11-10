@@ -28,16 +28,12 @@
 
 package org.opennms.netmgt.provision;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.Lists;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.model.CityResponse;
+import com.maxmind.geoip2.record.City;
+import com.maxmind.geoip2.record.Country;
+import com.maxmind.geoip2.record.Location;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +41,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.geoip.GeoIpConfig;
+import org.opennms.netmgt.config.geoip.Subnet;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -61,15 +59,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.google.common.collect.Lists;
-import com.maxmind.geoip2.DatabaseReader;
-import com.maxmind.geoip2.model.CityResponse;
-import com.maxmind.geoip2.record.City;
-import com.maxmind.geoip2.record.Country;
-import com.maxmind.geoip2.record.Location;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
+@ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
@@ -135,17 +136,17 @@ public class GeoIpProvisioningAdapterIT implements InitializingBean {
     public void testAddNodeDirectly() throws Exception {
         final DatabaseReader databaseReader = mock(DatabaseReader.class);
 
-        final Map<String,String> cityNames = new TreeMap<>();
+        final Map<String, String> cityNames = new TreeMap<>();
         cityNames.put("en", "Atlantis");
 
-        final Map<String,String> countryNames = new TreeMap<>();
+        final Map<String, String> countryNames = new TreeMap<>();
         countryNames.put("en", "Atlantic Ocean");
 
         when(databaseReader.city(InetAddress.getByName("1.2.3.4"))).thenReturn(
                 new CityResponse(new City(Lists.newArrayList("en"), 100, 100, cityNames),
                         null,
                         new Country(Lists.newArrayList("en"), null, (Integer) null, false, null, countryNames),
-                        new Location(null,null,30.0,-40.0,null,null,null),
+                        new Location(null, null, 30.0, -40.0, null, null, null),
                         null,
                         null,
                         null,
@@ -236,5 +237,31 @@ public class GeoIpProvisioningAdapterIT implements InitializingBean {
         assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("fd99::1")));
         assertEquals(false, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("fc11::1")));
         assertEquals(true, geoIpProvisioningAdapter.isPublicAddress(InetAddress.getByName("2001::1")));
+    }
+
+    private boolean isInside(final String cidr, final String ip) {
+        final GeoIpConfig geoIpConfig = new GeoIpConfig();
+        final Subnet subnet = new Subnet();
+        subnet.setCidr(cidr);
+        org.opennms.netmgt.config.geoip.Location location = new org.opennms.netmgt.config.geoip.Location();
+        location.setName("Dummy");
+        location.getSubnets().add(subnet);
+        location.getSubnets().add(subnet);
+        geoIpConfig.getLocations().add(location);
+        return geoIpProvisioningAdapter.getSubnet(geoIpConfig, "Dummy", ip) != null;
+    }
+
+    @Test
+    public void testIPv4() {
+        assertEquals(true, isInside("10.0.0.0/16", "10.0.0.1"));
+        assertEquals(true, isInside("10.0.0.0/16", "10.0.0.2"));
+        assertEquals(false, isInside("10.0.0.0/16", "10.1.0.1"));
+    }
+
+    @Test
+    public void testIPv6() {
+        assertEquals(true, isInside("2001::/64", "2001::1"));
+        assertEquals(true, isInside("2001::/64", "2001::2"));
+        assertEquals(false, isInside("2001::/64", "2001:1::1"));
     }
 }

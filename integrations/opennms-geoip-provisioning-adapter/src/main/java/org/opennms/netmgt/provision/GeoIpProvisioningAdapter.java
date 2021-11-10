@@ -39,10 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.geoip.Asset;
-import org.opennms.netmgt.config.geoip.GeoIpConfig;
-import org.opennms.netmgt.config.geoip.GeoIpConfigDao;
-import org.opennms.netmgt.config.geoip.Subnet;
+import org.opennms.netmgt.config.geoip.*;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -67,6 +64,7 @@ import com.google.common.base.Strings;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
+import inet.ipaddr.IPAddressString;
 
 @EventListener(name = GeoIpProvisioningAdapter.NAME)
 public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
@@ -181,7 +179,7 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
                 assetRecord.setGeolocation(new OnmsGeolocation());
             }
 
-            final Subnet subnet = geoIpConfig.getSubnet(node.getLocation().getLocationName(), InetAddressUtils.str(addressToUse));
+            final Subnet subnet = getSubnet(geoIpConfig, node.getLocation().getLocationName(), InetAddressUtils.str(addressToUse));
 
             if (subnet != null) {
                 for (final Asset asset : subnet.getAssets()) {
@@ -275,6 +273,21 @@ public class GeoIpProvisioningAdapter extends SimplerQueuedProvisioningAdapter i
                 }
             }
         }
+    }
+
+    Subnet getSubnet(final GeoIpConfig config, final String locationName, final String addressToUse) {
+        final IPAddressString ipAddressString = new IPAddressString(addressToUse);
+        for (final Location location : config.getLocations()) {
+            if (locationName.equals(location.getName())) {
+                for (final Subnet subnet : location.getSubnets()) {
+                    final IPAddressString subnetAddress = new IPAddressString(subnet.getCidr());
+                    if (subnetAddress.contains(ipAddressString)) {
+                        return subnet;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
