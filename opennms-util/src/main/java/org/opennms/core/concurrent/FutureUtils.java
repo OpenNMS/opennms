@@ -166,4 +166,22 @@ public class FutureUtils {
         return result;
     }
 
+    /**
+     * Converts a list of values into futures and collects their results. The order of the results in the list
+     * corresponds to the order of the given values.
+     * <p>
+     * Each future is created not before its preceding future has completed. In other words, the futures are executed
+     * sequentially.
+     */
+    public static <U, V> CompletionStage<List<V>> traverseSequentially(
+            List<U> us,
+            Function<U, CompletionStage<V>> func
+    ) {
+        CompletableFuture<List<V>> result = CompletableFuture.completedFuture(new ArrayList<>());
+        for (var u: us) {
+            result = result.thenCombine(func.apply(u), (list, item) -> { list.add(item); return list; });
+        }
+        return result;
+    }
+
 }

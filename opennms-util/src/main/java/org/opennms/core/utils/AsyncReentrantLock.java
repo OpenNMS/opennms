@@ -28,78 +28,105 @@
 
 package org.opennms.core.utils;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A reentrant lock that is not bound to a thread.
  *
  * {@link java.util.concurrent.locks.ReentrantLock} must be unlocked by the same thread that acquired the lock. This
- * class provides a {@link Locker} abstraction that can be passed between threads. In other words a lock acquired by
- * a specific locker in some thread can be unlocked in a different thread. An {@code AsyncReentrantLock} can be
- * acquired several times by the same locker.
+ * class provides a {@link Locker} abstraction that can be passed between threads. In other words, a lock acquired by
+ * a specific locker in some thread can be unlocked in a different thread. An {@code AsyncReentrantLock} is reentrant,
+ * i.e. it can be locked by the same locker several times.
+ *
+ * <strong>Note:</strong> An {@code AsyncReentrantLock} must not be used by several threads concurrently, i.e. it does
+ * not synchronize between threads. An {@code AsyncReentrantLock} is for executions that may span several threads but
+ * at every time only a single thread is active.
  */
 public class AsyncReentrantLock {
 
-    private final Semaphore semaphore;
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncReentrantLock.class);
+
+    private Locker lockedBy = null;
+    private int cnt = 0;
+    private Stack<String> lockedAt = new Stack<>();
 
     public AsyncReentrantLock(boolean fair) {
-        semaphore = new Semaphore(1, fair);
+    }
+
+    private static String at(Exception ex) {
+        return Arrays.stream(ex.getStackTrace()).map(e -> e.toString()).collect(Collectors.joining("\n"));
     }
 
     public static class Locker {
+        private static AtomicInteger counter = new AtomicInteger();
 
-        private Map<Semaphore, Integer> map = new IdentityHashMap<>();
+        private String createdAt = at(new Exception());
+        private int id = counter.incrementAndGet();
 
-        private synchronized void lock(Semaphore s) {
-            Integer i = map.get(s);
-            if (i == null) {
-                s.acquireUninterruptibly();
-                map.put(s, 1);
-            } else {
-                map.put(s, i + 1);
-            }
+        @Override
+        public String toString() {
+            return "Locker{" +
+                   "id: " + id +
+                   "createdAt='" + createdAt + '\'' +
+                   '}';
         }
-
-        private synchronized boolean tryLock(Semaphore s, long time, TimeUnit timeUnit) throws InterruptedException {
-            Integer i = map.get(s);
-            if (i == null) {
-                var acquired = s.tryAcquire(time, timeUnit);
-                if (acquired) {
-                    map.put(s, 1);
-                }
-                return acquired;
-            } else {
-                map.put(s, i + 1);
-                return true;
-            }
-        }
-
-        private synchronized void unlock(Semaphore s) {
-            Integer i = map.get(s);
-            if (i == null) {
-                throw new IllegalStateException("semaphore was not acquired first");
-            } else if (i == 1) {
-                map.remove(s);
-                s.release();
-            } else {
-                map.put(s, i - 1);
-            }
-        }
-
     }
 
-    public void unlock(Locker locker) {
-        locker.unlock(semaphore);
+    public synchronized void unlock(Locker locker) {
+        Objects.requireNonNull(locker);
+        if (lockedBy != locker) {
+            throw new IllegalStateException("lock is not owned by given locker");
+        }
+        cnt--;
+        lockedAt.pop();
+        if (cnt == 0) {
+            lockedBy = null;
+        }
+        notify();
     }
 
-    public void lock(Locker locker) {
-        locker.lock(semaphore);
+    public synchronized void lock(Locker locker) {
+        Objects.requireNonNull(locker);
+        while(lockedBy != null && lockedBy != locker) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        cnt++;
+        lockedBy = locker;
+        lockedAt.push(at(new Exception()));
+        notify();
     }
 
-    public boolean tryLock(Locker locker, long time, TimeUnit timeUnit) throws InterruptedException {
-        return locker.tryLock(semaphore, time, timeUnit);
+    public synchronized boolean tryLock(Locker locker, long duration, TimeUnit timeUnit) throws InterruptedException {
+        Objects.requireNonNull(locker);
+        var start = System.currentTimeMillis();
+        var total = timeUnit.toMillis(duration);
+        while (lockedBy != null && lockedBy != locker) {
+            var ellapsed = System.currentTimeMillis() - start;
+            var remaining = total - ellapsed;
+            if (remaining > 0) {
+                wait(remaining);
+            } else {
+//                LOG.debug("could not lock - locker: " + locker + "; cnt: " + cnt + "; lockedBy: " + lockedBy);
+//                lockedAt.forEach(ex -> LOG.debug("lockedAt: " + ex));
+                return false;
+            }
+        }
+        cnt++;
+        lockedBy = locker;
+        lockedAt.push(at(new Exception()));
+        notify();
+        return true;
     }
 }

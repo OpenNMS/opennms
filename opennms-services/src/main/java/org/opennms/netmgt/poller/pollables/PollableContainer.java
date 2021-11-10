@@ -348,7 +348,9 @@ abstract public class PollableContainer extends PollableElement {
     public CompletionStage<PollStatus> pollRemainingMembers(AsyncReentrantLock.Locker locker, final PollableElement member) {
         var memberStatus = member.getStatus();
         final var remainingMembers = getMembers().stream().filter(elem -> elem != member).collect(Collectors.toList());
-        return FutureUtils.traverse(
+        // the locker must not be shared by more than one thread concurrently
+        // -> use traverseSequentially that creates the next future not before the previous future has completed
+        return FutureUtils.traverseSequentially(
                 remainingMembers,
                 elem -> elem.poll(locker)
         ).thenApply(list -> list.stream().anyMatch(PollStatus::isUp) ? PollStatus.up() : memberStatus)
