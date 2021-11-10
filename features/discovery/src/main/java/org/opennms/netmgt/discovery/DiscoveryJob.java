@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.utils.IteratorUtils;
-import org.opennms.netmgt.cm.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;

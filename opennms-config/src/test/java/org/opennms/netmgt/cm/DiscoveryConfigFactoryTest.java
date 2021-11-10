@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.Definition;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;

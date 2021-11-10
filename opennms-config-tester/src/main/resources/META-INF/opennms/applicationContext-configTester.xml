@@ -183,7 +183,7 @@
 
   <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
 
-  <bean id="discoveryConfigFactory" class="org.opennms.netmgt.cm.DiscoveryConfigFactory"/>
+  <bean id="discoveryConfigFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory"/>
 
   <bean name="droolsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/drools-northbounder-configuration.xml" />

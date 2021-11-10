@@ -21,6 +21,7 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              !org.opennms.netmgt.config.DiscoveryConfigFactory,
               !com.sun.activation.registries,
               !org.codehaus.*
               !com.fasterxml.jackson.*,

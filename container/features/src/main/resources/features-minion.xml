@@ -114,8 +114,6 @@
 
       <feature>opennms-core-ipc-rpc-api</feature>
 
-      <!-- it should be already in opennms-core-ipc-rpc-api -->
-      <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>

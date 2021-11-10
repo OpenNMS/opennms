@@ -310,8 +310,6 @@
         <feature>owasp-html-sanitizer</feature>
         <feature>commons-jexl</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
 
@@ -537,7 +535,6 @@
         <feature>opennms-dao-api</feature>
         <feature>opennms-core-tracing</feature>
         <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
