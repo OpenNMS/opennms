@@ -29,6 +29,11 @@ Before adding nodes to a requisition, you must <<provisioning/getting-started.ad
 . Click *Return* to view the list of nodes you have added.
 . Click *Synchronize* to provision them to the {page-component-title} database.
 
+[[requisition-rest]]
+== Add nodes via REST API
+
+You can use the REST API to add nodes to your {page-component-tile} database.
+There are endpoints for both xref:development:rest/nodes.adoc[individual nodes] and xref:development:rest/requisitions.adoc[entire requisitions].
 
 [[requisition-new-suspect]]
 == Add nodes via newSuspect events
