@@ -45,7 +45,7 @@ public class MigratorTest {
 
     @Test
     public void testGetUserForDDLWithHostname() {
-        String userName = "opennms@@test-env-onms";
+        String userName = "opennms@test-env-onms";
         Migrator migrator = new Migrator();
         migrator.setDatabaseUser(userName);
         assertEquals("opennms",  migrator.getUserForDDL());
