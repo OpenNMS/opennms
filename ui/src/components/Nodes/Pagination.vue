@@ -1,16 +1,18 @@
 <template>
-  <Paginator
-    :first="offset"
-    :rows="limit"
-    :total-records="totalCount"
-    @page="onPage($event)"
-    :rowsPerPageOptions="[5, 20, 30]"
-  />
+  <FeatherPagination
+    v-if="totalCount"
+    class="pagination"
+    v-model="page"
+    :pageSize="pageSize"
+    :total="totalCount"
+    @update:pageSize="updatePageSize"
+    @update:modelValue="updatePage"
+  ></FeatherPagination>
 </template>
   
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import Paginator, { PageState } from 'primevue/paginator'
+import { FeatherPagination } from "@featherds/pagination"
 import { useStore } from 'vuex'
 
 const props = defineProps({
@@ -37,17 +39,19 @@ const props = defineProps({
 })
 const emit = defineEmits(['update-query-parameters'])
 const store = useStore()
-const limit = ref(props.parameters.limit)
-const offset = ref(props.parameters.offset)
+const pageSize = ref(props.parameters.limit)
+const page = ref(1)
 
 onMounted(() => store.dispatch(`${props.moduleName}/${props.functionName}`, props.payload || props.parameters))
 
-const totalCount = computed(() => store.state[props.moduleName][props.totalCountStateName])
+const totalCount = computed(() => {
+  const totalCount = store.state[props.moduleName][props.totalCountStateName]
+  if (totalCount && !isNaN(totalCount)) return totalCount
+  return 0
+})
 
-const onPage = (event: PageState) => {
-  limit.value = event.rows
-  offset.value = event.rows * event.page
-  const updatedParameters = { ...props.parameters, limit: limit.value, offset: offset.value }
+const updatePage = () => {
+  const updatedParameters = { ...props.parameters, limit: pageSize.value, offset: (page.value - 1) * pageSize.value }
   emit('update-query-parameters', updatedParameters)
   if (props.payload) {
     store.dispatch(`${props.moduleName}/${props.functionName}`, { ...props.payload, queryParameters: updatedParameters })
@@ -55,4 +59,16 @@ const onPage = (event: PageState) => {
   }
   store.dispatch(`${props.moduleName}/${props.functionName}`, updatedParameters)
 }
+
+const updatePageSize = (v: number) => {
+  pageSize.value = v
+  updatePage()
+}
 </script>
+
+<style lang="scss">
+@import "@featherds/styles/mixins/typography";
+.pagination {
+  @include body-small();
+}
+</style>

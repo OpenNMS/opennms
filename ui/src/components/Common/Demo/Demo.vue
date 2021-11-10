@@ -94,13 +94,13 @@ import Button from '../Button.vue'
 import RadioButton from '../RadioButton.vue'
 import RadioButtonGroup from '../RadioButtonFieldSet.vue'
 
-const city = ref('');
-const showInputText = ref('');
-const showInputNumber = ref();
-const selectedCity1 = ref('');
-const showTimePicker = ref('');
-const buttonLabel = ref('Save');
-const cityGroupName = ref('');
+const city = ref('')
+const showInputText = ref('')
+const showInputNumber = ref()
+const selectedCity1 = ref('')
+const showTimePicker = ref('')
+const buttonLabel = ref('Save')
+const cityGroupName = ref('')
 const pcontent = ref('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
 const cities = ref([
   { name: 'New York', code: 'NY' },
@@ -108,17 +108,17 @@ const cities = ref([
   { name: 'London', code: 'LDN' },
   { name: 'Istanbul', code: 'IST' },
   { name: 'Paris', code: 'PRS' }
-]);
+])
 
 const categories = ref([
   { name: 'Accounting', key: 'A' },
   { name: 'Marketing', key: 'M' },
   { name: 'Production', key: 'P' },
   { name: 'Research', key: 'R' }
-]);
+])
 
 const selectedValue = (val: string) => {
-  cityGroupName.value = val;
+  cityGroupName.value = val
 }
 
 </script>

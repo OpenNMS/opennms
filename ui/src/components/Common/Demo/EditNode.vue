@@ -1,10 +1,10 @@
 <template>
-    <p>
-        <Button :label="buttonLabel" primeClass="rounded" @click="onBackClick"></Button>
-    </p>
-    <p>
-        <ReqDefinitionForm title="Edit"></ReqDefinitionForm>
-    </p>
+  <p>
+    <Button :label="buttonLabel" primeClass="rounded" @click="onBackClick"></Button>
+  </p>
+  <p>
+    <ReqDefinitionForm title="Edit"></ReqDefinitionForm>
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +18,7 @@ const buttonLabel = ref('Back To Node Table')
 
 //Routing Back to Table
 const onBackClick = () => {
-    router.push({ name: 'requisitionDefinitionsLayout' });
+  router.push({ name: 'requisitionDefinitionsLayout' })
 }
 
 </script>

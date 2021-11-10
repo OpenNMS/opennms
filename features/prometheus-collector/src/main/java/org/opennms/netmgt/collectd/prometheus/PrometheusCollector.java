@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -174,7 +174,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
             final List<Metric> metricsForGroup = filterMetrics(group.getFilterExp(), metrics);
             if (metricsForGroup.isEmpty()) {
                 // Don't bother continuing if we have no metrics
-                LOG.debug("No metrics found in group named '{}' on agent {}.", group.getName(), agent);
+                LOG.warn("No metrics found in group named '{}' on agent {}.", group.getName(), agent);
                 continue;
             }
 
@@ -292,7 +292,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
                 LOG.warn("Failed to evaluate expression '{}'. The metric will not be included.",
                         filterExpression, e);
             }
-            LOG.trace("Rule '{}' on {} passed? {}", filterExpression, metric, passed);
+            LOG.debug("Rule '{}' on {} passed? {}", filterExpression, metric, passed);
 
             if (passed) {
                 filteredMetrics.add(metric);
@@ -318,7 +318,7 @@ public class PrometheusCollector extends AbstractRemoteServiceCollector {
             final StandardEvaluationContext context = new StandardEvaluationContext(metric);
             try {
                 final String instance = exp.getValue(context, String.class);
-                LOG.trace("Rule '{}' on {} returned instance: {}", group.getGroupByExp(), metric, instance);
+                LOG.debug("Rule '{}' on {} returned instance: {}", group.getGroupByExp(), metric, instance);
                 if (instance == null) {
                     LOG.info("Rule '{}' on {} did not produce an instance. Result will be ignored.", group.getGroupByExp(), metric);
                     continue;

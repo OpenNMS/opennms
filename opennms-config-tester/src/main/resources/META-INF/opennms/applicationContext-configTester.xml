@@ -45,6 +45,7 @@
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
+        <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
@@ -205,6 +206,10 @@
   
   <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+  </bean>
+
+  <bean id="geoIpConfigDao" class="org.opennms.netmgt.config.geoip.GeoIpConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/geoip-adapter-configuration.xml" />
   </bean>
 
   <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>

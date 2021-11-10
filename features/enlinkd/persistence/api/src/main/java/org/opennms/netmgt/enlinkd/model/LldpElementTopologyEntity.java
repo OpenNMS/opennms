@@ -37,11 +37,13 @@ import org.opennms.netmgt.model.ReadOnlyEntity;
 public class LldpElementTopologyEntity {
     private final Integer id;
     private final String lldpChassisId;
+    private final String lldpSysname;
     private final Integer nodeId;
 
-    public LldpElementTopologyEntity(Integer id, String lldpChassisId, Integer nodeId) {
+    public LldpElementTopologyEntity(Integer id, String lldpChassisId, String sysname, Integer nodeId) {
         this.id = id;
         this.lldpChassisId = lldpChassisId;
+        this.lldpSysname = sysname;
         this.nodeId = nodeId;
     }
 
@@ -49,6 +51,7 @@ public class LldpElementTopologyEntity {
         return new LldpElementTopologyEntity(
                 element.getId(),
                 element.getLldpChassisId(),
+                element.getLldpSysname(),
                 Optional.ofNullable(element.getNode()).map(OnmsNode::getId).orElse(null));
     }
 
@@ -62,6 +65,10 @@ public class LldpElementTopologyEntity {
 
     public Integer getNodeId() {
         return nodeId;
+    }
+
+    public String getLldpSysname() {
+        return lldpSysname;
     }
 
     public String getNodeIdAsString() {

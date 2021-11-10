@@ -21,11 +21,13 @@
 
     <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity"/>
 
-    <bean id="grpcClient" class="org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber"
+    <bean id="grpcTwinSubscriber" class="org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber"
           init-method="start" destroy-method="close">
         <argument ref="minionIdentity"/>
         <argument ref="configAdmin"/>
         <argument value="${port}"/>
     </bean>
+
+    <service ref="grpcTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
 </blueprint>

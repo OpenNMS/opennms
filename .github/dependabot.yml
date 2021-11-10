@@ -3,7 +3,7 @@ updates:
 
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
-    directory: "/web"
+    directory: "/ui"
     target-branch: "develop"
     reviewers:
       - "rangerrick"

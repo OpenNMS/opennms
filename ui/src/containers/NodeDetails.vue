@@ -1,41 +1,30 @@
 <template>
-  <div class="p-grid page">
-    <div class="p-col-12">
-      <Breadcrumb :home="home" :model="items">
-        <template #item="{ item }">
-          <router-link :to="item.to">{{ item.label }}</router-link>
-        </template>
-      </Breadcrumb>
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <BreadCrumbs :items="items" />
     </div>
-    <div class="p-col-6">
+  </div>
+  <div class="feather-row" style="flex-wrap: inherit;">
+    <div class="feather-col-6">
       <NodeAvailabilityGraphVue />
-      <Panel header="Node Interfaces" class="node-interfaces">
-        <InterfacesTabsVue />
-      </Panel>
+      <InterfacesTabsVue />
     </div>
-    <div class="p-col-6">
+    <div class="feather-col-6">
       <EventsTable />
-      <OutagesTable class="outages-table" />
+      <OutagesTable />
     </div>
   </div>
 </template>
   
 <script setup lang="ts">
-import { ref } from 'vue'
 import EventsTable from '@/components/Nodes/EventsTable.vue'
 import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 import InterfacesTabsVue from '@/components/Nodes/InterfacesTabs.vue'
 import NodeAvailabilityGraphVue from '@/components/Nodes/NodeAvailabilityGraph.vue'
-import Breadcrumb from 'primevue/breadcrumb'
-import Panel from 'primevue/panel'
-
-const home = ref({ label: 'Nodes', to: '/' })
-const items = ref([{ label: 'Node Details', to: '#' }])
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { BreadCrumb } from '@/types'
+const items: BreadCrumb[] = [
+  { label: 'Nodes', to: '/' },
+  { label: 'Node Details', to: '#', position: 'last' }
+]
 </script>
-  
-<style lang="scss" scoped>
-.node-interfaces,
-.outages-table {
-  margin-top: 20px;
-}
-</style>
