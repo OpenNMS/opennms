@@ -54,6 +54,7 @@ cd ~/project/smoke-test
 if [ $SUITE = "minimal" ]; then
   echo "#### Executing minimal set smoke/system tests"
   IT_TESTS="MenuHeaderIT,SinglePortFlowsIT"
+  SUITE=core
 else
   find_tests
   echo "#### Executing complete suite of smoke/system tests"
