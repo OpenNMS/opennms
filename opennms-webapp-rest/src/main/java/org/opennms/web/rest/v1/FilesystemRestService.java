@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -95,12 +96,7 @@ public class FilesystemRestService {
         if (!FILES.contains(fileName)) {
             throw new RuntimeException("Unsupported filename: '" + fileName + "'");
         }
-        final File file = Paths.get(System.getProperty("opennms.home"), "etc", fileName).toFile();
-        if (!file.exists()) {
-            return Response.noContent().build();
-        }
-        final String mimeType = Files.probeContentType(file.toPath());
-        return streamAll(file, mimeType, fileName);
+        return fileContents(Paths.get(System.getProperty("opennms.home"), "etc", fileName));
     }
 
     @POST
@@ -143,13 +139,20 @@ public class FilesystemRestService {
         }
     }
 
-    public static Response streamAll(final File file, String mimeType, String fileName) {
-        return Response.ok(file)
-                .type(mimeType)
-                .header(HttpHeaders.CONTENT_DISPOSITION, fileName)
-                .header(HttpHeaders.CONTENT_LENGTH, file.length())
-                .header(HttpHeaders.LAST_MODIFIED, new Date(file.lastModified()))
-                .build();
+    public static Response fileContents(final java.nio.file.Path path) {
+        if (!Files.exists(path)) {
+            return Response.noContent().build();
+        }
+        try {
+            final String mimeType = Files.probeContentType(path);
+            return Response.ok(Files.readString(path, StandardCharsets.UTF_8))
+                    .type(mimeType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, path.getFileName().toString())
+                    .header(HttpHeaders.LAST_MODIFIED, new Date(Files.getLastModifiedTime(path).toMillis()))
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean maybeReloadDaemon(String fileName) {

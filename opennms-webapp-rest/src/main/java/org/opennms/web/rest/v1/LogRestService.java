@@ -28,11 +28,9 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.opennms.web.rest.v1.FilesystemRestService.streamAll;
+import static org.opennms.web.rest.v1.FilesystemRestService.fileContents;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -60,16 +58,11 @@ public class LogRestService {
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName) throws IOException {
+    public Response getFileContents(@QueryParam("f") String fileName) {
         if (!LOGFILES.contains(fileName)) {
             throw new RuntimeException("Unsupported filename: '" + fileName + "'");
         }
-        final File file = Paths.get(System.getProperty("opennms.home"), "logs", fileName).toFile();
-        if (!file.exists()) {
-            return Response.noContent().build();
-        }
-        final String mimeType = Files.probeContentType(file.toPath());
-        return streamAll(file, mimeType, fileName);
+        return fileContents(Paths.get(System.getProperty("opennms.home"), "logs", fileName));
     }
 
     private static final List<String> LOGFILES = Arrays.asList(
