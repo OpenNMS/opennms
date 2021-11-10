@@ -29,11 +29,11 @@
             <cm:delete name="tobedeleted"/>
             <cm:put name="property3" type="boolean" default="false" />
         </cm:changeSchema>
-        <cm:registerSchema id="datachoices"/><!-- TODO: Patrick
+        <cm:registerSchema id="datachoices"/>
         <cm:changeSchema schemaId="datachoices">
             <cm:put name="enabled" type="boolean" default="false" />
             <cm:put name="acknowledged-by" type="string" default="" />
         </cm:changeSchema>
-        <cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/> -->
+        <cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/>
     </changeSet>
 </databaseChangeLog>

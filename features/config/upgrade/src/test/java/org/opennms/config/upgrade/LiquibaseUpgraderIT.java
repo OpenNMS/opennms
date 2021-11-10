@@ -174,7 +174,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
 
             // check if CM was called for schema
-            verify(cmSpy, times(4)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
+            verify(cmSpy, times(5)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
@@ -197,7 +197,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check for org.opennms.features.datachoices.cfg
             Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
             assertEquals(2, config.get().keySet().size());
-            assertEquals("false", config.get().get("enabled"));
+            assertEquals(false, config.get().get("enabled"));
             assertEquals("admin", config.get().get("acknowledged-by"));
         } finally {
             this.db.cleanUp();
