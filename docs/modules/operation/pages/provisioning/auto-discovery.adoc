@@ -109,6 +109,7 @@ This delay allows {page-component-title} to fully start before generating new ev
 | foreign-source
 | not set
 | Adds discovered nodes to the specified foreign source requisition.
+
 | location
 | Default
 | The monitoring location where this discovery batch will be executed.
