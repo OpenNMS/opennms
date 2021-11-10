@@ -1,0 +1,384 @@
+[[ref-ssl]]
+= Securing Jetty With HTTPS
+
+If users will be accessing the OpenNMS web UI across untrusted networks, it is desirable to protect web sessions using HTTPS.
+This article explains how to configure OpenNMS' built-in Jetty web server to support HTTPS with no dependencies on external software.
+
+Two commands will be used, openssl, and keytool.
+For further information on running openssl, see its [online manual](http://www.openssl.org/docs/apps/openssl.html), and for keytool, see its [online documentation page](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html).
+
+NOTE: It may be easier to leave the Jetty config at default and use nginx or Apache as a reverse proxy.
+https://opennms.discourse.group/t/how-to-use-nginx-as-ssl-proxy-with-opennms-horizon/208
+
+== Copy jetty.xml
+
+There is a sample `jetty.xml` config in `$\{OPENNMS_HOME}/etc/examples`.
+Copy this to `$\{OPENNMS_HOME}/etc` and remove comment tags for the section "Add HTTPS Support"
+
+**THIS MUST BE DONE FOR HTTPS SETTINGS TO APPLY**
+
+== For the Impatient
+**These instructions are not appropriate for production environments**
+
+If you want only to see that this feature works, and are not yet concerned with configuring HTTPS for the web UI in a production environment, complete the following steps.
+You will end up with an HTTPS-enabled version of the OpenNMS web UI that presents a completely bogus SSL certificate.
+
+.Stop OpenNMS
+[source, console]
+----
+$ systemctl stop opennms
+----
+
+.Copy the example keystore into place
+[source, console]
+----
+$ cp ${OPENNMS_HOME}/etc/examples/jetty.keystore ${OPENNMS_HOME}/etc/
+----
+
+.Specify HTTPS properties in `$\{OPENNMS_HOME}/etc/opennms.properties.d/https.properties`
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-port = 8443
+org.opennms.netmgt.jetty.https-keystore = ${OPENNMS_HOME}/etc/jetty.keystore<1>
+org.opennms.netmgt.jetty.https-keystorepassword = changeit
+org.opennms.netmgt.jetty.https-keypassword = changeit
+----
+<1> Replace with the exact path to the keystore file on your system.
+
+.Start OpenNMS
+[source, console]
+----
+$ systemctl start opennms
+----
+
+In your web browser, visit the following URL: \https://127.0.0.1:8443/opennms/.
+Your browser will warn you that the server's certificate cannot be verified because it is expired and is issued by an untrusted authority.
+If you opt to continue anyway, you will be presented with the OpenNMS login page.
+
+== For the Patient
+The following instructions explain how to set up Jetty as a standalone HTTPS server so that it is suitable for use in production environments.
+You will end up with an HTTPS-enabled version of the OpenNMS web UI that presents an SSL certificate customized for your environment.
+The path of this section branches to allow you to choose whether to obtain an SSL certificate signed by a trusted certifying authority or to make do with a self-signed SSL certificate.
+
+== Create a new Java keystore
+Using the keytool utility that ships as $\{JAVA_HOME}/bin/keytool with Sun's Java distributions, create a new keystore and populate it with a new key.
+For the first question ("What is your first and last name"), enter the fully-qualified domain name by which people will be accessing your OpenNMS server's web UI.
+Choose this name correctly, as you will have to start over if you ever need to change it. Answer the remaining questions according to the specifics of your organization and locality.
+
+Be sure to specify an appropriate number of days for the validity parameter.
+After this number of days elapses, the key you are generating will expire and you may no longer be able to use it to create new certificates.
+The example below specifies 731 days, which will make the key valid for two years (accounting for a possible leap year).
+
+It is important that you choose good passwords for the keystore and for the key itself.
+These passwords may be the same or different to each other.
+Using different and strong passwords here protects your server's private key in the event the keystore file falls into the wrong hands.
+You should take precautions to keep this from happening, including setting filesystem user and group permissions so that unauthorized individuals with accounts on the OpenNMS server will not have read (or write) access to the keystore.
+
+By default, keytool will create DSA keys, but Jetty requires an RSA key.
+Make sure you are passing the `-keyalg RSA` option to keytool.
+
+[source, console]
+----
+$ keytool -alias opennms-jetty -genkeypair -keyalg RSA -keysize 2048 -validity 731 -keystore /tmp/propercert/proper.keystore
+Enter keystore password:  aGoodStrongKeystorePassword
+What is your first and last name?
+  [Unknown]:  opennms.example.org
+What is the name of your organizational unit?
+  [Unknown]:  Network Management Division
+What is the name of your organization?
+  [Unknown]:  The Example Organization
+What is the name of your City or Locality?
+  [Unknown]:  Marina del Rey
+What is the name of your State or Province?
+  [Unknown]:  California
+What is the two-letter country code for this unit?
+  [Unknown]:  US
+Is CN=opennms.example.org, OU=Network Management Division, O=The Example Organization, L=Marina del Rey, ST=California, C=US correct?
+  [no]:  yes
+----
+
+=== Option A: Certificate signed by a trusted CA
+Generate a certificate signing request (or CSR) from the key that you created above.
+The command to do this is straightforward.
+The filename you specify for the file parameter will contain the CSR after the command completes.
+
+[source, console]
+----
+$ keytool -certreq -keystore /tmp/propercert/proper.keystore -file /tmp/propercert/proper.csr -alias opennms-jetty
+Enter keystore password:  aGoodStrongKeystorePassword
+Enter key password for <mykey>anotherGoodStrongPassword
+----
+
+The CSR output file is a text file whose contents will look similar to the following:
+
+[source, certificate]
+----
+-----BEGIN NEW CERTIFICATE REQUEST-----
+MIICjjCCAkwCAQAwgYkxCzAJBgNVBAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTESMBAG
+A1UEBxMJUGl0dHNib3JvMSAwHgYDVQQKExdUaGUgT3Blbk5NUyBHcm91cCwgSW5jLjEQMA4GA1UE
+CxMHVW5rbm93bjEZMBcGA1UEAxMQZGVtby5vcGVubm1zLm9yZzCCAbcwggEsBgcqhkjOOAQBMIIB
+HwKBgQD9f1OBHXUSKVLfSpwu7OTn9hG3UjzvRADDHj+AtlEmaUVdQCJR+1k9jVj6v8X1ujD2y5tV
+bNeBO4AdNG/yZmC3a5lQpaSfn+gEexAiwk+7qdf+t8Yb+DtX58aophUPBPuD9tPFHsMCNVQTWhaR
+MvZ1864rYdcq7/IiAxmd0UgBxwIVAJdgUI8VIwvMspK5gqLrhAvwWBz1AoGBAPfhoIXWmz3ey7yr
+XDa4V7l5lK+7+jrqgvlXTAs9B4JnUVlXjrrUWU/mcQcQgYC0SRZxI+hMKBYTt88JMozIpuE8FnqL
+VHyNKOCjrh4rs6Z1kW6jfwv6ITVi8ftiegEkO8yk8b6oUZCJqIPf4VrlnwaSi2ZegHtVJWQBTDv+
+z0kqA4GEAAKBgHQVrC0ysQbtmvu3Btjsz1n+6MJIm6mB0Y28fzKFC/azpMB+hultKdUFsnnb13BN
+fnfuUoULeLTu/cGvAsqFtCpJuAmcAzXxmTp0BTYj4o8jJYi0dLIKnox3Shy4VTr+qJlzn9Y1auWy
+rpwdD03e6Kq32rKpgU5fwC53L0J8dI6yoAAwCwYHKoZIzjgEAwUAAy8AMCwCFFtHtT6XNS8A/0Xu
+OfVnTnL+zrTPAhR7QgO0Y3Sd0u39l3uOvhX3G5//zw==
+-----END NEW CERTIFICATE REQUEST-----
+----
+
+There is no particular need to protect the CSR, as it contains no data that would aid an attacker.
+
+==== Submit the CSR to the trusted CA
+Send the certificate signing request (CSR) that you just generated to a certificate authority (CA) that you trust.
+This could be a commercial CA whose signatures most or all modern browsers will honor (for discussion, see http://en.wikipedia.org/wiki/Certificate_authority) or a CA that is internal to your organization and whose public key is installed into all browsers on your organization's computers.
+The specifics of this step are entirely outside the scope of this article.
+
+==== Import the signed certificate
+After you submit the certificate signing request to the CA, and fulfill the CA's requirements for validating your identity and trustworthiness, the CA will send you a certificate file that bears the CA's signature.
+
+The signed certificate consists of the public half of the key that you generated in the first step plus a signature performed using the CA's private key.
+Therefore, the signed certificate (like the CSR)  contains no information that will aid an attacker if it is disclosed.
+
+In order for your OpenNMS server to use the signed certificate, you must replace the self-signed certificate created in the first step by the signed certificate.
+You do that by importing the signed certificate for the same alias that you defined in the first step (here "opennms-jetty"):
+
+[source, console]
+----
+$ keytool -import -keystore /tmp/propercert/proper.keystore -file /path/to/signed-cert.txt -alias opennms-jetty
+Enter keystore password:  aGoodStrongKeystorePassword
+----
+
+NOTE: This requires that your keystore already trust the CA that has signed your certificate.
+If you see the error "keytool error: java.lang.Exception: Public keys in reply and keystore don't match", this indicates that you need to import your certificate authority's CA certificate first:
+
+[source, console]
+----
+$ keytool -import -trustcacerts -alias <my-CA-root> -keystore /tmp/propercert/proper.keystore -file /path/to/CA-cert.txt
+Enter keystore password:  aGoodStrongKeystorePassword
+----
+
+Now retry the import of the server cert.
+
+=== Option B: Self-signed certificate
+If you are content with a self-signed certificate, you need to perform just one step to add a signature to your new SSL certificate.
+
+As in the key generation process above, be sure that you specify an appropriate number of days for the validity parameter.
+
+[source, console]
+----
+$ keytool -selfcert -validity 721 -keystore /tmp/propercert/proper.keystore -alias opennms-jetty
+Enter keystore password:  aGoodStrongKeystorePassword
+Enter key password for <mykey>anotherGoodStrongPassword
+----
+
+==== Copy the keystore into place
+Now that the keystore you created contains your server's signed SSL certificate, you must copy the keystore to a place where OpenNMS can find it.
+In the real world, you might want to place the keystore in a different location, perhaps one that is not included in your nightly backups (unless you trust your backup operator completely).
+In extreme cases it might be desirable to put the keystore on a filesystem that is unmounted except when starting or restarting OpenNMS.
+For the purposes of this article, we will assume that you copied the keystore to $\{OPENNMS_HOME}/etc/opennms.keystore.
+
+
+==== Configure the Jetty HTTPS parameters in OpenNMS
+In your favorite editor, open the file OPENNMS_HOME/etc/opennms.properties.
+
+Uncomment (or add if not present) the line that sets the property org.opennms.netmgt.jetty.https-keystore, and change the value of this property to the location of the keystore that now contains your server's signed SSL certificate:
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-keystore = ${OPENNMS_HOME}/etc/opennms.keystore
+----
+
+Uncomment  (or add if not present) the lines that set the properties org.opennms.netmgt.jetty.https-keystorepassword and org.opennms.netmgt.jetty.https-keypassword, and change the values of each property to match the password you used for the keystore and the key itself in the first step:
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-keystorepassword = aGoodStrongKeystorePassword
+org.opennms.netmgt.jetty.https-keypassword = anotherGoodStrongPassword
+----
+
+Uncomment (or add if not present) the line that sets the property org.opennms.netmgt.jetty.https-port, and optionally change the value to suit your needs:
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-port = 8443
+----
+
+If you have multiple certificates in the keystore and wish to force Jetty to use a particular certificate, then uncomment or add the following option to specify the alias of the certificate that you would like to use.
+If this option is not present, Jetty will use the first certificate that it finds in the keystore.
+
+----
+org.opennms.netmgt.jetty.https-cert-alias = myOpennmsCertificate
+----
+
+==== Restrict access to the plain-HTTP listener
+Although the steps you have completed so far have configured OpenNMS to start a Jetty HTTPS listener on port 8443, they have not disabled the plain HTTP listener that is present by default on port 8980.
+This listener must be present so that the OpenNMS real-time console can update the availability statistics shown in the web UI.
+Since you have done all the work to enable HTTPS, you probably do not want users using HTTP, so you will need to restrict access to the plain-HTTP listener.
+
+There are two ways to accomplish this task.
+The first is to tell the plain-HTTP listener to bind only to an interface that is not accessible from any untrusted networks.
+In a setup where the OpenNMS web UI runs on the same server as the other OpenNMS daemons, it makes sense to use the loopback interface for this purpose.
+You can restrict the plain-HTTP listener to bind only to the localhost interface (which always has the IP address 127.0.0.1) by uncommenting the line that sets the property org.opennms.netmgt.jetty.host:
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.host = 127.0.0.1
+----
+
+The second way to restrict access to the plain-HTTP listener is to use firewall rules.
+These rules may be local to the OpenNMS web UI server (e.g.iptables on Linux or ipf on Solaris) or they may be configured in a discrete firewall external that stands between the OpenNMS web UI server and the rest of the network.
+Configuring these rules is beyond the scope of this article.
+
+==== Restrict access to the HTTPS listener
+Although HTTPS is considered secure, there are valid reasons to restrict the interfaces on which the OpenNMS Jetty HTTPS listener is reachable.
+Currently it is possible to bind the HTTPS listener to all interfaces (the default) or to a single interface.
+To bind the HTTPS listener to a single interface, uncomment the line that sets the property org.opennms.netmgt.jetty.https-host:
+
+[source, properties]
+----
+org.opennms.netmgt.jetty.https-host = 10.11.12.13
+----
+
+== Using a Pre-existing Private Key and Certificate
+
+Many users may already have deployed significant amounts of SSL private keys and certs throughout their networks.
+In many cases, the system on which ONMS is running may already have a private key and certificate.
+Consequently, it would be a shame to manage yet another set of keys and certs.
+
+The keytool utility included with JDK 1.6 and newer added the option to import an existing keystore into a new keystore.
+
+[source, console]
+----
+openssl pkcs12 -export -out src.pk12 -in cert.pem -inkey key.pem
+keytool -importkeystore -srckeystore src.pk12 -srcstoretype PKCS12 \
+    -destkeystore mycert.jks -deststoretype JKS
+----
+
+Alternatively, you can follow the procedure used on [this web page](http://www.agentbob.info/agentbob/79-AB.html?branch=1&language=1) to convert the keystore.
+
+We summarize here just in case this web page goes away.
+We assume the private key is in key.pem and the cert is in cert.pem (both are in PEM format).
+
+=== Convert the key and cert from PEM format to DER format using openssl command
+
+Use openssl to convert from PEM to DER format.
+
+[source, console]
+----
+openssl pkcs8 -topk8 -nocrypt -in key.pem -inform PEM -out key.der -outform DER
+openssl x509 -in cert.pem -inform PEM -out cert.der -outform DER
+----
+
+=== Put key and cert into a new Java Keystore
+
+Use the [ImportKey.java](http://www.agentbob.info/agentbob/80/version/default/part/AttachmentData/data/ImportKey.java) class to take the key and cert and place it in a newly constructed JKS keystore.
+I modified the ImportKey java source to use the keystore password changeit and to use the key alias importkey and to save the resulting keystore in the file opennms.keystore
+`
+java ImportKey key.der cert.der
+`
+
+== Using wildcard certifcate with a Pre-existing Private Key and Certificate
+
+Description from: http://www.agentbob.info/agentbob/79-AB.html?branch=1&language=1
+
+Copied wildcard certifcate to /home/monitor/ssl
+
+[source, console]
+----
+root@opennms: /home/monitor/ssl# ls -al
+
+-rw-r--r--  1 root    root     5626 Jun 24 11:09 cabundle.crt
+-rw-r--r--  1 root    root     1363 Sep 15 11:58 cert.der
+-rw-r--r--  1 root    root     1903 Jun 24 11:09 certificate.crt
+-rw-r--r--  1 root    root     1704 Jun 24 11:09 certificate.key
+-rw-r--r--  1 root    root     1679 Sep 15 09:24 certificate.new.key
+-rw-r--r--  1 root    root     7256 Jun 24 11:09 certificate.p7b
+-rw-rw-r--  1 monitor monitor  3281 Sep 15 11:53 ImportKey.class
+-rw-r--r--  1 root    root     1218 Sep 15 11:58 key.der
+-rw-r--r--  1 root    root     1423 Sep 15 09:32 keystore.jks
+----
+
+ImportKey.class download:
+http://www.agentbob.info/agentbob/81/version/default/part/AttachmentData/data/ImportKey.class
+
+Convert both, the key and the certificate into DER format using openssl
+
+[source, console]
+----
+openssl pkcs8 -topk8 -nocrypt -in key.pem -inform PEM -out key.der -outform DER
+openssl pkcs8 -topk8 -nocrypt -in certificate.key -inform PEM -out key.der -outform DER
+openssl x509 -in certificate.crt -inform PEM -out cert.der -outform DER
+
+java ImportKey key.der cert.der
+root@opennms:/home/monitor/ssl# java ImportKey key.der cert.der
+Using keystore-file : /root/keystore.ImportKey
+One certificate, no chain.
+Key and certificate stored.
+Alias:importkey  Password:importkey
+root@opennms:/home/monitor/ssl#
+----
+
+Now we have a proper JKS containing our private key and certificate in a file called keystore.ImportKey, using 'importkey' as alias and also as password
+
+Copy /root/keystore.ImportKey to /ect/opennms/opennms.keystore
+
+Change password importkey to changeit (this password is also in opennms.properties file, section https)
+`
+keytool -keystore opennms.keystore -keypasswd -new changeit -alias importkey
+`
+Rename alias
+```
+root@opennms:/etc/opennms# keytool -changealias -alias "importkey" -destalias "*.company.com" -keystore opennms.keystore
+Enter keystore password:
+root@opennms:/etc/opennms#
+```
+View certifate.
+```
+root@opennms:/etc/opennms# keytool -list -v -keystore opennms.keystore
+Enter keystore password: changeit
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: *.company.com
+Creation date: Sep 15, 2015
+Entry type: PrivateKeyEntry`
+Certificate chain length: 1
+Certificate[1]:
+```
+
+== How to: Create and use a certificate signed by the CAcert community #
+
+[CAcert](http://www.cacert.org) is a community that offers "free trust" - free signed certificates.
+If you are interested in using them, read their website.
+This howto assumes that you already have an account at CAcert and that you use the Debian package of OpenNMS (or: the path to they keystore is like it is in the debian package).
+
+Let’s Encrypt is a new Certificate Authority, It’s free, automated, and open.
+Arriving Q4 2015 https://letsencrypt.org/
+
+* Create a fresh keypair in a fresh keystore
+`keytool -keyalg RSA  -genkey -validity 731 -keystore /usr/share/opennms/etc/opennms.keystore`
+
+Note: Use your FQDN when you are asked for first and last name!
+* Create a certificate signing request (CSR)
+`
+keytool -certreq -keystore  /usr/share/opennms/etc/opennms.keystore -file /tmp/opennms.services.net-lab.net.csr
+`
+* Let a cacert CA sign the CSR
+Copy and paste /tmp/opennms.services.net-lab.net.csr into cacert's web UI and save the resulting (signed) certificate into a new file /tmp/opennms.services.net-lab.net.cert
+* Import cacert.org root certificate and class3 certficate into your keystore:
+`
+wget --no-check-certificate -q -O - https://www.cacert.org/certs/root.crt  | keytool -import -noprompt -alias cacertroot -trustcacerts -storepass ***yourpass*** -keystore /usr/share/opennms/etc/opennms.keystore
+`
+
+`
+wget --no-check-certificate -q -O - https://www.cacert.org/certs/class3.crt | keytool -import -noprompt -alias cacertclass3  -trustcacerts -storepass ***yourpass*** -keystore /usr/share/opennms/etc/opennms.keystore
+`
+
+Note: You have to import the CAcert root certificate once into your browser, in order to make your browser trust the CAcert certificates (Some Linux distris already did that, see [InclusionStatus](http://wiki.cacert.org/wiki/InclusionStatus)
+* Import your cert into the keystore
+`keytool -import -noprompt -storepass valvoja -keystore /usr/share/opennms/etc/opennms.keystore -file /tmp/opennms.services.net-lab.net.cert`
