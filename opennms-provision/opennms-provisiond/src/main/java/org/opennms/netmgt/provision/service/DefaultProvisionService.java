@@ -263,7 +263,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         for(final OnmsIpInterface onmsIpInterface : dbNode.getIpInterfaces()) {
             final InetAddress inetAddress = onmsIpInterface.getIpAddress();
             if (inetAddress != null) {
-                node.getIpInterfaceByIpAddress(inetAddress).setMetaData(onmsIpInterface.getMetaData());
+                final OnmsIpInterface theIpInterface = node.getIpInterfaceByIpAddress(inetAddress);
+                if (theIpInterface != null) {
+                    theIpInterface.setMetaData(onmsIpInterface.getMetaData());
+                }
             }
         }
 

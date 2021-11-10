@@ -1,5 +1,9 @@
 <template>
-  <NodesTable />
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <NodesTable />
+    </div>
+  </div>
 </template>
   
 <script setup lang="ts">

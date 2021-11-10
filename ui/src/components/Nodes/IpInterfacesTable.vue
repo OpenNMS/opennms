@@ -1,50 +1,38 @@
-<template>
-  <DataTable
-    :value="ipInterfaces"
-    showGridlines
-    data-key="id"
-    :loading="loading"
-    responsiveLayout="scroll"
-    @sort="sort"
-    :lazy="true"
-  >
-    <template #empty>There are no IP interfaces for this node</template>
-
-    <template #loading>Loading data. Please wait.</template>
-
-    <template #footer>
-      <Pagination
-        :payload="payload"
-        :parameters="queryParameters"
-        @update-query-parameters="updateQueryParameters"
-        moduleName="nodesModule"
-        functionName="getNodeIpInterfaces"
-        totalCountStateName="ipInterfacesTotalCount"
-      />
-    </template>
-
-    <Column field="ipAddress" header="IP Address" :sortable="true">
-      <template #body="{ data }">{{ data.ipAddress }}</template>
-    </Column>
-
-    <Column field="hostName" header="IP Host Name">
-      <template #body="{ data }">{{ data.hostName || 'N/A' }}</template>
-    </Column>
-
-    <Column field="ifIndex" header="SNMP ifIndex">
-      <template #body="{ data }">{{ data.ifIndex || 'N/A' }}</template>
-    </Column>
-
-    <Column field="managed" header="Managed">
-      <template #body="{ data }">{{ data.isManaged }}</template>
-    </Column>
-  </DataTable>
+  <template>
+  <div class="feather-row">
+    <div class="feather-col-12">
+      <table class="tl1 tl2 tl3" summary="IP Interfaces">
+        <thead>
+          <tr>
+            <th scope="col">IP Address</th>
+            <th scope="col">IP Host Name</th>
+            <th scope="col">SNMP ifIndex</th>
+            <th scope="col">Managed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="ipInterface in ipInterfaces" :key="ipInterface.id">
+            <td>{{ ipInterface.ipAddress }}</td>
+            <td>{{ ipInterface.hostName || 'N/A' }}</td>
+            <td>{{ ipInterface.ifIndex || 'N/A' }}</td>
+            <td>{{ ipInterface.isManaged || 'N/A' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <Pagination
+    :payload="payload"
+    :parameters="queryParameters"
+    @update-query-parameters="updateQueryParameters"
+    moduleName="nodesModule"
+    functionName="getNodeIpInterfaces"
+    totalCountStateName="ipInterfacesTotalCount"
+  />
 </template>
   
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { computed } from 'vue'
 import Pagination from './Pagination.vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
@@ -53,12 +41,18 @@ import useQueryParameters from '@/hooks/useQueryParams'
 const store = useStore()
 const route = useRoute()
 const optionalPayload = { id: route.params.id }
-const { queryParameters, updateQueryParameters, sort, payload } = useQueryParameters({
+const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
   limit: 5,
   offset: 0,
   _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
 }, 'nodesModule/getNodeIpInterfaces', optionalPayload)
-const loading = ref(false)
 const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
 </script>
-  
+
+<style lang="scss">
+@import "@featherds/table/scss/table";
+table {
+  width: 100%;
+  @include table();
+}
+</style>

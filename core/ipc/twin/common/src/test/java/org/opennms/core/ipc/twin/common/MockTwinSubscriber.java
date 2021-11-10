@@ -78,7 +78,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
     }
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequest twinRequest) {
         try {
             byte[] value = objectMapper.writeValueAsBytes(twinRequest);
             ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(TwinApiIT.rpcRequestTopic, twinRequest.getKey(), value);
@@ -106,7 +106,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
                     for (ConsumerRecord<String, byte[]> record : records) {
 
                         try {
-                            TwinResponseBean twinResponse = objectMapper.readValue(record.value(), TwinResponseBean.class);
+                            TwinUpdate twinResponse = objectMapper.readValue(record.value(), TwinUpdate.class);
                             accept(twinResponse);
                         } catch (IOException e) {
                             // Ignore
@@ -142,7 +142,7 @@ public class MockTwinSubscriber extends AbstractTwinSubscriber {
                     for (ConsumerRecord<String, byte[]> record : records) {
                         CompletableFuture.runAsync(() -> {
                             try {
-                                TwinResponseBean twinResponse = objectMapper.readValue(record.value(), TwinResponseBean.class);
+                                TwinUpdate twinResponse = objectMapper.readValue(record.value(), TwinUpdate.class);
                                 accept(twinResponse);
                             } catch (IOException e) {
                                 // Ignore

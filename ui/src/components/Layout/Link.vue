@@ -1,5 +1,5 @@
 <template>
-  <h3 class="link">
+  <h3 class="link headline3">
     <router-link :to="to">
       <slot></slot>
     </router-link>
@@ -7,27 +7,20 @@
 </template>
 
 <script setup lang="ts">
-  import { toRefs } from "vue"
-
-  const props = defineProps({
-    to: {
-      required: true,
-      type: String
-    }
-  })
-
-  const { to } = toRefs(props)
+defineProps({
+  to: {
+    required: true,
+    type: String
+  }
+})
 </script>
 
 <style lang="scss" scoped>
-$linkColor: #14d1df;
 .link {
   width: 100%;
   a {
-    text-decoration: none;
-    color: $linkColor;
+    color: var(--feather-primary-text-on-color);
     margin-left: 50px;
-    font-family: "Segoe UI", Roboto, Helvetica;
   }
 }
 </style>

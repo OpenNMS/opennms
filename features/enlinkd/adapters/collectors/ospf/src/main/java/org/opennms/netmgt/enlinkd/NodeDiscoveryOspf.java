@@ -65,8 +65,8 @@ public final class NodeDiscoveryOspf extends NodeCollector {
 	 * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-	 * @param EnhancedLinkd linkd
-	 * @param LinkableNode node
+	 * @param ospfTopologyService linkd
+	 * @param locationAwareSnmpClient node
 	 */
     public NodeDiscoveryOspf(
             final OspfTopologyService ospfTopologyService,
@@ -85,7 +85,7 @@ public final class NodeDiscoveryOspf extends NodeCollector {
 
         final OspfIpAddrTableGetter ipAddrTableGetter = new OspfIpAddrTableGetter(peer,
                                                                                   getLocationAwareSnmpClient(),
-                                                                                  getLocation(),getNodeId());
+                                                                                  getLocation());
         final OspfGeneralGroupTracker ospfGeneralGroup = new OspfGeneralGroupTracker();
         try {
             getLocationAwareSnmpClient().walk(peer, ospfGeneralGroup).
