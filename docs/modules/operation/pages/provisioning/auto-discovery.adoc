@@ -76,7 +76,7 @@ A definition without any detectors will fall back to ICMP ping for discovery.
 [[ga-manual-discovery]]
 == Manual discovery configuration
 
-In addition to the configuration above, there are some optional settings that can be configured via `$\{OPENNMS_HOME}/etc/discovery-configuration.xml`.
+In addition to the configuration above, there are some optional settings you can configure via `$\{OPENNMS_HOME}/etc/discovery-configuration.xml`.
 
 .Discovery configuration parameters
 [options="header" cols="1,1,3"]
@@ -87,9 +87,9 @@ In addition to the configuration above, there are some optional settings that ca
 
 | packets-per-second
 | 1
-| This is the number of ICMP packets that will be generated each second.
-Note that there is a relationship between the packets-per-second and the number of threads.
-If your network has an average latency of 500ms, then setting packets-per-second to 2 would double the speed at which NewSuspect messages were created.
+| Number of ICMP packets that will be generated each second.
+Note that there is a relationship between the packets per second and the number of threads.
+If your network has an average latency of 500ms, then setting packets per second to 2 would double the speed at which NewSuspect messages are created.
 But if there is only one thread available, setting this number to 3 would have little effect - the single thread would be processing as many packets as it could as fast as it could.
 
 | initial-sleep-time
@@ -99,7 +99,7 @@ This delay allows {page-component-title} to fully start before generating new ev
 
 | restart-sleep-time
 | 86400000 ms (1 day)
-| Once the discovery process has completed, the time, in milliseconds, before it will start again.
+| Once the discovery process finishes, the time, in milliseconds, before it will start again.
 
 | timeout
 | 2000 ms
@@ -107,7 +107,7 @@ This delay allows {page-component-title} to fully start before generating new ev
 
 | retries
 | 1
-| The number of attempts that will be made to query a given IP address before deciding that there is nothing there.
+| The number of attempts to query a given IP address before deciding that there is nothing there.
 
 | foreign-source
 | not set
@@ -121,7 +121,7 @@ This delay allows {page-component-title} to fully start before generating new ev
 | Description
 
 | specific
-| Specify individual IP address(es) to be discovered.
+| Specify individual IP address(es) to discover.
 May be repeated multiple times.
 
 [source, xml]
@@ -130,7 +130,7 @@ May be repeated multiple times.
 ----
 
 | include-range
-| Specify a range of IP addresses to be discovered.
+| Specify a range of IP addresses to discover.
 May be repeated multiple times.
 
 [source, xml]
@@ -142,7 +142,7 @@ May be repeated multiple times.
 ----
 
 | exclude-range
-| Specify a range of IP address to be excluded from discovery.
+| Specify a range of IP address to exclude from discovery.
 
 [source, xml]
 ----
@@ -152,15 +152,15 @@ May be repeated multiple times.
 </exclude-range>
 ----
 
-NOTE: The exclude-range tag will only override addresses in an include-range.
+NOTE: The exclude-range tag will override addresses only in an include-range.
 It will not override specific IP addresses or addresses included in a file.
 There is no "specific" version of the exclude tag.
-If you want to exclude a specific IP address, use an exclude-range where the beginning and ending IP addresses are the same.
+To exclude a specific IP address, use an exclude-range where the beginning and ending IP addresses are the same.
 
 | include-url
-| Specify the full path to a text file containing one IP address per line to be included in discovery.
-Comments can be embedded in this file.
-Any content on a line after a `#` character will be ignored.
+| Specify the full path to a text file containing one IP address per line to include in discovery.
+You can embed comments in this file.
+Any content on a line after a `#` character is ignored.
 
 [source, xml]
 ----
