@@ -169,47 +169,47 @@
       <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG">
         <!-- always leave instrumentation logging at INFO -->
         <KeyValuePair key="instrumentation"      value="INFO" />
-        <KeyValuePair key="access-point-monitor" value="WARN" />
-        <KeyValuePair key="ackd"                 value="WARN" />
-        <KeyValuePair key="actiond"              value="WARN" />
-        <KeyValuePair key="alarmd"               value="WARN" />
-        <KeyValuePair key="asterisk-gateway"     value="WARN" />
-        <KeyValuePair key="archiver"             value="WARN" />
-        <KeyValuePair key="bsmd"                 value="WARN" />
-        <KeyValuePair key="collectd"             value="WARN" />
-        <KeyValuePair key="correlator"           value="WARN" />
-        <KeyValuePair key="discovery"            value="WARN" />
-        <KeyValuePair key="eventd"               value="WARN" />
-        <KeyValuePair key="event-translator"     value="WARN" />
-        <KeyValuePair key="icmp"                 value="WARN" />
-        <KeyValuePair key="ipc"                  value="WARN" />
-        <KeyValuePair key="jetty-server"         value="WARN" />
-        <KeyValuePair key="enlinkd"              value="WARN" />
+        <KeyValuePair key="access-point-monitor" value="DEBUG" />
+        <KeyValuePair key="ackd"                 value="DEBUG" />
+        <KeyValuePair key="actiond"              value="DEBUG" />
+        <KeyValuePair key="alarmd"               value="DEBUG" />
+        <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
+        <KeyValuePair key="archiver"             value="DEBUG" />
+        <KeyValuePair key="bsmd"                 value="DEBUG" />
+        <KeyValuePair key="collectd"             value="DEBUG" />
+        <KeyValuePair key="correlator"           value="DEBUG" />
+        <KeyValuePair key="discovery"            value="DEBUG" />
+        <KeyValuePair key="eventd"               value="DEBUG" />
+        <KeyValuePair key="event-translator"     value="DEBUG" />
+        <KeyValuePair key="icmp"                 value="DEBUG" />
+        <KeyValuePair key="ipc"                  value="DEBUG" />
+        <KeyValuePair key="jetty-server"         value="DEBUG" />
+        <KeyValuePair key="enlinkd"              value="DEBUG" />
         <KeyValuePair key="manager"              value="DEBUG" />
-        <KeyValuePair key="map"                  value="WARN" />
-        <KeyValuePair key="minion"               value="WARN" />
-        <KeyValuePair key="notifd"               value="WARN" />
-        <KeyValuePair key="oss-qosd"             value="WARN" />
-        <KeyValuePair key="oss-qosdrx"           value="WARN" />
-        <KeyValuePair key="passive"              value="WARN" />
-        <KeyValuePair key="perspectivepollerd"   value="WARN" />
-        <KeyValuePair key="poller"               value="WARN" />
-        <KeyValuePair key="provisiond"           value="WARN" />
-        <KeyValuePair key="queued"               value="WARN" />
-        <KeyValuePair key="reportd"              value="WARN" />
-        <KeyValuePair key="reports"              value="WARN" />
-        <KeyValuePair key="rtc"                  value="WARN" />
-        <KeyValuePair key="statsd"               value="WARN" />
-        <KeyValuePair key="scriptd"              value="WARN" />
-        <KeyValuePair key="snmp"                 value="WARN" />
-        <KeyValuePair key="snmp-poller"          value="WARN" />
-        <KeyValuePair key="syslogd"              value="WARN" />
-        <KeyValuePair key="telemetryd"           value="WARN" />
-        <KeyValuePair key="tl1d"                 value="WARN" />
-        <KeyValuePair key="trapd"                value="WARN" />
-        <KeyValuePair key="trouble-ticketer"     value="WARN" />
-        <KeyValuePair key="vacuumd"              value="WARN" />
-        <KeyValuePair key="web"                  value="WARN" />
+        <KeyValuePair key="map"                  value="DEBUG" />
+        <KeyValuePair key="minion"               value="DEBUG" />
+        <KeyValuePair key="notifd"               value="DEBUG" />
+        <KeyValuePair key="oss-qosd"             value="DEBUG" />
+        <KeyValuePair key="oss-qosdrx"           value="DEBUG" />
+        <KeyValuePair key="passive"              value="DEBUG" />
+        <KeyValuePair key="perspectivepollerd"   value="DEBUG" />
+        <KeyValuePair key="poller"               value="DEBUG" />
+        <KeyValuePair key="provisiond"           value="DEBUG" />
+        <KeyValuePair key="queued"               value="DEBUG" />
+        <KeyValuePair key="reportd"              value="DEBUG" />
+        <KeyValuePair key="reports"              value="DEBUG" />
+        <KeyValuePair key="rtc"                  value="DEBUG" />
+        <KeyValuePair key="statsd"               value="DEBUG" />
+        <KeyValuePair key="scriptd"              value="DEBUG" />
+        <KeyValuePair key="snmp"                 value="DEBUG" />
+        <KeyValuePair key="snmp-poller"          value="DEBUG" />
+        <KeyValuePair key="syslogd"              value="DEBUG" />
+        <KeyValuePair key="telemetryd"           value="DEBUG" />
+        <KeyValuePair key="tl1d"                 value="DEBUG" />
+        <KeyValuePair key="trapd"                value="DEBUG" />
+        <KeyValuePair key="trouble-ticketer"     value="DEBUG" />
+        <KeyValuePair key="vacuumd"              value="DEBUG" />
+        <KeyValuePair key="web"                  value="DEBUG" />
       </DynamicThresholdFilter>
 
       <appender-ref ref="RoutingAppender"/>
