@@ -4,6 +4,7 @@ updates:
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
     target-branch: "foundation-2021"
+    versioning-strategy: "increase-if-necessary"
     reviewers:
       - "rangerrick"
     labels:
@@ -19,8 +20,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "foundation-2019"
-    versioning-strategy: "increase-if-necessary"
+    target-branch: "foundation-2021"
     reviewers:
       - "rangerrick"
     labels:
