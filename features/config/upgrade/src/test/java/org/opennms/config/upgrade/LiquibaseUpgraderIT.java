@@ -28,9 +28,12 @@
 
 package org.opennms.config.upgrade;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.MigrationFailedException;
 import liquibase.exception.ValidationFailedException;
+
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +46,8 @@ import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,7 +67,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -167,7 +174,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent());
 
             // check if CM was called for schema
-            verify(cmSpy, times(3)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
+            verify(cmSpy, times(4)).changeConfigDefinition(anyString(), any(ConfigDefinition.class));
 
             // check if xml file was moved into archive folder
             assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"))); // should be gone since we moved the file
@@ -177,20 +184,21 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // check if schema changes work properly
             Optional<ConfigDefinition> configDefinition = this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROPERTIES);
             assertTrue(configDefinition.isPresent());
-            // TODO: converter & validation for property is going to implemented in other task (Patrick/Freddy)
-//            ConfigItem schema = null;//(ConfigItem) configDefinition.get().getSchema();
-//            assertNotNull(schema);
-//            assertEquals(2, schema.getChildren().size());
-//            assertEquals("property1", schema.getChildren().get(0).getName());
-//            assertEquals(".*", schema.getChildren().get(0).getPattern());
-//            assertEquals(ConfigItem.Type.BOOLEAN, schema.getChildren().get(1).getType());
-//            assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
-//
-//            // check for org.opennms.features.datachoices.cfg
-//            Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
-//            assertEquals(2, config.get().keySet().size());
-//            assertEquals("false", config.get().get("enabled"));
-//            assertEquals("admin", config.get().get("acknowledged-by"));
+
+            OpenAPI openApi = configDefinition.get().getSchema();
+            ConfigItem schema = OpenAPIBuilder.createBuilder(SCHEMA_NAME_PROPERTIES, SCHEMA_NAME_PROPERTIES, "", openApi).getRootConfig();
+            assertNotNull(schema);
+            assertEquals(2, schema.getChildren().size());
+            assertEquals("property1", schema.getChildren().get(0).getName());
+            assertEquals(".*", schema.getChildren().get(0).getPattern());
+            assertEquals(ConfigItem.Type.BOOLEAN, schema.getChildren().get(1).getType());
+            assertEquals(Boolean.FALSE, schema.getChildren().get(1).getDefaultValue());
+
+            // check for org.opennms.features.datachoices.cfg
+            Optional<JSONObject> config = this.cm.getJSONConfiguration("datachoices", "default");
+            assertEquals(2, config.get().keySet().size());
+            assertEquals("false", config.get().get("enabled"));
+            assertEquals("admin", config.get().get("acknowledged-by"));
         } finally {
             this.db.cleanUp();
         }

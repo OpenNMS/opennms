@@ -31,6 +31,7 @@ package org.opennms.features.config.dao.api;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ConfigItem {
     private String name;
@@ -114,6 +115,17 @@ public class ConfigItem {
 
     public List<ConfigItem> getChildren() {
         return children;
+    }
+
+    public Optional<ConfigItem> getChild(final String name) {
+        Objects.requireNonNull(name);
+        if(this.children == null) {
+            return Optional.empty();
+        }
+        return children
+                .stream()
+                .filter(item -> name.equals(item.getName()))
+                .findAny();
     }
 
     public void setChildren(List<ConfigItem> children) {

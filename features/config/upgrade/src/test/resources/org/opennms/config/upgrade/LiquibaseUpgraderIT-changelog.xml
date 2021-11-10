@@ -23,14 +23,17 @@
     </changeSet>
     <changeSet author="LiquibaseUpgraderIT" id="upgrade-properties">
         <cm:registerSchema id="propertiesTest"/>
-        <!-- converter & validation for property is not implemented yet -->
-        <!--cm:changeSchema schemaId="propertiesTest">
+        <cm:changeSchema schemaId="propertiesTest">
             <cm:put name="property1" type="string" default="" pattern=".*" />
             <cm:put name="tobedeleted" type="string" default="" pattern=".*" />
             <cm:delete name="tobedeleted"/>
             <cm:put name="property3" type="boolean" default="false" />
-        </cm:changeSchema-->
-        <cm:registerSchema id="datachoices"/>
-        <!--cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/-->
+        </cm:changeSchema>
+        <cm:registerSchema id="datachoices"/><!-- TODO: Patrick
+        <cm:changeSchema schemaId="datachoices">
+            <cm:put name="enabled" type="boolean" default="false" />
+            <cm:put name="acknowledged-by" type="string" default="" />
+        </cm:changeSchema>
+        <cm:importConfig schemaId="datachoices" configId="default" filePath="org.opennms.features.datachoices.cfg"/> -->
     </changeSet>
 </databaseChangeLog>

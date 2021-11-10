@@ -39,6 +39,8 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
@@ -145,7 +147,9 @@ public class ImportConfiguration extends AbstractCmChange {
                         if("xml".equalsIgnoreCase(fileType)) {
                             configObject = new XmlToJson(asString(this.configResource), configDefinition.get()).getJson();
                         } else if("cfg".equalsIgnoreCase(fileType)) {
-                            configObject = new PropertiesToJson(this.configResource.getInputStream()).getJson();
+                            // TODO: Patrick: adopt builder to make this easier
+                            ConfigItem schema = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "", configDefinition.get().getSchema()).getRootConfig();
+                            configObject = new PropertiesToJson(this.configResource.getInputStream(), schema).getJson();
                         } else {
                             throw new IllegalArgumentException(String.format("Unknown file type: '%s'", fileType));
                         }

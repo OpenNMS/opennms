@@ -90,6 +90,10 @@ public class OpenAPIBuilder {
         return builder;
     }
 
+    public ConfigItem getRootConfig() {
+        return this.rootConfig;
+    }
+
     /**
      * handle for object schema ref lookup and build children attributes
      * @param schema
