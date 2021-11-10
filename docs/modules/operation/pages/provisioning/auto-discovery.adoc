@@ -91,7 +91,7 @@ In addition to the configuration above, there are some optional settings you can
 
 | initial-sleep-time
 | 30000 ms (30 seconds)
-| The time, in milliseconds, before the discovery process will commence once OpenNMS is started.
+| The time, in milliseconds, before the discovery process begins after OpenNMS has started.
 This delay allows {page-component-title} to fully start before generating new events.
 
 | restart-sleep-time
@@ -109,6 +109,14 @@ This delay allows {page-component-title} to fully start before generating new ev
 | foreign-source
 | not set
 | Adds discovered nodes to the specified foreign source requisition.
+| location
+| Default
+| The monitoring location where this discovery batch will be executed.
+Only used when Minions have been deployed.
+
+| chunk-size
+| 100
+| When using a monitoring locations and Minions, defines how many IP addresses are delegated to each Minion for scanning.
 |===
 
 .Discovery range configuration parameters
