@@ -126,9 +126,13 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
     @Override
     protected void sendRpcRequest(TwinRequest twinRequest) {
-        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
-        // Send RPC Request asynchronously.
-        CompletableFuture.runAsync(() -> retrySendRpcRequest(twinRequestProto), twinRequestSenderExecutor);
+        try {
+            TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+            // Send RPC Request asynchronously.
+            CompletableFuture.runAsync(() -> retrySendRpcRequest(twinRequestProto), twinRequestSenderExecutor);
+        } catch (Exception e) {
+            LOG.error("Exception while sending request with key {}", twinRequest.getKey());
+        }
     }
 
     private void retrySendRpcRequest(TwinRequestProto twinRequestProto) {
