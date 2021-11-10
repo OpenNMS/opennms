@@ -51,7 +51,7 @@ import javax.servlet.http.HttpSession;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.cm.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;

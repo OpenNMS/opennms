@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  ******************************************************************************/
 
-package org.opennms.netmgt.cm;
+package org.opennms.netmgt.config;
 
 import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
@@ -34,7 +34,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.core.utils.LocationUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.*;
