@@ -117,7 +117,7 @@ public final class OpenNMSStack implements TestRule {
         final boolean shouldEnableKafka = IpcStrategy.KAFKA.equals(model.getIpcStrategy())
                 || model.getOpenNMS().isKafkaProducerEnabled();
         if (shouldEnableKafka) {
-            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"))
+            kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.0"))
                     // Reduce from the default of 1GB
                     .withEnv("KAFKA_HEAP_OPTS", "-Xms256m -Xmx256m")
                     .withNetwork(Network.SHARED)
