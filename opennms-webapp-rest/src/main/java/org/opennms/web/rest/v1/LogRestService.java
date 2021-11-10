@@ -28,26 +28,33 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.opennms.web.rest.v1.FilesystemRestService.fileContents;
-
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.springframework.stereotype.Component;
 
 @Component
 @Path("logs")
 public class LogRestService {
+
+    public static final int DEFAULT_NUM_LINES = 5000;
+
+    public static final int MAX_NUM_LINES = 10000;
 
     @GET
     @Path("/")
@@ -58,11 +65,47 @@ public class LogRestService {
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName) {
+    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines) {
         if (!LOGFILES.contains(fileName)) {
             throw new RuntimeException("Unsupported filename: '" + fileName + "'");
         }
-        return fileContents(Paths.get(System.getProperty("opennms.home"), "logs", fileName));
+
+        int N = DEFAULT_NUM_LINES;
+        if (numLines != null) {
+            N = numLines;
+        }
+        N = Math.min(MAX_NUM_LINES, Math.max(N, 1)); // make sure the value is within [1, MAX_NUM_LINES]
+
+        return logFileContents(Paths.get(System.getProperty("opennms.home"), "logs", fileName), N);
+    }
+
+    public static Response logFileContents(final java.nio.file.Path path, int numLastLinesToRead) {
+        if (!Files.exists(path)) {
+            return Response.noContent().build();
+        }
+        try {
+            final String mimeType = Files.probeContentType(path);
+
+            final StringBuilder sb = new StringBuilder();
+            try (ReversedLinesFileReader reader = new ReversedLinesFileReader(path.toFile(), StandardCharsets.UTF_8)) {
+                for (int k = 0; k < numLastLinesToRead; k++) {
+                    final String line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    sb.append(line);
+                    sb.append("\n");
+                }
+            }
+
+            return Response.ok(sb.toString())
+                    .type(mimeType)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, path.getFileName().toString())
+                    .header(HttpHeaders.LAST_MODIFIED, new Date(Files.getLastModifiedTime(path).toMillis()))
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static final List<String> LOGFILES = Arrays.asList(
