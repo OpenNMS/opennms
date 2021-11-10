@@ -97,9 +97,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             } catch (Exception e) {
                 LOG.error("Exception while sending response to consumer", e);
             }
+        } else {
+            TwinRequest twinRequest = new TwinRequest(key, location);
+            sendRpcRequest(twinRequest);
         }
-        TwinRequest twinRequest = new TwinRequest(key, location);
-        sendRpcRequest(twinRequest);
 
         LOG.info("Subscribed to object updates with key {}", key);
         return session;
