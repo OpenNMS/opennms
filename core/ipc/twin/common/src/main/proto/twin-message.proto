@@ -21,5 +21,8 @@ message TwinResponseProto {
   bytes twin_object = 2;
   string system_id = 3;
   string location = 4;
-  map<string, string> tracing_info = 5;
+  bool is_patch_object = 5;
+  string session_id = 6;
+  int32 version = 7;
+  map<string, string> tracing_info = 8;
 }

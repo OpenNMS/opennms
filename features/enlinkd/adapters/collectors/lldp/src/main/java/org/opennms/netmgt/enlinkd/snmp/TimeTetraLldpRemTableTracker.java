@@ -31,7 +31,15 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.snmp.*;
+import org.opennms.netmgt.enlinkd.model.LldpLink;
+import org.opennms.netmgt.snmp.TableTracker;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpRowResult;
+import org.opennms.netmgt.snmp.RowCallback;
+import org.opennms.netmgt.snmp.SnmpValue;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +96,9 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 
     };
 
-    public static class LldpRemRow extends SnmpRowResult {
+    public static class TimeTetraLldpRemRow extends SnmpRowResult {
 
-		public LldpRemRow(int columnCount, SnmpInstId instance) {
+		public TimeTetraLldpRemRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);
 		}
@@ -132,29 +140,28 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 	    }
 
 
-	    public TimeTetraLldpLink getLldpLink() {
+	    public LldpLink getLldpLink() {
 
-            TimeTetraLldpLink timeTetraLldpLink = new TimeTetraLldpLink();
-            timeTetraLldpLink.getLldpLink().setLldpLocalPortNum(getLldpRemLocalPortNum());
-            timeTetraLldpLink.setTmnxLldpRemLocalDestMACAddress(getTmnxLldpRemLocalDestMACAddress());
-            timeTetraLldpLink.getLldpLink().setLldpPortIfindex(getIfindex());
-            timeTetraLldpLink.getLldpLink().setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
-            timeTetraLldpLink.getLldpLink().setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
-            timeTetraLldpLink.getLldpLink().setLldpRemSysname(getLldpRemSysname());
-            timeTetraLldpLink.getLldpLink().setLldpRemPortId(getLldpRemPortid());
-            timeTetraLldpLink.getLldpLink().setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
-            timeTetraLldpLink.getLldpLink().setLldpRemPortDescr(getLldpRemPortDescr());
+            LldpLink lldpLink = new LldpLink();
+            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setLldpPortIfindex(getIfindex());
+            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemSysname(getLldpRemSysname());
+            lldpLink.setLldpRemPortId(getLldpRemPortid());
+            lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
+            lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
             LOG.debug( "getLldpLink: local port num: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
-                       timeTetraLldpLink.getLldpLink().getLldpLocalPortNum(),
-                       timeTetraLldpLink.getLldpLink().getLldpPortIfindex(),
-                    timeTetraLldpLink.getTmnxLldpRemLocalDestMACAddress(),
-                       timeTetraLldpLink.getLldpLink().getLldpRemChassisId(),
+                       lldpLink.getLldpLocalPortNum(),
+                       lldpLink.getLldpPortIfindex(),
+                        getTmnxLldpRemLocalDestMACAddress(),
+                       lldpLink.getLldpRemChassisId(),
                        LldpChassisIdSubType.getTypeString(getLldpRemChassisidSubtype()),
-                       timeTetraLldpLink.getLldpLink().getLldpRemSysname(),
-                       timeTetraLldpLink.getLldpLink().getLldpRemPortId(),
+                       lldpLink.getLldpRemSysname(),
+                       lldpLink.getLldpRemPortId(),
                        LldpPortIdSubType.getTypeString(getLldpRemPortidSubtype()));
 
-            return timeTetraLldpLink;
+            return lldpLink;
 	    }
     }
 
@@ -174,21 +181,21 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
     /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(final int columnCount, final SnmpInstId instance) {
-        return new LldpRemRow(columnCount, instance);
+        return new TimeTetraLldpRemRow(columnCount, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public void rowCompleted(final SnmpRowResult row) {
-        processLldpRemRow((LldpRemRow)row);
+        processLldpRemRow((TimeTetraLldpRemRow)row);
     }
 
     /**
      * <p>processLldpRemRow</p>
      *
-     * @param row a {@link TimeTetraLldpRemTableTracker.LldpRemRow} object.
+     * @param row a {@link TimeTetraLldpRemRow} object.
      */
-    public void processLldpRemRow(final LldpRemRow row) {
+    public void processLldpRemRow(final TimeTetraLldpRemRow row) {
     }
 
 }

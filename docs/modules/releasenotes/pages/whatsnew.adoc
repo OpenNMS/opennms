@@ -6,7 +6,7 @@
 == System Requirements
 
 * *Java 11*: OpenNMS Horizon 29 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 13.
+* *PostgreSQL 10 or higher*: Horizon 29 requires any supported version of PostgreSQL from 10 up to (and including) 14.
 
 == Breaking Changes
 
@@ -29,9 +29,17 @@ If you wish to revert to the previous behavior, create an `$OPENNMS_HOME/etc/ope
 RUNAS=root
 ----
 
-=== SQS Minion RPC Support Dropped
+=== Additional configuration needed when using Kafka/gRPC for Minion communication.
 
-Support for Amazon SQS for Minion RPC has been removed.
+The Twin API has replaced the OpenNMS REST API for synchronizing Trapd configuration updates.
+Additional settings are needed on both Minion and {page-component-title} to enable Twin when not using the ActiveMQ message broker.
+
+Refer to the deployment section in the documentation for details.
+
+
+=== SQS Minion IPC Support Dropped
+
+Support for Amazon SQS for Minion communication has been removed.
 We recommend to instead use Kafka for use cases that require horizontal scaling of Minion communication.
 
 === Time Series Integration Layer Changes
@@ -73,7 +81,11 @@ Over time, all configuration information will be migrated to this new API.
 === Provisioning
 
 * A link:https://issues.opennms.org/browse/NMS-13313[`localhost` node is now monitored] and enumerates some useful OpenNMS metrics by default.
-* LLDP scanning in Enlinkd has link:[added support for `TIMETRA-LLDP-MIB`].
+* LLDP scanning in Enlinkd has link:https://issues.opennms.org/browse/NMS-13593[added support for `TIMETRA-LLDP-MIB`].
+
+=== GeoIP Provisioning Adapter
+You can use the GeoIP Provisioning Adapter to enrich a node's asset data with location information.
+It uses the GeoIP2 Databases from MaxMind to look up longitude/latitude values for a given IP address.
 
 === REST API
 

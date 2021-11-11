@@ -35,13 +35,13 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
 
 
     @Override
-    protected void sendRpcRequest(TwinRequestBean twinRequest) {
+    protected void sendRpcRequest(TwinRequest twinRequest) {
         // no need to send any RPC on local subscriber.
     }
 
     @Override
-    public void accept(TwinResponseBean twinResponse) {
-        super.accept(twinResponse);
+    public void accept(TwinUpdate twinUpdate) {
+        super.accept(twinUpdate);
     }
 
     @Override

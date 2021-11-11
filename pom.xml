@@ -1358,8 +1358,6 @@
     <asmVersion>5.0.4</asmVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
-    <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
@@ -1405,6 +1403,7 @@
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
     <geohashVersion>1.4.0</geohashVersion>
+    <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
@@ -1421,6 +1420,7 @@
     <httpcoreVersion>4.4.4</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
+    <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.10.5</jackson2Version>
     <jacocoVersion>0.8.5</jacocoVersion>
@@ -1441,6 +1441,7 @@
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
+    <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
@@ -2371,6 +2372,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-geoip-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3725,6 +3731,16 @@
         <version>99.99.99-use-com-codeborne-phantomjsdriver-until-1-2-1-is-released</version>
       </dependency>
       <dependency>
+        <groupId>com.github.seancfoley</groupId>
+        <artifactId>ipaddress</artifactId>
+        <version>${ipaddressVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.maxmind.geoip2</groupId>
+        <artifactId>geoip2</artifactId>
+        <version>${geoipVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
         <version>1.2.1</version>
@@ -3825,9 +3841,9 @@
         <version>1.5.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>1.4.5</version>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>1.6.7</version>
       </dependency>
       <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
