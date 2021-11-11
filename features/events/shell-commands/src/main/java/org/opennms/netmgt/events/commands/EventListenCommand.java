@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.events.commands;
 
-import com.google.common.base.Strings;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -36,90 +35,58 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.apache.karaf.shell.support.table.ShellTable;
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Command(scope = "opennms", name = "event-listen", description = "Listens to an event sent by event-send")
 @Service
-public class EventListenCommand implements Action {
+public class EventListenCommand implements Action, EventListener {
 
     @Reference
-    public EventConfDao eventConfDao;
-    
-    @Reference
-    public EventDao eventDao;
+    public EventSubscriptionService eventSubscriptionService;
 
-    @Reference
-    public EventForwarder eventForwarder;
-
+    BlockingQueue<IEvent> events = new LinkedBlockingQueue<>();
 
     // options and arguments -------------------------------------------------------------------------------------------
 
-    @Option(name="-l", aliases="--limit", description="Limit the number of events that are shown.")
-    int limit = 10;
-
-    @Option(name="-u", aliases="--uei", description="events uei", required=false, multiValued=false)
-    String eventUei = "uei.opennms.org/alarms/trigger";
-
-    @Option(name="-s", aliases="--seconds", description="number of seconds to run, defaults to 60", required=false, multiValued=false)
-    int numSeconds = 60;
-
-    @Option(name="-r", aliases="--report", description="number of seconds after which the report should be generated, defaults to 15", required=false, multiValued=false)
-    int reportIntervalInSeconds = 15;
-
-    @Argument(name="uei", description="Event UEI to match (exact).", required = false, multiValued = false)
+    @Argument(name="uei", description="Event UEI to match (exact).", required = true)
     @Completion(EventUeiCompleter.class)
     String eventUeiMatch;
 
     // execute override ------------------------------------------------------------------------------------------------
 
+
     @Override
     public Object execute() {
-        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsEvent.class)
-                .orderBy("eventTime").desc()
-                .limit(limit)
-                .alias("node",  "node", JoinType.LEFT_JOIN)
-                .alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
-        
-        if (! Strings.isNullOrEmpty(eventUeiMatch)) {
-            criteriaBuilder.eq("eventUei", eventUeiMatch);
-        }
+        // event subscription service
+        eventSubscriptionService.addEventListener(this, eventUeiMatch);
 
-        final OnmsEventCollection eventCollection = new OnmsEventCollection(eventDao.findMatching(criteriaBuilder.toCriteria()));
-        eventCollection.setTotalCount(eventDao.countMatching(criteriaBuilder.toCriteria()));
-        System.out.println(String.format("Found %d events, showing %d:", eventCollection.getTotalCount(), eventCollection.size()));
-        try {
-            ShellTable table = new ShellTable();
-            table.column("ID");
-            table.column("UEI");
-            table.column("Severity");
-            table.column("Time");
-            table.column("Node Label");
-            table.column("Interface");
-            table.column("Service");
-            for (OnmsEvent event : eventCollection) {
-                String ipAddr = "";
-                if (event.getIpAddr() != null) {
-                    ipAddr = event.getIpAddr().getHostAddress();
-                }
-                String serviceName = "";
-                if (event.getServiceType() != null) {
-                    serviceName = event.getServiceType().getName();
-                }
-                table.addRow().addContent(event.getId(), event.getEventUei(), event.getSeverityLabel(), event.getEventTime(), event.getNodeLabel(), ipAddr, serviceName);
+        // Wait until we timeout or get interrupted
+        while (true) {
+            try {
+                System.out.println(events.take());
+            } catch (Exception e) {
+                break;
             }
-            table.print(System.out);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
-
+        eventSubscriptionService.removeEventListener(this);
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return "EventTest-"+System.identityHashCode(this);
+    }
+
+    @Override
+    public void onEvent(IEvent e) {
+        events.add(e);
     }
 }

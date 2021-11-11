@@ -112,6 +112,8 @@
 
     <service interface="org.opennms.netmgt.events.api.EventForwarder" ref="eventIpcManagerImpl" />
 
+    <service interface="org.opennms.netmgt.events.api.EventSubscriptionService" ref="eventIpcManagerImpl" />
+
     <!-- moreover, expose the only missing Dao reference that is needed for the shell commands -->
     <service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
