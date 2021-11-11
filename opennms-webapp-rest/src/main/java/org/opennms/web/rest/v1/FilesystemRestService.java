@@ -60,12 +60,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.opennms.core.daemon.DaemonReloadEnum;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -76,6 +73,7 @@ import com.google.common.collect.ImmutableSet;
 @Component
 @Path("filesystem")
 public class FilesystemRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(FilesystemRestService.class);
 
     private static final Set<String> SUPPORTED_FILE_EXTENSIONS = ImmutableSet.of("xml",
             "properties",
@@ -84,12 +82,7 @@ public class FilesystemRestService {
             "groovy",
             "bsh");
 
-    public static final String POLLER_CONFIGURATION_XML = "poller-configuration.xml";
-
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
-
-    @Autowired
-    private EventIpcManager eventForwarder;
 
     @GET
     @Path("/")
@@ -100,7 +93,7 @@ public class FilesystemRestService {
         }
 
         try {
-            return Files.find(etcFolder, 3, (path, basicFileAttributes) -> isSupportedExtension(path))
+            return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
                     .map(p -> etcFolder.relativize(p).toString())
                     .sorted()
                     .collect(Collectors.toList());
@@ -154,19 +147,12 @@ public class FilesystemRestService {
             // Copy it to the right place
             Files.copy(tempFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Reload the associated daemon
-            boolean didReloadDaemon = maybeReloadDaemon(fileName);
-
-            // Build our message
-            String message = String.format("Successfully wrote to '%s'.", targetPath);
-            if (didReloadDaemon) {
-                message += " The daemon was reloaded.";
-            }
-
-            return message;
+            return String.format("Successfully wrote to '%s'.", targetPath);
         } finally {
             // Delete the temporary file
-            tempFile.delete();
+            if (!tempFile.delete()) {
+                LOG.warn("Failed to delete temporary file '{}' when uploading contents for '{}'.", tempFile, targetPath);
+            }
         }
     }
 
@@ -186,14 +172,20 @@ public class FilesystemRestService {
         }
     }
 
-    private boolean maybeReloadDaemon(String fileName) {
-        if (POLLER_CONFIGURATION_XML.equals(fileName)) {
-            EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, FilesystemRestService.class.getName());
-            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, DaemonReloadEnum.POLLERD.getDaemonName());
-            eventForwarder.sendNow(eventBuilder.getEvent());
-            return true;
+    private static boolean isSupportedExtension(java.nio.file.Path path) {
+        return SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(path.getFileName().toString()));
+    }
+
+    private java.nio.file.Path ensureFileIsAllowed(String fileName) {
+        final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
+        final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
+        if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
+            throw new BadRequestException("Cannot access files outside of folder! Filename given: " + fileName);
         }
-        return false;
+        if (!SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(fileNormalized.getFileName().toString()))) {
+            throw new BadRequestException("Unsupported file extension: " + fileName);
+        }
+        return fileNormalized;
     }
 
     private void maybeValidateXml(File file) {
@@ -240,22 +232,6 @@ public class FilesystemRestService {
         public String toString() {
             return sb.toString();
         }
-    }
-
-    private java.nio.file.Path ensureFileIsAllowed(String fileName) {
-        final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
-        final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
-        if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
-            throw new BadRequestException("Cannot access files outside of folder! Filename given: " + fileName);
-        }
-        if (!SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(fileNormalized.getFileName().toString()))) {
-            throw new BadRequestException("Unsupported file extension: " + fileName);
-        }
-        return fileNormalized;
-    }
-
-    private static boolean isSupportedExtension(java.nio.file.Path path) {
-        return SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(path.getFileName().toString()));
     }
 
 }

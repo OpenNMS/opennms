@@ -1,5 +1,7 @@
 # System Properties
 
+## Time series
+
 Enable the time-series storage API to delegate persistence and retrieval to a plugin:
 ```
 org.opennms.timeseries.strategy=integration
