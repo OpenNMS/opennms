@@ -22,9 +22,10 @@
     <reference id="serviceTypeDao" interface="org.opennms.netmgt.dao.api.ServiceTypeDao" />
     <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
 
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
-        <argument ref="eventdMetricRegistry" />
+        <argument ref="metricRegistry" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="assetRecordDao" ref="assetRecordDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
@@ -51,7 +52,7 @@
     </bean>
 
     <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
-        <argument ref="eventdMetricRegistry"/>
+        <argument ref="metricRegistry"/>
         <property name="eventConfDao" ref="eventConfDao"/>
         <property name="eventUtil" ref="eventUtil"/>
     </bean>
@@ -59,7 +60,7 @@
 
 
     <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
-        <argument ref="eventdMetricRegistry"/>
+        <argument ref="metricRegistry"/>
         <property name="nodeDao" ref="nodeDao" />
         <property name="eventUtil" ref="eventUtil" />
         <property name="distPollerDao" ref="distPollerDao" />
@@ -69,19 +70,15 @@
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
 
-
-
-    <bean id="eventdMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
-
     <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-        <argument ref="eventdMetricRegistry"/>
+        <argument ref="metricRegistry"/>
         <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
     </bean>
 
     <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
     <bean id="shouldLogEventSummaries" factory-ref="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
     <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl" init-method="afterPropertiesSet">
-        <argument ref="eventdMetricRegistry"/>
+        <argument ref="metricRegistry"/>
         <property name="eventProcessors">
             <list>
                 <!--
@@ -103,7 +100,7 @@
     <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
 
     <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl" init-method="afterPropertiesSet"> <!-- EventIpcManagerDefaultImpl = sub-interface of EventForwarder -->
-        <argument ref="eventdMetricRegistry"/>
+        <argument ref="metricRegistry"/>
         <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
         <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
         <property name="eventHandler" ref="eventdEventHandler"/>
