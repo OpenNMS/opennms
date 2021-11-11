@@ -12,7 +12,7 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
-  <!-- Drools integration -->
+  <!-- Drools integration -->  <!-- MCB need features (drools supporting osgi?) -->
 
   <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
 
