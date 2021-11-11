@@ -23,7 +23,7 @@
 $linkColor: #14d1df;
 .link {
   width: 100%;
-  a {
+  a, a:link, a:visited {
     text-decoration: none;
     color: $linkColor;
     margin-left: 50px;

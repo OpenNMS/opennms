@@ -12,8 +12,8 @@
     <!-- Search -->
     <template #header>
       <div class="flex-container space-between">
-        <div>
-          <h2 style="line-height: 0.7;">Nodes</h2>
+        <div style="margin-top: 10px;">
+          <h2>Nodes</h2>
         </div>
         <div>
           <span class="p-input-icon-left top-10">

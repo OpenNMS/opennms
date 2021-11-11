@@ -12,13 +12,13 @@
       <Search />
     </div>
     <div>
-      <Button @click="returnHandler" class="p-button-md p-button-primary">Return to previous UI</Button>
+      <FeatherButton primary @click="returnHandler">Return to previous UI</FeatherButton>
     </div>
   </div>
 </template>
     
 <script setup lang="ts">
-  import Button from 'primevue/button'
+  import { FeatherButton } from '@featherds/button'
   import Logo from '@/assets/OpenNMS_Horizontal-Logo_Dark-BG.svg'
   import Search from './Search.vue'
   import { useRouter } from 'vue-router'
@@ -29,6 +29,7 @@
 </script>
     
 <style lang="scss">
+@import "../Common/common.scss";
 $menuColor: #0a0c1b;
 .menubar {
   display: flex;

@@ -28,7 +28,11 @@
             <!-- custom data column added -->
             <Column v-for="columnName of props.customData">
                 <template #body="{ data, index }">
-                    <Button :label="columnName" @click="onClickHandle(columnName, data, index)"></Button>
+                    <FeatherButton 
+                        primary 
+                        @click="onClickHandle(columnName, data, index)"
+                    >{{ columnName }}
+                    </FeatherButton>
                 </template>
             </Column>
         </PrimeVueDataTable>
@@ -41,7 +45,7 @@ import { computed, ref } from 'vue'
 import PrimeVueDataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import router from '@/router'
-import Button from "./Button.vue"
+import { FeatherButton }   from '@featherds/button'
 import { useStore } from 'vuex'
 import { notify } from "@kyvg/vue3-notification"
 import { putProvisionDService } from "./../../services/configurationService"

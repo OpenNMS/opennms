@@ -51,7 +51,7 @@
   <hr />
 
   <p>
-    <Button :label="buttonLabel" primeClass="sm" icon="pi pi-users" badge="8"></Button>
+    <FeatherButton primary>Save</FeatherButton>
   </p>
 
   <hr />
@@ -90,7 +90,7 @@ import InputNumber from '../InputNumber.vue'
 import DropDown from '../DropDown.vue'
 import FieldSet from '../FieldSet.vue'
 import TimePicker from '../TimePicker.vue'
-import Button from '../Button.vue'
+import { FeatherButton }   from '@featherds/button'
 import RadioButton from '../RadioButton.vue'
 import RadioButtonGroup from '../RadioButtonFieldSet.vue'
 
