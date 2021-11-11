@@ -13,6 +13,8 @@
     <packaging>bundle</packaging>
     <properties>
       <opennms.doc.component>Plugin Support</opennms.doc.component>
+      <!-- automatically run annotation processors within the incremental compilation -->
+      <m2e.apt.activation>jdt_apt</m2e.apt.activation>
     </properties>
     <build>
         <plugins>
@@ -43,11 +45,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <!-- automatically run annotation processors within the incremental compilation -->
-        <m2e.apt.activation>jdt_apt</m2e.apt.activation>
-    </properties>
 
     <dependencies>
         <dependency>
