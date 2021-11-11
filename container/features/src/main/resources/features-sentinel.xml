@@ -321,4 +321,32 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.snmp-collector/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
     </feature>
+
+
+    <!-- sentinel event-d -->
+    <feature name="sentinel-eventd" description="OpenNMS :: Features :: Events :: Daemon" version="${project.version}">
+        <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
+        <feature>netty4</feature>
+        <feature>commons-beanutils</feature>
+        <feature>commons-lang</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <feature>commons-io</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
+        <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-core-ipc-sink-camel</feature>
+        <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
+        <feature>opennms-core-daemon</feature>
+
+        <feature>opennms-health</feature>
+        <feature>opennms-collection-core</feature>
+        <feature>opennms-dao</feature>
+        <feature>opennms-persistence</feature>
+        <feature>sentinel-config-dao-poll-outages</feature>
+        <feature>sentinel-persistence</feature>
+    </feature>
+
 </features>

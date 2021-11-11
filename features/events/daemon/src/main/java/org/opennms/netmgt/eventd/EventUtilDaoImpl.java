@@ -272,4 +272,20 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
         }
         return descriptorsByName;
     }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
+        this.assetRecordDao = assetRecordDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setHwEntityDao(HwEntityDao hwEntityDao) {
+        this.hwEntityDao = hwEntityDao;
+    }
 }

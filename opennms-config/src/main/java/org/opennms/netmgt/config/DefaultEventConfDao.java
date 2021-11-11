@@ -55,6 +55,7 @@ import org.opennms.netmgt.xml.eventconf.Partition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -247,8 +248,12 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		return m_events;
 	}
 
-	public void setConfigResource(Resource configResource) throws IOException {
+	public void setConfigResource(Resource configResource) throws IOException { // who invokes this?
 		m_configResource = configResource;
+	}
+
+	public void setConfigResourcePath(String path) throws IOException {
+    	m_configResource = new FileSystemResource(path);
 	}
 
 	@Override

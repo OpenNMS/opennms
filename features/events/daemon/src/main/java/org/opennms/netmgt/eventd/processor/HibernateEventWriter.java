@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.Correlation;
 import org.opennms.netmgt.dao.util.Forward;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
@@ -98,8 +100,10 @@ public class HibernateEventWriter implements EventWriter {
     public static final String LOG_MSG_DEST_LOG_ONLY = "logonly";
     public static final String LOG_MSG_DEST_DISPLAY_ONLY = "displayonly";
     
-    @Autowired
-    private TransactionOperations m_transactionManager;
+    //@Autowired
+    //private TransactionOperations m_transactionManager;
+
+    private SessionUtils sessionUtils;
     
     @Autowired
     private NodeDao nodeDao;
@@ -183,16 +187,13 @@ public class HibernateEventWriter implements EventWriter {
             try (Context context = writeTimer.time()) {
                 final AtomicReference<EventProcessorException> exception = new AtomicReference<>();
 
-                m_transactionManager.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        for (Event eachEvent : eventsToPersist) {
-                            try {
-                                process(eventLog.getHeader(), eachEvent);
-                            } catch (EventProcessorException e) {
-                                exception.set(e);
-                                return;
-                            }
+                sessionUtils.withTransaction(() -> {
+                    for (Event eachEvent : eventsToPersist) {
+                        try {
+                            process(eventLog.getHeader(), eachEvent);
+                        } catch (EventProcessorException e) {
+                            exception.set(e);
+                            return;
                         }
                     }
                 });
@@ -276,7 +277,10 @@ public class HibernateEventWriter implements EventWriter {
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            ovent.setDistPoller(monitoringSystemDao.get(event.getDistPoller()));
+            final OnmsMonitoringSystem monitoringSystem = monitoringSystemDao.get(event.getDistPoller());
+            if (monitoringSystem==null) { LOG.warn("No monitoring system match for distPoller = {}. Event cannot be inserted. ", event.getDistPoller()); }
+            // per Jesse: in place of above warning, automatically invoke whatever would INSERT INTO monitoringsystems (id,location,type) VALUES ('00000000-0000-0000-0000-000000ddba11', LOCATION, TYPE);
+            ovent.setDistPoller(monitoringSystem);
         }
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {
@@ -402,7 +406,36 @@ public class HibernateEventWriter implements EventWriter {
         return ovent;
     }
 
-    public void setTransactionManager(TransactionOperations transactionManager) {
-        m_transactionManager = transactionManager;
+//    public void setTransactionManager(TransactionOperations transactionManager) {
+//        m_transactionManager = transactionManager;
+//    }
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
+    public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
+        this.monitoringSystemDao = monitoringSystemDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        this.distPollerDao = distPollerDao;
+    }
+
+    public void setEventDao(EventDao eventDao) {
+        this.eventDao = eventDao;
+    }
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        this.serviceTypeDao = serviceTypeDao;
+    }
+
+    public void setEventUtil(EventUtil eventUtil) {
+        this.eventUtil = eventUtil;
+    }
+
+
 }
