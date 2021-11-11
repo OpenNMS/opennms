@@ -433,7 +433,7 @@ component-dao.xml:
 
 Every system (Core, Minion, Sentinel) is expected to have a unique ID.
 
-The default system id for Sentinel is `00000000-0000-0000-0000-000000ddba11"` and is defined here: [features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml](https://github.com/OpenNMS/opennms/blob/opennms-28.1.1-1/features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml#L16)
+The default system id for Sentinel is `00000000-0000-0000-0000-000000ddba11` and is defined here: [features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml](https://github.com/OpenNMS/opennms/blob/opennms-28.1.1-1/features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml#L16)
 
 To manually add an entry for a Sentinel, you can use
 ```
