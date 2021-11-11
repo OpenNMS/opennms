@@ -119,6 +119,16 @@
       <groupId>org.opennms.features.config.service</groupId>
       <artifactId>org.opennms.features.config.service.impl</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-models</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.swagger.parser.v3</groupId>
+          <artifactId>swagger-parser</artifactId>
+        </exclusion>
+    </exclusions>
     </dependency>
   </dependencies>
 </project>

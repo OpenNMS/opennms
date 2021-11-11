@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,23 +24,25 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
 
-package org.opennms.features.config.rest.impl;
+package org.opennms.features.config.dao.impl.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
-
 import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfigSwaggerConverter {
+    public static final String APPLICATION_JSON = "application/json";
     private final Logger LOG = LoggerFactory.getLogger(ConfigSwaggerConverter.class);
 
     private final Map<ConfigItem, Schema<?>> schemasByItem = new LinkedHashMap<>();
@@ -60,7 +63,7 @@ public class ConfigSwaggerConverter {
 
     private final OpenAPI openAPI = new OpenAPI();
 
-    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException{
+    public String convertToString(ConfigItem item, String prefix, String acceptType) throws JsonProcessingException {
         OpenAPI openapi = convert(item, prefix);
         return convertOpenAPIToString(openapi, acceptType);
     }
@@ -68,7 +71,7 @@ public class ConfigSwaggerConverter {
     /**
      * convert open api object to specific string (default is yaml)
      *
-     * @param openapi schema
+     * @param openapi    schema
      * @param acceptType (json / yaml)
      * @return
      * @throws JsonProcessingException
@@ -76,14 +79,13 @@ public class ConfigSwaggerConverter {
     public String convertOpenAPIToString(OpenAPI openapi, String acceptType) throws JsonProcessingException {
         ObjectMapper objectMapper;
         try {
-            org.springframework.http.MediaType mediaType = org.springframework.http.MediaType.valueOf(acceptType);
-            if (org.springframework.http.MediaType.APPLICATION_JSON.equals(mediaType) && mediaType != null) {
-                objectMapper = new ObjectMapper();
+            if (APPLICATION_JSON.equals(acceptType)) {
+                objectMapper = Json.mapper();
             } else {
-                objectMapper = new ObjectMapper(new YAMLFactory());
+                objectMapper = Yaml.mapper();
             }
         } catch (Exception e) {
-            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage()+ " using media type = yaml instead.");
+            LOG.warn("UNKNOWN MediaType: " + acceptType + " error: " + e.getMessage() + " using media type = yaml instead.");
             objectMapper = new ObjectMapper(new YAMLFactory());
         }
 
@@ -102,7 +104,7 @@ public class ConfigSwaggerConverter {
         }
     }
 
-    private Info genInfo(){
+    private Info genInfo() {
         // TODO: Freddy handle version properly
         Info info = new Info();
         info.setDescription("OpenNMS Data Model");
@@ -112,33 +114,79 @@ public class ConfigSwaggerConverter {
     }
 
     /**
-     * It will generate a big openapi path with external $ref to schema
-     * @param prefix
-     * @param items
-     * @return path openapi doc
+     * replace servers part of openapi
+     *
+     * @param openapi
+     * @param urls
+     * @return
      */
-    public OpenAPI convert(String prefix, Map<String, ConfigItem> items) {
-        // Create an empty set of components
-        Components components = new Components();
-        openAPI.setComponents(components);
-
-        // Create an empty set of paths
-        Paths paths = new Paths();
-        openAPI.setPaths(paths);
-
-        // Create a basic info section
-        Info info = this.genInfo();
-
-        openAPI.setInfo(info);
-        items.forEach((configName, item) -> {
-            // Generate paths for the items
-            this.generatePathsForItems(item, prefix + configName, configName);
-            pathItemsByPath.forEach(paths::addPathItem);
+    public OpenAPI setupServers(OpenAPI openapi, List<String> urls) {
+        final List<Server> servers = new ArrayList<>(1);
+        urls.forEach(url -> {
+            Server server = new Server();
+            server.setUrl(url);
+            servers.add(server);
         });
-        return openAPI;
+        openapi.setServers(servers);
+        return openapi;
+    }
+
+    /**
+     * It will extract all API paths to generate a giant openapi with remote $ref schema
+     *
+     * @param openapiMap
+     * @param prefix     (must include context path)
+     * @return
+     */
+    public OpenAPI mergeAllPathsWithRemoteRef(Map<String, OpenAPI> openapiMap, String prefix) {
+        OpenAPI allApi = new OpenAPI();
+        allApi.setInfo(this.genInfo());
+        allApi.setPaths(new Paths());
+
+        openapiMap.forEach((configName, openapi) -> {
+            Paths paths = openapi.getPaths();
+            paths.forEach((name, path) -> {
+                if (path.readOperations() == null)
+                    return;
+                path.readOperations().forEach((oper -> {
+                    if (oper.getResponses() != null) {
+                        oper.getResponses().forEach((resK, resV) -> {
+                            if (resV.getContent() != null) {
+                                resV.getContent().forEach((ck, cv) -> {
+                                    if (cv.getSchema().get$ref() != null) {
+                                        cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    if (oper.getRequestBody() != null && oper.getRequestBody().getContent() != null) {
+                        oper.getRequestBody().getContent().forEach((ck, cv) -> {
+                            if (cv.getSchema().get$ref() != null) {
+                                cv.getSchema().set$ref(prefix + "schema/" + configName + cv.getSchema().get$ref());
+                            }
+                        });
+                    }
+                }));
+                allApi.getPaths().putIfAbsent(name, path);
+            });
+        });
+        return allApi;
     }
 
     public OpenAPI convert(ConfigItem item, String prefix) {
+        return this.convert(item, prefix, false);
+    }
+
+    /**
+     * Convert ConfigItem to OpenAPI
+     *
+     * @param item
+     * @param prefix
+     * @param isSingleConfig (it will disable post & delete API)
+     * @return
+     */
+    public OpenAPI convert(ConfigItem item, String prefix, boolean isSingleConfig) {
         // Create an empty set of components
         Components components = new Components();
         openAPI.setComponents(components);
@@ -155,24 +203,35 @@ public class ConfigSwaggerConverter {
             }
         });
 
-        // Create an empty set of paths
-        Paths paths = new Paths();
-        openAPI.setPaths(paths);
+        if (prefix != null) {
+            // Create an empty set of paths
+            Paths paths = new Paths();
+            openAPI.setPaths(paths);
 
-        // Generate paths for the items
-        this.generatePathsForItems(item, prefix, null);
-        pathItemsByPath.forEach(paths::addPathItem);
+            // Generate paths for the items
+            this.generatePathsForItems(item,prefix , null, isSingleConfig);
+            pathItemsByPath.forEach(paths::addPathItem);
+        }
 
         return openAPI;
     }
 
+//    public OpenAPI appendPaths(OpenAPI openapi, String prefix){
+//        // Create an empty set of paths
+//        Paths paths = new Paths();
+//        openAPI.setPaths(paths);
+//
+//        // Generate paths for the items
+//        this.generatePathsForItems(item, prefix, null);
+//        pathItemsByPath.forEach(paths::addPathItem);
+//    }
+
     /**
-     *
      * @param item
      * @param prefix
      * @param externalConfigName (use for generate external $ref)
      */
-    private void generatePathsForItems(ConfigItem item, String prefix, String externalConfigName) {
+    private void generatePathsForItems(ConfigItem item, String prefix, String externalConfigName, boolean isSingleConfig) {
         String path = prefix;
 
         // Index the path for future reference
@@ -189,7 +248,7 @@ public class ConfigSwaggerConverter {
         Content jsonObjectContent = new Content();
         MediaType mediaType = new MediaType();
         mediaType.schema(schemaForCurrentItem);
-        jsonObjectContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+        jsonObjectContent.addMediaType(APPLICATION_JSON, mediaType);
 
         // configId result content
         Content configIdContent = new Content();
@@ -198,7 +257,7 @@ public class ConfigSwaggerConverter {
         Schema configIdSchema = new StringSchema();
         configIdParent.setItems(configIdSchema);
         configIdMediaType.schema(configIdParent);
-        configIdContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), configIdMediaType);
+        configIdContent.addMediaType(APPLICATION_JSON, configIdMediaType);
 
         // configId path param
         List<Parameter> parameters = new ArrayList<>();
@@ -210,18 +269,20 @@ public class ConfigSwaggerConverter {
         parameters.add(configIdParam);
 
         //============= POST =================
-        Operation post = this.generateOperation(tagName, "Add " + item.getName() + " configuration", "empty",
-                parameters, jsonObjectContent, null);
-        configIdPathItem.setPost(post);
+        if (!isSingleConfig) {
+            Operation post = this.generateOperation(tagName, "Add " + item.getName() + " configuration", "empty",
+                    parameters, jsonObjectContent, null);
+            configIdPathItem.setPost(post);
+        }
 
         //============== PUT =================
         Operation put = this.generateOperation(tagName, "Overwrite " + item.getName() + " configuration", "OK",
-                parameters, jsonObjectContent, null);
+                isSingleConfig ? null : parameters, jsonObjectContent, null);
         configIdPathItem.setPut(put);
 
         //============== GET =================
         Operation get = this.generateOperation(tagName, "Get " + item.getName() + " configuration",
-                item.getName() + " configuration", parameters, null, jsonObjectContent);
+                item.getName() + " configuration", isSingleConfig ? null : parameters, null, jsonObjectContent);
         configIdPathItem.setGet(get);
 
         Operation getConfigIds = this.generateOperation(tagName, "Get " + item.getName() + " configIds",
@@ -229,13 +290,19 @@ public class ConfigSwaggerConverter {
         configNamePathItem.setGet(getConfigIds);
 
         //============== DELETE =================
-        Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
-                item.getName() + " configuration", parameters, null, null);
-        configIdPathItem.setDelete(delete);
+        if (!isSingleConfig) {
+            Operation delete = this.generateOperation(tagName, "Delete " + item.getName() + " configuration",
+                    item.getName() + " configuration", parameters, null, null);
+            configIdPathItem.setDelete(delete);
+        }
 
         // Save
-        pathItemsByPath.put(path, configNamePathItem);
-        pathItemsByPath.put(path + "/{configId}", configIdPathItem);
+        if(!isSingleConfig) {
+            pathItemsByPath.put(path, configNamePathItem);
+            pathItemsByPath.put(path + "/{configId}", configIdPathItem);
+        } else {
+            pathItemsByPath.put(path + "/default", configIdPathItem);
+        }
     }
 
     private Operation generateOperation(String tagName, String summary, String description,
@@ -282,7 +349,8 @@ public class ConfigSwaggerConverter {
         Content messageContent = new Content();
         messageResponse.setContent(messageContent);
         MediaType mediaType = new MediaType();
-        messageContent.addMediaType(org.springframework.http.MediaType.APPLICATION_JSON.toString(), mediaType);
+
+        messageContent.addMediaType(APPLICATION_JSON.toString(), mediaType);
 
         ObjectSchema parentSchema = new ObjectSchema();
 
@@ -328,6 +396,9 @@ public class ConfigSwaggerConverter {
                 break;
             case STRING:
                 schema = new StringSchema();
+                if (item.getPattern() != null) { // pattern only work on string
+                    schema.setPattern(item.getPattern());
+                }
                 break;
             case NUMBER:
                 schema = new NumberSchema();
@@ -367,19 +438,31 @@ public class ConfigSwaggerConverter {
         if (item.getDocumentation() != null && !"".equals(item.getDocumentation().trim())) {
             schema.setDescription(item.getDocumentation());
         }
-
+        if (item.getMultipleOf() != null) {
+            if (schema instanceof NumberSchema || schema instanceof IntegerSchema)
+                schema.setMultipleOf(BigDecimal.valueOf(item.getMultipleOf()));
+        }
         if (item.getMin() != null) {
-            schema.setMinimum(BigDecimal.valueOf(item.getMin()));
+            if (schema instanceof StringSchema)
+                schema.setMinLength(Math.toIntExact(item.getMin()));
+            else if (schema instanceof ArraySchema)
+                schema.setMinItems(Math.toIntExact(item.getMin()));
+            else
+                schema.setMinimum(BigDecimal.valueOf(item.getMin()));
         }
         if (item.getMax() != null) {
-            schema.setMaximum(BigDecimal.valueOf(item.getMax()));
+            if (schema instanceof StringSchema)
+                schema.setMaxLength(Math.toIntExact(item.getMax()));
+            else if (schema instanceof ArraySchema)
+                schema.setMaxItems(Math.toIntExact(item.getMax()));
+            else
+                schema.setMaximum(BigDecimal.valueOf(item.getMax()));
         }
-        if (item.getPattern() != null) {
-            schema.setPattern(item.getPattern());
-        }
+
         if (item.getDefaultValue() != null) {
             schema.setDefault(item.getDefaultValue());
         }
+
         if (parent != null) {
             // Add the item to the parent
             Schema<?> schemaForParent = schemasByItem.get(parent);
@@ -392,7 +475,7 @@ public class ConfigSwaggerConverter {
             }
 
             if (ConfigItem.Type.ARRAY.equals(parent.getType())) {
-                // If the parent is an array, then add the the child as an item, and not a property
+                // If the parent is an array, then add the child as an item, and not a property
                 ((ArraySchema) schemaForParent).setItems(schemaForCurrentItem);
             } else {
                 schemaForParent.addProperties(schemaForCurrentItem.getName(), schemaForCurrentItem);
@@ -407,19 +490,20 @@ public class ConfigSwaggerConverter {
         schemasByItem.put(item, schema);
     }
 
-    private String generate$ref(ConfigItem item){
+    private String generate$ref(ConfigItem item) {
         return this.generate$ref(item, null);
     }
 
     /**
      * It help to generate $ref for openapi
+     *
      * @param item
      * @param configName (It will generate external reference when it is not null)
      * @return
      */
-    private String generate$ref(ConfigItem item, String configName){
-        if(configName != null) {
-            return "/opennms/rest/cm/schema/"+ configName + "#/components/schemas/" + item.getName();
+    private String generate$ref(ConfigItem item, String configName) {
+        if (configName != null) {
+            return "/opennms/rest/cm/schema/" + configName + "#/components/schemas/" + item.getName();
         } else
             return "#/components/schemas/" + item.getName();
     }

@@ -1771,9 +1771,9 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
-        <bundle>wrap:mvn:com.atlassian.oai/swagger-request-validator-core/${swaggerRequestValidatorVersion}</bundle>
+        <!--bundle>wrap:mvn:com.atlassian.oai/swagger-request-validator-core/${swaggerRequestValidatorVersion}</bundle>
         <bundle>wrap:mvn:io.swagger.core.v3/swagger-models/${swaggerVersion}</bundle>
-        <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle>
+        <bundle>wrap:mvn:io.swagger.parser.v3/swagger-parser/${swaggerParserVersion}</bundle-->
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxp-api-1.4/${servicemixSpecsVersion}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>

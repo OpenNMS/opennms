@@ -51,11 +51,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.google.common.io.Resources;
 
 @JUnitConfigurationEnvironment
-public class ValidateUsingConverterTest {
+public class XmlConverterTest {
     final static String FOREIGN_SOURCES = "/opt/opennms/etc/foreign-sources";
 
     @Test
-    public void testConverter() throws IOException, JAXBException {
+    public void testConverter() throws IOException {
         final XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
         final String sourceXml = Resources.toString(
                 Resources.getResource("provisiond-configuration.xml"), StandardCharsets.UTF_8);
@@ -87,7 +87,7 @@ public class ValidateUsingConverterTest {
     public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
         XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
-        ValidationSchema schema = converter.getValidationSchema();
+        String schema = converter.getRawSchema();
         Assert.assertNotNull("Fail to find schema!!!", schema);
     }
 
@@ -100,7 +100,7 @@ public class ValidateUsingConverterTest {
         test.addSnmpv3User(user);
         test.setUseAddressFromVarbind(true);
         String xmlStr = JaxbUtils.marshal(test);
-        converter.validate(xmlStr, ConfigConverter.SCHEMA_TYPE.XML);
+
         FakeXsdForTest convertedTest =  JaxbUtils.unmarshal(FakeXsdForTest.class, xmlStr);
         Assert.assertEquals("Trap port is wrong after conversion!",
                 1024, convertedTest.getSnmpTrapPort());
@@ -108,33 +108,32 @@ public class ValidateUsingConverterTest {
                 "127.0.0.1", convertedTest.getSnmpTrapAddress());
         Assert.assertEquals("Snmpv3User is wrong after conversion!",
                 "SecurityName", convertedTest.getSnmpv3User(0).getSecurityName());
-        converter.validate(xmlStr, ConfigConverter.SCHEMA_TYPE.XML);
     }
 
-    /**
-     * it is expected to have exception due to not xsd validation. importThreads > 0
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @Test(expected = RuntimeException.class)
-    public void testValidateFail() throws JAXBException, IOException {
-        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
-        FakeXsdForTest test = new FakeXsdForTest();
-        test.setSnmpTrapPort(-1);
-        converter.validate(JaxbUtils.marshal(test), ConfigConverter.SCHEMA_TYPE.XML);
-    }
+//    /**
+//     * it is expected to have exception due to not xsd validation. importThreads > 0
+//     * @throws IOException
+//     * @throws ClassNotFoundException
+//     */
+//    @Test(expected = RuntimeException.class)
+//    public void testValidateFail() throws JAXBException, IOException {
+//        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
+//        FakeXsdForTest test = new FakeXsdForTest();
+//        test.setSnmpTrapPort(-1);
+//        converter.validate(JaxbUtils.marshal(test), ConfigConverter.SCHEMA_TYPE.XML);
+//    }
 
-    /**
-     * it is expected to have exception due to not xsd validation.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-
-    @Test(expected = RuntimeException.class)
-    public void testJsonValidateFail() throws JAXBException, IOException {
-        final String invalidJson = Resources.toString(
-                Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        converter.validate(converter.jsonToXml(invalidJson), ConfigConverter.SCHEMA_TYPE.XML);
-    }
+//    /**
+//     * it is expected to have exception due to not xsd validation.
+//     * @throws IOException
+//     * @throws ClassNotFoundException
+//     */
+//
+//    @Test(expected = RuntimeException.class)
+//    public void testJsonValidateFail() throws JAXBException, IOException {
+//        final String invalidJson = Resources.toString(
+//                Resources.getResource("provisiond_invalid.json"), StandardCharsets.UTF_8);
+//        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+//        converter.validate(converter.jsonToXml(invalidJson), ConfigConverter.SCHEMA_TYPE.XML);
+//    }
 }

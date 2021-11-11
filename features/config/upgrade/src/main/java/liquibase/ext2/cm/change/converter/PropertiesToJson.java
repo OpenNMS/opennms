@@ -34,13 +34,16 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.json.JSONObject;
+import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.service.api.JsonAsString;
 
 /** Converts a configuration properties file into json format to be stored in the cm manger. */
 public class PropertiesToJson {
     final private JsonAsString json;
+    final private ConfigItem schema;
 
-    public PropertiesToJson(final InputStream inputStream) {
+    public PropertiesToJson(final InputStream inputStream, ConfigItem schema) {
+        this.schema = schema;
         Properties props = new Properties();
         try {
             props.load(inputStream);
@@ -50,9 +53,37 @@ public class PropertiesToJson {
 
         JSONObject jsonObject = new JSONObject();
         for(Map.Entry<?,?> entry : props.entrySet()) {
-            jsonObject.put(entry.getKey().toString(), entry.getValue());
+            jsonObject.put(entry.getKey().toString(), cast(entry));
         }
         json = new JsonAsString(jsonObject.toString());
+    }
+
+    private Object cast(Map.Entry<?,?> entry) {
+        if(null == entry.getValue()) {
+            return null;
+        }
+        ConfigItem.Type type = schema
+                .getChild(entry.getKey().toString())
+                .map(ConfigItem::getType)
+                .orElse(ConfigItem.Type.STRING);
+        switch (type) {
+            case STRING:
+                return entry.getValue().toString();
+            case NUMBER:
+                return Double.parseDouble(entry.getValue().toString());
+            case LONG:
+                return Long.parseLong(entry.getValue().toString());
+            case BOOLEAN:
+                return Boolean.parseBoolean(entry.getValue().toString());
+            // TODO: Patrick case DATE:
+            // TODO: Patrick case DATE_TIME:
+            case INTEGER:
+            case POSITIVE_INTEGER:
+            case NON_NEGATIVE_INTEGER:
+            case NEGATIVE_INTEGER:
+                return Integer.parseInt(entry.getValue().toString());
+        }
+        return entry.getValue().toString();
     }
 
     public JsonAsString getJson() {

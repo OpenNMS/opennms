@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2021 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -24,38 +24,33 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ ******************************************************************************/
+package org.opennms.features.config.dao.api.util;
 
-package org.opennms.features.config.dao.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.OpenAPI;
 
-public class XmlSchema {
+import java.io.IOException;
 
-    private final String xsdContent;
-    private final String namespace;
-    private final String topLevelObject;
+/**
+ * Custom serializer to prevent too much null write into database
+ */
+public class OpenAPISerializer extends JsonSerializer<OpenAPI> {
+    private ObjectMapper mapper;
 
-    @JsonCreator
-    public XmlSchema(@JsonProperty("xsdContent") String xsdContent,
-                     @JsonProperty("namespace") String namespace,
-                     @JsonProperty("topLevelObject") String topLevelObject) {
-        this.xsdContent = xsdContent;
-        this.namespace = namespace;
-        this.topLevelObject = topLevelObject;
+    public OpenAPISerializer() {
+        mapper = Json.mapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    public String getXsdContent() {
-        return xsdContent;
+    @Override
+    public void serialize(OpenAPI o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        mapper.writeValue(jsonGenerator, o);
     }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public String getTopLevelObject() {
-        return topLevelObject;
-    }
-
 }

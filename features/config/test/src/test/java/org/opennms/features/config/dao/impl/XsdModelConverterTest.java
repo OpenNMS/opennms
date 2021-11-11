@@ -28,24 +28,34 @@
 
 package org.opennms.features.config.dao.impl;
 
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.io.Resources;
+import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.impl.util.SchemaUtil;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.XsdModelConverter;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 public class XsdModelConverterTest {
-    final String configName = "testConfigName";
 
     @Test
-    public void testData() throws IOException, JAXBException {
+    public void testData() throws IOException {
         // register
         XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
-        ConfigSchema<XmlConverter> configSchema = new ConfigSchema<>(configName, XmlConverter.class, converter);
-        configSchema.getConverter().getValidationSchema().getConfigItem();
 
+        XsdModelConverter xsdConverter = new XsdModelConverter();
+        String xsdStr = Resources.toString(SchemaUtil.getSchemaPath("provisiond-configuration.xsd"), StandardCharsets.UTF_8);
+        XmlSchemaCollection collection = xsdConverter.convertToSchemaCollection(xsdStr);
+        ConfigItem item = xsdConverter.convert(collection, "provisiond-configuration");
+
+        Assert.assertEquals("Should have enough children items", 7, item.getChildren().size());
+        Assert.assertEquals("Should have correct schema ref.",
+                "{http://xmlns.opennms.org/xsd/config/provisiond-configuration}provisiond-configuration", item.getSchemaRef());
+        Assert.assertNotNull("Should have documentation", item.getDocumentation());
     }
 }

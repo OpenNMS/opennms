@@ -32,13 +32,16 @@ import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.createConfigItemForP
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.findPropertyDefinition;
 import static liquibase.ext2.cm.change.Liqui2ConfigItemUtil.getAttributeValueOrThrowException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
+import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +64,7 @@ public class ChangeSchema extends AbstractCmChange {
     private String schemaId;
     private final List<String> validationErrorsWhileParsing = new ArrayList<>();
 
-    private List<Consumer<ConfigItem>> changes = new ArrayList<>();
+    private List<Consumer<OpenAPIBuilder>> changes = new ArrayList<>();
     private List<String> changeLog = new ArrayList<>();
 
     @Override
@@ -85,26 +88,43 @@ public class ChangeSchema extends AbstractCmChange {
                 // we wrap all changes into one statement to be atomic and save some time
                 new GenericCmStatement((ConfigurationManagerService cm) -> {
                     // 1.) find schema
-                    Optional<ConfigDefinition> definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
+                    Optional<ConfigDefinition> definitionOpt = null;
+                    try {
+                        definitionOpt = ((CmDatabase) database).getConfigurationManager().getRegisteredConfigDefinition(this.schemaId);
+                    } catch (JsonProcessingException e) {
+                        LOG.error("Fail to get config definition.", e);
+                        throw new RuntimeException(e);
+                    }
                     ConfigDefinition definition;
                     if (definitionOpt.isEmpty()) {
                         // Create a new one
-                        definition = new ConfigDefinition();
+                        definition = new ConfigDefinition(this.schemaId);
                         definition.setConfigName(this.schemaId);
-                        definition.setSchema(new ConfigItem());
-                        cm.registerConfigDefinition(this.schemaId, definition);
+                        try {
+                            cm.registerConfigDefinition(this.schemaId, definition);
+                        } catch (JsonProcessingException e) {
+                            LOG.error("Fail to register config definition.", e);
+                            throw new RuntimeException(e);
+                        }
                     } else {
                         definition = definitionOpt.get();
                     }
-                    ConfigItem schema = definition.getSchema();
+
+                    OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "/rest/cm", definition.getSchema());
 
                     // 2.) apply all changes
-                    for (Consumer<ConfigItem> change : changes) {
-                        change.accept(schema);
+                    for (Consumer<OpenAPIBuilder> change : changes) {
+                        change.accept(builder);
                     }
 
                     // 3.) write definition
-                    cm.changeConfigDefinition(this.schemaId, definition);
+                    definition.setSchema(builder.build(true));
+                    try {
+                        cm.changeConfigDefinition(this.schemaId, definition);
+                    } catch (IOException e) {
+                        LOG.error("Fail to change config definition.", e);
+                        throw new RuntimeException(e);
+                    }
                 })
         };
     }
@@ -122,7 +142,7 @@ public class ChangeSchema extends AbstractCmChange {
     private void handlePut(ParsedNode node) {
         try {
             final ConfigItem newPropertyDefinition = createConfigItemForProperty(node.getChildren());
-            Consumer<ConfigItem> change = schema -> put(schema, newPropertyDefinition);
+            Consumer<OpenAPIBuilder> change = schema -> put(schema, newPropertyDefinition);
             changes.add(change);
         } catch (IllegalArgumentException e) {
             this.validationErrorsWhileParsing.add(e.getMessage());
@@ -132,27 +152,20 @@ public class ChangeSchema extends AbstractCmChange {
     /**
      * remove old definition (if present) & add new one.
      */
-    static void put(ConfigItem schema, ConfigItem newPropertyDefinition) {
-        findPropertyDefinition(schema, newPropertyDefinition.getName()).ifPresent(p -> schema.getChildren().remove(p));
-        schema.getChildren().add(newPropertyDefinition);
+    static void put(OpenAPIBuilder schema, ConfigItem newPropertyDefinition) {
+        schema.removeAttribute(newPropertyDefinition.getName());
+        schema.addAttribute(newPropertyDefinition);
     }
 
     private void handleDelete(ParsedNode node) {
         try {
             String name = getAttributeValueOrThrowException(node.getChildren(), "name");
             changeLog.add(String.format("DELETE: name=%s", name));
-            Consumer<ConfigItem> change = configItem -> delete(configItem, name);
+            Consumer<OpenAPIBuilder> change = openApi -> openApi.removeAttribute(name);
             changes.add(change);
         } catch (IllegalArgumentException e) {
             this.validationErrorsWhileParsing.add(e.getMessage());
         }
-    }
-
-    /**
-     * remove old definition (if present) & add new one.
-     */
-    static void delete(ConfigItem schema, String propertyName) {
-        findPropertyDefinition(schema, propertyName).ifPresent(configItem -> schema.getChildren().remove(configItem));
     }
 
     public String getSchemaId() {
