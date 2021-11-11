@@ -29,7 +29,6 @@
 package org.opennms.netmgt.flows.elastic.thresholding;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Maps;
 
 public class FlowThresholder {
     private static final Logger LOG = LoggerFactory.getLogger(FlowThresholder.class);
@@ -63,19 +61,30 @@ public class FlowThresholder {
     private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
 
     private final ThresholdingService thresholdingService;
-    private final Map<ApplicationKey, AtomicLong> applicationAccumulator = Maps.newHashMap();
     private final CollectionAgentFactory collectionAgentFactory;
+
+    private final Cache<ApplicationKey, AtomicLong> applicationAccumulator;
 
     private final Cache<NodeInterfaceKey, ThresholdingSession> thresholdingSessions;
 
     public FlowThresholder(final ThresholdingService thresholdingService,
                            final CollectionAgentFactory collectionAgentFactory,
-                           final CacheConfig cacheConfig) {
+                           final CacheConfig aggregationCacheConfig,
+                           final CacheConfig sessionCacheConfig) {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
 
+        this.applicationAccumulator = new CacheBuilder<NodeInterfaceKey, AtomicLong>()
+                .withConfig(aggregationCacheConfig)
+                .withCacheLoader(new CacheLoader<NodeInterfaceKey, AtomicLong>() {
+                    @Override
+                    public AtomicLong load(final NodeInterfaceKey nik) throws Exception {
+                        return new AtomicLong(0L);
+                    }
+                }).build();
+
         this.thresholdingSessions = new CacheBuilder<NodeInterfaceKey, ThresholdingSession>()
-                .withConfig(cacheConfig)
+                .withConfig(sessionCacheConfig)
                 .withCacheLoader(new CacheLoader<NodeInterfaceKey, ThresholdingSession>() {
                     @Override
                     public ThresholdingSession load(final NodeInterfaceKey nik) throws Exception {
@@ -89,41 +98,34 @@ public class FlowThresholder {
     }
 
     public void threshold(final FlowDocument document,
-                          final FlowSource source) {
+                          final FlowSource source) throws ExecutionException, ThresholdInitializationException {
         if (document.getNodeExporter() != null && !Strings.isNullOrEmpty(document.getApplication())) {
             final var nodeId = document.getNodeExporter().getNodeId();
 
-            final var accumulator = this.applicationAccumulator.computeIfAbsent(
-                    new ApplicationKey(nodeId,
+            final var accumulator = this.applicationAccumulator.get(new ApplicationKey(nodeId,
                                        document.getDirection() == Direction.INGRESS
                                        ? document.getInputSnmp()
                                        : document.getOutputSnmp(),
-                                       document.getApplication()),
-                    key -> new AtomicLong(0L));
+                                       document.getApplication()));
 
             final var counter = accumulator.addAndGet(document.getBytes());
 
-            try {
-                final var thresholdingSession = this.thresholdingSessions.get(new NodeInterfaceKey(nodeId,
-                                                                                                   document.getDirection() == Direction.INGRESS
-                                                                                                   ? document.getSrcAddr()
-                                                                                                   : document.getDstAddr()));
+            final var thresholdingSession = this.thresholdingSessions.get(new NodeInterfaceKey(nodeId,
+                                                                                               document.getDirection() == Direction.INGRESS
+                                                                                               ? document.getSrcAddr()
+                                                                                               : document.getDstAddr()));
 
-                final var collectionAgent = this.collectionAgentFactory.createCollectionAgent(
-                        Integer.toString(nodeId),
-                        InetAddressUtils.addr(source.getSourceAddress()));
+            final var collectionAgent = this.collectionAgentFactory.createCollectionAgent(
+                    Integer.toString(nodeId),
+                    InetAddressUtils.addr(source.getSourceAddress()));
 
-                final var nodeResource = new NodeLevelResource(nodeId);
-                final var appResource = new DeferredGenericTypeResource(nodeResource, "flow-application", document.getApplication());
+            final var nodeResource = new NodeLevelResource(nodeId);
+            final var appResource = new DeferredGenericTypeResource(nodeResource, "flow-application", document.getApplication());
 
-                final var collectionSetBuilder = new CollectionSetBuilder(collectionAgent);
-                collectionSetBuilder.withCounter(appResource, "flow-application", "bytes", counter);
+            final var collectionSetBuilder = new CollectionSetBuilder(collectionAgent)
+                    .withCounter(appResource, "flow-application", "bytes", counter);
 
-                thresholdingSession.accept(collectionSetBuilder.build());
-
-            } catch (final ThresholdInitializationException | ExecutionException e) {
-                LOG.warn("Failed to create thresholding session", e);
-            }
+            thresholdingSession.accept(collectionSetBuilder.build());
         }
     }
 }
