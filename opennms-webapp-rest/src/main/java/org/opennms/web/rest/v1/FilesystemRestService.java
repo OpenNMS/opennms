@@ -35,40 +35,58 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.core.daemon.DaemonReloadEnum;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.web.api.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import com.google.common.collect.ImmutableSet;
+
 @Component
 @Path("filesystem")
 public class FilesystemRestService {
+
+    private static final Set<String> SUPPORTED_FILE_EXTENSIONS = ImmutableSet.of("xml",
+            "properties",
+            "cfg",
+            "drl",
+            "groovy",
+            "bsh");
+
+    public static final String POLLER_CONFIGURATION_XML = "poller-configuration.xml";
+
+    private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
 
     @Autowired
     private EventIpcManager eventForwarder;
@@ -76,27 +94,39 @@ public class FilesystemRestService {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getFiles() {
-        return FILES;
+    public List<String> getFiles(@Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for enumerating files.");
+        }
+
+        try {
+            return Files.find(etcFolder, 3, (path, basicFileAttributes) -> isSupportedExtension(path))
+                    .map(p -> etcFolder.relativize(p).toString())
+                    .sorted()
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to enumerate files in path: " + etcFolder, e);
+        }
     }
 
     @GET
     @Path("/help")
     @Produces("text/markdown")
-    public InputStream getFileHelp(@QueryParam("f") String fileName) throws IOException {
-        if (!FILES.contains(fileName)) {
-            throw new RuntimeException("Unsupported filename: '" + fileName + "'");
+    public InputStream getFileHelp(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for retrieving help.");
         }
+        ensureFileIsAllowed(fileName);
         return this.getClass().getResourceAsStream("/help/" + fileName + ".md");
     }
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName) throws IOException {
-        if (!FILES.contains(fileName)) {
-            throw new RuntimeException("Unsupported filename: '" + fileName + "'");
+    public Response getFileContents(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is reading files.");
         }
-        return fileContents(Paths.get(System.getProperty("opennms.home"), "etc", fileName));
+        return fileContents(ensureFileIsAllowed(fileName));
     }
 
     @POST
@@ -104,13 +134,15 @@ public class FilesystemRestService {
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String uploadFile(@QueryParam("f") String fileName,
-                             @Multipart("upload") Attachment attachment) throws IOException {
-        if (!FILES.contains(fileName)) {
-            throw new RuntimeException("Unsupported filename: '" + fileName + "'");
+                             @Multipart("upload") Attachment attachment,
+                             @Context SecurityContext securityContext) throws IOException {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for uploading file contents.");
         }
+        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
 
         // Write the contents a temporary file
-        final File tempFile = File.createTempFile("upload-",fileName);
+        final File tempFile = File.createTempFile("upload-", targetPath.getFileName().toString());
         try {
             tempFile.deleteOnExit();
             final InputStream in = attachment.getObject(InputStream.class);
@@ -120,7 +152,6 @@ public class FilesystemRestService {
             maybeValidateXml(tempFile);
 
             // Copy it to the right place
-            final java.nio.file.Path targetPath = Paths.get(System.getProperty("opennms.home"), "etc", fileName);
             Files.copy(tempFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
             // Reload the associated daemon
@@ -129,7 +160,7 @@ public class FilesystemRestService {
             // Build our message
             String message = String.format("Successfully wrote to '%s'.", targetPath);
             if (didReloadDaemon) {
-                message += " The associated daemon was also reloaded.";
+                message += " The daemon was reloaded.";
             }
 
             return message;
@@ -211,95 +242,20 @@ public class FilesystemRestService {
         }
     }
 
-    public static final String POLLER_CONFIGURATION_XML = "poller-configuration.xml";
-
-    private static final List<String> FILES = Arrays.asList(
-            "availability-reports.xml",
-            "bsf-northbounder-configuration.xml",
-            "collectd-configuration.xml",
-            "discovery-configuration.xml",
-            "drools-northbounder-configuration.xml",
-            "http-datacollection-config.xml",
-            "jdbc-datacollection-config.xml",
-            "log4j2.xml",
-            POLLER_CONFIGURATION_XML,
-            "provisiond-configuration.xml",
-            "rancid-configuration.xml",
-            "snmp-asset-adapter-configuration.xml",
-            "statsd-configuration.xml",
-            "syslogd-configuration.xml",
-            "telemetryd-configuration.xml",
-            "trend-configuration.xml",
-            "viewsdisplay.xml",
-            "wmi-config.xml",
-            "wsman-asset-adapter-configuration.xml",
-            "wsman-config.xml",
-            "snmp-config.xml",
-            "notifd-configuration.xml",
-            "snmptrap-northbounder-configuration.xml",
-            "elastic-credentials.xml",
-            "ksc-performance-reports.xml",
-            "ifttt-config.xml",
-            "rtc-configuration.xml",
-            "enlinkd-configuration.xml",
-            "microblog-configuration.xml",
-            "snmp-metadata-adapter-configuration.xml",
-            "datacollection-config.xml",
-            "javamail-configuration.xml",
-            "threshd-configuration.xml",
-            "ackd-configuration.xml",
-            "tl1d-configuration.xml",
-            "log4j2-tools.xml",
-            "eventd-configuration.xml",
-            "surveillance-views.xml",
-            "opennms-activemq.xml",
-            "nsclient-config.xml",
-            "trapd-configuration.xml",
-            "vmware-datacollection-config.xml",
-            "nsclient-datacollection-config.xml",
-            "jmx-datacollection-config.xml",
-            "users.xml",
-            "destinationPaths.xml",
-            "snmp-hardware-inventory-adapter-configuration.xml",
-            "prometheus-datacollection.d/node-exporter.xml",
-            "xmp-datacollection-config.xml",
-            "thresholds.xml",
-            "translator-configuration.xml",
-            "vacuumd-configuration.xml",
-            "eventconf.xml",
-            "site-status-views.xml",
-            "email-northbounder-configuration.xml",
-            "notifications.xml",
-            "xml-datacollection-config.xml",
-            "remote-repository.xml",
-            "jmx-config.xml",
-            "vmware-config.xml",
-            "ami-config.xml",
-            "syslog-northbounder-configuration.xml",
-            "service-configuration.xml",
-            "notificationCommands.xml",
-            "actiond-configuration.xml",
-            "prometheus-datacollection-config.xml",
-            "vmware-cim-datacollection-config.xml",
-            "jasper-reports.xml",
-            "scriptd-configuration.xml",
-            "reportd-configuration.xml",
-            "tca-datacollection-config.xml",
-            "categories.xml",
-            "database-reports.xml",
-            "wsman-datacollection-config.xml",
-            "poll-outages.xml",
-            "rws-configuration.xml",
-            "snmp-interface-poller-configuration.xml",
-            "wmi-datacollection-config.xml",
-            "chart-configuration.xml",
-            "search-actions.xml",
-            "xmp-config.xml",
-            // non-xml
-            "opennms.properties",
-            "javamail-configuration.properties",
-            "org.opennms.features.topology.app.cfg"
-    ); static {
-        FILES.sort(Comparator.naturalOrder());
+    private java.nio.file.Path ensureFileIsAllowed(String fileName) {
+        final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
+        final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
+        if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
+            throw new BadRequestException("Cannot access files outside of folder! Filename given: " + fileName);
+        }
+        if (!SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(fileNormalized.getFileName().toString()))) {
+            throw new BadRequestException("Unsupported file extension: " + fileName);
+        }
+        return fileNormalized;
     }
+
+    private static boolean isSupportedExtension(java.nio.file.Path path) {
+        return SUPPORTED_FILE_EXTENSIONS.contains(FilenameUtils.getExtension(path.getFileName().toString()));
+    }
+
 }
