@@ -32,20 +32,25 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.opennms.web.api.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -56,18 +61,45 @@ public class LogRestService {
 
     public static final int MAX_NUM_LINES = 10000;
 
+    private static final String LOG_FILE_EXTENSION = ".log";
+
+    private final java.nio.file.Path logFolder = Paths.get(System.getProperty("opennms.home"), "logs");
+
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getLogFiles() {
-        return LOGFILES;
+    public List<String> getLogFiles(@Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for enumerating log files.");
+        }
+
+        try {
+            return Files.find(logFolder, 1,
+                    (path, basicFileAttributes) -> path.getFileName().toString().endsWith(LOG_FILE_EXTENSION))
+                    .map(p -> p.getFileName().toString())
+                    .sorted()
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to enumerate log files in path: " + logFolder, e);
+        }
     }
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines) {
-        if (!LOGFILES.contains(fileName)) {
-            throw new RuntimeException("Unsupported filename: '" + fileName + "'");
+    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines, @Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for reading log files.");
+        }
+
+        // Ensure that the filename ends with the extension
+        if (!fileName.endsWith(LOG_FILE_EXTENSION)) {
+            throw new BadRequestException("Invalid log file extension access files outside of log folder! Filename given: " + fileName);
+        }
+
+        // Ensure that the file is in the given folder
+        final java.nio.file.Path logFilePath = logFolder.resolve(fileName);
+        if (!Objects.equals(logFolder, logFilePath.getParent())) {
+            throw new BadRequestException("Cannot access files outside of log folder! Filename given: " + fileName);
         }
 
         int N = DEFAULT_NUM_LINES;
@@ -76,7 +108,7 @@ public class LogRestService {
         }
         N = Math.min(MAX_NUM_LINES, Math.max(N, 1)); // make sure the value is within [1, MAX_NUM_LINES]
 
-        return logFileContents(Paths.get(System.getProperty("opennms.home"), "logs", fileName), N);
+        return logFileContents(logFilePath, N);
     }
 
     public static Response logFileContents(final java.nio.file.Path path, int numLastLinesToRead) {
@@ -108,40 +140,4 @@ public class LogRestService {
         }
     }
 
-    private static final List<String> LOGFILES = Arrays.asList(
-            "ackd.log",
-            "actiond.log",
-            "alarmd.log",
-            "bsmd.log",
-            "collectd.log",
-            "discovery.log",
-            "enlinkd.log",
-            "event-translator.log",
-            "eventd.log",
-            "icmp.log",
-            "ipc.log",
-            "jetty-server.log",
-            "karaf.log",
-            "karafStartupMonitor.log",
-            "manager.log",
-            "minion.log",
-            "notifd.log",
-            "output.log",
-            "passive.log",
-            "perspectivepollerd.log",
-            "poller.log",
-            "provisiond.log",
-            "queued.log",
-            "reportd.log",
-            "rtc.log",
-            "scriptd.log",
-            "statsd.log",
-            "telemetryd.log",
-            "trapd.log",
-            "trouble-ticketer.log",
-            "vacuumd.log",
-            "web.log"
-    ); static {
-        LOGFILES.sort(Comparator.naturalOrder());
-    }
 }
