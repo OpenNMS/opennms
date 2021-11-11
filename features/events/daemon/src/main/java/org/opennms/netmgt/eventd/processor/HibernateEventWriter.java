@@ -50,6 +50,7 @@ import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
@@ -276,7 +277,10 @@ public class HibernateEventWriter implements EventWriter {
         }
         // Otherwise, use the event's distPoller
         if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
-            ovent.setDistPoller(monitoringSystemDao.get(event.getDistPoller()));
+            final OnmsMonitoringSystem monitoringSystem = monitoringSystemDao.get(event.getDistPoller());
+            if (monitoringSystem==null) { LOG.warn("No monitoring system match for distPoller = {}. Event cannot be inserted. ", event.getDistPoller()); }
+            // per Jesse: in place of above warning, automatically invoke whatever would INSERT INTO monitoringsystems (id,location,type) VALUES ('00000000-0000-0000-0000-000000ddba11', LOCATION, TYPE);
+            ovent.setDistPoller(monitoringSystem);
         }
         // And if both are unavailable, use the local system as the event's source system
         if (ovent.getDistPoller() == null) {
