@@ -394,7 +394,7 @@
         -->
 
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <!-- <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle> -->
+        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
 
     </feature>
 </features>

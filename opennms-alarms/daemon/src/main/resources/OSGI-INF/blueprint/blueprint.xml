@@ -35,6 +35,7 @@
     <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
     -->
 
+    <!--
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
     <bean id="droolsAlarmContext" class="org.opennnms.netmgt" >
@@ -52,16 +53,11 @@
         <property name="hwEntityDao" ref="hwEntityDao" />
     </bean>
 
-    <!-- tag, persist, issueCb(lifecycle listener?)-->
-    <!--  <bean interface="org.opennms.netmgt.alarmd.AlarmMatchers" /> -->
-    <!--  <bean interface="org.opennms.netmgt.alarmd.AlarmPersister" /> -->
 
     <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" />
 
-    <!-- service exports -->
-    <!-- ./opennms-alarms/30.0.0-SNAPSHOT/opennms-alarms-30.0.0-SNAPSHOT.pom --> <!-- opennms-alarmd -->
-    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" /> <!-- impl: AlarmLifecycleListenerManager -->
-    <!-- moreover, expose the only missing Dao reference that is needed for the shell commands -->
+    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" />
     <service interface="org.opennms.netmgt.config.api.AlarmDao" ref="eventConfDao" />
+    -->
 
 </blueprint>
