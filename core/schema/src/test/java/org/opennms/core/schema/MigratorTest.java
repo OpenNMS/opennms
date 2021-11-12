@@ -44,20 +44,20 @@ public class MigratorTest {
 
 
     @Test
-    public void testGetUserForDDLWithHostname() {
+    public void testGetUserForONMSDBWithHostname() {
         String userName = "opennms@test-env-onms";
         Migrator migrator = new Migrator();
         migrator.setDatabaseUser(userName);
-        assertEquals("opennms",  migrator.getUserForDDL());
+        assertEquals("opennms",  migrator.getUserForONMSDB());
     }
 
 
     @Test
-    public void testGetUserForDDLWithoutHostname() {
+    public void testGetUserForONMSDBWithoutHostname() {
         String userName = "opennms";
         Migrator migrator = new Migrator();
         migrator.setDatabaseUser(userName);
-        assertEquals("opennms",  migrator.getUserForDDL());
+        assertEquals("opennms",  migrator.getUserForONMSDB());
     }
 
 }

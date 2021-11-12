@@ -418,10 +418,10 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getUserForDDL() + "'");
+            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getUserForONMSDB() + "'");
             if (rs.next()) {
                 final String datname = rs.getString("usename");
-                if (datname != null && datname.equalsIgnoreCase(getUserForDDL())) {
+                if (datname != null && datname.equalsIgnoreCase(getUserForONMSDB())) {
                     return true;
                 } else {
                     return false;
@@ -452,7 +452,7 @@ public class Migrator {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            st.execute("CREATE USER " + getUserForDDL() + " WITH PASSWORD '" + getDatabasePassword() + "'");
+            st.execute("CREATE USER " + getUserForONMSDB() + " WITH PASSWORD '" + getDatabasePassword() + "'");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {
@@ -460,7 +460,7 @@ public class Migrator {
         }
     }
 
-    protected String getUserForDDL() {
+    protected String getUserForONMSDB() {
         String user = getDatabaseUser();
         user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
         return user;
@@ -554,7 +554,7 @@ public class Migrator {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
             st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
-            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForDDL() + "\"");
+            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {
