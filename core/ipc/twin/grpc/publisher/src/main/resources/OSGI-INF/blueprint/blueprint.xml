@@ -15,7 +15,6 @@
           init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
         <argument ref="grpcIpcServer"/>
-        <argument value="${port}"/>
     </bean>
 
     <service ref="grpcTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher">
