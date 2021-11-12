@@ -149,11 +149,15 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized TrapdConfig getInstance() {
+    public static synchronized TrapdConfigFactory getInstance() throws IOException {
        /* if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
         return m_singleton;*/
-        return BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfig.class);
+
+        TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
+        configFactory.reload();
+        return configFactory;
+
     }
     
     /**
