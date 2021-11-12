@@ -367,10 +367,6 @@
         <bundle>mvn:org.kie/kie-internal/7.31.0.Final</bundle>
         <bundle>mvn:org.drools/drools-core-reflective/7.31.0.Final</bundle>
 
-        <feature>opennms-core-daemon</feature>
-        <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
-
         <!-- these are not needed, remove
         <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/30.0.0-SNAPSHOT</bundle>
@@ -394,11 +390,11 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/30.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-impl/30.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms/opennms-model/30.0.0-SNAPSHOT</bundle>
+        <feature>opennms-core-daemon</feature>
         -->
 
-        <feature>opennms-core-daemon</feature>
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+        <!-- <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle> -->
 
     </feature>
 </features>
