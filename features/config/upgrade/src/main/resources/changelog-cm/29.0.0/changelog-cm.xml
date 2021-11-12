@@ -23,4 +23,10 @@
         <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="05e182a8a059a6464f894ffd7d32f3b9f1b023a9e8da2593e238c79bae36359f" rootElement="discovery-configuration"/>
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
+
+    <changeSet author="psuthar" id="1.0-register-schema-trapd">
+        <cm:registerSchema id="trapd"/>
+        <cm:importSchemaFromXsd id="trapd" xsdFileName="trapd-configuration.xsd" xsdFileHash="ad97a001cd7ebb8a8b1a45574ba4e681e204ecf8592bf264764d4d7f52efc7a1" rootElement="trapd-configuration"/>
+        <cm:importConfig schemaId="trapd" configId="default" filePath="trapd-configuration.xml"/>
+    </changeSet>
 </databaseChangeLog>
