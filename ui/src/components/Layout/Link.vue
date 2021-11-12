@@ -18,7 +18,7 @@ defineProps({
 <style lang="scss" scoped>
 .link {
   width: 100%;
-  a {
+  a, a:link, a:visited {
     color: var(--feather-primary-text-on-color);
     margin-left: 50px;
   }

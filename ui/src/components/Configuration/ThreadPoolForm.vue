@@ -43,17 +43,18 @@
         <ValidationMessage :model="validationVar.threadpool.writeThreads"></ValidationMessage>
       </div>
       <div class="p-field p-col-2">
-        <Button
-          icon="pi pi-save"
-          label="Save"
+        <FeatherButton 
+          primary
           :disabled="
             validationVar.threadpool.writeThreads.$invalid ||
             validationVar.threadpool.scanThreads.$invalid ||
             validationVar.threadpool.rescanThreads.$invalid ||
             validationVar.threadpool.importThreads.$invalid
-          "
+            "
           @click="onSave()"
-        ></Button>
+        >
+          Save
+        </FeatherButton>
       </div>
     </div>
   </div>
@@ -62,7 +63,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import InputNumber from '../Common/InputNumber.vue'
-import Button from '../Common/Button.vue'
+import { FeatherButton } from '@featherds/button'
 import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
 import { useStore } from 'vuex'
