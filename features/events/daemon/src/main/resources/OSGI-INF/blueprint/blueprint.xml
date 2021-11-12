@@ -41,7 +41,7 @@
     feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/spring-legacy
     feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/sentinel
     -->
-    <!-- system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes  -->
+    <!-- ** system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes  -->
     <bean id="eventConfResourceLocation" class="java.lang.String">
         <!-- <argument value="file:${opennms.home}/etc/eventconf.xml" /> -->
         <argument value="/Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/eventconf.xml" />
