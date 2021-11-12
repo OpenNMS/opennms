@@ -31,7 +31,14 @@
               :icon="setIcon(node)"
               add
             >
-              <l-popup>{{ node.label }}</l-popup>
+              <l-popup>
+                <h4>Node <span>{{ node.label }}</span></h4>
+                <p><a href="#">View in Topology Map</a></p>
+                <ul>
+                  <li>Description: </li>
+                  <li>Severity: {{alarmSeverity}}</li>
+                </ul>
+              </l-popup>
             </l-marker>
             <l-polyline
               v-for="(coordinatePair, index) in edges"
@@ -87,10 +94,11 @@ let interestedAlarms = computed(() => {
   return store.getters["mapModule/getAlarmsFromSelectedNodes"];
 });
 
-
+let alarmSeverity:string = "";
 const setIcon = (node: Node): L.Icon | void =>  {
   for (const alarm of interestedAlarms.value) {
     if (node.label === alarm.nodeLabel) {
+      alarmSeverity = alarm.severity;
       return L.icon({
         iconUrl: setMarkerColor(alarm.severity),
         shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
@@ -188,5 +196,16 @@ const tileProviders = [
 <style scoped>
 .geo-map {
   height: 80vh;
+}
+.leaflet-popup-content-wrapper h4{
+  font-size: 20px;
+  font-weight: normal;
+  margin: 0px;
+}
+.leaflet-popup-content-wrapper h4 span{
+  color: #0078A8;
+}
+.leaflet-popup-content-wrapper p{
+  margin: 0px;
 }
 </style>
