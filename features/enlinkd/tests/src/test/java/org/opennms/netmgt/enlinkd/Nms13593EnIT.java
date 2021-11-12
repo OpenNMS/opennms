@@ -48,7 +48,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.*;
 public class Nms13593EnIT extends EnLinkdBuilderITCase {
         
 	Nms13593NetworkBuilder builder = new Nms13593NetworkBuilder();
-    /*
+/*
 A:ZHBGO1Zsr001# show system lldp neighbor
 Link Layer Discovery Protocol (LLDP) System Information
 
@@ -76,7 +76,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             @JUnitSnmpAgent(host=ZHBGO1Zsr001_IP, port=161, resource=ZHBGO1Zsr001_RESOURCE),
             @JUnitSnmpAgent(host=ZHBGO1Zsr002_IP, port=161, resource=ZHBGO1Zsr002_RESOURCE)
     })
-    public void testLldpLinks() {
+    public void testLldpSrv001Src002Links() {
         m_nodeDao.save(builder.getZHBGO1Zsr001());
         m_nodeDao.save(builder.getZHBGO1Zsr002());
 
@@ -147,7 +147,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
             printLldpLink(link);
             assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
             assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
-            if (link.getNode().getId() == zsr001.getId()) {
+            if (link.getNode().getId().intValue() == zsr001.getId().intValue()) {
                 switch (link.getLldpLocalPortNum()) {
                     case 1:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
@@ -180,7 +180,7 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
                         fail();
                         break;
                 }
-            } else if (link.getNode().getId() == zsr002.getId()) {
+            } else if (link.getNode().getId().intValue() == zsr002.getId().intValue()) {
                 switch (link.getLldpLocalPortNum()) {
                     case 1:
                         assertEquals(104906753,link.getLldpPortIfindex().intValue());
@@ -286,5 +286,186 @@ ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
 
 
     }
+
+    /*
+A:ZHBGO1Zsr001# show system lldp neighbor
+Link Layer Discovery Protocol (LLDP) System Information
+
+===============================================================================
+NB = nearest-bridge   NTPMR = nearest-non-tpmr   NC = nearest-customer
+===============================================================================
+Lcl Port      Scope Remote Chassis ID  Index  Remote Port     Remote Sys Name
+-------------------------------------------------------------------------------
+3/2/c1/1      NB    50:E0:EF:00:06:00  1      1/1/c1/1, 100-* esat-1
+3/2/c3/1      NB    50:E0:EF:00:06:00  2      1/1/c3/1, 100-* esat-1
+3/2/c5/1      NB    24:21:24:DA:F6:3F  3      3/2/c5/1        ZHBGO1Zsr002
+3/2/c6/1      NB    24:21:24:DA:F6:3F  4      3/2/c6/1        ZHBGO1Zsr002
+===============================================================================
+* indicates that the corresponding row element may have been truncated.
+Number of neighbors : 4
+
+two LLDP links must be found
+ZHBGO1Zsr001 (3/2/c5/1) -> ZHBGO1Zsr002 (3/2/c5/1)
+ZHBGO1Zsr001 (3/2/c6/1) -> ZHBGO1Zsr002 (3/2/c6/1)
+
+     */
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ZHBGO1Zsr003_IP, port=161, resource=ZHBGO1Zsr003_RESOURCE),
+            @JUnitSnmpAgent(host=ZHBGO1Zsr004_IP, port=161, resource=ZHBGO1Zsr004_RESOURCE)
+    })
+    public void testLldpSrv003Src004Links() {
+        m_nodeDao.save(builder.getZHBGO1Zsr003());
+        m_nodeDao.save(builder.getZHBGO1Zsr004());
+
+        m_nodeDao.flush();
+
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+
+        assertTrue(m_linkdConfig.useLldpDiscovery());
+        assertFalse(m_linkdConfig.useCdpDiscovery());
+        assertFalse(m_linkdConfig.useOspfDiscovery());
+        assertFalse(m_linkdConfig.useBridgeDiscovery());
+        assertFalse(m_linkdConfig.useIsisDiscovery());
+
+        final OnmsNode zsr003 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr003_NAME);
+        final OnmsNode zsr004 = m_nodeDao.findByForeignId("linkd", ZHBGO1Zsr004_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(zsr003.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(zsr004.getId()));
+
+
+        assertTrue(m_linkd.runSingleSnmpCollection(zsr003.getId()));
+        assertEquals(1, m_lldpElementDao.countAll());
+        assertEquals(1, m_lldpLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(zsr004.getId()));
+        assertEquals(2, m_lldpElementDao.countAll());
+        assertEquals(2, m_lldpLinkDao.countAll());
+
+
+
+        int ei = 0;
+        int ej = 0;
+        for (final LldpElement node: m_lldpElementDao.findAll()) {
+            printLldpElement(node);
+            assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,node.getLldpChassisIdSubType());
+            switch (node.getLldpSysname()) {
+                case "srv003":
+                    assertEquals(zsr003.getId().intValue(),node.getNode().getId().intValue());
+                    assertEquals(ZHBGO1Zsr003_LLDP_ID,node.getLldpChassisId());
+                    ei++;
+                    break;
+                case "srv004":
+                    assertEquals(zsr004.getId().intValue(),node.getNode().getId().intValue());
+                    assertEquals(ZHBGO1Zsr004_LLDP_ID,node.getLldpChassisId());
+                    ej++;
+                    break;
+                default:
+                    fail();
+                    break;
+            }
+        }
+        assertEquals(1,ei);
+        assertEquals(1,ej);
+
+        int l34=0;
+        int l43=0;
+
+        for (LldpLink link: m_lldpLinkDao.findAll()) {
+            printLldpLink(link);
+            assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
+            assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            if (link.getNode().getId().intValue() == zsr003.getId().intValue()) {
+                if (link.getLldpLocalPortNum() == 1) {
+                    assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+                    assertEquals(ZHBGO1Zsr004_LLDP_ID, link.getLldpRemChassisId());
+                    assertEquals(ZHBGO1Zsr004_NAME, link.getLldpRemSysname());
+
+                    assertEquals("35684352", link.getLldpPortId());
+                    assertEquals(35684352, link.getLldpPortIfindex().intValue());
+                    assertEquals("1/1/1, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv004-1/1/9\"", link.getLldpPortDescr());
+                    assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
+
+                    assertEquals("35946496", link.getLldpRemPortId());
+                    assertEquals("1/1/9, 10/100/Gig Ethernet SFP, \"to_srv003-1/1/1\"", link.getLldpRemPortDescr());
+                    assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpRemPortIdSubType());
+                    l34++;
+                } else {
+                    fail();
+                }
+            } else if (link.getNode().getId().intValue() == zsr004.getId().intValue()) {
+                if (link.getLldpLocalPortNum() == 1) {
+                    assertEquals(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+                    assertEquals(ZHBGO1Zsr003_LLDP_ID, link.getLldpRemChassisId());
+                    assertEquals(ZHBGO1Zsr003_NAME, link.getLldpRemSysname());
+
+                    assertEquals("35684352", link.getLldpRemPortId());
+                    assertEquals("1/1/1, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv004-1/1/9\"", link.getLldpRemPortDescr());
+                    assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpRemPortIdSubType());
+
+                    assertEquals("35946496", link.getLldpPortId());
+                    assertEquals(35946496, link.getLldpPortIfindex().intValue());
+                    assertEquals("1/1/9, 10/100/Gig Ethernet SFP, \"to_srv003-1/1/1\"", link.getLldpPortDescr());
+                    assertEquals(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, link.getLldpPortIdSubType());
+                    l43++;
+                } else {
+                    fail();
+                }
+            } else {
+                fail();
+            }
+        }
+
+        assertEquals(1,l34);
+        assertEquals(1,l43);
+
+        m_linkd.forceTopologyUpdaterRun(ProtocolSupported.LLDP);
+        m_linkd.runTopologyUpdater(ProtocolSupported.LLDP);
+
+        LldpOnmsTopologyUpdater updater = m_linkd.getLldpTopologyUpdater();
+
+        OnmsTopology topology = updater.getTopology();
+        Assert.assertNotNull(topology);
+        assertEquals(2,topology.getVertices().size());
+        assertEquals(1,topology.getEdges().size());
+        int i=0;
+        int j=0;
+        for (OnmsTopologyVertex v :topology.getVertices()) {
+            switch (v.getLabel()) {
+                case "srv003":
+                    i++;
+                    break;
+                case "srv004":
+                    j++;
+                    break;
+                default:
+                    fail();
+            }
+
+        }
+        assertEquals(1,i);
+        assertEquals(1,j);
+
+        OnmsTopologyEdge e = topology.getEdges().iterator().next();
+        System.err.println(e.getSource().getIfindex());
+        System.err.println(e.getTarget().getIfindex());
+        System.err.println(e.getSource().getIfname());
+        System.err.println(e.getTarget().getIfname());
+
+        assertEquals("srv003",e.getSource().getVertex().getLabel());
+        assertEquals("srv004",e.getTarget().getVertex().getLabel());
+        assertEquals("1/1/1",e.getSource().getIfname());
+        assertEquals(35684352,e.getSource().getIfindex().intValue());
+        assertEquals("1/1/9",e.getTarget().getIfname());
+        assertEquals(35946496,e.getTarget().getIfindex().intValue());
+
+    }
+
 
 }

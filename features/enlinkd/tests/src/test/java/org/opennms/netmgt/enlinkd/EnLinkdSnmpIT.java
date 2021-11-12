@@ -722,6 +722,248 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
     }
 
+    /**
+     * This test is designed to test the issues in bug NMS-13593.
+     *
+     * @see "https://issues.opennms.org/browse/NMS-13593"
+
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ZHBGO1Zsr003_IP, port=161, resource=ZHBGO1Zsr003_RESOURCE)
+    })
+    public void testTimeTetraLldpSrv003Walk() throws Exception {
+        String trackerName03 = "lldpLocalGroup03";
+        SnmpAgentConfig  config03 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr003_IP));
+        LldpLocalGroupTracker lldpLocalGroup03 = new LldpLocalGroupTracker();
+        final List<TimeTetraLldpLink> links03 = new ArrayList<>();
+
+        try {
+            m_client.walk(config03,lldpLocalGroup03)
+                    .withDescription(trackerName03)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement lldpElement03 = lldpLocalGroup03.getLldpElement();
+        LOG.warn("03 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement03.getLldpChassisIdSubType().getValue()));
+        LOG.warn("03 local chassis id: " + lldpElement03.getLldpChassisId());
+        LOG.warn("03 local sysname: " + lldpElement03.getLldpSysname());
+        LOG.warn("03 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement03.getLldpChassisIdSubType().getValue()));
+        LOG.warn("03 local chassis id: " + lldpElement03.getLldpChassisId());
+        LOG.warn("03 local sysname: " + lldpElement03.getLldpSysname());
+
+        assertEquals(ZHBGO1Zsr003_LLDP_ID, lldpElement03.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement03.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr003_NAME, lldpElement03.getLldpSysname());
+        assertEquals(ZHBGO1Zsr003_LLDP_ID, lldpElement03.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement03.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr003_NAME, lldpElement03.getLldpSysname());
+
+        LldpRemTableTracker lldpRemTable03 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                fail();
+            }
+        };
+
+        try {
+            m_client.walk(config03,
+                            lldpRemTable03)
+                    .withDescription("lldpRemTable03")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        TimeTetraLldpRemTableTracker timetetralldpRemTable03
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                assertEquals(6, row.getColumnCount());
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links03.add(timeTetraLldpLinklink);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+        try {
+            m_client.walk(config03,
+                            timetetralldpRemTable03)
+                    .withDescription("timetetralldpRemTable03")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        assertEquals(1,links03.size());
+        TimeTetraLldpLink ttlink03 = links03.iterator().next();
+        final TimeTetraLldpLocPortGetter ttlldpLocPort03 = new TimeTetraLldpLocPortGetter(config03,
+                m_client,
+                null,0);
+
+
+        LldpLink updated = ttlldpLocPort03.getLldpLink(ttlink03);
+        LOG.warn("03 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+        LOG.warn("03 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+        LOG.warn("03 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+        LOG.warn("03 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+        LOG.warn("03 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+        LOG.warn("03 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+        LOG.warn("03 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+        LOG.warn("03 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+        LOG.warn("03 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+        LOG.warn("03 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
+
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,updated.getLldpRemChassisIdSubType());
+        assertEquals(ZHBGO1Zsr004_LLDP_ID,updated.getLldpRemChassisId());
+        assertEquals(ZHBGO1Zsr004_NAME,updated.getLldpRemSysname());
+
+        assertEquals("35684352",updated.getLldpPortId());
+        assertEquals(35684352,updated.getLldpPortIfindex().intValue());
+        assertEquals("1/1/1, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv004-1/1/9\"",updated.getLldpPortDescr());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+
+        assertEquals("35946496",updated.getLldpRemPortId());
+        assertEquals("1/1/9, 10/100/Gig Ethernet SFP, \"to_srv003-1/1/1\"",updated.getLldpRemPortDescr());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpRemPortIdSubType());
+
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-13593.
+     *
+     * @see "https://issues.opennms.org/browse/NMS-13593"
+
+     *
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ZHBGO1Zsr004_IP, port=161, resource=ZHBGO1Zsr004_RESOURCE)
+    })
+    public void testTimeTetraLldpSrv004Walk() throws Exception {
+        String trackerName04 = "lldpLocalGroup04";
+        SnmpAgentConfig  config04 = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ZHBGO1Zsr004_IP));
+        LldpLocalGroupTracker lldpLocalGroup04 = new LldpLocalGroupTracker();
+        final List<TimeTetraLldpLink> links04 = new ArrayList<>();
+
+        try {
+            m_client.walk(config04,lldpLocalGroup04)
+                    .withDescription(trackerName04)
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement lldpElement04 = lldpLocalGroup04.getLldpElement();
+        LOG.warn("04 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement04.getLldpChassisIdSubType().getValue()));
+        LOG.warn("04 local chassis id: " + lldpElement04.getLldpChassisId());
+        LOG.warn("04 local sysname: " + lldpElement04.getLldpSysname());
+        LOG.warn("04 local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement04.getLldpChassisIdSubType().getValue()));
+        LOG.warn("04 local chassis id: " + lldpElement04.getLldpChassisId());
+        LOG.warn("04 local sysname: " + lldpElement04.getLldpSysname());
+
+        assertEquals(ZHBGO1Zsr004_LLDP_ID, lldpElement04.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement04.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr004_NAME, lldpElement04.getLldpSysname());
+        assertEquals(ZHBGO1Zsr004_LLDP_ID, lldpElement04.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement04.getLldpChassisIdSubType());
+        assertEquals(ZHBGO1Zsr004_NAME, lldpElement04.getLldpSysname());
+
+        LldpRemTableTracker lldpRemTable04 = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                fail();
+            }
+        };
+
+        try {
+            m_client.walk(config04,
+                            lldpRemTable04)
+                    .withDescription("lldpRemTable04")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        TimeTetraLldpRemTableTracker timetetralldpRemTable04
+                = new TimeTetraLldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+                assertEquals(6, row.getColumnCount());
+                TimeTetraLldpLink timeTetraLldpLinklink = row.getLldpLink();
+                assertNotNull(timeTetraLldpLinklink.getLldpLink());
+                assertNotNull(timeTetraLldpLinklink.getTmnxLldpRemLocalDestMACAddress());
+                LldpLink link = timeTetraLldpLinklink.getLldpLink();
+                assertNotNull(link.getLldpLocalPortNum());
+                assertNotNull(link.getLldpPortIfindex());
+                links04.add(timeTetraLldpLinklink);
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
+            }
+        };
+        try {
+            m_client.walk(config04,
+                            timetetralldpRemTable04)
+                    .withDescription("timetetralldpRemTable04")
+                    .withLocation(null)
+                    .execute()
+                    .get();
+        } catch (final InterruptedException e) {
+            fail();
+        }
+
+        assertEquals(1,links04.size());
+        TimeTetraLldpLink ttlink04 = links04.iterator().next();
+        final TimeTetraLldpLocPortGetter ttlldpLocPort04 = new TimeTetraLldpLocPortGetter(config04,
+                m_client,
+                null,0);
+
+
+        LldpLink updated = ttlldpLocPort04.getLldpLink(ttlink04);
+        LOG.warn("04 {} ifindex {}",updated.getLldpLocalPortNum(),updated.getLldpPortIfindex());
+        LOG.warn("04 {} portid {}",updated.getLldpLocalPortNum(),updated.getLldpPortId());
+        LOG.warn("04 {} port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpPortIdSubType());
+        LOG.warn("04 {} portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpPortDescr());
+        LOG.warn("04 {} rem chassisId {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisId());
+        LOG.warn("04 {} rem chassisId subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemChassisIdSubType());
+        LOG.warn("04 {} rem sysname {}",updated.getLldpLocalPortNum(),updated.getLldpRemSysname());
+        LOG.warn("04 {} rem portid {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortId());
+        LOG.warn("04 {} rem port subtype {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortIdSubType());
+        LOG.warn("04 {} rem portdescr {}",updated.getLldpLocalPortNum(),updated.getLldpRemPortDescr());
+
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS,updated.getLldpRemChassisIdSubType());
+        assertEquals(ZHBGO1Zsr003_LLDP_ID,updated.getLldpRemChassisId());
+        assertEquals(ZHBGO1Zsr003_NAME,updated.getLldpRemSysname());
+
+        assertEquals("35684352",updated.getLldpRemPortId());
+        assertEquals("1/1/1, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv004-1/1/9\"",updated.getLldpRemPortDescr());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpRemPortIdSubType());
+
+        assertEquals("35946496",updated.getLldpPortId());
+        assertEquals(35946496,updated.getLldpPortIfindex().intValue());
+        assertEquals("1/1/9, 10/100/Gig Ethernet SFP, \"to_srv003-1/1/1\"",updated.getLldpPortDescr());
+        assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, updated.getLldpPortIdSubType());
+
+    }
+
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:/linkd/nms17216/switch1-walk.txt")

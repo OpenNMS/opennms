@@ -43,53 +43,61 @@ public class Nms13593NetworkBuilder extends NmsNetworkBuilder {
     static {
     try {
         ZHBGO1Zsr001_IP_IF_MAP.put(InetAddressUtils.addr(ZHBGO1Zsr001_IP), 1);
-
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(1, "system, Loopback IP interface");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(1, "lo0");
         ZHBGO1Zsr001_IF_MAC_MAP.put(1, "24 21 24 EC E2 3F".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr001_IF_IFALIAS_MAP.put(1, "");
-
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(104906753, "3/2/c1/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(104906753, "3/2/c1/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(104906753, "24 21 24 77 97 DF".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr001_IF_IFALIAS_MAP.put(104906753, "");
-
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(105037825, "3/2/c5/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(105037825, "3/2/c5/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(105037825, "24 21 24 77 98 07".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105037825, "");
-
         ZHBGO1Zsr001_IF_IFDESCR_MAP.put(105070593, "3/2/c6/1, 100-Gig Ethernet");
         ZHBGO1Zsr001_IF_IFNAME_MAP.put(105070593, "3/2/c6/1");
         ZHBGO1Zsr001_IF_MAC_MAP.put(105070593, "24 21 24 77 98 11".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr001_IF_IFALIAS_MAP.put(105070593, "");
 
         ZHBGO1Zsr002_IP_IF_MAP.put(InetAddressUtils.addr(ZHBGO1Zsr002_IP), 1);
-
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(1, "system, Loopback IP interface");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(1, "lo0");
         ZHBGO1Zsr002_IF_MAC_MAP.put(1, "24 21 24 DA F6 3F".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(1, "");
-
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(104906753, "3/2/c1/1, 100-Gig Ethernet");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(104906753, "3/2/c1/1");
         ZHBGO1Zsr002_IF_MAC_MAP.put(104906753, "24 21 24 77 4F 37".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(104906753, "");
-
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(105037825, "3/2/c5/1, 100-Gig Ethernet");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(105037825, "3/2/c5/1");
         ZHBGO1Zsr002_IF_MAC_MAP.put(105037825, "24 21 24 77 4F 5F".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105037825, "");
-
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(105070593, "3/2/c6/1, 100-Gig Ethernet");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(105070593, "3/2/c6/1");
         ZHBGO1Zsr002_IF_MAC_MAP.put(105070593, "24 21 24 77 4F 69".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(105070593, "");
-
         ZHBGO1Zsr002_IF_IFDESCR_MAP.put(1140918299, "esat-1/1/27, 1-Gig/10-Gig Ethernet, \"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
         ZHBGO1Zsr002_IF_IFNAME_MAP.put(1140918299, "esat-1/1/27");
         ZHBGO1Zsr002_IF_MAC_MAP.put(1140918299, "50 E0 EF 00 50 1C".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
         ZHBGO1Zsr002_IF_IFALIAS_MAP.put(1140918299, "\"to-ZHAUWA1Zbb002 1/1/c36/3 Ref|708432|2393/KTN|-XV003-ODF 48 - 13+14\"");
+
+        ZHBGO1Zsr003_IP_IF_MAP.put(InetAddressUtils.addr(ZHBGO1Zsr003_IP), 1);
+        ZHBGO1Zsr003_IF_IFDESCR_MAP.put(1, "system, Loopback IP interface");
+        ZHBGO1Zsr003_IF_IFNAME_MAP.put(1, "lo0");
+        ZHBGO1Zsr003_IF_IFALIAS_MAP.put(1, "");
+        ZHBGO1Zsr003_IF_IFDESCR_MAP.put(35684352, "1/1/1, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv004-1/1/9\"");
+        ZHBGO1Zsr003_IF_IFNAME_MAP.put(35684352, "1/1/1");
+        ZHBGO1Zsr003_IF_MAC_MAP.put(35684352, "02 20 80 00".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
+
+        ZHBGO1Zsr004_IP_IF_MAP.put(InetAddressUtils.addr(ZHBGO1Zsr004_IP), 1);
+        ZHBGO1Zsr004_IF_IFDESCR_MAP.put(1, "system, Loopback IP interface");
+        ZHBGO1Zsr004_IF_IFNAME_MAP.put(1, "lo0");
+        ZHBGO1Zsr004_IF_IFALIAS_MAP.put(1, "");
+        ZHBGO1Zsr004_IF_IFDESCR_MAP.put(35946496, "1/1/9, 10/100/Gig Ethernet SFP, \"Uplink-port-to-srv003-1/1/1\"");
+        ZHBGO1Zsr004_IF_IFNAME_MAP.put(35946496, "1/1/9");
+        ZHBGO1Zsr004_IF_MAC_MAP.put(35946496, "02 24 80 00".replaceAll("\\s+","").toLowerCase(Locale.ROOT));
+
 
 
     } catch (Exception e) {
@@ -105,6 +113,16 @@ public class Nms13593NetworkBuilder extends NmsNetworkBuilder {
     public OnmsNode getZHBGO1Zsr002() {
         return getNode(ZHBGO1Zsr002_NAME,ZHBGO1Zsr002_SYSOID,ZHBGO1Zsr002_IP,ZHBGO1Zsr002_IP_IF_MAP,ZHBGO1Zsr002_IF_IFNAME_MAP,
                 ZHBGO1Zsr002_IF_MAC_MAP,ZHBGO1Zsr002_IF_IFDESCR_MAP,ZHBGO1Zsr002_IF_IFALIAS_MAP);
+    }
+
+    public OnmsNode getZHBGO1Zsr003() {
+        return getNode(ZHBGO1Zsr003_NAME,ZHBGO1Zsr003_SYSOID,ZHBGO1Zsr003_IP,ZHBGO1Zsr003_IP_IF_MAP,ZHBGO1Zsr003_IF_IFNAME_MAP,
+                ZHBGO1Zsr003_IF_MAC_MAP,ZHBGO1Zsr003_IF_IFDESCR_MAP,ZHBGO1Zsr003_IF_IFALIAS_MAP);
+    }
+
+    public OnmsNode getZHBGO1Zsr004() {
+        return getNode(ZHBGO1Zsr004_NAME,ZHBGO1Zsr004_SYSOID,ZHBGO1Zsr004_IP,ZHBGO1Zsr004_IP_IF_MAP,ZHBGO1Zsr004_IF_IFNAME_MAP,
+                ZHBGO1Zsr004_IF_MAC_MAP,ZHBGO1Zsr004_IF_IFDESCR_MAP,ZHBGO1Zsr004_IF_IFALIAS_MAP);
     }
 
 }
