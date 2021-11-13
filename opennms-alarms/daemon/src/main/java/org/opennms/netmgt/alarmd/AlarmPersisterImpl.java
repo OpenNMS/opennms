@@ -45,6 +45,7 @@ import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -56,7 +57,6 @@ import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -87,7 +87,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private EventUtil m_eventUtil;
 
     @Autowired
-    private TransactionOperations m_transactionOperations;
+    private SessionUtils sessionUtils;
 
     @Autowired
     private AlarmEntityNotifier m_alarmEntityNotifier;
@@ -115,16 +115,19 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // We do this to ensure that clears and triggers are processed in the same order
         // as the calls are made
         final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
-        final OnmsAlarm alarm;
+        final OnmsAlarm[] alarm = new OnmsAlarm[1];
         try {
             locks.forEach(Lock::lock);
             // Process the alarm inside a transaction
-            alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
+            // alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
+            sessionUtils.withTransaction(()->{
+                alarm[0] = addOrReduceEventAsAlarm(event);
+            });
         } finally {
             locks.forEach(Lock::unlock);
         }
 
-        return alarm;
+        return alarm[0];
     }
 
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
@@ -433,13 +436,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
     }
 
-    public TransactionOperations getTransactionOperations() {
-        return m_transactionOperations;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        m_transactionOperations = transactionOperations;
-    }
 
     /**
      * <p>setAlarmDao</p>
@@ -520,11 +516,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
     public void setCreateNewAlarmIfClearedAlarmExists(boolean createNewAlarmIfClearedAlarmExists) {
         m_createNewAlarmIfClearedAlarmExists = createNewAlarmIfClearedAlarmExists;
     }
-    public boolean islegacyAlarmState() {
+    public boolean isLegacyAlarmState() {
         return m_legacyAlarmState;
     }
 
     public void setLegacyAlarmState(boolean legacyAlarmState) {
         m_legacyAlarmState = legacyAlarmState;
+    }
+
+    public void setAlarmEntityNotifier(AlarmEntityNotifier m_alarmEntityNotifier) {
+        this.m_alarmEntityNotifier = m_alarmEntityNotifier;
     }
 }

@@ -30,6 +30,7 @@
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" />
 
+  <!-- BP reference list -->
   <onmsgi:list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
     <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
   </onmsgi:list>
@@ -38,6 +39,7 @@
     <property name="persister" ref="alarmPersister" />
   </bean>
 
+  <!-- do not carry over if cannot implement ? could mean redoing the entire annotations for filtering listeners -->
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />

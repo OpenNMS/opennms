@@ -176,4 +176,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         }
     }
 
+    public void setEventProxy(EventProxy m_eventProxy) {
+        this.m_eventProxy = m_eventProxy;
+    }
 }
