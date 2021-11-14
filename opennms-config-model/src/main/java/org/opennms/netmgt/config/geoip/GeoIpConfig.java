@@ -41,7 +41,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.camel.component.netty4.util.SubnetUtils;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name = "geoip-config")
@@ -97,20 +96,6 @@ public class GeoIpConfig {
 
     public void setResolve(final Resolve resolve) {
         this.resolve = resolve;
-    }
-
-    public Subnet getSubnet(final String locationName, final String addressToUse) {
-        for (final Location location : locations) {
-            if (locationName.equals(location.getName())) {
-                for (final Subnet subnet : location.getSubnets()) {
-                    SubnetUtils subnetAddress = new SubnetUtils(subnet.getCidr());
-                    if (subnetAddress.getInfo().isInRange(addressToUse)) {
-                        return subnet;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public boolean isEnabled() {

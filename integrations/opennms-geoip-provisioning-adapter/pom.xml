@@ -29,7 +29,10 @@
     <dependency>
       <groupId>com.maxmind.geoip2</groupId>
       <artifactId>geoip2</artifactId>
-      <version>2.15.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.seancfoley</groupId>
+      <artifactId>ipaddress</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

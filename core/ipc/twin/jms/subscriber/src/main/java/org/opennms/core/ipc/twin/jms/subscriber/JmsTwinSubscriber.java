@@ -79,29 +79,33 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
 
     @Override
     protected void sendRpcRequest(TwinRequest twinRequest) {
-        TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
-        LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
-        template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
-            @Override
-            public void onComplete(Exchange exchange) {
-                try {
-                    byte[] response = exchange.getOut().getBody(byte[].class);
-                    TwinUpdate twinUpdate = mapTwinResponseToProto(response);
-                    if (twinUpdate.getLocation() == null ||
-                            twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
-                        LOG.trace("Received TwinUpdate as RPC reply {}", twinUpdate);
-                        accept(twinUpdate);
+        try {
+            TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
+            LOG.trace("Sent RPC request for consumer key {} ", twinRequestProto.getConsumerKey());
+            template.asyncCallbackSendBody(endpoint, twinRequestProto.toByteArray(), new Synchronization() {
+                @Override
+                public void onComplete(Exchange exchange) {
+                    try {
+                        byte[] response = exchange.getOut().getBody(byte[].class);
+                        TwinUpdate twinUpdate = mapTwinResponseToProto(response);
+                        if (twinUpdate.getLocation() == null ||
+                                twinUpdate.getLocation().equals(getMinionIdentity().getLocation())) {
+                            LOG.trace("Received TwinUpdate as RPC reply {}", twinUpdate);
+                            accept(twinUpdate);
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Failed to process twin update for the key {} ", twinRequest.getKey(), e);
                     }
-                } catch (Exception e) {
-                    LOG.error("Failed to process twin update for the key {} ", twinRequest.getKey(), e);
                 }
-            }
 
-            @Override
-            public void onFailure(Exchange exchange) {
-                // Nothing to do when there is a failure as we don't have any timeouts here.
-            }
-        });
+                @Override
+                public void onFailure(Exchange exchange) {
+                    // Nothing to do when there is a failure as we don't have any timeouts here.
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while sending request with key {}", twinRequest.getKey());
+        }
     }
 
     public void init() throws Exception {
@@ -147,7 +151,7 @@ public class JmsTwinSubscriber extends AbstractTwinSubscriber implements Process
         @Override
         public void configure() throws Exception {
             String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
-            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:%s",
+            final JmsEndpoint endpoint = getContext().getEndpoint(String.format("queuingservice:topic:%s",
                     queueName), JmsEndpoint.class);
             from(endpoint).setExchangePattern(ExchangePattern.InOnly)
                     .process(processor)

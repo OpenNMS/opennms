@@ -118,18 +118,22 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
 
     @Override
     protected void handleSinkUpdate(final TwinUpdate sinkUpdate) {
-        final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
-                ? Topic.responseGlobal()
-                : Topic.responseForLocation(sinkUpdate.getLocation());
+        try {
+            final var topic = Strings.isNullOrEmpty(sinkUpdate.getLocation())
+                    ? Topic.responseGlobal()
+                    : Topic.responseForLocation(sinkUpdate.getLocation());
 
-        final var proto = mapTwinResponse(sinkUpdate);
+            final var proto = mapTwinResponse(sinkUpdate);
 
-        final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
-        this.producer.send(record, (meta, ex) -> {
-            if (ex != null) {
-                RATE_LIMITED_LOG.error("Error publishing update", ex);
-            }
-        });
+            final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
+            this.producer.send(record, (meta, ex) -> {
+                if (ex != null) {
+                    RATE_LIMITED_LOG.error("Error publishing update", ex);
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Exception while sending update for key {} at location {} ", sinkUpdate.getKey(), sinkUpdate.getLocation());
+        }
     }
 
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {

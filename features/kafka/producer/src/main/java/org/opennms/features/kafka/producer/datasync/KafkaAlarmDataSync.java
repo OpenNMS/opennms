@@ -31,6 +31,7 @@ package org.opennms.features.kafka.producer.datasync;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -189,7 +190,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             scheduler.shutdown();
         }
         if (streams != null) {
-            streams.close(2, TimeUnit.MINUTES);
+            streams.close(Duration.ofMinutes(2));
         }
     }
 
