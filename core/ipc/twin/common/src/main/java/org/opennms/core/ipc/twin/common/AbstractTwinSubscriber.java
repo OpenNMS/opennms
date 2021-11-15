@@ -81,6 +81,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
     @Override
     public <T> Closeable subscribe(final String key, final Class<T> clazz, final Consumer<T> consumer) {
+        if (this.executorService.isShutdown()) {
+            throw new IllegalStateException("Subscriber is already closed");
+        }
+
         final var subscription = this.subscriptions.computeIfAbsent(key, Subscription::new);
         return subscription.consume(clazz, consumer);
     }
@@ -207,14 +211,18 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                     // Forward to typed consumer
                     consumer.accept(value);
 
-                } catch (final JsonProcessingException e) {
-                    LOG.error("Deserialize twin failed: {} as {}", this.key, clazz, e);
+                } catch (final Exception e) {
+                    LOG.error("Processing twin update failed: {} as {}", this.key, clazz, e);
                 }
             };
 
             if (this.value == null) {
                 // Initially request value
-                this.request();
+
+                // Send request only if there is no ongoing request
+                if (this.retry == null) {
+                    this.request();
+                }
             } else {
                 // If value already exists, forward to consumer without requesting
                 jsonConsumer.accept(this.value.value);
@@ -230,13 +238,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         private synchronized void accept(final Value value) {
             Objects.requireNonNull(value);
 
-            // Cancel outstanding retry
-            if (this.retry != null) {
-                this.retry.cancel(false);
-                this.retry = null;
-            }
-
-            // // Call all consumers if value has changed
+            // Call all consumers if value has changed
             if (!(this.value != null && Objects.equals(this.value.value, value.value))) {
                 this.consumers.forEach(c -> c.accept(value.value));
             }
@@ -250,16 +252,17 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             AbstractTwinSubscriber.this.sendRpcRequest(request);
 
-            // Cancel an outstanding retry
-            if (this.retry != null) {
-                this.retry.cancel(false);
-            }
-
             // Schedule a retry
             this.retry = AbstractTwinSubscriber.this.executorService.schedule(this::request, 5, TimeUnit.SECONDS);
         }
 
         public synchronized void update(final TwinUpdate update) throws IOException {
+            // Cancel outstanding retry
+            if (this.retry != null) {
+                this.retry.cancel(false);
+                this.retry = null;
+            }
+
             if (this.value == null || !Objects.equals(this.value.sessionId, update.getSessionId())) {
                 // Either there was no previous known value or the session has restarted
 

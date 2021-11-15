@@ -29,8 +29,6 @@
 package org.opennms.core.ipc.twin.common;
 
 
-import java.io.IOException;
-
 import org.opennms.distributed.core.api.Identity;
 
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
@@ -47,10 +45,6 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
     @Override
     public void accept(TwinUpdate twinUpdate) {
         super.accept(twinUpdate);
-    }
-
-    @Override
-    public void close() throws IOException {
     }
 }
 
