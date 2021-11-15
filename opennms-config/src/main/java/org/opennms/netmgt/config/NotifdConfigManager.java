@@ -35,6 +35,7 @@ import java.io.Reader;
 import java.util.Collection;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notifications.Notification;
@@ -53,13 +54,32 @@ import org.slf4j.LoggerFactory;
  * Window - Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-public abstract class NotifdConfigManager {
+public abstract class NotifdConfigManager extends AbstractCmJaxbConfigDao<NotifdConfiguration>{
     private static final Logger LOG = LoggerFactory.getLogger(NotifdConfigManager.class);
 
     /**
      * 
      */
     protected NotifdConfiguration configuration;
+
+    /**
+     * <p>Constructor for AbstractJaxbConfigDao.</p>
+     * It will use {@link DefaultAbstractCmJaxbConfigDaoUpdateCallback},
+     * override getUpdateCallback if you need to change.
+     *
+     * @param entityClass a {@link Class} object.
+     * @param description a {@link String} object.
+     * @see #getUpdateCallback()
+     */
+    public NotifdConfigManager() {
+        super(NotifdConfiguration.class, "Notifd-Configuration");
+    }
+
+    public NotifdConfigManager (NotifdConfiguration config) {
+        super(NotifdConfiguration.class, "Notifd-Configuration");
+        configuration = config;
+    }
+
 
     /**
      * <p>parseXml</p>
@@ -140,21 +160,9 @@ public abstract class NotifdConfigManager {
      * @throws java.io.IOException if any.
      */
     public synchronized void saveCurrent() throws IOException {
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
-        final String xml = JaxbUtils.marshal(configuration);
-        saveXml(xml);
+        this.updateConfig(configuration);
         update();
     }
-
-    /**
-     * <p>saveXml</p>
-     *
-     * @param xml a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    protected abstract void saveXml(String xml) throws IOException;
 
     /**
      * <p>getNextNotifIdSql</p>

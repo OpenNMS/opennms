@@ -122,6 +122,7 @@ public class NotificationWizardServlet extends HttpServlet {
          */
         try {
             NotifdConfigFactory.init();
+            NotifdConfigFactory.getInstance().reload();
         } catch (final Throwable t) {
             throw new ServletException("Failed to initialize NotifdConfigFactory: " + t.getMessage(), t);
         }

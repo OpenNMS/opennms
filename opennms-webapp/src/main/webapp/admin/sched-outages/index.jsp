@@ -70,6 +70,7 @@
 			WriteablePollOutagesDao.class);
 
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
+    NotifdConfigFactory.getInstance().reload();
 	String deleteName = request.getParameter("deleteOutage");
 	if (deleteName != null) {
 		pollOutagesDao.getWriteLock().lock();

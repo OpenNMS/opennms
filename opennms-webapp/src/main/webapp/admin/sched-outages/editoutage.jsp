@@ -158,7 +158,8 @@
 		}
 	}%>
 <%
-    NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
+    NotifdConfigFactory.init();
+    NotifdConfigFactory.getInstance().reload(); //Must do this early on - if it fails, then just throw the exception to the web gui
 
 	// @i18n
 	final HashMap<String, String> shortDayNames = new HashMap<String, String>();

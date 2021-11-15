@@ -47,4 +47,10 @@
         <cm:importConfig schemaId="xmp" configId="default" filePath="xmp-config.xml"/>
     </changeSet>
 
+    <changeSet author="uguggilam" id="1.0-register-schema-notifd">
+        <cm:registerSchema id="notifd"/>
+        <cm:importSchemaFromXsd id="notifd" xsdFileName="notifd-configuration.xsd" xsdFileHash="ffb7114b6ac496314340fa5eb95b5bfdd8e7754c3c2916e618673802c913a5e2" rootElement="notifd-configuration"/>
+        <cm:importConfig schemaId="notifd" configId="default" filePath="notifd-configuration.xml"/>
+    </changeSet>
+
 </databaseChangeLog>

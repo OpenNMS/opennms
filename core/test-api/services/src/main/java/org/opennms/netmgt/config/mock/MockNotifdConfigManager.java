@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.config.mock;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
+import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigManager;
 
 /**
@@ -43,19 +41,11 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
     private String m_nextNotifIdSql;
     private String m_nextUserNotifIdSql;
 
-    /*
-     * init the mock config
-     */
-    
-    
-    /**
-     * @param configString
-     * @throws IOException
-     */
-    public MockNotifdConfigManager(String configString) throws IOException {
-        InputStream reader = new ByteArrayInputStream(configString.getBytes(StandardCharsets.UTF_8));
-        parseXml(reader);
-        reader.close();
+    private NotifdConfigFactory notifdConfigFactory;
+
+    public MockNotifdConfigManager(NotifdConfigFactory notifdConfigFactory) throws IOException {
+        this.notifdConfigFactory = notifdConfigFactory;
+        this.configuration = notifdConfigFactory.getConfiguration();
     }
 
     /* (non-Javadoc)
@@ -63,13 +53,6 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
      */
     @Override
     protected void update() throws IOException {
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotifdConfigManager#saveXml(java.lang.String)
-     */
-    @Override
-    protected void saveXml(String xml) throws IOException {
     }
 
     /* (non-Javadoc)
@@ -93,5 +76,14 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
     public void setNextUserNotifIdSql(String sql) {
         m_nextUserNotifIdSql = sql;
     }
-    
+
+    @Override
+    protected String getConfigName() {
+        return NotifdConfigFactory.CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return NotifdConfigFactory.DEFAULT_CONFIG_ID;
+    }
 }

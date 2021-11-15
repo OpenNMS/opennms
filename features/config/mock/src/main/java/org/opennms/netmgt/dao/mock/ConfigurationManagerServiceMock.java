@@ -99,6 +99,9 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             if ("discovery".equals(configName)) {
                 XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
+            } else if ("notifd".equals(configName)) {
+                XmlConverter converter = new XmlConverter("notifd-configuration.xsd", "notifd-configuration");
+                schema = new ConfigSchema(configName, XmlConverter.class, converter);
             }
         } catch (Exception e) {
             e.printStackTrace();

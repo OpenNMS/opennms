@@ -74,14 +74,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
-        "classpath:/applicationContext-rest-test.xml"
+        "classpath:/applicationContext-rest-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-notifdTest.xml",
+
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -180,14 +181,9 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</threshd-configuration>");
         m_threshdDao.overrideConfig(new FileInputStream(threshdConfig));
 
-        // Setup Notifid Configuration
-        FileUtils.writeStringToFile(new File(etc, "notifd-configuration.xml"), "<?xml version=\"1.0\"?>"
-                + "<notifd-configuration status=\"off\" match-all=\"true\">"
-                + "<queue><queue-id>default</queue-id><interval>20s</interval>"
-                + "<handler-class><name>org.opennms.netmgt.notifd.DefaultQueueHandler</name></handler-class>"
-                + "</queue>"
-                + "</notifd-configuration>");
+        // Setup Notifd Configuration
         NotifdConfigFactory.init();
+        NotifdConfigFactory.getInstance().reload();
 
         m_jaxbContext = JaxbUtils.getContextFor(Outages.class);
     }
