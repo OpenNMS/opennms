@@ -88,6 +88,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
 
     // binding
     public synchronized void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
+        if (northbounder==null) { return; }
         LOG.debug("onNorthbounderRegistered: starting {}", northbounder.getName());
         northbounder.start();
         m_northboundInterfaces.add(northbounder);
@@ -96,6 +97,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
 
     // unbinding
     public synchronized void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
+        if (northbounder==null) { return; }
         LOG.debug("onNorthbounderUnregistered: stopping {}", northbounder.getName());
         northbounder.stop();
         m_northboundInterfaces.remove(northbounder);

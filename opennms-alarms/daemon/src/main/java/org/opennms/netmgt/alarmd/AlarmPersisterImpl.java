@@ -501,11 +501,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void onExtensionRegistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
         LOG.debug("onExtensionRegistered: {} with properties: {}", ext, properties);
+        if (ext==null) { return; }
         extensions.add(ext);
     }
 
     public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
         LOG.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
+        if (ext==null) { return; }
         extensions.remove(ext);
     }
 
@@ -526,5 +528,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier m_alarmEntityNotifier) {
         this.m_alarmEntityNotifier = m_alarmEntityNotifier;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 }

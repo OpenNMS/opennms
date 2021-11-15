@@ -370,7 +370,7 @@
         <bundle>mvn:org.drools/drools-core-reflective/7.31.0.Final</bundle>
 
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <!-- bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle> -->
+        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
 
     </feature>
 </features>

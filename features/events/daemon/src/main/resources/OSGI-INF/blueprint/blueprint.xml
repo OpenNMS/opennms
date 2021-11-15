@@ -113,5 +113,10 @@
 
     <!-- moreover, expose the only missing Dao reference that is needed for the shell commands -->
     <service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
+    <!-- moreover....  expose the eventProxy for NorthbounderManager in alarmd's blueprint -->
+    <service interface="org.opennms.netmgt.events.api.EventProxy" ref="eventIpcManagerImpl" />
+
+
+
 
 </blueprint>

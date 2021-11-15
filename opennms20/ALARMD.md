@@ -16,6 +16,7 @@ should depend on eventd -- features sentinel-alarm pulls in sentinel-eventd
    - no wiring below persistence level already provided
    - subclass of _InitializingBean_ requires the after-prop attribute on bean
    ` ... init-method="afterPropertiesSet">`
+   - pair these up with detroy methods in case they are missing  
    - onsgi:list -> BP reference List
    - if possible: annotation _EventHandler_ filter in BP
     `@EventHandler(uei = EventHandler.ALL_UEIS)

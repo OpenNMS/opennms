@@ -76,27 +76,32 @@
     </bean>
 
 
-    <reference-list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
+    <reference-list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension" availability="optional" >
         <reference-listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
     </reference-list>
-    <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager" init-method="onNorthbounderRegistered" destroy-method="onNorthbounderUnregistered">
+    <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager">
         <property name="eventProxy" ref="eventProxy" />
     </bean>
     <service id="alarmEntityListenerService" interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="northbounderManager"/>
-    <reference-list interface="org.opennms.netmgt.alarmd.api.Northbounder">
+    <reference-list interface="org.opennms.netmgt.alarmd.api.Northbounder" availability="optional" >
         <reference-listener ref="northbounderManager" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
     </reference-list>
     <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="afterPropertiesSet">
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
-    <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
+    <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" init-method="onStart" destroy-method="onStop">
         <property name="persister" ref="alarmPersister" />
         <property name="droolsAlarmContext" ref="droolsAlarmContext" />
         <property name="alarmLifecycleListenerManager" ref="alarmLifecycleListenerManager" />
         <property name="northbounderManager" ref="northbounderManager" />
     </bean>
 
+    <!-- try to carry over if cannot implement ? could mean redoing the entire annotations for filtering listeners -->
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="daemon" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
 
     <!-- Lifecycle listeners
     <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" >
