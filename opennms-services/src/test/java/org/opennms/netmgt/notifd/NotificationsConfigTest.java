@@ -33,22 +33,20 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.mock.MockNotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.test.mock.MockUtil;
 
 public class NotificationsConfigTest {
-    
+
     @Test
     public void testFormattedNotificationsXml() throws Exception {
         MockUtil.println("################# Running Test ################");
         MockLogAppender.setupLogging();
-        
-        MockNotifdConfigManager notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
-
-        NotificationManager manager = new MockNotificationManager(notifdConfig, null, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications-config-test.xml"));
+        NotifdConfigFactory.init();
+        NotificationManager manager = new MockNotificationManager(NotifdConfigFactory.getInstance(), null, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications-config-test.xml"));
         Notification n = manager.getNotification("crazyTestNotification");
         assertTrue(n.getTextMessage().contains("\n"));
     }

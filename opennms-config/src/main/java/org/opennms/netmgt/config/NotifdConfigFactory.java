@@ -29,17 +29,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ConfigFileConstants;
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NotifdConfigFactory class.</p>
@@ -47,7 +42,12 @@ import org.opennms.core.utils.ConfigFileConstants;
  * @author ranger
  * @version $Id: $
  */
-public class NotifdConfigFactory extends NotifdConfigManager {
+public final class NotifdConfigFactory extends NotifdConfigManager {
+    private static final Logger LOG = LoggerFactory.getLogger(NotifdConfigFactory.class);
+
+    public static final String CONFIG_NAME = "notifd";
+    public static final String DEFAULT_CONFIG_ID = "default";
+
     /**
      * Singleton instance
      */
@@ -74,6 +74,11 @@ public class NotifdConfigFactory extends NotifdConfigManager {
     private NotifdConfigFactory() {
     }
 
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        reload();
+    }
+
     /**
      * <p>Getter for the field <code>instance</code>.</p>
      *
@@ -86,16 +91,17 @@ public class NotifdConfigFactory extends NotifdConfigManager {
         return instance;
     }
 
+
+
     /**
      * <p>init</p>
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException {
+    public static synchronized void init() throws IOException {
         if (!initialized) {
             instance = new NotifdConfigFactory();
-            instance.reload();
             initialized = true;
         }
     }
@@ -106,19 +112,8 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException {
-        m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
-
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_notifdConfFile);
-            m_lastModified = m_notifdConfFile.lastModified();
-            parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
-        }
+    public synchronized void reload() throws IOException {
+        configuration = this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -146,17 +141,6 @@ public class NotifdConfigFactory extends NotifdConfigManager {
         return status;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void saveXml(String xml) throws IOException {
-        if (xml != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_notifdConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-        }
-    }
-
     /**
      * <p>update</p>
      *
@@ -164,9 +148,18 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      */
     @Override
     protected synchronized void update() throws IOException {
-        if (m_lastModified != m_notifdConfFile.lastModified()) {
-            NotifdConfigFactory.getInstance().reload();
-        }
+        if(null == configuration)
+            reload();
+    }
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 
 }

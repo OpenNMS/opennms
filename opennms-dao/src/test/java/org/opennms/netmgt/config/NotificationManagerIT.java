@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.DBUtils;
@@ -88,10 +87,11 @@ import com.google.common.collect.ImmutableMap;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        // Notifd
+        "classpath:/META-INF/opennms/applicationContext-notifdTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
@@ -123,7 +123,11 @@ public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private CategoryDao m_categoryDao;
 
+    @Autowired
+    protected NotifdConfigFactory m_notifdConfig;
+
     private NotificationManagerImpl m_notificationManager;
+
     private NotifdConfigManager m_configManager;
 
     private OnmsNode node1;
@@ -144,7 +148,7 @@ public class NotificationManagerIT implements InitializingBean {
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
 
-        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
+        m_configManager = new MockNotifdConfigManager(m_notifdConfig);
         m_notificationManager = new NotificationManagerIT.NotificationManagerImpl(m_configManager, m_dataSource);
 
         OnmsNode node;
