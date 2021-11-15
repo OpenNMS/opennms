@@ -36,10 +36,10 @@ import java.util.function.Consumer;
 
 import javax.xml.bind.JAXBException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigSchema;
 
 /**
  * Responsible for managing Schemas and Configurations.
@@ -50,33 +50,15 @@ import org.opennms.features.config.dao.api.ConfigSchema;
  */
 public interface ConfigurationManagerService {
 
-    /** Registers a new schema. The schema name must not have been used before. */
-    @Deprecated // use registerConfigDefinition() instead.
-    void registerSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
-
     /** Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException. */
-    void registerConfigDefinition(String configName, ConfigDefinition configDefinition);
-
-    /** Upgrades an existing schema to a new version. Existing da is validated against the new schema. */
-    @Deprecated // use changeConfigDefinition() instead.
-    void upgradeSchema(String configName, String xsdName, String topLevelElement) throws IOException, JAXBException;
+    void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException;
 
     /** Changes a ConfigDefinition. If the configName is not present it will throw an  IllegalArgumentException. */
-    void changeConfigDefinition(String configName, ConfigDefinition configDefinition);
+    void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException;
 
-    Map<String, ConfigSchema<?>> getAllConfigSchema();
+    Map<String, ConfigDefinition> getAllConfigDefinition();
 
-    /**
-     * Get the registered Schema
-     *
-     * @param configName
-     * @return ConfigSchema
-     * @throws IOException
-     */
-    @Deprecated // replace with getRegisteredConfigDefinition
-    Optional<ConfigSchema<?>> getRegisteredSchema(String configName);
-
-    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName);
+    Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) throws JsonProcessingException;
 
     void registerReloadConsumer(ConfigUpdateInfo info, Consumer<ConfigUpdateInfo> consumer);
 
@@ -122,13 +104,14 @@ public interface ConfigurationManagerService {
 
     /**
      * get config as xml by configName, configId
-     *
+     * TODO: Freddy keeps until there is a better ConfigurationManagerServiceMock which can handle xml > json without extra info.
      * @param configName
      * @param configId
      * @return xml string
      * @throws IOException
      */
-    Optional<String> getXmlConfiguration(String configName, String configId) throws IOException;
+    @Deprecated
+    Optional<String> getXmlConfiguration(String configName, String configId) throws IOException, JAXBException;
 
     /**
      * get whole ConfigData by configName

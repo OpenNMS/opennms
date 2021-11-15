@@ -28,34 +28,25 @@
 
 package org.opennms.features.config.service.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ConfigData;
 import org.opennms.features.config.dao.api.ConfigDefinition;
-import org.opennms.features.config.dao.api.ConfigSchema;
 import org.opennms.features.config.dao.api.ConfigStoreDao;
-import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 @Component
 public class ConfigurationManagerServiceImpl implements ConfigurationManagerService {
@@ -64,100 +55,44 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     // This map contains key: ConfigUpdateInfo value: list of Consumer
     private final ConcurrentHashMap<ConfigUpdateInfo, Collection<Consumer<ConfigUpdateInfo>>> onloadNotifyMap = new ConcurrentHashMap<>();
 
-    private final Map<String, ConfigDefinition> configDefinitions = new HashMap<>(); // TODO: Patrick: need to be replaced with proper implementations
-
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
         this.configStoreDao = configStoreDao;
     }
 
     @Override
-    public void registerSchema(String configName, String xsdName, String topLevelElement)
-            throws IOException, JAXBException {
-        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
-        Objects.requireNonNull(configName);
-        Objects.requireNonNull(converter);
-        if (this.getRegisteredSchema(configName).isPresent()) {
-            throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
-        }
-        final ConfigSchema configSchema = new ConfigSchema(configName, converter.getClass(), converter);
-        configStoreDao.register(configSchema);
-    }
-
-    @Override
-    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) {
-        // TODO: Patrick: implement me properly
+    public void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
-        if (this.getRegisteredSchema(configName).isPresent() || configDefinitions.containsKey(configName)) {
+
+        if (this.getRegisteredConfigDefinition(configName).isPresent()) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is already registered.", configName));
         }
-        this.configDefinitions.put(configName, configDefinition); // TODO: Patrick fix this mock:
         try {
-            ConfigSchema<?> schema = new ConfigSchema<>(configDefinition.getConfigName(),
-                    XmlConverter.class,
-                    new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration"));
-            configStoreDao.register(schema);
-        } catch(IOException | JAXBException e) {
+            configStoreDao.register(configDefinition);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void upgradeSchema(String configName, String xsdName, String topLevelElement)
-            throws IOException, JAXBException {
-        XmlConverter converter = new XmlConverter(xsdName, topLevelElement);
-
-        Objects.requireNonNull(configName);
-        Objects.requireNonNull(converter);
-        if (this.getRegisteredSchema(configName).isEmpty()) {
-            throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
-        }
-
-        final ConfigSchema configSchema = new ConfigSchema(configName,
-                converter.getClass(), converter);
-        Map<String, JSONObject> configs = configStoreDao
-                .getConfigs(configName)
-                .orElse(Collections.emptyMap());
-
-        // Check if all existing configuration match the new schema. If not => throw Exception
-        for (Map.Entry<String, JSONObject> config : configs.entrySet()) {
-            String xml = converter.jsonToXml(config.getValue().toString());
-            if (!converter.validate(xml, ConfigConverter.SCHEMA_TYPE.XML)) {
-                throw new IllegalArgumentException(
-                        String.format("Existing config with id=%s doesn't fit new schema %s", config.getKey(), config.getValue()));
-            }
-        }
-
-        // all good => save new schema version.
-        configStoreDao.register(configSchema);
-    }
-
-    @Override
-    public Map<String, ConfigSchema<?>> getAllConfigSchema() {
-        return configStoreDao.getAllConfigSchema();
-    }
-
-    @Override
-    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) {
-        // TODO: Patrick: implement me properly
+    public void changeConfigDefinition(String configName, ConfigDefinition configDefinition) throws IOException {
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configDefinition);
-        if (this.getRegisteredSchema(configName).isEmpty() &&  !configDefinitions.containsKey(configName)) {
+        if (this.getRegisteredConfigDefinition(configName).isEmpty()) {
             throw new IllegalArgumentException(String.format("Schema with id=%s is not present. Use registerSchema instead.", configName));
         }
-        this.configDefinitions.put(configName, configDefinition);
+        configStoreDao.updateConfigDefinition(configDefinition);
     }
 
     @Override
-    public Optional<ConfigSchema<?>> getRegisteredSchema(final String configName) {
-        Objects.requireNonNull(configName);
-        return configStoreDao.getConfigSchema(configName);
+    public Map<String, ConfigDefinition> getAllConfigDefinition() {
+        return configStoreDao.getAllConfigDefinition();
     }
 
     @Override
-    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) {
+    public Optional<ConfigDefinition> getRegisteredConfigDefinition(String configName) throws JsonProcessingException {
         Objects.requireNonNull(configName);
-        return Optional.ofNullable(this.configDefinitions.get(configName));
+        return configStoreDao.getConfigDefinition(configName);
     }
 
     @Override
@@ -203,8 +138,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         Objects.requireNonNull(configId);
         Objects.requireNonNull(configName);
         Objects.requireNonNull(configObject);
-        Optional<ConfigSchema<?>> configSchema = this.getRegisteredSchema(configName);
-        if (configSchema.isEmpty()) {
+        Optional<ConfigDefinition> configDefinition = this.getRegisteredConfigDefinition(configName);
+        if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
         if (this.getJSONConfiguration(configName, configId).isPresent()) {
@@ -244,9 +179,9 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Optional<String> getXmlConfiguration(String configName, String configId) throws IOException {
-        Optional<ConfigSchema<?>> configSchema = configStoreDao.getConfigSchema(configName);
-        if (configSchema.isEmpty()) {
-            LOG.error("Fail to get config for configName: {}, configId: {}", configName, configId);
+        Optional<ConfigDefinition> configDefinition = configStoreDao.getConfigDefinition(configName);
+        if (configDefinition.isEmpty()) {
+            LOG.error("Fail to get configDefinition for configName: {}, configId: {}", configName, configId);
             return Optional.empty();
         }
         Optional<JSONObject> config = configStoreDao.getConfig(configName, configId);
@@ -255,7 +190,10 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             return Optional.empty();
         }
         JSONObject json = config.get();
-        return Optional.of(configSchema.get().getConverter().jsonToXml(json.toString()));
+        ConfigDefinition xmlConfigDef = configDefinition.get();
+
+        ConfigConverter converter = XsdHelper.getConverter(xmlConfigDef);
+        return Optional.of(converter.jsonToXml(json.toString()));
     }
 
     @Override

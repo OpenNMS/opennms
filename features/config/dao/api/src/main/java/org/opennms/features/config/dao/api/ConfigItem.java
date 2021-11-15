@@ -31,6 +31,7 @@ package org.opennms.features.config.dao.api;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class ConfigItem {
     private String name;
@@ -43,6 +44,7 @@ public class ConfigItem {
     private List<ConfigItem> children = new LinkedList<>();
     private Long min = null;
     private Long max = null;
+    private Long multipleOf = null;
     private String pattern;
     private Object defaultValue;
     private String documentation;
@@ -115,6 +117,17 @@ public class ConfigItem {
         return children;
     }
 
+    public Optional<ConfigItem> getChild(final String name) {
+        Objects.requireNonNull(name);
+        if(this.children == null) {
+            return Optional.empty();
+        }
+        return children
+                .stream()
+                .filter(item -> name.equals(item.getName()))
+                .findAny();
+    }
+
     public void setChildren(List<ConfigItem> children) {
         this.children = children;
     }
@@ -141,6 +154,17 @@ public class ConfigItem {
 
     public void setMax(Long max) {
         this.max = max;
+    }
+
+    public Long getMultipleOf() {
+        return multipleOf;
+    }
+
+    public void setMultipleOf(Long multipleOf) {
+        if(multipleOf < 0){
+            throw new RuntimeException("multipleOf must > 0");
+        }
+        this.multipleOf = multipleOf;
     }
 
     public String getPattern() {

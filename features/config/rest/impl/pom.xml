@@ -89,45 +89,6 @@
       </exclusions>
     </dependency>
 
-
-   <dependency>
-     <groupId>com.atlassian.oai</groupId>
-     <artifactId>swagger-request-validator-core</artifactId>
-     <version>${swaggerRequestValidatorVersion}</version>
-   </dependency>
-   <dependency>
-     <groupId>io.swagger.parser.v3</groupId>
-     <artifactId>swagger-parser</artifactId>
-     <version>${swaggerParserVersion}</version>
-   </dependency>
-
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger-ui</artifactId>
-      <version>3.0.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-aop</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-
-      </exclusions>
-    </dependency>
-
-   <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-models</artifactId>
-      <version>${swaggerVersion}</version>
-    </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
@@ -168,9 +129,5 @@
       <version>1.3</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.opennms.core.test-api</groupId>
-          <artifactId>org.opennms.core.test-api.db</artifactId>
-      </dependency>
   </dependencies>
 </project>

@@ -301,11 +301,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureOpennmsAwsSqs() {
-		installFeature("opennms-aws-sqs");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsBootstrap() {
 		installFeature("opennms-bootstrap");
 		System.out.println(executeCommand("feature:list -i"));
@@ -382,11 +377,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureOpennmsCoreIpcSinkAwsSqs() {
-		installFeature("opennms-core-ipc-sink-aws-sqs");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsCoreIpcRpcApi() {
 		installFeature("opennms-core-ipc-rpc-api");
 		System.out.println(executeCommand("feature:list -i"));
@@ -394,11 +384,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureOpennmsCoreIpcRpcJms() {
 		installFeature("opennms-core-ipc-rpc-jms");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
-	public void testInstallFeatureOpennmsCoreIpcRpcAwsSqs() {
-		installFeature("opennms-core-ipc-rpc-aws-sqs");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test

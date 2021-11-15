@@ -31,10 +31,9 @@ package liquibase.ext2.cm.change;
 import java.io.IOException;
 import java.net.URL;
 
-import org.opennms.features.config.dao.api.util.SchemaUtil;
-
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
+import org.opennms.features.config.dao.impl.util.SchemaUtil;
 
 public class HashUtil {
     public static String getHash(String xsdFileName) throws IOException {

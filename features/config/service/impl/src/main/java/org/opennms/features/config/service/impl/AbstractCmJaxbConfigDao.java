@@ -39,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -133,7 +134,7 @@ public abstract class AbstractCmJaxbConfigDao<ENTITY_CLASS> {
             configOptional = configurationManagerService
                     .getXmlConfiguration(this.getConfigName(), configId)
                     .map(s -> JaxbUtils.unmarshal(entityClass, s, false)); // no validation since we validated already at write time
-        } catch (IOException e) {
+        } catch (IOException | JAXBException e) {
             throw new RuntimeException(e);
         }
 

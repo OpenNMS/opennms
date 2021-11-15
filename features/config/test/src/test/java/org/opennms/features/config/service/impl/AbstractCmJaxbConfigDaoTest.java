@@ -28,18 +28,6 @@
 
 package org.opennms.features.config.service.impl;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doAnswer;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import javax.xml.bind.JAXBException;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,7 +36,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.dao.api.ConfigSchema;
+import org.opennms.features.config.dao.api.ConfigConverter;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.DefaultAbstractCmJaxbConfigDaoUpdateCallback;
@@ -57,7 +47,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -80,13 +69,17 @@ public class AbstractCmJaxbConfigDaoTest {
     private ConfigurationManagerService configurationManagerService;
 
     @Before
-    public void init() throws IOException, JAXBException {
-        configurationManagerService.registerSchema(provisiondCmJaxbConfigTestDao.getConfigName(),
+    public void init() throws Exception {
+        ConfigDefinition def = XsdHelper.buildConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(),
                 "provisiond-configuration.xsd", "provisiond-configuration");
+
+        configurationManagerService.registerConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName(), def);
         URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("provisiond-configuration.xml");
-        Optional<ConfigSchema<?>> configSchema = configurationManagerService.getRegisteredSchema(provisiondCmJaxbConfigTestDao.getConfigName());
+        Optional<ConfigDefinition> registeredDef = configurationManagerService.getRegisteredConfigDefinition(provisiondCmJaxbConfigTestDao.getConfigName());
         String xmlStr = Files.readString(Path.of(xmlPath.getPath()));
-        JsonAsString configObject = new JsonAsString(configSchema.get().getConverter().xmlToJson(xmlStr));
+        ConfigConverter converter = XsdHelper.getConverter(registeredDef.get());
+
+        JsonAsString configObject = new JsonAsString(converter.xmlToJson(xmlStr));
         configurationManagerService.registerConfiguration(provisiondCmJaxbConfigTestDao.getConfigName(),
                 provisiondCmJaxbConfigTestDao.getDefaultConfigId(), configObject);
     }

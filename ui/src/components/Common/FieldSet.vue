@@ -1,9 +1,9 @@
 <template>
-	<Fieldset>		
-		<slot></slot>
-	</Fieldset>
+  <Fieldset>
+    <slot></slot>
+  </Fieldset>
 </template>
-<script setup lang="ts">		
+<script setup lang="ts">
 </script>
 
 <style lang="scss">

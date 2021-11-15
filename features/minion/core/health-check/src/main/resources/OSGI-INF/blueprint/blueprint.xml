@@ -17,17 +17,6 @@
         <argument value="Unknown"/>
     </bean>
 
-    <bean id="passiveRestConnectionHealthCheck" class="org.opennms.core.health.api.DefaultPassiveHealthCheck">
-        <argument value="Connecting to OpenNMS ReST API (passive)"/>
-        <argument>
-            <list>
-                <value>rest</value>
-                <value>passive</value>
-            </list>
-        </argument>
-        <argument value="Unknown"/>
-    </bean>
-
     <service ref="passiveEchoRpcHealthCheck">
         <interfaces>
             <value>org.opennms.core.health.api.HealthCheck</value>
@@ -35,16 +24,6 @@
         </interfaces>
         <service-properties>
             <entry key="alias" value="opennms.passiveEchoRpcHealthCheck"/>
-        </service-properties>
-    </service>
-
-    <service ref="passiveRestConnectionHealthCheck">
-        <interfaces>
-            <value>org.opennms.core.health.api.HealthCheck</value>
-            <value>org.opennms.core.health.api.HealthCheckResponseCache</value>
-        </interfaces>
-        <service-properties>
-            <entry key="alias" value="opennms.passiveRestConnectionHealthCheck"/>
         </service-properties>
     </service>
 

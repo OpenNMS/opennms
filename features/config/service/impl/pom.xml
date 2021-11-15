@@ -134,12 +134,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-config-model</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
         <version>${project.version}</version>
@@ -148,6 +142,11 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${jsonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-web-dependencies</artifactId>
+        <type>pom</type>
       </dependency>
     </dependencies>
 </project>
