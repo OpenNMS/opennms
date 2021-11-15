@@ -280,53 +280,85 @@ const generateURL = () => {
       + reqDefinition.reqDef.foreignSource
   }
 }
-
 //Save 
 const onSave = () => {
-  let provisionDService = store.state.configuration.provisionDService['requisition-def']
-  //create copy state data
-  let copyProvisionData = JSON.parse(JSON.stringify(provisionDService))
-  //generate cron_expression
-  const cron_expression = saveCronSchedule()
-  const paylod =
-  {
-    'rescan-existing': 'true',
-    'import-url-resource': generatedURL.value,
-    'import-name': reqDefinition.reqDef.name,
-    'cron-schedule': cron_expression
-  }
-  //Edit record operation
-  if (router.currentRoute.value.name === 'reqDefEdit') {
-    //Edited data replace with new payload
-    copyProvisionData.splice(putDataPosition.value, 1, paylod)
-  } else {
-    //New record operation
-    copyProvisionData.push(paylod)
-  }
-  const requestPayload = { 'requisition-def': copyProvisionData }
-  let response = putProvisionDService(requestPayload)
-  try {
-    if (response != null) {
-      notify({
-        title: "Notification",
-        text: 'Requisition definition data successfully updated !',
-        type: 'success',
-      })
-
-      //Route to table and refresh the data
-      router.push({ name: 'requisitionDefinitionsLayout' })
-      setTimeout(() => {
-        location.reload()
-      }, 1000)
+    let provisionDService = store.state.configuration.provisionDService['requisition-def'];
+    if(provisionDService != undefined){ 
+        //create copy state data
+    let copyProvisionData = JSON.parse(JSON.stringify(provisionDService));
+    //generate cron_expression
+    const cron_expression = saveCronSchedule();
+    const paylod =
+    {
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
     }
-  } catch {
-    notify({
-      title: "Notification",
-      text: 'ProvisionDService PUT API Error',
-      type: 'error',
-    })
-  }
-}
+    //Edit record operation
+    if (router.currentRoute.value.name === 'reqDefEdit') {
+        //Edited data replace with new payload
+        copyProvisionData.splice(putDataPosition.value, 1, paylod);
+    } else {
+        //New record operation
+        copyProvisionData.push(paylod);
+    }
+    const requestPayload = { 'requisition-def': copyProvisionData };
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
+    }else{
+        const cron_expression = saveCronSchedule();
+const paylod1 =
+    [{
+        'rescan-existing': 'true',
+        'import-url-resource': generatedURL.value,
+        'import-name': reqDefinition.reqDef.name,
+        'cron-schedule': cron_expression
+    }]
+    const requestPayload = { 'requisition-def': paylod1};
+    let response = putProvisionDService(requestPayload);
+    try {
+        if (response != null) {
+            notify({
+                title: "Notification",
+                text: 'Requisition definition data successfully updated !',
+                type: 'success',
+            });
+            //Route to table and refresh the data
+            router.push({ name: 'requisitionDefinitionsLayout' });
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+    } catch {
+        notify({
+            title: "Notification",
+            text: 'ProvisionDService PUT API Error',
+            type: 'error',
+        });
+    }
+    }
+};
+
 
 const saveCronSchedule = () => {
   let cronSchedule = ['minute', 'hour', 'day of month', 'month', 'day of week']
