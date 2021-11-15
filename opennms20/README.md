@@ -1,6 +1,6 @@
 # OpenNMS 2.0
 
-## Abstract
+## Motivation
 
 Let's reassess the architecture of the stack and the different runtimes with the aim of:
 * Improving the developer experience
@@ -35,10 +35,36 @@ The Minion and Sentinel are custom Karaf distributions.
 
 See [SENTINEL](SENTINEL.md) for more information on the Sentinel runtime.
 
+## Recommendations
 
-## Target State
+### Leverage the Karaf runtime
 
 We want to standardize on using Karaf as the base distribution and move away from the custom bootstrap currently used by the Core.
 
 This will allow us to take full advantage of the modularity of OSGi and the Karaf ecosystem.
+
 This will also allow us to reduce technical debt and complexity of the solution - there are may pain points associated with different forms of wiring and classloader issues related to running Karaf inside the Core.
+
+## Remaining Uncertainties
+
+### Target Maven tree structure
+
+How do we want to organize the tree?
+
+Review artifactId:groupIds
+
+### Karaf feature structure
+
+What can users install and choose from?
+
+### Wiring
+
+OSGi annotations (R7) vs Blueprint syntax?
+
+### Integration testing
+
+Heavily tied to Spring currently
+
+Whitebox with mocks (no database, or filesystem access)
+
+Blackbox with containers

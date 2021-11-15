@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
   <properties>
     <opennms.doc.component>core</opennms.doc.component>
+    <opennms.doc.stability>active</opennms.doc.stability>
   </properties>
   <name>OpenNMS :: Core</name>
   <build>
