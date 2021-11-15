@@ -28,6 +28,17 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigData;
@@ -40,16 +51,6 @@ import org.opennms.features.config.service.api.JsonAsString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * It is a minimal mock for CM use. If configFile is passed, it will read and return as configEntity.
@@ -95,9 +96,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     public Optional<ConfigSchema<?>> getRegisteredSchema(String configName) {
         ConfigSchema schema = null;
         try {
-
             if ("discovery".equals(configName)) {
                 XmlConverter converter = new XmlConverter("discovery-configuration.xsd", "discovery-configuration");
+                schema = new ConfigSchema(configName, XmlConverter.class, converter);
+            } else if ("notifd".equals(configName)) {
+                XmlConverter converter = new XmlConverter("notifd-configuration.xsd", "notifd-configuration");
                 schema = new ConfigSchema(configName, XmlConverter.class, converter);
             }
         } catch (Exception e) {

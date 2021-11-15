@@ -43,6 +43,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.TimeConverter;
+import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -76,7 +77,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -100,8 +100,10 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
     @Autowired
     protected NotificationDao m_notificationDao;
 
+    @Autowired
+    protected NotifdConfigFactory m_notifdConfig;
+
     protected MockEventIpcManager m_eventMgr;
-    protected MockNotifdConfigManager m_notifdConfig;
     protected MockGroupManager m_groupManager;
     protected MockUserManager m_userManager;
     protected NotificationManager m_notificationManager;
@@ -127,24 +129,26 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
 
-        m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
-        m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
-        m_notifdConfig.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
-        
+        //MockNotifdConfigManager mockNotifdConfigManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
+        MockNotifdConfigManager mockNotifdConfigManager = new MockNotifdConfigManager(m_notifdConfig);
+        mockNotifdConfigManager.setNextNotifIdSql(m_db.getNextNotifIdSql());
+        mockNotifdConfigManager.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
+
+
         m_groupManager = createGroupManager();
         m_userManager = createUserManager(m_groupManager);
         
         m_destinationPathManager = new MockDestinationPathManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "destination-paths.xml"));        
         m_notificationCommandManger = new MockNotificationCommandManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notification-commands.xml"));
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications.xml"));
+        m_notificationManager = new MockNotificationManager(mockNotifdConfigManager, m_db, ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifications.xml"));
         
         m_anticipator = new NotificationAnticipator();
         MockNotificationStrategy.setAnticipator(m_anticipator);
 
-        m_notifd.setConfigManager(m_notifdConfig);
+        m_notifd.setConfigManager(mockNotifdConfigManager);
 
         m_eventProcessor.setEventManager(m_eventMgr);
-        m_eventProcessor.setNotifdConfigManager(m_notifdConfig);
+        m_eventProcessor.setNotifdConfigManager(mockNotifdConfigManager);
         m_eventProcessor.setGroupManager(m_groupManager);
         m_eventProcessor.setUserManager(m_userManager);
         m_eventProcessor.setDestinationPathManager(m_destinationPathManager);

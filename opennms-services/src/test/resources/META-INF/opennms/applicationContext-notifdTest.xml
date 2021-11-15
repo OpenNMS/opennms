@@ -20,6 +20,14 @@
     <tx:annotation-driven/>
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
+    <bean id="skipConfigUpgrades" class="java.lang.Boolean">
+        <constructor-arg value="true"/>
+    </bean>
+
+    <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
+        <property name="configFile" value="org/opennms/netmgt/notifd/notifd-configuration.xml"/>
+    </bean>
+
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
     </bean>

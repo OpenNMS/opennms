@@ -1,0 +1,31 @@
+<notifd-configuration xmlns="http://xmlns.opennms.org/xsd/config/notifd" status="off" match-all="true">
+   <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/serviceResponsive" acknowledge="uei.opennms.org/nodes/serviceUnresponsive">
+      <match>nodeid</match>
+      <match>interfaceid</match>
+      <match>serviceid</match>
+   </auto-acknowledge>
+   <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeRegainedService" acknowledge="uei.opennms.org/nodes/nodeLostService">
+      <match>nodeid</match>
+      <match>interfaceid</match>
+      <match>serviceid</match>
+   </auto-acknowledge>
+   <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/interfaceUp" acknowledge="uei.opennms.org/nodes/interfaceDown">
+      <match>nodeid</match>
+      <match>interfaceid</match>
+   </auto-acknowledge>
+   <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeUp" acknowledge="uei.opennms.org/nodes/nodeDown">
+      <match>nodeid</match>
+   </auto-acknowledge>
+   <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/correlation/perspective/wideSpreadOutageResolved" acknowledge="uei.opennms.org/correlation/perspective/wideSpreadOutage">
+      <match>nodeid</match>
+      <match>interfaceid</match>
+      <match>serviceid</match>
+   </auto-acknowledge>
+   <queue>
+      <queue-id>default</queue-id>
+      <interval>20s</interval>
+      <handler-class>
+         <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>
+      </handler-class>
+   </queue>
+</notifd-configuration>
