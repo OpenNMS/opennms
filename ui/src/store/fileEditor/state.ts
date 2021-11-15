@@ -1,5 +1,10 @@
 import { FileEditorResponseLog } from '@/types'
 
+export interface IFile {
+  name: string
+  children?: IFile[]
+}
+
 export interface State {
   fileNames: string[]
   file: string
@@ -11,6 +16,7 @@ export interface State {
   logs: FileEditorResponseLog[]
   isConsoleOpen: boolean
   isHelpOpen: boolean
+  filesInFolders: IFile
 }
 
 const state: State = {
@@ -23,7 +29,8 @@ const state: State = {
   modifiedFileString: '',
   logs: [],
   isConsoleOpen: false,
-  isHelpOpen: false
+  isHelpOpen: false,
+  filesInFolders: {} as IFile
 }
 
 export default state

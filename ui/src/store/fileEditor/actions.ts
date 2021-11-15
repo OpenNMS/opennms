@@ -9,6 +9,7 @@ interface ContextWithState extends VuexContext {
 const getFileNames = async (context: VuexContext) => {
   const fileNames = await API.getFileNames()
   context.commit('SAVE_FILE_NAMES_TO_STATE', fileNames)
+  context.commit('SAVE_FOLDER_FILE_STRUCTURE', fileNames)
 }
 
 const getFile = async (context: VuexContext, fileName: string) => {

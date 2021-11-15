@@ -1,8 +1,36 @@
 import { FileEditorResponseLog } from '@/types'
-import { State } from './state'
+import { State, IFile } from './state'
+
+const filesToFolders = (fileNames: string[]): IFile => {
+  const files: IFile[] = []
+
+  const createFolder = (fileArray: IFile[], file: string) => {
+    const fileNamePieces = file.split('/')
+    const folder = fileNamePieces[0]
+    fileNamePieces.shift()
+    const remaining = fileNamePieces.join('/')
+    const existingFolder = fileArray.filter(x => x.name === folder)[0] as Required<IFile>
+
+    if (existingFolder) addFileOrCreateFolder(existingFolder.children, remaining)
+    else fileArray.push({ name: folder, children: addFileOrCreateFolder([], remaining) })
+  }
+
+  const addFileOrCreateFolder = (fileArray: IFile[], file: string): IFile[] => {
+    if (file.includes('/')) createFolder(fileArray, file)
+    else fileArray.push({ name: file })
+    return fileArray
+  }
+
+  for (const file of fileNames) addFileOrCreateFolder(files, file)
+  return { name: 'Files', children: files }
+}
 
 const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
   state.fileNames = fileNames
+}
+
+const SAVE_FOLDER_FILE_STRUCTURE = (state: State, fileNames: string[]) => {
+  state.filesInFolders = filesToFolders(fileNames)
 }
 
 const SAVE_FILE_TO_STATE = (state: State, file: string) => {
@@ -64,5 +92,6 @@ export default {
   ADD_LOG_TO_STATE,
   CLEAR_LOGS,
   SET_IS_CONSOLE_OPEN,
-  SET_IS_HELP_OPEN
+  SET_IS_HELP_OPEN,
+  SAVE_FOLDER_FILE_STRUCTURE
 }
