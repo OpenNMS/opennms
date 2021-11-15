@@ -131,15 +131,11 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
     @After
     public void tearDown() throws IOException, JAXBException {
-        if (cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID).isPresent()) {
-            this.cm.unregisterConfiguration(SCHEMA_NAME_PROVISIOND, CONFIG_ID);
-        }
+
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
         }
-        if (cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID).isPresent()) {
-            this.cm.unregisterConfiguration(SCHEMA_NAME_EVENTD, CONFIG_ID);
-        }
+
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_EVENTD);
         }
