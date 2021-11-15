@@ -55,8 +55,8 @@ public abstract class AbstractTwinBrokerIT {
     protected abstract TwinPublisher createPublisher() throws Exception;
     protected abstract TwinSubscriber createSubscriber(final MinionIdentity identity) throws Exception;
 
-    private TwinPublisher publisher;
-    private TwinSubscriber subscriber;
+    public TwinPublisher publisher;
+    public TwinSubscriber subscriber;
 
     private final MinionIdentity standardIdentity = new MockMinionIdentity("remote");
 
