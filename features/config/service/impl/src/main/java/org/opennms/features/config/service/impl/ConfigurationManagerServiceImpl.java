@@ -38,11 +38,13 @@ import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.OpenAPIConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -142,9 +144,13 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        if (this.getJSONConfiguration(configName, configId).isPresent()) {
-            throw new IllegalArgumentException(String.format(
-                    "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
+        try{
+            if (this.getJSONConfiguration(configName, configId).isPresent()) {
+                throw new IllegalArgumentException(String.format(
+                        "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
+            }
+        } catch(FileNotFoundException ex){
+            // it is expected to have file not found exception
         }
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
@@ -165,14 +171,23 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
-        return configStoreDao.getConfig(configName, configId);
+        Optional<JSONObject> configObj = configStoreDao.getConfig(configName, configId);
+        if (configObj.isEmpty()) {
+            return configObj;
+        }
+        // try to fill default value or empty signature
+        Optional<ConfigDefinition> def = configStoreDao.getConfigDefinition(configName);
+        if (def.isPresent()) {
+            OpenAPIConfigHelper.fillWithDefaultValue(def.get(), configObj.get());
+        }
+        return configObj;
     }
 
     @Override
     public String getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
         Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
         if (config.isEmpty()) {
-            throw new IllegalArgumentException(configName + ":" + configId);
+            throw new FileNotFoundException(configName + ":" + configId);
         }
         return config.get().toString();
     }
