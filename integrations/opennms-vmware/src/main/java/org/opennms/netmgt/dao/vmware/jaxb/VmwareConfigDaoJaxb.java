@@ -29,12 +29,16 @@
 package org.opennms.netmgt.dao.vmware.jaxb;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 /**
  * The Class VmwareConfigDaoJaxb
@@ -43,12 +47,23 @@ import java.util.Map;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, VmwareConfig> implements VmwareConfigDao {
+
+public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> implements VmwareConfigDao {
+    protected static VmwareConfig m_config;
+    private static final String CONFIG_NAME = "vmware";
+    private static final String DEFAULT_CONFIG_ID = "default";
     /**
      * Default constructor
      */
+
     public VmwareConfigDaoJaxb() {
         super(VmwareConfig.class, "Vmware Configuration");
+    }
+
+
+    @PostConstruct
+    public void postConstruct() throws IOException {
+       this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -58,7 +73,7 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      */
     @Override
     public VmwareConfig getConfig() {
-        return getContainer().getObject();
+        return m_config;
     }
 
     /**
@@ -68,10 +83,10 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      * @param jaxbConfig a config object.
      * @return a custom object
      */
-    @Override
+    /*@Override
     public VmwareConfig translateConfig(VmwareConfig jaxbConfig) {
         return jaxbConfig;
-    }
+    }*/
 
     /**
      * Returns the map of server entries from the configuration object.
@@ -87,5 +102,16 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
         }
         return vmwareServerMap;
     }
+
+    @Override
+    protected String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
+    }
+
 
 }
