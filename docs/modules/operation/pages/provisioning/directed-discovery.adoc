@@ -32,7 +32,7 @@ Before adding nodes to a requisition, you must <<provisioning/getting-started.ad
 [[requisition-rest]]
 == Add nodes via REST API
 
-You can use the REST API to add nodes to your {page-component-tile} database.
+You can use the REST API to add nodes to your {page-component-title} database.
 There are endpoints for both xref:development:rest/nodes.adoc[individual nodes] and xref:development:rest/requisitions.adoc[entire requisitions].
 
 [[requisition-new-suspect]]
