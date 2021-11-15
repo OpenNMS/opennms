@@ -1,0 +1,15 @@
+[[development]]
+= Development
+
+This developer section is for anyone wanting to either write code which directly accesses the OpenNMS {page-component-title} API, or to contribute directly to the project.
+It assumes some familiarity with concepts deploying and running OpenNMS components described in the xref:deployment:core/introduction.adoc[Deployment] and xref:operation:overview/overview.adoc[Operations] sections of this manual.
+This section covers the following topics:
+
+* Instructions how to build {page-component-title} from source
+* Enhance Minion running in Karaf OSGi container
+* Enhance the Topology visualisation
+* Create GraphML custom network topologies
+* Enable CORS support
+* Develop against REST APIs
+* Write and publish documentation
+* Integration in environments using AMQP
