@@ -1,15 +1,12 @@
 import axios from 'axios'
 import { rest } from '@/services/axiosInstances'
 import { useStore } from 'vuex'
-import typesUrl from '../../src/components/Common/Demo/MockupData/types.json'
-import periodUrl from '../../src/components/Common/Demo/MockupData/schedulePeriod.json'
-import advDropdownUrl from '../../src/components/Common/Demo/MockupData/advancedDropdown.json'
+import getDropdownTypes from '../../src/components/Common/Demo/MockupData/types.json'
+import getSchedulePeriod from '../../src/components/Common/Demo/MockupData/schedulePeriod.json'
+import getAdvancedDropdown from '../../src/components/Common/Demo/MockupData/advancedDropdown.json'
 
 let getProvisionD = '/cm/provisiond/default'
 const store = useStore()
-const getDropdownTypes = typesUrl;
-const getSchedulePeriod = periodUrl;
-const getAdvancedDropdown = advDropdownUrl;
 const getProvisionDService = rest.get(getProvisionD).then((response) => {
   try {
     console.log(response, response.data );
