@@ -42,6 +42,7 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jms.JmsEndpoint;
+import org.opennms.core.ipc.twin.api.TwinStrategy;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
@@ -49,6 +50,7 @@ import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,13 +104,17 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
     }
 
     public void init() throws Exception {
-        rpcCamelContext.addRoutes(new RpcRouteBuilder(this, rpcCamelContext));
-        LOG.info("JMS Twin publisher initialized");
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            rpcCamelContext.addRoutes(new RpcRouteBuilder(this, rpcCamelContext));
+            LOG.info("JMS Twin publisher initialized");
+        }
     }
 
     public void close() throws IOException {
-        executor.shutdownNow();
-        LOG.info("JMS Twin publisher stopped");
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            executor.shutdownNow();
+            LOG.info("JMS Twin publisher stopped");
+        }
     }
 
     @Override

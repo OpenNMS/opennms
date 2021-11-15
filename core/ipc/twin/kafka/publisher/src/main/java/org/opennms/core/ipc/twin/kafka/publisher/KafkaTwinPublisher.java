@@ -50,6 +50,7 @@ import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.KafkaTwinConstants;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.ipc.twin.api.TwinStrategy;
 import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
@@ -58,6 +59,7 @@ import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,26 +101,27 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
         kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
         kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
         kafkaConfig.putAll(kafkaConfigProvider.getProperties());
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
+            this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
 
-        LOG.debug("Initialized kafka twin publisher with {}", kafkaConfig);
-        this.producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+            final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
+            consumer.subscribe(ImmutableList.<String>builder()
+                    .add(Topic.request())
+                    .build());
 
-        final KafkaConsumer<String, byte[]> consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaProducer.class.getClassLoader());
-        consumer.subscribe(ImmutableList.<String>builder()
-                                        .add(Topic.request())
-                                        .build());
-
-        this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
+            this.consumerRunner = new KafkaConsumerRunner(consumer, this::handleMessage, "twin-publisher");
+        }
     }
 
     public void close() throws IOException {
-
-        if (this.consumerRunner != null) {
-            this.consumerRunner.close();
-        }
-
-        if (this.producer != null) {
-            this.producer.close();
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
+            if (this.consumerRunner != null) {
+                this.consumerRunner.close();
+            }
+            if (this.producer != null) {
+                this.producer.close();
+            }
         }
     }
 

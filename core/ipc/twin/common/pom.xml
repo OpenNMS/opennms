@@ -107,6 +107,11 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.logging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.twin</groupId>
             <artifactId>org.opennms.core.ipc.twin.api</artifactId>
             <version>${project.version}</version>
