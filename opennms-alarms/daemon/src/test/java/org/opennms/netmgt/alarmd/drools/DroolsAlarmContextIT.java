@@ -61,6 +61,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -104,9 +105,10 @@ public class DroolsAlarmContextIT {
         dac.setUseManualTick(true);
         dac.setAlarmTicketerService(ticketer);
 
-        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
-        transactionTemplate.afterPropertiesSet();
-        dac.setTransactionTemplate(transactionTemplate);
+        // MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
+        // transactionTemplate.afterPropertiesSet();
+        MockSessionUtils transactionTemplate = new MockSessionUtils();
+        dac.setSessionUtils(transactionTemplate);
 
         alarmDao = mock(AlarmDao.class);
         when(alarmDao.findAll()).thenReturn(Collections.emptyList());

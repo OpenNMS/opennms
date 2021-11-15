@@ -86,6 +86,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         }
     }
 
+    // binding
     public synchronized void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
         LOG.debug("onNorthbounderRegistered: starting {}", northbounder.getName());
         northbounder.start();
@@ -93,12 +94,16 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         onNorthboundersChanged();
     }
 
+    // unbinding
     public synchronized void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
         LOG.debug("onNorthbounderUnregistered: stopping {}", northbounder.getName());
         northbounder.stop();
         m_northboundInterfaces.remove(northbounder);
         onNorthboundersChanged();
     }
+
+
+
 
     private void onNorthboundersChanged() {
         final long numNbisActive = m_northboundInterfaces.stream()

@@ -2,7 +2,7 @@
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
            xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0
-		hteventIpcManagerImpltps://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
@@ -13,20 +13,23 @@
     <!-- Load system properties -->
     <ext:property-placeholder />
 
+
     <!-- service imports DAOs (services et al) -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
-    <reference id="acknowledgmentDao" interface="org.opennms.netmgt.dao.api.acknowledgmentDao" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
     <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
-    <reference id="alarmEntityNotifier" interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" /> <!-- check -->
+    <reference id="alarmEntityNotifier" interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" />
     <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" />
     <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
     <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
     <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
+    <reference id="acknowledgmentDao" interface="org.opennms.netmgt.dao.api.AcknowledgmentDao" />
+    <reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy"/>
 
 
+    <!-- drools integration -->
     <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService">
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="alarmDao" ref="alarmDao" />
@@ -46,19 +49,17 @@
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmService" ref="defaultAlarmService" />
         <property name="alarmTicketerService" ref="defaultAlarmTicketerService" />
-        <property name="template" ref="sessionUtils" />
+        <property name="sessionUtils" ref="sessionUtils" />
     </bean>
-
-    <!-- TODO
-    <reference-list id="alarmLifecycleListener" member-type="service-object" ref="droolsAlarmContext" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
-        <onmsgi:service-properties>
+    <service id="alarmLifecycleListener" ref="droolsAlarmContext" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+        <service-properties>
             <entry key="registration.export" value="true" />
-        </onmsgi:service-properties>
-    </reference-list>
-    -->
+        </service-properties>
+    </service>
 
+
+    <!-- daemon -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
-
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
         <argument ref="metricRegistry" />
         <property name="nodeDao" ref="nodeDao" />
@@ -66,7 +67,6 @@
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
         <property name="hwEntityDao" ref="hwEntityDao" />
     </bean>
-
     <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl">
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmEntityNotifier" ref="alarmEntityNotifier" />
@@ -75,21 +75,21 @@
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
 
-    <!-- TODO
-    <reference-list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
-       <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
-    </reference-list>
-    -->
 
+    <reference-list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
+        <reference-listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
+    </reference-list>
+    <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager" init-method="onNorthbounderRegistered" destroy-method="onNorthbounderUnregistered">
+        <property name="eventProxy" ref="eventProxy" />
+    </bean>
+    <service id="alarmEntityListenerService" interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="northbounderManager"/>
+    <reference-list interface="org.opennms.netmgt.alarmd.api.Northbounder">
+        <reference-listener ref="northbounderManager" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
+    </reference-list>
     <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="afterPropertiesSet">
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
-
-    <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager">
-        <property name="eventProxy" ref="eventSubscriptionService" />
-    </bean>
-
     <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
         <property name="persister" ref="alarmPersister" />
         <property name="droolsAlarmContext" ref="droolsAlarmContext" />
@@ -97,25 +97,16 @@
         <property name="northbounderManager" ref="northbounderManager" />
     </bean>
 
-    <!-- daemonListener: do not carry over if cannot implement ? could mean redoing the entire annotations for filtering listeners -->
 
-    <!-- Northbounders -->
-
-    <!-- northbounderManager -->
-
-    <!-- export service AlarmEntityListener -->
-
-    <!-- reference list northbounderList -->
-
-    <!-- Lifecycle listeners -->
-
-    <!-- alarmLifecycleListenerManager -->
-
-    <!-- reference list alarmLifecycleListenerManager -->
-
-    <!-- reference list alarmLifecycleListeners  -->
-
-    <!-- <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" /> -->
-    <service interface="org.opennms.netmgt.config.api.AlarmDao" ref="eventConfDao" />
+    <!-- Lifecycle listeners
+    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" >
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+    <reference-list id="alarmLifecycleListeners" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+        <reference-listener ref="alarmLifecycleListenerManager" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
+    </reference-list>
+    -->
 
 </blueprint>

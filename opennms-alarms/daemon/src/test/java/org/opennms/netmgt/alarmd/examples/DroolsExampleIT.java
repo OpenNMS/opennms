@@ -47,6 +47,7 @@ import org.opennms.netmgt.alarmd.drools.DefaultAlarmService;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -78,9 +79,10 @@ public abstract class DroolsExampleIT {
         dac.setUsePseudoClock(true);
         dac.setUseManualTick(true);
 
-        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
-        transactionTemplate.afterPropertiesSet();
-        dac.setTransactionTemplate(transactionTemplate);
+        //MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
+        //transactionTemplate.afterPropertiesSet();
+        MockSessionUtils transactionTemplate = new MockSessionUtils();
+        dac.setSessionUtils(transactionTemplate);
 
         alarmDao = mock(AlarmDao.class);
         dac.setAlarmDao(alarmDao);

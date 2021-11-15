@@ -352,6 +352,8 @@
     <!-- factor out hard-coded versions -->
     <feature name="sentinel-alarmd" description="OpenNMS :: Alarms :: Daemon" version="${project.version}">
 
+        <feature>sentinel-eventd</feature>
+
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.8_1</bundle>
         <bundle>mvn:org.kie.soup/kie-soup-commons/7.31.0.Final</bundle>
         <bundle>mvn:org.kie.soup/kie-soup-project-datamodel-api/7.31.0.Final</bundle>
@@ -367,34 +369,8 @@
         <bundle>mvn:org.kie/kie-internal/7.31.0.Final</bundle>
         <bundle>mvn:org.drools/drools-core-reflective/7.31.0.Final</bundle>
 
-        <!-- these are not needed, remove
-        <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.soa/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-util/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.lib/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.spring/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.xml/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.criteria/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.logging/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/30.0.0-SNAPSHOT</bundle>
-
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-config-model/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-impl/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-model/30.0.0-SNAPSHOT</bundle>
-        <feature>opennms-core-daemon</feature>
-        -->
-
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+        <!-- bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle> -->
 
     </feature>
 </features>

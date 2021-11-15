@@ -12,7 +12,7 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
-  <!-- Drools integration -->  <!-- MCB need features (drools supporting osgi?) -->
+  <!-- Drools integration -->
 
   <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
 
@@ -30,7 +30,6 @@
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" />
 
-  <!-- BP reference list -->
   <onmsgi:list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
     <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
   </onmsgi:list>
@@ -48,7 +47,6 @@
   <!-- Northbounders -->
 
   <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager" />
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="northbounderManager"/>
 
   <onmsgi:list id="northbounderList" interface="org.opennms.netmgt.alarmd.api.Northbounder">
