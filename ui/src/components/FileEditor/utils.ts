@@ -8,7 +8,7 @@ export const sortFilesAndFolders = (files: IFile[]): IFile[] => {
     }
   }
   const folders = files.filter(x => x.children).sort((a, b) => a.name.localeCompare(b.name))
-  const noFolders = files.filter(x => !x.children)
+  const noFolders = files.filter(x => !x.children).sort((a, b) => a.name.localeCompare(b.name))
   return [...folders, ...noFolders]
 }
 

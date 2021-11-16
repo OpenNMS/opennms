@@ -26,10 +26,6 @@ const getFile = async (context: VuexContext, fileName: string) => {
   context.commit('SAVE_SNIPPETS_TO_STATE', snippets)
 }
 
-const setSelectedFileName = async (context: VuexContext, fileName: string) => {
-  context.commit('SAVE_SELECTED_FILE_NAME_TO_STATE', fileName)
-}
-
 const saveModifiedFile = async (context: ContextWithState) => {
   const xml = 'xml', plain = 'plain'
   const filename = context.state.selectedFileName
@@ -53,6 +49,14 @@ const saveModifiedFile = async (context: ContextWithState) => {
   } else {
     context.commit('SET_IS_CONSOLE_OPEN', true)
   }
+}
+
+const addNewFileToState = async (context: VuexContext, newFilePath: string) => {
+  context.commit('SAVE_NEW_FILE_TO_STATE', newFilePath)
+}
+
+const setSelectedFileName = async (context: VuexContext, fileName: string) => {
+  context.commit('SAVE_SELECTED_FILE_NAME_TO_STATE', fileName)
 }
 
 const setModifiedFileString = async (context: VuexContext, modifiedFileString: string) => {
@@ -104,5 +108,6 @@ export default {
   setIsConsoleOpen,
   setIsHelpOpen,
   setSelectedFileName,
-  clearEditor
+  clearEditor,
+  addNewFileToState
 }

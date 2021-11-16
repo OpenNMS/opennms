@@ -60,7 +60,6 @@ const toggle = () => {
 
 const addItem = (item: IFile) => {
   if (!isOpen.value) toggle()
-  console.log(item.fullPath)
   item.children?.unshift({
     name: '',
     isEditing: true,

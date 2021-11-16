@@ -7,7 +7,17 @@ const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
 }
 
 const SAVE_FOLDER_FILE_STRUCTURE = (state: State, fileNames: string[]) => {
-  state.filesInFolders = filesToFolders(fileNames)
+  const filteredFileNames = fileNames.filter((fileName) => 
+    !state.searchValue || 
+    fileName === state.selectedFileName ||
+    (state.searchValue && fileName.includes(state.searchValue)))
+
+  state.filesInFolders = filesToFolders(filteredFileNames)
+}
+
+const SAVE_NEW_FILE_TO_STATE = (state: State, newFilePath: string) => {
+  state.fileNames = [...state.fileNames, newFilePath]
+  SAVE_FOLDER_FILE_STRUCTURE(state, state.fileNames)
 }
 
 const SAVE_FILE_TO_STATE = (state: State, file: string) => {
@@ -20,8 +30,7 @@ const SAVE_SNIPPETS_TO_STATE = (state: State, snippets: string) => {
 
 const SAVE_SEARCH_VALUE_TO_STATE = (state: State, searchValue: string) => {
   state.searchValue = searchValue
-  const filteredFileNames = state.fileNames.filter((fileName) => !searchValue || (searchValue && fileName.includes(searchValue)))
-  state.filesInFolders = filesToFolders(filteredFileNames)
+  SAVE_FOLDER_FILE_STRUCTURE(state, state.fileNames)
 }
 
 const SAVE_IS_CONTENT_MODIFIED_TO_STATE = (state: State, contentModified: boolean) => {
@@ -68,18 +77,19 @@ const SET_IS_HELP_OPEN = (state: State, isOpen: boolean) => {
 }
 
 export default {
-  SAVE_FILE_NAMES_TO_STATE,
+  CLEAR_LOGS,
+  CLEAR_EDITOR,
+  ADD_LOG_TO_STATE,
+  SET_IS_HELP_OPEN,
+  TRIGGER_FILE_RESET,
   SAVE_FILE_TO_STATE,
+  SET_IS_CONSOLE_OPEN,
+  SAVE_NEW_FILE_TO_STATE,
   SAVE_SNIPPETS_TO_STATE,
+  SAVE_FILE_NAMES_TO_STATE,
+  SAVE_MODIFIED_FILE_STRING,
+  SAVE_FOLDER_FILE_STRUCTURE,
   SAVE_SEARCH_VALUE_TO_STATE,
   SAVE_IS_CONTENT_MODIFIED_TO_STATE,
-  TRIGGER_FILE_RESET,
-  SAVE_SELECTED_FILE_NAME_TO_STATE,
-  SAVE_MODIFIED_FILE_STRING,
-  ADD_LOG_TO_STATE,
-  CLEAR_LOGS,
-  SET_IS_CONSOLE_OPEN,
-  SET_IS_HELP_OPEN,
-  SAVE_FOLDER_FILE_STRUCTURE,
-  CLEAR_EDITOR
+  SAVE_SELECTED_FILE_NAME_TO_STATE
 }

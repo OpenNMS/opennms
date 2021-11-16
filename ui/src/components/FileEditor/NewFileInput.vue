@@ -29,19 +29,16 @@ const { item } = props
 
 const addNewFile = () => {
   if (!item.isEditing) return
-  if (!newFileName.value) {
-    item.isEditing = false
-    item.isHidden = true
-    return
-  }
-  item.name = newFileName.value
   item.isEditing = false
-  item.fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
+  if (!newFileName.value) return
+  const fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
 
-  // set newly created file as selected
-  store.dispatch('fileEditorModule/setSelectedFileName', item.fullPath)
-  // clear editor contents
+    // set newly created file as selected
+  store.dispatch('fileEditorModule/setSelectedFileName', fullPath)
+    // clear editor contents
   store.dispatch('fileEditorModule/clearEditor')
+  // update vuex store with new file
+  store.dispatch('fileEditorModule/addNewFileToState', fullPath)
 }
 
 onMounted(() => input.value.focus())
