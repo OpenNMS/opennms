@@ -178,7 +178,8 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         // try to fill default value or empty signature
         Optional<ConfigDefinition> def = configStoreDao.getConfigDefinition(configName);
         if (def.isPresent()) {
-            OpenAPIConfigHelper.fillWithDefaultValue(def.get(), configObj.get());
+            OpenAPIConfigHelper.fillWithDefaultValue(def.get().getSchema(),
+                    def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG), configObj.get());
         }
         return configObj;
     }

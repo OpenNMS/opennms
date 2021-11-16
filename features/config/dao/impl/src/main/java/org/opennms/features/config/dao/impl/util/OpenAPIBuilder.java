@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class OpenAPIBuilder {
-    private static final String SCHEMA_REF_TAG = "#/components/schemas/";
+    public static final String SCHEMA_REF_TAG = "#/components/schemas/";
     private ConfigItem rootConfig;
     private String configName;
     private String topElementName;

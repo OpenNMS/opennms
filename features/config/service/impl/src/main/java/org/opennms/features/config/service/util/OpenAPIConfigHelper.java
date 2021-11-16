@@ -27,34 +27,48 @@
  ******************************************************************************/
 package org.opennms.features.config.service.util;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.*;
 import org.json.JSONObject;
-import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 public class OpenAPIConfigHelper {
-    public static void fillWithDefaultValue(ConfigDefinition configDefinition, final JSONObject configJsonObj) {
-        if (configDefinition == null || configDefinition.getSchema() == null) {
+    /**
+     * It will walk through all properties in schema and insert default value / null into json if property not found.
+     * @param openapi
+     * @param topLevelElement
+     * @param configJsonObj
+     */
+    public static void fillWithDefaultValue(OpenAPI openapi, String topLevelElement, final JSONObject configJsonObj) {
+        if (openapi == null) {
             return;
         }
-        Map<String, Schema> schemaMap = configDefinition.getSchema().getComponents().getSchemas();
-        Schema rootSchema = schemaMap.get(configDefinition.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG));
+        Map<String, Schema> schemaMap = openapi.getComponents().getSchemas();
+        Schema rootSchema = schemaMap.get(topLevelElement);
         ((Map<String, Schema>) rootSchema.getProperties()).forEach((key, schema) -> {
             if (!configJsonObj.has(key)) {
-                fillSingleValue(key, configJsonObj, schema);
+                fillSingleValue(key, configJsonObj, schema, openapi);
             }
         });
     }
 
-    public static void fillSingleValue(String key, final JSONObject configJsonObj, Schema propertySchema) {
+    private static void fillSingleValue(String key, final JSONObject configJsonObj, Schema propertySchema, OpenAPI openapi) {
         if (propertySchema instanceof ArraySchema) {
             configJsonObj.put(key, new ArrayList<>(0));
-        } else if (propertySchema instanceof StringSchema || propertySchema instanceof NumberSchema || propertySchema instanceof IntegerSchema) {
-            configJsonObj.put(key, propertySchema.getDefault());
-        } else if (propertySchema.get$ref() != null) {
-            //TODO: handle properly
+        } else if (propertySchema instanceof StringSchema || propertySchema instanceof NumberSchema
+                || propertySchema instanceof IntegerSchema || propertySchema instanceof DateSchema
+                || propertySchema instanceof DateTimeSchema || propertySchema instanceof BooleanSchema) {
+            configJsonObj.put(key, propertySchema.getDefault() == null ? JSONObject.NULL : propertySchema.getDefault());
+        } else if (propertySchema instanceof Schema && propertySchema.get$ref() != null) {
+            String schemaName = propertySchema.get$ref().replaceAll("^" + OpenAPIBuilder.SCHEMA_REF_TAG, "");
+            JSONObject newObject = new JSONObject();
+            configJsonObj.put(key, newObject);
+            fillWithDefaultValue(openapi, schemaName, newObject);
+        } else {
+            configJsonObj.put(key, (Object) null);
         }
     }
 }
