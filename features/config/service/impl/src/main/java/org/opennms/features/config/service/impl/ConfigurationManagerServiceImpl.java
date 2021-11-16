@@ -144,12 +144,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        try{
+        try {
             if (this.getJSONConfiguration(configName, configId).isPresent()) {
                 throw new IllegalArgumentException(String.format(
                         "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
             }
-        } catch(FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             // it is expected to have file not found exception
         }
 
@@ -178,8 +178,11 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         // try to fill default value or empty signature
         Optional<ConfigDefinition> def = configStoreDao.getConfigDefinition(configName);
         if (def.isPresent()) {
-            OpenAPIConfigHelper.fillWithDefaultValue(def.get().getSchema(),
-                    def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG), configObj.get());
+            String schemaName = def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+            if (schemaName == null) { // assume if top element name is null, the top schema name is configName
+                schemaName = configName;
+            }
+            OpenAPIConfigHelper.fillWithDefaultValue(def.get().getSchema(), schemaName, configObj.get());
         }
         return configObj;
     }
