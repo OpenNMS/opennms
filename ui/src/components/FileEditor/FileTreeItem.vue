@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang=ts>
-import { ref, computed, PropType } from 'vue'
+import { ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import Open from "@featherds/icon/navigation/DownChevron"
@@ -42,13 +42,19 @@ const props = defineProps({
   }
 })
 
+// open first folder by default
+const isOpen = ref(props.item.name === undefined)
 const searchValue = computed(() => store.state.fileEditorModule.searchValue)
-// open first folder, or all folders if searching
-const setFoldersOpen = Boolean(searchValue.value || props.item.name === undefined)
-const isOpen = ref(setFoldersOpen)
 const isFolder = computed(() => props.item.children && props.item.children.length)
 const isEditing = computed(() => props.item.isEditing)
 const selectedFile = computed(() => store.state.fileEditorModule.selectedFileName)
+
+watch(searchValue, (searchValue) => {
+  // open all folders if searching
+  if (searchValue) isOpen.value = true
+  // else only files folder
+  else isOpen.value = props.item.name === 'Files'
+})
 
 const getFile = (filename: string) => store.dispatch('fileEditorModule/getFile', filename)
 

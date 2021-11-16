@@ -7,10 +7,12 @@ const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
 }
 
 const SAVE_FOLDER_FILE_STRUCTURE = (state: State, fileNames: string[]) => {
-  const filteredFileNames = fileNames.filter((fileName) => 
-    !state.searchValue || 
-    fileName === state.selectedFileName ||
-    (state.searchValue && fileName.includes(state.searchValue)))
+  const filteredFileNames = fileNames.filter((fileName) => {
+    const searchValue = state.searchValue.toLowerCase()
+    const filename = fileName.toLowerCase()
+    const selectedFileName = state.selectedFileName.toLowerCase()
+    return !searchValue || filename === selectedFileName || (searchValue && filename.includes(searchValue))
+  })
 
   state.filesInFolders = filesToFolders(filteredFileNames)
 }

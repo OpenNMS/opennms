@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect } from "vue"
+import { ref, computed, watchEffect, watch } from "vue"
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
 import Console from './Console.vue'
@@ -37,20 +37,28 @@ const theme = computed(() => {
 
 const store = useStore()
 const content = ref('')
+const reactiveEditor = ref()
 
+const selectedFileName = computed(() => store.state.fileEditorModule.selectedFileName)
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const fileString = computed(() => store.state.fileEditorModule.file)
 const lang = computed(() => {
   const xml = 'xml', properties = 'properties'
-  const selectedFileName = store.state.fileEditorModule.selectedFileName
-  if (selectedFileName) {
-    const splitSelectedFileName = selectedFileName.split('.')
+  if (selectedFileName.value) {
+    const splitSelectedFileName = selectedFileName.value.split('.')
     const filetype = splitSelectedFileName[splitSelectedFileName.length - 1]
     if (filetype !== xml) return properties
   }
   return xml
 })
+
 watchEffect(() => content.value = fileString.value)
+watch(selectedFileName, () => {
+  // enable editor when file is selected
+  reactiveEditor.value.setOptions({ readOnly: false })
+  reactiveEditor.value.renderer.setShowGutter(true)
+  reactiveEditor.value.renderer.$cursorLayer.element.style.display = "block"
+})
 
 const change = () => {
   store.dispatch('fileEditorModule/setIsFileContentModified', content.value !== fileString.value)
@@ -63,6 +71,13 @@ const init = (editor: any) => {
     bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
     exec: () => store.dispatch('fileEditorModule/saveModifiedFile')
   })
+
+  // disable editor on load
+  editor.setOptions({ readOnly: true })
+  editor.renderer.setShowGutter(false)
+  editor.renderer.$cursorLayer.element.style.display = "none"
+  
+  reactiveEditor.value = editor
 }
 </script>
 

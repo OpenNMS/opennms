@@ -23,26 +23,34 @@ const getFolderPath = (folder: string, fullPath: string) => {
   return path.join('/')
 }
 
-export const filesToFolders = (fileNames: string[]): IFile => {
-  const files: IFile[] = []
-
-  const createFolder = (fileArray: IFile[], file: string, fullPath: string) => {
+/**
+ * Recursive function to create folders from file paths
+ * 
+ * @param {IFile[]} folder - Array of files that represents a folder.
+ * @param {string} file - name of the current file.
+ * @param {string} fullPath - full path of file used to send file to BE.
+ */
+const addFileOrCreateFolder = (folder: IFile[], file: string, fullPath: string): IFile[] => {
+  if (file.includes('/')) { // create a folder
     const fileNamePieces = file.split('/')
-    const folder = fileNamePieces[0]
+    const folderName = fileNamePieces[0]
     fileNamePieces.shift()
     const remaining = fileNamePieces.join('/')
-    const existingFolder = fileArray.filter(x => x.name === folder)[0] as Required<IFile>
+    const existingFolder = folder.filter(x => x.name === folderName)[0] as Required<IFile>
 
     if (existingFolder) addFileOrCreateFolder(existingFolder.children, remaining, fullPath)
-    else fileArray.push({ name: folder, children: addFileOrCreateFolder([], remaining, fullPath), fullPath: getFolderPath(folder, fullPath) })
-  }
+    else folder.push({ name: folderName, children: addFileOrCreateFolder([], remaining, fullPath), fullPath: getFolderPath(folderName, fullPath) })
 
-  const addFileOrCreateFolder = (fileArray: IFile[], file: string, fullPath: string): IFile[] => {
-    if (file.includes('/')) createFolder(fileArray, file, fullPath)
-    else fileArray.push({ name: file, fullPath })
-    return fileArray
+  } else { // add file to the folder
+    folder.push({ name: file, fullPath })
   }
+  return folder
+}
 
-  for (const file of fileNames) addFileOrCreateFolder(files, file, file)
+export const filesToFolders = (fileNames: string[]): IFile => {
+  const files: IFile[] = []
+  for (const file of fileNames) {
+    addFileOrCreateFolder(files, file, file)
+  }
   return { name: 'Files', children: sortFilesAndFolders(files) }
 }
