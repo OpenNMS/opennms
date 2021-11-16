@@ -20,7 +20,7 @@ config:property-set bootstrap.servers kafka-broker-ip:9092 <1>
 config:update
 ----
 <1> Set the Kafka broker IP by replacing the kafka-broker-ip and port you want to connect to.
-    You can add multiple hosts in a comma separated list, e.g. `kafka-broker-1:9092,kafka-broker-2:9092`
+    Add multiple hosts in a comma-separated list, for example, `kafka-broker-1:9092,kafka-broker-2:9092`
 
 Next, install the `opennms-kafka-producer` feature from that same shell using:
 
