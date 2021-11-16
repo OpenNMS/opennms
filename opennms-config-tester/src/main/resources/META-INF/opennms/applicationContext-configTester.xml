@@ -541,7 +541,7 @@
   </bean>
 
   <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.vmware.jaxb.VmwareConfigDaoJaxb">
-    <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
+   <!-- <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>-->
   </bean>
 
   <bean id="wsManDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.WSManDataCollectionConfigDaoJaxb" />
