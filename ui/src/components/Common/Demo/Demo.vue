@@ -55,31 +55,14 @@
   </p>
 
   <hr />
-  <h5>Basic Radio button</h5>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city1" name="city" value="Chicago" v-model="city" :disabled="true" />
-    <label for="city1">Chicago</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city2" name="city" value="Los Angeles" v-model="city" />
-    <label for="city2">Los Angeles</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city3" name="city" value="New York" v-model="city" />
-    <label for="city3">New York</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city4" name="city" value="San Francisco" v-model="city" />
-    <label for="city4">San Francisco</label>
-  </div>
-  <hr />
-  <label>selected radio button values : {{ city }}</label>
-
-  <hr />
-  <div>
-    <RadioButtonGroup name="cityGroup" :radioValues="categories" @selectedRadioVal="selectedValue" />
-    <label>selected radio button values : {{ cityGroupName }}</label>
-  </div>
+  <FeatherRadioGroup :label="'Favourite subject type?'" v-model="cityGroupName">
+      <FeatherRadio
+        v-for="item in categories"
+        :value="item.name"
+        :key="item.key"
+        >{{ item.name }}</FeatherRadio
+      >
+    </FeatherRadioGroup>
 </template>
 
 <script setup lang="ts">
@@ -93,6 +76,7 @@ import TimePicker from '../TimePicker.vue'
 import Button from '../Button.vue'
 import RadioButton from '../RadioButton.vue'
 import RadioButtonGroup from '../RadioButtonFieldSet.vue'
+import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 
 const city = ref('')
 const showInputText = ref('')

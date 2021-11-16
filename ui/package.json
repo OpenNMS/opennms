@@ -34,6 +34,7 @@
     "@featherds/table": "^0.2.11",
     "@featherds/tabs": "^0.2.11",
     "@featherds/utils": "^0.2.11",
+    "@featherds/radio": "^0.2.11",
     "axios": "^0.21.2",
     "dayjs": "^1.10.7",
     "lodash": "^4.17.21",
