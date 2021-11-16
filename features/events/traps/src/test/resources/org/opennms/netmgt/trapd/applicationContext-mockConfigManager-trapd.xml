@@ -12,6 +12,6 @@
         <constructor-arg value="true"/>
     </bean>
     <bean id="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
-        <property name="configFile" value="org/opennms/netmgt/trapd/trapd-configuration.xml"/>
+        <property name="configFile" value="trapd/etc/trapd-configuration.xml"/>
     </bean>
 </beans>

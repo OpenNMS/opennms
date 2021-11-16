@@ -183,7 +183,7 @@ public class TrapListener implements TrapNotificationListener {
 
     public void reload() throws IOException {
         //TrapdConfigFactory.reload();
-        m_config = TrapdConfigFactory.getInstance();
+       TrapdConfigFactory.getInstance().reload();
     }
 
     private InetAddress getInetAddress() {
