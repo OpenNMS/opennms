@@ -178,11 +178,13 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
             nodeDao.saveOrUpdate(node);
 
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, PREFIX + NAME);
+            ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
             ebldr.setInterface(ipAddress);
             getEventForwarder().sendNow(ebldr.getEvent());
         } catch (Throwable e) {
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, PREFIX + NAME);
+            ebldr.addParam(EventConstants.PARM_METHOD, NAME);
             ebldr.setNodeid(nodeId);
             ebldr.setInterface(ipAddress);
             ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
@@ -285,6 +287,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
                 ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
             if (ebldr != null) {
+                ebldr.addParam(EventConstants.PARM_METHOD, NAME);
                 getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
