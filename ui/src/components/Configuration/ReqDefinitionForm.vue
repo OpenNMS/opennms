@@ -158,8 +158,8 @@ const reqDefinition = reactive(State)
 
 const minVal = ref(1)
 const count = ref(0)
-const actionsAddIcon = ref(markRaw(actionsAdd));
-const navigationCancelIcon = ref(markRaw(navigationCancel));
+const actionsAddIcon = ref(actionsAdd);
+const navigationCancelIcon = ref(navigationCancel);
 const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }])
 const generatedURL = ref('')
 const advString: any = ref([])
