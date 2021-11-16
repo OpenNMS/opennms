@@ -8,7 +8,7 @@
         <div class="feather-row">
           <transition name="fade">
             <div class="feather-col-3" v-if="!isHelpOpen">
-              <Files />
+              <FileSidebar />
             </div>
           </transition>
 
@@ -40,7 +40,7 @@ import { onMounted, computed } from "vue"
 import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import Editor from '@/components/FileEditor/Editor.vue'
-import Files from '@/components/FileEditor/Files.vue'
+import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
 import Help from '@/components/FileEditor/Help.vue'
 import TopBar from '@/components/FileEditor/TopBar.vue'
 const store = useStore()

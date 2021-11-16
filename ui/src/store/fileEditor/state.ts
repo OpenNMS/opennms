@@ -3,6 +3,9 @@ import { FileEditorResponseLog } from '@/types'
 export interface IFile {
   name: string
   children?: IFile[]
+  fullPath?: string
+  isEditing?: boolean
+  isHidden?: boolean
 }
 
 export interface State {

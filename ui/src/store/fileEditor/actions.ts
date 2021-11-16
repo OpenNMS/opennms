@@ -17,12 +17,16 @@ const getFile = async (context: VuexContext, fileName: string) => {
   context.commit('SAVE_MODIFIED_FILE_STRING', '')
   context.commit('SAVE_SNIPPETS_TO_STATE', '')
   context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
+  context.commit('SAVE_SELECTED_FILE_NAME_TO_STATE', fileName)
 
   const file = await API.getFile(fileName)
   const snippets = await API.getSnippets(fileName)
 
   context.commit('SAVE_FILE_TO_STATE', file)
   context.commit('SAVE_SNIPPETS_TO_STATE', snippets)
+}
+
+const setSelectedFileName = async (context: VuexContext, fileName: string) => {
   context.commit('SAVE_SELECTED_FILE_NAME_TO_STATE', fileName)
 }
 
@@ -63,6 +67,10 @@ const setIsFileContentModified = async (context: VuexContext, contentModified: b
   context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', contentModified)
 }
 
+const clearEditor = async (context: VuexContext) => {
+  context.commit('CLEAR_EDITOR')
+}
+
 const triggerFileReset = async (context: VuexContext) => {
   context.commit('TRIGGER_FILE_RESET')
 }
@@ -94,5 +102,7 @@ export default {
   addLog,
   clearLogs,
   setIsConsoleOpen,
-  setIsHelpOpen
+  setIsHelpOpen,
+  setSelectedFileName,
+  clearEditor
 }

@@ -13,10 +13,15 @@
 </template>
   
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
 import Menubar from './components/Layout/Menubar.vue'
 import Sidebar from './components/Layout/Sidebar.vue'
 import Spinner from './components/Common/Spinner.vue'
+
+const store = useStore()
+onMounted(() => store.dispatch('summaryModule/getSummary'))
 </script>
   
 <style lang="scss">

@@ -267,3 +267,11 @@ export interface BreadCrumb {
   to: string
   position?: string
 }
+
+export interface Summary {
+  teamUnacknowledgedCount: number
+  totalCount: number
+  totalUnacknowledgedCount: number
+  user: string
+  userUnacknowledgedCount: number
+}

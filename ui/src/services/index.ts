@@ -14,6 +14,7 @@ import { getLocations } from './locationsService'
 import { scanIPRanges, detectSNMPAvailable, provision } from './inventoryService'
 import { getFileNames, getFile, getSnippets, postFile } from './configService'
 import { getLogs, getLog } from './logsService'
+import { getSummary } from './summaryService'
 
 export default {
   search,
@@ -34,5 +35,6 @@ export default {
   postFile,
   getSnippets,
   getLogs,
-  getLog
+  getLog,
+  getSummary
 }

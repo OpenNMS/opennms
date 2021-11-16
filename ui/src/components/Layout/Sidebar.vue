@@ -3,13 +3,18 @@
   <div class="sidebar">
     <Link to="/">Nodes</Link>
     <Link to="/inventory">Inventory</Link>
-    <Link to="/file-editor">File Editor</Link>
-    <Link to="/logs">Logs</Link>
+    <Link v-if="isAdmin" to="/file-editor">File Editor</Link>
+    <Link v-if="isAdmin" to="/logs">Logs</Link>
   </div>
 </template>
     
 <script setup lang="ts">
 import Link from './Link.vue'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+
+const store = useStore()
+const isAdmin = computed(() => store.state.summaryModule.summary.user === 'admin')
 </script>
     
 <style lang="scss">
