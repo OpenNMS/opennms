@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        elementFormDefault="qualified">
+
+    <element name="jmx-config">
+        <annotation>
+            <documentation>
+                Configuration for JMX.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="this:mbean-server" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="mbean-server">
+        <complexType>
+            <sequence>
+                <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+            <attribute name="ipAddress" type="this:IpAddress" use="optional" default="127.0.0.1"/>
+            <attribute name="port" type="positiveInteger" use="optional" default="18980"/>
+        </complexType>
+    </element>
+
+    <element name="parameter">
+        <complexType>
+            <attribute name="key" type="this:key" use="required"/>
+            <attribute name="value" type="string" use="required"/>
+        </complexType>
+    </element>
+
+    <simpleType name="IpAddress">
+        <annotation>
+            <documentation>
+                IP-Address
+            </documentation>
+        </annotation>
+        <restriction base="token">
+            <!-- IPv4 -->
+            <pattern value="(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}" />
+            <!-- Fully specified IPv6 address -->
+            <pattern value="[0-9A-Fa-f]{1,4}(:[0-9A-Fa-f]{1,4}){7}"/>
+            <!-- IPv6  with double colon start -->
+            <pattern value=":(:[0-9A-Fa-f]{1,4}){1,7}"/>
+            <!-- IPv6  with double colon in the middle -->
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,6}(:[0-9A-Fa-f]{1,4})"/>
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,5}(:[0-9A-Fa-f]{1,4}){1,2}"/>
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,4}(:[0-9A-Fa-f]{1,4}){1,3}"/>
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,3}(:[0-9A-Fa-f]{1,4}){1,4}"/>
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,2}(:[0-9A-Fa-f]{1,4}){1,5}"/>
+            <pattern value="([0-9A-Fa-f]{1,4}:){1}(:[0-9A-Fa-f]{1,4}){1,6}"/>
+            <!-- IPv6  with double colon th the end -->
+            <pattern value="([0-9A-Fa-f]{1,4}:){1,7}:"/>
+            <!-- Embedded IPv4 addresses -->
+            <pattern
+                    value="((:(:0{1,4}){0,3}(:(0{1,4}|[fF]{4}))?)|(0{1,4}:(:0{1,4}){0,2}(:(0{1,4}|[fF]{4}))?)|((0{1,4}:){2}(:0{1,4})?(:(0{1,4}|[fF]{4}))?)|((0{1,4}:){3}(:(0{1,4}|[fF]{4}))?)|((0{1,4}:){4}(0{1,4}|[fF]{4})?)):(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])"/>
+            <!-- The unspecified address -->
+            <pattern value="::"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="key">
+        <annotation>
+            <documentation>
+                List of keys for parameter
+            </documentation>
+        </annotation>
+        <restriction base="string">
+            <pattern value="protocol|urlPath|factory|username|password|ds-name|friendly-name"/>
+        </restriction>
+    </simpleType>
+
+</schema>

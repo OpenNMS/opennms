@@ -11,12 +11,6 @@
     <context:annotation-config />
     <tx:annotation-driven/>
 
-    <bean id="jmxConfigResourceLocation" class="java.lang.String">
-        <constructor-arg value="file:${opennms.home}/etc/jmx-config.xml"/>
-    </bean>
-
-    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
-        <property name="configResource" ref="jmxConfigResourceLocation"/>
-    </bean>
+    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoCm"/>
 
 </beans>
