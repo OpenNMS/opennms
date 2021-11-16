@@ -354,6 +354,7 @@
 
         <feature>sentinel-eventd</feature>
 
+        <!-- org.kie.api.KieServices -->
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.8_1</bundle>
         <bundle>mvn:org.kie.soup/kie-soup-commons/7.31.0.Final</bundle>
         <bundle>mvn:org.kie.soup/kie-soup-project-datamodel-api/7.31.0.Final</bundle>
@@ -369,8 +370,13 @@
         <bundle>mvn:org.kie/kie-internal/7.31.0.Final</bundle>
         <bundle>mvn:org.drools/drools-core-reflective/7.31.0.Final</bundle>
 
+        <bundle>mvn:org.drools/drools-core-dynamic/7.31.0.Final</bundle>
+        <!-- new version of xstream on top for now -->
+        <!-- <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.11_1</bundle> -->
+        <bundle>mvn:com.thoughtworks.xstream/xstream/1.4.18</bundle> <!-- this later version provides lambda loader dependency -->
+
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+        <!-- <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle> -->
 
     </feature>
 </features>
