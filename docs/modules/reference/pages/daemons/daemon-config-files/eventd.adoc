@@ -3,7 +3,7 @@
 
 .Eventd configuration file overview
 [options="header"]
-[cols="2,1,1,3"]
+[cols="2,3,1,1"]
 |===
 | File
 | Description
@@ -20,7 +20,7 @@
 | yes
 | no
 
-| events/*
+| events/*.xml
 | Out-of-the-box, all files in this folder are included via `include` directives in `eventconf.xml`.
 | yes
 | no

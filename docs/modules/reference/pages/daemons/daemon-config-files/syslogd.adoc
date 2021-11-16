@@ -4,7 +4,8 @@
 
 .Syslogd configuration file overview
 [options="header"]
-[cols="2,1,1,3"]
+[cols="2,3,1,1"]
+
 |===
 | File
 | Description
@@ -12,6 +13,11 @@
 | Restart Required
 
 | syslogd-configuration.xml
+| Configure generic behavior of Syslogd; for example, port numbers or matching behavior.
+| yes
+| no
+
+| syslogd/*.xml
 | Configure generic behavior of Syslogd; for example, port numbers or matching behavior.
 | yes
 | no
