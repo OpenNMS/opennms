@@ -7,10 +7,16 @@
       <span v-if="isFolder">
         <FeatherIcon :icon="isOpen ? Open : Close" />
       </span>
-      <span v-if="!isEditing">{{ item.name }}</span>
-      <span v-if="isFolder" class="add" @click.stop="addItem(item)">&nbsp +</span>
 
-      <NewFileInput v-if="isEditing" :item="item"/>
+      <span v-if="!isEditing">{{ item.name }}</span>
+
+      <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp +</span>
+
+      <span class="remove" v-if="item.fullPath === selectedFile">
+        <FeatherIcon :icon="Remove" @click="deleteFile(item)" />
+      </span>
+
+      <NewFileInput v-if="isEditing" :item="item" />
     </div>
 
     <!-- Folder -->
@@ -29,8 +35,9 @@
 import { ref, computed, PropType, watch } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
-import Open from "@featherds/icon/navigation/DownChevron"
+import Open from "@featherds/icon/navigation/ExpandMore"
 import Close from "@featherds/icon/navigation/ChevronRight"
+import Remove from "@featherds/icon/action/Remove"
 import { IFile } from "@/store/fileEditor/state"
 import NewFileInput from './NewFileInput.vue'
 
@@ -43,7 +50,8 @@ const props = defineProps({
 })
 
 // open first folder by default
-const isOpen = ref(props.item.name === undefined)
+const firstFolder = props.item.name === undefined || props.item.name === 'etc'
+const isOpen = ref(firstFolder)
 const searchValue = computed(() => store.state.fileEditorModule.searchValue)
 const isFolder = computed(() => props.item.children && props.item.children.length)
 const isEditing = computed(() => props.item.isEditing)
@@ -53,7 +61,7 @@ watch(searchValue, (searchValue) => {
   // open all folders if searching
   if (searchValue) isOpen.value = true
   // else only files folder
-  else isOpen.value = props.item.name === 'Files'
+  else isOpen.value = firstFolder
 })
 
 const getFile = (filename: string) => store.dispatch('fileEditorModule/getFile', filename)
@@ -64,13 +72,18 @@ const toggle = () => {
   }
 }
 
-const addItem = (item: IFile) => {
+const addNewFile = (file: IFile) => {
   if (!isOpen.value) toggle()
-  item.children?.unshift({
+  file.children?.unshift({
     name: '',
     isEditing: true,
-    fullPath: item.fullPath
+    fullPath: file.fullPath
   })
+}
+
+const deleteFile = async (file: IFile) => {
+  await store.dispatch('fileEditorModule/deleteFile', file.name)
+  store.dispatch('fileEditorModule/getFiles')
 }
 </script>
 
@@ -84,7 +97,10 @@ ul {
 }
 li {
   padding: 2px;
-  padding-left: 10px;
+  padding-left: 14px;
+  .subtitle2 {
+    padding-left: 10px;
+  }
 }
 .add {
   margin-left: 0px;
@@ -97,5 +113,10 @@ li {
 }
 .hidden {
   display: none;
+}
+.remove {
+  float: right;
+  margin-right: 10px;
+  color: var(--feather-primary-text-on-surface) !important;
 }
 </style>

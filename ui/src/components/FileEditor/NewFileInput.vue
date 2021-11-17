@@ -6,18 +6,22 @@
     @blur="addNewFile"
     @keyup.enter="addNewFile"
     v-model="newFileName"
+    :error="fileNameError"
   />
 </template>
 
 <script setup lang=ts>
-import { ref, onMounted, PropType } from 'vue'
+import { ref, onMounted, PropType, computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { IFile } from "@/store/fileEditor/state"
+import { getExtensionFromFilenameSafely } from './utils'
 
 const store = useStore()
 const input = ref()
 const newFileName = ref('')
+const fileNameError = ref('')
+const allowedFileExtensions = computed(() => store.state.fileEditorModule.allowedFileExtensions)
 
 const props = defineProps({
   item: {
@@ -28,9 +32,21 @@ const props = defineProps({
 const { item } = props
 
 const addNewFile = () => {
+  // clear any previous errors
+  fileNameError.value = ''
+
   if (!item.isEditing) return
   item.isEditing = false
+
   if (!newFileName.value) return
+
+  // check if file extension allowed
+  const extension = getExtensionFromFilenameSafely(newFileName.value)
+  if (!allowedFileExtensions.value.includes(extension)) {
+    fileNameError.value = 'Unsupported file extension.'
+    item.isEditing = true // leave editing on
+  }
+  
   const fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
 
     // set newly created file as selected
@@ -39,6 +55,8 @@ const addNewFile = () => {
   store.dispatch('fileEditorModule/clearEditor')
   // update vuex store with new file
   store.dispatch('fileEditorModule/addNewFileToState', fullPath)
+  // update the search input with the new file name
+  store.dispatch('fileEditorModule/setSearchValue', newFileName.value)
 }
 
 onMounted(() => input.value.focus())

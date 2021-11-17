@@ -1,7 +1,7 @@
 <template>
   <div class="search-bar">
     <div class="search">
-      <FeatherInput label="Search files" v-model="searchValue" @update:modelValue="search" />
+      <FeatherInput label="Search etc" :modelValue="searchValue"  @update:modelValue="search" />
     </div>
     <div class="save">
       <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>
@@ -14,18 +14,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 
 const store = useStore()
-const searchValue = ref('')
 
 const contentModified = computed(() => store.state.fileEditorModule.contentModified)
 const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
+const searchValue = computed(() => store.state.fileEditorModule.searchValue)
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
-const search = () => store.dispatch('fileEditorModule/setSearchValue', searchValue.value)
+const search = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
 const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
 const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
 </script>

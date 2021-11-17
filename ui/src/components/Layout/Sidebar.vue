@@ -14,7 +14,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
-const isAdmin = computed(() => store.state.summaryModule.summary.user === 'admin')
+const isAdmin = computed(() => store.getters['authModule/isAdmin'])
 </script>
     
 <style lang="scss">

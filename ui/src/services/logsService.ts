@@ -11,9 +11,9 @@ const getLogs = async (): Promise<string[]> => {
   }
 }
 
-const getLog = async (fileName: string): Promise<string> => {
+const getLog = async (fileName: string, reverse: boolean = false): Promise<string> => {
   try {
-    const resp = await rest.get(`${endpoint}/contents?f=${fileName}`)
+    const resp = await rest.get(`${endpoint}/contents?f=${fileName}&reverse=${reverse}`)
     return resp.data
   } catch (err) {
     return ''

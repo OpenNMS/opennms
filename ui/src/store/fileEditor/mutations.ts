@@ -6,6 +6,10 @@ const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
   state.fileNames = fileNames
 }
 
+const SAVE_FILE_EXTENSIONS_TO_STATE = (state: State, extensions: string[]) => {
+  state.allowedFileExtensions = extensions
+}
+
 const SAVE_FOLDER_FILE_STRUCTURE = (state: State, fileNames: string[]) => {
   const filteredFileNames = fileNames.filter((fileName) => {
     const searchValue = state.searchValue.toLowerCase()
@@ -92,6 +96,7 @@ export default {
   SAVE_MODIFIED_FILE_STRING,
   SAVE_FOLDER_FILE_STRUCTURE,
   SAVE_SEARCH_VALUE_TO_STATE,
-  SAVE_IS_CONTENT_MODIFIED_TO_STATE,
-  SAVE_SELECTED_FILE_NAME_TO_STATE
+  SAVE_FILE_EXTENSIONS_TO_STATE,
+  SAVE_SELECTED_FILE_NAME_TO_STATE,
+  SAVE_IS_CONTENT_MODIFIED_TO_STATE
 }

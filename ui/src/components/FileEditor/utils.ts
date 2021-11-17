@@ -52,5 +52,9 @@ export const filesToFolders = (fileNames: string[]): IFile => {
   for (const file of fileNames) {
     addFileOrCreateFolder(files, file, file)
   }
-  return { name: 'Files', children: sortFilesAndFolders(files) }
+  return { name: 'etc', children: sortFilesAndFolders(files) }
+}
+
+export const getExtensionFromFilenameSafely = (filename: string) => {
+  return filename.slice((Math.max(0, filename.lastIndexOf(".")) || Infinity) + 1);
 }

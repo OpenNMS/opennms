@@ -47,7 +47,10 @@ const store = useStore()
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const snippets = computed(() => store.state.fileEditorModule.snippets)
 const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', true)
-onMounted(() => store.dispatch('fileEditorModule/getFileNames'))
+onMounted(() => {
+  store.dispatch('fileEditorModule/getFileNames')
+  store.dispatch('fileEditorModule/getFileExtensions')
+})
 </script>
 
 <style scoped lang="scss">

@@ -268,10 +268,9 @@ export interface BreadCrumb {
   position?: string
 }
 
-export interface Summary {
-  teamUnacknowledgedCount: number
-  totalCount: number
-  totalUnacknowledgedCount: number
-  user: string
-  userUnacknowledgedCount: number
+export interface WhoAmIResponse {
+  fullName: string
+  id: string
+  internal: boolean
+  roles: string[]
 }

@@ -21,7 +21,7 @@ import Sidebar from './components/Layout/Sidebar.vue'
 import Spinner from './components/Common/Spinner.vue'
 
 const store = useStore()
-onMounted(() => store.dispatch('summaryModule/getSummary'))
+onMounted(() => store.dispatch('authModule/getWhoAmI'))
 </script>
   
 <style lang="scss">

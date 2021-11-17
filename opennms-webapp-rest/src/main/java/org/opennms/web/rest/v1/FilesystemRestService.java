@@ -195,7 +195,7 @@ public class FilesystemRestService {
     public String deleteFile(@QueryParam("f") String fileName,
                              @Context SecurityContext securityContext) throws IOException {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for uploading file contents.");
+            throw new ForbiddenException("ADMIN role is required for deleting file contents.");
         }
         final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
         Files.delete(targetPath);

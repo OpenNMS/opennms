@@ -12,6 +12,11 @@ const getFileNames = async (context: VuexContext) => {
   context.commit('SAVE_FOLDER_FILE_STRUCTURE', fileNames)
 }
 
+const getFileExtensions = async (context: VuexContext) => {
+  const extensions = await API.getFileExtensions()
+  context.commit('SAVE_FILE_EXTENSIONS_TO_STATE', extensions)
+}
+
 const getFile = async (context: VuexContext, fileName: string) => {
   // reset modified file string, snippets
   context.commit('SAVE_MODIFIED_FILE_STRING', '')
@@ -24,6 +29,16 @@ const getFile = async (context: VuexContext, fileName: string) => {
 
   context.commit('SAVE_FILE_TO_STATE', file)
   context.commit('SAVE_SNIPPETS_TO_STATE', snippets)
+}
+
+const deleteFile = async (context: VuexContext, fileName: string) => {
+  const response = await API.deleteFile(fileName)
+  context.commit('ADD_LOG_TO_STATE', response)
+
+  if (!response.success && response.msg) {
+    context.commit('SET_IS_CONSOLE_OPEN', true)
+  }
+  return
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
@@ -47,7 +62,7 @@ const saveModifiedFile = async (context: ContextWithState) => {
     context.commit('SAVE_FILE_TO_STATE', fileString)
     context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
   } else {
-    context.commit('SET_IS_CONSOLE_OPEN', true)
+    if (response.msg) context.commit('SET_IS_CONSOLE_OPEN', true)
   }
 }
 
@@ -109,5 +124,7 @@ export default {
   setIsHelpOpen,
   setSelectedFileName,
   clearEditor,
-  addNewFileToState
+  addNewFileToState,
+  getFileExtensions,
+  deleteFile
 }

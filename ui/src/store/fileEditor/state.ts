@@ -20,6 +20,7 @@ export interface State {
   isConsoleOpen: boolean
   isHelpOpen: boolean
   filesInFolders: IFile
+  allowedFileExtensions: string[]
 }
 
 const state: State = {
@@ -33,7 +34,8 @@ const state: State = {
   logs: [],
   isConsoleOpen: false,
   isHelpOpen: false,
-  filesInFolders: {} as IFile
+  filesInFolders: {} as IFile,
+  allowedFileExtensions: []
 }
 
 export default state

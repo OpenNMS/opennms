@@ -1,7 +1,7 @@
 <template>
   <div class="search-bar">
     <div class="search">
-      <FeatherInput label="Search files" v-model="searchValue" @update:modelValue="search" />
+      <FeatherInput label="Search logs" v-model="searchValue" @update:modelValue="search" />
     </div>
   </div>
   <hr />
