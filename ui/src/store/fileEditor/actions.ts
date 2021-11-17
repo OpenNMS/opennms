@@ -6,8 +6,8 @@ interface ContextWithState extends VuexContext {
   state: State
 }
 
-const getFileNames = async (context: VuexContext) => {
-  const fileNames = await API.getFileNames()
+const getFileNames = async (context: ContextWithState) => {
+  const fileNames = await API.getFileNames(context.state.changedFilesOnly)
   context.commit('SAVE_FILE_NAMES_TO_STATE', fileNames)
   context.commit('SAVE_FOLDER_FILE_STRUCTURE', fileNames)
 }
@@ -86,6 +86,10 @@ const setIsFileContentModified = async (context: VuexContext, contentModified: b
   context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', contentModified)
 }
 
+const setChangedFilesOnly = async (context: VuexContext, changedOnly: boolean) => {
+  context.commit('SAVE_CHANGED_FILES_ONLY', changedOnly)
+}
+
 const clearEditor = async (context: VuexContext) => {
   context.commit('CLEAR_EDITOR')
 }
@@ -126,5 +130,6 @@ export default {
   clearEditor,
   addNewFileToState,
   getFileExtensions,
-  deleteFile
+  deleteFile,
+  setChangedFilesOnly
 }

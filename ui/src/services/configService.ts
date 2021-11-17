@@ -4,7 +4,7 @@ import { FileEditorResponseLog } from '@/types'
 
 const endpoint = '/filesystem'
 
-const getFileNames = async (changedFilesOnly: boolean = false): Promise<string[]> => {
+const getFileNames = async (changedFilesOnly: boolean): Promise<string[]> => {
   try {
     const resp = await rest.get(`${endpoint}?changedFilesOnly=${changedFilesOnly}`)
     return resp.data

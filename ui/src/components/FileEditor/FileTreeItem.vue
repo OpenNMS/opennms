@@ -13,7 +13,7 @@
       <span v-if="isFolder" class="add" @click.stop="addNewFile(item)">&nbsp +</span>
 
       <span class="remove" v-if="item.fullPath === selectedFile">
-        <FeatherIcon :icon="Remove" @click="deleteFile(item)" />
+        <FeatherIcon :icon="Remove" @click.stop="deleteFile(item)" />
       </span>
 
       <NewFileInput v-if="isEditing" :item="item" />
@@ -83,7 +83,7 @@ const addNewFile = (file: IFile) => {
 
 const deleteFile = async (file: IFile) => {
   await store.dispatch('fileEditorModule/deleteFile', file.name)
-  store.dispatch('fileEditorModule/getFiles')
+  store.dispatch('fileEditorModule/getFileNames')
 }
 </script>
 

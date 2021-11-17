@@ -82,6 +82,10 @@ const SET_IS_HELP_OPEN = (state: State, isOpen: boolean) => {
   state.isHelpOpen = isOpen
 }
 
+const SAVE_CHANGED_FILES_ONLY = (state: State, changedFilesOnly: boolean) => {
+  state.changedFilesOnly = changedFilesOnly
+}
+
 export default {
   CLEAR_LOGS,
   CLEAR_EDITOR,
@@ -92,6 +96,7 @@ export default {
   SET_IS_CONSOLE_OPEN,
   SAVE_NEW_FILE_TO_STATE,
   SAVE_SNIPPETS_TO_STATE,
+  SAVE_CHANGED_FILES_ONLY,
   SAVE_FILE_NAMES_TO_STATE,
   SAVE_MODIFIED_FILE_STRING,
   SAVE_FOLDER_FILE_STRUCTURE,
