@@ -32,12 +32,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -86,7 +89,7 @@ public class LogRestService {
 
     @GET
     @Path("/contents")
-    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines, @Context SecurityContext securityContext) {
+    public Response getFileContents(@QueryParam("f") String fileName, @QueryParam("n") Integer numLines, @QueryParam("reverse") @DefaultValue("true") boolean reverse, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for reading log files.");
         }
@@ -108,26 +111,35 @@ public class LogRestService {
         }
         N = Math.min(MAX_NUM_LINES, Math.max(N, 1)); // make sure the value is within [1, MAX_NUM_LINES]
 
-        return logFileContents(logFilePath, N);
+        return logFileContents(logFilePath, N, reverse);
     }
 
-    public static Response logFileContents(final java.nio.file.Path path, int numLastLinesToRead) {
+    public static Response logFileContents(final java.nio.file.Path path, int numLastLinesToRead, boolean reverse) {
         if (!Files.exists(path)) {
             return Response.noContent().build();
         }
         try {
             final String mimeType = Files.probeContentType(path);
 
-            final StringBuilder sb = new StringBuilder();
+            final List<String> lines = new LinkedList<>();
             try (ReversedLinesFileReader reader = new ReversedLinesFileReader(path.toFile(), StandardCharsets.UTF_8)) {
                 for (int k = 0; k < numLastLinesToRead; k++) {
                     final String line = reader.readLine();
                     if (line == null) {
                         break;
                     }
-                    sb.append(line);
-                    sb.append("\n");
+                    lines.add(line);
                 }
+            }
+
+            final StringBuilder sb = new StringBuilder();
+            if (!reverse) {
+                // we read in reversed order, so if we don't want the results to be reversed, we reverse again :)
+                Collections.reverse(lines);
+            }
+            for (String line : lines) {
+                sb.append(line);
+                sb.append("\n");
             }
 
             return Response.ok(sb.toString())

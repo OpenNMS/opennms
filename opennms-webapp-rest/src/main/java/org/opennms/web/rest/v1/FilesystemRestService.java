@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,8 +43,10 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -58,6 +61,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.web.api.Authentication;
@@ -83,11 +87,12 @@ public class FilesystemRestService {
             "bsh");
 
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
+    private final java.nio.file.Path etcPristineFolder = Paths.get(System.getProperty("opennms.home"), "share", "etc-pristine");
 
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getFiles(@Context SecurityContext securityContext) {
+    public List<String> getFiles(@QueryParam("changedFilesOnly") boolean changedFilesOnly, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
             throw new ForbiddenException("ADMIN role is required for enumerating files.");
         }
@@ -95,10 +100,26 @@ public class FilesystemRestService {
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path))
                     .map(p -> etcFolder.relativize(p).toString())
+                    .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p))
                     .sorted()
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Failed to enumerate files in path: " + etcFolder, e);
+        }
+    }
+
+    public boolean doesFileExistAndMatchContentsWithEtcPristine(String file) {
+        final java.nio.file.Path etcPath = ensureFileIsAllowed(file);
+        final java.nio.file.Path etcPristinePath = etcPristineFolder.resolve(file);
+        if (!Files.exists(etcPristinePath)) {
+            return false;
+        }
+
+        try (Reader pathReader = Files.newBufferedReader(etcPath);
+             Reader etcPristineReader = Files.newBufferedReader(etcPristinePath)) {
+            return IOUtils.contentEqualsIgnoreEOL(pathReader, etcPristineReader);
+        } catch (IOException e) {
+            throw new InternalServerErrorException(e);
         }
     }
 
@@ -114,10 +135,22 @@ public class FilesystemRestService {
     }
 
     @GET
+    @Path("/extensions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> getSupportedExtensions(@Context SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for retrieving supported extensions.");
+        }
+        return SUPPORTED_FILE_EXTENSIONS.stream()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @GET
     @Path("/contents")
     public Response getFileContents(@QueryParam("f") String fileName, @Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is reading files.");
+            throw new ForbiddenException("ADMIN role is required for reading files.");
         }
         return fileContents(ensureFileIsAllowed(fileName));
     }
@@ -154,6 +187,19 @@ public class FilesystemRestService {
                 LOG.warn("Failed to delete temporary file '{}' when uploading contents for '{}'.", tempFile, targetPath);
             }
         }
+    }
+
+    @DELETE
+    @Path("/contents")
+    @Produces(MediaType.TEXT_HTML)
+    public String deleteFile(@QueryParam("f") String fileName,
+                             @Context SecurityContext securityContext) throws IOException {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for uploading file contents.");
+        }
+        final java.nio.file.Path targetPath = ensureFileIsAllowed(fileName);
+        Files.delete(targetPath);
+        return String.format("Successfully deleted to '%s'.", targetPath);
     }
 
     public static Response fileContents(final java.nio.file.Path path) {
