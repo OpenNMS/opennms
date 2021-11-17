@@ -32,9 +32,8 @@ fi
 if [ -e "${OPENNMS_HOME}/etc/opennms.conf" ]; then
   # shellcheck disable=SC1090,SC1091
   . "${OPENNMS_HOME}/etc/opennms.conf"
-else
-  [ -z "$RUNAS" ] && RUNAS=opennms
 fi
+[ -z "$RUNAS" ] && RUNAS=opennms
 
 if [ -z "$PING_USER" ]; then
 	PING_USER="$RUNAS"
