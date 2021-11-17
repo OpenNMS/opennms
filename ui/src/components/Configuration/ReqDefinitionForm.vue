@@ -52,14 +52,15 @@
           <label for="advOps">Advanced Options</label>
           <div class v-for="add in addAnotherArr">
             <p class="closeBtn">
-              <Button
-                v-if="add.id !== 0"
-                icon="pi pi-times"
-                style="font-size: 12px;"
-                @click="closeIcon(add.id)"
+              <FeatherButton 
+                primary 
+                v-if="add.id !== 0" 
+                icon="Cancel"
+                @click="closeIcon(add.id)" 
                 @change="generateURL"
-                label=""
-              ></Button>
+              >
+                <FeatherIcon :icon="navigationCancelIcon"> </FeatherIcon>
+              </FeatherButton>
             </p>
             <DropDown
               v-model="add.dropdownVal"
@@ -77,13 +78,12 @@
             </p>
           </div>
           <div class="width100">
-            <Button
-              @click="addAnother"
-              label="Add Another"
-              icon="pi pi-plus"
-              style="font-size: 12px;
-                             width: fit-content;"
-            ></Button>
+            <FeatherButton primary @click="addAnother">
+              <template v-slot:icon>
+                <FeatherIcon :icon="actionsAddIcon" aria-hidden="true" focusable="false"></FeatherIcon>
+              </template>
+              Add Another
+            </FeatherButton>
             <a class="viewDoc">View Documentation</a>
           </div>
         </div>
@@ -119,7 +119,12 @@
         </div>
 
         <div class="p-field p-col-2">
-          <Button label="Save" icon="pi pi-save" type="submit" :disabled="model.reqDef.$invalid"></Button>
+          <FeatherButton 
+            primary 
+            :disabled="model.reqDef.$invalid" 
+            type="submit"
+          >Save
+          </FeatherButton>
         </div>
       </div>
     </form>
@@ -132,7 +137,10 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
-import Button from '../Common/Button.vue'
+import { FeatherButton }   from '@featherds/button'
+import { FeatherIcon }   from '@featherds/icon'
+import actionsAdd from "@featherds/icon/actions/Add";
+import navigationCancel from "@featherds/icon/navigation/Cancel";
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'
 import ValidationMessage from '../Common/ValidationMessage.vue'
@@ -150,6 +158,8 @@ const reqDefinition = reactive(State)
 
 const minVal = ref(1)
 const count = ref(0)
+const actionsAddIcon = ref(actionsAdd);
+const navigationCancelIcon = ref(navigationCancel);
 const addAnotherArr = ref([{ "id": count.value, "dropdownVal": '', "advTextVal": '' }])
 const generatedURL = ref('')
 const advString: any = ref([])

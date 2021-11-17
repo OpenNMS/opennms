@@ -1,5 +1,5 @@
 import useVuelidate from '@vuelidate/core'
-import { reactive } from 'vue-demi'
+import { reactive } from 'vue'
 import reqDefModel from '../ReqDefinitionFormModel'
 import threadpollModel from '../ThreadpoolModel'
 

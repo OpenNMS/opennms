@@ -1,6 +1,6 @@
 <template>
   <p>
-    <Button :label="buttonLabel" primeClass="rounded" @click="onBackClick"></Button>
+    <FeatherBackButton @click="onBackClick">Back To Node Table</FeatherBackButton>
   </p>
   <p>
     <ReqDefinitionForm title="Edit"></ReqDefinitionForm>
@@ -9,12 +9,9 @@
 
 <script setup lang="ts">
 
-import { ref } from 'vue'
-import Button from "../Button.vue"
+import { FeatherBackButton } from "@featherds/back-button"
 import router from '@/router'
 import ReqDefinitionForm from '../../Configuration/ReqDefinitionForm.vue'
-
-const buttonLabel = ref('Back To Node Table')
 
 //Routing Back to Table
 const onBackClick = () => {

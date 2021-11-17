@@ -43,7 +43,7 @@
   <hr />
 
   <p>
-    <Button :label="buttonLabel" primeClass="sm" icon="pi pi-users" badge="8"></Button>
+    <FeatherButton primary>Save</FeatherButton>
   </p>
 
   <hr />
@@ -64,7 +64,7 @@ import InputText from '../InputText.vue'
 import InputNumber from '../InputNumber.vue'
 import DropDown from '../DropDown.vue'
 import TimePicker from '../TimePicker.vue'
-import Button from '../Button.vue'
+import { FeatherButton }   from '@featherds/button'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { FeatherTextarea } from '@featherds/textarea'
 
@@ -73,7 +73,6 @@ const showInputText = ref('')
 const showInputNumber = ref()
 const selectedCity1 = ref('')
 const showTimePicker = ref('')
-const buttonLabel = ref('Save')
 const cityGroupName = ref('')
 const pcontent = ref('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
 const cities = ref([
