@@ -323,11 +323,9 @@
     </feature>
 
 
-    <!-- sentinel event-d -->
     <feature name="sentinel-eventd" description="OpenNMS :: Features :: Events :: Daemon" version="${project.version}">
         <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
         <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
         <feature>netty4</feature>
         <feature>commons-beanutils</feature>
@@ -347,6 +345,42 @@
         <feature>opennms-persistence</feature>
         <feature>sentinel-config-dao-poll-outages</feature>
         <feature>sentinel-persistence</feature>
+
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
+    <!-- factor out hard-coded versions -->
+    <feature name="sentinel-alarmd" description="OpenNMS :: Alarms :: Daemon" version="${project.version}">
+
+        <feature>sentinel-eventd</feature>
+
+        <!-- org.kie.api.KieServices -->
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.8_1</bundle>
+        <bundle>mvn:org.kie.soup/kie-soup-commons/7.31.0.Final</bundle>
+        <bundle>mvn:org.kie.soup/kie-soup-project-datamodel-api/7.31.0.Final</bundle>
+        <bundle>mvn:org.mvel/mvel2/2.2.4.Final</bundle>
+        <bundle>mvn:org.kie.soup/kie-soup-project-datamodel-commons/7.31.0.Final</bundle>
+        <bundle>mvn:org.kie.soup/kie-soup-maven-support/7.31.0.Final</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.antlr</bundle>
+
+        <!-- these next 5 have interdependent dependencies and cannot start as loaded -->
+        <bundle>mvn:org.drools/drools-core/7.31.0.Final</bundle>
+        <bundle>mvn:org.drools/drools-compiler/7.31.0.Final</bundle>
+        <bundle>mvn:org.kie/kie-api/7.31.0.Final</bundle>
+        <bundle>mvn:org.kie/kie-internal/7.31.0.Final</bundle>
+        <bundle>mvn:org.drools/drools-core-reflective/7.31.0.Final</bundle>
+
+        <bundle>mvn:org.drools/drools-core-dynamic/7.31.0.Final</bundle>
+        <bundle>mvn:com.thoughtworks.xstream/xstream/1.4.18</bundle> <!-- this later version provides lambda loader dependency -->
+        <!--  <bundle>mvn:org.kie/kie-osgi-integration/7.31.0.Final</bundle> -->
+        <bundle>mvn:org.mvel/mvel2/2.4.4.Final</bundle>
+        <bundle>wrap:mvn:org.eclipse.jdt.core.compiler/ecj/4.4.2$Bundle-SymbolicName=Eclipse-JDT-Compiler&amp;Bundle-Version=4.4.2</bundle>
+        <bundle>wrap:mvn:org.codehaus.janino/janino/2.5.16$Bundle-SymbolicName=Codehaus-Janino&amp;Bundle-Version=2.5.16</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-atinject_1.0_spec/1.0</bundle>
+
+
+        <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
+
+    </feature>
 </features>

@@ -138,4 +138,16 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
         return THREADS;
     }
 
+
+    public void setAlarmLifecycleListenerManager(AlarmLifecycleListenerManager allm) {
+        this.m_alm = allm;
+    }
+
+    public void setDroolsAlarmContext(DroolsAlarmContext droolsAlarmContext) {
+        this.m_droolsAlarmContext = droolsAlarmContext;
+    }
+
+    public void setNorthbounderManager(NorthbounderManager northbounderManager) {
+        this.m_northbounderManager = northbounderManager;
+    }
 }

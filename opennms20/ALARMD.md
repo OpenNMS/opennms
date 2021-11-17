@@ -1,44 +1,48 @@
-
 # Alarmd
-should depend on eventd
-features sentinel-alarm pulls in sentinel-eventd
 
-feature-testing (DoD)
-same event-stress
-results in inserts into alarm table
-write alarm-list command
-extra-credit:
-check drools functionality 
-write a test suite of events to do a
-trigger clear
-to trip drools rule and test
+should depend on eventd -- features sentinel-alarm pulls in sentinel-eventd
 
-.. next: REST API
-post event via rest API
-query alarms via rest API
+* src/main/resources/META-INF/opennms/applicationContext-alarmd.xml
+* src/main/resources/OSGI-INF/blueprint/blueprint.xml
+(start empty, or just containing the exported service)
 
-.. distributed, IPC (camel)
+* in karaf container load this bundle (drools OSGI compatible?)
+   - iteratively satisfy dependencies for that bundle    
+   - grep existing feature files in (container/feature)
+  - collect all bundles/feature dependencies into a feature file
 
-1) in karaf container load this bundle
-drools features non-existent
-   need to write
-   drools OSGI compatible
+* Wire from applicationContext config, translating to blueprint
+   - code grep-ing in app files for associated beans
+   - no wiring below persistence level already provided
+   - subclass of _InitializingBean_ requires the after-prop attribute on bean
+   ` ... init-method="afterPropertiesSet">`
+   - pair these up with detroy methods in case they are missing  
+   - onsgi:list -> BP reference List
+   - if possible: annotation _EventHandler_ filter in BP
+    `@EventHandler(uei = EventHandler.ALL_UEIS)
+    public void onEvent(IEvent e) {`
+   - _@Autowired_ vars require explicit setters and for BP bean injection
+   - use the non-sprint _transactions_ with SessionUtils
+      replace @Transactional with a wrap of 
+      `sessionUtils.withTransaction(() -> { ... });`
+      replace TransactionOperations with a wrap of
+      `sessionUtils.withTransaction(() -> { ... });` (clean import, refactor test)
    
-3) iteratively satisfy dependencies for that bundle
+* Leverage/write shell commands to exercise new feature
 
-a) use application context config, translate to blueprint
-b) initializing beans require the after-prop attribute on bean
-c) grep existing feature files in (container/feature)
+* Definition of Done:
+   - same event-stress events?  alert-stress?
+check to see results in inserts into alarm table
+     select * from alarms; has one new row as a result of the send event
+write alarm-list command
+   -check drools functionality
+write a test suite of events to do a trigger clear
+to trip drools rule and test
+     alart reduced from 4 - 2 immediately (CHECK)
+     alarm deleted after 5 minutes
 
-4) collect all bundles/feature dependencies into a feature file
-
-5) we get interface from container 
-6) iteratively add blueprint wiring for that service
-
-a) code greping in app files for associted beans
-b) but persistence level already provided, no wiring at-below persistence
-c) sessionUtils replaces transactionManager (refactor assoc. tests as well)
-
-7) leverage/write shell commands to exercise new feature
-
-
+* ( next steps )
+  - REST-API post event via rest API, query alarms via rest API)
+  - write IT for a dockerized karaf with injected config )
+* ( next-next steps:  distributed, IPC,  camel)
+ 

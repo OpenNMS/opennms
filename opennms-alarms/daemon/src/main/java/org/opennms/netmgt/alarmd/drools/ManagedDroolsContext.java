@@ -55,6 +55,7 @@ import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.builder.model.KieSessionModel;
 import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.conf.ClockTypeOption;
@@ -286,7 +287,10 @@ public class ManagedDroolsContext {
     }
 
     private ReleaseId buildKieModule() {
-        final KieServices ks = KieServices.Factory.get();
+        // final KieServices ks = KieServices.Factory.get();
+        final KieServices ks = ServiceRegistry.getInstance().get(KieServices.class);
+
+
         final KieFileSystem kfs = ks.newKieFileSystem();
         final ReleaseId id = generateReleaseId();
 
@@ -317,7 +321,11 @@ public class ManagedDroolsContext {
         }
 
         // Validate
-        final KieBuilder kb = ks.newKieBuilder(kfs);
+        // final KieBuilder kb = ks.newKieBuilder(kfs);
+        final KieBuilder kb = ks.newKieBuilder(kfs, getClass().getClassLoader());
+        //kb.setDependencies(kmodule);
+
+
         kb.buildAll(); // kieModule is automatically deployed to KieRepository if successfully built.
         if (kb.getResults().hasMessages(Message.Level.ERROR)) {
             throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
@@ -341,7 +349,8 @@ public class ManagedDroolsContext {
     }
 
     private static ReleaseId generateReleaseId() {
-        final KieServices ks = KieServices.Factory.get();
+        // final KieServices ks = KieServices.Factory.get();
+        final KieServices ks = ServiceRegistry.getInstance().get(KieServices.class);
         final String moduleName = UUID.randomUUID().toString();
         return ks.newReleaseId(ManagedDroolsContext.class.getPackage().getName(), moduleName, "1.0.0");
     }

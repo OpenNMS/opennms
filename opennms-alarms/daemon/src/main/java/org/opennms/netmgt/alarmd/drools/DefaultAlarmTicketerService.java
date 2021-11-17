@@ -145,4 +145,16 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
         alarmInTrans.setLastAutomationTime(now);
         alarmEntityNotifier.didUpdateLastAutomationTime(alarmInTrans, previousLastAutomationTime);
     }
+
+    public void setAlarmDao(AlarmDao alarmDao) {
+        this.alarmDao = alarmDao;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
+    }
+
+    public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
+        this.alarmEntityNotifier = alarmEntityNotifier;
+    }
 }

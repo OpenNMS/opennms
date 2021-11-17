@@ -12,7 +12,7 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
-  <!-- Drools integration -->  <!-- MCB need features (drools supporting osgi?) -->
+  <!-- Drools integration -->
 
   <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
 
@@ -38,6 +38,7 @@
     <property name="persister" ref="alarmPersister" />
   </bean>
 
+  <!-- do not carry over if cannot implement ? could mean redoing the entire annotations for filtering listeners -->
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
@@ -46,7 +47,6 @@
   <!-- Northbounders -->
 
   <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager" />
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="northbounderManager"/>
 
   <onmsgi:list id="northbounderList" interface="org.opennms.netmgt.alarmd.api.Northbounder">

@@ -58,6 +58,7 @@ import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -65,12 +66,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
@@ -109,7 +108,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private AlarmTicketerService alarmTicketerService;
 
     @Autowired
-    private TransactionTemplate template;
+    private SessionUtils sessionUtils;
 
     @Autowired
     private AlarmDao alarmDao;
@@ -187,17 +186,14 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // while we wait on the database (particularly for systems with large amounts of alarms)
             try {
                 preHandleAlarmSnapshot();
-                template.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        LOG.info("Loading all alarms to seed Drools context.");
-                        final List<OnmsAlarm> allAlarms = alarmDao.findAll();
-                        LOG.info("Done loading {} alarms.", allAlarms.size());
-                        // Leverage the existing snapshot processing function to see the engine
-                        handleAlarmSnapshot(allAlarms);
-                        // Seed was submitted as an atomic action
-                        seedSubmittedLatch.countDown();
-                    }
+                sessionUtils.withTransaction(()->{
+                    LOG.info("Loading all alarms to seed Drools context.");
+                    final List<OnmsAlarm> allAlarms = alarmDao.findAll();
+                    LOG.info("Done loading {} alarms.", allAlarms.size());
+                    // Leverage the existing snapshot processing function to see the engine
+                    handleAlarmSnapshot(allAlarms);
+                    // Seed was submitted as an atomic action
+                    seedSubmittedLatch.countDown();
                 });
             } finally {
                 postHandleAlarmSnapshot();
@@ -587,11 +583,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         seedSubmittedLatch.await();
     }
 
-    public void setTransactionTemplate(TransactionTemplate template) {
-        this.template = template;
-    }
-
     public void setAlarmDao(AlarmDao alarmDao) {
         this.alarmDao = alarmDao;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 }

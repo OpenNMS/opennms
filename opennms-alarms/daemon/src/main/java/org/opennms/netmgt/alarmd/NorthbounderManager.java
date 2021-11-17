@@ -86,19 +86,26 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         }
     }
 
+    // binding
     public synchronized void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
+        if (northbounder==null) { return; }
         LOG.debug("onNorthbounderRegistered: starting {}", northbounder.getName());
         northbounder.start();
         m_northboundInterfaces.add(northbounder);
         onNorthboundersChanged();
     }
 
+    // unbinding
     public synchronized void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
+        if (northbounder==null) { return; }
         LOG.debug("onNorthbounderUnregistered: stopping {}", northbounder.getName());
         northbounder.stop();
         m_northboundInterfaces.remove(northbounder);
         onNorthboundersChanged();
     }
+
+
+
 
     private void onNorthboundersChanged() {
         final long numNbisActive = m_northboundInterfaces.stream()
@@ -176,4 +183,7 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         }
     }
 
+    public void setEventProxy(EventProxy m_eventProxy) {
+        this.m_eventProxy = m_eventProxy;
+    }
 }
