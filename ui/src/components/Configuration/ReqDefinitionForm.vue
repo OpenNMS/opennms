@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 
-import { computed, markRaw, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
