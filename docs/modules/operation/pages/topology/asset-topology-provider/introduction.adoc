@@ -32,7 +32,7 @@ All of these nodes are in the same north region.
 The `building` asset fields for node 1 and node 2 are set to 21 (both nodes are in building 21), while the `building` asset fields for node 3 and node 4 are set to 22 (both nodes are in building 22).
 
 The Asset Topology Provider generates four linked graphs for this configuration.
-The layer 0 graph is called `asset-region`; the layer 1 graph is called `asset-building`; and the layer 2 graph is called `nodes`.
+The layer 0 graph is called `asset-region`, the layer 1 graph is called `asset-building`, and the layer 2 graph is called `nodes`.
 
 Conceptually, the topology is rendered as concentric sets.
 The Asset Topology Provider first searches all of the nodes with regions defined and creates a new level 0 graph node representing each region found.

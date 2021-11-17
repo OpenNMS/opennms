@@ -1,4 +1,4 @@
-= Create Asset-Based Topologies Using {page-component-title} Events
+== Create asset-based topologies using {page-component-title} events
 
 The Asset Topology Provider listens for events that trigger the generation and installation or removal of topologies.
 The Asset Topology Provider events are defined in the file:
