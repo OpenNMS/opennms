@@ -259,7 +259,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
      * getAlarms
      * </p>
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
+     * @return a Response containing {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -274,8 +274,6 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
         return Response.status(Status.ACCEPTED).entity(coll).build();
     }
-
-
 
 
     @PUT

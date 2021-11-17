@@ -98,7 +98,14 @@
         <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
 
-    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager"  />
+    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+
+
 
     <!-- can one export and import a service in the same blueprint ? -->
     <reference-list id="alarmLifecycleListeners" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" availability="optional">
