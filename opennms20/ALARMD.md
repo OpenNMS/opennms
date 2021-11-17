@@ -33,10 +33,13 @@ should depend on eventd -- features sentinel-alarm pulls in sentinel-eventd
 * Definition of Done:
    - same event-stress events?  alert-stress?
 check to see results in inserts into alarm table
+     select * from alarms; has one new row as a result of the send event
 write alarm-list command
    -check drools functionality
 write a test suite of events to do a trigger clear
 to trip drools rule and test
+     alart reduced from 4 - 2 immediately (CHECK)
+     alarm deleted after 5 minutes
 
 * ( next steps )
   - REST-API post event via rest API, query alarms via rest API)

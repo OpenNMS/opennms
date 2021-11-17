@@ -51,11 +51,7 @@
         <property name="alarmTicketerService" ref="defaultAlarmTicketerService" />
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
-    <service id="alarmLifecycleListener" ref="droolsAlarmContext" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
+    <service id="alarmLifecycleListener" ref="droolsAlarmContext" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" />
 
 
     <!-- daemon -->
@@ -75,7 +71,6 @@
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
 
-
     <reference-list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension" availability="optional" >
         <reference-listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
     </reference-list>
@@ -86,9 +81,10 @@
     <reference-list interface="org.opennms.netmgt.alarmd.api.Northbounder" availability="optional" >
         <reference-listener ref="northbounderManager" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
     </reference-list>
-    <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="afterPropertiesSet">
+    <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="afterPropertiesSet" >
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
+        <property name="listener" ref="droolsAlarmContext" /> <!-- TODO check with group -->
     </bean>
     <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" init-method="onStart" destroy-method="onStop">
         <property name="persister" ref="alarmPersister" />
@@ -97,21 +93,19 @@
         <property name="northbounderManager" ref="northbounderManager" />
     </bean>
 
-    <!-- try to carry over if cannot implement ? could mean redoing the entire annotations for filtering listeners -->
-    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter" init-method="afterPropertiesSet" destroy-method="destroy">
         <property name="annotatedListener" ref="daemon" />
         <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
 
-    <!-- Lifecycle listeners
-    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" >
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
-    <reference-list id="alarmLifecycleListeners" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+    <service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager"  />
+
+    <!-- can one export and import a service in the same blueprint ? -->
+    <reference-list id="alarmLifecycleListeners" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" availability="optional">
         <reference-listener ref="alarmLifecycleListenerManager" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
     </reference-list>
-    -->
+
+
+
 
 </blueprint>

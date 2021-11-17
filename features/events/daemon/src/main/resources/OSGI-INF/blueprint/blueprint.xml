@@ -35,16 +35,9 @@
     <!-- Load system property -->
     <ext:property-placeholder />
 
-    <!--
-    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/features
-    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/spring
-    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/spring-legacy
-    feature:repo-add mvn:org.opennms.karaf/opennms/29.0.0-SNAPSHOT/xml/sentinel
-    -->
-    <!-- ** system:property opennms.home /Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes  -->
     <bean id="eventConfResourceLocation" class="java.lang.String">
-        <!-- <argument value="file:${opennms.home}/etc/eventconf.xml" /> -->
-        <argument value="/Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/eventconf.xml" />
+        <argument value="${opennms.home}/etc/eventconf.xml" />
+        <!-- <argument value="/Users/markcbordelon/Documents/clodovicus/opennms/opennms/opennms-base-assembly/target/classes/etc/eventconf.xml" /> -->
     </bean>
 
     <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="afterPropertiesSet">

@@ -218,12 +218,16 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
 
     public void onListenerRegistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
         LOG.debug("onListenerRegistered: {} with properties: {}", listener, properties);
-        listeners.add(listener);
+        if (listener!=null) { listeners.add(listener); }
+    }
+
+    public void setListener(final AlarmLifecycleListener listener) {
+        if (listener!=null) { onListenerRegistered(listener, null); }
     }
 
     public void onListenerUnregistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
         LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
-        listeners.remove(listener);
+        if (listener!=null) { listeners.remove(listener); }
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {

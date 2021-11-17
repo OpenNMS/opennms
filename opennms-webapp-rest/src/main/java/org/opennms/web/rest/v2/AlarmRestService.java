@@ -37,10 +37,12 @@ import java.util.concurrent.Callable;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -64,6 +66,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.mapper.v2.AlarmMapper;
 import org.opennms.web.rest.model.v2.AlarmCollectionDTO;
@@ -248,6 +251,32 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
         return Response.noContent().build();
     }
+
+
+
+    /**
+     * <p>
+     * getAlarms
+     * </p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
+        SecurityHelper.assertUserReadCredentials(securityContext);
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
+        builder.distinct();
+        final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_dao.findMatching(builder.toCriteria()));
+
+        // For getting totalCount
+        coll.setTotalCount(m_dao.countMatching(builder.count().toCriteria()));
+
+        return Response.status(Status.ACCEPTED).entity(coll).build();
+    }
+
+
+
 
     @PUT
     @Path("{id}/memo")
