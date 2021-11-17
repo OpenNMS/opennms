@@ -21,6 +21,8 @@
 
     <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
       <property name="eventIpcManager" ref="eventIpcManager"/>
+        <!--The timout to repeat  in seconds -->
+        <property name="collectorInitTimeOut" value="300" />
     </bean>
 
     <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory" />

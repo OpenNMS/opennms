@@ -43,6 +43,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
@@ -198,6 +202,8 @@ public class Collectd extends AbstractServiceDaemon implements
     @Autowired
     private ReadablePollOutagesDao pollOutagesDao;
 
+    private int collectorInitTimeOut; //in seconds
+
     /**
      * Constructor.
      */
@@ -205,6 +211,14 @@ public class Collectd extends AbstractServiceDaemon implements
         super(LOG4J_CATEGORY);
 
         m_collectableServices = Collections.synchronizedList(new LinkedList<CollectableService>());
+    }
+
+    public int getCollectorInitTimeOut() {
+        return collectorInitTimeOut;
+    }
+
+    public void setCollectorInitTimeOut(int collectorInitTimeOut) {
+        this.collectorInitTimeOut = collectorInitTimeOut;
     }
 
     /**
@@ -1529,28 +1543,37 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void instantiateCollectors() {
         LOG.debug("instantiateCollectors: Loading collectors");
+        long startTime = System.currentTimeMillis();
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
-        /*
-         * Load up an instance of each collector from the config
-         * so that the event processor will have them for
-         * new incoming events to create collectable service objects.
-         */
-        Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
-        for (Collector collector : collectors) {
-            String svcName = collector.getService();
-            try {
-                LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
-                final ServiceCollector sc = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
-                if (sc == null) {
-                    throw new IllegalArgumentException(String.format("No collector found with class name '%s'. Available collectors include: %s",
-                            collector.getClassName(), m_serviceCollectorRegistry.getCollectorClassNames()));
+        executor.scheduleWithFixedDelay(()-> {
+            //only load those collectors not loaded yet
+            List<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors().stream()
+                    .filter(svc-> !m_collectors.keySet().contains(svc.getService()))
+                    .collect(Collectors.toList());
+            for(Collector collector: collectors) {
+                String serviceName = collector.getService();
+                try {
+                    LOG.debug("instantiateCollectors: Loading collector {}, classname {}", serviceName, collector.getClassName());
+                    final ServiceCollector sc = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
+                    if(sc != null) {
+                        sc.initialize();
+                        setServiceCollector(serviceName, sc);
+                    }
+                } catch (Exception e) {
+                    LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(),serviceName, e);
                 }
-                sc.initialize();
-                setServiceCollector(svcName, sc);
-            } catch (Throwable t) {
-                LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
             }
-        }
+            long timePassedInSeconds =  TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+
+            if(collectors.isEmpty() || timePassedInSeconds >= collectorInitTimeOut) { //stop the thread after 10 minutes or all the collectors are loaded
+                if(!collectors.isEmpty()) {
+                    LOG.warn("After {} seconds those collectors {} not loaded", timePassedInSeconds, collectors.stream().map(c->c.getService()).collect(Collectors.joining(",")));
+                }
+                executor.shutdown();
+            }
+
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public static String getLoggingCategory() {
