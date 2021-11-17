@@ -62,7 +62,8 @@ import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
-import org.opennms.netmgt.dao.jmx.JmxConfigDaoCm;
+import org.opennms.netmgt.config.jmx.JmxConfig;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
 /**
@@ -88,7 +89,12 @@ public class JMXCollectorTest {
 
         jmxNodeInfo = new JMXNodeInfo(0);
         jmxCollector = new JMXCollectorImpl();
-        jmxCollector.setJmxConfigDao(new JmxConfigDaoCm());
+        jmxCollector.setJmxConfigDao(new JmxConfigDao() {
+            @Override
+            public JmxConfig getConfig() {
+                return null;
+            }
+        });
         jmxCollector.setJmxDataCollectionConfigDao(jmxDataCollectionConfigDao);
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest");
