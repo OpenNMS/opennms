@@ -378,9 +378,28 @@
         <bundle>wrap:mvn:org.codehaus.janino/janino/2.5.16$Bundle-SymbolicName=Codehaus-Janino&amp;Bundle-Version=2.5.16</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-atinject_1.0_spec/1.0</bundle>
 
-
         <bundle>mvn:org.opennms/opennms-alarm-api/30.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms/opennms-alarmd/30.0.0-SNAPSHOT</bundle>
-
     </feature>
+
+    <!-- need to feature:install felix-http for web server -->
+
+    <feature name="sentinel-alarmd-rest" description="OpenNMS :: Alarms :: Rest"  version="${project.version}">
+        <feature>felix-http</feature>
+        <requirement>osgi.service;effective:=active;filter:=(objectClass=org.osgi.service.http.HttpService)</requirement>
+        <feature dependency="true">aries-blueprint</feature>
+        <feature version="${cxf.version}" dependency="true">cxf-jaxrs</feature>
+        <!-- below already loaded in feature "opennms-core", so might not be necessary -->
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+
+        <!-- install bundle associated with the api/interface for the alarm rest service -->
+        <!-- install bundle implementation of AlarmRestService as bundle (currently packaged as war, rewrite as new subproject?) -->
+        <!-- analog: <bundle>mvn:org.apache.karaf.examples/karaf-rest-example-client-http/${project.version}</bundle> -->
+        <!-- analog: <bundle>mvn:org.apache.karaf.examples/karaf-rest-example-client-cxf/${project.version}</bundle> -->
+    </feature>
+
 </features>
