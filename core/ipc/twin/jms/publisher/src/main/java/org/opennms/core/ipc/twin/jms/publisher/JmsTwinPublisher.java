@@ -85,11 +85,15 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
 
     @Override
     protected void handleSinkUpdate(TwinUpdate sinkUpdate) {
-        TwinResponseProto twinResponseProto = mapTwinResponse(sinkUpdate);
-        Map<String, Object> headers = new HashMap<>();
-        String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
-        headers.put(JMS_QUEUE_NAME_HEADER, queueName);
-        template.sendBodyAndHeaders(twinResponseProto.toByteArray(), headers);
+        try {
+            TwinResponseProto twinResponseProto = mapTwinResponse(sinkUpdate);
+            Map<String, Object> headers = new HashMap<>();
+            String queueName = String.format(TWIN_QUEUE_NAME_FORMAT, SystemInfoUtils.getInstanceId(), "Twin.Sink");
+            headers.put(JMS_QUEUE_NAME_HEADER, queueName);
+            template.sendBodyAndHeaders(twinResponseProto.toByteArray(), headers);
+        } catch (Exception e) {
+            LOG.error("Exception while sending update for key {} at location {} ", sinkUpdate.getKey(), sinkUpdate.getLocation());
+        }
     }
 
     public void init() throws Exception {

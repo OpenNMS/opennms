@@ -703,6 +703,16 @@ find %{buildroot}%{instprefix}/bin \
 	-type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
+# Put various shared directories in the package
+find %{buildroot}%{instprefix}/bin \
+	%{buildroot}%{sharedir}/etc-pristine \
+	%{buildroot}%{sharedir}/mibs \
+	%{buildroot}%{sharedir}/reports \
+	%{buildroot}%{sharedir}/rrd \
+	%{buildroot}%{sharedir}/xsds \
+	-type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
+	sort >> %{_tmppath}/files.main
 
 # jetty
 find %{buildroot}%{jettydir} ! -type d | \
@@ -896,6 +906,8 @@ if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
 
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST" "$SHARE_INST" "$LOG_INST"
+
 if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	printf -- "- making symlink for $ROOT_INST/logs... "
 	if [ -e "$ROOT_INST/logs" ] && [ ! -L "$ROOT_INST/logs" ]; then
@@ -907,7 +919,7 @@ if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 		echo "done"
 	fi
 fi
-"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs" "$LOG_INST"
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/logs"
 
 if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 	printf -- "- making symlink for $ROOT_INST/share... "
@@ -920,7 +932,7 @@ if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
 		echo "done"
 	fi
 fi
-"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share" "$SHARE_INST"
+"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/share" "$ROOT_INST/share"/*
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
 if [ `ls $ROOT_INST/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then

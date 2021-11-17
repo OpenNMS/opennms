@@ -20,19 +20,11 @@
     :step="2"
     v-model="showInputNumber"
   />
-  <p>Input Text :: {{ showInputNumber }}</p>
+  <p>Input Number :: {{ showInputNumber }}</p>
   <p>FieldSet Demo</p>
-  <FieldSet>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-      fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-      sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </p>
-  </FieldSet>
-
+  <FeatherTextarea
+    label="Fieldset Area"
+    rows="5" />
   <p>Dropdown Demo</p>
   <DropDown
     v-model="selectedCity1"
@@ -55,31 +47,14 @@
   </p>
 
   <hr />
-  <h5>Basic Radio button</h5>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city1" name="city" value="Chicago" v-model="city" :disabled="true" />
-    <label for="city1">Chicago</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city2" name="city" value="Los Angeles" v-model="city" />
-    <label for="city2">Los Angeles</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city3" name="city" value="New York" v-model="city" />
-    <label for="city3">New York</label>
-  </div>
-  <div class="p-field-radiobutton">
-    <RadioButton id="city4" name="city" value="San Francisco" v-model="city" />
-    <label for="city4">San Francisco</label>
-  </div>
-  <hr />
-  <label>selected radio button values : {{ city }}</label>
-
-  <hr />
-  <div>
-    <RadioButtonGroup name="cityGroup" :radioValues="categories" @selectedRadioVal="selectedValue" />
-    <label>selected radio button values : {{ cityGroupName }}</label>
-  </div>
+  <FeatherRadioGroup :label="'Favourite subject type?'" v-model="cityGroupName">
+      <FeatherRadio
+        v-for="item in categories"
+        :value="item.name"
+        :key="item.key"
+        >{{ item.name }}</FeatherRadio
+      >
+    </FeatherRadioGroup>
 </template>
 
 <script setup lang="ts">
@@ -88,11 +63,10 @@ import { ref } from 'vue'
 import InputText from '../InputText.vue'
 import InputNumber from '../InputNumber.vue'
 import DropDown from '../DropDown.vue'
-import FieldSet from '../FieldSet.vue'
 import TimePicker from '../TimePicker.vue'
 import { FeatherButton }   from '@featherds/button'
-import RadioButton from '../RadioButton.vue'
-import RadioButtonGroup from '../RadioButtonFieldSet.vue'
+import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
+import { FeatherTextarea } from '@featherds/textarea'
 
 const city = ref('')
 const showInputText = ref('')

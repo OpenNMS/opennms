@@ -1403,6 +1403,7 @@
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
     <geohashVersion>1.4.0</geohashVersion>
+    <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>
@@ -1419,8 +1420,9 @@
     <httpcoreVersion>4.4.4</httpcoreVersion>
     <httpclientVersion>4.5.13</httpclientVersion>
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
+    <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jackson2Version>2.12.4</jackson2Version>
+    <jackson2Version>2.12.3</jackson2Version>
     <snakeyamlVersion>1.29</snakeyamlVersion>
     <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
@@ -1446,8 +1448,8 @@
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junitVintageEngineVersion>5.6.2</junitVintageEngineVersion>
     <karafVersion>4.3.2</karafVersion>
-    <kafkaBundleVersion>2.8.0_1</kafkaBundleVersion>
-    <kafkaVersion>2.8.0</kafkaVersion>
+    <kafkaBundleVersion>3.0.0_1</kafkaBundleVersion>
+    <kafkaVersion>3.0.0</kafkaVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -1484,15 +1486,15 @@
     <rancidApiVersion>1.0.5</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
-    <rocksdbjniVersion>5.18.4</rocksdbjniVersion>
-    <scalaLibraryVersion>2.12.12</scalaLibraryVersion>
-    <scalaLoggingVersion>3.9.2</scalaLoggingVersion>
-    <scalaVersion>2.12</scalaVersion>
+    <rocksdbjniVersion>6.19.3</rocksdbjniVersion>
+    <scalaLibraryVersion>2.13.7</scalaLibraryVersion>
+    <scalaLoggingVersion>3.9.4</scalaLoggingVersion>
+    <scalaVersion>2.13</scalaVersion>
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.30</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.7.7</snappyJavaVersion>
+    <snappyJavaVersion>1.1.8.1</snappyJavaVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
@@ -1512,8 +1514,8 @@
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.4.7</zookeeperVersion>
-    <zookeeper2Version>3.5.9</zookeeper2Version>
-    <zstdJniVersion>1.4.9-1</zstdJniVersion>
+    <zookeeper2Version>3.6.3</zookeeper2Version>
+    <zstdJniVersion>1.5.0-2</zstdJniVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -3735,6 +3737,16 @@
         <groupId>com.github.detro</groupId>
         <artifactId>phantomjsdriver</artifactId>
         <version>99.99.99-use-com-codeborne-phantomjsdriver-until-1-2-1-is-released</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.seancfoley</groupId>
+        <artifactId>ipaddress</artifactId>
+        <version>${ipaddressVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.maxmind.geoip2</groupId>
+        <artifactId>geoip2</artifactId>
+        <version>${geoipVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.codeborne</groupId>
