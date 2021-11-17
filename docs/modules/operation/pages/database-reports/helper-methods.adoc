@@ -1,0 +1,39 @@
+[[ga-database-reports-helper-methods]]
+== Helper methods
+
+There are a few helper methods to help create reports in {page-component-title}.
+
+These helpers come with the Measurement Datasource.
+
+.Supported helper methods for the `org.opennms.netmgt.jasper.helper.MeasurementsHelper` class
+[options="header"]
+[cols="2,3a"]
+|===
+| Helper method
+| Description
+
+| getNodeOrNodeSourceDescriptor(nodeId, foreignSource, foreignId)
+| Generates a node source descriptor according to the input parameters.
+Either `node[nodeId]` or `nodeSource[foreignSource:foreignId]` is returned. +
+`nodeSource[foreignSource:foreignId]` is returned only if `foreignSource` and `foreignId` are not empty and not null.
+Otherwise, `node[nodeId]` is returned.
+
+* *nodeId*: String, the ID of the node.
+* *foreignSource*: String, the foreign source of the node. May be null.
+* *foreignId*: String, the foreign ID of the node. May be null.
+
+For more details, see <<ga-database-reports-node-source-descriptor, Node source descriptor use>>.
+
+| getInterfaceDescriptor(snmpifname, snmpifdescr, snmpphysaddr)
+| Returns the interface descriptor of a given interface; for example, `en0-005e607e9e00`.
+The input parameters are prioritized. +
+If an `snmpifdescr` is specified, it is used instead of the `snmpifname`. +
+If an `snmpphysaddr` is defined, it will be appended to `snmpifname`/`snmpifdescr`.
+
+* *snmpifname*: String, the interface name of the interface; for example, `en0`. May be null.
+* *snmpifdescr*: String, the description of the interface; for example, `en0`. May be null.
+* *snmpphysaddr*: String, the MAC address of the interface; for example, `005e607e9e00`. May be null.
+As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined.
+
+For more details, see <<ga-database-reports-interface-descriptor, Interface descriptor use>>.
+|===

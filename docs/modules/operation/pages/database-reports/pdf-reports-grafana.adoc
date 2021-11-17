@@ -1,0 +1,20 @@
+== Creating PDF reports from Grafana dashboards using {page-component-title}
+
+{page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
+You can also schedule and email these PDF reports to anyone:
+
+* Keep staff without access to {page-component-title} informed about network performance for improved capacity planning
+* Create a permanent record of strategic information and progress over a long period of time
+
+The PDF report displays each of the panels from the specified dashboard, with one, two, or four panels per page, depending on the selected template.
+
+Dashboard to PDF:
+
+image:database-reports/Dashboard-pdf.png[PDF report]
+
+=== Before you begin
+
+This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel.
+OpenNMS lets you create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+
+You must set up Grafana as a data source by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}.

@@ -1,0 +1,5 @@
+[[ga-database-reports-limitations]]
+== Limitations
+
+ * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
+One does not have to use the data source, though.

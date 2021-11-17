@@ -1,0 +1,28 @@
+[[ga-database-reports-node-source-descriptor]]
+=== Node source descriptor use
+
+A node is addressed by a node source descriptor.
+The node source descriptor references the node either via the foreign source and foreign id or by the node id.
+
+If `storeByForeignSource` is enabled, it is only possible to address the node via foreign source and foreign id.
+
+To make report creation easier, there is a helper method to create the node source descriptor.
+
+NOTE: For more information, see https://opennms.discourse.group/t/storing-data-with-foreign-sources/2057[Storing data with foreign sources] on Discourse.
+
+The following example shows the use of that helper.
+
+.jrxml report snippet to visualize the use of the node source descriptor.
+[source, xml]
+------
+<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $Pforeignsource, $P{foreignid})]]></defaultValueExpression>
+</parameter>
+<queryString language="Measurement">
+  <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
+<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/>
+</query-request>]]>
+------
+Depending on the input parameters, you get either a node resource descriptor or a foreign source/foreign id resource descriptor.
+

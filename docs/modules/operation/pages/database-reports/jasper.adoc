@@ -1,0 +1,8 @@
+[[ga-database-reports-usage-jaspersoft-studio]]
+== Jaspersoft Studio use
+
+When developing new reports, we recommended using the Jaspersoft Studio application.
+Download it link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
+
+TIP: We recommend to always use the same Jaspersoft Studio version that the {page-component-title} JasperReport library uses.
+     Currently {page-component-title} uses version {jasperreportsversion}.

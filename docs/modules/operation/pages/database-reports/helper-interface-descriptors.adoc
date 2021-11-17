@@ -1,0 +1,23 @@
+[[ga-database-reports-interface-descriptor]]
+=== Interface descriptor use
+
+An interfaceSnmp is addressed with the exact interface descriptor.
+To allow easy access to the interface descriptor, we provide a helper tool.
+The following example shows the use of that helper.
+
+.jrxml report snippet to visualize the use of the interface descriptor
+[source, xml]
+------
+<parameter name="interface" class="java.lang.String" isForPrompting="false">
+  <parameterDescription><![CDATA[]]></parameterDescription>
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+</parameter>
+<queryString language="Measurement">
+  <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
+<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
+------
+
+To get the appropriate interface descriptor depends on the input parameter.
+

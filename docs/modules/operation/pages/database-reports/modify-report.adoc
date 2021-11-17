@@ -1,0 +1,11 @@
+[[ga-database-report-modify-report]]
+== Modify existing reports
+
+All default {page-component-title} reports are located in `$OPENNMS_HOME/etc/report-templates`.
+Each .jrxml file located there can be modified; the changes are applied the next time {page-component-title} creates a report.
+
+When a subreport has been modified, {page-component-title} will detect a change based on the report's `lastModified` time and will recompile the report.
+A compiled version of the report is represented by a .jasper file with the same name as the .jrxml file.
+Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
+
+TIP: If unsure, simply delete all .jasper files and {page-component-title} will automatically compile the subreports if needed.

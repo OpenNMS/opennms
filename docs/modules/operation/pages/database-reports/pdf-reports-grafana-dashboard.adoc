@@ -1,0 +1,24 @@
+=== Create a PDF of a Grafana dashboard
+
+. In the {page-component-title} UI, choose menu:Reports[Database Reports].
+. In the *Report Templates* area, click *Grafana Dashboard Report <Xppp>*, where <Xppp> represents the number of panels per page you want to display.
+. In the *Report Parameters* area, specify the appropriate information.
+.. Note that *Grafana Endpoint* is the data source. Select a Grafana dashboard from the list.
+.. You can also specify CSV for report type.
+. Click *Create Report*.
+.. You are prompted to save the report locally or open it.
+The file is saved to a folder on the {page-component-title} server.
+It also appears in the UI in the *Persisted Reports* tab.
+. To send the report to someone, click *Deliver this report*.
+. Fill out the *Report Delivery Options*.
+.. If you select *Email report*, specify the recipient’s email address in the *Recipient* field.
+Separate multiple recipient emails with a comma.
+.. Webhook lets you post the generated report to the specified URL.
+. Click *Deliver Report*.
+. To schedule the report for regular delivery, click *Schedule this report*.
+. Specify the report frequency (daily, days per week, and so on) and interval of the report.
+. Click *Schedule Report*.
+
+Scheduled reports appear in the *Report Schedules* tab, where you can edit or delete them:
+
+image::database-reports/PDF-Report.png[pdf report]

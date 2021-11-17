@@ -1,0 +1,22 @@
+[[ga-database-reports-access-performance-data]]
+== Accessing performance data
+
+WARNING: Before OpenNMS Horizon 17 and OpenNMS Meridian 2016, you could access the performance data stored in .rrd or .jrobin files directly by using the jrobin language extension the RrdDataSource provides.
+         This is no longer possible; you must use the Measurements Datasource.
+
+To access performance data within reports, we created a custom Measurement Datasource that lets you query the Measurements API and process the returned data in your reports.
+Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the Measurements API.
+
+NOTE:  When using the Measurements Datasource within a report, an HTTP connection to the Measurements API is established only if the report is not running within {page-component-title}; for example, when used with Jaspersoft Studio.
+
+To receive data from the Measurements API, create a query as follows:
+
+.Sample queryString to receive data from the Measurements API
+[source, xml]
+------
+<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"> <1>
+  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P\{nodeid}].interfaceSnmp[$P{interface}]"/>
+</query-request>
+------
+<1> The query language. In our case, "measurement", but JasperReports supports a lot out of the box, such as sql, xpath, and so on.

@@ -1,0 +1,14 @@
+
+= Database Reports
+
+Reporting on information from the {page-component-title} monitoring system is important for strategical or operational decisions.
+Database reports give access to the embedded JasperReports engine and allow users to create and customize report templates.
+Run these reports on demand or on a predefined schedule within {page-component-title}.
+
+NOTE: Originally database reports created reports working on data stored in the {page-component-title} database only.
+      This is no longer mandatory, you can also use performance data.
+      Theoretically, the reports do not need to be {page-component-title} related.
+
+NOTE: The {page-component-title} Report Engine lets you create reports and supports distributed report repositories.
+         This documentation does not cover these features.
+         It describes only reports using JasperReports and Grafana dashboards.

@@ -1,0 +1,24 @@
+[[grafana-endpoint]]
+=== Configure the Grafana endpoint
+
+Configuring the Grafana endpoint sets up Grafana as the data source for the dashboards from which you create PDFs.
+
+. Login to your Grafana instance.
+. Choose menu:Configuration[API Keys New API Key].
+. Specify a key name and "Viewer" role and click *Add*.
+.. Leave the time to live blank so that the key never expires.
+. Copy the key so that you can paste it into the {page-component-title} UI.
++
+image:database-reports/API-Key.png[Grafana API, 400]
+
+.. If desired, use the cURL command provided in the API key dialog to test the key.
+. In OpenNMS, click *Please add a Grafana endpoint*:
+
++
+image:database-reports/grafana-endpoint.png[Endpoint, 400]
+
+. In the *Endpoint Configuration* screen click the plus sign on the right to add a new endpoint.
+. Fill in the information and click *Test Connection*.
+. Click *Create*.
+
+You can now use {page-component-title} to create PDF reports of Grafana dashboards.

@@ -1,0 +1,12 @@
+[[ga-database-reports-https]]
+=== HTTPS use
+
+To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
+In addition, you must configure {page-component-title} to use that Java Truststore.
+Please follow the instructions in this <<admin/http-ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
+
+In addition, set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to "true" to ensure that only secure connections are established.
+
+WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false", an accidentally insecure connection can be established to the Measurements API location.
+An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to "false".
+

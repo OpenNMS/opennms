@@ -1,0 +1,14 @@
+[[ga-database-reports-overview]]
+== Overview
+
+The {page-component-title} Report Engine uses the JasperReport library to create reports in various output formats.
+Each report template must be a `*.jrxml` file.
+The {page-component-title} Report Engine passes a JDBC connection to the {page-component-title} database to each report on execution.
+
+.Feature overview
+|===
+| Supported Output Formats | PDF, CSV
+| JasperReport Version   | {jasperreportsversion}
+|===
+
+For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].

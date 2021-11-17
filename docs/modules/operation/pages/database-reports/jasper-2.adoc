@@ -1,0 +1,29 @@
+[[ga-database-reports-connect-database]]
+=== Connect to the {page-component-title} database
+
+To actually create SQL statements against the {page-component-title} database you must create a database Data Adapter.
+The official Jaspersoft Studio documentation and wiki describe how to do this.
+
+[[ga-database-reports-measurement-ds-helpers]]
+=== Use Measurements Datasource and Helpers
+
+To use the Measurements API you must add the Measurements Datasource library to the build path of JasperStudio.
+To do so, right click in the Project Explorer and select *Configure Buildpath*.
+
+image::database-reports/1_configure-build-path-1.png[]
+
+. Switch to the *Libraries* tab.
+. Click *Add External JARs* and select the `opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
+. Close the file selection dialog.
+
++
+image::database-reports/2_configure-build-path-2.png[]
+
+. The Measurements Datasource and Helpers should now be available.
+. Go to the *Dataset and Query Dialog* in Jaspersoft Studio and select the "measurement" language.
+
+image::database-reports/3_dataset-query-dialog.png[]
+
+NOTE: If the `Read Fields` functionality is not available, use the `Data preview`.
+       Use the `MEASUREMENT_URL`, `MEASUREMENT_USERNAME`, and `MEASUREMENT_PASSWORD` connection parameters to Access the Measurements API.
+      See <<ga-database-reports-fields, Supported Fields>> for more details.
