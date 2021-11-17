@@ -29,20 +29,9 @@
 
     <element name="parameter">
         <complexType>
-            <attribute name="key" type="this:key" use="required"/>
+            <attribute name="key" type="string" use="required"/>
             <attribute name="value" type="string" use="required"/>
         </complexType>
     </element>
-
-    <simpleType name="key">
-        <annotation>
-            <documentation>
-                List of keys for parameter
-            </documentation>
-        </annotation>
-        <restriction base="string">
-            <pattern value="protocol|urlPath|factory|username|password|ds-name|friendly-name"/>
-        </restriction>
-    </simpleType>
 
 </schema>
