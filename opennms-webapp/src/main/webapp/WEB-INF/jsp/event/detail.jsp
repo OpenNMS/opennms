@@ -79,9 +79,11 @@
 <% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
 <% boolean acknowledgeEvent = "true".equals(System.getProperty("opennms.eventlist.acknowledge")); %>
 <% boolean canAck = (request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN) || !request.isUserInRole(org.opennms.web.api.Authentication.ROLE_READONLY)); %>
+<% boolean showParms = "true".equals(System.getProperty("opennms.eventdetail.showParms")); %>
 
 <c:set var="provisioned" value="<%=provisioned%>"/>
 <c:set var="acknowledgeEvent" value="<%=acknowledgeEvent%>"/>
+<c:set var="showParms" value="<%=showParms%>"/>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
@@ -221,6 +223,22 @@
         <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
       </div>
     </div>
+
+    <c:if test="${showParms}">
+    <div class="card severity">
+      <div class="card-header">
+        <span>Parameters</span>
+      </div>
+      <table class="table table-sm severity">
+        <% for (Map.Entry<String, String> parm : event.getParms().entrySet()) { %>
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1"><%=WebSecurityUtils.sanitizeString(parm.getKey(), true)%></th>
+          <td class="col-3"><%=WebSecurityUtils.sanitizeString(parm.getValue(), true)%></td>
+        </tr>
+        <% } %>
+      </table>
+    </div>
+    </c:if>
 
     <div class="card severity">
       <div class="card-header">
