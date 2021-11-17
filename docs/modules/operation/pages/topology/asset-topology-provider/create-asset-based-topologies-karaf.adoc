@@ -1,4 +1,4 @@
-= Create Asset-Based Topologies From Karaf Console
+== Create asset-based topologies from Karaf console
 
 Use the {page-component-title} Karaf console to control topology generation.
 To log in, use the admin password.
@@ -23,11 +23,11 @@ The following commands are available
 -l, --label : Asset topology label (shows in topology menu) (Default: asset) +
 -i, --providerId : Unique providerId of asset topology (Default: Asset Topology Provider) +
 -f, --filter : Optional node filter (Default: empty filter; in other words, allow all nodes) +
--a, --assetLayers : Comma-separated list of asset layers (Default: asset-region, asset-building, asset-rack) +
+-a, --assetLayers : Comma-separated list of asset layers (Default: asset-region,asset-building,asset-rack) +
 -p, --preferredLayout : Preferred Layout (Default: Grid Layout) +
--b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT)
+-b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT) +
 
-If you simply type `opennms:asset-topo-create`, a topology with default settings is created.
+If you simply type `asset-topology:create`, a default topology with providerId asset is created.
 
 | opennms:asset-topo-remove
 | Removes asset topology.
@@ -35,11 +35,11 @@ If you simply type `opennms:asset-topo-create`, a topology with default settings
 
 | opennms:asset-topo-list
 | Lists all asset topologies installed.
-| --all : display detailed view including --uriParams string
+| all : display detailed view including --uriParams string
 
 | opennms:asset-topo-regenerate
 | Regenerates the graphs for the given asset topology definition.
-| -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset).
+| -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
 
 | opennms:asset-topo-regenerateall
 | Best-effort regeneration of all asset topologies.
