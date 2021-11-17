@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -161,7 +160,7 @@ public class CollectdTest {
         allIps.add(addr("192.168.1.4"));
         allIps.add(addr("192.168.1.5"));
         expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).anyTimes();
-        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<>(0)).anyTimes();
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 
@@ -184,7 +183,6 @@ public class CollectdTest {
         m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
         m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
         m_collectd.setPollOutagesDao(m_pollOutagesDao);
-        m_collectd.setCollectorInitTimeOut(1);
 
         m_thresholdingDao.overrideConfig(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml"));
     }
@@ -249,7 +247,6 @@ public class CollectdTest {
 
         // Initialize Collectd
         m_collectd.afterPropertiesSet();
-        TimeUnit.SECONDS.sleep(2);
 
         // Start and stop collectd
         m_collectd.start();
@@ -263,7 +260,7 @@ public class CollectdTest {
      */
     @Test
     public void testOverrides() {
-    	Map<String, Object> map = new HashMap<>();
+    	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("max-repetitions", "11");
     	map.put("read-community", "notPublic");
 		ServiceParameters params = new ServiceParameters(map);
@@ -302,11 +299,11 @@ public class CollectdTest {
         m_collectd.start();
 
         m_scheduler.next();
-        TimeUnit.SECONDS.sleep(1);
+
         assertEquals(0, m_scheduler.getEntryCount());
 
         m_collectd.stop();
-
+        
         m_easyMockUtils.verifyAll();
     }
 
@@ -346,7 +343,7 @@ public class CollectdTest {
         m_scheduler.next();
 
         m_collectd.stop();
-        TimeUnit.SECONDS.sleep(1);
+
         m_easyMockUtils.verifyAll();
     }
 
