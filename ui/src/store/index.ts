@@ -6,6 +6,7 @@ import nodesModule from './nodes'
 import eventsModule from './events'
 import ifServicesModule from './ifServices'
 import spinnerModule from './spinner'
+import mapModule from './map'
 
 export default createStore({
   modules: {
@@ -13,6 +14,7 @@ export default createStore({
     nodesModule,
     eventsModule,
     ifServicesModule,
-    spinnerModule
+    spinnerModule,
+    mapModule,
   }
 })

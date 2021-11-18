@@ -2,6 +2,8 @@
 <template>
   <div class="sidebar">
     <Link to="/">Nodes</Link>
+    <Link to="/map">Map</Link>
+
   </div>
 </template>
     
@@ -11,7 +13,7 @@ import Link from './Link.vue'
     
 <style lang="scss">
 .sidebar {
-  height: 100vh;
+  height: 170vh;
   width: 230px;
   position: relative;
   float: left;
