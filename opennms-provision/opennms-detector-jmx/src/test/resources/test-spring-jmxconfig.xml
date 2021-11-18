@@ -12,6 +12,6 @@
     <tx:annotation-driven/>
 
 
-    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoCm"/>
+    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.cm.JmxConfigDaoCm"/>
     <bean id="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock" />
 </beans>

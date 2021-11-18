@@ -11,6 +11,6 @@
     <context:annotation-config />
     <tx:annotation-driven/>
 
-    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoCm"/>
+    <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.cm.JmxConfigDaoCm"/>
 
 </beans>
