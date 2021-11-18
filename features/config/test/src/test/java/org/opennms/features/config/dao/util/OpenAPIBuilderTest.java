@@ -37,23 +37,22 @@ import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.math.BigDecimal;
 
 public class OpenAPIBuilderTest {
-    String prefix = "/rest/cm";
     String configName = "configName";
     String elementName = "element";
 
     @Test
     public void testBuildOpenAPI() {
-        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addStringAttribute("att1", null, null, "^\\d{3}-\\d{3}$", "val1", true, "att1 doc")
                 .addBooleanAttribute("bool1", false, false, "bool att")
                 .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")
                 .build(false);
-
         Assert.assertArrayEquals("Should generate 2 paths.",
                 new String[]{"/rest/cm/configName", "/rest/cm/configName/{configId}"}, openapi.getPaths().keySet().toArray());
         Assert.assertEquals("Should generate operations for /rest/cm/configName.",
@@ -73,7 +72,7 @@ public class OpenAPIBuilderTest {
 
     @Test
     public void testBuildNestedSingleConfigOpenAPI() {
-        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addArray("arr1", OpenAPIBuilder.createBuilder()
                         .addStringAttribute("name", 3L, 10L, null, null, true, "val1")
@@ -101,14 +100,14 @@ public class OpenAPIBuilderTest {
 
     @Test(expected = RuntimeException.class)
     public void testDuplicateAttributeName() {
-        OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addDateAttribute("att1", null, true, "date doc");
     }
 
     @Test
     public void testConvertBack() throws JsonProcessingException {
-        OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addDateTimeAttribute("att1", null, true, "date time doc")
                 .addDateTimeAttribute("att2", null, true, "date time doc")
                 .addObject("obj1", OpenAPIBuilder.createBuilder()
@@ -121,7 +120,7 @@ public class OpenAPIBuilderTest {
                         .addNumberAttribute("digit", ConfigItem.Type.INTEGER, 3L, 10L, null, null, true, "digit")
                         .addDateAttribute("data", null, false, "date field"), 1L, 5L, true, "test array");
         OpenAPI openapi = builder.build(false);
-        OpenAPIBuilder newBuilder = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi);
+        OpenAPIBuilder newBuilder = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH, openapi);
         OpenAPI newOpenapi = newBuilder.build(false);
 
 
@@ -134,12 +133,12 @@ public class OpenAPIBuilderTest {
 
     @Test
     public void testOpenAPIAddAttribute() {
-        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addStringAttribute("att1", null, null, "^\\d{3}-\\d{3}$", "val1", true, "att1 doc")
                 .addStringAttribute("att2", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
                 .build(false);
 
-        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi)
+        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH, openapi)
                 .addStringAttribute("att3", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
                 .build(false);
 
@@ -148,12 +147,12 @@ public class OpenAPIBuilderTest {
 
     @Test
     public void testOpenAPIRemoveAttribute() throws JsonProcessingException {
-        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addStringAttribute("att1", null, null, "^\\d{3}-\\d{3}$", "val1", true, "att1 doc")
                 .addStringAttribute("att2", null, null, "^\\d{3}-\\d{3}$", "val2", true, "att2 doc")
                 .build(false);
 
-        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix, openapi)
+        OpenAPI newOpenapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH, openapi)
                 .removeAttribute("att2")
                 .build(false);
 

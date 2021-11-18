@@ -146,7 +146,7 @@ public class ConfigurationManagerServiceImplTest {
         ConfigConverter converter = XsdHelper.getConverter(def.get());
 
         ProvisiondConfiguration pConfig = JaxbUtils.unmarshal(ProvisiondConfiguration.class,
-                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID)), false);
+                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get()), false);
 
         pConfig.setImportThreads(12L);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(pConfig))));
@@ -180,7 +180,7 @@ public class ConfigurationManagerServiceImplTest {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
         ProvisiondConfiguration config = JaxbUtils.unmarshal(ProvisiondConfiguration.class,
-                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID)), false);
+                converter.jsonToXml(configManagerService.getJSONStrConfiguration(CONFIG_NAME, CONFIG_ID).get()), false);
         config.setImportThreads(-1L);
         configManagerService.updateConfiguration(CONFIG_NAME, CONFIG_ID, new JsonAsString(converter.xmlToJson(JaxbUtils.marshal(config))));
         Optional<ConfigData<JSONObject>> configData = configManagerService.getConfigData(CONFIG_NAME);

@@ -27,30 +27,22 @@
  ******************************************************************************/
 package org.opennms.features.config.service.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.ObjectSchema;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
-import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
-import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.math.BigDecimal;
-import java.util.List;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
 
 public class OpenAPIConfigHelperTest {
-    String prefix = "/rest/cm";
     String configName = "configName";
     String elementName = "element";
 
     @Test
     public void testFillingOpenAPI() {
-        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, prefix)
+        OpenAPI openapi = OpenAPIBuilder.createBuilder(configName, elementName, ConfigurationManagerService.BASE_PATH)
                 .addStringAttribute("att1", null, null, null, "val1", true, "att1 doc")
                 .addBooleanAttribute("bool1", false, false, "bool att")
                 .addArray("arr1", ConfigItem.Type.INTEGER, null, 100L, 20L, null, 10L, null, null, true, "test array")

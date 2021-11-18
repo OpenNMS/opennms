@@ -52,7 +52,6 @@ import java.util.*;
  */
 public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigManagerRestServiceImpl.class);
-    private String BASE_PATH = "/rest/cm/";
     public static final String MESSAGE_TAG = "MESSAGE";
 
     @Autowired
@@ -94,7 +93,7 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
             }
         });
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
-        OpenAPI allAPI = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, request.getContextPath() + BASE_PATH);
+        OpenAPI allAPI = configSwaggerConverter.mergeAllPathsWithRemoteRef(apis, request.getContextPath() + ConfigurationManagerService.BASE_PATH);
         allAPI = configSwaggerConverter.setupServers(allAPI, Arrays.asList(new String[]{request.getContextPath()}));
         String outStr = configSwaggerConverter.convertOpenAPIToString(allAPI, acceptType);
         return Response.ok(outStr).build();
@@ -131,10 +130,11 @@ public class ConfigManagerRestServiceImpl implements ConfigManagerRestService {
     @Override
     public Response getConfig(String configName, String configId) {
         try {
-            String jsonStr = configurationManagerService.getJSONStrConfiguration(configName, configId);
-            return Response.ok(jsonStr).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            Optional<String> json = configurationManagerService.getJSONStrConfiguration(configName, configId);
+            if(json.isEmpty()){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            return Response.ok(json.get()).build();
         } catch (Exception e) {
             LOG.error("configName: {}, configId: {}", configName, configId, e);
             return this.generateSimpleMessageResponse(Response.Status.BAD_REQUEST, e.getMessage());

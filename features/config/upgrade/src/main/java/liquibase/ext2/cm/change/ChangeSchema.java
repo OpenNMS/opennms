@@ -110,7 +110,7 @@ public class ChangeSchema extends AbstractCmChange {
                         definition = definitionOpt.get();
                     }
 
-                    OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, "/rest/cm", definition.getSchema());
+                    OpenAPIBuilder builder = OpenAPIBuilder.createBuilder(this.schemaId, this.schemaId, ConfigurationManagerService.BASE_PATH, definition.getSchema());
 
                     // 2.) apply all changes
                     for (Consumer<OpenAPIBuilder> change : changes) {

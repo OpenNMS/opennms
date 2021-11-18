@@ -43,8 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -144,14 +142,11 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
         if (configDefinition.isEmpty()) {
             throw new IllegalArgumentException(String.format("Unknown service with id=%s.", configName));
         }
-        try {
-            if (this.getJSONConfiguration(configName, configId).isPresent()) {
-                throw new IllegalArgumentException(String.format(
-                        "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
-            }
-        } catch (FileNotFoundException ex) {
-            // it is expected to have file not found exception
+        if (this.getJSONConfiguration(configName, configId).isPresent()) {
+            throw new IllegalArgumentException(String.format(
+                    "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
+
 
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
@@ -188,12 +183,12 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     }
 
     @Override
-    public String getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
         Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
         if (config.isEmpty()) {
-            throw new FileNotFoundException(configName + ":" + configId);
+            return Optional.empty();
         }
-        return config.get().toString();
+        return Optional.of(config.get().toString());
     }
 
     @Override

@@ -49,6 +49,7 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
  * @apiNote Due to the classloading behaviour. Do not use any non-primitive API parameters via OSGi interface. It will subject to <b>FAIL</b>!!!
  */
 public interface ConfigurationManagerService {
+    String BASE_PATH = "/rest/cm";
 
     /** Registers a ConfigDefinition under a unique configName. If the schema id is present it will throw an IllegalArgumentException. */
     void registerConfigDefinition(String configName, ConfigDefinition configDefinition) throws JsonProcessingException;
@@ -100,7 +101,7 @@ public interface ConfigurationManagerService {
      * @return config in json string
      * @see #getJSONStrConfiguration(String, String)
      */
-    String getJSONStrConfiguration(String configName, String configId) throws IOException;
+    Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException;
 
     /**
      * get config as xml by configName, configId
