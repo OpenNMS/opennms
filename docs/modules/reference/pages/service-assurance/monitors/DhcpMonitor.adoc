@@ -1,18 +1,6 @@
 
 = DhcpMonitor
 
-
-IMPORTANT: The use of the DhcpMonitor requires the installation of the `opennms-plugin-protocol-dhcp` package before polling will start.
-
-****
-To install the opennms-plugin-protocol-dhcp package:
-
-* For RPM-based distributions:
-** `yum install opennms-plugin-protocol-dhcp`
-* For Debian-based distributions:
-** `apt-get install opennms-plugin-protocol-dhcp`
-****
-
 Use this monitor to check the availability and functionality of DHCP servers.
 The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.
 A DHCP server is tested by sending a DISCOVER message.
@@ -22,6 +10,9 @@ The background listening process is started only if the DhcpMonitor is used.
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
          You can test if a process is listening on UDP/68 with `sudo ss -lnpu sport = :68`.
+
+NOTE: The use of the DhcpMonitor previously required the installation of an additional package.
+The functionality of this additional plugin has been rolled into the core {page-component-title} service and is no longer a separate install.
 
 == Monitor facts
 
