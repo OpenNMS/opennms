@@ -33,6 +33,7 @@
       </div>
     </div>
   </div>
+  <ConfimDialog />
 </template>
 
 <script setup lang="ts">
@@ -43,6 +44,7 @@ import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
 import Help from '@/components/FileEditor/Help.vue'
 import TopBar from '@/components/FileEditor/TopBar.vue'
+import ConfimDialog from '@/components/FileEditor/ConfimDialog.vue'
 const store = useStore()
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const snippets = computed(() => store.state.fileEditorModule.snippets)

@@ -1,6 +1,6 @@
 import API from "@/services"
 import { VuexContext } from '@/types'
-import { State } from './state'
+import { IFile, State } from './state'
 
 interface ContextWithState extends VuexContext {
   state: State
@@ -36,14 +36,16 @@ const deleteFile = async (context: VuexContext, fileName: string) => {
   context.commit('ADD_LOG_TO_STATE', response)
 
   if (response.success) {
-    context.dispatch('fileEditorModule/getFileNames')
-    context.dispatch('fileEditorModule/clearEditor')
-    context.dispatch('fileEditorModule/setSelectedFileName', '')
+    context.dispatch('getFileNames')
+    context.dispatch('clearEditor')
+    context.dispatch('setSelectedFileName', '')
   }
 
   if (!response.success && response.msg) {
     context.commit('SET_IS_CONSOLE_OPEN', true)
   }
+
+  context.dispatch('setFileToDelete', null)
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
@@ -119,6 +121,10 @@ const setIsHelpOpen = (context: VuexContext, isOpen: boolean) => {
   context.commit('SET_IS_HELP_OPEN', isOpen)
 }
 
+const setFileToDelete = (context: VuexContext, file: IFile | null) => {
+  context.commit('SET_FILE_TO_DELETE', file)
+}
+
 export default {
   getFileNames,
   getFile,
@@ -136,5 +142,6 @@ export default {
   addNewFileToState,
   getFileExtensions,
   deleteFile,
-  setChangedFilesOnly
+  setChangedFilesOnly,
+  setFileToDelete
 }

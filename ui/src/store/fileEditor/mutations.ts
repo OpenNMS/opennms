@@ -1,5 +1,5 @@
 import { FileEditorResponseLog } from '@/types'
-import { State } from './state'
+import { IFile, State } from './state'
 import { filesToFolders } from '@/components/FileEditor/utils'
 
 const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
@@ -86,6 +86,10 @@ const SAVE_CHANGED_FILES_ONLY = (state: State, changedFilesOnly: boolean) => {
   state.changedFilesOnly = changedFilesOnly
 }
 
+const SET_FILE_TO_DELETE = (state: State, fileToDelete: IFile | null) => {
+  state.fileToDelete = fileToDelete
+}
+
 export default {
   CLEAR_LOGS,
   CLEAR_EDITOR,
@@ -93,6 +97,7 @@ export default {
   SET_IS_HELP_OPEN,
   TRIGGER_FILE_RESET,
   SAVE_FILE_TO_STATE,
+  SET_FILE_TO_DELETE,
   SET_IS_CONSOLE_OPEN,
   SAVE_NEW_FILE_TO_STATE,
   SAVE_SNIPPETS_TO_STATE,

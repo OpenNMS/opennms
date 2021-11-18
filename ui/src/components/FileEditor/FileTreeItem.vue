@@ -1,6 +1,6 @@
 <template>
-  <ConfimDialog :file="fileToDelete" @closeModal="fileToDelete = null" />
-  <li class="pointer"
+  <li
+    class="pointer"
     :class="[{ hidden: item.isHidden }, { selected: !isFolder && !isEditing && item.fullPath === selectedFile }]"
     @click="!isFolder && item.fullPath ? getFile(item.fullPath) : ''"
   >
@@ -40,7 +40,6 @@ import Open from "@featherds/icon/navigation/ExpandMore"
 import Close from "@featherds/icon/navigation/ChevronRight"
 import Remove from "@featherds/icon/action/Remove"
 import NewFileInput from './NewFileInput.vue'
-import ConfimDialog from './ConfimDialog.vue'
 import { IFile } from "@/store/fileEditor/state"
 
 const store = useStore()
@@ -54,7 +53,6 @@ const props = defineProps({
 // open first folder by default
 const firstFolder = props.item.name === undefined || props.item.name === 'etc'
 const isOpen = ref(firstFolder)
-const fileToDelete = ref<null | IFile>(null)
 const searchValue = computed(() => store.state.fileEditorModule.searchValue)
 const isFolder = computed(() => props.item.children && props.item.children.length)
 const isEditing = computed(() => props.item.isEditing)
@@ -84,7 +82,7 @@ const addNewFile = (file: IFile) => {
   })
 }
 
-const openConfirmDeleteModal = (file: IFile) => fileToDelete.value = file
+const openConfirmDeleteModal = (file: IFile) => store.dispatch('fileEditorModule/setFileToDelete', file)
 </script>
 
 <style lang="scss" scoped>

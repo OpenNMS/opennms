@@ -1,19 +1,18 @@
 <template>
-  <FeatherDialog v-model="file" :labels="labels">
+  <FeatherDialog v-model="open" :labels="labels">
     <p class="subtitle2 dialog">Delete {{ file?.name }}?</p>
 
     <template v-slot:footer>
-      <FeatherButton text @click="emit('closeModal')">Cancel</FeatherButton>
+      <FeatherButton text @click="cancel">Cancel</FeatherButton>
       <FeatherButton class="btn-delete" text @click="deleteFile">Confirm</FeatherButton>
     </template>
   </FeatherDialog>
 </template>
 <script setup lang=ts>
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import { FeatherDialog } from "@featherds/dialog"
 import { FeatherButton } from "@featherds/button"
-import { PropType } from '@vue/runtime-core'
-import { IFile } from '@/store/fileEditor/state'
 
 const store = useStore()
 
@@ -22,18 +21,15 @@ const labels = {
   close: 'Close'
 }
 
-const props = defineProps({
-  file: {
-    type: Object as PropType<IFile | null>,
-    required: true
-  }
+const open = ref(false)
+const file = computed(() => {
+  const fileToDelete = store.state.fileEditorModule.fileToDelete
+  open.value = Boolean(fileToDelete)
+  return fileToDelete
 })
 
-const emit = defineEmits(['closeModal'])
-const deleteFile = () => {
-  store.dispatch('fileEditorModule/deleteFile', props.file?.fullPath)
-  emit('closeModal')
-}
+const deleteFile = () => store.dispatch('fileEditorModule/deleteFile', file.value.fullPath)
+const cancel = () => store.dispatch('fileEditorModule/setFileToDelete', null)
 </script>
 
 <style lang="scss" scoped>
