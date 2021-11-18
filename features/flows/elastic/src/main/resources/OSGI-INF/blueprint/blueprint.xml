@@ -209,6 +209,22 @@
     <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
     <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
 
+    <!-- Thresholding -->
+    <bean id="thresholdingCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="flow-thresholding-sessions"/>
+        <property name="metricRegistry" ref="metricRegistry" />
+        <property name="enabled" value="${flowThresholdCache.enabled}" />
+        <property name="maximumSize" value="${flowThresholdCache.maximumSize}" />
+        <property name="expireAfterWrite" value="${flowThresholdCache.expireAfterWrite}" />
+        <property name="recordStats" value="${flowThresholdCache.recordStats}" />
+    </bean>
+
+    <bean id="flowThresholding" class="org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding" >
+        <argument ref="thresholdingService"/>
+        <argument ref="collectionAgentFactory"/>
+        <argument ref="thresholdingCacheConfig"/>
+    </bean>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start" destroy-method="stop">
@@ -223,8 +239,7 @@
         <argument ref="tracerRegistry"/>
         <argument ref="enrichedFlowForwarder"/>
         <argument ref="rawIndexSettings"/>
-        <argument ref="thresholdingService"/>
-        <argument ref="collectionAgentFactory"/>
+        <argument ref="flowThresholding"/>
 
         <property name="enableFlowForwarding" value="${enableForwarding}"/>
         <property name="bulkRetryCount" value="${bulkRetryCount}"/>

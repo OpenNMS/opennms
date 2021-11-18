@@ -61,9 +61,10 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholder;
+import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -140,7 +142,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final EnrichedFlowForwarder enrichedFlowForwarder;
 
-    private final FlowThresholder thresholder;
+    private final FlowThresholding thresholding;
 
     private boolean enableFlowForwarding = false;
 
@@ -180,7 +182,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
                                  IndexSettings indexSettings,
-                                 final FlowThresholder thresholder) {
+                                 final FlowThresholding thresholding) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -191,7 +193,7 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.thresholder = thresholder;
+        this.thresholding = thresholding;
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -231,9 +233,9 @@ public class ElasticFlowRepository implements FlowRepository {
     public ElasticFlowRepository(final MetricRegistry metricRegistry, final JestClient jestClient, final IndexStrategy indexStrategy,
                                  final DocumentEnricher documentEnricher, final SessionUtils sessionUtils, final NodeDao nodeDao,
                                  final SnmpInterfaceDao snmpInterfaceDao, final Identity identity, final TracerRegistry tracerRegistry,
-                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final FlowThresholder thresholder, final int bulkSize,
+                                 final EnrichedFlowForwarder enrichedFlowForwarder, final IndexSettings indexSettings, final FlowThresholding thresholding, final int bulkSize,
                                  final int bulkFlushMs) {
-        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholder);
+        this(metricRegistry, jestClient, indexStrategy, documentEnricher, sessionUtils, nodeDao, snmpInterfaceDao, identity, tracerRegistry, enrichedFlowForwarder, indexSettings, thresholding);
         this.bulkSize = bulkSize;
         this.bulkFlushMs = bulkFlushMs;
     }
@@ -301,10 +303,14 @@ public class ElasticFlowRepository implements FlowRepository {
             throw new FlowException("Failed to enrich one or more flows.", e);
         }
 
-        if (this.thresholder != null) {
+        if (this.thresholding != null) {
             // TODO: add flag to disable/enable
             // TODO: add timer
-            flowDocuments.forEach(doc -> this.thresholder.threshold(doc, source));
+            try {
+                this.thresholding.threshold(flowDocuments, source);
+            } catch (final ExecutionException | ThresholdInitializationException e) {
+                throw new FlowException("Failed to evaluate thresholds", e);
+            }
         }
 
         if(enableFlowForwarding) {
