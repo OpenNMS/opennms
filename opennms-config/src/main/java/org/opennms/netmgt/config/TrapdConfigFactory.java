@@ -93,7 +93,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
     /**
      * <p>Constructor for TrapdConfigFactory.</p>
      *
-     * @param stream a {@link java.io.InputStream} object.
+     * @param config  TrapdConfiguration object.
      * @throws IOException 
      */
     public TrapdConfigFactory(TrapdConfiguration config) throws IOException {
@@ -106,26 +106,7 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
         reload();
     }
 
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    /*public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRAPD_CONFIG_FILE_NAME);
 
-        m_singleton = new TrapdConfigFactory(cfgFile.getPath());
-
-        m_loaded = true;
-    }*/
 
     /**
      * Reload the config from the default config file
@@ -136,10 +117,6 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      */
     public synchronized void reload() throws IOException {
         this.m_config = this.loadConfig(this.getDefaultConfigId());
-       /* m_singleton = null;
-        m_loaded = false;
-
-        init();*/
     }
 
     /**
@@ -150,14 +127,9 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized TrapdConfigFactory getInstance() throws IOException {
-       /* if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-        return m_singleton;*/
-
         TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
         configFactory.reload();
         return configFactory;
-
     }
     
     /**
