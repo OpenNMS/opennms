@@ -53,6 +53,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
     private static final String NODE_LABEL = "localNode";
     private static final String NODE_FOREIGNID = "localNode";
