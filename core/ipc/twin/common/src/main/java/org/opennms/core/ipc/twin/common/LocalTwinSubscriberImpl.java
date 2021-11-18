@@ -29,12 +29,13 @@
 package org.opennms.core.ipc.twin.common;
 
 
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
 
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
-    public LocalTwinSubscriberImpl(final Identity identity) {
-        super(identity);
+    public LocalTwinSubscriberImpl(final Identity identity, TracerRegistry tracerRegistry) {
+        super(identity, tracerRegistry);
     }
 
     @Override

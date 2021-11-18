@@ -112,6 +112,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson2Version}</version>

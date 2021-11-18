@@ -33,6 +33,9 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Properties;
 
+import io.opentracing.References;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -53,7 +56,8 @@ import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
 import org.opennms.core.ipc.twin.kafka.common.KafkaConsumerRunner;
 import org.opennms.core.ipc.twin.kafka.common.Topic;
-import org.opennms.distributed.core.api.Identity;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.tracing.util.TracingInfoCarrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +78,14 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private KafkaProducer<String, byte[]> producer;
     private KafkaConsumerRunner consumerRunner;
 
-    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber) {
-        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
+    public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
+        this(localTwinSubscriber, new OnmsKafkaConfigProvider(KafkaTwinConstants.KAFKA_CONFIG_SYS_PROP_PREFIX), tracerRegistry);
     }
 
     public KafkaTwinPublisher(final LocalTwinSubscriber localTwinSubscriber,
-                              final KafkaConfigProvider kafkaConfigProvider) {
-        super(localTwinSubscriber);
+                              final KafkaConfigProvider kafkaConfigProvider,
+                              final TracerRegistry tracerRegistry) {
+        super(localTwinSubscriber, tracerRegistry);
         this.kafkaConfigProvider = Objects.requireNonNull(kafkaConfigProvider);
     }
 
@@ -140,8 +145,14 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
         try {
             final TwinRequest request = mapTwinRequestProto(record.value());
-            final var response = this.getTwin(request);
-            this.handleSinkUpdate(response);
+            String tracingOperationKey = request.getKey() + "@" + request.getLocation();
+            Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
+                    tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
+            try (Scope scope = spanBuilder.startActive(true)) {
+                final var response = this.getTwin(request);
+                addTracingInfo(scope.span(), response);
+                this.handleSinkUpdate(response);
+            }
         } catch (Exception e) {
             LOG.error("Exception while processing request", e);
         }

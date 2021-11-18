@@ -32,7 +32,6 @@ import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -41,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher;
-import org.opennms.core.ipc.twin.jms.subscriber.JmsTwinSubscriber;
 import org.opennms.core.ipc.twin.test.AbstractTwinBrokerIT;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
@@ -64,14 +62,12 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.notNullValue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -79,7 +75,8 @@ import static org.hamcrest.Matchers.notNullValue;
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
-        "classpath:/META-INF/opennms/applicationContext-twin-jms-publisher.xml"
+        "classpath:/META-INF/opennms/applicationContext-twin-jms-publisher.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml"
 })
 @JUnitConfigurationEnvironment
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
