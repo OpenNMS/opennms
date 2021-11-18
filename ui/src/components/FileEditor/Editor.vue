@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'help-open' : isHelpOpen, 'help-closed': !isHelpOpen }">
+  <div :class="{ 'help-open': isHelpOpen, 'help-closed': !isHelpOpen }">
     <div class="editor-with-console">
       <VAceEditor
         v-model:value="content"
@@ -52,12 +52,22 @@ const lang = computed(() => {
   return xml
 })
 
+const disableEditor = (editor: any) => {
+  editor.setOptions({ readOnly: true })
+  editor.renderer.setShowGutter(false)
+  editor.renderer.$cursorLayer.element.style.display = "none"
+}
+
 watchEffect(() => content.value = fileString.value)
-watch(selectedFileName, () => {
+watch(selectedFileName, (selectedFileName) => {
   // enable editor when file is selected
-  reactiveEditor.value.setOptions({ readOnly: false })
-  reactiveEditor.value.renderer.setShowGutter(true)
-  reactiveEditor.value.renderer.$cursorLayer.element.style.display = "block"
+  if (selectedFileName) {
+    reactiveEditor.value.setOptions({ readOnly: false })
+    reactiveEditor.value.renderer.setShowGutter(true)
+    reactiveEditor.value.renderer.$cursorLayer.element.style.display = "block"
+  } else {
+    disableEditor(reactiveEditor.value)
+  }
 })
 
 const change = () => {
@@ -71,12 +81,8 @@ const init = (editor: any) => {
     bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
     exec: () => store.dispatch('fileEditorModule/saveModifiedFile')
   })
-
   // disable editor on load
-  editor.setOptions({ readOnly: true })
-  editor.renderer.setShowGutter(false)
-  editor.renderer.$cursorLayer.element.style.display = "none"
-  
+  disableEditor(editor)
   reactiveEditor.value = editor
 }
 </script>
@@ -86,12 +92,12 @@ const init = (editor: any) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--feather-border-on-surface)
+  border: 1px solid var(--feather-border-on-surface);
 }
 .help-open {
-  height: calc(100vh - 180px)
+  height: calc(100vh - 180px);
 }
 .help-closed {
-  height: calc(100vh - 120px)
+  height: calc(100vh - 120px);
 }
 </style>

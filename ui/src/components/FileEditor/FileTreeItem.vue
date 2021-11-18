@@ -81,10 +81,7 @@ const addNewFile = (file: IFile) => {
   })
 }
 
-const deleteFile = async (file: IFile) => {
-  await store.dispatch('fileEditorModule/deleteFile', file.name)
-  store.dispatch('fileEditorModule/getFileNames')
-}
+const deleteFile = (file: IFile) => store.dispatch('fileEditorModule/deleteFile', file.fullPath)
 </script>
 
 <style lang="scss" scoped>

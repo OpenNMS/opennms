@@ -3,13 +3,15 @@ export interface State {
   log: string
   searchValue: string
   selectedLog: string
+  reverseLog: boolean
 }
 
 const state: State = {
   logs: [],
   log: '',
   searchValue: '',
-  selectedLog: ''
+  selectedLog: '',
+  reverseLog: false
 }
 
 export default state

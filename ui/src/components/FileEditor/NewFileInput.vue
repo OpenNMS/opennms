@@ -46,17 +46,19 @@ const addNewFile = () => {
     fileNameError.value = 'Unsupported file extension.'
     item.isEditing = true // leave editing on
   }
-  
+
   const fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
 
+  if (!item.isEditing) {
     // set newly created file as selected
-  store.dispatch('fileEditorModule/setSelectedFileName', fullPath)
+    store.dispatch('fileEditorModule/setSelectedFileName', fullPath)
     // clear editor contents
-  store.dispatch('fileEditorModule/clearEditor')
-  // update vuex store with new file
-  store.dispatch('fileEditorModule/addNewFileToState', fullPath)
-  // update the search input with the new file name
-  store.dispatch('fileEditorModule/setSearchValue', newFileName.value)
+    store.dispatch('fileEditorModule/clearEditor')
+    // update vuex store with new file
+    store.dispatch('fileEditorModule/addNewFileToState', fullPath)
+    // update the search input with the new file name
+    store.dispatch('fileEditorModule/setSearchValue', newFileName.value)
+  }
 }
 
 onMounted(() => input.value.focus())

@@ -321,7 +321,7 @@
   resolved "https://registry.yarnpkg.com/@emmetio/scanner/-/scanner-1.0.0.tgz#065b2af6233fe7474d44823e3deb89724af42b5f"
   integrity sha512-8HqW8EVqjnCmWXVpqAOZf+EGESdkR27odcMMMGefgKXtar00SoYNSryGv//TELI4T3QFsECo78p+0lmalk/CFA==
 
-"@featherds/app-bar@^0.2.12":
+"@featherds/app-bar@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/app-bar/-/app-bar-0.2.12.tgz#abaa5149638005fad8f720382ec2e10cf1385c6d"
   integrity sha512-nTEKxUKUtgV2srN2PubSYtcfg/1ilwNyBkOZi1YCSzBdTlAI+9lZOudyiOPNnSDsMw+vfhmBdMsq6hVoOnshTw==
@@ -332,7 +332,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/app-layout@^0.2.12":
+"@featherds/app-layout@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/app-layout/-/app-layout-0.2.12.tgz#2d7176dcd998458d5abb4b6896793dd609ea5508"
   integrity sha512-MB2i3WSMJd1mIRZHvdRT/8+14kvcYEphl0MLCvaPflW9hjjgWddg/UQegRUQu7Dk3h/APIRK5PAusYLGq1KCiw==
@@ -340,7 +340,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/autocomplete@^0.2.12":
+"@featherds/autocomplete@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/autocomplete/-/autocomplete-0.2.12.tgz#a56a732f546bcc55f20f948d1b9256b744905e44"
   integrity sha512-cCiQSt00fGsooe8ZAuX7ISQD/mj0lDAGhD8JxG027SFW/TRczCzf63N/dG57166T0kCUw5vxxd6FGUKR3PdZcA==
@@ -355,7 +355,7 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/button@^0.2.12":
+"@featherds/button@0.2.12", "@featherds/button@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/button/-/button-0.2.12.tgz#909d20de7b034fb6e98e9f6e1036654311afea9f"
   integrity sha512-X+VOudwr1zZvfbFYntccHLE8lIMFqac97/ftg/PswB3xBiFNVJQHgoVAS/rAsDtgm/QGmgQ/lHw8issnYKc/3Q==
@@ -364,7 +364,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/checkbox@^0.2.12":
+"@featherds/checkbox@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/checkbox/-/checkbox-0.2.12.tgz#45592e4e95b9b0fecc0566856736929f9b389fc9"
   integrity sha512-057hGxOSzc/V8eW9LCaFOTehfu0UDm7ABt03LIgF62iwBgC+6driv8OAbBJfiQlJOxunrUsn7rwBMUYn7+pP7g==
@@ -374,7 +374,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/chips@^0.2.12":
+"@featherds/chips@0.2.12", "@featherds/chips@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/chips/-/chips-0.2.12.tgz#a7ae2e041ee671555c300892ff156b3e150230fd"
   integrity sha512-oyq1I0US3u7Dsb9CrbMDFdqV+F4NIR6tphy8f1XF6XogHTOQf9W7JbzWN8cx9C+yMDm/FY77+A1wYKEKVNfB+g==
@@ -395,7 +395,7 @@
     lodash.debounce "^4.0.8"
     vue "^3.1.0-0"
 
-"@featherds/date-input@^0.2.12":
+"@featherds/date-input@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/date-input/-/date-input-0.2.12.tgz#e07aa2280caae83a5b51da584577541c1606baed"
   integrity sha512-aoeDrs6vXa3wR9iHRnRtxdxAIfucIMbhCAPf6HOPCDGs6ehszM5npsiMOR/XXbznN8XW0EMmeIyxm1z3gdhdgQ==
@@ -411,7 +411,7 @@
     date-fns "^2.17.0"
     vue "^3.1.0-0"
 
-"@featherds/dialog@^0.2.12":
+"@featherds/dialog@0.2.12", "@featherds/dialog@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/dialog/-/dialog-0.2.12.tgz#2e6e69f27c943c01b17c998c1e3e7043d591fc3f"
   integrity sha512-VP+A9iRhHAKSzdsntU7u8XYQYAg7nF1PYXd0arg3Mq602hcSwmIcHpzOiTjCC3c19UqkJzpfuX0HuqcYfMygSA==
@@ -422,7 +422,7 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/drawer@^0.2.12":
+"@featherds/drawer@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/drawer/-/drawer-0.2.12.tgz#171e47a4d917a89d5f212c9ee0c7c09de4eb4eaa"
   integrity sha512-BFoaqYjbla/CmpVoJZPUnSg/gaCKEKtusPV4U0eDXiw378OtwTmDv6T3/2gClbg1IE49AYaT3SJl8dc0fCmKrw==
@@ -434,7 +434,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/dropdown@^0.2.12":
+"@featherds/dropdown@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/dropdown/-/dropdown-0.2.12.tgz#7bc9ce1a74cfacc7c78586e285a5571de0667af3"
   integrity sha512-ryB9VYF3Cb310jguxb+ZtARYamiCexVYgDBjXgmaUbvPqfZfzhCpOi4RiqqkTAhPzjpiKT8YE4St96ScIfRTWA==
@@ -444,7 +444,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/icon@^0.2.12":
+"@featherds/icon@0.2.12", "@featherds/icon@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.2.12.tgz#c4216a2e390dd4f68afdffddc98c3a22eb484bf5"
   integrity sha512-lWI2uEp55/EOzbjnUeuviXLkERN/G/+uAQD/BCWF7L1JIvt8+50nhR45uWbDg89i8pHh51TAyE4KaRdSjfyVVA==
@@ -459,7 +459,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/input@^0.2.12":
+"@featherds/input@0.2.12", "@featherds/input@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/input/-/input-0.2.12.tgz#6b13e733fca1f46d74cf0c06106ca440f19d5eb8"
   integrity sha512-PzyaC6wT7L3kpYGM1xRru8NgY/Cd+PTc9aJ0XPxASSCGHkN5DulpwPXDJiiwvnRan0Rc4po5ef5qBVRvKGpE/w==
@@ -471,7 +471,7 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/list@^0.2.12":
+"@featherds/list@0.2.12", "@featherds/list@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/list/-/list-0.2.12.tgz#af0faaad67769326e2e7eb59f3aaf5c3e312ea8d"
   integrity sha512-zm1EaJi8T8Ef9rDSGk7GRXU7A/GLlmG4fnMItUO5Top5tNakrmsNpE+7EA5KLdlNsxoThjxuA0sxIHofStXV0w==
@@ -493,7 +493,7 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/navigation-rail@^0.2.12":
+"@featherds/navigation-rail@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/navigation-rail/-/navigation-rail-0.2.12.tgz#fa6f4838b7f08d1583b7baec98c15cfe643cfc8d"
   integrity sha512-eh3fyGoStBTAl2OhVRLfT82Cr0oC/+/kyZknDoUV1IDW9WcHMzdG0BCifV4p4kTI/sE/iC74lQyMu5Ren3R4og==
@@ -505,7 +505,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/pagination@^0.2.12":
+"@featherds/pagination@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/pagination/-/pagination-0.2.12.tgz#07848f6ec11877e826cf49b8cbd85939b5c7db6d"
   integrity sha512-D6AqAm+cQnPmyL7Xk1vNxoh/fQ4p4c11NkO0/MomvVBe3i5Yb/ZBa4ApawIyZA9DytBLjNd67rssMb6beheI9w==
@@ -516,7 +516,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/progress@^0.2.12":
+"@featherds/progress@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/progress/-/progress-0.2.12.tgz#50b83ad33b678bd5ebeebc75dd024b8424c26d0f"
   integrity sha512-8BH8DJ2zF4gVeo2Uf+c1DsZbQ0PDFQ84W9QfzzeV+PPocmYLURcUrCEQI9qGIJl9O/G2A02AAzXFmR69RFwbCw==
@@ -524,7 +524,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/protected-input@^0.2.12":
+"@featherds/protected-input@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/protected-input/-/protected-input-0.2.12.tgz#5ad37c3429e971d207ef5edc815afdf21fff7d85"
   integrity sha512-Zio3IApSpncZ+d1LtFIIKfRyQjHiQlj4fw/PFynWEgpj1eE5Ozc8IgSP9Bvn98Z5B7sa4q7iiJaemG3F0wsWmg==
@@ -552,7 +552,7 @@
   dependencies:
     vue "^3.1.0-0"
 
-"@featherds/select@^0.2.12":
+"@featherds/select@0.2.12", "@featherds/select@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/select/-/select-0.2.12.tgz#f10a7abc708655d40672ae45c3081b1387622e05"
   integrity sha512-O2EU5hKIlZP+rlN6aTMYl8TOtO03cDQAOrmvqg5jxMH+fcPROY7f24wdnkXkg9ueIAlTXLAiSWCWi7Sj24LJNw==
@@ -565,7 +565,7 @@
     "@featherds/utils" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/styles@^0.2.12":
+"@featherds/styles@0.2.12", "@featherds/styles@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/styles/-/styles-0.2.12.tgz#404e57f16caec7ec309dfcf173252196e962efa1"
   integrity sha512-dCP4kR7ZBzqr1Xy2us+PHuzUO0KkTwl9LkqIKlBMUBW1xxVY0W4Hf4H5ZJ7MaeL1yv1oA5uKqeXITrzKisUtcQ==
@@ -578,7 +578,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/table@^0.2.12":
+"@featherds/table@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/table/-/table-0.2.12.tgz#67fbaa3834c881f4bb7ef2986213eae4694d9e31"
   integrity sha512-wifeQddSpCB7aM03byBs6Zk2VEKftkOCbq8sGDP2gwtBEkp/b+qv/P7IoHrpnZAe9ntL8d89o+odYe99W5LEjg==
@@ -589,7 +589,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/tabs@^0.2.12":
+"@featherds/tabs@0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/tabs/-/tabs-0.2.12.tgz#90271e5b633dfa60053bf09ec59e0e15fa467716"
   integrity sha512-XgeiSGP4WxucxQV4HbSeXf0ALGSFej8M6dqRqmxA/AJxY4lY1oT+puxPYL4Plhcvrn9qsSh/KIiCnr4cC0xcdA==
@@ -599,7 +599,7 @@
     "@featherds/styles" "^0.2.12"
     vue "^3.1.0-0"
 
-"@featherds/utils@^0.2.12":
+"@featherds/utils@0.2.12", "@featherds/utils@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@featherds/utils/-/utils-0.2.12.tgz#0895990c5801c999444a72ce05c65722c9e9fff3"
   integrity sha512-dXiY0xux8N6nZz69EZZRxWlUho1pky2vTwmRztHRzaeZpVy3FHSI8r6L0e8LShYcR7KyXu0FoNtX0LdkqjQ+Tw==

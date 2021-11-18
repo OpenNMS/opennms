@@ -35,10 +35,15 @@ const deleteFile = async (context: VuexContext, fileName: string) => {
   const response = await API.deleteFile(fileName)
   context.commit('ADD_LOG_TO_STATE', response)
 
+  if (response.success) {
+    context.dispatch('fileEditorModule/getFileNames')
+    context.dispatch('fileEditorModule/clearEditor')
+    context.dispatch('fileEditorModule/setSelectedFileName', '')
+  }
+
   if (!response.success && response.msg) {
     context.commit('SET_IS_CONSOLE_OPEN', true)
   }
-  return
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
