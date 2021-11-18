@@ -43,6 +43,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
@@ -135,7 +136,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Instantiated service collectors specified in config file
      */
-    private final Map<String,ServiceCollector> m_collectors = new HashMap<String,ServiceCollector>(4);
+    private final Map<String,ServiceCollector> m_collectors = new HashMap<>(4);
 
     /**
      * List of all CollectableService objects.
@@ -224,12 +225,10 @@ public class Collectd extends AbstractServiceDaemon implements
         // make sure the instrumentation gets initialized
         instrumentation();
         
-        instantiateCollectors();
-
-        getScheduler().schedule(0, ifScheduler());
-
-        installMessageSelectors();
-
+        instantiateCollectors().whenComplete((v, ex)->{
+            getScheduler().schedule(0, ifScheduler());
+            installMessageSelectors();
+        });
     }
 
     private void installMessageSelectors() {
@@ -1527,7 +1526,7 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_collectors.keySet();
     }
 
-    private void instantiateCollectors() {
+    private CompletableFuture<Void> instantiateCollectors() {
         LOG.debug("instantiateCollectors: Loading collectors");
 
         /*
@@ -1536,21 +1535,22 @@ public class Collectd extends AbstractServiceDaemon implements
          * new incoming events to create collectable service objects.
          */
         Collection<Collector> collectors = m_collectdConfigFactory.getCollectdConfig().getCollectors();
-        for (Collector collector : collectors) {
+        List<CompletableFuture<ServiceCollector>> list = new ArrayList<>();
+        for(Collector collector: collectors) {
             String svcName = collector.getService();
-            try {
-                LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
-                final ServiceCollector sc = m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName());
-                if (sc == null) {
-                    throw new IllegalArgumentException(String.format("No collector found with class name '%s'. Available collectors include: %s",
-                            collector.getClassName(), m_serviceCollectorRegistry.getCollectorClassNames()));
-                }
-                sc.initialize();
-                setServiceCollector(svcName, sc);
-            } catch (Throwable t) {
-                LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
-            }
+            LOG.debug("instantiateCollectors: Loading collector {}, classname {}", svcName, collector.getClassName());
+            list.add(m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName())
+                    .whenComplete((sc, ex)-> {
+                        try {
+                            sc.initialize();
+                            setServiceCollector(svcName, sc);
+                            LOG.debug("instantiateCollectors: Loading collector {} was initialized", svcName);
+                        } catch (CollectionInitializationException e) {
+                            LOG.warn("instantiateCollectors: Failed to load collector {} for service {}", collector.getClassName(), svcName, e);
+                        }
+                    }));
         }
+        return CompletableFuture.allOf(list.toArray(new CompletableFuture[0]));
     }
 
     public static String getLoggingCategory() {
