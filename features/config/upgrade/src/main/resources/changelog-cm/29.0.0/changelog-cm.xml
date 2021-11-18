@@ -26,7 +26,7 @@
 
     <changeSet author="dherdt" id="1.0-register-jmxconfig">
         <cm:registerSchema id="jmxconfig"/>
-        <cm:importSchemaFromXsd id="jmxconfig" xsdFileName="jmx-config.xsd" xsdFileHash="282f7db937dcd1914c2cf4f5abc19fbe7b86f47c1d798981289666b7debed57d" rootElement="jmx-config"/>
+        <cm:importSchemaFromXsd id="jmxconfig" xsdFileName="jmx-config.xsd" xsdFileHash="a06f6d24c15f976e94ac1a4467b5d4195d7b89dc114ff385c7ac5c4a65fad193" rootElement="jmx-config"/>
         <cm:importConfig schemaId="jmxconfig" configId="default" filePath="jmx-config.xml"/>
     </changeSet>
 
