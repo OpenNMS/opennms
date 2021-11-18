@@ -3618,7 +3618,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>3.9</version>
+        <version>5.5.2</version>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
