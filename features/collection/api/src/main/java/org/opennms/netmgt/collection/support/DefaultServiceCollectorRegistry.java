@@ -117,7 +117,7 @@ public class DefaultServiceCollectorRegistry implements ServiceCollectorRegistry
             future = new CompletableFuture<>();
             m_collectorsByClassName.put(className, future);
         }
-        return m_collectorsByClassName.get(className);
+        return future;
     }
 
     @Override
