@@ -63,6 +63,7 @@ public class FlowThresholding {
     private static final Logger LOG = LoggerFactory.getLogger(FlowThresholding.class);
 
     public static final String SERVICE_NAME = "Flow-Threshold";
+    public static final String RESOURCE_TYPE_NAME = "flowApp";
 
     private final static RrdRepository FLOW_APP_RRD_REPO = new RrdRepository();
 
@@ -110,7 +111,7 @@ public class FlowThresholding {
                                                    document.getApplication());
 
                 // Update the counter
-                final var counter = this.applicationAccumulator.computeIfAbsent(key, k->new AtomicLong(0))
+                final var counter = this.applicationAccumulator.computeIfAbsent(key, k -> new AtomicLong(0))
                                                                .addAndGet(document.getBytes());
 
                 // Apply thresholding
@@ -121,8 +122,7 @@ public class FlowThresholding {
                         InetAddressUtils.addr(source.getSourceAddress()));
 
                 final var nodeResource = new NodeLevelResource(nodeId);
-                final var ifaceResource = new InterfaceLevelResource(nodeResource, Integer.toString(key.iface));
-                final var appResource = new DeferredGenericTypeResource(nodeResource, "flow_app", document.getApplication());
+                final var appResource = new DeferredGenericTypeResource(nodeResource, RESOURCE_TYPE_NAME, document.getApplication());
 
                 final var collectionSetBuilder = new CollectionSetBuilder(collectionAgent)
                         .withCounter(appResource, "flowappxxxx", "bytes", counter);
