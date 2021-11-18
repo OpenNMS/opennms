@@ -1,0 +1,43 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+        xmlns:cxf="http://cxf.apache.org/blueprint/core"
+        xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+        http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+    <bean id="alarmRestServiceImpl" class="org.opennms.netmgt.alarmd.rest.internal.AlarmRestServiceImpl">
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="sessionUtils" ref="sessionUtils" />
+    </bean>
+    <!--
+    <service id="alarmRestService" ref="alarmRestServiceImpl" interface="org.opennms.netmgt.alarmd.rest.AlarmRestService" />
+    -->
+
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+    </cxf:bus>
+
+    <jaxrs:server id="alarmRest" address="/alarms">
+        <jaxrs:serviceBeans>
+            <ref component-id="alarmRestServiceImpl" />
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+
+</blueprint>
