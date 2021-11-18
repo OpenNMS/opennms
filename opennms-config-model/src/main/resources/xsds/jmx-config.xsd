@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        elementFormDefault="qualified">
+
+    <element name="jmx-config">
+        <annotation>
+            <documentation>
+                Configuration for JMX.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="this:mbean-server" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="mbean-server">
+        <complexType>
+            <sequence>
+                <element ref="this:parameter" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+            <attribute name="ipAddress" type="string" use="optional" default="127.0.0.1"/>
+            <attribute name="port" type="positiveInteger" use="optional" default="18980"/>
+        </complexType>
+    </element>
+
+    <element name="parameter">
+        <complexType>
+            <attribute name="key" type="string" use="required"/>
+            <attribute name="value" type="string" use="required"/>
+        </complexType>
+    </element>
+
+</schema>
