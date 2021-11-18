@@ -38,7 +38,10 @@ const addNewFile = () => {
   if (!item.isEditing) return
   item.isEditing = false
 
-  if (!newFileName.value) return
+  if (!newFileName.value) {
+    item.isHidden = true
+    return
+  }
 
   // check if file extension allowed
   const extension = getExtensionFromFilenameSafely(newFileName.value)
@@ -66,8 +69,8 @@ onMounted(() => input.value.focus())
 
 <style lang="scss">
 .new-input {
-  padding-top: 0px;
-  padding-bottom: 0px;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 
   .feather-input-wrapper-container {
     .feather-input-wrapper {
