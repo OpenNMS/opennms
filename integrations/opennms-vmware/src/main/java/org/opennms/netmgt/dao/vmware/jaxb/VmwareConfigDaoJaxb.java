@@ -63,7 +63,7 @@ public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> i
 
     @PostConstruct
     public void postConstruct() throws IOException {
-       this.loadConfig(this.getDefaultConfigId());
+        this.m_config = this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
