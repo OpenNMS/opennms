@@ -41,13 +41,13 @@ import { FeatherButton } from "@featherds/button"
 import KeyboardArrowUp from '@featherds/icon/hardware/KeyboardArrowUp'
 import KeyboardArrowDown from '@featherds/icon/hardware/KeyboardArrowDown'
 import 'ace-builds/src-noconflict/mode-text'
-import 'ace-builds/src-noconflict/theme-github'
-import 'ace-builds/src-noconflict/theme-clouds_midnight'
+import 'ace-builds/src-noconflict/theme-xcode'
+import 'ace-builds/src-noconflict/theme-dracula'
 
 const theme = computed(() => {
   const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'clouds_midnight'
-  return 'github'
+  if (theme === 'open-dark') return 'dracula'
+  return 'xcode'
 })
 
 const store = useStore()
@@ -64,6 +64,7 @@ const getLog = (reverse: boolean) => {
 
 watchEffect(() => content.value = logString.value)
 const init = (editor: any) => {
+  editor.setFontSize(15)
   editor.setOptions({ readOnly: true })
   editor.renderer.setShowGutter(false)
   editor.renderer.$cursorLayer.element.style.display = "none"

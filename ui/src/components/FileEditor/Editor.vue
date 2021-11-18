@@ -18,21 +18,23 @@
 
 <script setup lang="ts">
 import { ref, computed, watchEffect, watch } from "vue"
+import { getExtensionFromFilenameSafely } from './utils'
 import { useStore } from 'vuex'
 import { VAceEditor } from 'vue3-ace-editor'
 import Console from './Console.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-xml'
+import 'ace-builds/src-noconflict/mode-java'
 import 'ace-builds/src-noconflict/mode-properties'
-import 'ace-builds/src-noconflict/theme-github'
-import 'ace-builds/src-noconflict/theme-clouds_midnight'
+import 'ace-builds/src-noconflict/theme-xcode'
+import 'ace-builds/src-noconflict/theme-dracula'
 import workerXmlUrl from 'ace-builds/src-noconflict/worker-xml?url'
 ace.config.setModuleUrl('ace/mode/xml_worker', workerXmlUrl)
 
 const theme = computed(() => {
   const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'clouds_midnight'
-  return 'github'
+  if (theme === 'open-dark') return 'dracula'
+  return 'xcode'
 })
 
 const store = useStore()
@@ -43,13 +45,13 @@ const selectedFileName = computed(() => store.state.fileEditorModule.selectedFil
 const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
 const fileString = computed(() => store.state.fileEditorModule.file)
 const lang = computed(() => {
-  const xml = 'xml', properties = 'properties'
+  const xml = 'xml', properties = 'properties', drl = 'drl', java = 'java'
   if (selectedFileName.value) {
-    const splitSelectedFileName = selectedFileName.value.split('.')
-    const filetype = splitSelectedFileName[splitSelectedFileName.length - 1]
-    if (filetype !== xml) return properties
+    const extension = getExtensionFromFilenameSafely(selectedFileName.value)
+    if (extension === xml) return xml
+    if (extension === drl) return java
   }
-  return xml
+  return properties
 })
 
 const disableEditor = (editor: any) => {
@@ -81,6 +83,7 @@ const init = (editor: any) => {
     bindKey: { win: "Ctrl-S", "mac": "Cmd-S" },
     exec: () => store.dispatch('fileEditorModule/saveModifiedFile')
   })
+  editor.setFontSize(15)
   // disable editor on load
   disableEditor(editor)
   reactiveEditor.value = editor
