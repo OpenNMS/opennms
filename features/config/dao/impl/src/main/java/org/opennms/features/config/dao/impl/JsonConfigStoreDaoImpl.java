@@ -209,6 +209,9 @@ public class JsonConfigStoreDaoImpl implements ConfigStoreDao<JSONObject> {
         if (configData.isEmpty()) {
             throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }
+        if (configData.get().getConfigs().size() <= 1 ) {
+            throw new IllegalArgumentException("Deletion of the last config is not allowed. " + configName + ", configId " + configId);
+        }
         if (configData.get().getConfigs().remove(configId) == null) {
             throw new IllegalArgumentException("Config not found for config " + configName + ", configId " + configId);
         }

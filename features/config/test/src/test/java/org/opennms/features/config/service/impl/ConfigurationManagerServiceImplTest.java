@@ -191,6 +191,9 @@ public class ConfigurationManagerServiceImplTest {
     public void testRemoveEverything() throws Exception {
         Optional<ConfigDefinition> def = configManagerService.getRegisteredConfigDefinition(CONFIG_NAME);
         ConfigConverter converter = XsdHelper.getConverter(def.get());
+        //below extra configuration added, since it is not allowed to delete last configuration
+        configManagerService.registerConfiguration(CONFIG_NAME, CONFIG_ID + "_1", new JsonAsString("{}"));
+
         configManagerService.unregisterConfiguration(CONFIG_NAME, CONFIG_ID);
         Optional<JSONObject> json = configManagerService.getJSONConfiguration(CONFIG_NAME, CONFIG_ID);
         Assert.assertTrue("Fail to unregister config", json.isEmpty());
