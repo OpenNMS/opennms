@@ -247,7 +247,6 @@ export interface BreadCrumb {
   position?: string
 }
 
-//added by Jane
 export interface Vertice {
   tooltipText: string
   namespace: string
