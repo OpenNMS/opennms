@@ -85,8 +85,6 @@ import org.opennms.netmgt.flows.elastic.thresholding.FlowThresholding;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -116,8 +114,6 @@ import io.searchbox.client.JestClient;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
 public class ThresholdingIT {
-    private static Logger LOG = LoggerFactory.getLogger(ThresholdingIT.class);
-
     @Rule
     public final ElasticSearchRule elasticSearchRule = new ElasticSearchRule();
 
@@ -177,44 +173,8 @@ public class ThresholdingIT {
     }
 
     private FlowRepository createFlowRepository(final JestClient jestClient) throws InterruptedException {
-        final var config = new ThresholdingConfig();
-        final var group = new Group();
-        group.setName("test");
-        group.setRrdRepository("/opt/opennms/share/rrd/snmp/");
-        final var threshold = new Threshold();
-        threshold.setDescription("Test Threshold");
-        threshold.setType(ThresholdType.HIGH);
-        threshold.setDsType("flow_app");
-        threshold.setDsName("bytes");
-        threshold.setValue("4096");
-        threshold.setRearm("2048");
-        threshold.setTrigger("1");
-        group.addThreshold(threshold);
-        config.addGroup(group);
-        this.thresholdingDao.overrideConfig(config);
-
-        final var thresd = new ThreshdConfiguration();
-        final var pakkage = new Package();
-        pakkage.setName("test_package");
-        final var filter = new Filter();
-        filter.setContent("IPADDR != '0.0.0.0'");
-        pakkage.setFilter(filter);
-        final var includeRange = new IncludeRange();
-        includeRange.setBegin("0.0.0.0");
-        includeRange.setEnd("255.255.255.255");
-        pakkage.setIncludeRanges(ImmutableList.of(includeRange));
-        final var service = new Service();
-        service.setName(FlowThresholding.SERVICE_NAME);
-        service.setInterval(300000L);
-        service.setUserDefined(false);
-        service.setStatus(ServiceStatus.ON);
-        final var parameter = new Parameter();
-        parameter.setKey("thresholding-group");
-        parameter.setValue(group.getName());
-        service.addParameter(parameter);
-        pakkage.addService(service);
-        thresd.addPackage(pakkage);
-        this.threshdDao.overrideConfig(thresd);
+        this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));
+        this.threshdDao.overrideConfig(getClass().getResourceAsStream("/threshd-configuration.xml"));
 
         this.threshdDao.rebuildPackageIpListMap();
 
