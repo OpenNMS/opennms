@@ -558,6 +558,7 @@ workflows:
                 - /^merge-foundation.*/
       - smoke-test-core:
           requires:
+            - tarball-assembly
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
@@ -574,8 +575,9 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-flaky:
           requires:
-            - meridian-rpm-build
             - tarball-assembly
+            - meridian-rpm-build
+            - minion-rpm-build
             - sentinel-rpm-build
           filters:
             branches:
@@ -589,6 +591,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minion:
           requires:
+            - tarball-assembly
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
@@ -605,6 +608,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-sentinel:
           requires:
+            - tarball-assembly
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
@@ -621,6 +625,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minimal:
           requires:
+            - tarball-assembly
             - meridian-rpm-build
             - minion-rpm-build
             - sentinel-rpm-build
@@ -636,9 +641,17 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-#      - horizon-publish-oci:
+#      - meridian-publish-oci:
 #          requires:
-#            - horizon-rpm-build
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - integration-test
+#            - smoke-test-core
+#            - smoke-test-flaky
+#            - smoke-test-minion
+#            - smoke-test-minimal
+#            - smoke-test-sentinel
 #          filters:
 #            branches:
 #              only:
@@ -647,7 +660,15 @@ workflows:
 #                - /^release-.*/
 #      - minion-publish-oci:
 #          requires:
-#            - minion-rpm-build
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - integration-test
+#            - smoke-test-core
+#            - smoke-test-flaky
+#            - smoke-test-minion
+#            - smoke-test-minimal
+#            - smoke-test-sentinel
 #          filters:
 #            branches:
 #              only:
@@ -656,7 +677,15 @@ workflows:
 #                - /^release-.*/
 #      - sentinel-publish-oci:
 #          requires:
-#            - sentinel-rpm-build
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - integration-test
+#            - smoke-test-core
+#            - smoke-test-flaky
+#            - smoke-test-minion
+#            - smoke-test-minimal
+#            - smoke-test-sentinel
 #          filters:
 #            branches:
 #              only:
@@ -665,7 +694,7 @@ workflows:
 #                - /^release-.*/
 #      # These don't actually require `integration-test` but we shouldn't bother
 #      # spending cycles unless everything else passed
-#      - horizon-deb-build:
+#      - meridian-deb-build:
 #          requires:
 #            - integration-test
 #          filters:
@@ -708,15 +737,15 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - horizon-deb-build
+#            - meridian-deb-build
 #            - minion-deb-build
 #            - sentinel-deb-build
+#            - integration-test
 #            - smoke-test-core
 #            - smoke-test-flaky
 #            - smoke-test-minion
-#            - smoke-test-sentinel
 #            - smoke-test-minimal
-#            - integration-test
+#            - smoke-test-sentinel
 #          filters:
 #            branches:
 #              only: << parameters.main_branch >>
@@ -732,13 +761,15 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - horizon-deb-build
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - integration-test
 #            - smoke-test-core
 #            - smoke-test-flaky
 #            - smoke-test-minion
-#            - smoke-test-sentinel
 #            - smoke-test-minimal
-#            - integration-test
+#            - smoke-test-sentinel
 #          filters:
 #            branches:
 #              only: /^foundation.*/
@@ -750,7 +781,7 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - horizon-deb-build
+#            - meridian-deb-build
 #            - smoke-test-core
 #            - smoke-test-flaky
 #            - smoke-test-minion
@@ -768,12 +799,12 @@ workflows:
 #            - meridian-deb-build
 #            - minion-deb-build
 #            - sentinel-deb-build
+            - integration-test
             - smoke-test-core
             - smoke-test-flaky
             - smoke-test-minion
-            - smoke-test-sentinel
             - smoke-test-minimal
-            - integration-test
+            - smoke-test-sentinel
           filters:
             branches:
               only:
