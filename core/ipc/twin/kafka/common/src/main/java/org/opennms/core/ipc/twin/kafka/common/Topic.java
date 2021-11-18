@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.twin.kafka.common;
 
+import org.opennms.core.utils.SystemInfoUtils;
+
 import java.util.Objects;
 
 public class Topic {
@@ -36,19 +38,20 @@ public class Topic {
     private final static String REQUEST = "request";
     private final static String RESPONSE = "response";
 
-    private Topic() {}
+    private Topic() {
+    }
 
     public static String request() {
-        return String.format("%s.%s", Topic.PREFIX, Topic.REQUEST);
+        return String.format("%s.%s.%s", SystemInfoUtils.getInstanceId(), Topic.PREFIX, Topic.REQUEST);
     }
 
     public static String responseGlobal() {
-        return String.format("%s.%s", Topic.PREFIX, Topic.RESPONSE);
+        return String.format("%s.%s.%s", SystemInfoUtils.getInstanceId(), Topic.PREFIX, Topic.RESPONSE);
     }
 
     public static String responseForLocation(final String location) {
         Objects.requireNonNull(location);
 
-        return String.format("%s.%s.%s", Topic.PREFIX, Topic.RESPONSE, location);
+        return String.format("%s.%s.%s.%s", SystemInfoUtils.getInstanceId(), Topic.PREFIX, Topic.RESPONSE, location);
     }
 }

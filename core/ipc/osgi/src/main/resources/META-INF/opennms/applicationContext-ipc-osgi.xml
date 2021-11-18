@@ -20,9 +20,18 @@
   <bean id="osgiTwinPublisher" class="org.opennms.core.ipc.twin.osgi.OsgiTwinPublisher" primary="true">
   </bean>
 
-  <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl"/>
+  <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+  <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+    <constructor-arg ref="identity"/>
+  </bean>
 
   <onmsgi:service  interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <onmsgi:service  interface="org.opennms.core.ipc.twin.api.TwinSubscriber" ref="localTwinSubscriber">
     <onmsgi:service-properties>
       <entry key="registration.export" value="true" />
     </onmsgi:service-properties>
