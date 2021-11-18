@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.jmx;
+package org.opennms.netmgt.dao.jmx.cm;
 
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.jmx.JmxConfig;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 
 /**
  * Implementation for JMX config DAO class using configuration manager.
