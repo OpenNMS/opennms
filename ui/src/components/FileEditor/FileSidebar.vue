@@ -1,7 +1,11 @@
 <template>
   <Search />
-  <div class="file-sidebar">
+  <div class="sidebar-relative-container">
     <div class="file-tools">
+      <!-- <FeatherButton class="btn" icon="Scroll to selected file" @click="scrollToSelectedFile">
+        <FeatherIcon :icon="Wifi" />
+      </FeatherButton> -->
+
       <FeatherButton
         v-if="changedFilesOnly"
         class="btn"
@@ -20,9 +24,11 @@
         <FeatherIcon :icon="UnfoldLess" />
       </FeatherButton>
     </div>
-    <ul>
-      <FileTreeItem class="pointer" :item="treeData" />
-    </ul>
+    <div class="file-sidebar">
+      <ul>
+        <FileTreeItem class="pointer" :item="treeData" />
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -35,6 +41,7 @@ import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from "@featherds/button"
 import UnfoldLess from '@featherds/icon/navigation/UnfoldLess'
 import UnfoldMore from '@featherds/icon/navigation/UnfoldMore'
+import Wifi from '@featherds/icon/notification/Wifi'
 
 const store = useStore()
 const changedFilesOnly = ref(false)
@@ -44,39 +51,52 @@ const getFles = (changedOnly: boolean) => {
   store.dispatch('fileEditorModule/getFileNames')
   changedFilesOnly.value = changedOnly
 }
+const scrollToSelectedFile = () => {
+  const selected = document.getElementById("selected")
+  if (selected) {
+    selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 ul {
   padding-left: 0px;
+  margin-top: 5px;
 }
 p {
   margin: 0px;
   padding: 5px;
   padding-left: 10px;
 }
-.file-sidebar {
-  overflow-y: scroll;
-  overflow-x: hidden;
-  height: calc(100vh - 182px);
-  word-break: break-all;
-  border: 1px solid var(--feather-border-on-surface);
-}
-.file-tools {
-  display: block;
-  height: 30px;
-  background: var(--feather-shade-4);
 
-  .btn {
-    margin: 0px;
-    float: right;
-    height: 25px !important;
-    width: 25px !important;
-    min-width: 25px !important;
-    margin-right: 5px;
-    margin-top: 2px;
-    svg {
-      font-size: 20px !important;
+.sidebar-relative-container {
+  position: relative;
+
+  .file-sidebar {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(100vh - 212px);
+    word-break: break-all;
+    border: 1px solid var(--feather-border-on-surface);
+  }
+  .file-tools {
+    position: sticky;
+    width: 100%;
+    height: 30px;
+    background: var(--feather-shade-4);
+
+    .btn {
+      margin: 0px;
+      float: right;
+      height: 25px !important;
+      width: 25px !important;
+      min-width: 25px !important;
+      margin-right: 5px;
+      margin-top: 2px;
+      svg {
+        font-size: 20px !important;
+      }
     }
   }
 }

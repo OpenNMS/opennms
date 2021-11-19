@@ -6,7 +6,6 @@
     @blur="addNewFile"
     @keyup.enter="addNewFile"
     v-model="newFileName"
-    :error="fileNameError"
   />
 </template>
 
@@ -20,7 +19,6 @@ import { getExtensionFromFilenameSafely } from './utils'
 const store = useStore()
 const input = ref()
 const newFileName = ref('')
-const fileNameError = ref('')
 const allowedFileExtensions = computed(() => store.state.fileEditorModule.allowedFileExtensions)
 
 const props = defineProps({
@@ -32,9 +30,6 @@ const props = defineProps({
 const { item } = props
 
 const addNewFile = () => {
-  // clear any previous errors
-  fileNameError.value = ''
-
   if (!item.isEditing) return
   item.isEditing = false
 
@@ -46,22 +41,25 @@ const addNewFile = () => {
   // check if file extension allowed
   const extension = getExtensionFromFilenameSafely(newFileName.value)
   if (!allowedFileExtensions.value.includes(extension)) {
-    fileNameError.value = 'Unsupported file extension.'
-    item.isEditing = true // leave editing on
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: ( ${newFileName.value} ) has an unsupported file extension.`})
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File extensions include: ${allowedFileExtensions.value}`})
+    store.dispatch('fileEditorModule/setIsConsoleOpen', true)
+    item.isHidden = true
+    return
   }
 
   const fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
 
-  if (!item.isEditing) {
-    // set newly created file as selected
-    store.dispatch('fileEditorModule/setSelectedFileName', fullPath)
-    // clear editor contents
-    store.dispatch('fileEditorModule/clearEditor')
-    // update vuex store with new file
-    store.dispatch('fileEditorModule/addNewFileToState', fullPath)
-    // update the search input with the new file name
-    store.dispatch('fileEditorModule/setSearchValue', newFileName.value)
-  }
+  // save to list of unsaved files, used when deleting before save
+  store.dispatch('fileEditorModule/addFileToUnsavedFilesList', fullPath)
+  // set this new file as selected
+  store.dispatch('fileEditorModule/setSelectedFileName', fullPath)
+  // clear editor contents
+  store.dispatch('fileEditorModule/clearEditor')
+  // update vuex store with new file
+  store.dispatch('fileEditorModule/addNewFileToState', fullPath)
+  // update the search input with the new file name
+  store.dispatch('fileEditorModule/setSearchValue', newFileName.value)
 }
 
 onMounted(() => input.value.focus())

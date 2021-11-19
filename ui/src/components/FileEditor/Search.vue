@@ -1,7 +1,7 @@
 <template>
   <div class="search-bar">
     <div class="search">
-      <FeatherInput label="Search etc" :modelValue="searchValue"  @update:modelValue="search" />
+      <FeatherInput label="Search etc" :modelValue="searchValue" @update:modelValue="search" />
     </div>
     <div class="save">
       <FeatherButton :disabled="disableBtn" primary @click="save">Save</FeatherButton>

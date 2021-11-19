@@ -26,6 +26,11 @@ const SAVE_NEW_FILE_TO_STATE = (state: State, newFilePath: string) => {
   SAVE_FOLDER_FILE_STRUCTURE(state, state.fileNames)
 }
 
+const REMOVE_UNSAVED_FILE_FROM_STATE = (state: State, newFilePath: string) => {
+  state.fileNames = state.fileNames.filter(path => path !== newFilePath)
+  SAVE_FOLDER_FILE_STRUCTURE(state, state.fileNames)
+}
+
 const SAVE_FILE_TO_STATE = (state: State, file: string) => {
   state.file = file
 }
@@ -90,6 +95,14 @@ const SET_FILE_TO_DELETE = (state: State, fileToDelete: IFile | null) => {
   state.fileToDelete = fileToDelete
 }
 
+const ADD_TO_UNSAVED_FILES_LIST = (state: State, unsavedFile: string) => {
+  state.unsavedFiles = [...state.unsavedFiles, unsavedFile]
+}
+
+const REMOVE_FROM_UNSAVED_FILES_LIST = (state: State, unsavedFile: string) => {
+  state.unsavedFiles = state.unsavedFiles.filter(path => path !== unsavedFile)
+}
+
 export default {
   CLEAR_LOGS,
   CLEAR_EDITOR,
@@ -103,10 +116,13 @@ export default {
   SAVE_SNIPPETS_TO_STATE,
   SAVE_CHANGED_FILES_ONLY,
   SAVE_FILE_NAMES_TO_STATE,
+  ADD_TO_UNSAVED_FILES_LIST,
   SAVE_MODIFIED_FILE_STRING,
   SAVE_FOLDER_FILE_STRUCTURE,
   SAVE_SEARCH_VALUE_TO_STATE,
   SAVE_FILE_EXTENSIONS_TO_STATE,
+  REMOVE_UNSAVED_FILE_FROM_STATE,
+  REMOVE_FROM_UNSAVED_FILES_LIST,
   SAVE_SELECTED_FILE_NAME_TO_STATE,
   SAVE_IS_CONTENT_MODIFIED_TO_STATE
 }

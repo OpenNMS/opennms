@@ -30,7 +30,7 @@ onMounted(() => store.dispatch('logsModule/getLogs'))
 .card {
   @include elevation(2);
   background: var(--feather-surface);
-  margin: 15px;
+  margin: 14px;
   padding: 15px;
   position: relative;
 }

@@ -1,6 +1,7 @@
 <template>
   <li
     class="pointer"
+    :id="item.fullPath === selectedFile ? 'selected' : ''"
     :class="[{ hidden: item.isHidden }, { selected: !isFolder && !isEditing && item.fullPath === selectedFile }]"
     @click="!isFolder && item.fullPath ? getFile(item.fullPath) : ''"
   >

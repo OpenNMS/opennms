@@ -1,5 +1,5 @@
 import API from "@/services"
-import { VuexContext } from '@/types'
+import { FileEditorResponseLog, VuexContext } from '@/types'
 import { IFile, State } from './state'
 
 interface ContextWithState extends VuexContext {
@@ -31,7 +31,29 @@ const getFile = async (context: VuexContext, fileName: string) => {
   context.commit('SAVE_SNIPPETS_TO_STATE', snippets)
 }
 
-const deleteFile = async (context: VuexContext, fileName: string) => {
+const deleteFile = async (context: ContextWithState, fileName: string) => {
+  // runs after delete
+  const clearSearch = () => {
+    // clear the search if it matches the deleted file
+    const searchValue = context.state.searchValue.toLowerCase()
+    const actualFileName = fileName.split('/').pop()?.toLowerCase()
+    if (searchValue == actualFileName) {
+      context.dispatch('setSearchValue', '')
+    }
+  }
+
+  if (context.state.unsavedFiles.includes(fileName)) {
+    // file not in DB, just delete from state
+    context.commit('REMOVE_UNSAVED_FILE_FROM_STATE', fileName)
+    context.commit('REMOVE_FROM_UNSAVED_FILES_LIST', fileName)
+    context.dispatch('clearEditor')
+    context.dispatch('setSelectedFileName', '')
+    context.dispatch('setFileToDelete', null) // closes confirmation modal
+
+    clearSearch()
+    return
+  }
+
   const response = await API.deleteFile(fileName)
   context.commit('ADD_LOG_TO_STATE', response)
 
@@ -39,13 +61,14 @@ const deleteFile = async (context: VuexContext, fileName: string) => {
     context.dispatch('getFileNames')
     context.dispatch('clearEditor')
     context.dispatch('setSelectedFileName', '')
+    clearSearch()
   }
 
   if (!response.success && response.msg) {
     context.commit('SET_IS_CONSOLE_OPEN', true)
   }
 
-  context.dispatch('setFileToDelete', null)
+  context.dispatch('setFileToDelete', null)  // closes confirmation modal
 }
 
 const saveModifiedFile = async (context: ContextWithState) => {
@@ -68,6 +91,7 @@ const saveModifiedFile = async (context: ContextWithState) => {
   if (response.success) {
     context.commit('SAVE_FILE_TO_STATE', fileString)
     context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
+    context.commit('REMOVE_FROM_UNSAVED_FILES_LIST', filename)
   } else {
     if (response.msg) context.commit('SET_IS_CONSOLE_OPEN', true)
   }
@@ -105,7 +129,7 @@ const triggerFileReset = async (context: VuexContext) => {
   context.commit('TRIGGER_FILE_RESET')
 }
 
-const addLog = (context: VuexContext, log: string) => {
+const addLog = (context: VuexContext, log: FileEditorResponseLog) => {
   context.commit('ADD_LOG_TO_STATE', log)
 }
 
@@ -123,6 +147,10 @@ const setIsHelpOpen = (context: VuexContext, isOpen: boolean) => {
 
 const setFileToDelete = (context: VuexContext, file: IFile | null) => {
   context.commit('SET_FILE_TO_DELETE', file)
+}
+
+const addFileToUnsavedFilesList = (context: VuexContext, unsavedFile: string) => {
+  context.commit('ADD_TO_UNSAVED_FILES_LIST', unsavedFile)
 }
 
 export default {
@@ -143,5 +171,6 @@ export default {
   getFileExtensions,
   deleteFile,
   setChangedFilesOnly,
-  setFileToDelete
+  setFileToDelete,
+  addFileToUnsavedFilesList
 }

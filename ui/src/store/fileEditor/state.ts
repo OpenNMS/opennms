@@ -23,6 +23,7 @@ export interface State {
   allowedFileExtensions: string[]
   changedFilesOnly: boolean
   fileToDelete: IFile | null
+  unsavedFiles: string[]
 }
 
 const state: State = {
@@ -39,7 +40,8 @@ const state: State = {
   filesInFolders: {} as IFile,
   allowedFileExtensions: [],
   changedFilesOnly: false,
-  fileToDelete: null
+  fileToDelete: null,
+  unsavedFiles: []
 }
 
 export default state

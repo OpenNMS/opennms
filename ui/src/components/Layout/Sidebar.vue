@@ -19,7 +19,7 @@ const isAdmin = computed(() => store.getters['authModule/isAdmin'])
     
 <style lang="scss">
 .sidebar {
-  height: 100vh;
+  height: calc(100vh - 60px);
   width: 230px;
   position: relative;
   float: left;
