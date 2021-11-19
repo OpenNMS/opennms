@@ -39,7 +39,7 @@ If you simply type `asset-topology:create`, a default topology with providerId a
 
 | opennms:asset-topo-regenerate
 | Regenerates the graphs for the given asset topology definition.
-| -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset)
+| -i, --providerId : Unique providerId of asset topology to regenerate (Default: asset).
 
 | opennms:asset-topo-regenerateall
 | Best-effort regeneration of all asset topologies.
