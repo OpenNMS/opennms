@@ -1,7 +1,7 @@
 [[node-filtering]]
 == Node filtering
 
-In many cases, it is desirable to control which nodes are included or excluded from a topology.
+In many cases, it is desirable to control which nodes a topology includes or excludes.
 For instance, it is useful to be able to generate customized topologies for specific customers that include only regions/buildings, and so on, relevant to their filtered node set.
 To this end, it is possible to define a node filter that chooses which nodes are included in a generated topology.
 
