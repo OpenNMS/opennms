@@ -3,7 +3,7 @@
 After installing the topology and refreshing your screen, you should see a new topology display option in the {page-component-title} topology page.
 The label field provides the displayed name of this topology.
 
-The label field does not need to be the same as the providerId that the ReST API uses for the installation or removal of a topology.
+The label field does not need to be the same as the providerId that the REST API uses for the installation or removal of a topology.
 However, the label field must be unique across all installed topologies.
 
 It is possible to have several topologies installed that have been generated using different configurations.
