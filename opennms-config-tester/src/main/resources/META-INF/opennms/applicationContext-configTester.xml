@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
+<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" 
-       xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="
-           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd"
        default-lazy-init="true">
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -51,7 +46,10 @@
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
+
+
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
+
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
@@ -240,9 +238,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/jdbc-datacollection-config.xml"/>
   </bean>
 
-  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
-    <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
-  </bean>
+  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoCm"/>
 
   <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
 

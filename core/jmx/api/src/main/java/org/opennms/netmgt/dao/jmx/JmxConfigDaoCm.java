@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2021 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,46 +25,39 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.netmgt.dao.jmx;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 
 /**
- * Implementation for config dao class.
+ * Implementation for JMX config DAO class using configuration manager.
  *
- * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
+ * @author Dmitri Herdt <dmitri@herdt.online>
  */
-public class JmxConfigDaoJaxb extends AbstractJaxbConfigDao<JmxConfig, JmxConfig> implements JmxConfigDao {
-    /**
-     * Default constructor
-     */
-    public JmxConfigDaoJaxb() {
-        super(JmxConfig.class, "Jmx Configuration");
+public class JmxConfigDaoCm extends AbstractCmJaxbConfigDao<JmxConfig> implements JmxConfigDao {
+    
+    private static final String CONFIG_NAME = "jmx";
+    private static final String DEFAULT_CONFIG_ID = "default";
+
+    public JmxConfigDaoCm() {
+        super(JmxConfig.class, "JMX Configuration");
     }
 
-    /**
-     * Returns the loaded config object.
-     *
-     * @return the current config object
-     */
+
     @Override
     public JmxConfig getConfig() {
-        if (getContainer() != null) {
-            return getContainer().getObject();
-        }
-        return null;
+        return this.getConfig(this.getDefaultConfigId());
     }
 
-    /**
-     * Used to transform the config object to a custom representation. This method is not modified in this class, it just
-     * returns the config object itself.
-     *
-     * @param jaxbConfig a config object.
-     * @return a custom object
-     */
     @Override
-    public JmxConfig translateConfig(JmxConfig jaxbConfig) {
-        return jaxbConfig;
+    protected String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    protected String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
     }
 }
