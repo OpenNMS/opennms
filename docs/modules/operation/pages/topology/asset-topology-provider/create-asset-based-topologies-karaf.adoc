@@ -23,7 +23,7 @@ The following commands are available
 -l, --label : Asset topology label (shows in topology menu) (Default: asset) +
 -i, --providerId : Unique providerId of asset topology (Default: Asset Topology Provider) +
 -f, --filter : Optional node filter (Default: empty filter; in other words, allow all nodes) +
--a, --assetLayers : Comma-separated list of asset layers (Default: asset-region,asset-building,asset-rack) +
+-a, --assetLayers : Comma-separated list of asset layers (Default: asset-region, asset-building, asset-rack) +
 -p, --preferredLayout : Preferred Layout (Default: Grid Layout) +
 -b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT) +
 
