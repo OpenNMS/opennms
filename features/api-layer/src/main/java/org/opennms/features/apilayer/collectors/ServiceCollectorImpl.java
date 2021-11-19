@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.collectors;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +96,10 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
 
     @Override
     public RrdRepository getRrdRepository(String collectionName) {
-        return null;
+        String path = System.getProperty("opennms.home")+ ResourcePath.get("share", "rrd" + collectionName.toLowerCase());
+        final RrdRepository rrdRepository = new RrdRepository();
+        rrdRepository.setRrdBaseDir(new File(path));
+        return rrdRepository;
     }
 
     @Override

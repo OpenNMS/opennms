@@ -1027,32 +1027,30 @@ public class Collectd extends AbstractServiceDaemon implements
     private void rebuildScheduler() {
         // Register new collectors if necessary
         Set<String> configuredCollectors = new HashSet<>();
+        List<CompletableFuture<ServiceCollector>> futureList = new ArrayList<>();
         for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
             String svcName = collector.getService();
             configuredCollectors.add(svcName);
             if (getServiceCollector(svcName) == null) {
-                try {
-                    LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
-                    Class<?> cc = Class.forName(collector.getClassName());
-                    ServiceCollector sc = (ServiceCollector) cc.newInstance();
-                    sc.initialize();
-                    setServiceCollector(svcName, sc);
-                } catch (Throwable t) {
-                    LOG.warn("rebuildScheduler: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
-                }
+                LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
+                futureList.add(m_serviceCollectorRegistry.getCollectorByClassName(collector.getClassName())
+                        .whenComplete((sc, ex) -> {
+                            try {
+                                sc.initialize();
+                                setServiceCollector(svcName, sc);
+                            } catch (Throwable t) {
+                                LOG.warn("rebuildScheduler: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
+                            }
+                        }));
             }
         }
+        CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
         // Removing unused collectors if necessary
-        List<String> blackList = new ArrayList<>();
-        for (String collectorName : getCollectorNames()) {
-            if (!configuredCollectors.contains(collectorName)) {
-                blackList.add(collectorName);
-            }
-        }
-        for (String collectorName : blackList) {
-            LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", collectorName);
-            m_collectors.remove(collectorName);
-        }
+        getCollectorNames().stream().filter(name->!configuredCollectors.contains(name))
+                .forEach(name ->{
+                    LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", name);
+                    m_collectors.remove(name);
+                });
         // Recreating all Collectable Services (using the nodeID list populated at the beginning)
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
         m_filterDao.flushActiveIpAddressListCache();
