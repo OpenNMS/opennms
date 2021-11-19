@@ -43,7 +43,7 @@
   </div>
 </template>
 <script setup lang ="ts">
-import { computed, watch, ref, nextTick } from "vue";
+import { computed, ref, nextTick } from "vue";
 import "leaflet/dist/leaflet.css";
 import {
   LMap,

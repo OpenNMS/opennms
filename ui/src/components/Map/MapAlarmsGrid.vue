@@ -74,7 +74,6 @@ let gridColumnApi: any = ref({});
 function onGridReady(params: any) {
   gridApi = params.api
   gridColumnApi = params.columnApi;
-  // sizeToFit()
   autoSizeAll(false);
 }
 
@@ -182,7 +181,7 @@ function clearFilters() {
 }
 
 function applyFilters() {
-  let nodesLabel: any = [];
+  let nodesLabel: string[] = [];
   gridApi.forEachNodeAfterFilter((node: any) => {
     nodesLabel.push(node.data.node);
   });
