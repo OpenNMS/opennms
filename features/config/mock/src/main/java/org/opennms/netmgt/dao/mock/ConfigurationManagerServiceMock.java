@@ -107,7 +107,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
     }
 
     @Override
-    public String getJSONStrConfiguration(String configName, String configId) throws IOException {
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException {
         return null;
     }
 

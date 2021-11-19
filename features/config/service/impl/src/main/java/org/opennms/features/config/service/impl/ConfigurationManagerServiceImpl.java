@@ -38,11 +38,11 @@ import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.OpenAPIConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -147,6 +147,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
                     "Configuration with service=%s, id=%s is already registered, update instead.", configName, configId));
         }
 
+
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(service={}, id={}, config={});", configName, configId, configObject);
     }
@@ -165,16 +166,29 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
 
     @Override
     public Optional<JSONObject> getJSONConfiguration(final String configName, final String configId) throws IOException {
-        return configStoreDao.getConfig(configName, configId);
+        Optional<JSONObject> configObj = configStoreDao.getConfig(configName, configId);
+        if (configObj.isEmpty()) {
+            return configObj;
+        }
+        // try to fill default value or empty signature
+        Optional<ConfigDefinition> def = configStoreDao.getConfigDefinition(configName);
+        if (def.isPresent()) {
+            String schemaName = def.get().getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+            if (schemaName == null) { // assume if top element name is null, the top schema name is configName
+                schemaName = configName;
+            }
+            OpenAPIConfigHelper.fillWithDefaultValue(def.get().getSchema(), schemaName, configObj.get());
+        }
+        return configObj;
     }
 
     @Override
-    public String getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
+    public Optional<String> getJSONStrConfiguration(String configName, String configId) throws IOException, IllegalArgumentException {
         Optional<JSONObject> config = this.getJSONConfiguration(configName, configId);
         if (config.isEmpty()) {
-            throw new IllegalArgumentException(configName + ":" + configId);
+            return Optional.empty();
         }
-        return config.get().toString();
+        return Optional.of(config.get().toString());
     }
 
     @Override
