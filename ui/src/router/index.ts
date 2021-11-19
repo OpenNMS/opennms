@@ -1,12 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Nodes from '@/containers/Nodes.vue'
-import NodeDetails from '@/containers/NodeDetails.vue'
-import Inventory from '@/containers/Inventory.vue'
-import FileEditor from '@/containers/FileEditor.vue'
-import Logs from '@/containers/Logs.vue'
-import StepAdd from '@/components/Inventory/StepAdd.vue'
-import StepSchedule from '@/components/Inventory/StepSchedule.vue'
-import StepConfigure from '@/components/Inventory/StepConfigure.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -14,60 +6,41 @@ const router = createRouter({
     {
       path: '/',
       name: 'nodes',
-      component: Nodes
+      component: () => import('@/containers/Nodes.vue')
     },
     {
       path: '/node/:id',
       name: 'Node Details',
-      component: NodeDetails
+      component: () => import('@/containers/NodeDetails.vue')
     },
     {
       path: '/inventory',
       name: 'Inventory',
-      component: Inventory,
+      component: () => import('@/containers/Inventory.vue'),
       children: [
         {
           path: '',
-          component: StepAdd
+          component: () => import('@/components/Inventory/StepAdd.vue')
         },
         {
           path: 'configure',
-          component: StepConfigure
+          component: () => import('@/components/Inventory/StepConfigure.vue')
         },
         {
           path: 'schedule',
-          component: StepSchedule
-        }
-      ]
-    },
-    {
-      path: '/inventory',
-      name: 'Inventory',
-      component: Inventory,
-      children: [
-        {
-          path: '',
-          component: StepAdd
-        },
-        {
-          path: 'configure',
-          component: StepConfigure
-        },
-        {
-          path: 'schedule',
-          component: StepSchedule
+          component: () => import('@/components/Inventory/StepSchedule.vue')
         }
       ]
     },
     {
       path: '/file-editor',
       name: 'FileEditor',
-      component: FileEditor
+      component: () => import('@/containers/FileEditor.vue')
     },
     {
       path: '/logs',
       name: 'Logs',
-      component: Logs
+      component: () => import('@/containers/Logs.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
