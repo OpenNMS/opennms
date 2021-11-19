@@ -51,6 +51,7 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>XmpMonitor class.</p>
@@ -59,7 +60,8 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public class XmpMonitor extends AbstractServiceMonitor {
-
+    @Autowired
+    XmpConfigFactory xmpConfigFactory;
     /**
      * The default port to use for XMP
      */
@@ -142,7 +144,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = svc.getAddress();
 
-        XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
+        XmpConfig protoConfig = xmpConfigFactory.getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
         // TODO how to apply timeout and retry to XMP operations?

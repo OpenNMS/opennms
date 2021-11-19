@@ -56,16 +56,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 
-public class XmpConfigFactory {
+import javax.annotation.PostConstruct;
+
+public class XmpConfigFactory extends AbstractCmJaxbConfigDao<XmpConfig> {
 
     /* class variables and methods *********************** */
-    private static XmpConfigFactory instance;
+    //private static XmpConfigFactory instance;
     private XmpConfig config = null;
-
+    private static final String CONFIG_NAME = "xmp";
+    private static final String DEFAULT_CONFIG_ID = "default";
     // initialize our class for the creation of instances
     /**
      * <p>init</p>
@@ -73,15 +78,20 @@ public class XmpConfigFactory {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public static void init() throws IOException, FileNotFoundException 
+    /*public static void init() throws IOException, FileNotFoundException
     {
-
         if (instance == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMP_CONFIG_FILE_NAME);
+            //File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.XMP_CONFIG_FILE_NAME);
             // create instance of ourselves and that causes
             // config file to be read and XmpConfig to be instantiated
-            instance = new XmpConfigFactory(cfgFile.getPath());
+            instance = BeanUtils.getBean("commonContext", "xmpFactory", XmpConfigFactory.class);
+
         }
+    }*/
+
+    @PostConstruct
+    public void postConstruct() throws IOException {
+        config = this.loadConfig(this.getDefaultConfigId());
     }
 
     /**
@@ -96,27 +106,31 @@ public class XmpConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory} object.
      */
-    public static XmpConfigFactory getInstance() { return instance; }
+   //public static XmpConfigFactory getInstance() { return instance; }
 
-    public static void setInstance(XmpConfigFactory instance) {
+    /*public static void setInstance(XmpConfigFactory instance) {
         XmpConfigFactory.instance = instance;
-    }
+    }*/
 
     /* instance variables ******************************** */
 
     /* constructors  ************************************* */
 
+    public XmpConfigFactory() throws IOException
+    {
+        super(XmpConfig.class, "xmp Configuration");
+    }
     /**
      * <p>Constructor for XmpConfigFactory.</p>
      *
      * @param configFile a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public XmpConfigFactory(String configFile) 
-    throws IOException 
+    public XmpConfigFactory(XmpConfig config) throws IOException
     {
-        config = JaxbUtils.unmarshal(XmpConfig.class, configFile);
-        return; 
+        //config = JaxbUtils.unmarshal(XmpConfig.class, configFile);
+        super(XmpConfig.class, "xmp Configuration");
+        this.config = config;
     }
 
     /**
@@ -125,11 +139,21 @@ public class XmpConfigFactory {
      * @param rdr a {@link java.io.Reader} object.
      * @throws java.io.IOException if any.
      */
-    public XmpConfigFactory(Reader rdr) 
-    throws IOException 
+    /*public XmpConfigFactory(Reader rdr) throws IOException
     {
         config = (XmpConfig)JaxbUtils.unmarshal(XmpConfig.class,rdr);
+    }*/
+
+    @Override
+    public String getConfigName() {
+        return CONFIG_NAME;
     }
+
+    @Override
+    public String getDefaultConfigId() {
+        return DEFAULT_CONFIG_ID;
+    }
+
 
     /* private methods *********************************** */
 

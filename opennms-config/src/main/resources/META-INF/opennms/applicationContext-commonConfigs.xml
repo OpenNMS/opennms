@@ -89,6 +89,8 @@
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
 
+  <bean id="xmpFactory" class="org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory"/>
+
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>XmpPeerFactory class.</p>
@@ -45,6 +46,8 @@ import org.opennms.netmgt.config.xmpConfig.XmpConfig;
  */
 public class XmpPeerFactory {
 
+    @Autowired
+    XmpConfigFactory xmpConfigFactory;
     /**
      * The singleton instance of this factory
      */
@@ -80,8 +83,8 @@ public class XmpPeerFactory {
         }
         
         // Someday we might do something substantial here
-        XmpConfigFactory.init();
-        m_config = XmpConfigFactory.getInstance().getXmpConfig();
+        //XmpConfigFactory.init();
+        //m_config = xmpConfigFactory.getXmpConfig();
         m_singleton = new XmpPeerFactory();
         m_loaded = true;
     }
@@ -96,7 +99,7 @@ public class XmpPeerFactory {
         m_singleton = null;
         m_loaded = false;
         
-        XmpConfigFactory.init();
+        //XmpConfigFactory.init();
         init();
     }
 
