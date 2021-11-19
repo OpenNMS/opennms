@@ -2,6 +2,30 @@
 
 = Changelog
 
+[releasenotes-changelog-29.0.1]
+
+==== Release 29.0.1
+
+Release 29.0.1 is a quick release outside of the normal schedule to address some bugs found
+in 29.0.0 mostly related to running as non-root, and Minion communication.
+
+The codename for Horizon 29.0.1 is https://wikipedia.org/wiki/$$Emu$$[_Emu_].
+
+* Kafka topics should start with OpenNMS Instance ID for Twin (Issue http://issues.opennms.org/browse/NMS-13733[NMS-13733])
+* opennms.spec file tries to find out if gid 1000 is used but doesn't actually check hat (Issue http://issues.opennms.org/browse/NMS-13734[NMS-13734])
+* Events from Hardware Inventory Provisioning Adapter and SNMP Metadata Provisioning Adapter cannot be distinguished (Issue http://issues.opennms.org/browse/NMS-13735[NMS-13735])
+* Upgrade to 29: fix-permissions script fails changing ownership (Issue http://issues.opennms.org/browse/NMS-13736[NMS-13736])
+* Minion user not authorized to read from topic OpenNMS.Twin.Sink (Issue http://issues.opennms.org/browse/NMS-13742[NMS-13742])
+* opennms-plugin-provisioning-wsman-asset missing on Debian (Issue http://issues.opennms.org/browse/NMS-13747[NMS-13747])
+* Upgrade to 29: "$RUNAS is not set" (Issue http://issues.opennms.org/browse/NMS-13748[NMS-13748])
+* SNMP Metadata XSD does not allow multiple <config> elements (Issue http://issues.opennms.org/browse/NMS-13752[NMS-13752])
+
+===== Enhancement
+
+* Support  multiple auth params for same SNMPV3 username (Issue http://issues.opennms.org/browse/NMS-13490[NMS-13490])
+* Add retry for RPC calls (Issue http://issues.opennms.org/browse/NMS-13652[NMS-13652])
+* Migrate Discovery settings from wiki into docs (Issue http://issues.opennms.org/browse/NMS-13730[NMS-13730])
+
 [[releasenotes-changelog-29.0.0]]
 
 == Release 29.0.0
