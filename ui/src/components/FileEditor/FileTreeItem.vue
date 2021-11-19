@@ -62,8 +62,10 @@ const selectedFile = computed(() => store.state.fileEditorModule.selectedFileNam
 watch(searchValue, (searchValue) => {
   // open all folders if searching
   if (searchValue) isOpen.value = true
-  // else only files folder
-  else isOpen.value = firstFolder
+  else { // else only etc folder & folder with file
+    const selectedFilePath = selectedFile.value
+    isOpen.value = firstFolder || selectedFilePath.toLowerCase().includes(props.item.name.toLowerCase())
+  }
 })
 
 const getFile = (filename: string) => store.dispatch('fileEditorModule/getFile', filename)

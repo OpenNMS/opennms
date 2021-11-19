@@ -44,8 +44,8 @@ const deleteFile = async (context: ContextWithState, fileName: string) => {
 
   if (context.state.unsavedFiles.includes(fileName)) {
     // file not in DB, just delete from state
-    context.commit('REMOVE_UNSAVED_FILE_FROM_STATE', fileName)
     context.commit('REMOVE_FROM_UNSAVED_FILES_LIST', fileName)
+    context.commit('REMOVE_UNSAVED_FILE_FROM_STATE', fileName)
     context.dispatch('clearEditor')
     context.dispatch('setSelectedFileName', '')
     context.dispatch('setFileToDelete', null) // closes confirmation modal
@@ -89,9 +89,9 @@ const saveModifiedFile = async (context: ContextWithState) => {
   context.commit('ADD_LOG_TO_STATE', response)
 
   if (response.success) {
+    context.commit('REMOVE_FROM_UNSAVED_FILES_LIST', filename)
     context.commit('SAVE_FILE_TO_STATE', fileString)
     context.commit('SAVE_IS_CONTENT_MODIFIED_TO_STATE', false)
-    context.commit('REMOVE_FROM_UNSAVED_FILES_LIST', filename)
   } else {
     if (response.msg) context.commit('SET_IS_CONSOLE_OPEN', true)
   }

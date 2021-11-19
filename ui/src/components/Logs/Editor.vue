@@ -5,7 +5,7 @@
         v-if="reverseLog"
         :disabled="!selectedLog"
         class="btn"
-        icon="Display log descending"
+        icon="Display oldest first."
         @click="getLog(false)"
       >
         <FeatherIcon :icon="KeyboardArrowDown" />
@@ -15,7 +15,7 @@
         v-if="!reverseLog"
         :disabled="!selectedLog"
         class="btn"
-        icon="Display log acending"
+        icon="Display newest first."
         @click="getLog(true)"
       >
         <FeatherIcon :icon="KeyboardArrowUp" />

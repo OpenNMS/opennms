@@ -1,6 +1,7 @@
 import { FileEditorResponseLog } from '@/types'
 import { IFile, State } from './state'
 import { filesToFolders } from '@/components/FileEditor/utils'
+import { uniq } from 'lodash'
 
 const SAVE_FILE_NAMES_TO_STATE = (state: State, fileNames: string[]) => {
   state.fileNames = fileNames
@@ -11,7 +12,8 @@ const SAVE_FILE_EXTENSIONS_TO_STATE = (state: State, extensions: string[]) => {
 }
 
 const SAVE_FOLDER_FILE_STRUCTURE = (state: State, fileNames: string[]) => {
-  const filteredFileNames = fileNames.filter((fileName) => {
+  const savedAndUnsavedFiles = uniq([...fileNames, ...state.unsavedFiles])
+  const filteredFileNames = savedAndUnsavedFiles.filter((fileName) => {
     const searchValue = state.searchValue.toLowerCase()
     const filename = fileName.toLowerCase()
     const selectedFileName = state.selectedFileName.toLowerCase()
