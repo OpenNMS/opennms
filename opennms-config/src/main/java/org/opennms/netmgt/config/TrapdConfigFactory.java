@@ -128,7 +128,8 @@ public final class TrapdConfigFactory extends AbstractCmJaxbConfigDao<TrapdConfi
      */
     public static synchronized TrapdConfigFactory getInstance() throws IOException {
         TrapdConfigFactory configFactory = BeanUtils.getBean("commonContext", "trapdConfig", TrapdConfigFactory.class);
-        configFactory.reload();
+        if(!m_loaded)
+            configFactory.reload();
         return configFactory;
     }
     
