@@ -139,7 +139,7 @@ import InputText from '../Common/InputText.vue'
 import DropDown from '../Common/DropDown.vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
-import actionsAdd from "@featherds/icon/actions/Add";
+import actionsAdd from "@featherds/icon/action/Add";
 import navigationCancel from "@featherds/icon/navigation/Cancel";
 import InputNumber from '../Common/InputNumber.vue'
 import State from './formState'

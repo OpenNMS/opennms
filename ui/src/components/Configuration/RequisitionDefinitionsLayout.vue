@@ -24,7 +24,7 @@
 import { ref } from 'vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherIcon }   from '@featherds/icon'
-import actionsAdd from "@featherds/icon/actions/Add";
+import actionsAdd from "@featherds/icon/action/Add";
 import navigationArrowBack from "@featherds/icon/navigation/ArrowBack";
 import { markRaw } from "vue";
 import DataTableDemo from '../Common/Demo/DataTableDemo.vue'

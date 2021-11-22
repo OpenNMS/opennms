@@ -22,9 +22,9 @@
   />
   <p>Input Number :: {{ showInputNumber }}</p>
   <p>FieldSet Demo</p>
-  <!-- <FeatherTextarea
+  <FeatherTextarea
     label="Fieldset Area"
-    rows="5" /> -->
+    rows="5" />
   <p>Dropdown Demo</p>
   <DropDown
     v-model="selectedCity1"
@@ -66,7 +66,7 @@ import DropDown from '../DropDown.vue'
 import TimePicker from '../TimePicker.vue'
 import { FeatherButton }   from '@featherds/button'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-//import FeatherTextarea from '@featherds/textarea'
+import {FeatherTextarea} from '@featherds/textarea'
 
 const city = ref('')
 const showInputText = ref('')
