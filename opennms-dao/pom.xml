@@ -80,6 +80,11 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.jmx</groupId>
+      <artifactId>org.opennms.core.jmx.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.config.service</groupId>
       <artifactId>org.opennms.features.config.service.api</artifactId>
       <version>${project.version}</version>
