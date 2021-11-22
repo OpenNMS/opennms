@@ -58,7 +58,6 @@ import { useStore } from "vuex";
 import { Coordinates } from "@/types";
 let leafletReady = ref(false);
 let leafletObject = ref("");
-let visible = ref(false);
 let map: any = ref();
 const store = useStore();
 let center = computed(() => {
