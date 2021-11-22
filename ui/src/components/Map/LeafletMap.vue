@@ -54,7 +54,6 @@ import {
   LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import MarkerCluster from "./MarkerCluster.vue";
-import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
 import { Coordinates } from "@/types";
 let leafletReady = ref(false);
