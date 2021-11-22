@@ -15,9 +15,14 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
+    <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" />
+    <reference id="troubleTicketProxy" interface="org.opennms.web.svclayer.TroubleTicketProxy" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+
     <bean id="alarmRestServiceImpl" class="org.opennms.netmgt.alarmd.rest.internal.AlarmRestServiceImpl">
         <property name="alarmDao" ref="alarmDao" />
+        <property name="alarmRepository" ref="alarmRepository" />
+        <property name="troubleTicketProxy" ref="troubleTicketProxy" />
         <property name="sessionUtils" ref="sessionUtils" />
     </bean>
     <!--
@@ -30,7 +35,7 @@
         </cxf:features>
     </cxf:bus>
 
-    <jaxrs:server id="alarmRest" address="/alarms">
+    <jaxrs:server id="alarmRest" address="/alarmservice">
         <jaxrs:serviceBeans>
             <ref component-id="alarmRestServiceImpl" />
         </jaxrs:serviceBeans>

@@ -415,7 +415,9 @@ feature:install cxf-jaxrs
         -->
         <!--
         bundle:install -s wrap:mvn:org.opennms/opennms-webapp-rest/30.0.0-SNAPSHOT
+        bundle:install mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.9.0
         bundle:install -s mvn:org.opennms/opennms-alarm-rest/30.0.0-SNAPSHOT
+
         -->
     </feature>
 
