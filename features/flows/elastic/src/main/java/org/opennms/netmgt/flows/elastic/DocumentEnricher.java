@@ -33,11 +33,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.opennms.core.cache.Cache;
@@ -46,15 +44,6 @@ import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.dto.CollectionSetDTO;
-import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
-import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
-import org.opennms.netmgt.collection.support.builder.PerspectiveResponseTimeResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -65,10 +54,6 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +61,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Maps;
 
 public class DocumentEnricher {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentEnricher.class);

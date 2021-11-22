@@ -31,6 +31,10 @@
             <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+            <cm:property name="flowThresholdCache.enabled" value="true"/>
+            <cm:property name="flowThresholdCache.maximumSize" value="10000"/>
+            <cm:property name="flowThresholdCache.expireAfterWrite" value="1800000"/> <!-- Drop cached sessions after 30 minutes -->
+            <cm:property name="flowThresholdCache.recordStats" value="true"/>
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action settings -->
