@@ -23,7 +23,7 @@
 | snmp-interface-poller-configuration.xml
 | Change how and when polling is performed globally or define fine-grained settings for specific packages.
 | yes
-| no
+| yes
 |===
 
 .Example reload command
