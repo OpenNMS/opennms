@@ -47,6 +47,11 @@ public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements L
     public void accept(TwinUpdate twinUpdate) {
         super.accept(twinUpdate);
     }
+
+    @Override
+    public TracerRegistry getTracerRegistry() {
+        return super.getTracerRegistry();
+    }
 }
 
 

@@ -11,13 +11,10 @@
 
     <reference id="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
 
-    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
-
     <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
           init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
         <argument ref="grpcIpcServer"/>
-        <argument ref="tracerRegistry"/>
     </bean>
 
     <service ref="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>

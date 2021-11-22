@@ -75,7 +75,14 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry) {
         this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
-        this.tracerRegistry = tracerRegistry;
+        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+        this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
+        this.tracer = this.tracerRegistry.getTracer();
+    }
+
+    public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
+        this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
+        this.tracerRegistry = localTwinSubscriber.getTracerRegistry();
         this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
         this.tracer = this.tracerRegistry.getTracer();
     }
@@ -225,8 +232,8 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
                 Span span = tracer.buildSpan(tracingOperationKey).start();
                 byte[] objInBytes = objectMapper.writeValueAsBytes(obj);
                 TwinUpdate twinUpdate = getResponseFromUpdatedObj(objInBytes, sessionKey);
-                TracingInfoCarrier.updateTracingMetadata(AbstractTwinPublisher.this.tracer, span, twinUpdate::addTracingInfo);
                 if (twinUpdate != null) {
+                    TracingInfoCarrier.updateTracingMetadata(AbstractTwinPublisher.this.tracer, span, twinUpdate::addTracingInfo);
                     // Send update to local subscriber and on sink path.
                     span.setTag(TAG_TWIN_SINK, true);
                     if (sessionKey.location != null) {

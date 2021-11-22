@@ -185,6 +185,10 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         return tracer;
     }
 
+    public TracerRegistry getTracerRegistry() {
+        return tracerRegistry;
+    }
+
     public Identity getIdentity() {
         return this.identity;
     }

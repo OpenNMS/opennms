@@ -71,8 +71,8 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             .build();
     private final ExecutorService twinRpcExecutor = Executors.newCachedThreadPool(twinRpcThreadFactory);
 
-    public GrpcTwinPublisher(LocalTwinSubscriber twinSubscriber, GrpcIpcServer grpcIpcServer, TracerRegistry tracerRegistry) {
-        super(twinSubscriber, tracerRegistry);
+    public GrpcTwinPublisher(LocalTwinSubscriber twinSubscriber, GrpcIpcServer grpcIpcServer) {
+        super(twinSubscriber);
         this.grpcIpcServer = grpcIpcServer;
     }
 

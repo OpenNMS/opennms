@@ -66,7 +66,7 @@ public class GrpcTwinIT extends AbstractTwinBrokerIT {
         TracerRegistry tracerRegistry = Mockito.mock(TracerRegistry.class);
         Mockito.when(tracerRegistry.getTracer()).thenReturn(GlobalTracer.get());
         LocalTwinSubscriber localTwinSubscriber = new LocalTwinSubscriberImpl(new MockMinionIdentity("Default"), tracerRegistry);
-        final var publisher = new GrpcTwinPublisher(localTwinSubscriber, grpcIpcServer, tracerRegistry);
+        final var publisher = new GrpcTwinPublisher(localTwinSubscriber, grpcIpcServer);
         publisher.start();
 
         return publisher;

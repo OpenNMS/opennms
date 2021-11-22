@@ -26,7 +26,7 @@
     <constructor-arg ref="tracerRegistry"/>
   </bean>
 
-  <onmsgi:service  interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
+  <onmsgi:service interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
     <onmsgi:service-properties>
       <entry key="registration.export" value="true" />
     </onmsgi:service-properties>
