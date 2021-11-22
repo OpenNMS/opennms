@@ -5,19 +5,19 @@
       <FeatherButton
         v-if="changedFilesOnly"
         class="btn"
-        icon="Show all files"
+        icon="Click to show all files."
         @click="getFles(false)"
       >
-        <FeatherIcon :icon="UnfoldMore" />
+        <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
 
       <FeatherButton
         v-if="!changedFilesOnly"
-        class="btn"
-        icon="Show modified files only"
+        class="btn unfiltered"
+        icon="Click to show modified files only."
         @click="getFles(true)"
       >
-        <FeatherIcon :icon="UnfoldLess" />
+        <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
 
       <FeatherButton
@@ -44,8 +44,7 @@ import FileTreeItem from './FileTreeItem.vue'
 import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from "@featherds/button"
-import UnfoldLess from '@featherds/icon/navigation/UnfoldLess'
-import UnfoldMore from '@featherds/icon/navigation/UnfoldMore'
+import FilterAlt from '@featherds/icon/action/FilterAlt'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
 
 const store = useStore()
@@ -96,6 +95,10 @@ const scrollToSelectedFile = () => {
       margin-top: 2px;
       svg {
         font-size: 20px !important;
+      }
+
+      &.unfiltered {
+        color: var(--feather-shade-1);
       }
     }
   }

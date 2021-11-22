@@ -20,6 +20,7 @@ const store = useStore()
 const input = ref()
 const newFileName = ref('')
 const allowedFileExtensions = computed(() => store.state.fileEditorModule.allowedFileExtensions)
+const fileNames = computed(() => store.state.fileEditorModule.fileNames)
 
 const props = defineProps({
   item: {
@@ -41,14 +42,23 @@ const addNewFile = () => {
   // check if file extension allowed
   const extension = getExtensionFromFilenameSafely(newFileName.value)
   if (!allowedFileExtensions.value.includes(extension)) {
-    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: ( ${newFileName.value} ) has an unsupported file extension.`})
-    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File extensions include: ${allowedFileExtensions.value}`})
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: ( ${newFileName.value} ) has an unsupported file extension.` })
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File extensions include: ${allowedFileExtensions.value}` })
     store.dispatch('fileEditorModule/setIsConsoleOpen', true)
     item.isHidden = true
     return
   }
 
   const fullPath = `${item.fullPath ? item.fullPath + '/' + newFileName.value : newFileName.value}`
+
+  // check if it is a duplicated file name
+  if (fileNames.value.includes(fullPath)) {
+    console.log('ran')
+    store.dispatch('fileEditorModule/addLog', { success: false, msg: `File not added: Duplicate file names are not allowed.` })
+    store.dispatch('fileEditorModule/setIsConsoleOpen', true)
+    item.isHidden = true
+    return
+  }
 
   // save to list of unsaved files, used when deleting before save
   store.dispatch('fileEditorModule/addFileToUnsavedFilesList', fullPath)
