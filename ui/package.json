@@ -35,8 +35,6 @@
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.0",
     "lodash": "^4.17.21",
-    "patch-package": "^6.4.7",
-    "postinstall-postinstall": "^2.1.0",
     "sass": "^1.37.5",
     "sass-loader": "^12.1.0",
     "splitpanes": "^3.0.6",
