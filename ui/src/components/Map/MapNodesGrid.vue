@@ -46,11 +46,11 @@ const defaultColDef = ref({
   suppressMenu: true
 })
 
-let interestedNodesID = computed(() => {
+const interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
-let rowData = ref(getGridRowDataFromInterestedNodes());
+const rowData = ref(getGridRowDataFromInterestedNodes());
 
 function getGridRowDataFromInterestedNodes() {
   return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
@@ -79,7 +79,7 @@ function onGridReady(params: any) {
 }
 
 function autoSizeAll(skipHeader: boolean) {
-  var allColumnIds: string[] = [];
+  const allColumnIds: string[] = [];
   gridColumnApi.getAllColumns().forEach(function (column: any) {
     allColumnIds.push(column.colId);
   });
@@ -102,7 +102,7 @@ function clearFilters() {
 }
 
 function confirmFilters() {
-  let ids: string[] = [];
+  const ids: string[] = [];
   gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()));
   store.dispatch("mapModule/setInterestedNodesId", ids);
 }
@@ -115,8 +115,7 @@ function rowDoubleClicked() {
   const id = gridApi.getSelectedNodes().map((node: any) => node.data)[0].id;
   const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id);
 
-  let coordinate: Coordinates;
-  coordinate = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
+  const coordinate: Coordinates = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
   store.dispatch("mapModule/setMapCenter", coordinate)
 }
 

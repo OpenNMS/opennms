@@ -11,7 +11,7 @@
         >
           <option v-for="option in alarmOptions" :value="option" :key="option">{{ option }}</option>
         </select>
-                <!-- <section>
+        <!-- <section>
           <FeatherSelect
             class="my-select"
             label="Alarm Action"
@@ -19,7 +19,7 @@
             v-model="alarmOption"
             :disabled="!hasAlarmSelected"
           ></FeatherSelect>
-        </section> -->
+        </section>-->
         <feather-button primary @click="clearFilters()">Clear Filters</feather-button>
         <feather-button primary @click="applyFilters()">Filter Map</feather-button>
         <feather-button primary @click="reset()">Reset</feather-button>
@@ -57,15 +57,15 @@ const store = useStore();
 
 const gridOptions = ref({})
 
-let interestedNodesID = computed(() => {
+const interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 
-let alarms = computed(() => {
+const alarms = computed(() => {
   return store.getters['mapModule/getAlarmsFromSelectedNodes'];
 })
 
-let rowData = ref(getAlarmsFromSelectedNodes());
+const rowData = ref(getAlarmsFromSelectedNodes());
 
 let gridApi: any = ref({});
 
@@ -78,7 +78,7 @@ function onGridReady(params: any) {
 }
 
 function autoSizeAll(skipHeader: boolean) {
-  var allColumnIds: string[] = [];
+  const allColumnIds: string[] = [];
   gridColumnApi.getAllColumns().forEach(function (column: any) {
     allColumnIds.push(column.colId);
   });
@@ -88,14 +88,16 @@ function autoSizeAll(skipHeader: boolean) {
 watch(
   () => [interestedNodesID.value, alarms.value],
   () => {
-    gridApi.setRowData(
-      getAlarmsFromSelectedNodes()
-    );
+    if (gridApi.setRowData != undefined && gridApi.setRowData != null) {
+      gridApi.setRowData(
+        getAlarmsFromSelectedNodes()
+      );
+    }
   }
 )
 
 function getAlarmsFromSelectedNodes() {
-  let alarms: Alarm[] = store.getters['mapModule/getAlarmsFromSelectedNodes'];
+  const alarms: Alarm[] = store.getters['mapModule/getAlarmsFromSelectedNodes'];
   return alarms.map((alarm: Alarm) => ({
     id: +alarm.id,
     severity: alarm.severity,
@@ -109,12 +111,11 @@ function getAlarmsFromSelectedNodes() {
 
 const alarmOptions = ref<string[]>(["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"]);
 
-let alarmOption = ref<string>(alarmOptions.value[0]);
+const alarmOption = ref<string>(alarmOptions.value[0]);
 
 watch(
   () => [alarmOption.value],
-  (newValue, oldValue) => {
-    console.log("alarmOption changed from " + oldValue + " to " + newValue);
+  () => {
     let alarmQueryParameters: AlarmQueryParameters;
     switch (alarmOption.value) {
       case alarmOptions.value[0]:
@@ -141,9 +142,9 @@ watch(
     }
 
     let numFail: number = 0;
-    let respCollection: any = [];
+    const respCollection: any = [];
     selectedAlarmIds.value.forEach((alarmId: string) => {
-      let resp = store.dispatch("mapModule/modifyAlarm", {
+      const resp = store.dispatch("mapModule/modifyAlarm", {
         pathVariable: alarmId, queryParameters: alarmQueryParameters
       })
       respCollection.push(resp)
@@ -166,9 +167,9 @@ watch(
 
 const GStore = inject<any>('GStore');
 
-let selectedAlarmIds= ref<string[]>([]);
+const selectedAlarmIds = ref<string[]>([]);
 
-let hasAlarmSelected = ref<boolean>(false);
+const hasAlarmSelected = ref<boolean>(false);
 
 function onSelectionChanged() {
   let selectedRows = gridApi.getSelectedNodes().map((node: any) => node.data);
@@ -181,13 +182,12 @@ function clearFilters() {
 }
 
 function applyFilters() {
-  let nodesLabel: string[] = [];
+  const nodesLabel: string[] = [];
   gridApi.forEachNodeAfterFilter((node: any) => {
     nodesLabel.push(node.data.node);
   });
-  let distictNodesLabel = [...new Set(nodesLabel)];
-  let ids = [];
-  ids = store.getters['mapModule/getInterestedNodes']
+  const distictNodesLabel = [...new Set(nodesLabel)];
+  const ids = store.getters['mapModule/getInterestedNodes']
     .filter((node: Node) => distictNodesLabel.includes(node.label))
     .map((node: Node) => node.id);
   store.dispatch("mapModule/setInterestedNodesId", ids);

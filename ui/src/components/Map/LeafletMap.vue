@@ -54,26 +54,26 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import MarkerCluster from "./MarkerCluster.vue";
 import { useStore } from "vuex";
-import { Coordinates } from "@/types";
+import { Coordinates, Node } from "@/types";
 let leafletReady = ref<boolean>(false);
 let leafletObject = ref("");
 let map = ref();
 const store = useStore();
-const center = computed(() => {
+const center = computed<[number, number]>(() => {
   const coordinates: Coordinates = store.getters['mapModule/getMapCenter']
   return [coordinates.latitude, coordinates.longitude];
 })
-const zoom = ref(2);
-const interestedNodes = computed(() => {
+const zoom = ref<number>(2);
+const interestedNodes = computed<Node[]>(() => {
   return store.getters['mapModule/getInterestedNodes'];
 })
-function getCoordinateFromNode(node: any) {
+function getCoordinateFromNode(node: Node) {
   const coordinate: string[] = [];
   coordinate.push(node.assetRecord.latitude);
   coordinate.push(node.assetRecord.longitude);
   return coordinate;
 }
-const interestedNodesID = computed(() => {
+const interestedNodesID = computed<string[]>(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
 const edges = computed(() => {
@@ -89,7 +89,7 @@ const edges = computed(() => {
 })
 function getInterestedNodesCoordinateMap() {
   const map = new Map();
-  interestedNodes.value.forEach((node: any) => {
+  interestedNodes.value.forEach((node: Node) => {
     map.set(node.id, getCoordinateFromNode(node));
   });
   return map;
