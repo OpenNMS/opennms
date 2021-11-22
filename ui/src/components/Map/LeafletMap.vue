@@ -26,7 +26,6 @@
               v-for="(node, index) in interestedNodes"
               :key="index"
               :lat-lng="getCoordinateFromNode(node)"
-              add
             >
               <l-popup>{{ node.label }}</l-popup>
             </l-marker>
@@ -56,31 +55,31 @@ import {
 import MarkerCluster from "./MarkerCluster.vue";
 import { useStore } from "vuex";
 import { Coordinates } from "@/types";
-let leafletReady = ref(false);
+let leafletReady = ref<boolean>(false);
 let leafletObject = ref("");
-let map: any = ref();
+let map = ref();
 const store = useStore();
-let center = computed(() => {
+const center = computed(() => {
   const coordinates: Coordinates = store.getters['mapModule/getMapCenter']
   return [coordinates.latitude, coordinates.longitude];
 })
-let zoom = ref(2);
-let interestedNodes = computed(() => {
+const zoom = ref(2);
+const interestedNodes = computed(() => {
   return store.getters['mapModule/getInterestedNodes'];
 })
 function getCoordinateFromNode(node: any) {
-  let coordinate: string[] = [];
+  const coordinate: string[] = [];
   coordinate.push(node.assetRecord.latitude);
   coordinate.push(node.assetRecord.longitude);
   return coordinate;
 }
-let interestedNodesID = computed(() => {
+const interestedNodesID = computed(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
-let edges = computed(() => {
-  let ids = interestedNodesID.value;
-  let interestedNodesCoordinateMap = getInterestedNodesCoordinateMap();
-  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0]) && ids.includes(edge[1]))
+const edges = computed(() => {
+  const ids: string[] = interestedNodesID.value;
+  const interestedNodesCoordinateMap = getInterestedNodesCoordinateMap();
+  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
     .map((edge: [number, number]) => {
       let edgeCoordinatesPair = [];
       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]));
@@ -89,7 +88,7 @@ let edges = computed(() => {
     });
 })
 function getInterestedNodesCoordinateMap() {
-  var map = new Map();
+  const map = new Map();
   interestedNodes.value.forEach((node: any) => {
     map.set(node.id, getCoordinateFromNode(node));
   });
