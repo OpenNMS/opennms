@@ -202,3 +202,15 @@ export interface BreadCrumb {
   to: string
   position?: string
 }
+
+export interface WhoAmIResponse {
+  fullName: string
+  id: string
+  internal: boolean
+  roles: string[]
+}
+
+export interface FileEditorResponseLog {
+  success: boolean,
+  msg: string
+}

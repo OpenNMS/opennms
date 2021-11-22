@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Nodes from '@/containers/Nodes.vue'
 import NodeDetails from '@/containers/NodeDetails.vue'
+import FileEditor from '@/containers/FileEditor.vue'
+import Logs from '@/containers/Logs.vue'
 
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
@@ -14,6 +16,16 @@ const router = createRouter({
       path: '/node/:id',
       name: 'Node Details',
       component: NodeDetails
+    },
+    {
+      path: '/file-editor',
+      name: 'FileEditor',
+      component: FileEditor
+    },
+    {
+      path: '/logs',
+      name: 'Logs',
+      component: Logs
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
