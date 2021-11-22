@@ -21,7 +21,7 @@
 | no
 
 | events/*.xml
-| Out-of-the-box, all files in this folder are included via `include` directives in `eventconf.xml`.
+| Files in this folder must be specified as an include directive in `eventconf.xml`.
 | yes
 | no
 |===

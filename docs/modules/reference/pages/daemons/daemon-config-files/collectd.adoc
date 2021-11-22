@@ -12,22 +12,23 @@
 | Restart Required
 
 | collectd-configuration.xml
-| This file defines which collections are being collected and assigned to which nodes.
-A reload command changed configuration parameters of existing monitors.
+| This file defines which collections are being collected and assigned to which nodes. +
+Restart is required in case new collectors are created or removed. +
+Reload event loads changed configuration parameters of existing collectors but will not load new collectors.
 | yes
 | yes
 
 | datacollection-config.xml
 | Defines data collections via SNMP.
+Configuration is reprocessed when the file is modified.
 | no
 | no
 
 | datacollection/*.xml
 | Defines data collections via SNMP.
-Files in the directory are reprocessed when the `datacollection-config.xml` file is modified.
+Files in this folder must be specified as an include directive in `datacollection-config.xml`.
 | no
 | no
-
 
 | jdbc-datacollection-config.xml
 | Defines JDBC data collections.
@@ -61,13 +62,33 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | no
 | yes
 
+| snmp-config.xml
+| Defines data per-host security settings for SNMP communication.
+| no
+| no
+
+| wmi-config.xml
+| Defines data per-host security settings for WMI communication.
+| no
+| no
+
+| wmi-datacollection-config.xml
+| Defines data collections via WMI.
+| no
+| yes
+
+| wsman-config.xml
+| Defines data per-host security settings for WSMAM communication.
+| no
+| no
+
 | wsman-datacollection-config.xml
 | Defines data collections via WSMAN.
 | no
 | yes
 
 | wsman-datacollection.d/*.xml
-| Defines data collections via WSMAN.
+| Files in this folder must be specified as an include directive in `wsman-datacollection-config.xml`.
 | no
 | yes
 
@@ -77,7 +98,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | yes
 
 | xml-datacollection/*.xml
-| Defines data collections that can be extracted from XML or JSON documents.
+| Files in this folder must be specified as an include directive in `xml-datacollection-config.xml`.
 | no
 | yes
 

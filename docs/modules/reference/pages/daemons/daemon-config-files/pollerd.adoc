@@ -11,8 +11,9 @@
 | Restart Required
 
 | poller-configuration.xml
-| Contains service monitor configurations that are used for service availability checks. Restart is required in case new monitors are created or removed.
-Reload event loads changed configuration parameters of existing monitors.
+| Contains service monitor configurations that are used for service availability checks. +
+Restart is required in case new monitors are created or removed. +
+Reload event loads changed configuration parameters of existing monitors but will not load new monitors.
 | yes
 | yes
 
@@ -22,7 +23,8 @@ Reload event loads changed configuration parameters of existing monitors.
 | no
 
 | poll-outages.xml
-| Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
+| Defines scheduled maintenance windows when polling should not occur.
+Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 | yes
 | no
 |===
