@@ -89,9 +89,11 @@ function autoSizeAll(skipHeader: boolean) {
 watch(
   () => interestedNodesID.value,
   () => {
-    gridApi.setRowData(
-      getGridRowDataFromInterestedNodes()
-    );
+    if (gridApi.setRowData != undefined && gridApi.setRowData != null) {
+      gridApi.setRowData(
+        getGridRowDataFromInterestedNodes()
+      );
+    }
   }
 )
 
@@ -155,7 +157,7 @@ const columnDefs = ref([
     field: "latestNodeScan",
     headerTooltip: "Latest Nodes Scan",
     filter: "agDateColumnFilter",
-    cellRenderer: (data : any) => {
+    cellRenderer: (data: any) => {
       return data.value ? new Date(data.value).toLocaleDateString() : "";
     },
   },
@@ -209,7 +211,6 @@ const columnDefs = ref([
   margin-right: 10px;
 }
 .btn-primary {
-  margin-left: 10px
-
+  margin-left: 10px;
 }
 </style>
