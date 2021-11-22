@@ -28,4 +28,11 @@
         <cm:importSchemaFromXsd id="discovery" xsdFileName="discovery-configuration.xsd" xsdFileHash="05e182a8a059a6464f894ffd7d32f3b9f1b023a9e8da2593e238c79bae36359f" rootElement="discovery-configuration"/>
         <cm:importConfig schemaId="discovery" configId="default" filePath="discovery-configuration.xml"/>
     </changeSet>
+
+    <changeSet author="dherdt" id="1.0-register-jmxconfig">
+        <cm:registerSchema id="jmxconfig"/>
+        <cm:importSchemaFromXsd id="jmxconfig" xsdFileName="jmx-config.xsd" xsdFileHash="282f7db937dcd1914c2cf4f5abc19fbe7b86f47c1d798981289666b7debed57d" rootElement="jmx-config"/>
+        <cm:importConfig schemaId="jmxconfig" configId="default" filePath="jmx-config.xml"/>
+    </changeSet>
+
 </databaseChangeLog>
