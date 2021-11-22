@@ -59,16 +59,15 @@ import {
 import MarkerCluster from "./MarkerCluster.vue";
 import { Vue } from "vue-class-component";
 import { useStore } from "vuex";
-import L from "leaflet";
-import { Alarm, Node } from "@/types";
-import { Coordinates } from "@/types";
+import { Node, Coordinates } from "@/types";
+import { Icon } from "leaflet/dist/leaflet-src.esm"
 
 let leafletReady = ref(false);
 let leafletObject = ref("");
 let visible = ref(false);
 let map: any = ref();
 const store = useStore();
-let iconPath;
+
 
 let center = computed(() => {
   const coordinates: Coordinates = store.getters["mapModule/getMapCenter"];
@@ -91,9 +90,18 @@ let interestedAlarms = computed(() => {
 const setIcon = (node: Node): L.Icon | void =>  {
   for (const alarm of interestedAlarms.value) {
     if (node.label === alarm.nodeLabel) {
-      return L.icon({
+      return new Icon({
         iconUrl: setMarkerColor(alarm.severity),
-        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        shadowUrl: "src/assets/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      })
+    }else{
+      return new Icon({
+        iconUrl: "src/assets/Normal-icon.png",
+        shadowUrl: "src/assets/marker-shadow.png",
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
@@ -107,17 +115,17 @@ const setIcon = (node: Node): L.Icon | void =>  {
 function setMarkerColor(severity: any) {
   switch (severity.toUpperCase()) {
     case "NORMAL":
-      return (iconPath = "src/assets/Normal-icon.png");
+      return "src/assets/Normal-icon.png";
     case "WARNING":
-      return (iconPath = "src/assets/Warning-icon.png");
+      return "src/assets/Warning-icon.png";
     case "MINOR":
-      return (iconPath = "src/assets/Minor-icon.png");
+      return "src/assets/Minor-icon.png";
     case "MAJOR":
-      return (iconPath = "src/assets/Major-icon.png");
+      return "src/assets/Major-icon.png";
     case "CRITICAL":
-      return (iconPath = "src/assets/Critical-icon.png");
+      return "src/assets/Critical-icon.png";
     default:
-      return (iconPath = "src/assets/Normal-icon.png");
+      return "src/assets/Normal-icon.png";
   }
 }
 
