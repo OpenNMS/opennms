@@ -42,6 +42,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigConverter;
 import org.opennms.features.config.dao.api.ValidationSchema;
 import org.opennms.features.config.dao.impl.util.XmlConverter;
+import org.opennms.features.config.dao.impl.util.XmlSchema;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
@@ -56,7 +57,7 @@ public class XmlConverterTest {
 
     @Test
     public void testConverter() throws IOException {
-        final XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+        final XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
         final String sourceXml = Resources.toString(
                 Resources.getResource("provisiond-configuration.xml"), StandardCharsets.UTF_8);
         final String expectedJson = Resources.toString(
@@ -86,14 +87,14 @@ public class XmlConverterTest {
     @Test
     public void testXsdSearch() throws IOException, JAXBException {
         // check if xsd is not located in xsds path
-        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
-        String schema = converter.getRawSchema();
+        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
+        XmlSchema schema = converter.getXmlSchema();
         Assert.assertNotNull("Fail to find schema!!!", schema);
     }
 
     @Test
     public void testValidate() throws JAXBException, IOException {
-        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration");
+        XmlConverter converter = new XmlConverter("trapd-configuration.xsd", "trapd-configuration", null);
         FakeXsdForTest test = new FakeXsdForTest(1024, "127.0.0.1");
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("SecurityName");

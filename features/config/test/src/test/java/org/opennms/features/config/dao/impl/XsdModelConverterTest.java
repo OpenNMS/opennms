@@ -46,12 +46,11 @@ public class XsdModelConverterTest {
     @Test
     public void testData() throws IOException {
         // register
-        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration");
+        XmlConverter converter = new XmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
 
-        XsdModelConverter xsdConverter = new XsdModelConverter();
         String xsdStr = Resources.toString(SchemaUtil.getSchemaPath("provisiond-configuration.xsd"), StandardCharsets.UTF_8);
-        XmlSchemaCollection collection = xsdConverter.convertToSchemaCollection(xsdStr);
-        ConfigItem item = xsdConverter.convert(collection, "provisiond-configuration");
+        XsdModelConverter xsdConverter = new XsdModelConverter(xsdStr);
+        ConfigItem item = xsdConverter.convert("provisiond-configuration");
 
         Assert.assertEquals("Should have enough children items", 7, item.getChildren().size());
         Assert.assertEquals("Should have correct schema ref.",

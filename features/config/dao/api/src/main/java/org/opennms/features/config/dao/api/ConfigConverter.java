@@ -47,10 +47,4 @@ public interface ConfigConverter {
      * @return xml string
      */
     String jsonToXml(String jsonStr);
-
-    /**
-     * @return raw content of schema
-     */
-    @JsonIgnore
-    String getRawSchema();
 }

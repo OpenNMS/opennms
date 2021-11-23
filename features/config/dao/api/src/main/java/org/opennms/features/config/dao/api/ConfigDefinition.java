@@ -50,12 +50,13 @@ import java.util.Map;
  */
 
 public class ConfigDefinition {
-    transient public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
-    transient public static final String XSD_FILENAME_TAG = "xsdFilename";
+    public static final String TOP_LEVEL_ELEMENT_NAME_TAG = "topLevelElement";
+    public static final String XSD_FILENAME_TAG = "xsdFilename";
+    public static final String ELEMENT_NAME_TO_VALUE_NAME_TAG = "elementNameToValueName";
 
     private String configName;
     private int maxInstances = 1;
-    private Map<String, String> meta = new HashMap<>();
+    private Map<String, Object> meta = new HashMap<>();
 
     @JsonSerialize(using = OpenAPISerializer.class)
     @JsonDeserialize(using = OpenAPIDeserializer.class)
@@ -90,25 +91,25 @@ public class ConfigDefinition {
         this.maxInstances = maxInstances;
     }
 
-    public Map<String, String> getMeta() {
+    public Map<String, Object> getMeta() {
         return meta;
     }
 
-    public void setMeta(Map<String, String> meta) {
+    public void setMeta(Map<String, Object> meta) {
         this.meta = meta;
     }
 
-    public String getMetaValue(String key) {
+    public Object getMetaValue(String key) {
         return meta.get(key);
     }
 
-    public void setMetaValue(String key, String value) {
+    public void setMetaValue(String key, Object value) {
         this.meta.put(key, value);
     }
 
     @JsonIgnore
     public ValidationReport validate(String json) {
-        String topSchemaName = meta.get(TOP_LEVEL_ELEMENT_NAME_TAG);
+        String topSchemaName = (String) meta.get(TOP_LEVEL_ELEMENT_NAME_TAG);
         if(topSchemaName == null) {
             topSchemaName = configName;
         }
@@ -116,8 +117,7 @@ public class ConfigDefinition {
             throw new RuntimeException("Empty schema!");
         }
         SchemaValidator validator = new SchemaValidator(this.getSchema(), new MessageResolver());
-        final Schema schema = new Schema().$ref("#/components/schemas/" + topSchemaName);
-        ValidationReport report = validator.validate(json, schema, null);
-        return report;
+        final Schema<?> schema = new Schema<>().$ref("#/components/schemas/" + topSchemaName);
+        return validator.validate(json, schema, null);
     }
 }

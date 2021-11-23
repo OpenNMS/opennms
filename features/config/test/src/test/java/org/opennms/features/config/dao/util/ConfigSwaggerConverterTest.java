@@ -36,6 +36,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.ConfigSwaggerConverter;
+import org.opennms.features.config.dao.impl.util.SchemaUtil;
 import org.opennms.features.config.dao.impl.util.XsdModelConverter;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -81,13 +82,10 @@ public class ConfigSwaggerConverterTest {
     @Test
     public void canConvertXsd() throws IOException {
         final XmlSchemaCollection schemaCol = new XmlSchemaCollection();
-        final URL url = Resources.getResource(XSD_PATH);
-        try (InputStream is = url.openStream()) {
-            schemaCol.read(new StreamSource(is));
-        }
+        String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(XSD_PATH), StandardCharsets.UTF_8);
 
-        XsdModelConverter xsdModelConverter = new XsdModelConverter();
-        ConfigItem configItem = xsdModelConverter.convert(schemaCol, TOP_ELEMENT);
+        XsdModelConverter xsdModelConverter = new XsdModelConverter(xsdStr);
+        ConfigItem configItem = xsdModelConverter.convert(TOP_ELEMENT);
 
         ConfigSwaggerConverter configSwaggerConverter = new ConfigSwaggerConverter();
         String openapiStr = configSwaggerConverter.convertToString(configItem, "/VacuumdConfiguration",

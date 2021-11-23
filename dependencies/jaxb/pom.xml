@@ -22,7 +22,7 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
-      <artifactId>org.eclipse.persistence.moxy</artifactId>
+      <artifactId>eclipselink</artifactId>
       <version>${eclipselinkVersion}</version>
     </dependency>
     <!-- MOXy relies on javax.mail classes for Base64 decoding -->

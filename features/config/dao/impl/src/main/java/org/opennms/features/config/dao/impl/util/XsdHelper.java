@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Main helper class for all xsd related function
@@ -49,17 +50,11 @@ public class XsdHelper {
      * @param topLevelElement
      * @return
      */
-    private static OpenAPI convertXsd(String configName, String xsdName, String topLevelElement) {
-        Assert.notNull(configName);
+    private static XsdModelConverter getConverter(String xsdName) {
         Assert.notNull(xsdName);
-        Assert.notNull(topLevelElement);
         try {
-            ConfigSwaggerConverter converter = new ConfigSwaggerConverter();
-            XsdModelConverter xsdConverter = new XsdModelConverter();
             String xsdStr = Resources.toString(SchemaUtil.getSchemaPath(xsdName), StandardCharsets.UTF_8);
-            XmlSchemaCollection collection = xsdConverter.convertToSchemaCollection(xsdStr);
-            ConfigItem item = xsdConverter.convert(collection, topLevelElement);
-            return converter.convert(item, "/rest/cm/" + configName);
+            return new XsdModelConverter(xsdStr);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,10 +69,17 @@ public class XsdHelper {
      */
     public static ConfigDefinition buildConfigDefinition(String configName, String xsdName, String topLevelElement){
         ConfigDefinition def = new ConfigDefinition(configName);
-        OpenAPI api = XsdHelper.convertXsd(configName, xsdName, topLevelElement);
+        XsdModelConverter xsdConverter = XsdHelper.getConverter( xsdName);
+        ConfigItem item = xsdConverter.convert(topLevelElement);
+
+        ConfigSwaggerConverter swaggerConverter = new ConfigSwaggerConverter();
+        OpenAPI api = swaggerConverter.convert(item, "/rest/cm/" + configName);
+
         def.setSchema(api);
         def.setMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG, topLevelElement);
         def.setMetaValue(ConfigDefinition.XSD_FILENAME_TAG, xsdName);
+        def.setMetaValue(ConfigDefinition.ELEMENT_NAME_TO_VALUE_NAME_TAG, xsdConverter.getElementNameToValueNameMap());
+
         return def;
     }
 
@@ -88,11 +90,12 @@ public class XsdHelper {
      * @throws IOException
      */
     public static ConfigConverter getConverter(ConfigDefinition def) throws IOException {
-        String xsdName = def.getMetaValue(ConfigDefinition.XSD_FILENAME_TAG);
-        String topLevelElement = def.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+        String xsdName = (String) def.getMetaValue(ConfigDefinition.XSD_FILENAME_TAG);
+        String topLevelElement = (String) def.getMetaValue(ConfigDefinition.TOP_LEVEL_ELEMENT_NAME_TAG);
+        Map<String, String> elementNameToValueNameMap = (Map) def.getMetaValue(ConfigDefinition.ELEMENT_NAME_TO_VALUE_NAME_TAG);
         if(xsdName == null || topLevelElement == null){
             throw new RuntimeException("ConfigDefinition " + def.getConfigName() + " NOT support XmlConverter.");
         }
-        return new XmlConverter(xsdName, topLevelElement);
+        return new XmlConverter(xsdName, topLevelElement, elementNameToValueNameMap);
     }
 }
