@@ -79,7 +79,7 @@ function getCoordinateFromNode(node: Node) {
 const iconWidth = ref((25));
 const iconHeight = ref((42));
 const iconSize = computed(() => [iconWidth.value, iconHeight.value]);
-let nodeLabelAlarmServerityMap = computed(() => {
+const nodeLabelAlarmServerityMap = computed(() => {
   const alarms: Alarm[] = store.getters["mapModule/getAlarmsFromSelectedNodes"];
   const map: Map<string, string> = new Map<string, string>();
   alarms.forEach(function (alarm: Alarm) {
