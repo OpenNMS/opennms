@@ -1,0 +1,75 @@
+[[ref-ssl-wildcard]]
+= Wildcard Certificate
+
+Description from: http://www.agentbob.info/agentbob/79-AB.html?branch=1&language=1
+
+Copied wildcard certificate to /home/monitor/ssl
+
+[source, console]
+----
+root@opennms: /home/monitor/ssl# ls -al
+
+-rw-r--r--  1 root    root     5626 Jun 24 11:09 cabundle.crt
+-rw-r--r--  1 root    root     1363 Sep 15 11:58 cert.der
+-rw-r--r--  1 root    root     1903 Jun 24 11:09 certificate.crt
+-rw-r--r--  1 root    root     1704 Jun 24 11:09 certificate.key
+-rw-r--r--  1 root    root     1679 Sep 15 09:24 certificate.new.key
+-rw-r--r--  1 root    root     7256 Jun 24 11:09 certificate.p7b
+-rw-rw-r--  1 monitor monitor  3281 Sep 15 11:53 ImportKey.class
+-rw-r--r--  1 root    root     1218 Sep 15 11:58 key.der
+-rw-r--r--  1 root    root     1423 Sep 15 09:32 keystore.jks
+----
+
+ImportKey.class download:
+http://www.agentbob.info/agentbob/81/version/default/part/AttachmentData/data/ImportKey.class
+
+Convert both, the key and the certificate into DER format using openssl
+
+[source, console]
+----
+openssl pkcs8 -topk8 -nocrypt -in key.pem -inform PEM -out key.der -outform DER
+openssl pkcs8 -topk8 -nocrypt -in certificate.key -inform PEM -out key.der -outform DER
+openssl x509 -in certificate.crt -inform PEM -out cert.der -outform DER
+
+java ImportKey key.der cert.der
+root@opennms:/home/monitor/ssl# java ImportKey key.der cert.der
+Using keystore-file : /root/keystore.ImportKey
+One certificate, no chain.
+Key and certificate stored.
+Alias:importkey  Password:importkey
+root@opennms:/home/monitor/ssl#
+----
+
+Now we have a proper JKS containing our private key and certificate in a file called keystore.ImportKey, using 'importkey' as alias and also as password
+
+Copy /root/keystore.ImportKey to /ect/opennms/opennms.keystore
+
+Change password importkey to changeit (this password is also in opennms.properties file, section https)
+`
+keytool -keystore opennms.keystore -keypasswd -new changeit -alias importkey
+`
+Rename alias
+
+[source, console]
+----
+keytool -changealias -alias "importkey" -destalias "*.company.com" -keystore opennms.keystore
+Enter keystore password:
+----
+
+View certificate.
+
+[source, console]
+----
+keytool -list -v -keystore opennms.keystore
+Enter keystore password: changeit
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+Alias name: *.company.com
+Creation date: Sep 15, 2015
+Entry type: PrivateKeyEntry`
+Certificate chain length: 1
+Certificate[1]:
+----
