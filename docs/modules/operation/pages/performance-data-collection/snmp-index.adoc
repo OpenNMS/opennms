@@ -1,17 +1,23 @@
 
 [[snmp-index]]
-= Collect SNMP data from tables with arbitrary indexes
+= Custom resource types
 
+This section describes how to create a custom resource type to collect SNMP data from tables with arbitrary indexes:
 
-support for collecting and reporting on arbitrary SNMP tables
+* <<resourcetype-def, create a resourceType definition>>
+* <<group-def, create "group" and "mibObj" definitions>>
+* <<system-def, add the group to a system definition>>
+* <<report-snmp-graph, create a report in snmp-graph.properties>>
 
-new configuration, storage, and reporting features to gather data from tables with an arbitrary index. We use the term "resource type" to refer to each different custom index, be it the MIB-2 host-resources storage table, a Brocade fibre channel port table, as well as the existing node-level performance data and interface resource types.
+Whether it is an MIB-2 host-resources storage table, a Brocade fibre channel port table, or the existing node-level performance data and interface resource types, {page-component-title} uses the custom resource type to collect and display the data.
 
-The main part of this feature is the ability to define a custom resource type. The custom resource type is then used when collecting the data and when displaying the data.
-
+[[resourcetype-def]]
 == Create a resourceType definition
 
-Data collection is configured like normal, but with a few small differences. First, a "resourceType" element needs to exist in datacollection-config.xml to specify the custom resource type. For the MIB-2 host resources storage table, we have an entry like this:
+Configure data collection as normal, but with a few small differences.
+First, make sure a "resourceType" element exists in datacollection-config.xml to specify the custom resource type.
+This element needs to be before the "groups" element.
+For the MIB-2 host resources storage table, we have an entry like this:
 
 [source, xml]
 ----
@@ -21,16 +27,20 @@ Data collection is configured like normal, but with a few small differences. Fir
 </resourceType>
 ----
 
-This entry needs to be before the "groups" element.
+The "name" attribute ("hrStorageIndex" above) is not magical in any way; it does not need to correlate to a MIB that OpenNMS has knowledge of.
+The datacollection-config.xml file and the snmp-graph.properties file use this attribute to refer to this custom resource type.
 
-The "name" attribute ("hrStorageIndex" in the above example) is not magical in any way, i.e. it does not need to correlate to a MIB that OpenNMS has knowledge of. The generic index code does not care about the length of the index, so this facility should work for collecting from multiply-indexed tables such as tcpConnTable. Note that this statement is theoretical at present, as multiply-indexed collection has not been tested.
+The generic index code does not care about the length of the index, so this facility should work to collect from multiply-indexed tables such as tcpConnTable.
 
-The "name" attribute is used later in the datacollection-config.xml file to refer to this custom resource type, and also in the snmp-graph.properties file to refer to this resource type. We also need to separate data for this resource type from other resource types (node and interface data, as well as other custom resource types), so we place all of the RRD data into a directory based on the name. So, for example, for node 1, all data for the example resource type will go into $OPENNMS_HOME/share/rrd/snmp/1/hrStorageIndex.
+We also need to separate data for this resource type from other resource types (node and interface data, as well as other custom resource types), so we place all of the RRD data into a directory based on the name.
+So, for example, for node 1, all data for the example resource type will go into $OPENNMS_HOME/share/rrd/snmp/1/hrStorageIndex.
 
-The "label" attribute ("Storage (MIB-2 Host Resources)" in the above example) is used solely for a user-friendly label in the webUI when listing this resource type.
+The "label" attribute ("Storage (MIB-2 Host Resources)" above) is used solely for a user-friendly label in the webUI when listing this resource type.
 
-Lastly, the "persistenceSelectorStrategy" and "storageStrategy" define the classes that are used to decide whether data for this resource type should be persisted (written to disk), and how the data is written to disk. The classes shown in the example above are the usual ones, but if you need more flexibility you might want to use SiblingColumnStorageStrategy or PersistRegexSelectorStrategy.
+Lastly, the "persistenceSelectorStrategy" and "storageStrategy" define the classes that are used to decide whether data for this resource type should be persisted (written to disk), and how the data is written to disk.
+The classes shown in the example above are the usual ones, but if you need more flexibility you might want to use SiblingColumnStorageStrategy or PersistRegexSelectorStrategy.
 
+[[group-def]]
 == Create "group" and "mibObj" definitions
 
 Create the "group" and its children "mibObj" elements as you normally would, but with two differences:
@@ -50,9 +60,12 @@ Here is the data to be collected for the hrStorageIndex resource type:
 </group>
 ----
 
+[[system-def]]
 == Add the group to a system definition
 
-In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agent's "system object ID" to a set of data collection groups so it knows what it should gather for different types of SNMP agents. You will need to add the newly-created collection group to one or more system definitions (systemDef) in datacollection-config.xml so that OpenNMS will try to collect data for that collection group. The example below shows that the group for "mib2-host-resources-storage" was added to the definition for Net-SNMP which matches any agent that has a system object ID that begins with ".1.3.6.1.4.8072.3.":
+In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agent's "system object ID" to a set of data collection groups so it knows what it should gather for different types of SNMP agents.
+You will need to add the newly-created collection group to one or more system definitions (systemDef) in datacollection-config.xml so that OpenNMS will try to collect data for that collection group.
+The example below shows that the group for "mib2-host-resources-storage" was added to the definition for Net-SNMP which matches any agent that has a system object ID that begins with ".1.3.6.1.4.8072.3.":
 
 [source, xml]
 ----
@@ -70,6 +83,7 @@ In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agen
 </systemDef>
 ----
 
+[[report-snmp-graph]]
 == Create a report in snmp-graph.properties
 
 Finally, you create a report in snmp-graph.properties like you normally would, with the exception that you set the type to match the name of the resource type.
