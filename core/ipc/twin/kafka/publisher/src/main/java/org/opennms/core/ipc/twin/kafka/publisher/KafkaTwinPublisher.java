@@ -148,7 +148,7 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
     private void handleMessage(final ConsumerRecord<String, byte[]> record) {
         try {
             final TwinRequest request = mapTwinRequestProto(record.value());
-            String tracingOperationKey = request.getKey() + "@" + request.getLocation();
+            String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                     tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
             try (Scope scope = spanBuilder.startActive(true)) {

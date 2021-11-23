@@ -67,6 +67,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_PATCH;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_SESSION_ID;
 import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.TAG_VERSION;
+import static org.opennms.core.ipc.twin.common.AbstractTwinPublisher.generateTracingOperationKey;
 
 public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
@@ -118,8 +119,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         if (twinUpdate.getObject() == null || twinUpdate.getSessionId() == null) {
             return;
         }
-        String tracingOperationKey = twinUpdate.getLocation() != null ?
-                twinUpdate.getKey() + "@" + twinUpdate.getLocation() : twinUpdate.getKey();
+        String tracingOperationKey = generateTracingOperationKey(twinUpdate.getLocation(), twinUpdate.getKey());
         Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                 tracingOperationKey, twinUpdate.getTracingInfo(), References.FOLLOWS_FROM);
         // Consume in thread instead of using broker's callback thread.
@@ -287,8 +287,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
 
         private synchronized void request() {
             // Send a request
-            String tracingOperationKey = AbstractTwinSubscriber.this.identity.getLocation() != null ?
-                    this.key + "@" + AbstractTwinSubscriber.this.identity.getLocation() : this.key;
+            String tracingOperationKey = generateTracingOperationKey(getIdentity().getLocation(), getIdentity().getId());
             Span span = tracer.buildSpan(tracingOperationKey).start();
             final var request = new TwinRequest(this.key, AbstractTwinSubscriber.this.identity.getLocation());
             updateTracingTags(span, request);

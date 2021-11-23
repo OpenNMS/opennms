@@ -123,7 +123,7 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
         CompletableFuture.runAsync(() -> {
             try {
                 TwinRequest twinRequest = mapTwinRequestProto(requestBytes);
-                String tracingOperationKey = twinRequest.getKey() + "@" + twinRequest.getLocation();
+                String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
                 Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                         tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
                 try(Scope scope = spanBuilder.startActive(true)) {

@@ -81,10 +81,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
     }
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
-        this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
-        this.tracerRegistry = localTwinSubscriber.getTracerRegistry();
-        this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
-        this.tracer = this.tracerRegistry.getTracer();
+        this(localTwinSubscriber, localTwinSubscriber.getTracerRegistry());
     }
 
     /**
@@ -168,6 +165,10 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         span.setTag(TAG_PATCH, twinUpdate.isPatch());
     }
 
+    public static String generateTracingOperationKey(String location, String key) {
+        return location != null ? key + "@" + location : key;
+    }
+
     private synchronized TwinUpdate getResponseFromUpdatedObj(byte[] updatedObj, SessionKey sessionKey) {
         TwinTracker twinTracker = getTwinTracker(sessionKey.key, sessionKey.location);
         if (twinTracker == null || !Arrays.equals(twinTracker.getObj(), updatedObj)) {
@@ -228,7 +229,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
         public void publish(T obj) throws IOException {
             try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(TwinStrategy.LOG_PREFIX)) {
                 LOG.info("Published an object update for the session with key {}", sessionKey.toString());
-                String tracingOperationKey = sessionKey.location != null ? sessionKey.key + "@" + sessionKey.location : sessionKey.key;
+                String tracingOperationKey = generateTracingOperationKey(sessionKey.location, sessionKey.key);
                 Span span = tracer.buildSpan(tracingOperationKey).start();
                 byte[] objInBytes = objectMapper.writeValueAsBytes(obj);
                 TwinUpdate twinUpdate = getResponseFromUpdatedObj(objInBytes, sessionKey);
