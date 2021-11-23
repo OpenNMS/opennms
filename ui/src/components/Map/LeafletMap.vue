@@ -28,6 +28,7 @@
               :lat-lng="getCoordinateFromNode(node)"
             >
               <l-popup>{{ node.label }}</l-popup>
+              <l-icon :icon-url="setIcon(node)" :icon-size="iconSize" />
             </l-marker>
             <l-polyline
               v-for="(coordinatePair, index) in edges"
@@ -48,13 +49,14 @@ import {
   LMap,
   LTileLayer,
   LMarker,
+  LIcon,
   LPopup,
   LControlLayers,
   LPolyline,
 } from "@vue-leaflet/vue-leaflet";
 import MarkerCluster from "./MarkerCluster.vue";
 import { useStore } from "vuex";
-import { Coordinates, Node } from "@/types";
+import { Coordinates, Node, Alarm } from "@/types";
 let leafletReady = ref<boolean>(false);
 let leafletObject = ref("");
 let map = ref();
@@ -73,6 +75,65 @@ function getCoordinateFromNode(node: Node) {
   coordinate.push(node.assetRecord.longitude);
   return coordinate;
 }
+
+const iconWidth = ref((25));
+const iconHeight = ref((42));
+const iconSize = computed(() => [iconWidth.value, iconHeight.value]);
+let nodeLabelAlarmServerityMap = computed(() => {
+  const alarms: Alarm[] = store.getters["mapModule/getAlarmsFromSelectedNodes"];
+  const map: Map<string, string> = new Map<string, string>();
+  alarms.forEach(function (alarm: Alarm) {
+    if (getServerityLevel(alarm.severity) > getServerityLevel(map.get(alarm.nodeLabel))) {
+      map.set(alarm.nodeLabel, alarm.severity.toUpperCase());
+    }
+  });
+  return map;
+});
+
+function getServerityLevel(severity: string | undefined) {
+  if (severity) {
+    switch (severity.toUpperCase()) {
+      case "NORMAL":
+        return 11;
+      case "WARNING":
+        return 22;
+      case "MINOR":
+        return 33;
+      case "MAJOR":
+        return 44;
+      case "CRITICAL":
+        return 55;
+      default:
+        return 0;
+    }
+  }
+  return 0;
+}
+
+function setIcon(node: Node) {
+  return setMarkerColor(nodeLabelAlarmServerityMap.value.get(node.label));
+}
+
+function setMarkerColor(severity: string | undefined) {
+  if (severity) {
+    switch (severity.toUpperCase()) {
+      case "NORMAL":
+        return ("src/assets/Normal-icon.png");
+      case "WARNING":
+        return ("src/assets/Warning-icon.png");
+      case "MINOR":
+        return ("src/assets/Minor-icon.png");
+      case "MAJOR":
+        return ("src/assets/Major-icon.png");
+      case "CRITICAL":
+        return ("src/assets/Critical-icon.png");
+      default:
+        return ("src/assets/Normal-icon.png");
+    }
+  }
+  return ("src/assets/Normal-icon.png");
+}
+
 const interestedNodesID = computed<string[]>(() => {
   return store.getters['mapModule/getInterestedNodesID'];
 })
