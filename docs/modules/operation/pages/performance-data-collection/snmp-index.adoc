@@ -15,7 +15,7 @@ Whether it is an MIB-2 host-resources storage table, a Brocade fibre channel por
 == Create a resourceType definition
 
 Configure data collection as normal, but with a few small differences.
-First, make sure a "resourceType" element exists in datacollection-config.xml to specify the custom resource type.
+First, make sure a resourceType element exists in datacollection-config.xml to specify the custom resource type.
 This element needs to be before the "groups" element.
 For the MIB-2 host resources storage table, we have an entry like this:
 
@@ -27,28 +27,36 @@ For the MIB-2 host resources storage table, we have an entry like this:
 </resourceType>
 ----
 
-The "name" attribute ("hrStorageIndex" above) is not magical in any way; it does not need to correlate to a MIB that OpenNMS has knowledge of.
+*Name attribute*
+
+The name attribute ("hrStorageIndex" above) is not magical in any way; it does not need to correlate to an MIB that OpenNMS has knowledge of.
 The datacollection-config.xml file and the snmp-graph.properties file use this attribute to refer to this custom resource type.
 
-The generic index code does not care about the length of the index, so this facility should work to collect from multiply-indexed tables such as tcpConnTable.
+To ensure all resource type data stays separate, all RRD data goes into a directory based on this name.
+For example, for node 1, all data for the example resource type goes into `$OPENNMS_HOME/share/rrd/snmp/1/hrStorageIndex`.
 
-We also need to separate data for this resource type from other resource types (node and interface data, as well as other custom resource types), so we place all of the RRD data into a directory based on the name.
-So, for example, for node 1, all data for the example resource type will go into $OPENNMS_HOME/share/rrd/snmp/1/hrStorageIndex.
+The length of the index does not matter; this facility should work to collect from multiply indexed tables such as tcpConnTable.
 
-The "label" attribute ("Storage (MIB-2 Host Resources)" above) is used solely for a user-friendly label in the webUI when listing this resource type.
+*Label attribute*
 
-Lastly, the "persistenceSelectorStrategy" and "storageStrategy" define the classes that are used to decide whether data for this resource type should be persisted (written to disk), and how the data is written to disk.
-The classes shown in the example above are the usual ones, but if you need more flexibility you might want to use SiblingColumnStorageStrategy or PersistRegexSelectorStrategy.
+The label attribute ("Storage (MIB-2 Host Resources)" above) provides a user-friendly label in the webUI when listing this resource type.
+
+*Storage strategy classes*
+
+The persistenceSelectorStrategy and storageStrategy define the classes used to decide whether data for this resource type should be persisted (written to disk), and how the data is written to disk.
+The classes in the example above are the usual ones, but for more flexibility, you can use SiblingColumnStorageStrategy or PersistRegexSelectorStrategy.
 
 [[group-def]]
 == Create "group" and "mibObj" definitions
 
 Create the "group" and its children "mibObj" elements as you normally would, but with two differences:
 
-    Set the "ifType" attribute for the "group" element to be "all". Without this, the data will be incorrectly assumed to be node-level data (not indexed), which it isn't.
-    Set the "instance" attribute on the "mibObj" elements to be the name of your resource type. This would be "hrStorageIndex" for the example above.
+* Set the ifType attribute for the group element to be "all". Without this, the data will be incorrectly assumed to be node-level data (not indexed).
 
-Here is the data to be collected for the hrStorageIndex resource type:
+* Set the instance attribute on the mibObj elements to be the name of your resource type.
+This would be "hrStorageIndex" for the example above.
+
+Here is the data to collect for the hrStorageIndex resource type:
 
 [source, xml]
 ----
@@ -63,9 +71,11 @@ Here is the data to be collected for the hrStorageIndex resource type:
 [[system-def]]
 == Add the group to a system definition
 
-In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agent's "system object ID" to a set of data collection groups so it knows what it should gather for different types of SNMP agents.
-You will need to add the newly-created collection group to one or more system definitions (systemDef) in datacollection-config.xml so that OpenNMS will try to collect data for that collection group.
-The example below shows that the group for "mib2-host-resources-storage" was added to the definition for Net-SNMP which matches any agent that has a system object ID that begins with ".1.3.6.1.4.8072.3.":
+In datacollection-config.xml, OpenNMS needs to be able to map a remote SNMP agent's system object ID to a set of data collection groups so it knows what it should gather for different types of SNMP agents.
+
+You must add the newly created collection group to one or more system definitions (systemDef) in datacollection-config.xml so that OpenNMS will try to collect data for that collection group.
+
+The following shows that the group for "mib2-host-resources-storage" was added to the definition for Net-SNMP which matches any agent that has a system object ID that begins with ``.1.3.6.1.4.8072.3.`:
 
 [source, xml]
 ----
@@ -90,6 +100,8 @@ Finally, you create a report in snmp-graph.properties like you normally would, w
 
 Here is an example for hrStorageIndex disk utilization data:
 
+[source, xml]
+----
 report.mib2.storage.usage.name=Storage Utilization (MIB-2 Host Resources)
 report.mib2.storage.usage.columns=hrStorageSize, hrStorageUsed, hrStorageAllocUnits
 report.mib2.storage.usage.type=hrStorageIndex
@@ -108,10 +120,15 @@ report.mib2.storage.usage.command=--title="Storage Utilization" \
    GPRINT:usedBytes:AVERAGE:" Avg  \\: %8.2lf %s" \
    GPRINT:usedBytes:MIN:"Min  \\: %8.2lf %s" \
    GPRINT:usedBytes:MAX:"Max  \\: %8.2lf %s\\n"
+----
 
-Make sure that you add your new report to the "reports" parameter in the same file, otherwise the graphing system won't add it as an available report. For the above example, the report name is "mib2.storage.usage".
+Make sure that you add your new report to the reports parameter in the same file, otherwise the graphing system will not add it as an available report.
+For the above example, the report name is "mib2.storage.usage".
 
+[source, xml]
+----
 reports=mib2.bits, mib2.percentdiscards, mib2.percenterrors, \
 ...
 mib2.storage.usage, \
 ...
+----
