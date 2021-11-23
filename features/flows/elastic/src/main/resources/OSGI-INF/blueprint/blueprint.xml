@@ -216,7 +216,7 @@
     <!-- Thresholding -->
     <bean id="thresholdingCacheConfig" class="org.opennms.core.cache.CacheConfig">
         <argument value="flow-thresholding-sessions"/>
-        <property name="metricRegistry" ref="metricRegistry" />
+        <property name="metricRegistry" ref="flowRepositoryMetricRegistry" />
         <property name="enabled" value="${flowThresholdCache.enabled}" />
         <property name="maximumSize" value="${flowThresholdCache.maximumSize}" />
         <property name="expireAfterWrite" value="${flowThresholdCache.expireAfterWrite}" />
