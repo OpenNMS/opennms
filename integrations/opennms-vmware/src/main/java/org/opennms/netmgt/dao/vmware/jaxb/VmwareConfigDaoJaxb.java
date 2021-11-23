@@ -77,18 +77,6 @@ public class VmwareConfigDaoJaxb extends AbstractCmJaxbConfigDao<VmwareConfig> i
     }
 
     /**
-     * Used to transform the config object to a custom representation. This method is not modified in this class, it just
-     * returns the config object itself.
-     *
-     * @param jaxbConfig a config object.
-     * @return a custom object
-     */
-    /*@Override
-    public VmwareConfig translateConfig(VmwareConfig jaxbConfig) {
-        return jaxbConfig;
-    }*/
-
-    /**
      * Returns the map of server entries from the configuration object.
      *
      * @return the map of server entries
