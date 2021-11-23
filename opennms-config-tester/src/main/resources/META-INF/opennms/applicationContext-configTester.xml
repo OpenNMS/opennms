@@ -238,7 +238,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/jdbc-datacollection-config.xml"/>
   </bean>
 
-  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.cm.JmxConfigDaoCm"/>
+  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultJmxConfigDao"/>
 
   <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
 
