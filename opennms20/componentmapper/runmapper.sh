@@ -11,7 +11,6 @@ PATH="$PATH:$TOPDIR/maven/bin"
 set -e
 set -o pipefail
 JUNIT_PLUGIN_VERSION="$(grep '<maven.testing.plugin.version>' "${TOPDIR}/pom.xml" | sed -e 's,<[^>]*>,,g' -e 's, *,,g')"
-echo $JUNIT_PLUGIN_VERSION
 
 # Ensure the plugin is available
 # We swap to another directory so that we don't need to spend time parsing our current pom
