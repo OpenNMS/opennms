@@ -1,4 +1,4 @@
-== Configuration
+= Configuration
 
 The Asset Topology Provider persists both the asset topology graph definitions and the generated GraphML graphs.
 The persisted definitions mean that it is possible to regenerate graphs without reentering the configuration if the asset table changes.
