@@ -355,6 +355,7 @@ commands:
         default: 2
         type: integer
     steps:
+      - cached-checkout
       - run:
           name: Generate component mappings
           when: always
