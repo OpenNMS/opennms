@@ -25,7 +25,7 @@ The following commands are available
 -f, --filter : Optional node filter (Default: empty filter; in other words, allow all nodes) +
 -a, --assetLayers : Comma-separated list of asset layers (Default: asset-region, asset-building, asset-rack) +
 -p, --preferredLayout : Preferred Layout (Default: Grid Layout) +
--b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT) +
+-b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT)
 
 If you simply type `opennms:asset-topo-create`, a topology with default settings is created.
 
