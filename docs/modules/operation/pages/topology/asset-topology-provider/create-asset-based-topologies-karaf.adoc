@@ -35,7 +35,7 @@ If you simply type `asset-topology:create`, a default topology with providerId a
 
 | opennms:asset-topo-list
 | Lists all asset topologies installed.
-| all : display detailed view including --uriParams string
+| --all : display detailed view including --uriParams string
 
 | opennms:asset-topo-regenerate
 | Regenerates the graphs for the given asset topology definition.
