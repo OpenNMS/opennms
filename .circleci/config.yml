@@ -19,6 +19,9 @@ executors:
   smoke-test-executor:
     machine:
       image: ubuntu-2004:202010-01
+  component-map-executor:
+    machine:
+      image: ubuntu-2004:202010-01
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -345,6 +348,24 @@ commands:
           paths:
             - project
             - .m2
+  run-build:
+    description: "Run the main build"
+    parameters:
+      number-vcpu:
+        default: 2
+        type: integer
+    steps:
+      - run:
+          name: Generate component mappings
+          when: always
+          command: |
+            ./opennms20/componentmapper/runmapper.sh .
+      - store_artifacts:
+          path: target/components.csv
+          destination: components.csv
+      - store_artifacts:
+          path: target/components.html
+          destination: components.html
   run-integration-tests:
     parameters:
       run-code-coverage:
@@ -570,6 +591,11 @@ workflows:
               ignore:
                 - /^from-foundation.*/
       - build-docs:
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
+      - build-component-map:
           filters:
             branches:
               ignore:
@@ -829,6 +855,11 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 8
+  build-component-map:
+    executor: component-map-executor
+    steps:
+      - run-build-component-map:
+          number-vcpu: 2
   build-docs:
     executor: docs-executor
     steps:
