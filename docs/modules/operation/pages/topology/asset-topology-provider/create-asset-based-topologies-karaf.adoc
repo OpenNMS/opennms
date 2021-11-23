@@ -1,4 +1,4 @@
-== Create asset-based topologies from Karaf console
+= Create Asset-Based Topologies From Karaf Console
 
 Use the {page-component-title} Karaf console to control topology generation.
 To log in, use the admin password.
