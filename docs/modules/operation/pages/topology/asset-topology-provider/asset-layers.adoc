@@ -1,5 +1,5 @@
 [[asset-layers]]
-== Asset layers
+= Asset Layers
 
 The entries for `assetLayers` can be any node or asset entry from the following list (defined in class NodeParamLabels).
 Keys beginning with `node-` come from the node table.
