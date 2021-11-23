@@ -348,8 +348,8 @@ commands:
           paths:
             - project
             - .m2
-  run-build:
-    description: "Run the main build"
+  run-component-mapping:
+    description: "Component mappings"
     parameters:
       number-vcpu:
         default: 2
@@ -858,7 +858,7 @@ jobs:
   build-component-map:
     executor: component-map-executor
     steps:
-      - run-build-component-map:
+      - run-component-mapping:
           number-vcpu: 2
   build-docs:
     executor: docs-executor
