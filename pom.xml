@@ -1534,7 +1534,7 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.12.0</frontendPluginVersion>
-    <nodeVersion>v12.19.0</nodeVersion>
+    <nodeVersion>v16.3.0</nodeVersion>
     <npmVersion>6.13.4</npmVersion>
     <yarnVersion>v1.22.10</yarnVersion>
 
