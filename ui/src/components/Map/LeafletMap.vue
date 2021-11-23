@@ -83,12 +83,8 @@ let nodeLabelAlarmServerityMap = computed(() => {
   const alarms: Alarm[] = store.getters["mapModule/getAlarmsFromSelectedNodes"];
   const map: Map<string, string> = new Map<string, string>();
   alarms.forEach(function (alarm: Alarm) {
-    if (!map.has(alarm.nodeLabel)) {
+    if (getServerityLevel(alarm.severity) > getServerityLevel(map.get(alarm.nodeLabel))) {
       map.set(alarm.nodeLabel, alarm.severity.toUpperCase());
-    } else {
-      if (getServerityLevel(alarm.severity) > getServerityLevel(map.get(alarm.nodeLabel))) {
-        map.set(alarm.nodeLabel, alarm.severity.toUpperCase());
-      }
     }
   });
   return map;
