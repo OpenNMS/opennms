@@ -11,6 +11,6 @@ You must ensure that the providerId and label field used for each installation c
 
 == Additional notes
 
-Note that you must first uninstall an {page-component-title} GraphML topology before installing a new one.
-You will also have to log out and log back into the UI to see the new topology file.
-If you uninstall a topology while viewing it, the UI throws an error and you will also have to log out and back in to see the remaining topologies.
+You must first uninstall a {page-component-title} GraphML topology before installing an updated version of the same topology.
+You will have to log out and log back into the UI to see the new topology file.
+If you uninstall a topology while viewing it, the UI throws an error and you will have to log out and back in to see the remaining topologies.
