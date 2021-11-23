@@ -1,0 +1,38 @@
+[[ref-ssl-existing]]
+= Pre-existing Private Key and Certificate
+
+Many users may already have deployed significant amounts of SSL private keys and certs throughout their networks.
+In many cases, the system on which ONMS is running may already have a private key and certificate.
+Consequently, it would be a shame to manage yet another set of keys and certs.
+
+The keytool utility included with JDK 1.6 and newer added the option to import an existing keystore into a new keystore.
+
+[source, console]
+----
+openssl pkcs12 -export -out src.pk12 -in cert.pem -inkey key.pem
+keytool -importkeystore -srckeystore src.pk12 -srcstoretype PKCS12 \
+    -destkeystore mycert.jks -deststoretype JKS
+----
+
+Alternatively, you can follow the procedure used on http://www.agentbob.info/agentbob/79-AB.html?branch=1&language=1[this web page] to convert the keystore.
+
+We summarize here just in case this web page goes away.
+We assume the private key is in key.pem and the cert is in cert.pem (both are in PEM format).
+
+== Convert the key and cert from PEM format to DER format using openssl command
+
+Use openssl to convert from PEM to DER format.
+
+[source, console]
+----
+openssl pkcs8 -topk8 -nocrypt -in key.pem -inform PEM -out key.der -outform DER
+openssl x509 -in cert.pem -inform PEM -out cert.der -outform DER
+----
+
+== Put key and cert into a new Java Keystore
+
+Use the http://www.agentbob.info/agentbob/80/version/default/part/AttachmentData/data/ImportKey.java[ImportKey.java] class to take the key and cert and place it in a newly constructed JKS keystore.
+I modified the ImportKey java source to use the keystore password changeit and to use the key alias importkey and to save the resulting keystore in the file opennms.keystore
+`
+java ImportKey key.der cert.der
+`

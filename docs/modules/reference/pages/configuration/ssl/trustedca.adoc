@@ -1,0 +1,65 @@
+[[ref-ssl-trusted]]
+= Trusted CA Signing
+Generate a certificate signing request (or CSR) from the key that you created above.
+The command to do this is straightforward.
+The filename you specify for the file parameter will contain the CSR after the command completes.
+
+[source, console]
+----
+keytool -certreq -keystore /tmp/propercert/proper.keystore -file /tmp/propercert/proper.csr -alias opennms-jetty
+Enter keystore password:  aGoodStrongKeystorePassword
+Enter key password for <mykey>anotherGoodStrongPassword
+----
+
+The CSR output file is a text file whose contents will look similar to the following:
+
+[source, certificate]
+----
+-----BEGIN NEW CERTIFICATE REQUEST-----
+MIICjjCCAkwCAQAwgYkxCzAJBgNVBAYTAlVTMRcwFQYDVQQIEw5Ob3J0aCBDYXJvbGluYTESMBAG
+A1UEBxMJUGl0dHNib3JvMSAwHgYDVQQKExdUaGUgT3Blbk5NUyBHcm91cCwgSW5jLjEQMA4GA1UE
+CxMHVW5rbm93bjEZMBcGA1UEAxMQZGVtby5vcGVubm1zLm9yZzCCAbcwggEsBgcqhkjOOAQBMIIB
+HwKBgQD9f1OBHXUSKVLfSpwu7OTn9hG3UjzvRADDHj+AtlEmaUVdQCJR+1k9jVj6v8X1ujD2y5tV
+bNeBO4AdNG/yZmC3a5lQpaSfn+gEexAiwk+7qdf+t8Yb+DtX58aophUPBPuD9tPFHsMCNVQTWhaR
+MvZ1864rYdcq7/IiAxmd0UgBxwIVAJdgUI8VIwvMspK5gqLrhAvwWBz1AoGBAPfhoIXWmz3ey7yr
+XDa4V7l5lK+7+jrqgvlXTAs9B4JnUVlXjrrUWU/mcQcQgYC0SRZxI+hMKBYTt88JMozIpuE8FnqL
+VHyNKOCjrh4rs6Z1kW6jfwv6ITVi8ftiegEkO8yk8b6oUZCJqIPf4VrlnwaSi2ZegHtVJWQBTDv+
+z0kqA4GEAAKBgHQVrC0ysQbtmvu3Btjsz1n+6MJIm6mB0Y28fzKFC/azpMB+hultKdUFsnnb13BN
+fnfuUoULeLTu/cGvAsqFtCpJuAmcAzXxmTp0BTYj4o8jJYi0dLIKnox3Shy4VTr+qJlzn9Y1auWy
+rpwdD03e6Kq32rKpgU5fwC53L0J8dI6yoAAwCwYHKoZIzjgEAwUAAy8AMCwCFFtHtT6XNS8A/0Xu
+OfVnTnL+zrTPAhR7QgO0Y3Sd0u39l3uOvhX3G5//zw==
+-----END NEW CERTIFICATE REQUEST-----
+----
+
+There is no particular need to protect the CSR, as it contains no data that would aid an attacker.
+
+== Submit the CSR to the trusted CA
+Send the certificate signing request (CSR) that you just generated to a certificate authority (CA) that you trust.
+This could be a commercial CA whose signatures most or all modern browsers will honor (for discussion, see http://en.wikipedia.org/wiki/Certificate_authority) or a CA that is internal to your organization and whose public key is installed into all browsers on your organization's computers.
+The specifics of this step are entirely outside the scope of this article.
+
+== Import the signed certificate
+After you submit the certificate signing request to the CA, and fulfill the CA's requirements for validating your identity and trustworthiness, the CA will send you a certificate file that bears the CA's signature.
+
+The signed certificate consists of the public half of the key that you generated in the first step plus a signature performed using the CA's private key.
+Therefore, the signed certificate (like the CSR)  contains no information that will aid an attacker if it is disclosed.
+
+In order for your OpenNMS server to use the signed certificate, you must replace the self-signed certificate created in the first step by the signed certificate.
+You do that by importing the signed certificate for the same alias that you defined in the first step (here "opennms-jetty"):
+
+[source, console]
+----
+keytool -import -keystore /tmp/propercert/proper.keystore -file /path/to/signed-cert.txt -alias opennms-jetty
+Enter keystore password:  aGoodStrongKeystorePassword
+----
+
+NOTE: This requires that your keystore already trust the CA that has signed your certificate.
+If you see the error "keytool error: java.lang.Exception: Public keys in reply and keystore don't match", this indicates that you need to import your certificate authority's CA certificate first:
+
+[source, console]
+----
+keytool -import -trustcacerts -alias <my-CA-root> -keystore /tmp/propercert/proper.keystore -file /path/to/CA-cert.txt
+Enter keystore password:  aGoodStrongKeystorePassword
+----
+
+Now retry the import of the server cert.
