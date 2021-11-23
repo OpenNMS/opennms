@@ -6,8 +6,9 @@ import sys
 # from git import get_current_branch, get_parent_branch, get_changed_files
 from maven import MavenProject
 
-csvDir = "target"
+fileDir = "target"
 csvFilename = "components.csv"
+htmlFilename = "components.html"
 
 def load_maven_project(maven_project_root):
     if not os.path.isfile(os.path.join(maven_project_root, "pom.xml")):
@@ -20,11 +21,14 @@ def load_maven_project(maven_project_root):
 
     return MavenProject.load(structure_graph_file)
 
+def is_module_missing_component_names(module):
+    return (module.componentName == '' or module.subcomponentName == '' \
+            or module.stability == '')
 
 def apply_component_inheritance(maven_module, maven_project):
     dir = os.path.relpath(maven_module.path, maven_project._root_module.path)
 
-    while (maven_module.componentName == '' or maven_module.subcomponentName == '') and dir != '.':
+    while is_module_missing_component_names(maven_module) and dir != '.':
       # Look for a 'parent' module one dir up the path
       dir = os.path.abspath(os.path.join(dir, '..'))
       dir = os.path.relpath(dir, maven_project._root_module.path)
@@ -34,20 +38,98 @@ def apply_component_inheritance(maven_module, maven_project):
         maven_module.componentName = parent.componentName
       if maven_module.subcomponentName == '' and parent.subcomponentName != '':
         maven_module.subcomponentName = parent.subcomponentName
+      if maven_module.stability == '' and parent.stability != '':
+        maven_module.stability = parent.stability
 
 def generate_csv_file(project):
-    if not os.path.exists(csvDir):
-      os.makedirs(csvDir)
-    filename = os.path.join(csvDir, csvFilename)
+    if not os.path.exists(fileDir):
+      os.makedirs(fileDir)
+    filename = os.path.join(fileDir, csvFilename)
     with open(filename, 'w') as f:
       modules = project.modules
       for module in modules:
-        print(module.componentName + ',' + module.subcomponentName + ',' + module.path, file=f)
+        print(module.path + ',' + module.group_id + ',' + module.artifact_id + ',' + module.componentName + \
+              ',' + module.subcomponentName + ',' + module.stability, file=f)
 
-def generate_stats(project):
+def addModuleToTree(top, module, missing):
+    if module.componentName != '':
+      subcomponentList = top.get(module.componentName)
+      if subcomponentList == None:
+        subcomponentList = dict()
+        top[module.componentName] = subcomponentList
+
+      if module.subcomponentName != '':
+        moduleList = subcomponentList.get(module.subcomponentName)
+        if moduleList == None:
+          moduleList = dict()
+          moduleList[module.subcomponentName] = dict()
+          subcomponentList[module.subcomponentName] = moduleList
+
+        moduleList[module.artifact_id] = module
+      else:
+        if not module._is_root:
+          missing.append(module)
+    else:
+      if not module._is_root:
+        missing.append(module)
+
+def generateComponentTree(project, missingModules):
+    top = dict()
+    for module in project.modules:
+      addModuleToTree(top, module, missingModules)
+    return top
+
+def generate_html_file(project):
+    missing = []
+    tree = generateComponentTree(project, missing)
+    filename = os.path.join(fileDir, htmlFilename)
+    with open(filename, 'w') as f:
+      print('<h1>OpenNMS Components</h1>', file=f)
+      if missing:
+        generate_stats(project, f)
+      components = tree.keys()
+      print('<OL>', file=f)
+      for component in components:
+        print("<LI>Component:" + component, file=f)
+        subcomponents = tree.get(component)
+        if subcomponents:
+            print('<UL>', file=f)
+            for subcomponent in subcomponents.keys():
+              print("<LI>Subcomponent: " + subcomponent, file=f)
+              modules = subcomponents.get(subcomponent).keys()
+              if modules:
+                  print("<UL>", file=f)
+                  for module in modules:
+                    print("<LI>Module: " + module, file=f)
+                  print("</UL>", file=f)
+            print("</UL>", file=f)
+      print('</OL>', file=f)
+
+      if missing:
+        # Save to html and output directly
+        print('<ht>', file=f)
+        print('<h2>Modules Missing Component Info</h2>', file=f)
+        print('<UL>', file=f)
+
+        # Total project modules includes root module - exclude it from total
+        print('The following Maven modules (' + str(len(missing)) + ' out of ' + str(len(project.modules)-1) + ') are missing tags:')
+        for module in missing:
+          print('<LI>' + module.relative_path + '/pom.xml ' + module.group_id + ":" + module.artifact_id, file=f)
+          print(module.relative_path + '/pom.xml ' + module.group_id + ":" + module.artifact_id)
+        print('</UL>', file=f)
+        print('')
+        print('See https://github.com/OpenNMS/opennms/blub/features/opennms20/opennms20/COMPONENTS.md')
+        return 1
+    return 0
+
+
+
+
+def generate_stats(project, f):
     modules = project.modules
     withComponent = 0
     withSub = 0
+    withStability = 0
     total = 0
     for module in modules:
       # Ignore the root module
@@ -57,9 +139,11 @@ def generate_stats(project):
           withComponent += 1
         if module.subcomponentName != '':
           withSub += 1
+        if module.stability != '':
+          withStability += 1
 
-    print("Total: " + str(total) + ", With Component Name: " + str(withComponent) + \
-    ', with Subcomponent Name: ' + str(withSub))
+    print("<p>Total: " + str(total) + ", With Component Name: " + str(withComponent) + \
+    ', with Subcomponent Name: ' + str(withSub) + ", with stability: " + str(withStability) + "</p>", file=f)
 
 
 def generate_components(maven_project_root): 
@@ -72,7 +156,8 @@ def generate_components(maven_project_root):
       apply_component_inheritance(module, project)
 
     generate_csv_file(project)
-    generate_stats(project)
+    exit_code = generate_html_file(project)
+    sys.exit(exit_code)
 
 
 

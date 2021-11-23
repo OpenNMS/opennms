@@ -1,43 +1,36 @@
-#! /bin/bash
-# Run from base of repo
+#!/bin/bash
 
-BASEDIR=opennms
-MAPPER=$BASEDIR/opennms-tools/componentmapper/runmapper.sh
+# This script will return the code from the python generator
+# 0 indicates all files have been mapped
+# 1 indicates there are files missing component info
 
-# Use base if no dir passed in
-if [ $# -eq 0 ]; then
-  DIR="opennms"
-  # Initialize the CSV file
-  echo "Location, Component, Subcomponent" > /tmp/components.csv
-  cd ..
+TOPDIR="$1"
+# Make sure at least one Maven is in the path
+PATH="$PATH:$TOPDIR/maven/bin"
+
+set -e
+set -o pipefail
+JUNIT_PLUGIN_VERSION="$(grep '<maven.testing.plugin.version>' "${TOPDIR}/pom.xml" | sed -e 's,<[^>]*>,,g' -e 's, *,,g')"
+echo $JUNIT_PLUGIN_VERSION
+
+# Ensure the plugin is available
+# We swap to another directory so that we don't need to spend time parsing our current pom
+(cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
+      -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
+      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0.1-SNAPSHOT \
+      && mvn org.apache.maven.plugins:maven-dependency-plugin::get \
+        -DartifactId=surefire-junit4 -DgroupId=org.apache.maven.surefire -Dversion="$JUNIT_PLUGIN_VERSION")
+
+# Now execute the plugin if the structure has not been generated yet
+STRUCTURE_GRAPH_JSON="target/structure-graph.json"
+cd $TOPDIR
+if [ ! -e $STRUCTURE_GRAPH_JSON ]; then
+  mvn org.opennms.maven.plugins:structure-maven-plugin:1.0.1-SNAPSHOT:structure
 else
-  DIR="$1"
-fi
-POM=0
-
-# First, look for a pom:
-if [[ -f "$DIR/pom.xml" ]]; then
-  echo "Found pom in $DIR"
-  POM=1
-  # Now look for our component properties
-  COMPONENT=`xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="opennms.doc.component"]/text()' $DIR/pom.xml 2>/dev/null`
-  SUBCOMPONENT=`xmllint --xpath '/*[local-name()="project"]/*[local-name()="properties"]/*[local-name()="opennms.doc.subcomponent"]/text()' $DIR/pom.xml 2>/dev/null`
-
+  echo "Found existing Maven project structure map. Skipping generation."
+  echo "(If you have modified the Maven project modules or structure in some way since then delete $STRUCTURE_GRAPH_JSON and run the script again.)"
 fi
 
-if [ -z "$COMPONENT" ]; then
-  # Empty component, try using arg
-  COMPONENT="$2"
-fi
-if [ -z "$SUBCOMPONENT" ]; then
-  # Empty subcomponent, try using arg
-  SUBCOMPONENT="$3"
-fi
-
-if [ "$POM" -eq 1 ]; then
-  echo "$DIR, $COMPONENT, $SUBCOMPONENT" >> /tmp/components.csv
-fi
-
-# Next, find sub directories
-find "$DIR" -maxdepth 1 -mindepth 1 -type d -exec $MAPPER {} "$COMPONENT" "$SUBCOMPONENT" \;
+python3 opennms20/componentmapper/find-components.py generate-components .
+exit $?
 

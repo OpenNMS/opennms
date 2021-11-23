@@ -28,6 +28,8 @@ class MavenModule(MavenIdentifier):
         self.componentName = ""
         self.subcomponentName = ""
         self.stability = ""
+        self.artifact_id = json_obj['artifactId']
+        self.group_id = json_obj['groupId']
         self._is_root = is_root
 
         # Load pom to get component identifiers
@@ -85,6 +87,7 @@ class MavenProject(object):
         for module in self.modules:
             # Determine the path of the module relative to the root module
             relative_path = os.path.relpath(module.path, self._root_module.path)
+            module.relative_path = relative_path
             self.modules_by_relative_path[relative_path] = module
 
         # Index the modules by their dependencies
