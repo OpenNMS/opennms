@@ -27,7 +27,7 @@ The following commands are available
 -p, --preferredLayout : Preferred Layout (Default: Grid Layout) +
 -b, --breadcrumbStrategy : Breadcrumb strategy (Default: SHORTEST_PATH_TO_ROOT) +
 
-If you simply type `asset-topology:create`, a default topology with providerId asset is created.
+If you simply type `opennms:asset-topo-create`, a topology with default settings is created.
 
 | opennms:asset-topo-remove
 | Removes asset topology.
