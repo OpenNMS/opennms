@@ -1,5 +1,5 @@
 [[node-filtering]]
-== Node filtering
+= Node Filtering
 
 In many cases, it is desirable to control which nodes a topology includes or excludes.
 For instance, it is useful to be able to generate customized topologies for specific customers that include only regions/buildings, and so on, relevant to their filtered node set.
