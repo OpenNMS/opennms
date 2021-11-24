@@ -5,7 +5,7 @@
 # 1 indicates there are files missing component info
 
 RELDIR="$1"
-TOPDIR=$(cd $(RELDIR); pwd -P)
+TOPDIR=$(cd $RELDIR; pwd -P)
 # Make sure at least one Maven is in the path
 PATH="$PATH:$TOPDIR/maven/bin"
 
