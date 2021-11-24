@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.core.rpc.utils.MetadataConstants;
@@ -86,6 +87,9 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
 
     @Override
     public CollectorRequestBuilder withCollector(ServiceCollector collector) {
+        if(StringUtils.isNotEmpty(collector.getCollectorClassName())) {
+            return withCollectorClassName(collector.getCollectorClassName());
+        }
         this.serviceCollector = collector;
         return this;
     }

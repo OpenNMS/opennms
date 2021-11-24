@@ -168,4 +168,6 @@ public interface ServiceCollector {
    */
    Map<String, Object> unmarshalParameters(Map<String, String> parameters);
 
+   String getCollectorClassName();
+
 }

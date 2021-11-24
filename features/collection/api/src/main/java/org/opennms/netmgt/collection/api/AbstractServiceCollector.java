@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.collection.api;
 
-import org.opennms.core.utils.LocationUtils;
-
 import java.util.Collections;
 import java.util.Map;
+
+import org.opennms.core.utils.LocationUtils;
 
 /**
  * Boilerplate code for basic {@link ServiceCollector} implementations.
@@ -74,5 +74,10 @@ public abstract class AbstractServiceCollector implements ServiceCollector {
     public Map<String, Object> unmarshalParameters(Map<String, String> parameters) {
         // We always run at the default location, so no unmarshaling should be perfomed
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getCollectorClassName() {
+        return null;
     }
 }

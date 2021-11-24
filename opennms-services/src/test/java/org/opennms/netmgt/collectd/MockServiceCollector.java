@@ -116,4 +116,9 @@ public class MockServiceCollector implements ServiceCollector {
         if (s_delegate != null) return s_delegate.unmarshalParameters(parameters);
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getCollectorClassName() {
+        return MockServiceCollector.class.getCanonicalName();
+    }
 }
