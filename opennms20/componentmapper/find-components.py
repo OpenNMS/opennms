@@ -53,25 +53,25 @@ def generate_csv_file(project):
               ',' + module.subcomponentName + ',' + module.stability, file=f)
 
 def addModuleToTree(top, module, missing):
-    if module.componentName != '':
-      subcomponentList = top.get(module.componentName)
-      if subcomponentList == None:
-        subcomponentList = dict()
-        top[module.componentName] = subcomponentList
+    if not module._is_root:
+      if module.componentName != '':
+        subcomponentList = top.get(module.componentName)
+        if subcomponentList == None:
+          subcomponentList = dict()
+          top[module.componentName] = subcomponentList
 
-      if module.subcomponentName != '':
-        moduleList = subcomponentList.get(module.subcomponentName)
+        subname = module.subcomponentName
+        if subname == '':
+          subname='none'
+
+        moduleList = subcomponentList.get(subname)
         if moduleList == None:
           moduleList = dict()
-          moduleList[module.subcomponentName] = dict()
-          subcomponentList[module.subcomponentName] = moduleList
+          moduleList[subname] = dict()
+          subcomponentList[subname] = moduleList
 
         moduleList[module.artifact_id] = module
       else:
-        if not module._is_root:
-          missing.append(module)
-    else:
-      if not module._is_root:
         missing.append(module)
 
 def generateComponentTree(project, missingModules):
@@ -80,23 +80,84 @@ def generateComponentTree(project, missingModules):
       addModuleToTree(top, module, missingModules)
     return top
 
+def addHtmlHeader(f):
+    header="""<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.collapsible {
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  outline: none;
+  background-color: #FFF;
+}
+
+.collapsible:after {
+  content: '\\02795'; /* Unicode character for "plus" sign (+) */
+  float: left;
+}
+
+.active:after {
+  content: "\\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+</style>
+</head>
+<body>"""
+    print(header, file=f)
+
+def add_html_footer(f):
+    footer="""<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+
+  coll[i].click();
+  if (coll[i].textContent.includes("Subcomponent:")) {
+    coll[i].click();
+  }
+}
+</script>
+
+</body>
+</html>"""
+    print(footer, file=f)
 def generate_html_file(project):
     missing = []
     tree = generateComponentTree(project, missing)
     filename = os.path.join(fileDir, htmlFilename)
     with open(filename, 'w') as f:
+      addHtmlHeader(f)
       print('<h1>OpenNMS Components</h1>', file=f)
       if missing:
         generate_stats(project, f)
       components = tree.keys()
+      print('<h2>Component Tree</h2>', file=f)
       print('<OL>', file=f)
       for component in components:
-        print("<LI>Component:" + component, file=f)
+        print('<LI><button type="button" class="collapsible">Component:' + component + '</button>', file=f)
         subcomponents = tree.get(component)
         if subcomponents:
             print('<UL>', file=f)
             for subcomponent in subcomponents.keys():
-              print("<LI>Subcomponent: " + subcomponent, file=f)
+              print('<LI><button type="button" class="collapsible">Subcomponent: ' + subcomponent + '</button>', file=f)
               modules = subcomponents.get(subcomponent).keys()
               if modules:
                   print("<UL>", file=f)
@@ -120,6 +181,8 @@ def generate_html_file(project):
         print('</UL>', file=f)
         print('')
         print('See https://github.com/OpenNMS/opennms/blub/features/opennms20/opennms20/COMPONENTS.md')
+      add_html_footer(f)
+      if missing:
         return 1
     return 0
 
