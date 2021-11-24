@@ -20,8 +20,8 @@ executors:
     machine:
       image: ubuntu-2004:202010-01
   component-map-executor:
-    machine:
-      image: ubuntu-2004:202010-01
+    docker:
+      - image: opennms/build-env:debian-jdk11-b7291
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -860,7 +860,7 @@ jobs:
     executor: component-map-executor
     steps:
       - run-component-mapping:
-          number-vcpu: 2
+          number-vcpu: 1
   build-docs:
     executor: docs-executor
     steps:
