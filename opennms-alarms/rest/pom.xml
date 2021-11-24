@@ -20,6 +20,12 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
+              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.eclipse.persistence.jaxb;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -37,15 +43,24 @@
       <version>30.0.0-SNAPSHOT</version>
     </dependency>
 
-
+    <!-- needed for pulling the principle from the container -->
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi.core</artifactId>
+      <groupId>org.apache.karaf.jaas</groupId>
+      <artifactId>org.apache.karaf.jaas.boot</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+    <!-- needed for using opennms module instead of default karaf -->
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.jaas-login-module-simple</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 
+
+
     <!-- sessionutils for transaction and alarmDao -->
-    <!-- to pacakge containing
+    <!-- to package containing
     <dependency>
       <groupId>org.opennms.core.health</groupId>
       <artifactId>org.opennms.core.health.rest</artifactId>

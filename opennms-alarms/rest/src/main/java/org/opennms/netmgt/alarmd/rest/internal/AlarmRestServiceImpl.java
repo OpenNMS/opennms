@@ -29,49 +29,54 @@
 package org.opennms.netmgt.alarmd.rest.internal;
 
 
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.Principal;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.security.RolesAllowed;
+import javax.security.auth.Subject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.PUT;
+import javax.ws.rs.WebApplicationException;
+import org.apache.karaf.jaas.boot.principal.UserPrincipal;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restrictions;
-
 import org.opennms.core.resource.Vault;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.rest.AlarmRestService;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
-
+import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
-import org.opennms.web.svclayer.TroubleTicketProxy;
+//import org.opennms.web.svclayer.TroubleTicketProxy;
+
+import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 import org.springframework.stereotype.Component;
-
-
-import org.opennms.netmgt.dao.api.AlarmDao;
-
-import org.opennms.web.rest.support.Aliases;
-
-import java.util.Objects;
-import java.util.concurrent.Callable;
 
 /**
  * Basic Web Service using REST for {@link OnmsAlarm} entity, but from Karaf container.
@@ -84,11 +89,12 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceImpl.class);
 
+
     private AlarmDao alarmDao;
 
     private AlarmRepository alarmRepository;
 
-    private TroubleTicketProxy troubleTicketProxy;
+    //private TroubleTicketProxy troubleTicketProxy;
 
     private SessionUtils sessionUtils;
 
@@ -150,13 +156,14 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @Path("list")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
+        // replace the next line with @RolesAllowed("")
+        SecurityHelper.assertUserReadCredentials(securityContext);
 
         return this.sessionUtils.withReadOnlyTransaction(() -> {
-            //SecurityHelper.assertUserReadCredentials(securityContext);
             final CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
             builder.distinct();
             final OnmsAlarmCollection coll = new OnmsAlarmCollection(alarmDao.findMatching(builder.toCriteria()));
-
+            coll.getObjects().stream().forEach(a -> { JaxbUtils.marshal(a);});
             // For getting totalCount
             coll.setTotalCount(alarmDao.countMatching(builder.count().toCriteria()));
             return Response.status(Status.ACCEPTED).entity(coll).build();
@@ -168,9 +175,11 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+        // replace the next two lines with @RolesAllowed("")
+        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+        SecurityHelper.assertUserEditCredentials(securityContext, user);
+
         return this.sessionUtils.withTransaction(() -> {
-            final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
-            // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
             if (body == null) { throw getException(Status.BAD_REQUEST, "Body cannot be null."); }
             alarmRepository.updateStickyMemo(alarmId, body, user); // TODO doing anything??
@@ -192,34 +201,6 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         });
     }
 
-
-
-    @POST
-    @Path("{id}/ticket/update")
-    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        // SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-        return runIfTicketerPluginIsEnabled(() -> {
-            return this.sessionUtils.withTransaction(() -> {
-                troubleTicketProxy.updateTicket(alarmId);
-                return Response.status(Status.ACCEPTED).build();
-            });
-        });
-    }
-
-
-    @POST
-    @Path("{id}/ticket/close")
-    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
-        // SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-        return runIfTicketerPluginIsEnabled(() -> {
-            return this.sessionUtils.withTransaction(() -> {
-                troubleTicketProxy.closeTicket(alarmId);
-                return Response.status(Status.ACCEPTED).build();
-            });
-        });
-    }
-
-
     @DELETE
     @Path("{id}/memo")
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId)  {
@@ -237,6 +218,122 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         return null;
     }
 
+/*
+    @POST
+    @Path("{id}/ticket/update")
+    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+        // SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        return runIfTicketerPluginIsEnabled(() -> {
+            return this.sessionUtils.withTransaction(() -> {
+                troubleTicketProxy.updateTicket(alarmId);
+                return Response.status(Status.ACCEPTED).build();
+            });
+        });
+    }
+*/
+
+/*
+    @POST
+    @Path("{id}/ticket/close")
+    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception {
+        // SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
+        return runIfTicketerPluginIsEnabled(() -> {
+            return this.sessionUtils.withTransaction(() -> {
+                troubleTicketProxy.closeTicket(alarmId);
+                return Response.status(Status.ACCEPTED).build();
+            });
+        });
+    }
+*/
+
+
+    @GET
+    @Path("/testjaxrs")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response echoJaxrsSecCtxAnyone(@Context SecurityContext context) {
+        final String[] GROUPS = {"admingroup", "group", "capybaras"};
+        final String[] ROLES = {"admin", "manager", "viewer", "ssh", "read-only", "groomer"};
+
+        Token token = new Token("jaxrs test: check logs for user's role membership");
+
+        // get access to user principle via SecurityContext, check role membership
+        Principal userPrincipal = context.getUserPrincipal();
+        if (userPrincipal != null) {
+            token.setUserPrincipal(userPrincipal.getName());
+            for (String role : ROLES) {
+                LOG.info("User {} {} member of Role {}.", userPrincipal.getName(), (context.isUserInRole(role)? "is" : "is not"), role);
+            }
+        } else {
+            token.setError("no user principal in context");
+        }
+        return Response.ok(token).build();
+
+    }
+
+
+    @GET
+    @Path("/testjaas/groomer")
+    @RolesAllowed("groomer")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response echoJaasUserPrincipalGroomer() {
+
+        Token token = new Token("jaas test");
+
+        // get access to subject via container, and get user principal from subject principles
+        // (cannot check role membership without a JaxRs SecurityContext)
+        AccessControlContext acc = AccessController.getContext();
+        if (acc == null) {
+            token.setError("access control context is null");
+        }
+        Subject subject = Subject.getSubject(acc);
+        if (subject == null) {
+            token.setError("subject is null");
+        } else {
+            Optional<Principal> anyPrincipal = subject.getPrincipals().stream().filter(p-> (p instanceof UserPrincipal)).findAny();
+            if (anyPrincipal.isPresent()) {
+                Principal userPrincipal = anyPrincipal.get();
+                token.setUserPrincipal(userPrincipal.getName());
+            }
+        }
+
+        return Response.ok(token).build();
+    }
+
+
+
+
+    @GET
+    @Path("/testjaas/admin")
+    @RolesAllowed("admin")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response echoJaasUserPrincipalAdmin() {
+
+        Token token = new Token("jaas test");
+
+        // get access @RolesAllowedto subject via container, and get user principal from subject principles
+        // (cannot check role membership without a JaxRs SecurityContext)
+        AccessControlContext acc = AccessController.getContext();
+        if (acc == null) {
+            token.setError("access control context is null");
+        }
+        Subject subject = Subject.getSubject(acc);
+        if (subject == null) {
+            token.setError("subject is null");
+        } else {
+            Optional<Principal> anyPrincipal = subject.getPrincipals().stream().filter(p-> (p instanceof UserPrincipal)).findAny();
+            if (anyPrincipal.isPresent()) {
+                Principal userPrincipal = anyPrincipal.get();
+                token.setUserPrincipal(userPrincipal.getName());
+            }
+        }
+
+        return Response.ok(token).build();
+    }
+
+
+
+
+
 
 
     public void setAlarmDao(AlarmDao alarmDao) {
@@ -247,9 +344,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         this.alarmRepository = alarmRepository;
     }
 
-    public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
-        this.troubleTicketProxy = troubleTicketProxy;
-    }
+//    public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
+//        this.troubleTicketProxy = troubleTicketProxy;
+//    }
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;

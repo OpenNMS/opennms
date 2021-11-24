@@ -42,6 +42,7 @@
             <Import-Package>
               javassist.util.proxy,
               org.hibernate.proxy,
+              org.eclipse.persistence.internal.jaxb;resolution:=optional,
               *
             </Import-Package>
           </instructions>

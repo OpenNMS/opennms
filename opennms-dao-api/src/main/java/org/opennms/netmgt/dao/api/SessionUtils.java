@@ -33,9 +33,8 @@ import java.util.function.Supplier;
 /**
  * Utility functions for dealing with Hibernate session and transactions.
  *
- * These functions were added to this interface to help make them accessible
- * to bundles running in the OSGi container without having to deal with class-path issues
- * related to Spring & Hibernate.
+ * These functions were added to this interface to help make them accessible to bundles running in the OSGi container
+ * without having to deal with class-path issues related to Spring & Hibernate.
  *
  * @author jwhite
  */
