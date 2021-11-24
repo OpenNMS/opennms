@@ -24,6 +24,7 @@
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
               org.eclipse.persistence.jaxb;resolution:=optional,
+              org.apache.karaf.jaas.config;resolution:=optional,
               *
             </Import-Package>
           </instructions>
