@@ -16,7 +16,7 @@ JUNIT_PLUGIN_VERSION="$(grep '<maven.testing.plugin.version>' "${TOPDIR}/pom.xml
 # We swap to another directory so that we don't need to spend time parsing our current pom
 (cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
       -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
-      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0.1-SNAPSHOT \
+      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0 \
       && mvn org.apache.maven.plugins:maven-dependency-plugin::get \
         -DartifactId=surefire-junit4 -DgroupId=org.apache.maven.surefire -Dversion="$JUNIT_PLUGIN_VERSION")
 
@@ -24,7 +24,7 @@ JUNIT_PLUGIN_VERSION="$(grep '<maven.testing.plugin.version>' "${TOPDIR}/pom.xml
 STRUCTURE_GRAPH_JSON="target/structure-graph.json"
 cd $TOPDIR
 if [ ! -e $STRUCTURE_GRAPH_JSON ]; then
-  mvn org.opennms.maven.plugins:structure-maven-plugin:1.0.1-SNAPSHOT:structure
+  mvn org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 else
   echo "Found existing Maven project structure map. Skipping generation."
   echo "(If you have modified the Maven project modules or structure in some way since then delete $STRUCTURE_GRAPH_JSON and run the script again.)"
