@@ -62,5 +62,5 @@ public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
      * @param nodeId
      * @return
      */
-    List<IpNetToMedia> findByMacLinkOfNode(Integer nodeId);
+    List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId);
 }

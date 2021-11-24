@@ -95,7 +95,7 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
      * @param nodeId
      * @return
      */
-    List<OnmsIpInterface> findByMacLinkOfNode(Integer nodeId);
+    List<OnmsIpInterface> findByMacLinksOfNode(Integer nodeId);
 
     /**
      * <p>findByServiceType</p>

@@ -101,6 +101,11 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     }
 
     @Override
+    public List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(final String foreignSource, final String foreignId, final Integer ifIndex) {
         for (final OnmsSnmpInterface iface : findAll()) {
             final OnmsNode node = iface.getNode();
