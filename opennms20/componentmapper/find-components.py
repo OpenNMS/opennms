@@ -46,6 +46,7 @@ def generate_csv_file(project):
       os.makedirs(fileDir)
     filename = os.path.join(fileDir, csvFilename)
     with open(filename, 'w') as f:
+      print('Path,Group,Artifact,Component,Subcomponent,Stability', file=f)
       modules = project.modules
       for module in modules:
         print(module.path + ',' + module.group_id + ',' + module.artifact_id + ',' + module.componentName + \
