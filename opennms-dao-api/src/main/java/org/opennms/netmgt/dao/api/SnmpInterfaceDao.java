@@ -51,6 +51,8 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
      */
     OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex);
 
+    List<OnmsSnmpInterface> findByNodeId(Integer nodeId);
+
     /**
      * <p>findByForeignKeyAndIfIndex</p>
      *

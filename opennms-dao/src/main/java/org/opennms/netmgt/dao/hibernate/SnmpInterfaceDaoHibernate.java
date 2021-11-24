@@ -54,6 +54,14 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     }
 
     @Override
+    public List<OnmsSnmpInterface> findByNodeId(Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        return find("select distinct snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?",
+                nodeId);
+
+    }
+
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
