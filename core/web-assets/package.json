@@ -115,7 +115,7 @@
         "leaflet": "~1.0.3",
         "leaflet.markercluster": "~1.0.6",
         "moment": "^2.24.0",
-        "popper.js": "^1.15.0",
+        "popper.js": "^1.16.1",
         "regenerator-runtime": "^0.13.3",
         "tempusdominus-bootstrap-4": "^5.1.2",
         "tempusdominus-core": "^5.0.3",
