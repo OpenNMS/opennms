@@ -13,7 +13,7 @@ const state: State = {
   alarms: [],
   interestedNodesID: [],
   edges: [],
-  mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 },
+  mapCenter: { latitude: 37.776603506225115, longitude: -33.43824554266541 }
 }
 
 export default state

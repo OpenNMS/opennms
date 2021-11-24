@@ -1,11 +1,10 @@
 import API from "@/services"
 import { QueryParameters, VuexContext, Coordinates, AlarmModificationQueryVariable, Node } from '@/types'
-import { State } from './state'
 
 const getNodes = async (context: VuexContext, queryParameters?: QueryParameters) => {
   const resp = await API.getNodes(queryParameters)
   if (resp) {
-    let nodes = resp.node.filter(
+    const nodes = resp.node.filter(
       (node) =>
         !(
           node.assetRecord.latitude == null ||
@@ -16,8 +15,8 @@ const getNodes = async (context: VuexContext, queryParameters?: QueryParameters)
           node.assetRecord.longitude.length === 0
         )
     )
-    context.commit("SAVE_NODES_TO_STATE", nodes),
-      context.commit("SAVE_INTERESTED_NODES_ID", nodes.map(node => node.id))
+    context.commit("SAVE_NODES_TO_STATE", nodes)
+    context.commit("SAVE_INTERESTED_NODES_ID", nodes.map(node => node.id))
   }
 }
 

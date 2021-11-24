@@ -11,15 +11,6 @@
         >
           <option v-for="option in alarmOptions" :value="option" :key="option">{{ option }}</option>
         </select>
-        <!-- <section>
-          <FeatherSelect
-            class="my-select"
-            label="Alarm Action"
-            :options="alarmOptions"
-            v-model="alarmOption"
-            :disabled="!hasAlarmSelected"
-          ></FeatherSelect>
-        </section>-->
         <feather-button primary @click="clearFilters()">Clear Filters</feather-button>
         <feather-button primary @click="applyFilters()">Filter Map</feather-button>
         <feather-button primary @click="reset()">Reset</feather-button>
@@ -50,38 +41,31 @@ import { useStore } from "vuex"
 import { computed, watch } from 'vue'
 import { Alarm, Node, AlarmQueryParameters } from "@/types"
 import SeverityFloatingFilter from "./SeverityFloatingFilter.vue"
-// import { FeatherSelect } from "@featherds/select";
 import { FeatherButton } from "@featherds/button"
+import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 const store = useStore()
 
 const gridOptions = ref({})
 
-const interestedNodesID = computed(() => {
-  return store.getters['mapModule/getInterestedNodesID']
-})
+const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 
-const alarms = computed(() => {
-  return store.getters['mapModule/getAlarmsFromSelectedNodes']
-})
+const alarms = computed(() => store.getters['mapModule/getAlarmsFromSelectedNodes'])
 
 const rowData = ref(getAlarmsFromSelectedNodes())
 
-let gridApi: any = ref({})
+let gridApi: GridApi
+let gridColumnApi: ColumnApi
 
-let gridColumnApi: any = ref({})
-
-function onGridReady(params: any) {
+function onGridReady(params: GridReadyEvent) {
   gridApi = params.api
   gridColumnApi = params.columnApi
   autoSizeAll(false)
 }
 
 function autoSizeAll(skipHeader: boolean) {
-  const allColumnIds: string[] = []
-  gridColumnApi.getAllColumns().forEach(function (column: any) {
-    allColumnIds.push(column.colId)
-  })
+  const columns = gridColumnApi.getAllColumns() || []
+  const allColumnIds = columns.map((column) => column.getColId())
   gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
 }
 
@@ -109,30 +93,29 @@ function getAlarmsFromSelectedNodes() {
   }))
 }
 
-const alarmOptions = ref<string[]>(["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"])
-
-const alarmOption = ref<string>(alarmOptions.value[0])
+const alarmOptions = ["Not Selected", "Acknowledge", "Unacknowledge", "Escalate", "Clear"]
+const alarmOption = ref<string>(alarmOptions[0])
 
 watch(
   () => [alarmOption.value],
   () => {
     let alarmQueryParameters: AlarmQueryParameters
     switch (alarmOption.value) {
-      case alarmOptions.value[0]:
+      case alarmOptions[0]:
         break
-      case alarmOptions.value[1]: { // "Acknowledge"
+      case alarmOptions[1]: { // "Acknowledge"
         alarmQueryParameters = { ack: true }
         break
       }
-      case alarmOptions.value[2]: { // "Unacknowledge"
+      case alarmOptions[2]: { // "Unacknowledge"
         alarmQueryParameters = { ack: false }
         break
       }
-      case alarmOptions.value[3]: { // "Escalate"
+      case alarmOptions[3]: { // "Escalate"
         alarmQueryParameters = { escalate: true }
         break
       }
-      case alarmOptions.value[4]: { // "Clear"
+      case alarmOptions[4]: { // "Clear"
         alarmQueryParameters = { clear: true }
         break
       }
@@ -196,7 +179,6 @@ function applyFilters() {
 function reset() {
   store.dispatch("mapModule/resetInterestedNodesID")
 }
-
 
 const defaultColDef = ref({
   floatingFilter: true,
@@ -289,7 +271,7 @@ const columnDefs = ref([
     cellRenderer: (data: any) => {
       //This is a temporary solution. Currently the settings user set make the "Log Message" saved in database in html style. But the style may not 
       //fit our new Vue UI. That's the reason we add css to change it. This part of code will eventually be removed in future project design.   
-      let newData = `<style type = "text/css">
+      const newData = `<style type = "text/css">
             p
             {
                 margin: 0px;

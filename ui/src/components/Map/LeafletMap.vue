@@ -62,13 +62,11 @@ let leafletObject = ref("")
 let map = ref()
 const store = useStore()
 const center = computed<[number, number]>(() => {
-  const coordinates: Coordinates = store.getters['mapModule/getMapCenter']
+  const coordinates: Coordinates = store.state.mapModule.mapCenter
   return [coordinates.latitude, coordinates.longitude]
 })
 const zoom = ref<number>(2)
-const interestedNodes = computed<Node[]>(() => {
-  return store.getters['mapModule/getInterestedNodes']
-})
+const interestedNodes = computed<Node[]>(() => store.getters['mapModule/getInterestedNodes'])
 function getCoordinateFromNode(node: Node) {
   const coordinate: string[] = []
   coordinate.push(node.assetRecord.latitude)
@@ -134,13 +132,11 @@ function setMarkerColor(severity: string | undefined) {
   return ("src/assets/Normal-icon.png")
 }
 
-const interestedNodesID = computed<string[]>(() => {
-  return store.getters['mapModule/getInterestedNodesID']
-})
+const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 const edges = computed(() => {
   const ids: string[] = interestedNodesID.value
   const interestedNodesCoordinateMap = getInterestedNodesCoordinateMap()
-  return store.getters['mapModule/getEdges'].filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
+  return store.state.mapModule.edges.filter((edge: [number, number]) => ids.includes(edge[0].toString()) && ids.includes(edge[1].toString()))
     .map((edge: [number, number]) => {
       let edgeCoordinatesPair = []
       edgeCoordinatesPair.push(interestedNodesCoordinateMap.get(edge[0]))

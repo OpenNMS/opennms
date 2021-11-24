@@ -2,9 +2,9 @@
   <div class="mapnodes">
     <div class="button-group">
       <span class="buttons">
-        <feather-button primary v-on:click="clearFilters()">Clear Filters</feather-button>
-        <feather-button primary v-on:click="confirmFilters()">Filter Map</feather-button>
-        <feather-button primary v-on:click="reset()">Reset</feather-button>
+        <feather-button primary @click="clearFilters()">Clear Filters</feather-button>
+        <feather-button primary @click="confirmFilters()">Filter Map</feather-button>
+        <feather-button primary @click="reset()">Reset</feather-button>
       </span>
     </div>
     <div class="map-nodes-grid">
@@ -32,6 +32,7 @@ import { useStore } from "vuex"
 import { computed, watch } from 'vue'
 import { Coordinates, Node } from "@/types"
 import { FeatherButton } from "@featherds/button"
+import { ColumnApi, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 const store = useStore()
 
@@ -46,9 +47,7 @@ const defaultColDef = ref({
   suppressMenu: true
 })
 
-const interestedNodesID = computed(() => {
-  return store.getters['mapModule/getInterestedNodesID']
-})
+const interestedNodesID = computed<string[]>(() => store.state.mapModule.interestedNodesID)
 
 const rowData = ref(getGridRowDataFromInterestedNodes())
 
@@ -69,20 +68,18 @@ function getGridRowDataFromInterestedNodes() {
   }))
 }
 
-let gridApi: any = ref({})
-let gridColumnApi: any = ref({})
+let gridApi: GridApi
+let gridColumnApi: ColumnApi
 
-function onGridReady(params: any) {
+function onGridReady(params: GridReadyEvent) {
   gridApi = params.api
   gridColumnApi = params.columnApi
   autoSizeAll(false)
 }
 
 function autoSizeAll(skipHeader: boolean) {
-  const allColumnIds: string[] = []
-  gridColumnApi.getAllColumns().forEach(function (column: any) {
-    allColumnIds.push(column.colId)
-  })
+  const columns = gridColumnApi.getAllColumns() || []
+  const allColumnIds = columns.map((column) => column.getColId())
   gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
 }
 

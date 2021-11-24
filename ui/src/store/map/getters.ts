@@ -1,10 +1,6 @@
 import { Node, Alarm } from '@/types'
 import { State } from './state'
 
-const getInterestedNodesID = (state: State) => {
-  return state.interestedNodesID
-}
-
 const getInterestedNodes = (state: State) => {
   return state.nodesWithCoordinates.filter((node: Node) => state.interestedNodesID.includes(node.id))
 }
@@ -18,18 +14,7 @@ const getAlarmsFromSelectedNodes = (state: State) => {
   )
 }
 
-const getEdges = (state: State) => {
-  return state.edges
-}
-
-const getMapCenter = (state: State) => {
-  return state.mapCenter
-}
-
 export default {
-  getInterestedNodesID,
   getInterestedNodes,
-  getAlarmsFromSelectedNodes,
-  getEdges,
-  getMapCenter,
+  getAlarmsFromSelectedNodes
 }
