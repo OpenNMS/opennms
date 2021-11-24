@@ -18,34 +18,34 @@
 </template>
 
 <script setup lang="ts">
-import { Splitpanes, Pane } from "splitpanes";
-import "splitpanes/dist/splitpanes.css";
-import LeafletMap from "../components/Map/LeafletMap.vue";
+import { Splitpanes, Pane } from "splitpanes"
+import "splitpanes/dist/splitpanes.css"
+import LeafletMap from "../components/Map/LeafletMap.vue"
 
-import { useStore } from "vuex";
-import { computed} from 'vue';
+import { useStore } from "vuex"
+import { computed } from 'vue'
 
-const store = useStore();
+const store = useStore()
 
 let interestedNodesID = computed(() => {
-  return store.getters['mapModule/getInterestedNodesID'];
+  return store.getters['mapModule/getInterestedNodesID']
 })
 
 let alarms = computed(() => {
-  return store.getters['mapModule/getAlarmsFromSelectedNodes'];
+  return store.getters['mapModule/getAlarmsFromSelectedNodes']
 })
 
 store.dispatch("mapModule/getNodes", {
   limit: 5000,
   offset: 0,
-});
+})
 
 store.dispatch("mapModule/getAlarms", {
   limit: 5000,
   offset: 0,
-});
+})
 
-store.dispatch("mapModule/getNodesGraphEdges");
+store.dispatch("mapModule/getNodesGraphEdges")
 </script>
 
 <style lang="scss" scoped>

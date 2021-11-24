@@ -24,16 +24,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
-import { AgGridVue } from "ag-grid-vue3";
-import { useStore } from "vuex";
+import { ref } from "vue"
+import "ag-grid-community/dist/styles/ag-grid.css"
+import "ag-grid-community/dist/styles/ag-theme-alpine.css"
+import { AgGridVue } from "ag-grid-vue3"
+import { useStore } from "vuex"
 import { computed, watch } from 'vue'
-import { Coordinates, Node } from "@/types";
-import { FeatherButton } from "@featherds/button";
+import { Coordinates, Node } from "@/types"
+import { FeatherButton } from "@featherds/button"
 
-const store = useStore();
+const store = useStore()
 
 const gridOptions = ref({})
 
@@ -47,10 +47,10 @@ const defaultColDef = ref({
 })
 
 const interestedNodesID = computed(() => {
-  return store.getters['mapModule/getInterestedNodesID'];
+  return store.getters['mapModule/getInterestedNodesID']
 })
 
-const rowData = ref(getGridRowDataFromInterestedNodes());
+const rowData = ref(getGridRowDataFromInterestedNodes())
 
 function getGridRowDataFromInterestedNodes() {
   return store.getters['mapModule/getInterestedNodes'].map((node: any) => ({
@@ -66,24 +66,24 @@ function getGridRowDataFromInterestedNodes() {
     sysDescription: node.sysDescription,
     sysContact: node.sysContact,
     sysLocation: node.sysLocation
-  }));
+  }))
 }
 
-let gridApi: any = ref({});
-let gridColumnApi: any = ref({});
+let gridApi: any = ref({})
+let gridColumnApi: any = ref({})
 
 function onGridReady(params: any) {
   gridApi = params.api
   gridColumnApi = params.columnApi
-  autoSizeAll(false);
+  autoSizeAll(false)
 }
 
 function autoSizeAll(skipHeader: boolean) {
-  const allColumnIds: string[] = [];
+  const allColumnIds: string[] = []
   gridColumnApi.getAllColumns().forEach(function (column: any) {
-    allColumnIds.push(column.colId);
-  });
-  gridColumnApi.autoSizeColumns(allColumnIds, skipHeader);
+    allColumnIds.push(column.colId)
+  })
+  gridColumnApi.autoSizeColumns(allColumnIds, skipHeader)
 }
 
 watch(
@@ -92,28 +92,28 @@ watch(
     if (gridApi.setRowData != undefined && gridApi.setRowData != null) {
       gridApi.setRowData(
         getGridRowDataFromInterestedNodes()
-      );
+      )
     }
   }
 )
 
 function clearFilters() {
-  gridApi.setFilterModel(null);
+  gridApi.setFilterModel(null)
 }
 
 function confirmFilters() {
-  const ids: string[] = [];
-  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()));
-  store.dispatch("mapModule/setInterestedNodesId", ids);
+  const ids: string[] = []
+  gridApi.forEachNodeAfterFilter((node: any) => ids.push(node.data.id.toString()))
+  store.dispatch("mapModule/setInterestedNodesId", ids)
 }
 
 function reset() {
-  store.dispatch("mapModule/resetInterestedNodesID");
+  store.dispatch("mapModule/resetInterestedNodesID")
 }
 
 function rowDoubleClicked() {
-  const id = gridApi.getSelectedNodes().map((node: any) => node.data)[0].id;
-  const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id);
+  const id = gridApi.getSelectedNodes().map((node: any) => node.data)[0].id
+  const node = store.getters['mapModule/getInterestedNodes'].filter((n: Node) => n.id == id)
 
   const coordinate: Coordinates = { latitude: node[0].assetRecord.latitude, longitude: node[0].assetRecord.longitude }
   store.dispatch("mapModule/setMapCenter", coordinate)
@@ -127,7 +127,7 @@ const columnDefs = ref([
     width: 100,
     filter: "agNumberColumnFilter",
     comparator: (valueA: number, valueB: number) => {
-      return valueA - valueB;
+      return valueA - valueB
     },
   },
   {
@@ -157,7 +157,7 @@ const columnDefs = ref([
     headerTooltip: "Latest Nodes Scan",
     filter: "agDateColumnFilter",
     cellRenderer: (data: any) => {
-      return data.value ? new Date(data.value).toLocaleDateString() : "";
+      return data.value ? new Date(data.value).toLocaleDateString() : ""
     },
   },
   {
@@ -190,7 +190,7 @@ const columnDefs = ref([
     field: "sysLocation",
     headerTooltip: "Sys Location",
   },
-]);
+])
 </script>
 <style lang="scss" scoped>
 .button-group {
