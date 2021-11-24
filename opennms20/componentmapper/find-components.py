@@ -96,11 +96,14 @@ def addHtmlHeader(f):
 
 .collapsible:after {
   content: '\\02795'; /* Unicode character for "plus" sign (+) */
+  font-size:8px;
   float: left;
 }
 
 .active:after {
   content: "\\2796"; /* Unicode character for "minus" sign (-) */
+  font-size:8px;
+  float: left;
 }
 
 .content {
