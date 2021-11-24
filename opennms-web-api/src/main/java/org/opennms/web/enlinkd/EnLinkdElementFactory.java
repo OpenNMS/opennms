@@ -43,26 +43,15 @@ import javax.servlet.ServletContext;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
-import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
-import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
 import org.opennms.netmgt.enlinkd.model.BridgeElement.BridgeDot1dBaseType;
@@ -79,16 +68,27 @@ import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
+import org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao;
+import org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao;
 import org.opennms.netmgt.enlinkd.service.api.BridgePort;
 import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
+import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +243,6 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     }
 
-    @Transactional
     public OspfLinkNode convertFromModel(int nodeid, OspfLink link) {
         OspfLinkNode linknode = create(nodeid, link);
 
@@ -368,7 +367,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return linknode;
     }        
         
-    @Transactional
     public CdpLinkNode convertFromModel(int nodeid, CdpLink link) {
         CdpLinkNode linknode = create(nodeid, link);
         linknode.setCdpCacheDevice(link.getCdpCacheDeviceId());
@@ -443,7 +441,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return linknode;
     }
     
-    @Transactional
     private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
         LldpLinkNode linknode = create(nodeid, link);
 
@@ -520,7 +517,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return nodelinks;
     }
 
-    @Transactional
     private IsisLinkNode convertFromModel(int nodeid, IsIsLink link) {
         IsisLinkNode linknode = new IsisLinkNode();
         linknode.setIsisCircIfIndex(link.getIsisCircIfIndex());
@@ -606,7 +602,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return bridgeNode;
     }
     
-    @Transactional
     private BridgeLinkNode convertFromModel(Integer nodeid, SharedSegment segment) throws BridgeTopologyException {
         
         BridgeLinkNode linknode = new BridgeLinkNode();
@@ -629,7 +624,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return addBridgeRemotesNodes(nodeid, null, linknode, segment);
     }
 
-    @Transactional
     private BridgeLinkNode convertFromModel(Integer nodeid, String mac, List<OnmsIpInterface> ipaddrs, SharedSegment segment) {
         BridgeLinkNode linknode = new BridgeLinkNode();
         
@@ -654,7 +648,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
     }
 
-    @Transactional
     private BridgeLinkNode addBridgeRemotesNodes(Integer nodeid, String mac, BridgeLinkNode linknode,
             SharedSegment segment) {
 
