@@ -30,6 +30,7 @@ package org.opennms.features.apilayer.collectors;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -99,6 +100,15 @@ public class ServiceCollectorImpl<T extends ServiceCollector> implements org.ope
         ResourcePath opennmsHome = ResourcePath.fromString(System.getProperty("opennms.home"));
         String path = ResourcePath.get(opennmsHome, "share", "rrd", collectionName.toLowerCase()).toString();
         final RrdRepository rrdRepository = new RrdRepository();
+        rrdRepository.setStep(300);
+        rrdRepository.setHeartBeat(rrdRepository.getStep()*2);
+        rrdRepository.setRraList(Arrays.asList(
+                "RRA:AVERAGE:0.5:1:2016",
+                "RRA:AVERAGE:0.5:12:1488",
+                "RRA:AVERAGE:0.5:288:366",
+                "RRA:MAX:0.5:288:366",
+                "RRA:MIN:0.5:288:366"
+        ));
         rrdRepository.setRrdBaseDir(new File(path));
         return rrdRepository;
     }
