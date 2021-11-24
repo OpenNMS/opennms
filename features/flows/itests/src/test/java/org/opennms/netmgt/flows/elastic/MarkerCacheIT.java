@@ -58,6 +58,7 @@ import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -105,6 +106,9 @@ public class MarkerCacheIT {
 
     @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
 
     @Autowired
     private SnmpInterfaceDao snmpInterfaceDao;
@@ -158,7 +162,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -201,7 +207,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)
@@ -245,7 +253,9 @@ public class MarkerCacheIT {
         ), FilterService.NOOP);
 
         final DocumentEnricher documentEnricher = new DocumentEnricher(
-                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new MetricRegistry(),
+                nodeDao, ipInterfaceDao,
+                interfaceToNodeCache, sessionUtils, classificationEngine,
                 new CacheConfigBuilder()
                         .withName("flows.node")
                         .withMaximumSize(1000)

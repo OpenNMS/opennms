@@ -40,23 +40,23 @@ import com.google.common.collect.Maps;
 
 public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
 
-    private Map<Key, Integer> keyToNodeId = Maps.newHashMap();
+    private Map<Key, Entry> keyToEntry = Maps.newHashMap();
 
     @Override
     public boolean setNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return keyToNodeId.put(new Key(location, ipAddr), nodeId) != null;
+        return keyToEntry.put(new Key(location, ipAddr), new Entry(nodeId, 0)) != null;
     }
 
     @Override
     public boolean removeNodeId(String location, InetAddress ipAddr, int nodeId) {
-        return keyToNodeId.remove(new Key(location, ipAddr)) != null;
+        return keyToEntry.remove(new Key(location, ipAddr)) != null;
     }
 
     @Override
-    public Iterable<Integer> getNodeId(String location, InetAddress ipAddr) {
-        final Integer nodeId = keyToNodeId.get(new Key(location, ipAddr));
-        if (nodeId != null) {
-            return Arrays.asList(nodeId);
+    public Iterable<Entry> get(String location, InetAddress ipAddr) {
+        final var entry = keyToEntry.get(new Key(location, ipAddr));
+        if (entry != null) {
+            return Arrays.asList(entry);
         }
         return Collections.emptySet();
     }
@@ -65,11 +65,11 @@ public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
     public void dataSourceSync() {}
 
     @Override
-    public int size() { return keyToNodeId.size(); }
+    public int size() { return keyToEntry.size(); }
 
     @Override
     public void clear() {
-        keyToNodeId.clear();
+        keyToEntry.clear();
     }
 
     @Override
