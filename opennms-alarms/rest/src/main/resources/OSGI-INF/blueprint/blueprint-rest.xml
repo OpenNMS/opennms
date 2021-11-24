@@ -14,27 +14,29 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
 
-
-
-    <!-- generic bus with authentication handling in interceptor and feature -->
+    <!-- GENERIC BUS WITH JAASAUTHENTICATIONFEATURE AS FEATURE -->
     <cxf:bus>
-        <!-- authentication bus interceptor -->
-        <cxf:inInterceptors>
-            <bean class="org.apache.cxf.transport.http.HttpAuthenticationFaultHandler">
-                <property name="realm" value="TEST JAAS" /> <!-- TODO customize for opennms -->
-            </bean>
-        </cxf:inInterceptors>
         <cxf:features>
             <cxf:logging/>
-            <!-- authentication bus feature -->
+            <!-- authentication bus feature necessary , and must have karaf as contextName -->
             <bean class="org.apache.cxf.interceptor.security.JAASAuthenticationFeature">
-                <property name="contextName" value="karaf" /> <!-- TODO customize for opennms -->
+                <property name="contextName" value="karaf" /> <!-- karaf later  _customize for opennms -->
                 <property name="reportFault" value="true" />
             </bean>
+            -->
         </cxf:features>
+        <!-- authentication bus interceptor not necessary?
+        <cxf:inInterceptors>
+            <bean class="org.apache.cxf.transport.http.HttpAuthenticationFaultHandler">
+                <property name="realm" value="TEST JAAS_customize for opennms" />
+            </bean>
+        </cxf:inInterceptors>
+        -->
     </cxf:bus>
 
-    <!-- implementation of alart rest service -->
+
+
+    <!-- IMPLEMENTATION OF ALERT REST SERVICE -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
     <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" />
     <!--  <reference id="troubleTicketProxy" interface="org.opennms.web.svclayer.TroubleTicketProxy" /> -->
@@ -49,13 +51,16 @@
     <service id="alarmRestService" ref="alarmRestServiceImpl" interface="org.opennms.netmgt.alarmd.rest.AlarmRestService" />
     -->
 
-    <!-- web server running alert rest service and authentication filter as provider -->
-    <!-- authentication filter provider necessary? -->
+
+
+    <!-- WEB SERVER RUNNING ALERT REST SERVICE AND JAASAUTHENTICATION FILTER AS PROVIDER -->
+    <!-- authentication filter provider necessary not necessary
     <bean id="authenticationFilter" class="org.apache.cxf.jaxrs.security.JAASAuthenticationFilter">
-        <property name="contextName" value="karaf" /> <!-- TODO customize for opennms -->
-        <property name="realmName" value="TEST JAAS" /> <!-- TODO customize for opennms -->
-        <!-- <property name="useDoAs" value="true" /> experimental? -->
+        <property name="contextName" value="karaf_CustomizeForOpenNMS" />
+        <property name="realmName" value="TEST JAAS_CustomizeForOpenNMS" />
+        <property name="useDoAs" value="true" />
     </bean>
+    -->
     <jaxrs:server id="alarmRest" address="/alarmservice">
         <jaxrs:serviceBeans>
             <ref component-id="alarmRestServiceImpl" />

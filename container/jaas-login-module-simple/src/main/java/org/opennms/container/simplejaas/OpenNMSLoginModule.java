@@ -41,32 +41,35 @@ import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.karaf.jaas.modules.AbstractKarafLoginModule;
 import org.opennms.netmgt.config.api.UserConfig;
 //import org.opennms.web.springframework.security.LoginModuleUtils;
-//import org.opennms.web.springframework.security.OpenNMSLoginHandler;
+
 //import org.opennms.web.springframework.security.SpringSecurityUserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import org.springframework.security.core.GrantedAuthority;
 
 
-public class OpenNMSLoginModule extends AbstractKarafLoginModule /* implements OpenNMSLoginHandler */ {
+public class OpenNMSLoginModule extends AbstractKarafLoginModule implements SimpleOpenNMSLoginHandler {
     private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
     private Map<String, ?> m_sharedState;
 
     @Override
     public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map<String, ?> sharedState, final Map<String, ?> options) {
-        LOG.info("OpenNMS Login Module initializing: subject={}, callbackHandler={}, sharedState={}, options={}", subject, callbackHandler, sharedState, options);
+        LOG.info("~~~~~ OpenNMS Login Module initializing: subject={}, callbackHandler={}, sharedState={}, options={}", subject, callbackHandler, sharedState, options);
         m_sharedState = sharedState;
         super.initialize(subject, callbackHandler, options);
     }
 
     @Override
     public boolean login() throws LoginException {
-        succeeded = true; // LoginModuleUtils.doLogin(this, subject, m_sharedState, options);
+        LOG.info("~~~~~ OpenNMS Login Module login in: subject={}, callbackHandler={}, , options={}", subject, callbackHandler, options);
+        succeeded = SimpleLoginModuleUtils.doLogin(this, subject, m_sharedState, options);
         return succeeded;
     }
 
     @Override
     public boolean abort() throws LoginException {
-        return super.abort();
+        LOG.info("~~~~~ OpenNMS Login Module aborting");
+        return super.abort(); // TODO: WHAT DOES LOGIN() NEED TO DO BESIDES SET SUCCEEDED? "Authentication failed: Login Failure: all modules ignore"
     }
 
     @Override
@@ -78,7 +81,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule /* implements O
         return this.callbackHandler;
     }
 
-    //@Override
+    @Override
     public UserConfig userConfig() {
         return JaasSupport.getUserConfig();
     }
@@ -90,12 +93,12 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule /* implements O
     }
     */
 
-    //@Override
+    @Override
     public String user() {
         return this.user;
     }
 
-    //@Override
+    @Override
     public void setUser(final String user) {
         this.user = user;
     }
@@ -113,17 +116,17 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule /* implements O
     }
     */
 
-    //@Override
+    @Override
     public Set<Principal> principals() {
         return this.principals;
     }
 
-    //@Override
+    @Override
     public void setPrincipals(final Set<Principal> principals) {
         this.principals = principals;
     }
 
-    //@Override
+    @Override
     public boolean requiresAdminRole() {
         // this LoginHandler is used for Karaf access, allow admin login only
         return true;
