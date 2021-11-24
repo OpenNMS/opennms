@@ -42,8 +42,8 @@ import org.opennms.integration.api.v1.collectors.ServiceCollectorFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 public class ServiceCollectorImplTest {
-    private ServiceCollectorFactory mockFactory;
-    private ServiceCollectorImpl serviceCollector;
+    private ServiceCollectorFactory<?> mockFactory;
+    private ServiceCollectorImpl<?> serviceCollector;
     private String baseDir = "/opt/opennms";
     private String[] rrsList = new String[]{
             "RRA:AVERAGE:0.5:1:2016",
@@ -57,7 +57,7 @@ public class ServiceCollectorImplTest {
     public void setup(){
         System.setProperty("opennms.home", baseDir);
         mockFactory = mock(ServiceCollectorFactory.class);
-        serviceCollector = new ServiceCollectorImpl(mockFactory);
+        serviceCollector = new ServiceCollectorImpl<>(mockFactory);
     }
 
     @Test
