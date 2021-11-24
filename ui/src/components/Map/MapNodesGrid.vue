@@ -9,7 +9,7 @@
     </div>
     <div class="map-nodes-grid">
       <ag-grid-vue
-        style="width: 100%; height: 700px"
+        style="width: 100%; height: 100%"
         class="ag-theme-alpine"
         rowSelection="multiple"
         :columnDefs="columnDefs"
@@ -190,13 +190,16 @@ const columnDefs = ref([
 ])
 </script>
 <style lang="scss" scoped>
+.mapnodes {
+  height: calc(100% - 60px);
+}
 .button-group {
   width: 100%;
   height: 40px;
 }
 .map-nodes-grid {
   width: 100%;
-  height: 700px;
+  height: 100%;
 }
 .buttons {
   float: right;

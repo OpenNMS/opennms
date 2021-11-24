@@ -18,7 +18,7 @@
     </div>
     <div class="map-alarms-grid">
       <ag-grid-vue
-        style="width: 100%; height: 700px"
+        style="width: 100%; height: 100%"
         class="ag-theme-alpine"
         rowSelection="multiple"
         @grid-ready="onGridReady"
@@ -303,9 +303,12 @@ const columnDefs = ref([
   width: 100%;
   height: 40px;
 }
+.map-alarms {
+  height: calc(100% - 60px);
+}
 .map-alarms-grid {
   width: 100%;
-  height: 700px;
+  height: 100%;
 }
 .map-alarm-buttons {
   float: right;

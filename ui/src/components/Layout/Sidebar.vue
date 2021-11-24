@@ -13,7 +13,7 @@ import Link from './Link.vue'
     
 <style lang="scss">
 .sidebar {
-  height: 170vh;
+  height: calc(100vh - 60px);
   width: 230px;
   position: relative;
   float: left;

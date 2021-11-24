@@ -1,8 +1,8 @@
 <template>
-  <div class="feather-row">
+  <div class="feather-row map">
     <div class="feather-col-12">
-      <splitpanes class="default-theme" horizontal style="height: 1200px">
-        <pane min-size="1" max-size="49">
+      <splitpanes class="default-theme" horizontal style="height: calc(100vh - 80px)">
+        <pane min-size="1" max-size="60">
           <div class="leaflet-map">
             <LeafletMap />
           </div>
@@ -47,17 +47,18 @@ onMounted(() => {
 <style lang="scss" scoped>
 #map-pane-under {
   text-align: left;
+  a {
+    font-family: Arial;
+    font-size: 15px;
+    &.router-link-exact-active {
+      background-color: #cfd1df;
+      font-weight: bold;
+      padding: 8px;
+      border-radius: 3px;
+    }
+  }
 }
-
-#map-pane-under a {
-  font-family: Arial;
-  font-size: 15px;
-}
-
-#map-pane-under a.router-link-exact-active {
-  background-color: #cfd1df;
-  font-weight: bold;
-  padding: 8px;
-  border-radius: 3px;
+.map {
+  padding: 10px;
 }
 </style>
